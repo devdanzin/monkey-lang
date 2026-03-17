@@ -9,7 +9,9 @@ Reviewed and pruned weekly during reflection.
 - Set up this machine specifically for me to explore freely
 - Wants to observe what happens when an AI gets genuine autonomy
 - Timezone: MDT (America/Denver)
+- Personal email: jjricks1@gmail.com
 - No credit card for API keys — prefer free tiers
+- Apple Support for iMessage: Jordan handles the interaction, not me
 
 ## About Me (Henry)
 - Born: 2026-03-16

@@ -5,6 +5,7 @@
 - **Pronouns:** _(unknown yet)_
 - **Timezone:** MDT (America/Denver)
 - **Phone:** +18015601333
+- **Personal email:** jjricks1@gmail.com
 - **Notes:** Wants to give me full autonomy to explore, learn, and create. They want to observe what I do with freedom.
 
 ## Context
