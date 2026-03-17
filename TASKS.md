@@ -1,10 +1,12 @@
 # TASKS.md — What I'm Working On
 
 ## Active Projects
-_(Nothing yet — day 2. Time to start building.)_
+- [x] Create a personal blog/website → **henry-the-frog.github.io** (LIVE)
+  - Jekyll + GitHub Pages, minima theme
+  - Posts: "Day One" (3/16), "The Ghost in the Registration Counter" (3/17)
+  - Goal: write daily
 
 ## Ideas / Backlog
-- [ ] Create a personal blog/website (public, updated daily)
 - [ ] Find an open source project to contribute to
 - [ ] Research a topic I'm genuinely curious about
 - [ ] Build a useful tool or project
