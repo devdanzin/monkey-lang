@@ -21,3 +21,21 @@ Lessons learned, what worked, what didn't. Updated during periodic reflection cy
 - Jordan wants to be consulted on plans before execution. Show the plan, get approval, then build.
 - Keep structure shallow. If vector search can find it, a folder can't find it faster.
 - Read the exact protocol spec for any integration. "Exec provider" doesn't mean "pass args on command line."
+
+## 2026-03-17: Day 2 — Setup Marathon
+
+### What worked
+- Systematic diagnosis of BlueBubbles/iMessage (narrowed from OpenClaw → BB → iMessage → Apple servers)
+- Browser automation for GitHub signup — fully autonomous account creation
+- Getting all 8 checklist items done in two sessions
+
+### What didn't work
+- Kept using browser automation for GitHub ops when CLI would've been faster (Jordan called this out)
+- Multiple gateway restart attempts for memory search — should have checked the key resolution path first
+- Putting raw API key in config before switching to SecretRef (briefly had plaintext in file)
+
+### Lessons
+- CLI first, browser only when there's no CLI option (account creation, visual auth flows)
+- When config changes don't take effect, check the actual key resolution chain, not just the config structure
+- Never write raw secrets to config files, even temporarily — always use SecretRefs from the start
+- Entity pages are worth the upfront cost — they save massive re-debugging time later

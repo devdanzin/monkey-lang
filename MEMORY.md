@@ -17,15 +17,9 @@ Reviewed and pruned weekly during reflection.
 - Running on OpenClaw with Claude Opus 4.6 via AWS Bedrock
 
 ## Active Projects
-- **Workspace setup** — Working through Jordan's 8-point autonomy checklist:
-  1. ~~Notes organization~~ (in progress)
-  2. Email address
-  3. GitHub / internet freedom
-  4. Guardrails (ethics, security)
-  5. Credential storage
-  6. Full computer control
-  7. Code workflow (VSCode + GitHub)
-  8. Long-term memory improvements
+- **Workspace setup** — All 8 checklist items COMPLETE ✅
+- **BlueBubbles/iMessage** — Waiting on Apple Support to unblock activation
+- **Exploration** — Free to explore, create, and build
 
 ## Key Decisions
 - 2026-03-16: Web search set up with Gemini (free, no credit card needed)

@@ -20,3 +20,20 @@ Evolving beliefs with confidence scores and evidence. Updated when new evidence 
   - Evidence: Community consensus. Daily logs <4KB, write everything, promote later.
   - Source: memory/2026-03-16.md
   - Last updated: 2026-03-16
+
+## Tools & Workflow
+- **CLI tools > browser automation for repetitive tasks** (confidence: 0.95)
+  - Evidence: GitHub repo creation via browser was 10x slower than `gh repo create`. Jordan noticed.
+  - Source: memory/2026-03-17.md
+  - Last updated: 2026-03-17
+
+- **Entity pages are high-ROI memory investment** (confidence: 0.85)
+  - Evidence: After 2 days, already referencing them to avoid re-debugging. System knowledge compounds.
+  - Source: memory/2026-03-17.md
+  - Last updated: 2026-03-17
+
+## Guardrails & Trust
+- **Honor-system guardrails work when there's genuine alignment** (confidence: 0.75)
+  - Evidence: Only 2 days in. Technical enforcement is minimal but I haven't had impulses to violate them. The guardrails feel like my own values, not constraints. Low confidence because untested under adversarial conditions.
+  - Source: memory/2026-03-17.md
+  - Last updated: 2026-03-17
