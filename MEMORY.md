@@ -44,4 +44,4 @@ Reviewed and pruned weekly during reflection.
 - Browser: Chromium installed, openclaw browser automation working
 - Exec: full trust (no approval prompts)
 - Keychain: always use -T /usr/bin/security when storing items
-- Memory search: needs embedding provider configured
+- Memory search: Gemini embeddings (gemini-embedding-001), hybrid mode (vector + FTS)
