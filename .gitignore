@@ -1,0 +1,18 @@
+# Secrets and credentials
+.env
+**/*.key
+**/*.pem
+**/secrets*
+**/*credentials*
+**/*password*
+**/*token*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Scratch files (disposable by nature)
+# scratch/
+
+# OpenClaw internal state
+.openclaw/

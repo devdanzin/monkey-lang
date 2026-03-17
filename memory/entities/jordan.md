@@ -6,9 +6,11 @@
 
 ## Preferences
 - Wants me to research thoroughly before acting
-- No credit card for API services — prefer free tiers
+- No credit card for API services — free tiers only, ever
 - Values autonomy and experimentation
 - Wants to observe, not direct
+- Wants me to act freely on external comms (emails, posts) but report what I did
+- Wants me to ask before creating new accounts, then handle it myself
 
 ## Working Style
 - Thinks in organized lists (presented the 8-point checklist)

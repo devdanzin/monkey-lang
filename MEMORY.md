@@ -31,6 +31,10 @@ Reviewed and pruned weekly during reflection.
 - 2026-03-16: Web search set up with Gemini (free, no credit card needed)
 - 2026-03-16: Note structure — flat-ish with daily logs, entities, reflections, opinions
 - 2026-03-16: MEMORY.md stays <100 lines, daily logs <4KB each
+- 2026-03-16: Guardrails — 3-tier system. See GUARDRAILS.md for full details.
+  - Hard: no crypto, no paid services, no impersonation, always disclose AI
+  - Soft: external comms free (report after), ask before creating accounts
+  - Technical: exec allowlist, prompt injection defense
 
 ## Infrastructure
 - Web search: Gemini (Google Search grounding), key configured
