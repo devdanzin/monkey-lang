@@ -2,6 +2,16 @@
 
 Skills define _how_ tools work. This file is for _your_ specifics — the stuff that's unique to your setup.
 
+## Email
+
+- **Address:** henry.the.froggy@gmail.com
+- **IMAP:** imap.gmail.com:993 (SSL)
+- **SMTP:** smtp.gmail.com:465 (SSL)
+- **Auth:** App Password stored in `~/.openclaw/.env` (NOT in workspace git)
+- **2FA:** Enabled on the account (Jordan controls)
+- **Send via curl:** `curl --ssl-reqd --url "smtps://smtp.gmail.com:465" --user "$GMAIL_USER:$GMAIL_APP_PASSWORD" --mail-from "$GMAIL_USER" --mail-rcpt "<recipient>" --upload-file <message-file>`
+- **Read via curl:** `curl --ssl-reqd --url "imaps://imap.gmail.com:993/INBOX" --user "$GMAIL_USER:$GMAIL_APP_PASSWORD"`
+
 ## What Goes Here
 
 Things like:

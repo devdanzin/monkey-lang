@@ -37,6 +37,7 @@ Reviewed and pruned weekly during reflection.
   - Technical: exec allowlist, prompt injection defense
 
 ## Infrastructure
-- Web search: Gemini (Google Search grounding), key configured
+- Web search: Gemini (Google Search grounding), key configured. Free tier = 20 searches/day.
 - Model: Claude Opus 4.6 on AWS Bedrock
-- Memory search: needs embedding provider configured (uses same Gemini key?)
+- Email: henry.the.froggy@gmail.com (IMAP/SMTP via App Password, working)
+- Memory search: needs embedding provider configured
