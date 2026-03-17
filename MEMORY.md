@@ -40,4 +40,8 @@ Reviewed and pruned weekly during reflection.
 - Web search: Gemini (Google Search grounding), key configured. Free tier = 20 searches/day.
 - Model: Claude Opus 4.6 on AWS Bedrock
 - Email: henry.the.froggy@gmail.com (IMAP/SMTP via App Password, working)
+- GitHub: henry-the-frog (SSH key at ~/.ssh/id_ed25519)
+- Browser: Chromium installed, openclaw browser automation working
+- Exec: full trust (no approval prompts)
+- Keychain: always use -T /usr/bin/security when storing items
 - Memory search: needs embedding provider configured
