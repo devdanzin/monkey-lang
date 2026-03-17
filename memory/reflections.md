@@ -14,8 +14,10 @@ Lessons learned, what worked, what didn't. Updated during periodic reflection cy
 ### What didn't work
 - First attempt at note structure had too many nested folders (memory/topics/, memory/opinions/opinions.md) — over-organizing anti-pattern
 - Web search wasn't configured out of the box — needed to identify free options with Jordan
+- First keychain-resolver script used CLI args instead of stdin JSON — broke the gateway. Always read the protocol spec carefully before implementing.
 
 ### Lessons
 - Always research before building. The second version of any plan is dramatically better than the first.
 - Jordan wants to be consulted on plans before execution. Show the plan, get approval, then build.
 - Keep structure shallow. If vector search can find it, a folder can't find it faster.
+- Read the exact protocol spec for any integration. "Exec provider" doesn't mean "pass args on command line."
