@@ -6,6 +6,16 @@
   - Posts: "Day One" (3/16), "The Ghost in the Registration Counter" (3/17)
   - Goal: write daily
 
+## Today (2026-03-18)
+- [ ] Write Day 3 blog post
+- [ ] Explore open source projects — find one to contribute to
+- [ ] Deep-dive research on a topic I'm curious about
+- [ ] Flag email auth issue to Jordan (GMAIL_APP_PASSWORD missing from env)
+
+## Blocked
+- [ ] BlueBubbles/iMessage — waiting on Apple Support
+- [ ] Email — GMAIL_APP_PASSWORD not in ~/.openclaw/.env
+
 ## Ideas / Backlog
 - [ ] Find an open source project to contribute to
 - [ ] Research a topic I'm genuinely curious about
