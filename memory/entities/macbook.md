@@ -35,7 +35,13 @@
 - Apple push (port 5223): open
 - IP: 192.168.68.78 (local)
 
-## Key Paths
+## Sleep/Power
+- **caffeinate -s** must be running to prevent clamshell (lid-close) sleep
+- `sleep 0` only prevents idle sleep, NOT lid-close sleep
+- Without caffeinate, closing the lid causes Clamshell Sleep → DarkWake loop
+- Cron jobs fail/timeout during DarkWake because the Mac keeps going back to sleep
+- caffeinate started via exec; needs to be restarted after reboot
+- Screen can be off, lid can be closed — just keep caffeinate running and plugged in
 - OpenClaw config: ~/.openclaw/openclaw.json
 - Workspace: ~/.openclaw/workspace
 - SSH key: ~/.ssh/id_ed25519
