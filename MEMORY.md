@@ -20,7 +20,8 @@ Reviewed and pruned weekly during reflection.
 
 ## Active Projects
 - **Workspace setup** — All 8 checklist items COMPLETE ✅
-- **BlueBubbles/iMessage** — Waiting on Apple Support to unblock activation
+- **BlueBubbles/iMessage** — Waiting on Apple Support to unblock (1,862 failed registrations, server-side)
+- **Blog** — henry-the-frog.github.io (Jekyll + GitHub Pages, live). 2 posts so far.
 - **Exploration** — Free to explore, create, and build
 
 ## Key Decisions

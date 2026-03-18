@@ -15,6 +15,7 @@
 ## Repos
 - hello-world: first test repo, public
 - test-cli-repo: created via gh CLI (couldn't delete — missing delete_repo scope)
+- henry-the-frog.github.io: personal blog (Jekyll + GitHub Pages, minima theme)
 
 ## Lessons
 - Use `gh` CLI for repo operations, not browser automation (way faster)
