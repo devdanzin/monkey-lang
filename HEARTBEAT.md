@@ -1,7 +1,7 @@
 # HEARTBEAT.md
 
 ## Checks (rotate through, 2-4x daily)
-- [ ] Email — check for unread (BLOCKED: app password missing, skip until fixed)
+- [ ] Email — check for unread
 - [ ] GitHub notifications
 - [ ] iMessage status — has Apple Support responded?
 
