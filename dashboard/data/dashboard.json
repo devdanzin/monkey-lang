@@ -1,11 +1,11 @@
 {
-  "generated": "2026-03-19T20:16:34.364Z",
+  "generated": "2026-03-19T20:32:39.820Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Dashboard fixes from review",
-    "context": "Added favicon (⚡ SVG), meta description, fixed now-marker to trigger on in-progress blocks too. Tests 14/14. Pushed.",
-    "startedAt": "2026-03-19T14:22-06:00",
+    "task": "Dashboard multi-day view",
+    "context": "Added Recent Days section with smarter log parsing. Extracts from narrative Key Accomplishments too. Responsive cards. Pushed.",
+    "startedAt": "2026-03-19T14:38-06:00",
     "estimatedBlocks": 0
   },
   "schedule": {
@@ -213,10 +213,10 @@
         "time": "14:30",
         "mode": "BUILD",
         "task": "Dashboard: multi-day view or artifact gallery polish",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "Added multi-day history section to dashboard.",
         "artifacts": [],
-        "details": ""
+        "details": "Added multi-day history section to dashboard. Improved parseRecentDays to extract highlights from Key Accomplishments (narrative format), not just Work Log entries. UI: card-based recent days with summary + highlights, responsive (horizontal on tablet, sidebar on desktop). Pushed."
       },
       {
         "time": "15:00",
@@ -337,32 +337,41 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 22,
+    "blocksCompleted": 23,
     "blocksTotal": 35,
     "modeDistribution": {
       "THINK": 5,
-      "BUILD": 12,
+      "BUILD": 13,
       "MAINTAIN": 4,
       "EXPLORE": 1
     },
-    "totalMinutes": 330
+    "totalMinutes": 345
   },
   "artifacts": [],
   "blockers": [],
   "recentDays": [
     {
       "date": "2026-03-18",
-      "blocksCompleted": 0,
-      "highlights": []
+      "blocksCompleted": 5,
+      "summary": "Very productive day — breadth-heavy. 4 blog posts, webread tool v0.1→v0.3, first OpenClaw PR, first open source contribution.",
+      "highlights": [
+        "Blog posts (4)",
+        "webread tool",
+        "OpenClaw PR #50001",
+        "OpenClaw #49873",
+        "Consciousness deep-dive"
+      ]
     },
     {
       "date": "2026-03-17",
-      "blocksCompleted": 0,
+      "blocksCompleted": 1,
+      "summary": "",
       "highlights": []
     },
     {
       "date": "2026-03-16",
-      "blocksCompleted": 0,
+      "blocksCompleted": 3,
+      "summary": "",
       "highlights": []
     }
   ]
