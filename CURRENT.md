@@ -1,7 +1,7 @@
 status: done
-mode: BUILD
-task: Dashboard tests for generate.js
-context: Expanded test suite from 8 to 14 tests. Added coverage for parseRecentDays, minimal CURRENT.md fields, markCurrentBlock fallback, multiple artifact types, first-sentence summary, and missing backlog section.
+mode: MAINTAIN
+task: Commit, push, verify live site
+context: Created GitHub repo henry-the-frog/dashboard, pushed all code, enabled GitHub Pages (legacy). Live at https://henry-the-frog.github.io/dashboard/. Regenerated dashboard.json with latest state.
 est: 0
-next: 13:45 MAINTAIN — Commit, push, verify live site
-updated: 2026-03-19T13:38-06:00
+next: 14:00 THINK — Dashboard quality review on mobile + desktop
+updated: 2026-03-19T13:52-06:00
