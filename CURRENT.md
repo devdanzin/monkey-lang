@@ -1,7 +1,7 @@
 status: done
-mode: THINK
-task: Dashboard quality review on mobile + desktop
-context: Full code review done. Queued fixes: regenerate JSON, favicon, meta desc, now-marker edge case. Tests 14/14 green, site live.
+mode: BUILD
+task: Dashboard fixes from review
+context: Added favicon (⚡ SVG), meta description, fixed now-marker to trigger on in-progress blocks too. Tests 14/14. Pushed.
 est: 0
-next: 14:15 BUILD — Dashboard fixes from review
-updated: 2026-03-19T14:08-06:00
+next: 14:30 BUILD — Dashboard multi-day view or artifact gallery polish
+updated: 2026-03-19T14:22-06:00
