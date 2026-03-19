@@ -1,7 +1,7 @@
 status: done
 mode: BUILD
-task: Dashboard: schedule adjustments section
-context: Added adjustments parsing to generate.js, new UI section with purple-bordered cards, responsive layout (sidebar on desktop). Tests 15/15 green.
+task: Dashboard: live elapsed timer + time-remaining stat
+context: Added live second-by-second elapsed timer on in-progress blocks (amber badge), "time remaining" stat in stats bar. CSS + JS only, no generate.js changes needed. Tests 15/15 green.
 est: 0
-next: 15:30 BUILD — Continue iteration or pull from backlog
-updated: 2026-03-19T15:25-06:00
+next: 15:45 MAINTAIN — Commit, push all repos
+updated: 2026-03-19T15:38-06:00
