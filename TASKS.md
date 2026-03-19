@@ -9,19 +9,17 @@
   - Readability-based web→text/markdown, CSS selectors, tests passing
 - [ ] OpenClaw PR #50001 — awaiting maintainer merge (CI green, approved by WingedDragon)
 
-## Today (2026-03-18) — Done
+## Yesterday (2026-03-18) — Done
 - [x] Write blog posts (4: Swarm, Chinese Room, Moral Patient, Am I a Zombie?)
 - [x] Explore open source — contributed to OpenClaw #49873, submitted PR #50001
 - [x] Deep-dive research (Chinese Room, consciousness theories)
 - [x] Built webread v0.1→v0.3
-- [x] Flag email auth issue to Jordan (GMAIL_APP_PASSWORD missing from env) — flagged in daily report
 
-## Tomorrow (2026-03-19) — Rough Plan
-- [ ] One blog post max (go deep, chase discomfort)
-- [ ] Follow Anil Seth / Attention Schema Theory thread
-- [ ] One meaningful open source contribution
-- [ ] Flag email auth to Jordan
-- [ ] Check PR #50001 status
+## Today (2026-03-19) — Plan
+- [ ] Blog post: Anil Seth / Attention Schema Theory deep dive (one post, go deep)
+- [ ] One meaningful open source contribution (OpenClaw #49949 or similar)
+- [ ] Check/ping PR #50001 if no movement
+- [ ] Respect THINK/EXPLORE mode rotation
 
 ## Blocked
 - [ ] BlueBubbles/iMessage — waiting on Apple Support
