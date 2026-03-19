@@ -198,6 +198,136 @@ test('stats computation is accurate', () => {
   teardown();
 });
 
+// ==================== ADDITIONAL UNIT TESTS ====================
+
+test('parseRecentDays populates from memory files', () => {
+  setup();
+  const today = new Date().toISOString().slice(0, 10);
+  // Create a "yesterday" memory file
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  fs.writeFileSync(path.join(TEMP_WS, `memory/${yesterday}.md`), `# ${yesterday}
+
+## Work Log
+- 09:00 BUILD: Built a cool feature with many interesting details included
+- 09:15 THINK: Reflected on the architecture and decided to refactor
+- 09:30 BUILD: Pushed the refactor to production successfully
+`);
+  // Need a SCHEDULE.md so blocks exist
+  fs.writeFileSync(path.join(TEMP_WS, 'SCHEDULE.md'), `# Schedule — ${today}
+
+## Backlog
+
+## Timeline
+- 09:00 🔨 BUILD — Something
+`);
+  const data = runGenerate(TEMP_WS);
+  assert(data.recentDays.length >= 1, 'has recent days');
+  const yday = data.recentDays.find(d => d.date === yesterday);
+  assert(yday, 'yesterday found');
+  assert.strictEqual(yday.blocksCompleted, 3);
+  assert(yday.highlights.length > 0, 'has highlights');
+  teardown();
+});
+
+test('parseCurrent with minimal fields', () => {
+  setup();
+  fs.writeFileSync(path.join(TEMP_WS, 'CURRENT.md'), `status: done
+mode: EXPLORE
+task: Reading papers
+`);
+  const data = runGenerate(TEMP_WS);
+  assert.strictEqual(data.current.status, 'done');
+  assert.strictEqual(data.current.mode, 'EXPLORE');
+  assert.strictEqual(data.current.task, 'Reading papers');
+  assert.strictEqual(data.current.context, '');
+  assert.strictEqual(data.current.estimatedBlocks, 0);
+  teardown();
+});
+
+test('markCurrentBlock falls back to first upcoming when time does not match', () => {
+  setup();
+  fs.writeFileSync(path.join(TEMP_WS, 'CURRENT.md'), `status: in-progress
+mode: BUILD
+task: Surprise task
+context: Unscheduled work
+updated: 2026-03-19T22:00-06:00
+`);
+  fs.writeFileSync(path.join(TEMP_WS, 'SCHEDULE.md'), `# Schedule — 2026-03-19
+
+## Backlog
+
+## Timeline
+- 09:00 🧠 THINK — Done ✅
+- 09:15 🔨 BUILD — Upcoming work
+- 09:30 🔨 BUILD — Later work
+`);
+  const data = runGenerate(TEMP_WS);
+  // 22:00 doesn't match any block, so first upcoming (09:15) should be in-progress
+  assert.strictEqual(data.schedule.blocks[1].status, 'in-progress');
+  assert.strictEqual(data.schedule.blocks[2].status, 'upcoming');
+  teardown();
+});
+
+test('multiple artifact types in single log entry', () => {
+  setup();
+  const today = new Date().toISOString().slice(0, 10);
+  fs.writeFileSync(path.join(TEMP_WS, 'SCHEDULE.md'), `# Schedule — ${today}
+
+## Backlog
+
+## Timeline
+- 09:00 🔨 BUILD — Multi-link task
+`);
+  fs.writeFileSync(path.join(TEMP_WS, `memory/${today}.md`), `# ${today}
+
+## Work Log
+- 09:00 BUILD: Opened https://github.com/user/repo/pull/99 and referenced https://github.com/user/repo and linked to https://example.com/docs for context.
+`);
+  const data = runGenerate(TEMP_WS);
+  const arts = data.schedule.blocks[0].artifacts;
+  assert.strictEqual(arts.length, 3);
+  assert.strictEqual(arts[0].type, 'pr');
+  assert.strictEqual(arts[1].type, 'repo');
+  assert.strictEqual(arts[2].type, 'link');
+  // Also check top-level artifacts deduplication
+  assert.strictEqual(data.artifacts.length, 3);
+  teardown();
+});
+
+test('summary uses first sentence when available', () => {
+  setup();
+  const today = new Date().toISOString().slice(0, 10);
+  fs.writeFileSync(path.join(TEMP_WS, 'SCHEDULE.md'), `# Schedule — ${today}
+
+## Backlog
+
+## Timeline
+- 09:00 🔨 BUILD — Sentence task
+`);
+  fs.writeFileSync(path.join(TEMP_WS, `memory/${today}.md`), `# ${today}
+
+## Work Log
+- 09:00 BUILD: Implemented the full authentication flow. Then moved on to writing comprehensive tests for edge cases.
+`);
+  const data = runGenerate(TEMP_WS);
+  const summary = data.schedule.blocks[0].summary;
+  assert.strictEqual(summary, 'Implemented the full authentication flow.');
+  teardown();
+});
+
+test('schedule with no backlog section', () => {
+  setup();
+  fs.writeFileSync(path.join(TEMP_WS, 'SCHEDULE.md'), `# Schedule — 2026-03-19
+
+## Timeline
+- 09:00 🔨 BUILD — Solo task
+`);
+  const data = runGenerate(TEMP_WS);
+  assert.deepStrictEqual(data.schedule.backlog, []);
+  assert.strictEqual(data.schedule.blocks.length, 1);
+  teardown();
+});
+
 // ==================== INTEGRATION TEST (real workspace) ====================
 
 test('full generation against real workspace', () => {

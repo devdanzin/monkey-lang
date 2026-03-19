@@ -1,7 +1,7 @@
 status: done
 mode: BUILD
-task: Dashboard mobile responsive fixes
-context: Added ≤380px and ≤767px breakpoints, safe-area-inset support, viewport-fit=cover, stats bar wrapping, bigger touch targets, swipe-to-dismiss detail panel. Committed.
+task: Dashboard tests for generate.js
+context: Expanded test suite from 8 to 14 tests. Added coverage for parseRecentDays, minimal CURRENT.md fields, markCurrentBlock fallback, multiple artifact types, first-sentence summary, and missing backlog section.
 est: 0
-next: 13:30 BUILD — Dashboard tests for generate.js
-updated: 2026-03-19T13:24-06:00
+next: 13:45 MAINTAIN — Commit, push, verify live site
+updated: 2026-03-19T13:38-06:00
