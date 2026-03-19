@@ -1,7 +1,7 @@
 status: done
 mode: BUILD
-task: Review and publish "The Controlled Hallucination" blog post
-context: Reviewed the Anil Seth / AST / predictive processing post. Fixed Berggruen Prize attribution. Committed and pushed — now live on the site. 7th post total.
-est: 0
-next: Check PR #50001 status, then look at OpenClaw #49949 for open source contribution
-updated: 2026-03-19T09:20-06:00
+task: Scaffold Anthropic native web search provider (#49949)
+context: Created provider plugin, stream wrapper, registered in anthropic extension. Key blocker identified: need to verify pi-ai handles server_tool_use content blocks. Design doc written. Still need wrapStreamFn wiring, compat flag, config schema, tests.
+est: 2-3 blocks remaining
+next: Wire up wrapStreamFn in anthropic provider, add compat flag logic, verify pi-ai support
+updated: 2026-03-19T09:42-06:00
