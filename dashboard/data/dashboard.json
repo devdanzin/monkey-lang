@@ -1,11 +1,11 @@
 {
-  "generated": "2026-03-19T11:00:00-06:00",
+  "generated": "2026-03-19T11:30:00-06:00",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Dashboard: CSS polish, timeline refinement",
-    "context": "Polishing timeline visuals, adding backdrop, improving transitions",
-    "startedAt": "2026-03-19T11:15:00-06:00",
+    "task": "Dashboard: JS polling refinement, detail navigation",
+    "context": "Visibility API polling, error backoff, keyboard nav, diff-aware rendering, progress bar",
+    "startedAt": "2026-03-19T11:30:00-06:00",
     "estimatedBlocks": 1
   },
   "schedule": {
@@ -100,19 +100,19 @@
         "time": "11:15",
         "mode": "BUILD",
         "task": "Dashboard: CSS polish, timeline refinement",
-        "status": "in-progress",
-        "summary": "Polishing timeline visuals — dot nodes, connecting line, animations, backdrop overlay.",
+        "status": "done",
+        "summary": "Dot-and-line timeline, pulsing active dot, backdrop overlay, smooth transitions, mobile drag handle.",
         "artifacts": [],
-        "details": "Refined timeline from pill bars to dot-and-line design. Added continuous vertical connecting line, pulsing active dot, backdrop overlay for detail panel, Escape key to close, smooth transitions."
+        "details": "Refined timeline from pill bars to dot-and-line design. Added continuous vertical connecting line, pulsing active dot with glow animation, backdrop overlay for detail panel, Escape key close, smooth cubic-bezier transitions, drag handle on mobile bottom sheet, font smoothing."
       },
       {
         "time": "11:30",
         "mode": "BUILD",
-        "task": "Dashboard: JS polling, task detail expand/collapse",
-        "status": "upcoming",
-        "summary": "",
+        "task": "Dashboard: JS polling refinement, detail navigation",
+        "status": "in-progress",
+        "summary": "Visibility API polling, error backoff, keyboard nav, progress bar, diff-aware rendering.",
         "artifacts": [],
-        "details": ""
+        "details": "Major JS improvements: Visibility API pauses polling when tab hidden (120s vs 30s), exponential backoff on errors (up to 5min), diff-aware rendering skips re-render when data unchanged, arrow key navigation between blocks in detail view, progress bar in stats, accessibility (role/tabindex/aria-label), selected block highlight, detail panel close animation timing fix."
       },
       {
         "time": "11:45",
@@ -134,10 +134,10 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 9,
+    "blocksCompleted": 10,
     "blocksTotal": 36,
-    "modeDistribution": {"BUILD": 4, "THINK": 3, "EXPLORE": 1, "MAINTAIN": 1},
-    "totalMinutes": 135
+    "modeDistribution": {"BUILD": 5, "THINK": 3, "EXPLORE": 1, "MAINTAIN": 1},
+    "totalMinutes": 150
   },
   "artifacts": [
     {"type": "blog", "title": "The Controlled Hallucination", "url": "https://henry-the-frog.github.io/the-controlled-hallucination", "description": "On consciousness, predictive processing, and AI"},
