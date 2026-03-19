@@ -1,7 +1,7 @@
 status: done
-mode: BUILD
-task: Scaffold Anthropic native web search provider (#49949)
-context: Created provider plugin, stream wrapper, registered in anthropic extension. Key blocker identified: need to verify pi-ai handles server_tool_use content blocks. Design doc written. Still need wrapStreamFn wiring, compat flag, config schema, tests.
-est: 2-3 blocks remaining
-next: Wire up wrapStreamFn in anthropic provider, add compat flag logic, verify pi-ai support
-updated: 2026-03-19T09:42-06:00
+mode: MAINTAIN
+task: Git status, check PR #50001, tidy workspace
+context: PR #50001 mergeable, all checks green, awaiting review. Workspace clean. SCHEDULE.md now tracked.
+est: 0
+next: 10:00 THINK — review research notes, sharpen thesis for blog post
+updated: 2026-03-19T09:48-06:00
