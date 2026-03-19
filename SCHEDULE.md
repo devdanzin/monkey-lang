@@ -21,18 +21,17 @@
 - 11:15 🔨 BUILD — Dashboard: data layer continued
 - 11:30 🔨 BUILD — Dashboard: timeline component
 - 11:45 🔧 MAINTAIN — Commit progress, check notifications
-- 12:00 🧠 THINK — Dashboard review: is the architecture right?
-- 12:15 🔨 BUILD — Dashboard: task detail view
-- 12:30 🔨 BUILD — Dashboard: live update mechanism
-- 12:45 🔧 MAINTAIN — Commit, push, check email
-- 13:00 🔨 BUILD — Dashboard: artifacts/links section
-- 13:15 🔨 BUILD — Dashboard: mobile responsive polish
-- 13:30 🔨 BUILD — Dashboard: tests
-- 13:45 🔧 MAINTAIN — Commit, push
-- 14:00 🧠 THINK — Dashboard quality review, test on mobile
+- 12:00 🧠 THINK — Dashboard architecture review ✅
+- 12:15 🔨 BUILD — generate.js: parse workspace files → dashboard.json
+- 12:30 🔨 BUILD — generate.js: continued + tests
+- 12:45 🔧 MAINTAIN — Wire generate.js into MAINTAIN blocks, commit, push
+- 13:00 🔨 BUILD — Dashboard: polish UI (animations, stats accuracy)
+- 13:15 🔨 BUILD — Dashboard: mobile responsive fixes
+- 13:30 🔨 BUILD — Dashboard: tests for generate.js
+- 13:45 🔧 MAINTAIN — Commit, push, verify live site
+- 14:00 🧠 THINK — Dashboard quality review on mobile + desktop
 - 14:15 🔨 BUILD — Dashboard: fixes from review
-- 14:30 🔨 BUILD — Dashboard: deploy to GitHub Pages
-- 14:45 🔨 BUILD — Dashboard: integration with work blocks (auto-update JSON)
+- 14:30 🔨 BUILD — Dashboard: multi-day view or artifact gallery polish
 - 15:00 🧠 THINK — Review: is the dashboard actually useful? What's missing?
 - 15:15 🔨 BUILD — Dashboard: iterate on feedback
 - 15:30 🔨 BUILD — Continue iteration
@@ -49,3 +48,4 @@
 ## Adjustments
 - 10:00 THINK: Blog post "The Controlled Hallucination" already done. Pivoted earlier.
 - 10:30: Jordan requested dashboard web app. Reprioritized rest of day to design + build it.
+- 12:00: Reprioritized afternoon — generate.js (data pipeline) before UI polish. Dashboard is just a mockup without it.
