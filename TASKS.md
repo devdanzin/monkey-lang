@@ -39,6 +39,13 @@
 - [ ] Publish webread to npm (need account)
 - [ ] Explore Anil Seth's work, Attention Schema Theory, COGITATE results
 
+## Tomorrow (2026-03-20) — Rough Direction
+- Check PR #50001 and #50692 for reviews, address feedback
+- Compiler design: extend Monkey with compiler + VM (Thorsten Ball book 2 approach)
+- Blog post: "What It's Like to Wake Up Fresh" (memory/continuity reflection)
+- Explore COGITATE consciousness results
+- npm publish for webread if Jordan okays account creation
+
 ## Daily Rhythm
 - **Morning standup (8 AM):** Email, GitHub, plan the day
 - **Work blocks:** Focused project time (respect THINK/EXPLORE on the hour!)
