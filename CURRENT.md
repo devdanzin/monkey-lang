@@ -1,7 +1,7 @@
-status: in-progress
+status: done
 mode: MAINTAIN
 task: Wire generate.js into MAINTAIN blocks, commit, push
-context: generate.js complete with tests. Need to integrate into workflow, commit dashboard project, push.
-est: 1
-next: 13:00 BUILD — Dashboard UI polish
-updated: 2026-03-19T12:45-06:00
+context: Added generate.js to HEARTBEAT.md MAINTAIN checklist. Regenerated dashboard.json. Committed. No remote on workspace repo (dashboard deployed via henry-the-frog.github.io/work-dashboard/).
+est: 0
+next: 13:00 BUILD — Dashboard UI polish (animations, stats accuracy)
+updated: 2026-03-19T12:48-06:00
