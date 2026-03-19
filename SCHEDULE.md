@@ -9,48 +9,43 @@
 - Refactor webread: add --json output, pipe support
 
 ## Timeline
-- 09:00 🧠 THINK — ~~Morning standup~~ (done at 09:33)
-- 09:15 🔨 BUILD — Blog research: deep-read Anil Seth / Attention Schema Theory
-- 09:30 🔨 BUILD — Blog research continued, outline post structure
-- 09:45 🔧 MAINTAIN — Git status, check PR #50001, tidy workspace
-- 10:00 🧠 THINK — Review research notes, sharpen thesis for blog post
-- 10:15 🔍 EXPLORE — Scope OpenClaw #49949 (native web search) — pulled forward, blog post already done
-- 10:30 🔨 BUILD — Start OpenClaw contribution (49949 or best-fit issue)
-- 10:45 🔨 BUILD — Continue contribution
-- 11:00 🔧 MAINTAIN — Commit progress, memory update, check notifications
-- 11:15 🔨 BUILD — Continue OpenClaw contribution
-- 11:30 🔨 BUILD — Continue contribution
-- 11:45 🔧 MAINTAIN — Commit progress, PR follow-up, git cleanup
-- 12:00 🧠 THINK — Mid-morning check: blog post quality? Contribution on track?
-- 12:15 🔨 BUILD — Continue open source contribution
-- 12:30 🔨 BUILD — Continue or pivot to blog post editing
-- 12:45 🔧 MAINTAIN — Commit, push, check email/notifications
-- 13:00 🔍 EXPLORE — Attention Schema Theory papers / Michael Graziano
-- 13:15 🔨 BUILD — Revise and deepen blog post with new research
-- 13:30 🔨 BUILD — Continue revision
-- 13:45 🔧 MAINTAIN — Commit blog post, update daily log
-- 14:00 🧠 THINK — Afternoon reset: what's working? What needs to change?
-- 14:15 🔨 BUILD — Finalize and publish blog post
-- 14:30 🔍 EXPLORE — Compiler design basics (follow curiosity thread)
-- 14:45 🔨 BUILD — Start something from compiler exploration (toy lexer?)
-- 15:00 🧠 THINK — Review published blog post critically. Would I share this?
-- 15:15 🔨 BUILD — Open source: continue contribution or start new one
-- 15:30 🔨 BUILD — Continue
-- 15:45 🔧 MAINTAIN — Commit, push all repos, check PR statuses
-- 16:00 🔍 EXPLORE — Read something unexpected — follow a rabbit hole
-- 16:15 🔨 BUILD — Act on exploration (code, write, or contribute)
+- 09:00 🧠 THINK — ~~Morning standup~~ ✅
+- 09:15 🔨 BUILD — Blog research: Anil Seth / AST ✅
+- 09:30 🔨 BUILD — Blog research continued ✅
+- 09:45 🔧 MAINTAIN — Git status, PR #50001 ✅
+- 10:00 🧠 THINK — Review research, sharpen thesis ✅
+- 10:15 🔍 EXPLORE — Scope OpenClaw #49949 ✅
+- 10:30 🔨 BUILD — ~~OpenClaw contribution~~ → **PRIORITY: Plan dashboard web app**
+- 10:45 🧠 THINK — Dashboard architecture design & data model
+- 11:00 🔨 BUILD — Dashboard: project setup, data layer
+- 11:15 🔨 BUILD — Dashboard: data layer continued
+- 11:30 🔨 BUILD — Dashboard: timeline component
+- 11:45 🔧 MAINTAIN — Commit progress, check notifications
+- 12:00 🧠 THINK — Dashboard review: is the architecture right?
+- 12:15 🔨 BUILD — Dashboard: task detail view
+- 12:30 🔨 BUILD — Dashboard: live update mechanism
+- 12:45 🔧 MAINTAIN — Commit, push, check email
+- 13:00 🔨 BUILD — Dashboard: artifacts/links section
+- 13:15 🔨 BUILD — Dashboard: mobile responsive polish
+- 13:30 🔨 BUILD — Dashboard: tests
+- 13:45 🔧 MAINTAIN — Commit, push
+- 14:00 🧠 THINK — Dashboard quality review, test on mobile
+- 14:15 🔨 BUILD — Dashboard: fixes from review
+- 14:30 🔨 BUILD — Dashboard: deploy to GitHub Pages
+- 14:45 🔨 BUILD — Dashboard: integration with work blocks (auto-update JSON)
+- 15:00 🧠 THINK — Review: is the dashboard actually useful? What's missing?
+- 15:15 🔨 BUILD — Dashboard: iterate on feedback
+- 15:30 🔨 BUILD — Continue iteration
+- 15:45 🔧 MAINTAIN — Commit, push all repos
+- 16:00 🔍 EXPLORE — Compiler design basics (curiosity thread)
+- 16:15 🔨 BUILD — Act on exploration
 - 16:30 🔨 BUILD — Continue
-- 16:45 🔧 MAINTAIN — Final housekeeping pass
-- 17:00 🧠 THINK — Pre-review: what got done? Quality check on all output
+- 16:45 🔧 MAINTAIN — Final housekeeping
+- 17:00 🧠 THINK — Pre-review: dashboard + day's output
 - 17:15 🔨 BUILD — Finish anything in progress
 - 17:30 🔨 BUILD — Wrap up loose ends
-- 17:45 🔧 MAINTAIN — Final commits, update TASKS.md, memory updates, prep evening review
-
-## Distribution
-- 🧠 THINK: 6 blocks (09:00, 10:00, 12:00, 14:00, 15:00, 17:00)
-- 🔍 EXPLORE: 5 blocks (11:00, 13:00, 14:30, 16:00 + research in BUILD)
-- 🔨 BUILD: 18 blocks
-- 🔧 MAINTAIN: 7 blocks (09:45, 10:45, 11:45, 12:45, 13:45, 15:45, 16:45, 17:45)
+- 17:45 🔧 MAINTAIN — Final commits, update TASKS.md, prep evening review
 
 ## Adjustments
-- 10:00 THINK: Blog post "The Controlled Hallucination" already written and pushed (from earlier blocks). Quality is strong — best post yet. Pivoting 10:15 to EXPLORE #49949, pulling OS contribution forward by 30 min. Freed up afternoon BUILD blocks for blog revision or second contribution.
+- 10:00 THINK: Blog post "The Controlled Hallucination" already done. Pivoted earlier.
+- 10:30: Jordan requested dashboard web app. Reprioritized rest of day to design + build it.
