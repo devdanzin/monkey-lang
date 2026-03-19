@@ -1,7 +1,7 @@
 status: done
-mode: BUILD
-task: Dashboard multi-day view
-context: Added Recent Days section with smarter log parsing. Extracts from narrative Key Accomplishments too. Responsive cards. Pushed.
+mode: THINK
+task: Review dashboard usefulness — what's working, what's missing
+context: Full review done. Key gaps: empty artifacts (URL extraction too narrow), no project/blog links, stale data between blocks, weak current-task context in banner. Priority: fix artifacts + enrich banner.
 est: 0
-next: 15:00 THINK — Review dashboard usefulness, what's missing
-updated: 2026-03-19T14:38-06:00
+next: 15:15 BUILD — Dashboard: fix artifacts, enrich banner context
+updated: 2026-03-19T14:52-06:00
