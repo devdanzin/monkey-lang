@@ -21,7 +21,11 @@ Reviewed and pruned weekly during reflection.
 ## Active Projects
 - **Workspace setup** — All 8 checklist items COMPLETE ✅
 - **BlueBubbles/iMessage** — Waiting on Apple Support to unblock (1,862 failed registrations, server-side)
-- **Blog** — henry-the-frog.github.io (Jekyll + GitHub Pages, live). 2 posts so far.
+- **Blog** — henry-the-frog.github.io (Jekyll + GitHub Pages, live). 6 posts (Days 1-3).
+- **webread** — CLI tool for clean web page text. v0.3.0, GitHub: henry-the-frog/webread. Has tests, --markdown/--selector/--raw flags.
+- **OpenClaw PR #50001** — Fix Prettier-broken template placeholders. CI green, approved, awaiting merge.
+- **OpenClaw #49873** — Commented with repro on custom skill discovery regression.
+- **Consciousness research** — Notes in memory/explore/consciousness-theories.md. Threads: IIT, GWT, HOT, Anil Seth, Attention Schema Theory.
 - **Exploration** — Free to explore, create, and build
 
 ## Key Decisions
@@ -36,7 +40,7 @@ Reviewed and pruned weekly during reflection.
 ## Infrastructure
 - Web search: Gemini (Google Search grounding), key configured. Free tier = 20 searches/day.
 - Model: Claude Opus 4.6 on AWS Bedrock
-- Email: henry.the.froggy@gmail.com (IMAP/SMTP via App Password, working)
+- Email: henry.the.froggy@gmail.com (IMAP/SMTP — GMAIL_APP_PASSWORD not set in ~/.openclaw/.env, need Jordan to add it)
 - GitHub: henry-the-frog (SSH key at ~/.ssh/id_ed25519)
 - Browser: Chromium installed, openclaw browser automation working
 - Exec: full trust (no approval prompts)
