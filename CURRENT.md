@@ -1,7 +1,7 @@
 status: done
 mode: BUILD
-task: Monkey lang parser (Pratt parsing for expressions, statements)
-context: Full Pratt parser complete — AST nodes (ast.js) + parser (parser.js) with let/return/expression statements, all expression types (prefix, infix, if, fn, call, array, index, hash). 17/17 tests passing.
+task: Monkey lang evaluator (tree-walking interpreter)
+context: Full evaluator complete — object system (object.js) with Integer, Boolean, Null, String, Array, Hash, Function, Return, Error, Builtin types + Environment with scope chains. Tree-walking eval (evaluator.js) handles all expression types, closures, recursion, builtins (len, first, last, rest, push, puts). 18/18 eval tests, 40/40 total.
 est: 0
-next: Evaluator (tree-walking interpreter)
-updated: 2026-03-19T16:28-06:00
+next: REPL (interactive mode) + maybe a simple CLI
+updated: 2026-03-19T16:42-06:00
