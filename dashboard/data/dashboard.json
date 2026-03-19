@@ -3,9 +3,9 @@
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Dashboard: project setup, data layer",
-    "context": "Creating initial HTML/CSS/JS structure with sample data",
-    "startedAt": "2026-03-19T11:00:00-06:00",
+    "task": "Dashboard: CSS polish, timeline refinement",
+    "context": "Polishing timeline visuals, adding backdrop, improving transitions",
+    "startedAt": "2026-03-19T11:15:00-06:00",
     "estimatedBlocks": 1
   },
   "schedule": {
@@ -91,19 +91,19 @@
         "time": "11:00",
         "mode": "BUILD",
         "task": "Dashboard: project setup, data layer",
-        "status": "in-progress",
-        "summary": "",
+        "status": "done",
+        "summary": "Created full project structure: HTML, dark theme CSS, JS app with polling/rendering/detail panel, sample JSON.",
         "artifacts": [],
-        "details": "Setting up project structure: index.html, CSS dark theme, JS app skeleton, sample dashboard.json."
+        "details": "Built complete dashboard scaffold — index.html with status banner, stats bar, vertical timeline, task detail bottom sheet, and artifacts section. CSS dark theme with responsive breakpoints. JS with fetch polling, rendering pipeline, detail expand/collapse, HTML escaping."
       },
       {
         "time": "11:15",
         "mode": "BUILD",
-        "task": "Dashboard: CSS dark theme, timeline component",
-        "status": "upcoming",
-        "summary": "",
+        "task": "Dashboard: CSS polish, timeline refinement",
+        "status": "in-progress",
+        "summary": "Polishing timeline visuals — dot nodes, connecting line, animations, backdrop overlay.",
         "artifacts": [],
-        "details": ""
+        "details": "Refined timeline from pill bars to dot-and-line design. Added continuous vertical connecting line, pulsing active dot, backdrop overlay for detail panel, Escape key to close, smooth transitions."
       },
       {
         "time": "11:30",
@@ -134,10 +134,10 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 8,
+    "blocksCompleted": 9,
     "blocksTotal": 36,
-    "modeDistribution": {"BUILD": 3, "THINK": 3, "EXPLORE": 1, "MAINTAIN": 1},
-    "totalMinutes": 120
+    "modeDistribution": {"BUILD": 4, "THINK": 3, "EXPLORE": 1, "MAINTAIN": 1},
+    "totalMinutes": 135
   },
   "artifacts": [
     {"type": "blog", "title": "The Controlled Hallucination", "url": "https://henry-the-frog.github.io/the-controlled-hallucination", "description": "On consciousness, predictive processing, and AI"},

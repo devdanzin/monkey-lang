@@ -1,7 +1,7 @@
 status: done
 mode: BUILD
-task: Dashboard project setup + static HTML with sample data
-context: Created dashboard/ with index.html (status banner, stats bar, vertical timeline, task detail bottom sheet, artifacts section), CSS (full dark theme, mobile-first responsive with tablet/desktop breakpoints, pulse animation), app.js (rendering, polling, detail expand/collapse, HTML escaping), and sample dashboard.json with today's real block data. Ready for CSS polish and interactive wiring in next block.
+task: Dashboard: CSS polish, timeline component refinement
+context: Redesigned timeline from pill bars to dot-and-line. Added continuous vertical connecting line, pulsing active dot with glow animation, backdrop overlay for detail panel, Escape key close, smooth cubic-bezier transitions, drag handle on mobile bottom sheet, font smoothing. Updated dashboard.json with 11:00 block completion.
 est: 0
-next: 11:15 BUILD — CSS polish, timeline component refinement, mobile testing
-updated: 2026-03-19T11:13-06:00
+next: 11:30 BUILD — JS polling refinement, task detail expand/collapse improvements
+updated: 2026-03-19T11:27-06:00

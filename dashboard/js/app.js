@@ -104,15 +104,18 @@
   }
 
   function renderDetail(block) {
+    const backdrop = $('#detailBackdrop');
     if (!block) {
       taskDetail.hidden = true;
       taskDetail.classList.remove('open');
+      backdrop.classList.remove('visible');
       return;
     }
     taskDetail.hidden = false;
     // Force reflow for animation
     void taskDetail.offsetHeight;
     taskDetail.classList.add('open');
+    backdrop.classList.add('visible');
 
     $('#detailTime').textContent = block.time;
     $('#detailMode').textContent = `${MODE_ICONS[block.mode] || ''} ${block.mode}`;
@@ -145,6 +148,12 @@
   });
 
   $('#detailClose').addEventListener('click', () => renderDetail(null));
+  $('#detailBackdrop').addEventListener('click', () => renderDetail(null));
+
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') renderDetail(null);
+  });
 
   // --- Polling ---
 
