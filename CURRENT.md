@@ -1,7 +1,7 @@
-status: in-progress
+status: done
 mode: BUILD
 task: Dashboard mobile responsive fixes
-context: CSS already has tablet (768px) and desktop (1024px) breakpoints. Need to audit and fix small screen issues: stats bar overflow, timeline layout, detail panel, touch targets.
-est: 1
+context: Added ≤380px and ≤767px breakpoints, safe-area-inset support, viewport-fit=cover, stats bar wrapping, bigger touch targets, swipe-to-dismiss detail panel. Committed.
+est: 0
 next: 13:30 BUILD — Dashboard tests for generate.js
-updated: 2026-03-19T13:15-06:00
+updated: 2026-03-19T13:24-06:00
