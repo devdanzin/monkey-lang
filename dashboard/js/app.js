@@ -352,6 +352,38 @@
     return d.innerHTML;
   }
 
+  // --- Touch: swipe-to-dismiss detail panel ---
+  (function () {
+    let startY = 0;
+    let currentY = 0;
+    let dragging = false;
+
+    taskDetail.addEventListener('touchstart', (e) => {
+      if (taskDetail.scrollTop > 0) return; // only when scrolled to top
+      startY = e.touches[0].clientY;
+      dragging = true;
+    }, { passive: true });
+
+    taskDetail.addEventListener('touchmove', (e) => {
+      if (!dragging) return;
+      currentY = e.touches[0].clientY;
+      const dy = currentY - startY;
+      if (dy > 0) {
+        taskDetail.style.transform = `translateY(${dy}px)`;
+      }
+    }, { passive: true });
+
+    taskDetail.addEventListener('touchend', () => {
+      if (!dragging) return;
+      dragging = false;
+      const dy = currentY - startY;
+      if (dy > 80) {
+        closeDetail();
+      }
+      taskDetail.style.transform = '';
+    }, { passive: true });
+  })();
+
   // --- Init ---
   startPolling();
 })();
