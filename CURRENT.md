@@ -1,7 +1,7 @@
 status: done
-mode: THINK
-task: Dashboard architecture review
-context: Architecture is solid (vanilla JS, polling, responsive). Key gap identified: no generate.js yet — dashboard is static mockup. Reprioritized afternoon to build data pipeline first. UI detail/polish can wait.
+mode: BUILD
+task: generate.js — parse workspace files → dashboard.json
+context: Built generate.js (parsers for CURRENT.md, SCHEDULE.md, daily logs). Handles strikethrough/pivots in schedule, extracts artifacts from URLs in logs, computes stats, pulls recent days from memory/. Tests passing.
 est: 0
-next: 12:15 BUILD — generate.js (parse CURRENT.md, SCHEDULE.md, daily log → dashboard.json)
-updated: 2026-03-19T12:07-06:00
+next: 12:30 BUILD — generate.js continued + edge cases
+updated: 2026-03-19T12:28-06:00
