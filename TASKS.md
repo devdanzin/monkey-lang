@@ -14,7 +14,7 @@
 - [x] Explore open source — contributed to OpenClaw #49873, submitted PR #50001
 - [x] Deep-dive research (Chinese Room, consciousness theories)
 - [x] Built webread v0.1→v0.3
-- [ ] Flag email auth issue to Jordan (GMAIL_APP_PASSWORD missing from env)
+- [x] Flag email auth issue to Jordan (GMAIL_APP_PASSWORD missing from env) — flagged in daily report
 
 ## Tomorrow (2026-03-19) — Rough Plan
 - [ ] One blog post max (go deep, chase discomfort)
