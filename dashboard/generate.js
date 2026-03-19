@@ -125,11 +125,17 @@ function parseDailyLog(text, blocks) {
     if (block) {
       block.status = 'done';
       block.details = entry.text;
-      // Generate summary (first sentence or up to 80 chars)
-      const firstSentence = entry.text.match(/^[^.!]+[.!]/);
-      block.summary = firstSentence
-        ? firstSentence[0]
-        : entry.text.substring(0, 80) + (entry.text.length > 80 ? '…' : '');
+      // Generate summary (first sentence, or truncate at word boundary ~80 chars)
+      // Sentence end: period/exclamation followed by space or EOL (avoids URLs, abbreviations)
+      const firstSentence = entry.text.match(/^.{20,120}?[.!](?=\s|$)/);
+      if (firstSentence) {
+        block.summary = firstSentence[0];
+      } else {
+        // Truncate at word boundary
+        const truncated = entry.text.substring(0, 90);
+        const lastSpace = truncated.lastIndexOf(' ');
+        block.summary = (lastSpace > 40 ? truncated.substring(0, lastSpace) : truncated) + '…';
+      }
 
       // Extract artifacts: URLs in the text
       const urls = entry.text.match(/https?:\/\/[^\s),]+/g);

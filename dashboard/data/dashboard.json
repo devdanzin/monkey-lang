@@ -1,12 +1,12 @@
 {
-  "generated": "2026-03-19T18:17:21.788Z",
+  "generated": "2026-03-19T18:32:00.960Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "generate.js — parse workspace files → dashboard.json",
-    "context": "Dashboard UI complete with polling, detail panel, keyboard nav. Need generate.js to replace hand-crafted JSON. Parse CURRENT.md, SCHEDULE.md, daily log, artifacts.",
-    "startedAt": "2026-03-19T12:15-06:00",
-    "estimatedBlocks": 2
+    "task": "generate.js — edge cases + unit tests",
+    "context": "generate.js v1 working. Fixing summary truncation, adding isolated parser unit tests, improving robustness.",
+    "startedAt": "2026-03-19T12:30-06:00",
+    "estimatedBlocks": 1
   },
   "schedule": {
     "date": "2026-03-19",
@@ -25,7 +25,7 @@
         "mode": "BUILD",
         "task": "Blog research: Anil Seth / AST",
         "status": "done",
-        "summary": "Started Anil Seth / AST research (block ran out of time, partial)",
+        "summary": "Started Anil Seth / AST research (block ran out of time,…",
         "artifacts": [],
         "details": "Started Anil Seth / AST research (block ran out of time, partial)"
       },
@@ -43,7 +43,7 @@
         "mode": "MAINTAIN",
         "task": "Git status, PR #50001",
         "status": "done",
-        "summary": "Git tidy, PR #50001 still open (mergeable, all checks green, awaiting review)",
+        "summary": "Git tidy, PR #50001 still open (mergeable, all checks green, awaiting…",
         "artifacts": [],
         "details": "Git tidy, PR #50001 still open (mergeable, all checks green, awaiting review)"
       },
@@ -115,7 +115,7 @@
         "mode": "MAINTAIN",
         "task": "Commit progress, check notifications",
         "status": "done",
-        "summary": "Created henry-the-frog/work-dashboard repo on GitHub, pushed dashboard code, enabled GitHub Pages (henry-the-frog.",
+        "summary": "Created henry-the-frog/work-dashboard repo on GitHub, pushed dashboard code, enabled…",
         "artifacts": [],
         "details": "Created henry-the-frog/work-dashboard repo on GitHub, pushed dashboard code, enabled GitHub Pages (henry-the-frog.github.io/work-dashboard/). Checked notifications — PR #50001 still open, no reviews yet."
       },
@@ -126,23 +126,23 @@
         "status": "done",
         "summary": "Dashboard architecture review.",
         "artifacts": [],
-        "details": "Dashboard architecture review. Scaffold is solid (clean HTML/CSS/JS, responsive, good polling). Identified critical gap: no generate.js yet — dashboard shows hardcoded data. Reprioritized afternoon to build data pipeline before UI polish."
+        "details": "Dashboard architecture review."
       },
       {
         "time": "12:15",
         "mode": "BUILD",
         "task": "generate.js: parse workspace files → dashboard.json",
-        "status": "in-progress",
-        "summary": "Dashboard UI complete with polling, detail panel, keyboard nav. Need generate.js to replace hand-crafted JSON. Parse CURRENT.md, SCHEDULE.md, daily log, artifacts.",
+        "status": "done",
+        "summary": "generate.js v1 — parses CURRENT.md, SCHEDULE.md, daily logs into dashboard.json.",
         "artifacts": [],
-        "details": ""
+        "details": "generate.js v1 — parses CURRENT.md, SCHEDULE.md, daily logs into dashboard.json. Handles strikethrough schedule pivots, extracts artifacts from URLs, computes mode stats, pulls recent days from memory/. Tests passing (35 blocks, 13 done). Scaffold is solid (clean HTML/CSS/JS, responsive, good polling). Identified critical gap: no generate.js yet — dashboard shows hardcoded data. Reprioritized afternoon to build data pipeline before UI polish."
       },
       {
         "time": "12:30",
         "mode": "BUILD",
         "task": "generate.js: continued + tests",
-        "status": "upcoming",
-        "summary": "",
+        "status": "in-progress",
+        "summary": "generate.js v1 working. Fixing summary truncation, adding isolated parser unit tests, improving robustness.",
         "artifacts": [],
         "details": ""
       },
@@ -337,15 +337,15 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 13,
+    "blocksCompleted": 14,
     "blocksTotal": 35,
     "modeDistribution": {
       "THINK": 4,
-      "BUILD": 6,
+      "BUILD": 7,
       "MAINTAIN": 2,
       "EXPLORE": 1
     },
-    "totalMinutes": 195
+    "totalMinutes": 210
   },
   "artifacts": [],
   "blockers": [],
