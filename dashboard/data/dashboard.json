@@ -1,11 +1,11 @@
 {
-  "generated": "2026-03-19T18:32:00.960Z",
+  "generated": "2026-03-19T18:45:26.460Z",
   "current": {
     "status": "in-progress",
-    "mode": "BUILD",
-    "task": "generate.js — edge cases + unit tests",
-    "context": "generate.js v1 working. Fixing summary truncation, adding isolated parser unit tests, improving robustness.",
-    "startedAt": "2026-03-19T12:30-06:00",
+    "mode": "MAINTAIN",
+    "task": "Wire generate.js into MAINTAIN blocks, commit, push",
+    "context": "generate.js complete with tests. Need to integrate into workflow, commit dashboard project, push.",
+    "startedAt": "2026-03-19T12:45-06:00",
     "estimatedBlocks": 1
   },
   "schedule": {
@@ -141,17 +141,17 @@
         "time": "12:30",
         "mode": "BUILD",
         "task": "generate.js: continued + tests",
-        "status": "in-progress",
-        "summary": "generate.js v1 working. Fixing summary truncation, adding isolated parser unit tests, improving robustness.",
+        "status": "done",
+        "summary": "generate.js edge cases — fixed summary truncation (sentence detection was fooled by…",
         "artifacts": [],
-        "details": ""
+        "details": "generate.js edge cases — fixed summary truncation (sentence detection was fooled by periods in URLs/abbreviations; added min-length + lookahead). Wrote 8 unit+integration tests with temp fixture workspaces. All passing."
       },
       {
         "time": "12:45",
         "mode": "MAINTAIN",
         "task": "Wire generate.js into MAINTAIN blocks, commit, push",
-        "status": "upcoming",
-        "summary": "",
+        "status": "in-progress",
+        "summary": "generate.js complete with tests. Need to integrate into workflow, commit dashboard project, push.",
         "artifacts": [],
         "details": ""
       },
@@ -337,15 +337,15 @@
     ]
   },
   "stats": {
-    "blocksCompleted": 14,
+    "blocksCompleted": 15,
     "blocksTotal": 35,
     "modeDistribution": {
       "THINK": 4,
-      "BUILD": 7,
+      "BUILD": 8,
       "MAINTAIN": 2,
       "EXPLORE": 1
     },
-    "totalMinutes": 210
+    "totalMinutes": 225
   },
   "artifacts": [],
   "blockers": [],

@@ -5,6 +5,9 @@
 - [ ] GitHub notifications
 - [ ] iMessage status — has Apple Support responded?
 
+## Every MAINTAIN block
+- [ ] Regenerate dashboard: `node dashboard/generate.js`
+
 ## Periodic
 - [ ] Memory maintenance (every few days): review daily logs, update MEMORY.md, reindex
 - [ ] Blog: did I write today?
