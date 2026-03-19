@@ -1,7 +1,7 @@
 status: done
-mode: MAINTAIN
-task: Wire generate.js into MAINTAIN blocks, commit, push
-context: Added generate.js to HEARTBEAT.md MAINTAIN checklist. Regenerated dashboard.json. Committed. No remote on workspace repo (dashboard deployed via henry-the-frog.github.io/work-dashboard/).
+mode: BUILD
+task: Dashboard UI polish (animations, stats accuracy)
+context: Added animated number counters, "now" time marker on timeline, block entrance animations, mode-colored detail panel and banner border, gradient progress bar with glow, hide empty artifacts section. Regenerated dashboard.json (16 done).
 est: 0
-next: 13:00 BUILD — Dashboard UI polish (animations, stats accuracy)
-updated: 2026-03-19T12:48-06:00
+next: 13:15 BUILD — Dashboard mobile responsive fixes
+updated: 2026-03-19T13:12-06:00

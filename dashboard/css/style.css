@@ -51,12 +51,13 @@ body {
   top: 0;
   z-index: 100;
   background: var(--bg-surface);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 2px solid var(--border);
   padding: var(--space-md);
   display: flex;
   align-items: center;
   gap: var(--space-md);
   flex-wrap: wrap;
+  transition: border-bottom-color 0.4s ease;
 }
 
 .status-mode {
@@ -425,9 +426,10 @@ body {
 
 .progress-bar {
   height: 100%;
-  background: var(--accent);
+  background: linear-gradient(90deg, var(--accent), #79c0ff);
   border-radius: 3px;
-  transition: width 0.5s ease;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 6px rgba(88, 166, 255, 0.3);
 }
 
 .progress-label {
@@ -480,6 +482,58 @@ body {
   font-size: 0.75rem;
   color: var(--text-muted);
 }
+
+/* === Now Marker === */
+.now-marker {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-xs) 0;
+  position: relative;
+  z-index: 1;
+}
+
+.now-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #f85149;
+  background: var(--bg);
+  padding: 0 var(--space-xs);
+  white-space: nowrap;
+}
+
+.now-line {
+  flex: 1;
+  height: 2px;
+  background: #f85149;
+  border-radius: 1px;
+  opacity: 0.6;
+}
+
+/* === Block Entrance Animation === */
+.block {
+  animation: block-in 0.3s ease both;
+}
+
+@keyframes block-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Stagger the animation */
+.block:nth-child(1) { animation-delay: 0ms; }
+.block:nth-child(2) { animation-delay: 15ms; }
+.block:nth-child(3) { animation-delay: 30ms; }
+.block:nth-child(4) { animation-delay: 45ms; }
+.block:nth-child(5) { animation-delay: 60ms; }
+
+/* === Detail Mode Colors === */
+.detail-mode.mode-build { color: var(--mode-build); }
+.detail-mode.mode-think { color: var(--mode-think); }
+.detail-mode.mode-explore { color: var(--mode-explore); }
+.detail-mode.mode-maintain { color: var(--mode-maintain); }
 
 /* === Footer === */
 footer {

@@ -42,11 +42,34 @@
     return hash;
   }
 
+  // --- Animations ---
+
+  function animateNumber(el, to) {
+    const from = parseInt(el.textContent, 10) || 0;
+    if (from === to) return;
+    const duration = 400;
+    const start = performance.now();
+    function step(now) {
+      const t = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - t, 3); // ease-out cubic
+      el.textContent = Math.round(from + (to - from) * ease);
+      if (t < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
   // --- Rendering ---
 
   function renderBanner(current) {
     if (!current) return;
-    $('#currentMode').textContent = `${MODE_ICONS[current.mode] || ''} ${current.mode}`;
+    const modeEl = $('#currentMode');
+    const newMode = `${MODE_ICONS[current.mode] || ''} ${current.mode}`;
+    if (modeEl.textContent !== newMode) {
+      modeEl.textContent = newMode;
+      // Color the banner border based on mode
+      const banner = $('#statusBanner');
+      banner.style.borderBottomColor = `var(--mode-${current.mode.toLowerCase()}, var(--border))`;
+    }
     $('#currentTask').textContent = current.task;
     const ind = $('#statusIndicator');
     ind.textContent = current.status;
@@ -58,11 +81,11 @@
 
   function renderStats(stats) {
     if (!stats) return;
-    $('#blocksCompleted').textContent = stats.blocksCompleted;
-    $('#blocksTotal').textContent = stats.blocksTotal;
+    animateNumber($('#blocksCompleted'), stats.blocksCompleted);
+    animateNumber($('#blocksTotal'), stats.blocksTotal);
     const dist = stats.modeDistribution || {};
     const modesHTML = Object.entries(dist)
-      .map(([m, n]) => `<span class="mode-dot ${MODE_CLASS[m] || ''}">${n}</span>`)
+      .map(([m, n]) => `<span class="mode-dot ${MODE_CLASS[m] || ''}" title="${m}: ${n} blocks">${n}</span>`)
       .join('');
     $('#modeDistribution').innerHTML = modesHTML;
 
@@ -79,10 +102,24 @@
     }
   }
 
+  function getCurrentTimeStr() {
+    const now = new Date();
+    return now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+  }
+
   function renderTimeline(schedule) {
     if (!schedule || !schedule.blocks) return;
+    const nowStr = getCurrentTimeStr();
+    let nowInserted = false;
+
     timeline.innerHTML = schedule.blocks
       .map((block, i) => {
+        // Insert "now" marker before the first upcoming block after current time
+        let nowMarker = '';
+        if (!nowInserted && block.status === 'upcoming' && block.time > nowStr) {
+          nowInserted = true;
+          nowMarker = `<div class="now-marker"><span class="now-label">now</span><div class="now-line"></div></div>`;
+        }
         const modeClass = MODE_CLASS[block.mode] || '';
         const statusClass = block.status || 'upcoming';
         const statusLabel =
@@ -94,7 +131,7 @@
           .map((a) => `<a class="artifact-badge" href="${esc(a.url)}" target="_blank">${esc(a.type)}: ${esc(a.title)}</a>`)
           .join('');
 
-        return `
+        return `${nowMarker}
           <div class="block ${statusClass}" data-index="${i}" role="button" tabindex="0" aria-label="${block.time} ${block.mode}: ${block.task}">
             <div class="block-time">${esc(block.time)}</div>
             <div class="block-dot ${modeClass}"></div>
@@ -113,11 +150,13 @@
   }
 
   function renderArtifacts(artifacts) {
+    const section = $('#artifactsSection');
     const grid = $('#artifactsGrid');
     if (!artifacts || artifacts.length === 0) {
-      grid.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;">No artifacts yet today.</p>';
+      section.style.display = 'none';
       return;
     }
+    section.style.display = '';
     grid.innerHTML = artifacts
       .map((a) => `
         <a class="artifact-card" href="${esc(a.url)}" target="_blank">
@@ -142,7 +181,7 @@
 
     $('#detailTime').textContent = block.time;
     $('#detailMode').textContent = `${MODE_ICONS[block.mode] || ''} ${block.mode}`;
-    $('#detailMode').className = 'detail-mode';
+    $('#detailMode').className = `detail-mode mode-${block.mode.toLowerCase()}`;
     $('#detailTitle').textContent = block.task;
     $('#detailSummary').textContent = block.details || block.summary || 'No details yet.';
 
