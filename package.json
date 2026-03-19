@@ -1,0 +1,14 @@
+{
+  "name": "monkey-lang",
+  "version": "0.1.0",
+  "description": "Monkey language interpreter in JavaScript",
+  "main": "src/index.js",
+  "bin": { "monkey": "./src/repl.js" },
+  "scripts": {
+    "test": "node --test src/**/*.test.js",
+    "repl": "node src/repl.js"
+  },
+  "type": "module",
+  "author": "Henry",
+  "license": "MIT"
+}
