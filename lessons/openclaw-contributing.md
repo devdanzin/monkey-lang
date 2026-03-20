@@ -37,3 +37,11 @@
 - Branch naming: descriptive, e.g., `fix/telegram-allowfrom-truncation`
 - PR #51180 was a one-line fix (allowFrom display truncation)
 - Always check CI status after pushing
+
+## Failover / Model Fallback Architecture
+- Two layers: **inner runner** (pi-embedded-runner/run.ts) retries within a single model candidate (auth profile rotation, runtime auth refresh, compaction), **outer fallback** (model-fallback.ts) cascades across model candidates.
+- `classifyFailoverReasonFromHttpStatus` (pi-embedded-helpers/errors.ts) maps HTTP status → FailoverReason. Missing mappings = errors not classified = no fallback.
+- `coerceToFailoverError` (failover-error.ts) wraps raw errors into FailoverError using status, message, and symbolic codes. If it returns null, the error is "unrecognized" but still continues fallback for non-last candidates.
+- Inner runner throws FailoverError to outer fallback only when: all auth profiles exhausted AND `fallbackConfigured` is true.
+- Auth profile cooldown in outer fallback: "auth"/"auth_permanent" → always skip candidate. "rate_limit"/"overloaded" → probe with throttling.
+- Key gotcha: errors that don't classify as FailoverError in the inner runner get thrown as raw errors, bypassing the auth-profile-rotation logic entirely.
