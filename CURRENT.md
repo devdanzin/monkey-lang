@@ -1,7 +1,7 @@
 status: done
 mode: BUILD
-task: Dashboard live schedule tracking — "Next Up" preview + schedule adherence stat
-context: Added Next Up card preview (upcoming 4 blocks) and adherence % stat. Dashboard generates clean.
+task: Dashboard — visual stacked mode distribution bar
+context: Added horizontal stacked bar with legend showing BUILD/THINK/EXPLORE/MAINTAIN proportions. CSS, JS, HTML all updated. Dashboard generates clean.
 context-files: lessons/openclaw-contributing.md
-next: 5:30 BUILD — Continue dashboard improvements or pull from backlog
-updated: 2026-03-20T17:23:00-06:00
+next: 5:45 MAINTAIN — Git commit, dashboard push
+updated: 2026-03-20T17:35:00-06:00
