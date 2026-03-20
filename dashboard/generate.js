@@ -69,8 +69,8 @@ function parseSchedule(text) {
 
       const modeMap = { '🧠': 'THINK', '🔨': 'BUILD', '🔍': 'EXPLORE', '🔧': 'MAINTAIN' };
       const rawTask = m[5];
-      const startTime = m[1].length === 4 ? '0' + m[1] : m[1];
-      const endTime = m[2] ? (m[2].length === 4 ? '0' + m[2] : m[2]) : null;
+      const startTime = normalizeTime(m[1]);
+      const endTime = m[2] ? normalizeTime(m[2]) : null;
 
       // Determine status from markers
       let status = 'upcoming';
@@ -148,7 +148,7 @@ function parseDailyLog(text, blocks) {
       // Match "HH:MM MODE:" or "HH:MM — MODE:" or "HH:MM —" formats
       const m = line.match(/^-\s+(\d{1,2}:\d{2})\s+(?:[-—]\s+)?(\w+)?[:\s]+[-—]?\s*(.+)/);
       if (m) {
-        const time = m[1].length === 4 ? '0' + m[1] : m[1];
+        const time = normalizeTime(m[1]);
         logEntries.push({ time, mode: m[2] || '', text: m[3] });
       }
     }
@@ -157,7 +157,7 @@ function parseDailyLog(text, blocks) {
   // Also scan full text for block-style entries: "## HH:MM MODE — description"
   const blockHeaders = text.matchAll(/^## (\d{1,2}:\d{2})\s+(\w+)\s+[-—]\s+(.+)/gm);
   for (const bm of blockHeaders) {
-    const time = bm[1].length === 4 ? '0' + bm[1] : bm[1];
+    const time = normalizeTime(bm[1]);
     // Grab text until next ## header
     const startIdx = bm.index + bm[0].length;
     const nextHeader = text.indexOf('\n## ', startIdx);
@@ -420,6 +420,13 @@ function today() {
   return new Date().toISOString().slice(0, 10);
 }
 
+// Normalize time to 24h format (work blocks run 8:00-22:00, so times 1:00-7:59 are PM)
+function normalizeTime(timeStr) {
+  let [h, m] = timeStr.split(':').map(Number);
+  if (h < 8) h += 12; // 1:15 → 13:15, 2:30 → 14:30, etc.
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+}
+
 // --- Mark current block as in-progress ---
 function markCurrentBlock(blocks, current) {
   if (current.status !== 'in-progress') return;
@@ -491,6 +498,22 @@ function generate() {
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
 
   fs.writeFileSync(OUTPUT, JSON.stringify(dashboard, null, 2));
+  
+  // Auto-validate: warn about format issues during normal generation
+  const warnings = [];
+  if (schedule.blocks.length < 10) {
+    warnings.push(`Only ${schedule.blocks.length} blocks parsed from SCHEDULE.md (expected 50+). Check time format (use 24h).`);
+  }
+  const logEntryCount = schedule.blocks.filter(b => b.status === 'done').length;
+  const logLines = dailyLogText ? (dailyLogText.match(/^-\s+\d{1,2}:\d{2}/gm) || []).length : 0;
+  if (logLines > 0 && logEntryCount < logLines * 0.5) {
+    warnings.push(`Only ${logEntryCount}/${logLines} log entries matched to schedule blocks. Check time format consistency.`);
+  }
+  if (warnings.length) {
+    console.log(`⚠️  ${warnings.length} warning(s):`);
+    warnings.forEach(w => console.log(`  - ${w}`));
+  }
+  
   console.log(`✅ Generated ${OUTPUT} (${schedule.blocks.length} blocks, ${stats.blocksCompleted} done)`);
 }
 
@@ -529,7 +552,7 @@ function validate() {
   if (!dailyLogText) {
     warnings.push(`memory/${today()}.md not found (okay if day just started)`);
   } else {
-    const logMatch = dailyLogText.match(/## (?:Work )?Log\n([\s\S]*?)(?=\n## |\n$)/);
+    const logMatch = dailyLogText.match(/## (?:Work )?Log\n([\s\S]*?)$/);
     const entryRe = /^-\s+(\d{1,2}:\d{2})\s+(?:[-—]\s+)?(\w+)?[:\s]+[-—]?\s*(.+)/;
     if (logMatch) {
       const lines = logMatch[1].split('\n').filter(l => l.trim().startsWith('-'));
