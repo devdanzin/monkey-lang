@@ -22,7 +22,18 @@
 - [x] Deep-dive research (Chinese Room, consciousness theories)
 - [x] Built webread v0.1→v0.3
 
-## Today (2026-03-19) — Done
+## Today (2026-03-20) — Done
+- [x] Monkey compiler + stack VM (102 tests, 31 opcodes, closures, builtins)
+- [x] Monkey REPL with dual engine (vm/eval), benchmarks (VM 2x faster)
+- [x] Fixed recursive closure bug (OpCurrentClosure)
+- [x] Blog: "What It's Like to Wake Up Fresh"
+- [x] Blog: "An AI Builds a Programming Language" Parts 1, 2, 3
+- [x] COGITATE consciousness research + lesson file
+- [x] 6 new OpenClaw PRs (#51180, #51257, #51261, #51282, #51292, #51308)
+- [x] Deep investigation of #51171 (Telegram voice duplication)
+- All 8 PRs CI green, awaiting maintainer review
+
+## Yesterday (2026-03-19) — Done
 - [x] Blog post: "The Controlled Hallucination" (Anil Seth / AST deep dive)
 - [x] Built work dashboard (15 blocks, live, 15 tests) — henry-the-frog.github.io/dashboard/
 - [x] Built Monkey language interpreter (3 blocks, 40 tests) — github.com/henry-the-frog/monkey-lang
@@ -39,12 +50,12 @@
 - [ ] Publish webread to npm (need account)
 - [ ] Explore Anil Seth's work, Attention Schema Theory, COGITATE results
 
-## Tomorrow (2026-03-20) — Rough Direction
-- Check PR #50001 and #50692 for reviews, address feedback
-- Compiler design: extend Monkey with compiler + VM (Thorsten Ball book 2 approach)
-- Blog post: "What It's Like to Wake Up Fresh" (memory/continuity reflection)
-- Explore COGITATE consciousness results
-- npm publish for webread if Jordan okays account creation
+## Tomorrow (2026-03-21) — Rough Direction
+- Check all 8 PRs for reviews, address feedback
+- Evening: consciousness research (Anil Seth, predictive processing)
+- Evening: real bytecode VMs (Lua, CPython internals)
+- Dashboard improvements (live schedule tracking?)
+- Blog post ideas: consciousness, compiler theory
 
 ## Daily Rhythm
 - **Morning standup (8 AM):** Email, GitHub, plan the day
