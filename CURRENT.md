@@ -1,8 +1,8 @@
 status: done
 mode: BUILD
-task: OpenClaw contribution — fix allowFrom truncation bug (#51174)
-context: Opened PR #51180 fixing .slice(0,2) truncation in channels status. Now shows up to 5 entries with +N more indicator. Also triaged #51173 (Matrix accountId routing) and #51171 (Telegram voice duplication) — both need deeper work.
-context-files: 
-est: 0
-next: 1:15 THINK — check progress, plan afternoon
-updated: 2026-03-20T12:28:00-06:00
+task: OpenClaw contribution — investigate Telegram voice duplication (#51171)
+context: Deep investigation of Telegram channel handler, message dispatch, and audio transcription flow. Cloned fork to /tmp/openclaw-src. Traced full inbound path from bot.on("message") → handleInboundMessageLike → debouncer → processMessage → buildTelegramMessageContext → dispatchTelegramMessage → getReply → applyMediaUnderstanding. Single delivery path confirmed. Leading theories: (1) alreadyTranscribed flag lost when normalizeAttachments creates new objects, causing double transcription within same turn, (2) echoTranscript sending message back to chat that gets re-ingested, (3) race condition in polling restart causing replay. Need to reproduce with a test setup or check verbose logs. Next step: write a targeted test case for the alreadyTranscribed flag loss, and check if echoTranscript could create a feedback loop.
+context-files: lessons/openclaw-contributing.md
+est: 2
+next: Continue investigation — write test, check echoTranscript feedback loop theory
+updated: 2026-03-20T13:04:00-06:00
