@@ -1,0 +1,390 @@
+// Monkey Language Compiler + VM Tests
+
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
+import { Lexer } from './lexer.js';
+import { Parser } from './parser.js';
+import { Compiler } from './compiler.js';
+import { VM, Closure } from './vm.js';
+import { MonkeyInteger, MonkeyBoolean, MonkeyString, MonkeyNull, MonkeyArray, MonkeyHash, MonkeyError, NULL, TRUE, FALSE } from './object.js';
+import { Opcodes, make, disassemble } from './code.js';
+
+function parse(input) {
+  const lexer = new Lexer(input);
+  const parser = new Parser(lexer);
+  return parser.parseProgram();
+}
+
+function compileAndRun(input) {
+  const program = parse(input);
+  const compiler = new Compiler();
+  const err = compiler.compile(program);
+  if (err) throw new Error(`compiler error: ${err}`);
+  const vm = new VM(compiler.bytecode());
+  vm.run();
+  return vm.lastPoppedStackElem();
+}
+
+function testIntegerObject(obj, expected) {
+  assert.ok(obj instanceof MonkeyInteger, `expected MonkeyInteger, got ${obj?.constructor?.name}`);
+  assert.equal(obj.value, expected);
+}
+
+function testBooleanObject(obj, expected) {
+  assert.ok(obj instanceof MonkeyBoolean, `expected MonkeyBoolean, got ${obj?.constructor?.name}`);
+  assert.equal(obj.value, expected);
+}
+
+function testStringObject(obj, expected) {
+  assert.ok(obj instanceof MonkeyString, `expected MonkeyString, got ${obj?.constructor?.name}`);
+  assert.equal(obj.value, expected);
+}
+
+function testNullObject(obj) {
+  assert.equal(obj, NULL, `expected NULL, got ${obj?.inspect?.()}`);
+}
+
+// --- Code module tests ---
+describe('Code', () => {
+  it('make and disassemble OpConstant', () => {
+    const ins = make(Opcodes.OpConstant, 65534);
+    assert.equal(ins.length, 3);
+    assert.equal(ins[0], Opcodes.OpConstant);
+    assert.equal(ins[1], 0xFF);
+    assert.equal(ins[2], 0xFE);
+  });
+
+  it('make OpAdd (no operands)', () => {
+    const ins = make(Opcodes.OpAdd);
+    assert.equal(ins.length, 1);
+    assert.equal(ins[0], Opcodes.OpAdd);
+  });
+
+  it('make OpGetLocal (1-byte operand)', () => {
+    const ins = make(Opcodes.OpGetLocal, 255);
+    assert.equal(ins.length, 2);
+    assert.equal(ins[1], 255);
+  });
+
+  it('make OpClosure (2-byte + 1-byte operand)', () => {
+    const ins = make(Opcodes.OpClosure, 256, 5);
+    assert.equal(ins.length, 4);
+    assert.equal((ins[1] << 8) | ins[2], 256);
+    assert.equal(ins[3], 5);
+  });
+});
+
+// --- Integer arithmetic ---
+describe('Integer Arithmetic', () => {
+  const tests = [
+    ['1', 1],
+    ['2', 2],
+    ['1 + 2', 3],
+    ['1 - 2', -1],
+    ['1 * 2', 2],
+    ['4 / 2', 2],
+    ['50 / 2 * 2 + 10 - 5', 55],
+    ['5 + 5 + 5 + 5 - 10', 10],
+    ['2 * 2 * 2 * 2 * 2', 32],
+    ['5 * 2 + 10', 20],
+    ['5 + 2 * 10', 25],
+    ['5 * (2 + 10)', 60],
+    ['-5', -5],
+    ['-10', -10],
+    ['-50 + 100 + -50', 0],
+    ['(5 + 10 * 2 + 15 / 3) * 2 + -10', 50],
+  ];
+
+  for (const [input, expected] of tests) {
+    it(`${input} => ${expected}`, () => {
+      testIntegerObject(compileAndRun(input), expected);
+    });
+  }
+});
+
+// --- Boolean expressions ---
+describe('Boolean Expressions', () => {
+  const tests = [
+    ['true', true],
+    ['false', false],
+    ['1 < 2', true],
+    ['1 > 2', false],
+    ['1 < 1', false],
+    ['1 > 1', false],
+    ['1 == 1', true],
+    ['1 != 1', false],
+    ['1 == 2', false],
+    ['1 != 2', true],
+    ['true == true', true],
+    ['false == false', true],
+    ['true == false', false],
+    ['true != false', true],
+    ['false != true', true],
+    ['(1 < 2) == true', true],
+    ['(1 < 2) == false', false],
+    ['(1 > 2) == true', false],
+    ['(1 > 2) == false', true],
+    ['!true', false],
+    ['!false', true],
+    ['!5', false],
+    ['!!true', true],
+    ['!!false', false],
+    ['!!5', true],
+  ];
+
+  for (const [input, expected] of tests) {
+    it(`${input} => ${expected}`, () => {
+      testBooleanObject(compileAndRun(input), expected);
+    });
+  }
+});
+
+// --- Conditionals ---
+describe('Conditionals', () => {
+  const intTests = [
+    ['if (true) { 10 }', 10],
+    ['if (true) { 10 } else { 20 }', 10],
+    ['if (false) { 10 } else { 20 }', 20],
+    ['if (1) { 10 }', 10],
+    ['if (1 < 2) { 10 }', 10],
+    ['if (1 < 2) { 10 } else { 20 }', 10],
+    ['if (1 > 2) { 10 } else { 20 }', 20],
+  ];
+  for (const [input, expected] of intTests) {
+    it(`${input} => ${expected}`, () => {
+      testIntegerObject(compileAndRun(input), expected);
+    });
+  }
+
+  const nullTests = [
+    ['if (1 > 2) { 10 }'],
+    ['if (false) { 10 }'],
+  ];
+  for (const [input] of nullTests) {
+    it(`${input} => null`, () => {
+      testNullObject(compileAndRun(input));
+    });
+  }
+});
+
+// --- Global let statements ---
+describe('Global Let Statements', () => {
+  const tests = [
+    ['let one = 1; one', 1],
+    ['let one = 1; let two = 2; one + two', 3],
+    ['let one = 1; let two = one + one; one + two', 3],
+  ];
+  for (const [input, expected] of tests) {
+    it(`${input} => ${expected}`, () => {
+      testIntegerObject(compileAndRun(input), expected);
+    });
+  }
+});
+
+// --- String expressions ---
+describe('String Expressions', () => {
+  it('string literal', () => {
+    testStringObject(compileAndRun('"monkey"'), 'monkey');
+  });
+  it('string concatenation', () => {
+    testStringObject(compileAndRun('"mon" + "key"'), 'monkey');
+  });
+});
+
+// --- Array literals ---
+describe('Array Literals', () => {
+  it('empty array', () => {
+    const result = compileAndRun('[]');
+    assert.ok(result instanceof MonkeyArray);
+    assert.equal(result.elements.length, 0);
+  });
+  it('array with elements', () => {
+    const result = compileAndRun('[1, 2, 3]');
+    assert.ok(result instanceof MonkeyArray);
+    assert.equal(result.elements.length, 3);
+    testIntegerObject(result.elements[0], 1);
+    testIntegerObject(result.elements[1], 2);
+    testIntegerObject(result.elements[2], 3);
+  });
+  it('array with expressions', () => {
+    const result = compileAndRun('[1 + 2, 3 * 4, 5 + 6]');
+    assert.ok(result instanceof MonkeyArray);
+    testIntegerObject(result.elements[0], 3);
+    testIntegerObject(result.elements[1], 12);
+    testIntegerObject(result.elements[2], 11);
+  });
+});
+
+// --- Hash literals ---
+describe('Hash Literals', () => {
+  it('empty hash', () => {
+    const result = compileAndRun('{}');
+    assert.ok(result instanceof MonkeyHash);
+    assert.equal(result.pairs.size, 0);
+  });
+  it('hash with integer keys', () => {
+    const result = compileAndRun('{1: 2, 3: 4}');
+    assert.ok(result instanceof MonkeyHash);
+    assert.equal(result.pairs.size, 2);
+  });
+  it('hash with expressions', () => {
+    const result = compileAndRun('{1: 2 + 3, 4: 5 * 6}');
+    assert.ok(result instanceof MonkeyHash);
+    const pair1 = result.pairs.get('int:1');
+    testIntegerObject(pair1.value, 5);
+    const pair2 = result.pairs.get('int:4');
+    testIntegerObject(pair2.value, 30);
+  });
+});
+
+// --- Index expressions ---
+describe('Index Expressions', () => {
+  const tests = [
+    ['[1, 2, 3][1]', 2],
+    ['[1, 2, 3][0 + 2]', 3],
+    ['[[1, 1, 1]][0][0]', 1],
+    ['{1: 1, 2: 2}[1]', 1],
+    ['{1: 1, 2: 2}[2]', 2],
+  ];
+  for (const [input, expected] of tests) {
+    it(`${input} => ${expected}`, () => {
+      testIntegerObject(compileAndRun(input), expected);
+    });
+  }
+
+  it('array out of bounds => null', () => {
+    testNullObject(compileAndRun('[1, 2, 3][99]'));
+  });
+  it('hash missing key => null', () => {
+    testNullObject(compileAndRun('{1: 2}[0]'));
+  });
+});
+
+// --- Functions ---
+describe('Functions', () => {
+  const tests = [
+    ['let fivePlusTen = fn() { 5 + 10; }; fivePlusTen();', 15],
+    ['let one = fn() { 1; }; let two = fn() { 2; }; one() + two()', 3],
+    ['let a = fn() { 1 }; let b = fn() { a() + 1 }; let c = fn() { b() + 1 }; c();', 3],
+    ['let earlyExit = fn() { return 99; 100; }; earlyExit();', 99],
+    ['let earlyExit = fn() { return 99; return 100; }; earlyExit();', 99],
+    ['let noReturn = fn() { }; noReturn();', null],
+    ['let returnsOne = fn() { 1; }; let returnsOneReturner = fn() { returnsOne; }; returnsOneReturner()();', 1],
+  ];
+  for (const [input, expected] of tests) {
+    it(`${input} => ${expected}`, () => {
+      const result = compileAndRun(input);
+      if (expected === null) {
+        testNullObject(result);
+      } else {
+        testIntegerObject(result, expected);
+      }
+    });
+  }
+});
+
+// --- Functions with arguments ---
+describe('Functions with Arguments', () => {
+  const tests = [
+    ['let identity = fn(a) { a; }; identity(4);', 4],
+    ['let sum = fn(a, b) { a + b; }; sum(1, 2);', 3],
+    ['let sum = fn(a, b) { let c = a + b; c; }; sum(1, 2);', 3],
+    ['let sum = fn(a, b) { let c = a + b; c; }; sum(1, 2) + sum(3, 4);', 10],
+    ['let globalNum = 10; let sum = fn(a, b) { let c = a + b; c + globalNum; }; let outer = fn() { sum(1, 2) + sum(3, 4) + globalNum; }; outer() + globalNum;', 50],
+  ];
+  for (const [input, expected] of tests) {
+    it(`${input} => ${expected}`, () => {
+      testIntegerObject(compileAndRun(input), expected);
+    });
+  }
+});
+
+// --- Local bindings ---
+describe('Local Bindings', () => {
+  const tests = [
+    ['let one = fn() { let one = 1; one }; one();', 1],
+    ['let oneAndTwo = fn() { let one = 1; let two = 2; one + two; }; oneAndTwo();', 3],
+    ['let oneAndTwo = fn() { let one = 1; let two = 2; one + two; }; let threeAndFour = fn() { let three = 3; let four = 4; three + four; }; oneAndTwo() + threeAndFour();', 10],
+    ['let firstFoobar = fn() { let foobar = 50; foobar; }; let secondFoobar = fn() { let foobar = 100; foobar; }; firstFoobar() + secondFoobar();', 150],
+  ];
+  for (const [input, expected] of tests) {
+    it(`${input} => ${expected}`, () => {
+      testIntegerObject(compileAndRun(input), expected);
+    });
+  }
+});
+
+// --- Builtins ---
+describe('Builtins', () => {
+  it('len("")', () => {
+    testIntegerObject(compileAndRun('len("")'), 0);
+  });
+  it('len("four")', () => {
+    testIntegerObject(compileAndRun('len("four")'), 4);
+  });
+  it('len([1, 2, 3])', () => {
+    testIntegerObject(compileAndRun('len([1, 2, 3])'), 3);
+  });
+  it('first([1, 2, 3])', () => {
+    testIntegerObject(compileAndRun('first([1, 2, 3])'), 1);
+  });
+  it('last([1, 2, 3])', () => {
+    testIntegerObject(compileAndRun('last([1, 2, 3])'), 3);
+  });
+  it('rest([1, 2, 3])', () => {
+    const result = compileAndRun('rest([1, 2, 3])');
+    assert.ok(result instanceof MonkeyArray);
+    assert.equal(result.elements.length, 2);
+    testIntegerObject(result.elements[0], 2);
+    testIntegerObject(result.elements[1], 3);
+  });
+  it('push([], 1)', () => {
+    const result = compileAndRun('push([], 1)');
+    assert.ok(result instanceof MonkeyArray);
+    assert.equal(result.elements.length, 1);
+    testIntegerObject(result.elements[0], 1);
+  });
+});
+
+// --- Closures ---
+describe('Closures', () => {
+  const tests = [
+    ['let newClosure = fn(a) { fn() { a; }; }; let closure = newClosure(99); closure();', 99],
+    ['let newAdder = fn(a, b) { fn(c) { a + b + c }; }; let adder = newAdder(1, 2); adder(8);', 11],
+    ['let newAdder = fn(a, b) { let c = a + b; fn(d) { c + d }; }; let adder = newAdder(1, 2); adder(8);', 11],
+    ['let newAdderOuter = fn(a, b) { let c = a + b; fn(d) { let e = d + c; fn(f) { e + f; }; }; }; let newAdderInner = newAdderOuter(1, 2); let adder = newAdderInner(3); adder(8);', 14],
+    // Global + closure mix
+    ['let a = 1; let newAdderOuter = fn(b) { fn(c) { fn(d) { a + b + c + d }; }; }; let newAdderInner = newAdderOuter(2); let adder = newAdderInner(3); adder(8);', 14],
+  ];
+  for (const [input, expected] of tests) {
+    it(`${input} => ${expected}`, () => {
+      testIntegerObject(compileAndRun(input), expected);
+    });
+  }
+});
+
+// --- Recursive functions ---
+describe('Recursive Functions', () => {
+  it('recursive countdown', () => {
+    const input = `
+      let countDown = fn(x) {
+        if (x == 0) { return 0; }
+        countDown(x - 1);
+      };
+      countDown(1);
+    `;
+    testIntegerObject(compileAndRun(input), 0);
+  });
+
+  it('recursive fibonacci', () => {
+    const input = `
+      let fibonacci = fn(x) {
+        if (x == 0) { return 0; }
+        if (x == 1) { return 1; }
+        fibonacci(x - 1) + fibonacci(x - 2);
+      };
+      fibonacci(15);
+    `;
+    testIntegerObject(compileAndRun(input), 610);
+  });
+});

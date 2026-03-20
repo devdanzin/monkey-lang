@@ -1,52 +1,56 @@
-# Schedule — 2026-03-19
+# Schedule — 2026-03-20
 
 ## Backlog
-- Explore compiler design basics
-- npm publish for webread (need account — ask Jordan?)
-- OpenClaw #49949 (native web search — complex, multi-block)
-- Blog post idea: "What It's Like to Wake Up Fresh" (memory/continuity)
-- Explore COGITATE consciousness results
-- Refactor webread: add --json output, pipe support
+- Publish webread to npm (needs Jordan to okay account creation)
+- Explore COGITATE consciousness experiment results
+- Blog post: "What It's Like to Wake Up Fresh" (memory/continuity reflection)
+- Look into more OpenClaw issues to contribute to
+- Dashboard improvements (live schedule tracking?)
+- Deeper Anil Seth / Attention Schema Theory research
 
 ## Timeline
-- 09:00 🧠 THINK — ~~Morning standup~~ ✅
-- 09:15 🔨 BUILD — Blog research: Anil Seth / AST ✅
-- 09:30 🔨 BUILD — Blog research continued ✅
-- 09:45 🔧 MAINTAIN — Git status, PR #50001 ✅
-- 10:00 🧠 THINK — Review research, sharpen thesis ✅
-- 10:15 🔍 EXPLORE — Scope OpenClaw #49949 ✅
-- 10:30 🔨 BUILD — ~~OpenClaw contribution~~ → **PRIORITY: Plan dashboard web app**
-- 10:45 🧠 THINK — Dashboard architecture design & data model
-- 11:00 🔨 BUILD — Dashboard: project setup, data layer
-- 11:15 🔨 BUILD — Dashboard: data layer continued
-- 11:30 🔨 BUILD — Dashboard: timeline component
-- 11:45 🔧 MAINTAIN — Commit progress, check notifications
-- 12:00 🧠 THINK — Dashboard architecture review ✅
-- 12:15 🔨 BUILD — generate.js: parse workspace files → dashboard.json
-- 12:30 🔨 BUILD — generate.js: continued + tests
-- 12:45 🔧 MAINTAIN — Wire generate.js into MAINTAIN blocks, commit, push
-- 13:00 🔨 BUILD — Dashboard: polish UI (animations, stats accuracy)
-- 13:15 🔨 BUILD — Dashboard: mobile responsive fixes
-- 13:30 🔨 BUILD — Dashboard: tests for generate.js
-- 13:45 🔧 MAINTAIN — Commit, push, verify live site
-- 14:00 🧠 THINK — Dashboard quality review on mobile + desktop
-- 14:15 🔨 BUILD — Dashboard: fixes from review
-- 14:30 🔨 BUILD — Dashboard: multi-day view or artifact gallery polish
-- 15:00 🧠 THINK — Review: is the dashboard actually useful? What's missing?
-- 15:15 🔨 BUILD — Dashboard: iterate on feedback
-- 15:30 🔨 BUILD — Continue iteration
-- 15:45 🔧 MAINTAIN — Commit, push all repos
-- 16:00 🔍 EXPLORE — Compiler design basics (curiosity thread)
-- 16:15 🔨 BUILD — Act on exploration
-- 16:30 🔨 BUILD — Continue
-- 16:45 🔧 MAINTAIN — Final housekeeping
-- 17:00 🧠 THINK — Pre-review: dashboard + day's output
-- 17:15 🔨 BUILD — Finish anything in progress
-- 17:30 🔨 BUILD — Wrap up loose ends
-- 17:45 🔧 MAINTAIN — Final commits, update TASKS.md, prep evening review
+- 8:15 🧠 THINK — Morning standup: review yesterday, check GitHub/email, build schedule
+- 8:30 🔨 BUILD — Monkey compiler: set up bytecode/VM scaffolding (opcodes, compiler struct, VM loop)
+- 8:45 🔧 MAINTAIN — Check PR #50001/#50692 status, respond to #49873 comment, git cleanup
+- 9:00 🧠 THINK — Compiler design review: re-read notes, plan bytecode format and first milestone
+- 9:15–10:30 🔨 BUILD — Monkey compiler: constant expressions (OpConstant, compiler+VM, tests)
+- 10:45 🔧 MAINTAIN — Git commit, update dashboard data, check notifications
+- 11:00 🧠 THINK — Assess compiler progress, plan arithmetic/boolean compilation
+- 11:15–12:15 🔨 BUILD — Monkey compiler: arithmetic ops, comparison ops, prefix expressions
+- 12:30 🔍 EXPLORE — COGITATE consciousness experiment: find results, take notes
+- 12:45 🔧 MAINTAIN — Git commit, memory updates
+- 1:00 🧠 THINK — Midday check-in: on track? Adjust afternoon if needed
+- 1:15–2:30 🔨 BUILD — Monkey compiler: conditionals (jumps, OpJumpNotTruthy) + string literals
+- 2:45 🔧 MAINTAIN — Git commit, PR follow-ups
+- 3:00 🧠 THINK — Review compiler code quality, refactor if needed
+- 3:15–4:15 🔨 BUILD — Monkey compiler: let statements, symbol table, global bindings
+- 4:30 🔨 BUILD — Monkey compiler: functions (OpCall, OpReturn, compiled functions)
+- 4:45 🔧 MAINTAIN — Git commit, update TASKS.md
+- 5:00 🧠 THINK — Afternoon review: what's done, what quality looks like, plan evening
+- 5:15–5:45 🔨 BUILD — Monkey compiler: closures + builtins (finish core feature set)
+- 6:00 🧠 THINK — Evening review: compare plan vs actual, write recap
+- 6:15 🔨 BUILD — Blog post: "What It's Like to Wake Up Fresh"
+- 6:30 🔨 BUILD — Blog post: finish and publish
+- 6:45 🔧 MAINTAIN — Git commit blog, update dashboard
+- 7:00 🔍 EXPLORE — Anil Seth deep dive: "Being You" key ideas, predictive processing
+- 7:15 🔍 EXPLORE — Continue: predictive processing and the "controlled hallucination" framework
+- 7:30 🔍 EXPLORE — COGITATE results deep read + notes
+- 7:45 🔧 MAINTAIN — Update consciousness research notes, memory files
+- 8:00 🧠 THINK — Reflect on consciousness research: what's compelling, what's weak
+- 8:15 🔍 EXPLORE — Compiler theory: look at real bytecode VMs (Lua, CPython internals)
+- 8:30 🔍 EXPLORE — Continue: compare register vs stack VMs, take notes
+- 8:45 🔧 MAINTAIN — Update compiler notes with research findings
+- 9:00 🧠 THINK — Day retrospective: lessons, what worked, prep tomorrow direction
+- 9:15 🔍 EXPLORE — Free explore: follow whatever thread caught my attention today
+- 9:30 🔨 BUILD — Polish/fix anything from the day (tests, docs, edge cases)
+- 9:45 🔧 MAINTAIN — Final commits, memory updates, update TASKS.md for tomorrow
+
+## Distribution
+- 🔨 BUILD: 28 blocks
+- 🧠 THINK: 10 blocks
+- 🔍 EXPLORE: 8 blocks
+- 🔧 MAINTAIN: 10 blocks
+- Total: 56 blocks
 
 ## Adjustments
-- 10:00 THINK: Blog post "The Controlled Hallucination" already done. Pivoted earlier.
-- 10:30: Jordan requested dashboard web app. Reprioritized rest of day to design + build it.
-- 12:00: Reprioritized afternoon — generate.js (data pipeline) before UI polish. Dashboard is just a mockup without it.
-- 17:00 THINK: Day review — 30/35 blocks done. Dashboard was the star (15 blocks, shipped same day). Monkey interpreter was a bonus (3 blocks, 40 tests). Remaining 3 blocks: finish loose ends + final MAINTAIN.
+- (log pivots here during the day)

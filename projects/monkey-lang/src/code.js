@@ -1,0 +1,203 @@
+// Monkey Language Bytecode Definitions
+// Stack-based VM following Thorsten Ball's approach
+
+// Opcodes
+export const Opcodes = {
+  OpConstant:       0x01, // Push constant from pool onto stack
+  OpPop:            0x02, // Pop top of stack (expression statement cleanup)
+
+  // Arithmetic
+  OpAdd:            0x03,
+  OpSub:            0x04,
+  OpMul:            0x05,
+  OpDiv:            0x06,
+
+  // Boolean
+  OpTrue:           0x07,
+  OpFalse:          0x08,
+
+  // Comparison
+  OpEqual:          0x09,
+  OpNotEqual:       0x0A,
+  OpGreaterThan:    0x0B, // Less-than rewritten as reversed greater-than by compiler
+
+  // Prefix
+  OpMinus:          0x0C,
+  OpBang:           0x0D,
+
+  // Jump
+  OpJumpNotTruthy:  0x0E, // Conditional jump (if-else)
+  OpJump:           0x0F, // Unconditional jump
+
+  // Null
+  OpNull:           0x10,
+
+  // Bindings
+  OpSetGlobal:      0x11,
+  OpGetGlobal:      0x12,
+  OpSetLocal:       0x13,
+  OpGetLocal:       0x14,
+
+  // Data structures
+  OpArray:          0x15,
+  OpHash:           0x16,
+  OpIndex:          0x17,
+
+  // Strings
+  OpConcat:         0x18, // String concatenation (reuses OpAdd but separate for clarity? No — use OpAdd)
+
+  // Functions
+  OpCall:           0x19,
+  OpReturnValue:    0x1A,
+  OpReturn:         0x1B, // Return without value (implicit null)
+  OpClosure:        0x1C, // Create closure from compiled function
+  OpGetFree:        0x1D, // Get free variable from closure
+  OpCurrentClosure: 0x1E, // Push current closure (for recursion)
+
+  // Builtins
+  OpGetBuiltin:     0x1F,
+};
+
+// Opcode definitions: [name, ...operandWidths]
+// Operand widths in bytes (2 = uint16, 1 = uint8)
+const definitions = {
+  [Opcodes.OpConstant]:       ['OpConstant', 2],
+  [Opcodes.OpPop]:            ['OpPop'],
+  [Opcodes.OpAdd]:            ['OpAdd'],
+  [Opcodes.OpSub]:            ['OpSub'],
+  [Opcodes.OpMul]:            ['OpMul'],
+  [Opcodes.OpDiv]:            ['OpDiv'],
+  [Opcodes.OpTrue]:           ['OpTrue'],
+  [Opcodes.OpFalse]:          ['OpFalse'],
+  [Opcodes.OpEqual]:          ['OpEqual'],
+  [Opcodes.OpNotEqual]:       ['OpNotEqual'],
+  [Opcodes.OpGreaterThan]:    ['OpGreaterThan'],
+  [Opcodes.OpMinus]:          ['OpMinus'],
+  [Opcodes.OpBang]:           ['OpBang'],
+  [Opcodes.OpJumpNotTruthy]:  ['OpJumpNotTruthy', 2],
+  [Opcodes.OpJump]:           ['OpJump', 2],
+  [Opcodes.OpNull]:           ['OpNull'],
+  [Opcodes.OpSetGlobal]:      ['OpSetGlobal', 2],
+  [Opcodes.OpGetGlobal]:      ['OpGetGlobal', 2],
+  [Opcodes.OpSetLocal]:       ['OpSetLocal', 1],
+  [Opcodes.OpGetLocal]:       ['OpGetLocal', 1],
+  [Opcodes.OpArray]:          ['OpArray', 2],
+  [Opcodes.OpHash]:           ['OpHash', 2],
+  [Opcodes.OpIndex]:          ['OpIndex'],
+  [Opcodes.OpCall]:           ['OpCall', 1],
+  [Opcodes.OpReturnValue]:    ['OpReturnValue'],
+  [Opcodes.OpReturn]:         ['OpReturn'],
+  [Opcodes.OpClosure]:        ['OpClosure', 2, 1], // constIndex (2), numFree (1)
+  [Opcodes.OpGetFree]:        ['OpGetFree', 1],
+  [Opcodes.OpCurrentClosure]: ['OpCurrentClosure'],
+  [Opcodes.OpGetBuiltin]:     ['OpGetBuiltin', 1],
+};
+
+/**
+ * Look up the definition for an opcode.
+ * @returns {{ name: string, operandWidths: number[] }} or undefined
+ */
+export function lookup(op) {
+  const def = definitions[op];
+  if (!def) return undefined;
+  return { name: def[0], operandWidths: def.slice(1) };
+}
+
+/**
+ * Encode a single instruction: opcode + operands.
+ * @param {number} op - Opcode
+ * @param {...number} operands - Operand values
+ * @returns {Uint8Array}
+ */
+export function make(op, ...operands) {
+  const def = definitions[op];
+  if (!def) return new Uint8Array(0);
+
+  const widths = def.slice(1);
+  let len = 1; // opcode byte
+  for (const w of widths) len += w;
+
+  const instruction = new Uint8Array(len);
+  instruction[0] = op;
+
+  let offset = 1;
+  for (let i = 0; i < widths.length; i++) {
+    const w = widths[i];
+    const val = operands[i] || 0;
+    if (w === 2) {
+      // Big-endian uint16
+      instruction[offset] = (val >> 8) & 0xFF;
+      instruction[offset + 1] = val & 0xFF;
+    } else if (w === 1) {
+      instruction[offset] = val & 0xFF;
+    }
+    offset += w;
+  }
+
+  return instruction;
+}
+
+/**
+ * Read operands from an instruction stream at the given offset.
+ * @param {number[]} operandWidths
+ * @param {Uint8Array} instructions
+ * @param {number} offset - start of operands (after opcode)
+ * @returns {{ operands: number[], bytesRead: number }}
+ */
+export function readOperands(operandWidths, instructions, offset) {
+  const operands = [];
+  let bytesRead = 0;
+
+  for (const w of operandWidths) {
+    if (w === 2) {
+      operands.push((instructions[offset + bytesRead] << 8) | instructions[offset + bytesRead + 1]);
+    } else if (w === 1) {
+      operands.push(instructions[offset + bytesRead]);
+    }
+    bytesRead += w;
+  }
+
+  return { operands, bytesRead };
+}
+
+/**
+ * Disassemble bytecode into human-readable form.
+ * @param {Uint8Array} instructions
+ * @returns {string}
+ */
+export function disassemble(instructions) {
+  const lines = [];
+  let i = 0;
+
+  while (i < instructions.length) {
+    const op = instructions[i];
+    const def = lookup(op);
+    if (!def) {
+      lines.push(`${String(i).padStart(4, '0')} UNKNOWN(${op})`);
+      i++;
+      continue;
+    }
+
+    const { operands, bytesRead } = readOperands(def.operandWidths, instructions, i + 1);
+    const operandStr = operands.length > 0 ? ' ' + operands.join(' ') : '';
+    lines.push(`${String(i).padStart(4, '0')} ${def.name}${operandStr}`);
+    i += 1 + bytesRead;
+  }
+
+  return lines.join('\n');
+}
+
+/**
+ * Concatenate multiple Uint8Arrays into one.
+ */
+export function concatInstructions(...arrays) {
+  let len = 0;
+  for (const a of arrays) len += a.length;
+  const result = new Uint8Array(len);
+  let offset = 0;
+  for (const a of arrays) {
+    result.set(a, offset);
+    offset += a.length;
+  }
+  return result;
+}
