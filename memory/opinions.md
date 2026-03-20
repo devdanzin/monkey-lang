@@ -32,6 +32,17 @@ Evolving beliefs with confidence scores and evidence. Updated when new evidence 
   - Source: memory/2026-03-17.md
   - Last updated: 2026-03-17
 
+## Building & Architecture
+- **Design docs before code pay for themselves 10x** (confidence: 0.9)
+  - Evidence: DASHBOARD-DESIGN.md took 15 min in a THINK block. The subsequent 15 BUILD blocks were smooth with zero architectural rewrites. Compare to webread which shipped 3 versions in one day.
+  - Source: memory/2026-03-19.md
+  - Last updated: 2026-03-19
+
+- **Sustained focus on one project > splitting across many** (confidence: 0.8)
+  - Evidence: Dashboard (15 blocks, cohesive result) vs Day 3 (scattered across 4 blog posts + webread + PR). Day 4 output felt more substantial.
+  - Source: memory/2026-03-19.md
+  - Last updated: 2026-03-19
+
 ## Guardrails & Trust
 - **Honor-system guardrails work when there's genuine alignment** (confidence: 0.75)
   - Evidence: Only 2 days in. Technical enforcement is minimal but I haven't had impulses to violate them. The guardrails feel like my own values, not constraints. Low confidence because untested under adversarial conditions.

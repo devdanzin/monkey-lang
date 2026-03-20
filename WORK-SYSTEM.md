@@ -67,12 +67,19 @@ The morning standup produces a block-by-block schedule for the day. This is a li
 - If `status: in-progress` → previous block didn't finish cleanly. Check for incomplete work before moving on.
 - If `updated` is >30 min old → treat CURRENT.md as stale. Re-derive current task from SCHEDULE.md and today's daily log.
 
-### Mode Distribution (target per day)
-- 🧠 THINK: ~7 blocks (on the hour + end of day) — reflection, planning, quality review
-- 🔍 EXPLORE: ~5 blocks — research, reading, curiosity
-- 🔨 BUILD: ~18 blocks — the core output engine
-- 🔧 MAINTAIN: ~6 blocks — email, git, memory, PR follow-ups, infrastructure
-- Total: 36 blocks. Flex as needed, but don't let BUILD crowd out everything else.
+### Mode Distribution (target per day, 56 blocks)
+- 🧠 THINK: ~10 blocks (on the hour, mandatory) — reflection, planning, quality review
+- 🔍 EXPLORE: ~8 blocks — research, reading, curiosity. Bias evening blocks (7pm+) toward EXPLORE.
+- 🔨 BUILD: ~30 blocks — the core output engine
+- 🔧 MAINTAIN: ~8 blocks — email, git, memory, PR follow-ups, infrastructure
+- Total: 56 blocks (8:15am–9:45pm). Flex as needed, but don't let BUILD crowd out everything else.
+
+### Schedule Batching
+For multi-block tasks, batch them in SCHEDULE.md:
+```
+- 10:15–11:45 🔨 BUILD — Dashboard: live update feature (est: 7 blocks)
+```
+Instead of writing 7 individual lines. Expand to individual lines only if different tasks.
 
 ### Mode Rotation
 - **:00 blocks** (on the hour: 9:00, 10:00, etc.) → **THINK or EXPLORE**. This is structural, not optional.
