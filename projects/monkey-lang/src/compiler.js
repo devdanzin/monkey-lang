@@ -90,6 +90,10 @@ export class Compiler {
       }
     } else if (node instanceof ast.LetStatement) {
       const sym = this.symbolTable.define(node.name.value);
+      // Pass binding name to function literals for recursive self-reference
+      if (node.value instanceof ast.FunctionLiteral) {
+        node.value.name = node.name.value;
+      }
       const err = this.compile(node.value);
       if (err) return err;
       const op = sym.scope === SCOPE.GLOBAL ? Opcodes.OpSetGlobal : Opcodes.OpSetLocal;

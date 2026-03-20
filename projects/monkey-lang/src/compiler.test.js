@@ -387,4 +387,33 @@ describe('Recursive Functions', () => {
     `;
     testIntegerObject(compileAndRun(input), 610);
   });
+
+  it('recursive closure in local scope', () => {
+    const input = `
+      let wrapper = fn() {
+        let countDown = fn(x) {
+          if (x == 0) { return 0; }
+          countDown(x - 1);
+        };
+        countDown(1);
+      };
+      wrapper();
+    `;
+    testIntegerObject(compileAndRun(input), 0);
+  });
+
+  it('recursive fibonacci in local scope', () => {
+    const input = `
+      let wrapper = fn() {
+        let fib = fn(x) {
+          if (x == 0) { return 0; }
+          if (x == 1) { return 1; }
+          fib(x - 1) + fib(x - 2);
+        };
+        fib(10);
+      };
+      wrapper();
+    `;
+    testIntegerObject(compileAndRun(input), 55);
+  });
 });
