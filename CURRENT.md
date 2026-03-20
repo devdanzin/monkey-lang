@@ -1,8 +1,8 @@
 status: done
-mode: THINK
-task: 3:00 THINK — Review compiler code quality, plan next feature or new project
-context: Assessed all open issues. #51274 (handshake timeout) is cleanest next contribution — bump 3s default to 10-15s or make configurable. #51266 (graceful hook errors) as backup. Monkey code quality solid, no debt.
-context-files: lessons/openclaw-contributing.md, memory/decisions.md
+mode: BUILD
+task: Fix OpenClaw #51274 — handshake timeout configurable via gateway.handshakeTimeoutMs
+context: Opened PR #51282. Added config field, updated getHandshakeTimeoutMs() to read config (env var > config > default), added schema help. All tests pass.
+context-files: lessons/openclaw-contributing.md
 est: 0
-next: 3:15 BUILD — Fix #51274 handshake timeout (bump default + make configurable)
-updated: 2026-03-20T15:03:00-06:00
+next: 3:30 BUILD — Continue OpenClaw contribution or next backlog item
+updated: 2026-03-20T15:25:00-06:00
