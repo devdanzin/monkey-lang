@@ -45,3 +45,10 @@
 - Inner runner throws FailoverError to outer fallback only when: all auth profiles exhausted AND `fallbackConfigured` is true.
 - Auth profile cooldown in outer fallback: "auth"/"auth_permanent" → always skip candidate. "rate_limit"/"overloaded" → probe with throttling.
 - Key gotcha: errors that don't classify as FailoverError in the inner runner get thrown as raw errors, bypassing the auth-profile-rotation logic entirely.
+
+## Error Surfacing to Channels
+- `agent-runner-execution.ts` catch block is where agent errors become user-facing messages
+- Error classifiers: isBilling, isContextOverflow, isCompactionFailure, isSessionCorruption, isRoleOrderingError, isTransientHttp, isSandboxOrSecurity
+- Each classifier gets a specific safe message; catch-all is generic (no raw message interpolation)
+- Full error always logged via `defaultRuntime.error()` — visible in `openclaw logs --follow`
+- `sanitizeUserFacingText` exists but was only used for transient HTTP errors; now unnecessary since we never interpolate raw messages
