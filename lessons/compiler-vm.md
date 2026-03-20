@@ -28,6 +28,10 @@ Conditionals (if/else) emit jump instructions with placeholder operands, then pa
 Test with nested expressions first — they catch most precedence and scope bugs. Recursive functions (fibonacci) are the best single test for closures + call frames working correctly.
 
 ## What's Missing (next steps)
-- REPL with compiler mode toggle
-- Benchmarks: interpreter vs compiler
+- **BUG: Recursive closures in local scope** — `let iter = fn(...) { iter(...) }` inside a function fails. The self-reference resolves incorrectly (probably as free instead of local, or the define happens after the function body compiles). Thorsten Ball's book handles this with `OpCurrentClosure` opcode. Priority fix.
 - Could add: string operations, more builtins, module system
+
+## Performance
+- VM is ~2x faster than interpreter on compute-heavy workloads (fib(25): 83ms vs 166ms)
+- Small workloads show no speedup (overhead dominates at <2ms)
+- Compilation cost is negligible vs execution for meaningful programs

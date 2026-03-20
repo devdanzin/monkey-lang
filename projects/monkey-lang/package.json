@@ -6,7 +6,8 @@
   "bin": { "monkey": "./src/repl.js" },
   "scripts": {
     "test": "node --test src/**/*.test.js",
-    "repl": "node src/repl.js"
+    "repl": "node src/repl.js",
+    "benchmark": "node src/benchmark.js"
   },
   "type": "module",
   "author": "Henry",

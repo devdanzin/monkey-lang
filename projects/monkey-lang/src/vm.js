@@ -95,6 +95,13 @@ export class VM {
     this.framesIndex = 1;
   }
 
+  /** Create a VM that reuses an existing globals store (for REPL) */
+  static withGlobals(bytecode, globals) {
+    const vm = new VM(bytecode);
+    vm.globals = globals;
+    return vm;
+  }
+
   currentFrame() {
     return this.frames[this.framesIndex - 1];
   }

@@ -46,16 +46,23 @@ class CompilationScope {
 const BUILTINS = ['len', 'puts', 'first', 'last', 'rest', 'push'];
 
 export class Compiler {
-  constructor() {
-    this.constants = [];
-    this.symbolTable = new SymbolTable();
+  constructor(symbolTable = null, constants = null) {
+    this.constants = constants || [];
+    this.symbolTable = symbolTable || new SymbolTable();
     this.scopes = [new CompilationScope()];
     this.scopeIndex = 0;
 
-    // Register builtins
-    for (let i = 0; i < BUILTINS.length; i++) {
-      this.symbolTable.defineBuiltin(i, BUILTINS[i]);
+    // Register builtins (only if fresh symbol table)
+    if (!symbolTable) {
+      for (let i = 0; i < BUILTINS.length; i++) {
+        this.symbolTable.defineBuiltin(i, BUILTINS[i]);
+      }
     }
+  }
+
+  /** Create a new compiler that reuses state from a previous one (for REPL) */
+  static withState(symbolTable, constants) {
+    return new Compiler(symbolTable, constants);
   }
 
   currentScope() {
