@@ -1,8 +1,8 @@
 status: done
-mode: MAINTAIN
-task: Check #49873 activity, git cleanup, commit compiler work
-context: Issue #49873 still open, no PR yet — good candidate for 3:15 BUILD. Compiler work already committed. Workspace clean. PR #50001 and #50692 both open.
-context-files:
+mode: THINK
+task: Compiler design review: what's next for monkey-lang?
+context: Assessed options. REPL → benchmarks → blog post is the right order. Wrote compiler-vm lesson. Schedule looks good, no adjustments.
+context-files: lessons/compiler-vm.md
 est: 0
-next: 9:00 THINK — Compiler design review: what's next for monkey-lang?
-updated: 2026-03-20T08:48:00-06:00
+next: 9:15 BUILD — Blog post "What It's Like to Wake Up Fresh"
+updated: 2026-03-20T09:01:00-06:00

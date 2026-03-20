@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // generate.js — Parse workspace files into dashboard.json
-// Usage: node generate.js [--workspace /path] [--output /path/to/dashboard.json]
+// Usage: node generate.js [--workspace /path] [--output /path/to/dashboard.json] [--validate]
 
 'use strict';
 
@@ -64,11 +64,13 @@ function parseSchedule(text) {
   const timelineMatch = text.match(/## Timeline\n([\s\S]*?)(?=\n## |\n$)/);
   if (timelineMatch) {
     for (const line of timelineMatch[1].split('\n')) {
-      const m = line.match(/^-\s+(\d{2}:\d{2})\s+(🧠|🔨|🔍|🔧)\s+(\w+)\s+[-—]\s+(.+)/);
+      const m = line.match(/^-\s+(\d{1,2}:\d{2})(?:[–-](\d{1,2}:\d{2}))?\s+(🧠|🔨|🔍|🔧)\s+(\w+)\s+[-—]\s+(.+)/);
       if (!m) continue;
 
       const modeMap = { '🧠': 'THINK', '🔨': 'BUILD', '🔍': 'EXPLORE', '🔧': 'MAINTAIN' };
-      const rawTask = m[4];
+      const rawTask = m[5];
+      const startTime = m[1].length === 4 ? '0' + m[1] : m[1];
+      const endTime = m[2] ? (m[2].length === 4 ? '0' + m[2] : m[2]) : null;
 
       // Determine status from markers
       let status = 'upcoming';
@@ -76,6 +78,20 @@ function parseSchedule(text) {
       if (rawTask.includes('✅')) {
         status = 'done';
         task = task.replace('✅', '').trim();
+      }
+
+      // Expand time ranges into individual 15-min blocks
+      const times = [startTime];
+      if (endTime) {
+        let [h, min] = startTime.split(':').map(Number);
+        const [eh, emin] = endTime.split(':').map(Number);
+        while (true) {
+          min += 15;
+          if (min >= 60) { h++; min -= 60; }
+          const t = `${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
+          if (h > eh || (h === eh && min > emin)) break;
+          times.push(t);
+        }
       }
       // Strikethrough indicates replaced
       const strikeMatch = task.match(/~~(.+?)~~/);
@@ -92,15 +108,17 @@ function parseSchedule(text) {
       // Clean up bold markers
       task = task.replace(/\*\*/g, '').trim();
 
-      blocks.push({
-        time: m[1],
-        mode: modeMap[m[2]] || m[3],
-        task,
-        status,
-        summary: '',
-        artifacts: [],
-        details: '',
-      });
+      for (const time of times) {
+        blocks.push({
+          time,
+          mode: modeMap[m[3]] || m[4],
+          task,
+          status,
+          summary: '',
+          artifacts: [],
+          details: '',
+        });
+      }
     }
   }
 
@@ -122,12 +140,29 @@ function parseDailyLog(text, blocks) {
 
   // Extract work log entries: "- HH:MM MODE: description"
   const logEntries = [];
-  const logMatch = text.match(/## Work Log\n([\s\S]*?)(?=\n## |\n$)/);
+  // Match various log section headers
+  const logMatch = text.match(/## (?:Work )?Log\n([\s\S]*?)(?=\n## |\n$)/);
   if (logMatch) {
     for (const line of logMatch[1].split('\n')) {
-      const m = line.match(/^-\s+(\d{2}:\d{2})\s+(\w+):\s+(.+)/);
-      if (m) logEntries.push({ time: m[1], mode: m[2], text: m[3] });
+      // Match "HH:MM MODE:" or "HH:MM — MODE:" or "HH:MM —" formats
+      const m = line.match(/^-\s+(\d{1,2}:\d{2})\s+(?:[-—]\s+)?(\w+)?[:\s]+[-—]?\s*(.+)/);
+      if (m) {
+        const time = m[1].length === 4 ? '0' + m[1] : m[1];
+        logEntries.push({ time, mode: m[2] || '', text: m[3] });
+      }
     }
+  }
+
+  // Also scan for block-style entries outside Work Log section: "## HH:MM MODE — description"
+  const blockHeaders = text.matchAll(/^## (\d{1,2}:\d{2})\s+(\w+)\s+[-—]\s+(.+)/gm);
+  for (const bm of blockHeaders) {
+    const time = bm[1].length === 4 ? '0' + bm[1] : bm[1];
+    // Grab text until next ## header
+    const startIdx = bm.index + bm[0].length;
+    const nextHeader = text.indexOf('\n## ', startIdx);
+    const body = text.substring(startIdx, nextHeader > 0 ? nextHeader : text.length).trim();
+    const summary = bm[3];
+    logEntries.push({ time, mode: bm[2], text: summary + (body ? ' ' + body.split('\n')[0] : '') });
   }
 
   // Match log entries to blocks by time

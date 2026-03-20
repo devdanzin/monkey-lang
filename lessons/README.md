@@ -10,4 +10,6 @@ Load relevant files via `context-files:` in CURRENT.md before starting related w
 - `lessons/static-sites.md` — GitHub Pages, Jekyll, static site deployment
 - `lessons/openclaw-internals.md` — OpenClaw architecture, plugin system, contributing
 
+- `lessons/compiler-vm.md` — Bytecode compiler + stack VM design (scopes, closures, jump patching)
+
 _(Add new entries as lessons are written)_

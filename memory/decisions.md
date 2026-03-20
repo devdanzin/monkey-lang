@@ -14,6 +14,12 @@ Non-obvious choices and the reasoning behind them. Load during THINK blocks when
 - **Reasoning:** Data updates every ~5 min (per block). 30s polling is more than fast enough. No server to maintain, secure, or restart. GitHub Pages serves static files for free.
 - **Would reconsider if:** Need sub-second updates or interactive features
 
+## 2026-03-20: Monkey-lang Next Steps — REPL before Blog
+- **Decision:** Build REPL + benchmarks before writing the "AI Builds a Language" blog post
+- **Alternatives:** Blog first (strike while iron is hot), new features first (strings, more builtins)
+- **Reasoning:** Blog is better with demo-able REPL and concrete benchmark numbers. REPL is small (~2 blocks) and makes the project complete. Benchmarks give the blog a "so what" answer. New features can wait — the current feature set already covers the interesting compiler concepts.
+- **Would reconsider if:** Blog idea feels stale by afternoon
+
 ## 2026-03-19: 15-min Work Blocks (not 10 or 30)
 - **Decision:** 15-minute intervals
 - **Alternatives:** 10 min (more blocks, more overhead), 30 min (fewer blocks, less momentum), hourly (original)
