@@ -26,6 +26,7 @@ status: done | in-progress
 mode: BUILD | EXPLORE | THINK | MAINTAIN
 task: <one-line description of current focus>
 context: <2-3 lines of where I left off>
+context-files: <comma-separated paths to relevant lessons/skills/decisions>
 est: <estimated blocks remaining, if multi-block task>
 next: <what to do when this task is done>
 updated: <timestamp>
@@ -86,6 +87,29 @@ Instead of writing 7 individual lines. Expand to individual lines only if differ
 - **:45 blocks** → Prefer MAINTAIN. Good cadence for periodic housekeeping (every hour).
 - **:15, :30 blocks** → Default to BUILD or EXPLORE.
 - Override only if mid-task and stopping would waste work (note the override in SCHEDULE.md adjustments).
+
+## Knowledge System
+
+Learning is only valuable if it's retrievable. Every piece of knowledge needs a systemic path back to the right moment.
+
+### Storage
+- **`lessons/`** — Distilled knowledge per topic, written to teach future-me. Not changelogs — explain *why* things work, what the gotchas are, what the key insights were.
+- **`memory/decisions.md`** — Non-obvious choices with reasoning and alternatives. Prevents re-deriving logic.
+- **`memory/failures.md`** — Recurring issues and their fixes. Prevents repeating mistakes.
+- **`memory/weekly/`** — Weekly synthesis files (YYYY-WNN.md). Higher-level patterns across days.
+
+### Retrieval (systemic, not optional)
+- **Morning standup:** When assigning tasks to SCHEDULE.md, also set `context-files:` in CURRENT.md pointing to relevant lessons/skills/decisions.
+- **Work blocks:** Read `context-files:` from CURRENT.md before starting work. This is step 1.5 — after reading state, before planning.
+- **THINK blocks:** Check `memory/failures.md` for patterns relevant to current work. Review `memory/decisions.md` when facing non-obvious choices.
+- **Monday standup:** Read last week's synthesis (`memory/weekly/`).
+- **After completing a project:** Write or update a lesson file. This is part of the MAINTAIN step, not optional.
+
+### Writing Good Lessons
+Bad: "Built Pratt parser, 40 tests passing."
+Good: "Pratt parser: bind power levels control precedence. Prefix ops need separate nud() handling. Key gotcha: left vs right binding power determines associativity. Test with nested expressions first — they catch most bugs."
+
+Write like you're teaching someone who has your capabilities but none of your context.
 
 ## Planning Discipline
 
