@@ -24,10 +24,13 @@
 - `src/auto-reply/inbound-debounce.ts` — debounce engine for rapid messages
 
 ## Gotchas
-- `normalizeAttachments(ctx)` creates new objects from ctx.MediaPaths/MediaTypes — loses any in-memory flags like `alreadyTranscribed`
-- Debouncer skips voice messages (they have media, `shouldDebounce` returns false for entries with media)
+- `normalizeAttachments(ctx)` creates fresh objects BUT rehydrates `alreadyTranscribed` from `ctx.PreflightTranscribedIndices` — the flag is NOT lost (previous theory was wrong)
+- Debouncer skips voice messages (they have media, `shouldDebounce` returns false for entries with media in non-forward lane)
 - Grammy's `DEFAULT_UPDATE_TYPES` includes `edited_message` but there's no handler for it — edited messages are silently dropped
 - `echoTranscript` is opt-in config (`tools.media.audio.echoTranscript`)
+- No instance locking for Telegram polling — running multiple gateway instances with the same bot token can cause duplicate processing
+- ACP dispatch (`tryDispatchAcpReply`) and standard dispatch (`getReplyFromConfig`) are mutually exclusive — never both called for same message
+- `selectAttachments` properly skips `alreadyTranscribed` audio — preflight + main transcription cannot double-transcribe
 
 ## PR Process
 - Fork is henry-the-frog/openclaw
