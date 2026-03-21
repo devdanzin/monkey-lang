@@ -6,7 +6,7 @@ import { CompiledFunction } from './compiler.js';
 import {
   MonkeyInteger, MonkeyBoolean, MonkeyString, MonkeyNull,
   MonkeyArray, MonkeyHash, MonkeyBuiltin, MonkeyError,
-  TRUE, FALSE, NULL,
+  TRUE, FALSE, NULL, cachedInteger,
 } from './object.js';
 
 const STACK_SIZE = 2048;
@@ -173,7 +173,7 @@ export class VM {
               case Opcodes.OpMul: result = left.value * right.value; break;
               case Opcodes.OpDiv: result = Math.trunc(left.value / right.value); break;
             }
-            this.push(new MonkeyInteger(result));
+            this.push(cachedInteger(result));
           } else if (left instanceof MonkeyString && right instanceof MonkeyString && op === Opcodes.OpAdd) {
             this.push(new MonkeyString(left.value + right.value));
           } else {
@@ -223,7 +223,7 @@ export class VM {
           if (!(operand instanceof MonkeyInteger)) {
             throw new Error(`unsupported type for negation: ${operand.type()}`);
           }
-          this.push(new MonkeyInteger(-operand.value));
+          this.push(cachedInteger(-operand.value));
           break;
         }
 
@@ -418,7 +418,7 @@ export class VM {
               case Opcodes.OpMulConst: result = left4.value * right4.value; break;
               case Opcodes.OpDivConst: result = Math.trunc(left4.value / right4.value); break;
             }
-            this.push(new MonkeyInteger(result));
+            this.push(cachedInteger(result));
           } else if (left4 instanceof MonkeyString && right4 instanceof MonkeyString && op === Opcodes.OpAddConst) {
             this.push(new MonkeyString(left4.value + right4.value));
           } else {
@@ -446,12 +446,56 @@ export class VM {
               case Opcodes.OpGetLocalMulConst: result = leftVal.value * rightVal.value; break;
               case Opcodes.OpGetLocalDivConst: result = Math.trunc(leftVal.value / rightVal.value); break;
             }
-            this.push(new MonkeyInteger(result));
+            this.push(cachedInteger(result));
           } else if (leftVal instanceof MonkeyString && rightVal instanceof MonkeyString && op === Opcodes.OpGetLocalAddConst) {
             this.push(new MonkeyString(leftVal.value + rightVal.value));
           } else {
             throw new Error(`unsupported types for local+const op: ${leftVal.type()} and ${rightVal.type()}`);
           }
+          break;
+        }
+
+        // Integer-specialized opcodes: skip instanceof checks entirely
+        // Compiler guarantees both operands are MonkeyInteger
+        case Opcodes.OpAddInt: {
+          const r = this.pop();
+          const l = this.pop();
+          this.push(cachedInteger(l.value + r.value));
+          break;
+        }
+
+        case Opcodes.OpSubInt: {
+          const r = this.pop();
+          const l = this.pop();
+          this.push(cachedInteger(l.value - r.value));
+          break;
+        }
+
+        case Opcodes.OpGreaterThanInt: {
+          const r = this.pop();
+          const l = this.pop();
+          this.push(l.value > r.value ? TRUE : FALSE);
+          break;
+        }
+
+        case Opcodes.OpLessThanInt: {
+          const r = this.pop();
+          const l = this.pop();
+          this.push(l.value < r.value ? TRUE : FALSE);
+          break;
+        }
+
+        case Opcodes.OpEqualInt: {
+          const r = this.pop();
+          const l = this.pop();
+          this.push(l.value === r.value ? TRUE : FALSE);
+          break;
+        }
+
+        case Opcodes.OpNotEqualInt: {
+          const r = this.pop();
+          const l = this.pop();
+          this.push(l.value !== r.value ? TRUE : FALSE);
           break;
         }
 

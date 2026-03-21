@@ -39,6 +39,10 @@ class CompilationScope {
     this.instructions = new Uint8Array(0);
     this.lastInstruction = new EmittedInstruction(undefined, 0);
     this.previousInstruction = new EmittedInstruction(undefined, 0);
+    // Type tracking: number of known-integer values on top of stack
+    // Incremented when emitting integer constants, arithmetic results
+    // Reset to 0 on unknown (jumps, calls, etc.)
+    this.intStackDepth = 0;
   }
 }
 
@@ -118,6 +122,7 @@ export class Compiler {
     } else if (node instanceof ast.ExpressionStatement) {
       const err = this.compile(node.expression);
       if (err) return err;
+      this.consumeIntStack(1);
       this.emit(Opcodes.OpPop);
     } else if (node instanceof ast.BlockStatement) {
       for (const stmt of node.statements) {
@@ -144,7 +149,11 @@ export class Compiler {
         const folded = this.tryFoldConstant(node);
         if (folded) {
           const idx = this.addConstant(folded);
-          this.emit(Opcodes.OpConstant, idx);
+          if (folded instanceof MonkeyInteger) {
+            this.emitInt(Opcodes.OpConstant, idx);
+          } else {
+            this.emit(Opcodes.OpConstant, idx);
+          }
           return null;
         }
       }
@@ -165,13 +174,23 @@ export class Compiler {
         }
       }
 
-      // Handle '<' by reordering to '>'
+      // Handle '<': use OpLessThanInt for integer operands, swap approach for others
       if (node.operator === '<') {
-        let err = this.compile(node.right);
-        if (err) return err;
-        err = this.compile(node.left);
-        if (err) return err;
-        this.emit(Opcodes.OpGreaterThan);
+        if (this.isIntegerProducing(node.left) && this.isIntegerProducing(node.right)) {
+          let err = this.compile(node.left);
+          if (err) return err;
+          err = this.compile(node.right);
+          if (err) return err;
+          this.consumeIntStack(2);
+          this.emit(Opcodes.OpLessThanInt);
+        } else {
+          // Swap operands and use GreaterThan
+          let err = this.compile(node.right);
+          if (err) return err;
+          err = this.compile(node.left);
+          if (err) return err;
+          this.emitCompareOrSpecialized(Opcodes.OpGreaterThan, Opcodes.OpGreaterThanInt);
+        }
         return null;
       }
 
@@ -181,13 +200,13 @@ export class Compiler {
       if (err) return err;
 
       switch (node.operator) {
-        case '+': this.emitArithOrConst(Opcodes.OpAdd, Opcodes.OpAddConst); break;
-        case '-': this.emitArithOrConst(Opcodes.OpSub, Opcodes.OpSubConst); break;
-        case '*': this.emitArithOrConst(Opcodes.OpMul, Opcodes.OpMulConst); break;
-        case '/': this.emitArithOrConst(Opcodes.OpDiv, Opcodes.OpDivConst); break;
-        case '==': this.emit(Opcodes.OpEqual); break;
-        case '!=': this.emit(Opcodes.OpNotEqual); break;
-        case '>': this.emit(Opcodes.OpGreaterThan); break;
+        case '+': this.emitArithOrConst(Opcodes.OpAdd, Opcodes.OpAddConst, Opcodes.OpAddInt); break;
+        case '-': this.emitArithOrConst(Opcodes.OpSub, Opcodes.OpSubConst, Opcodes.OpSubInt); break;
+        case '*': this.emitArithOrConst(Opcodes.OpMul, Opcodes.OpMulConst, null); break;
+        case '/': this.emitArithOrConst(Opcodes.OpDiv, Opcodes.OpDivConst, null); break;
+        case '==': this.emitCompareOrSpecialized(Opcodes.OpEqual, Opcodes.OpEqualInt); break;
+        case '!=': this.emitCompareOrSpecialized(Opcodes.OpNotEqual, Opcodes.OpNotEqualInt); break;
+        case '>': this.emitCompareOrSpecialized(Opcodes.OpGreaterThan, Opcodes.OpGreaterThanInt); break;
         default: return `unknown operator: ${node.operator}`;
       }
     } else if (node instanceof ast.PrefixExpression) {
@@ -203,13 +222,20 @@ export class Compiler {
       const err = this.compile(node.right);
       if (err) return err;
       switch (node.operator) {
-        case '-': this.emit(Opcodes.OpMinus); break;
-        case '!': this.emit(Opcodes.OpBang); break;
+        case '-':
+          if (this.topNAreInt(1)) {
+            this.consumeIntStack(1);
+            this.emitInt(Opcodes.OpMinus);
+          } else {
+            this.emit(Opcodes.OpMinus);
+          }
+          break;
+        case '!': this.consumeIntStack(1); this.emit(Opcodes.OpBang); break;
         default: return `unknown prefix operator: ${node.operator}`;
       }
     } else if (node instanceof ast.IntegerLiteral) {
       const idx = this.addConstant(new MonkeyInteger(node.value));
-      this.emit(Opcodes.OpConstant, idx);
+      this.emitInt(Opcodes.OpConstant, idx);
     } else if (node instanceof ast.StringLiteral) {
       const idx = this.addConstant(new MonkeyString(node.value));
       this.emit(Opcodes.OpConstant, idx);
@@ -254,6 +280,7 @@ export class Compiler {
         if (err2) return err2;
       }
       this.emit(Opcodes.OpCall, node.arguments.length);
+      this.resetIntStack(); // Return value type is unknown
     }
 
     return null;
@@ -294,6 +321,9 @@ export class Compiler {
     // Patch jump to here
     const afterAlternative = this.currentInstructions().length;
     this.changeOperand(jumpPos, afterAlternative);
+
+    // After if/else, result type is unknown
+    this.resetIntStack();
 
     return null;
   }
@@ -336,6 +366,24 @@ export class Compiler {
   }
 
   /**
+   * Check if a node will produce a known integer value when compiled.
+   * Conservative — only returns true for obvious cases.
+   */
+  isIntegerProducing(node) {
+    if (node instanceof ast.IntegerLiteral) return true;
+    if (node instanceof ast.PrefixExpression && node.operator === '-') {
+      return this.isIntegerProducing(node.right);
+    }
+    if (node instanceof ast.InfixExpression && ['+', '-', '*', '/'].includes(node.operator)) {
+      return this.isIntegerProducing(node.left) && this.isIntegerProducing(node.right);
+    }
+    // Identifiers: we can't know the type statically in general
+    // But for local variables assigned from integer expressions, we could track...
+    // Conservative: return false for now
+    return false;
+  }
+
+  /**
    * Map from generic arithmetic op to its GetLocal*Const superinstruction.
    */
   static GET_LOCAL_CONST_OPS = {
@@ -349,9 +397,14 @@ export class Compiler {
    * Peephole optimization: if the last instruction was OpConstant,
    * fuse it with the arithmetic op into a single constant-operand opcode.
    * If OpGetLocal preceded OpConstant, fuse all three into OpGetLocal*Const.
+   * If both operands are known integers and intOp is provided, use it.
    */
-  emitArithOrConst(genericOp, constOp) {
+  emitArithOrConst(genericOp, constOp, intOp = null) {
     const scope = this.currentScope();
+
+    // Check for integer specialization first (before peephole)
+    const bothInt = this.topNAreInt(2);
+
     if (scope.lastInstruction.opcode === Opcodes.OpConstant) {
       // Extract the constant index from the OpConstant instruction
       const constPos = scope.lastInstruction.position;
@@ -368,21 +421,42 @@ export class Compiler {
 
         // Remove both OpGetLocal and OpConstant
         scope.instructions = scope.instructions.slice(0, prevPos);
-        // Reset last/previous (previousInstruction is now unknown, but we'll set it via emit)
         scope.lastInstruction = new EmittedInstruction(undefined, 0);
         scope.previousInstruction = new EmittedInstruction(undefined, 0);
 
-        // Emit fused superinstruction: OpGetLocal*Const localIdx constIdx
-        this.emit(superOp, localIdx, constIdx);
+        // Consumed 2 int slots (if they were tracked), result is int
+        this.consumeIntStack(2);
+        this.emitInt(superOp, localIdx, constIdx);
       } else {
         // Remove the OpConstant instruction
         scope.instructions = scope.instructions.slice(0, constPos);
         scope.lastInstruction = scope.previousInstruction;
 
-        // Emit fused opcode
-        this.emit(constOp, constIdx);
+        // Consumed 2 int slots, result is int
+        this.consumeIntStack(2);
+        this.emitInt(constOp, constIdx);
       }
+    } else if (bothInt && intOp) {
+      // Both operands are known integers — use specialized opcode
+      this.consumeIntStack(2);
+      this.emitInt(intOp);
     } else {
+      // Generic path — can't guarantee types, result type unknown
+      this.consumeIntStack(2);
+      this.emit(genericOp);
+    }
+  }
+
+  /**
+   * Emit a comparison opcode, using the integer-specialized variant
+   * if both operands are known integers.
+   */
+  emitCompareOrSpecialized(genericOp, intOp) {
+    if (this.topNAreInt(2)) {
+      this.consumeIntStack(2);
+      this.emit(intOp);
+    } else {
+      this.consumeIntStack(2);
       this.emit(genericOp);
     }
   }
@@ -407,6 +481,29 @@ export class Compiler {
     const pos = this.addInstruction(ins);
     this.setLastInstruction(op, pos);
     return pos;
+  }
+
+  /** Emit and mark that the result pushes a known integer onto the stack */
+  emitInt(op, ...operands) {
+    const pos = this.emit(op, ...operands);
+    this.currentScope().intStackDepth++;
+    return pos;
+  }
+
+  /** Consume N known-integer slots from the type tracker */
+  consumeIntStack(n) {
+    const scope = this.currentScope();
+    scope.intStackDepth = Math.max(0, scope.intStackDepth - n);
+  }
+
+  /** Reset int stack tracking (after jumps, calls, unknown ops) */
+  resetIntStack() {
+    this.currentScope().intStackDepth = 0;
+  }
+
+  /** Check if top N stack values are known integers */
+  topNAreInt(n) {
+    return this.currentScope().intStackDepth >= n;
   }
 
   addInstruction(ins) {

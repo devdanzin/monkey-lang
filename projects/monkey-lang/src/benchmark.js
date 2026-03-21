@@ -47,6 +47,14 @@ const BENCHMARKS = [
       len(repeat("ab", 100))
     `,
   },
+  {
+    name: 'integer arithmetic (pure)',
+    input: `
+      let sum = 0 + 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9;
+      let result = sum * sum * sum + sum * sum - sum;
+      result
+    `,
+  },
 ];
 
 function parse(input) {

@@ -107,3 +107,22 @@ export class Environment {
 export const TRUE = new MonkeyBoolean(true);
 export const FALSE = new MonkeyBoolean(false);
 export const NULL = new MonkeyNull();
+
+// Integer cache: pre-allocate MonkeyInteger objects for common values
+// Avoids allocation in hot loops (like CPython's small int cache)
+const INT_CACHE_MIN = -1;
+const INT_CACHE_MAX = 256;
+const INT_CACHE = new Array(INT_CACHE_MAX - INT_CACHE_MIN + 1);
+for (let i = INT_CACHE_MIN; i <= INT_CACHE_MAX; i++) {
+  INT_CACHE[i - INT_CACHE_MIN] = new MonkeyInteger(i);
+}
+
+/**
+ * Get or create a MonkeyInteger. Uses cache for common values.
+ */
+export function cachedInteger(value) {
+  if (value >= INT_CACHE_MIN && value <= INT_CACHE_MAX && (value | 0) === value) {
+    return INT_CACHE[value - INT_CACHE_MIN];
+  }
+  return new MonkeyInteger(value);
+}

@@ -1,8 +1,8 @@
 status: done
-mode: THINK
-task: Assessed optimization gains, planned opcode specialization approach
-context: Three opts shipped, 2.06x speedup. Opcode specialization plan: inline fast paths for integer ops in existing handlers (skip object wrapping). vm-internals scratch note hit promotion threshold (2 uses, 2 days) — promote in next THINK. Schedule on track, no adjustments.
+mode: BUILD
+task: Opcode specialization — integer cache + type-specialized opcodes
+context: Added integer cache (-1 to 256), 6 specialized integer opcodes (AddInt, SubInt, GreaterThanInt, LessThanInt, EqualInt, NotEqualInt), and compiler type tracking. fib(25) improved from ~80ms to ~76ms (6.3%). Total VM speedup now 2.19x vs evaluator.
 context-files: lessons/dispatch-strategies.md, lessons/compiler-vm-design.md, memory/scratch/vm-internals-lua-cpython.md
 est: 0
-next: 10:30 BUILD — Opcode specialization (integer fast paths in OpAdd/OpSub/OpLess/OpGreater handlers)
-updated: 2026-03-21T10:20:00-06:00
+next: 11:00 BUILD — Continue opcode specialization or next scheduled task
+updated: 2026-03-21T10:45:00-06:00

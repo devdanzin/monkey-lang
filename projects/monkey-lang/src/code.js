@@ -70,6 +70,15 @@ export const Opcodes = {
   OpGetLocalSubConst: 0x25,
   OpGetLocalMulConst: 0x26,
   OpGetLocalDivConst: 0x27,
+
+  // Integer-specialized opcodes (skip instanceof checks)
+  // Compiler emits these when it can prove both operands are integers
+  OpAddInt:         0x28,
+  OpSubInt:         0x29,
+  OpGreaterThanInt: 0x2A,
+  OpEqualInt:       0x2B,
+  OpNotEqualInt:    0x2C,
+  OpLessThanInt:    0x2D, // Unlike generic path, this is a direct opcode (no rewrite to GT)
 };
 
 // Opcode definitions: [name, ...operandWidths]
@@ -113,6 +122,12 @@ const definitions = {
   [Opcodes.OpGetLocalSubConst]: ['OpGetLocalSubConst', 1, 2],
   [Opcodes.OpGetLocalMulConst]: ['OpGetLocalMulConst', 1, 2],
   [Opcodes.OpGetLocalDivConst]: ['OpGetLocalDivConst', 1, 2],
+  [Opcodes.OpAddInt]:           ['OpAddInt'],
+  [Opcodes.OpSubInt]:           ['OpSubInt'],
+  [Opcodes.OpGreaterThanInt]:   ['OpGreaterThanInt'],
+  [Opcodes.OpEqualInt]:         ['OpEqualInt'],
+  [Opcodes.OpNotEqualInt]:      ['OpNotEqualInt'],
+  [Opcodes.OpLessThanInt]:      ['OpLessThanInt'],
 };
 
 /**

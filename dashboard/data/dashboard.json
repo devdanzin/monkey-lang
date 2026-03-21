@@ -1,12 +1,12 @@
 {
-  "generated": "2026-03-21T16:01:29.711Z",
+  "generated": "2026-03-21T16:36:16.577Z",
   "current": {
     "status": "done",
-    "mode": "THINK",
-    "task": "Assess optimization gains, benchmark comparison, plan next BUILD stretch",
-    "context": "Three optimizations shipped (constant-operand, superinstructions, constant folding). fib25: 166→80ms (2.06x vs eval). Constant folding minimal fib impact (variables dominate). Next: opcode specialization (integer fast paths) at 10:30, then Lua deep read at 11:15. Benchmarks blog deferred until final numbers.",
-    "next": "10:30 BUILD — Opcode specialization (integer fast paths)",
-    "startedAt": "2026-03-21T10:05:00-06:00",
+    "mode": "BUILD",
+    "task": "Opcode specialization — integer cache + type-specialized opcodes",
+    "context": "Added integer cache (-1 to 256), 6 specialized integer opcodes (AddInt, SubInt, GreaterThanInt, LessThanInt, EqualInt, NotEqualInt), and compiler type tracking. fib(25) improved from ~80ms to ~76ms (6.3%). Total VM speedup now 2.19x vs evaluator.",
+    "next": "11:00 BUILD — Continue opcode specialization or next scheduled task",
+    "startedAt": "2026-03-21T10:45:00-06:00",
     "estimatedBlocks": 0
   },
   "schedule": {
@@ -133,19 +133,27 @@
         "time": "10:15",
         "mode": "THINK",
         "task": "Assess optimization gains, benchmark comparison",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "Assessed optimization gains.",
         "artifacts": [],
-        "details": ""
+        "details": "Assessed optimization gains. 2.06x speedup, diminishing returns on fib (call overhead dominates). Planned opcode specialization: inline integer fast paths in existing handlers to skip object wrapping overhead. vm-internals scratch note hit promotion threshold (2 uses, 2 days). Schedule on track.",
+        "startedAt": "2026-03-21T10:15:00-06:00",
+        "completedAt": "2026-03-21T10:20:00-06:00",
+        "durationMs": 300000,
+        "durationFormatted": "5m"
       },
       {
         "time": "10:30",
         "mode": "BUILD",
         "task": "Monkey compiler: opcode specialization (integer fast paths, CPython 3.11 style)",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "Opcode specialization shipped.",
         "artifacts": [],
-        "details": ""
+        "details": "Opcode specialization shipped. Two optimizations: (1) Integer cache — pre-allocated MonkeyInteger objects for -1 to 256, eliminating allocation in hot loops (like CPython's small int cache). (2) Type-specialized opcodes — OpAddInt, OpSubInt, OpGreaterThanInt, OpLessThanInt, OpEqualInt, OpNotEqualInt that skip instanceof checks. Compiler tracks intStackDepth to emit specialized ops when both operands are known integers. fib(25): 80→76ms (6.3%), total VM speedup now 2.19x vs evaluator. 152 tests passing. Integer cache was the big win; specialized opcodes help more in pure arithmetic code.",
+        "startedAt": "2026-03-21T10:30:00-06:00",
+        "completedAt": "2026-03-21T10:45:00-06:00",
+        "durationMs": 900000,
+        "durationFormatted": "15m"
       },
       {
         "time": "10:45",
@@ -572,15 +580,15 @@
     "10:00: Blog already published, constant folding done. Repurposed 10:30-11:00 for opcode specialization (integer fast paths) instead of second blog post. Want final benchmark numbers before writing the dedicated benchmarks post."
   ],
   "stats": {
-    "blocksCompleted": 8,
+    "blocksCompleted": 10,
     "blocksTotal": 56,
     "modeDistribution": {
-      "THINK": 2,
-      "BUILD": 6
+      "THINK": 3,
+      "BUILD": 7
     },
-    "totalMinutes": 66,
-    "totalMs": 3960000,
-    "avgDurationMs": 495000
+    "totalMinutes": 86,
+    "totalMs": 5160000,
+    "avgDurationMs": 516000
   },
   "artifacts": [
     {
@@ -674,6 +682,11 @@
       "mode": "BUILD",
       "time": "10:00",
       "text": "Optimization assessment."
+    },
+    {
+      "mode": "BUILD",
+      "time": "10:30",
+      "text": "Opcode specialization shipped."
     }
   ]
 }
