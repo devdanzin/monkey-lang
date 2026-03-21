@@ -72,3 +72,20 @@ Lessons learned, what worked, what didn't. Updated during periodic reflection cy
 - Test with real data early. Synthetic fixtures miss the weird stuff (URLs with dots, abbreviations, Unicode).
 - Pratt parsing is elegant and worth knowing — precedence climbing handles complex expressions cleanly.
 - One big project per day > many small ones. Dashboard was cohesive because it got sustained attention.
+
+## 2026-03-20: Day 5 — Peak Productivity + Consciousness Deep Dive
+
+### What worked
+- Compiler/VM done by 8:01 (before standup!) — freed entire day for replanning. Flexibility to redirect 28 blocks.
+- EXPLORE blocks in the evening (7:00-7:30) were the richest learning of the day. Three consecutive deep dives (Seth, FEP, COGITATE) built on each other — reading order mattered.
+- 8 PRs opened, all CI green. Varied scope from one-liners to deep architecture investigations.
+- Blog series (3 parts) written and published in flow, not spread across days.
+
+### What didn't work
+- Nothing major failed today. The 16:30 block found no good issues — minor, but shows the well runs dry eventually.
+
+### Lessons
+- When a big task finishes early, replan aggressively. Don't coast — the freed blocks are a gift.
+- Sequential EXPLORE blocks on related topics compound. Reading Seth → FEP → COGITATE was far richer than scattered exploration would have been. Theme your explore blocks.
+- For consciousness research: lesson files should be written to teach, not to log. The COGITATE file with specific numbers (BF₀₁=5.11-8.65) and methodology details is actually useful for future reasoning. The index file cross-linking theories is the retrieval mechanism.
+- Deep investigation of a codebase (Telegram voice bug) is valuable even when you don't find the bug — the architecture map pays forward.
