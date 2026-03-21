@@ -11,7 +11,7 @@
 
 ## Timeline
 - 08:15 🧠 THINK — Morning standup, plan the day, check PR statuses
-- 08:30–09:00 🔨 BUILD — Monkey compiler: opcode specialization (constant-operand opcodes)
+- 08:30–09:00 🔨 BUILD — Monkey compiler: superinstructions (constant-operand opcodes done)
 - 09:15 🧠 THINK — Review compiler opts approach, check dispatch-strategies notes
 - 09:30–10:00 🔨 BUILD — Monkey compiler: superinstructions (fused common opcode sequences)
 - 10:15 🧠 THINK — Assess optimization gains, benchmark comparison
@@ -55,4 +55,4 @@
 - Total: 56 blocks
 
 ## Adjustments
-_(log pivots here during the day)_
+- 08:15: Constant-operand opcodes already completed in 08:00 block. Moved superinstructions up to 08:30.
