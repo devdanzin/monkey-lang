@@ -15,3 +15,4 @@ Promoted knowledge files. Only created when a topic has been used on 2+ separate
 - **`dispatch-strategies.md`** — Bytecode VM dispatch techniques, optimization hierarchy, what works in JS-hosted VMs. (Promoted 2026-03-21)
 - **`compiler-vm-design.md`** — Monkey language compiler & stack VM: scopes, closures, jump patching, testing strategy, performance. (Promoted 2026-03-21)
 - **`vm-internals-production.md`** — Lua 5.4 & CPython internals: instruction encoding, arithmetic fast paths, pc++ metamethod trick, specialization, stack vs register tradeoffs. (Promoted 2026-03-21)
+- **`openclaw-contributing.md`** — OpenClaw architecture, message flow, failover system, error surfacing, PR process, gotchas. (Promoted 2026-03-21)
