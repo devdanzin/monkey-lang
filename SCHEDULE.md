@@ -16,7 +16,7 @@
 - 09:15 🧠 THINK — Blog quality review (read draft critically)
 - 09:30–10:00 🔨 BUILD — Blog polish + publish (superinstructions done, no longer needed)
 - 10:15 🧠 THINK — Assess optimization gains, benchmark comparison
-- 10:30–11:00 🔨 BUILD — Blog: "How Bytecode VMs Actually Work" (Lua vs CPython vs Monkey)
+- 10:30–11:00 🔨 BUILD — Monkey compiler: opcode specialization (integer fast paths, CPython 3.11 style)
 - 11:15 🔍 EXPLORE — Deep read: Lua 5.4 source (lopcodes.c, lvm.c) for blog accuracy
 - 11:30–11:45 🔨 BUILD — Continue blog post, incorporate Lua/CPython specifics
 - 12:00 🧠 THINK — Midday review: blog quality check, plan afternoon
@@ -57,3 +57,4 @@
 
 ## Adjustments
 - 09:00: Superinstructions completed ahead of schedule (done in 08:30 block). Repurposed 09:30-10:00 for blog polish+publish instead. Promoted 2 scratch notes to lessons.
+- 10:00: Blog already published, constant folding done. Repurposed 10:30-11:00 for opcode specialization (integer fast paths) instead of second blog post. Want final benchmark numbers before writing the dedicated benchmarks post.
