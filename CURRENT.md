@@ -1,7 +1,7 @@
 status: done
 mode: BUILD
-task: Dashboard improvement — block duration chart + UTC date bug fix
-context: Added duration chart visualization (bar chart colored by mode, with tooltips and stats). Fixed critical UTC date bug in generate.js today() function that caused 0 blocks to show as done after 6 PM MDT.
+task: Dashboard — today's highlights section + mini mode bars in recent days
+context: Added highlights section (top 8 notable accomplishments with mode dots and times), mini mode-distribution bars in recent day cards. Both degrade gracefully when data is missing.
 context-files: lessons/openclaw-contributing.md
-next: 6:30 BUILD — Continue dashboard work or next from backlog
-updated: 2026-03-20T18:25:00-06:00
+next: 6:45 MAINTAIN — Git commit, update dashboard
+updated: 2026-03-20T18:38:00-06:00
