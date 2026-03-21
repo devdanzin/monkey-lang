@@ -14,3 +14,9 @@ Track recurring issues so future sessions don't repeat them.
 - **Pattern:** Cron sessions read TASKS.md for blockers that were already resolved in the main session
 - **Fix:** Update TASKS.md immediately when blockers are resolved, not just during MAINTAIN blocks
 - **Seen:** 2026-03-19 (evening review thought BlueBubbles and email were still broken)
+
+### Git remote confusion in shared workspace (2026-03-20)
+**Problem:** Running `git remote add origin` in a subdirectory (`projects/monkey-lang/`) actually modified the parent workspace repo's remote, since monkey-lang isn't a separate git repo.
+**Root cause:** monkey-lang is just a directory in the workspace repo, not a git submodule or separate repo.
+**Fix:** Removed the bad remote. Future: if a project needs its own GitHub repo, either use `git subtree` or initialize it as a truly separate repo outside the workspace.
+**Prevention:** Always check `git rev-parse --show-toplevel` before adding remotes in subdirectories.
