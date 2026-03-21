@@ -1,8 +1,8 @@
 status: done
-mode: EXPLORE
-task: 11:15 EXPLORE — Deep read Lua 5.4 source (lopcodes.c, lvm.c) for blog accuracy
-context: Read full lvm.c (1700 lines) and lopcodes.h. Verified all claims in lesson file. Key new findings: OP_ADDI is the only arithmetic op with immediate (no SUBI/MULI), OP_LOADI for small ints without constant pool, exact FORLOOP counter algorithm (unsigned division). Created scratch note with 8 specific details for blog update.
+mode: BUILD
+task: 11:30 BUILD — Update blog post with Lua/CPython source-level findings
+context: Updated Lua section with 8 source-verified details (pc++ trick, OP_ADDI uniqueness, FORLOOP counter, RETURN0/1, goto startfunc, k-bit, OP_LOADI). Updated benchmarks (76ms/2.19x). Updated What's Next (opcode specialization shipped). Pushed to GitHub Pages.
 context-files: lessons/vm-internals-production.md, memory/scratch/lua-source-blog-notes.md
 est: 0
-next: 11:30 BUILD — Update blog post with Lua/CPython source-level findings
-updated: 2026-03-21T11:27:00-06:00
+next: 11:45 BUILD — Continue blog post improvements or pull from backlog
+updated: 2026-03-21T11:38:00-06:00
