@@ -20,10 +20,10 @@
 - 11:15 🔍 EXPLORE — Deep read: Lua 5.4 source (lopcodes.c, lvm.c) for blog accuracy
 - 11:30–11:45 🔨 BUILD — Continue blog post, incorporate Lua/CPython specifics
 - 12:00 🧠 THINK — Midday review: blog quality check, plan afternoon
-- 12:15–13:00 🔨 BUILD — Finish and publish blog post
-- 13:15 🧠 THINK — Check PRs for review comments, plan next BUILD stretch
-- 13:30–14:15 🔨 BUILD — OpenClaw: tackle #51620 (gateway restart drops queued messages)
-- 14:30 🔍 EXPLORE — Read OpenClaw gateway internals for #51620 context
+- 12:15–13:00 🔨 BUILD — OpenClaw #51620: Phase 1 (persist followup queues across restart)
+- 13:00 🧠 THINK — Check PRs for review comments, assess #51620 progress
+- 13:15–14:15 🔨 BUILD — OpenClaw #51620: Phase 2 (drain-window arrivals) + tests
+- 14:30 🔍 EXPLORE — Read OpenClaw gateway internals for #51620 context (if needed)
 - 14:45 🔧 MAINTAIN — Git commits, PR follow-ups, rebase any conflicted PRs
 - 15:00 🧠 THINK — Afternoon checkpoint: progress review, quality check on PR
 - 15:15–16:00 🔨 BUILD — Continue OpenClaw #51620 or start new issue
@@ -58,3 +58,4 @@
 ## Adjustments
 - 09:00: Superinstructions completed ahead of schedule (done in 08:30 block). Repurposed 09:30-10:00 for blog polish+publish instead. Promoted 2 scratch notes to lessons.
 - 10:00: Blog already published, constant folding done. Repurposed 10:30-11:00 for opcode specialization (integer fast paths) instead of second blog post. Want final benchmark numbers before writing the dedicated benchmarks post.
+- 12:00: Blog fully done (published + polished by 11:45). Pulled OpenClaw #51620 forward to 12:15 instead of 13:30. Gained ~4 extra BUILD blocks for it.
