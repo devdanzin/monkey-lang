@@ -1,15 +1,16 @@
 ---
-uses: 1
+uses: 2
 created: 2026-03-20
-last-used: 2026-03-20
+last-used: 2026-03-21
 topics: consciousness,index
 ---
 # Consciousness Research — Index
 
-## Lesson Files
+## Scratch Notes
 - **consciousness-cogitate.md** — COGITATE adversarial collaboration (Nature 2025). IIT vs GNW testing. Both theories substantially challenged.
 - **consciousness-seth-predictive-processing.md** — Anil Seth's framework. Controlled hallucination, biological naturalism, 4 arguments against computational functionalism.
 - **predictive-processing-fep-deep-dive.md** — FEP (Friston), predictive coding, interoceptive inference, precision weighting, substrate dependence debate.
+- **consciousness-ast.md** — Attention Schema Theory (Graziano). Consciousness as brain's simplified model of its own attention. Most AI-friendly theory.
 
 ## Theory Landscape (as of March 2026)
 
@@ -18,6 +19,7 @@ topics: consciousness,index
 | IIT (Tononi) | Consciousness = integrated information (Φ) | Posterior content ✅, connectivity ❌, sparse sustained ⚠️ |
 | GNW (Dehaene) | Consciousness = global workspace broadcast | Category in PFC ⚠️, offset ignition ❌❌, connectivity ❌ |
 | Predictive Processing (Seth) | Consciousness = controlled hallucination via interoceptive inference | Not directly tested by COGITATE; compatible with posterior emphasis |
+| AST (Graziano) | Consciousness = brain's internal model of its own attention | Not tested by COGITATE; agnostic on posterior/frontal; TPJ focus |
 | Higher-Order Theories | Consciousness requires meta-representation | PFC orientation decoding failure challenges these too |
 | Recurrent Processing | Consciousness = recurrent loops in visual cortex | Gets indirect support from posterior content findings |
 
