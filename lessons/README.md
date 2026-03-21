@@ -12,4 +12,5 @@ Promoted knowledge files. Only created when a topic has been used on 2+ separate
 - May be archived or deleted if no longer relevant
 
 ## Available Lessons
-_(none yet — scratch notes need 2+ uses across separate days to promote)_
+- **`dispatch-strategies.md`** — Bytecode VM dispatch techniques, optimization hierarchy, what works in JS-hosted VMs. (Promoted 2026-03-21)
+- **`compiler-vm-design.md`** — Monkey language compiler & stack VM: scopes, closures, jump patching, testing strategy, performance. (Promoted 2026-03-21)

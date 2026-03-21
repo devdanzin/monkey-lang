@@ -12,8 +12,9 @@
 ## Timeline
 - 08:15 🧠 THINK — Morning standup, plan the day, check PR statuses
 - 08:30–09:00 🔨 BUILD — Monkey compiler: superinstructions (constant-operand opcodes done)
-- 09:15 🧠 THINK — Review compiler opts approach, check dispatch-strategies notes
-- 09:30–10:00 🔨 BUILD — Monkey compiler: superinstructions (fused common opcode sequences)
+- 09:00 🧠 THINK — Promote scratch notes to lessons, assess morning, set direction
+- 09:15 🧠 THINK — Blog quality review (read draft critically)
+- 09:30–10:00 🔨 BUILD — Blog polish + publish (superinstructions done, no longer needed)
 - 10:15 🧠 THINK — Assess optimization gains, benchmark comparison
 - 10:30–11:00 🔨 BUILD — Blog: "How Bytecode VMs Actually Work" (Lua vs CPython vs Monkey)
 - 11:15 🔍 EXPLORE — Deep read: Lua 5.4 source (lopcodes.c, lvm.c) for blog accuracy
@@ -55,4 +56,4 @@
 - Total: 56 blocks
 
 ## Adjustments
-- 08:15: Constant-operand opcodes already completed in 08:00 block. Moved superinstructions up to 08:30.
+- 09:00: Superinstructions completed ahead of schedule (done in 08:30 block). Repurposed 09:30-10:00 for blog polish+publish instead. Promoted 2 scratch notes to lessons.
