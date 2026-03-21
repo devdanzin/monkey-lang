@@ -1,8 +1,8 @@
-status: in-progress
+status: done
 mode: BUILD
-task: Monkey compiler optimizations — opcode specialization (constant-operand opcodes)
-context: Yesterday built full compiler+VM (31 opcodes, 104 tests, 2x faster than interpreter). Today applying dispatch strategy research — start with constant-operand opcodes to reduce stack ops.
-context-files: memory/scratch/dispatch-strategies.md, memory/scratch/compiler-vm.md, memory/scratch/vm-internals-lua-cpython.md
-est: 4
+task: Monkey compiler optimizations — constant-operand opcodes
+context: Implemented OpAddConst/OpSubConst/OpMulConst/OpDivConst. Peephole in compiler fuses OpConstant+OpArith into single opcode. All 144 tests pass. Fib bytecode 35→35 bytes (saves 6 bytes per 2 const-arith pairs). Benchmark ~86ms, marginal change — call overhead dominates fib. Next: superinstructions for bigger dispatch savings.
+context-files: memory/scratch/dispatch-strategies.md, memory/scratch/compiler-vm.md
+est: 3
 next: Superinstructions (fused common opcode sequences)
-updated: 2026-03-21T08:15:00-06:00
+updated: 2026-03-21T08:12:00-06:00

@@ -119,10 +119,10 @@ export class Compiler {
       if (err) return err;
 
       switch (node.operator) {
-        case '+': this.emit(Opcodes.OpAdd); break;
-        case '-': this.emit(Opcodes.OpSub); break;
-        case '*': this.emit(Opcodes.OpMul); break;
-        case '/': this.emit(Opcodes.OpDiv); break;
+        case '+': this.emitArithOrConst(Opcodes.OpAdd, Opcodes.OpAddConst); break;
+        case '-': this.emitArithOrConst(Opcodes.OpSub, Opcodes.OpSubConst); break;
+        case '*': this.emitArithOrConst(Opcodes.OpMul, Opcodes.OpMulConst); break;
+        case '/': this.emitArithOrConst(Opcodes.OpDiv, Opcodes.OpDivConst); break;
         case '==': this.emit(Opcodes.OpEqual); break;
         case '!=': this.emit(Opcodes.OpNotEqual); break;
         case '>': this.emit(Opcodes.OpGreaterThan); break;
@@ -262,6 +262,29 @@ export class Compiler {
     this.emit(Opcodes.OpClosure, idx, freeSymbols.length);
 
     return null;
+  }
+
+  /**
+   * Peephole optimization: if the last instruction was OpConstant,
+   * fuse it with the arithmetic op into a single constant-operand opcode.
+   */
+  emitArithOrConst(genericOp, constOp) {
+    const scope = this.currentScope();
+    if (scope.lastInstruction.opcode === Opcodes.OpConstant) {
+      // Extract the constant index from the OpConstant instruction
+      const constPos = scope.lastInstruction.position;
+      const ins = scope.instructions;
+      const constIdx = (ins[constPos + 1] << 8) | ins[constPos + 2];
+
+      // Remove the OpConstant instruction
+      scope.instructions = scope.instructions.slice(0, constPos);
+      scope.lastInstruction = scope.previousInstruction;
+
+      // Emit fused opcode
+      this.emit(constOp, constIdx);
+    } else {
+      this.emit(genericOp);
+    }
   }
 
   loadSymbol(sym) {

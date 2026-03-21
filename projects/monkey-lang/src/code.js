@@ -56,6 +56,13 @@ export const Opcodes = {
 
   // Builtins
   OpGetBuiltin:     0x1F,
+
+  // Constant-operand arithmetic (fused OpConstant + op)
+  // Right operand is loaded from constant pool, left from stack
+  OpAddConst:       0x20,
+  OpSubConst:       0x21,
+  OpMulConst:       0x22,
+  OpDivConst:       0x23,
 };
 
 // Opcode definitions: [name, ...operandWidths]
@@ -91,6 +98,10 @@ const definitions = {
   [Opcodes.OpGetFree]:        ['OpGetFree', 1],
   [Opcodes.OpCurrentClosure]: ['OpCurrentClosure'],
   [Opcodes.OpGetBuiltin]:     ['OpGetBuiltin', 1],
+  [Opcodes.OpAddConst]:       ['OpAddConst', 2],
+  [Opcodes.OpSubConst]:       ['OpSubConst', 2],
+  [Opcodes.OpMulConst]:       ['OpMulConst', 2],
+  [Opcodes.OpDivConst]:       ['OpDivConst', 2],
 };
 
 /**

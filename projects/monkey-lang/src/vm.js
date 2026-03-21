@@ -401,6 +401,32 @@ export class VM {
           break;
         }
 
+        case Opcodes.OpAddConst:
+        case Opcodes.OpSubConst:
+        case Opcodes.OpMulConst:
+        case Opcodes.OpDivConst: {
+          const constIdx3 = (ins[ip + 1] << 8) | ins[ip + 2];
+          this.currentFrame().ip += 2;
+          const left4 = this.pop();
+          const right4 = this.constants[constIdx3];
+
+          if (left4 instanceof MonkeyInteger && right4 instanceof MonkeyInteger) {
+            let result;
+            switch (op) {
+              case Opcodes.OpAddConst: result = left4.value + right4.value; break;
+              case Opcodes.OpSubConst: result = left4.value - right4.value; break;
+              case Opcodes.OpMulConst: result = left4.value * right4.value; break;
+              case Opcodes.OpDivConst: result = Math.trunc(left4.value / right4.value); break;
+            }
+            this.push(new MonkeyInteger(result));
+          } else if (left4 instanceof MonkeyString && right4 instanceof MonkeyString && op === Opcodes.OpAddConst) {
+            this.push(new MonkeyString(left4.value + right4.value));
+          } else {
+            throw new Error(`unsupported types for constant op: ${left4.type()} and ${right4.type()}`);
+          }
+          break;
+        }
+
         default:
           throw new Error(`unknown opcode: ${op}`);
       }
