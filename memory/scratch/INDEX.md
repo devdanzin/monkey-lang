@@ -9,4 +9,5 @@ Auto-generated. Standup reads this to match topics against today's tasks.
 - **openclaw-contributing** | uses: 1 | created: 2026-03-20 | topics: openclaw,contributing
 - **predictive-processing-fep-deep-dive** | uses: 1 | created: 2026-03-20 | topics: predictive,processing,fep,deep,dive
 - **tracing-jit-compilation** | uses: 1 | created: 2026-03-20 | topics: tracing,jit,compilation
-- **vm-internals-lua-cpython** | uses: 1 | created: 2026-03-20 | topics: vm,internals,lua,cpython
+- **vm-internals-lua-cpython** | ~~PROMOTED to lessons/vm-internals-production.md~~ | topics: vm,internals,lua,cpython
+- **lua-source-blog-notes** | uses: 1 | created: 2026-03-21 | topics: lua,vm,blog,source-reading

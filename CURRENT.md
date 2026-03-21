@@ -1,8 +1,8 @@
 status: done
-mode: THINK
-task: 11:00 THINK — Promoted vm-internals to lesson, assessed progress, planned next stretch
-context: Promoted vm-internals-lua-cpython scratch note to lessons/vm-internals-production.md (3rd lesson). Morning very productive — all optimizations shipped, blog published. Next: update blog with Lua source findings (pc++ trick, FORLOOP counter, arithmetic macros).
-context-files: lessons/vm-internals-production.md, lessons/dispatch-strategies.md
+mode: EXPLORE
+task: 11:15 EXPLORE — Deep read Lua 5.4 source (lopcodes.c, lvm.c) for blog accuracy
+context: Read full lvm.c (1700 lines) and lopcodes.h. Verified all claims in lesson file. Key new findings: OP_ADDI is the only arithmetic op with immediate (no SUBI/MULI), OP_LOADI for small ints without constant pool, exact FORLOOP counter algorithm (unsigned division). Created scratch note with 8 specific details for blog update.
+context-files: lessons/vm-internals-production.md, memory/scratch/lua-source-blog-notes.md
 est: 0
 next: 11:30 BUILD — Update blog post with Lua/CPython source-level findings
-updated: 2026-03-21T11:05:00-06:00
+updated: 2026-03-21T11:27:00-06:00

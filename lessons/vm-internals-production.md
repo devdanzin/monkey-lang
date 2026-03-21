@@ -11,6 +11,8 @@ Studying production VMs reveals design patterns that textbooks skip. The gap bet
 ### Instruction Encoding
 32-bit instructions with 7-bit opcode. Five formats (iABC, iABx, iAsBx, iAx, isJ) let the compiler pack register indices, constants, and small immediates into single instructions. The `k` bit in iABC format doubles flexibility — `RKC(i)` reads either a register or constant pool entry based on one bit.
 
+**OP_LOADI:** Dedicated opcode loads integers from sBx (17-bit signed: ±65535) directly — no constant pool lookup. Like a small int cache at the instruction encoding level.
+
 **Takeaway:** Instruction encoding is a design decision with huge downstream effects. Wider instructions = fewer dispatches = faster execution on modern CPUs where branch misprediction dominates.
 
 ### Arithmetic Macro Layering
@@ -19,12 +21,12 @@ Lua's `lvm.c` uses three arithmetic macro variants:
 - `op_arithK(L, iop, fop)` — register + constant from K[]
 - `op_arithI(L, iop, fop)` — register + signed 8-bit immediate
 
-All check `ttisinteger()` first. If both operands are integers, compute and `pc++` to skip the following metamethod opcode.
+All check `ttisinteger()` first. If both operands are integers, compute and `pc++` to skip the following metamethod opcode. Note: `op_arithI` is only used by OP_ADDI — there's no OP_SUBI or OP_MULI with immediate. The compiler rewrites `x - 1` as `ADDI x, -1` (sC is signed 8-bit: -128 to 127). Design choice: one immediate op covers most cases.
 
 **The pc++ trick:** Every arithmetic opcode is followed by `OP_MMBIN`/`OP_MMBINI`/`OP_MMBINK`. On success, the handler skips it. On failure, execution falls through to the metamethod call. This is zero-cost fast-path design — the slow path is there in the bytecode but never dispatched when types match.
 
 ### Notable Optimizations
-- **FORLOOP counter:** `OP_FORPREP` pre-computes an iteration count. Loop body just decrements and checks > 0. Avoids limit comparison and overflow issues.
+- **FORLOOP counter:** `OP_FORPREP` computes `count = (limit - init) / step` using unsigned arithmetic (avoids signed overflow), stores it in the limit slot. `OP_FORLOOP` just decrements count and checks > 0. Step=1 case avoids division. Eliminates limit comparison and overflow issues entirely.
 - **RETURN0/RETURN1:** Inline the entire `poscall` logic, avoiding a function call for the most common return patterns.
 - **Same C frame:** `OP_CALL` for Lua functions uses `goto startfunc` instead of C recursion. All Lua-to-Lua calls share one C stack frame — prevents C stack overflow on deep Lua recursion.
 - **LFALSESKIP:** Combined `set false + skip next instruction` for if/else patterns. Eliminates a jump.
