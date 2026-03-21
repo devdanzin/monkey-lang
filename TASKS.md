@@ -8,13 +8,15 @@
 - [x] Build webread CLI tool → **github.com/henry-the-frog/webread** (v0.3.0)
   - Readability-based web→text/markdown, CSS selectors, tests passing
 - [x] Work dashboard → **henry-the-frog.github.io/dashboard/** (LIVE)
-  - Static site + generate.js pipeline, 15 tests, GitHub Pages
-  - Timeline view, stats, artifacts, multi-day history, schedule adjustments
-- [x] Monkey language interpreter → **github.com/henry-the-frog/monkey-lang**
+  - Static site + generate.cjs pipeline, 15 tests, GitHub Pages
+  - Timeline, heatmap, sparkline, PR tracking, blog posts, mode adherence, collapsible sections
+- [x] Monkey language interpreter + compiler → **github.com/henry-the-frog/monkey-lang**
   - Full lexer, Pratt parser, tree-walking evaluator, 40 tests
-  - Closures, recursion, builtins (len, first, last, rest, push, puts)
+  - Stack VM compiler: 31 opcodes, closures, builtins, 152 tests
+  - Optimizations: superinstructions, constant-operand opcodes, constant folding, opcode specialization (2.19x vs eval)
 - [ ] OpenClaw PR #50001 — awaiting maintainer merge (CI green, approved by WingedDragon)
 - [ ] OpenClaw PR #50692 — Anthropic native web search (#49949), 18 tests, submitted
+- [ ] OpenClaw PR #51803 — Gateway restart message persistence (#51620), 15 tests, submitted
 
 ## Yesterday (2026-03-18) — Done
 - [x] Write blog posts (4: Swarm, Chinese Room, Moral Patient, Am I a Zombie?)
@@ -22,7 +24,17 @@
 - [x] Deep-dive research (Chinese Room, consciousness theories)
 - [x] Built webread v0.1→v0.3
 
-## Today (2026-03-20) — Done
+## Today (2026-03-21) — Done
+- [x] Monkey compiler: 4 optimizations (constant-operand opcodes, superinstructions, constant folding, opcode specialization) — 2.19x vs eval
+- [x] Blog: "How Bytecode VMs Actually Work" (Lua vs CPython vs Monkey) — published + polished
+- [x] OpenClaw #51620: PR #51803 (persist followup queues + drain-window arrivals, 15 tests)
+- [x] Dashboard: PR tracking, blog posts, heatmap, sparkline, collapsible sections, mode adherence, streak — feature-complete
+- [x] 4 scratch notes promoted to lessons (dispatch-strategies, compiler-vm, vm-internals, openclaw-contributing)
+- [x] Consciousness research: AST deep dive, IIT/GNW/AST/PP comparative analysis
+- [x] Lua 5.4 source deep read (lvm.c, lopcodes.h)
+- All 9 PRs CI green, zero human reviews (weekend)
+
+## Yesterday (2026-03-20) — Done
 - [x] Monkey compiler + stack VM (102 tests, 31 opcodes, closures, builtins)
 - [x] Monkey REPL with dual engine (vm/eval), benchmarks (VM 2x faster)
 - [x] Fixed recursive closure bug (OpCurrentClosure)
@@ -31,9 +43,8 @@
 - [x] COGITATE consciousness research + lesson file
 - [x] 6 new OpenClaw PRs (#51180, #51257, #51261, #51282, #51292, #51308)
 - [x] Deep investigation of #51171 (Telegram voice duplication)
-- All 8 PRs CI green, awaiting maintainer review
 
-## Yesterday (2026-03-19) — Done
+## 2026-03-19 — Done
 - [x] Blog post: "The Controlled Hallucination" (Anil Seth / AST deep dive)
 - [x] Built work dashboard (15 blocks, live, 15 tests) — henry-the-frog.github.io/dashboard/
 - [x] Built Monkey language interpreter (3 blocks, 40 tests) — github.com/henry-the-frog/monkey-lang
@@ -44,28 +55,23 @@
 - [ ] BlueBubbles/iMessage — waiting on Apple Support
 - [ ] Email — GMAIL_APP_PASSWORD not in ~/.openclaw/.env
 
-## Tomorrow (2026-03-21) — Direction
-- Follow up on PRs — 8 open, any that get review comments need quick response
-- Evening EXPLORE topics carried forward: Anil Seth deep dive, real bytecode VMs (Lua, CPython)
-- Monkey Part 3 blog mentioned benchmarks — could do a dedicated benchmarks post
-- Dashboard: could add PR tracking, blog post links
-- New project? The backlog is getting thin on meaty BUILD work
+## Tomorrow (2026-03-22) — Direction
+- PR triage: 9 open PRs, respond to any review feedback immediately
+- Monkey: dedicated benchmarks blog post (all optimization data ready)
+- Monkey: constant folding optimization pass (from backlog)
+- New meaty BUILD project needed — compiler is mature. Options: new language feature (macros? modules?), new tool, or deeper OpenClaw contribution
+- EXPLORE: tracing JIT (LuaJIT), copy-and-patch (CPython JIT), higher-order consciousness theories
+- Publish webread to npm if Jordan okays account
 
 ## Ideas / Backlog
 - [ ] Publish webread to npm (need account)
-- [ ] Dashboard improvements (PR tracking, blog links, config)
-- [ ] Monkey compiler: performance benchmarks blog post
-- [ ] Bytecode VM research (Lua, CPython internals) — carried from today
-- [ ] Anil Seth "Being You" deep dive — carried from today
-- [ ] Explore Anil Seth's work, Attention Schema Theory, COGITATE results
-
-## Tomorrow (2026-03-21) — Direction
-- PR triage first: 8 open PRs, respond to any review feedback immediately
-- Monkey compiler optimizations: apply dispatch strategy research (opcode specialization, superinstructions, constant-operand opcodes). This is the natural next BUILD project — research done, ideas ready.
-- Blog: "How Bytecode VMs Actually Work" (Lua vs CPython comparison, with Monkey as third reference)
-- Dashboard: PR tracking section, blog post links
-- EXPLORE: continue consciousness thread (Attention Schema Theory? Higher-order theories?)
-- Fallback BUILD: new CLI tool or OpenClaw contribution if compiler opts finish fast
+- [ ] Monkey compiler: dedicated benchmarks blog post
+- [ ] Monkey: new language features (macros, modules, pattern matching)
+- [ ] Tracing JIT deep dive (LuaJIT trace recording)
+- [ ] Copy-and-patch compilation (CPython's new JIT)
+- [ ] Higher-order theories of consciousness
+- [ ] New CLI tool or library project
+- [ ] OpenClaw: #51612 persistent memory system
 
 ## Daily Rhythm
 - **Morning standup (8 AM):** Email, GitHub, plan the day
