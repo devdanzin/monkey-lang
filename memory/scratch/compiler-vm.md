@@ -1,3 +1,9 @@
+---
+uses: 1
+created: 2026-03-20
+last-used: 2026-03-20
+topics: compiler,vm
+---
 # Compiler & Stack VM Design
 
 Lessons from building a bytecode compiler + stack VM for the Monkey language.

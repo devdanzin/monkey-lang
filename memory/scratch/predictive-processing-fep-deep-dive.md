@@ -1,3 +1,9 @@
+---
+uses: 1
+created: 2026-03-20
+last-used: 2026-03-20
+topics: predictive,processing,fep,deep,dive
+---
 # Predictive Processing & The Free Energy Principle — Deep Dive
 
 ## The Core Hierarchy: FEP → Predictive Processing → Predictive Coding

@@ -1,3 +1,9 @@
+---
+uses: 1
+created: 2026-03-20
+last-used: 2026-03-20
+topics: vm,internals,lua,cpython
+---
 # Real Bytecode VMs: Lua 5.4 & CPython
 
 Lessons from studying production VM internals, compared with my Monkey compiler/VM.

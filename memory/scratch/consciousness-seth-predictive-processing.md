@@ -1,3 +1,9 @@
+---
+uses: 1
+created: 2026-03-20
+last-used: 2026-03-20
+topics: consciousness,seth,predictive,processing
+---
 # Anil Seth: Predictive Processing & "Being You"
 
 ## Core Framework: Consciousness as Controlled Hallucination

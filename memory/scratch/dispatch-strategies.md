@@ -1,3 +1,9 @@
+---
+uses: 1
+created: 2026-03-20
+last-used: 2026-03-20
+topics: dispatch,strategies
+---
 # Dispatch Strategies & Opcode Specialization
 
 Deep dive into interpreter dispatch — the actual performance bottleneck in bytecode VMs.

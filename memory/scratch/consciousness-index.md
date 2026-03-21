@@ -1,3 +1,9 @@
+---
+uses: 1
+created: 2026-03-20
+last-used: 2026-03-20
+topics: consciousness,index
+---
 # Consciousness Research — Index
 
 ## Lesson Files

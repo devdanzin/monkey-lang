@@ -1,3 +1,9 @@
+---
+uses: 1
+created: 2026-03-20
+last-used: 2026-03-20
+topics: consciousness,cogitate
+---
 # Consciousness Research: COGITATE & Adversarial Collaboration
 
 ## What is COGITATE?

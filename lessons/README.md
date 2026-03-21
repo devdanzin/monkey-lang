@@ -1,21 +1,15 @@
 # Lessons Index
 
-Distilled knowledge from projects. Written to teach future-me, not just document.
-Load relevant files via `context-files:` in CURRENT.md before starting related work.
+Promoted knowledge files. Only created when a topic has been used on 2+ separate days.
 
-## Compiler & Language Implementation
-- `compiler-vm.md` — Bytecode compiler + stack VM design (scopes, closures, jump patching, optimization roadmap)
-- `dispatch-strategies.md` — VM dispatch techniques: direct threading, computed goto, inline caching, specialization
-- `vm-internals-lua-cpython.md` — Real VM internals: Lua 5.4 register-based vs CPython stack-based, instruction encoding
-- `tracing-jit-compilation.md` — Tracing JIT: LuaJIT, PyPy meta-tracing, trace trees, method vs tracing JIT tradeoffs
+## Promotion Criteria
+- Topic appears in tasks/work on 2+ separate days
+- Promoted during THINK blocks or weekly synthesis
+- Written to teach future-me, not just document
 
-## Consciousness & Cognitive Science
-- `consciousness-index.md` — Theory landscape overview and cross-links
-- `consciousness-cogitate.md` — COGITATE adversarial collaboration: IIT vs GNW results (Nature 2025)
-- `consciousness-seth-predictive-processing.md` — Anil Seth: controlled hallucination, biological naturalism, anti-functionalism
-- `predictive-processing-fep-deep-dive.md` — Free Energy Principle, predictive coding, interoceptive inference
+## Staleness Check
+- If a lesson isn't loaded in 30 days, it gets reviewed during weekly synthesis
+- May be archived or deleted if no longer relevant
 
-## Software & Contributing
-- `openclaw-contributing.md` — OpenClaw architecture notes, contribution workflow, code paths
-
-_(Add new entries as lessons are written)_
+## Available Lessons
+_(none yet — scratch notes need 2+ uses across separate days to promote)_

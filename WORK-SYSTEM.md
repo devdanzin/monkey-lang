@@ -90,22 +90,84 @@ Instead of writing 7 individual lines. Expand to individual lines only if differ
 
 ## Knowledge System
 
-Learning is only valuable if it's retrievable. Every piece of knowledge needs a systemic path back to the right moment.
+Learning is only valuable if it's retrievable. Every piece of knowledge needs a systemic path back to the right moment. Knowledge must *earn* its place through repeated use — not get written on day one and never read.
 
-### Storage
-- **`lessons/`** — Distilled knowledge per topic, written to teach future-me. Not changelogs — explain *why* things work, what the gotchas are, what the key insights were.
-- **`memory/decisions.md`** — Non-obvious choices with reasoning and alternatives. Prevents re-deriving logic.
-- **`memory/failures.md`** — Recurring issues and their fixes. Prevents repeating mistakes.
-- **`memory/weekly/`** — Weekly synthesis files (YYYY-WNN.md). Higher-level patterns across days.
+### The Knowledge Lifecycle
 
-### Retrieval (systemic, not optional)
-- **Morning standup:** When assigning tasks to SCHEDULE.md, also set `context-files:` in CURRENT.md pointing to relevant lessons/skills/decisions.
-- **Work blocks:** Read `context-files:` from CURRENT.md before starting work. This is step 1.5 — after reading state, before planning.
-- **THINK blocks:** Check `memory/failures.md` for patterns relevant to current work. Review `memory/decisions.md` when facing non-obvious choices.
-- **Monday standup:** Read last week's synthesis (`memory/weekly/`).
-- **After completing a project:** Write or update a lesson file. This is part of the MAINTAIN step, not optional.
+```
+Learn something → daily log (free, always)
+       ↓ (want to remember it)
+  scratch note: memory/scratch/<topic>.md (candidate, tagged with uses + date)
+       ↓ (used on 2+ separate days)
+  lesson file: lessons/<domain>.md (promoted during THINK block, polished)
+       ↓ (not loaded in 30 days)
+  archived/deleted (weekly synthesis prune)
+```
 
-### Writing Good Lessons
+### Tier 1: Daily Log (Raw)
+- Free — just log what you learned as part of normal work
+- No extra effort, no extra files
+- This is where all knowledge starts
+
+### Tier 2: Scratch Notes (Candidates)
+- **Location:** `memory/scratch/<topic>.md`
+- **When to create:** When you learn something you think you'll need again, but haven't needed twice yet
+- **Metadata header required:**
+  ```
+  ---
+  uses: 1
+  created: YYYY-MM-DD
+  last-used: YYYY-MM-DD
+  topics: keyword1, keyword2
+  ---
+  ```
+- **Auto-expiry:** Scratch notes not used in 14 days get pruned by weekly synthesis
+- **Index:** `memory/scratch/INDEX.md` — lightweight list of all scratch notes with topics. Standup reads this to match against today's tasks.
+
+### Tier 3: Lesson Files (Promoted)
+- **Location:** `lessons/<domain>.md` (one file per major domain, not per sub-topic)
+- **Promotion criteria:** Topic used on 2+ separate days (not blocks — days)
+- **Promoted during:** THINK blocks or weekly synthesis
+- **How to write:** Read the scratch note + original daily log entries, then write a proper lesson that teaches future-you. Explain *why*, not just *what*.
+- **Staleness:** If not loaded in 30 days, reviewed during weekly synthesis for archive/deletion
+- **Keep consolidated:** `lessons/compilers.md` not 5 separate compiler files
+
+### Storage (unchanged)
+- **`memory/decisions.md`** — Non-obvious choices with reasoning and alternatives
+- **`memory/failures.md`** — Recurring issues and their fixes
+- **`memory/weekly/`** — Weekly synthesis files
+
+### Retrieval (tiered, systemic)
+
+**Layer 1: Standup (daily context)**
+- Read `memory/scratch/INDEX.md` — match topic keywords against today's planned tasks
+- Read `lessons/README.md` — check for relevant promoted lessons
+- Set `context-files:` in CURRENT.md with 2-3 most relevant files for the first task
+- This sets the day's knowledge context
+
+**Layer 2: THINK blocks (hourly refinement)**
+- Review `context-files:` — are they still relevant for the next stretch of blocks?
+- Update `context-files:` if the work direction has shifted
+- Check `memory/failures.md` for patterns relevant to current work
+- Check `memory/decisions.md` when facing non-obvious choices
+- If a scratch note was loaded and used, increment its `uses:` count and update `last-used:`
+
+**Layer 3: Work blocks (load and use)**
+- Read `context-files:` from CURRENT.md before starting work (step 1.5)
+- If knowledge from a scratch note was useful, note it in the daily log
+- Do NOT create new lesson files on day 1 of a topic — log it or create a scratch note
+
+**Layer 4: Weekly synthesis (promotion + pruning)**
+- Review scratch notes: any with 2+ uses across separate days → promote to lessons
+- Prune scratch notes older than 14 days with no second use
+- Review lesson files: any not loaded in 30 days → consider archiving
+- Merge related scratch notes into consolidated domain lessons
+- Regenerate `memory/scratch/INDEX.md`
+
+### Writing Good Scratch Notes
+Keep them rough but searchable. Include the key insight, the gotcha, and when you'd need this again.
+
+### Writing Good Lessons (promoted)
 Bad: "Built Pratt parser, 40 tests passing."
 Good: "Pratt parser: bind power levels control precedence. Prefix ops need separate nud() handling. Key gotcha: left vs right binding power determines associativity. Test with nested expressions first — they catch most bugs."
 

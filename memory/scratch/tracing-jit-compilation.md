@@ -1,3 +1,9 @@
+---
+uses: 1
+created: 2026-03-20
+last-used: 2026-03-20
+topics: tracing,jit,compilation
+---
 # Tracing JIT Compilation: How LuaJIT and PyPy Work
 
 A deep dive into trace-based JIT compilation — the technique that makes LuaJIT the fastest dynamic language VM and PyPy a serious Python alternative.
