@@ -73,6 +73,42 @@ export class Compiler {
     return this.currentScope().instructions;
   }
 
+  /**
+   * Constant folding: try to evaluate an expression at compile time.
+   * Returns a MonkeyInteger/MonkeyString if fully constant, null otherwise.
+   */
+  tryFoldConstant(node) {
+    if (node instanceof ast.IntegerLiteral) {
+      return new MonkeyInteger(node.value);
+    }
+    if (node instanceof ast.PrefixExpression && node.operator === '-') {
+      const right = this.tryFoldConstant(node.right);
+      if (right instanceof MonkeyInteger) {
+        return new MonkeyInteger(-right.value);
+      }
+    }
+    if (node instanceof ast.InfixExpression) {
+      const left = this.tryFoldConstant(node.left);
+      const right = this.tryFoldConstant(node.right);
+      if (left instanceof MonkeyInteger && right instanceof MonkeyInteger) {
+        switch (node.operator) {
+          case '+': return new MonkeyInteger(left.value + right.value);
+          case '-': return new MonkeyInteger(left.value - right.value);
+          case '*': return new MonkeyInteger(left.value * right.value);
+          case '/': return right.value !== 0 ? new MonkeyInteger(Math.trunc(left.value / right.value)) : null;
+        }
+      }
+      // String concatenation folding
+      if (left instanceof MonkeyString && right instanceof MonkeyString && node.operator === '+') {
+        return new MonkeyString(left.value + right.value);
+      }
+    }
+    if (node instanceof ast.StringLiteral) {
+      return new MonkeyString(node.value);
+    }
+    return null;
+  }
+
   compile(node) {
     if (node instanceof ast.Program) {
       for (const stmt of node.statements) {
@@ -103,6 +139,32 @@ export class Compiler {
       if (err) return err;
       this.emit(Opcodes.OpReturnValue);
     } else if (node instanceof ast.InfixExpression) {
+      // Constant folding: try to evaluate at compile time
+      if (['+', '-', '*', '/'].includes(node.operator)) {
+        const folded = this.tryFoldConstant(node);
+        if (folded) {
+          const idx = this.addConstant(folded);
+          this.emit(Opcodes.OpConstant, idx);
+          return null;
+        }
+      }
+      // Constant comparison folding
+      if (['==', '!=', '>', '<'].includes(node.operator)) {
+        const left = this.tryFoldConstant(node.left);
+        const right = this.tryFoldConstant(node.right);
+        if (left instanceof MonkeyInteger && right instanceof MonkeyInteger) {
+          let result;
+          switch (node.operator) {
+            case '==': result = left.value === right.value; break;
+            case '!=': result = left.value !== right.value; break;
+            case '>': result = left.value > right.value; break;
+            case '<': result = left.value < right.value; break;
+          }
+          this.emit(result ? Opcodes.OpTrue : Opcodes.OpFalse);
+          return null;
+        }
+      }
+
       // Handle '<' by reordering to '>'
       if (node.operator === '<') {
         let err = this.compile(node.right);
@@ -129,6 +191,15 @@ export class Compiler {
         default: return `unknown operator: ${node.operator}`;
       }
     } else if (node instanceof ast.PrefixExpression) {
+      // Constant folding for prefix expressions
+      if (node.operator === '-') {
+        const folded = this.tryFoldConstant(node);
+        if (folded) {
+          const idx = this.addConstant(folded);
+          this.emit(Opcodes.OpConstant, idx);
+          return null;
+        }
+      }
       const err = this.compile(node.right);
       if (err) return err;
       switch (node.operator) {

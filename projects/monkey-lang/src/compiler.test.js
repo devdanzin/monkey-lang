@@ -417,3 +417,64 @@ describe('Recursive Functions', () => {
     testIntegerObject(compileAndRun(input), 55);
   });
 });
+
+describe('Constant Folding', () => {
+  it('folds integer arithmetic', () => {
+    testIntegerObject(compileAndRun('1 + 2'), 3);
+    testIntegerObject(compileAndRun('2 * 3 + 4'), 10);
+    testIntegerObject(compileAndRun('10 / 2 - 1'), 4);
+  });
+
+  it('folds nested constant expressions', () => {
+    testIntegerObject(compileAndRun('(1 + 2) * (3 + 4)'), 21);
+    testIntegerObject(compileAndRun('2 * 3 * 4'), 24);
+  });
+
+  it('folds prefix negation', () => {
+    testIntegerObject(compileAndRun('-5'), -5);
+    testIntegerObject(compileAndRun('-(1 + 2)'), -3);
+  });
+
+  it('folds constant comparisons', () => {
+    assert.equal(compileAndRun('1 == 1'), TRUE);
+    assert.equal(compileAndRun('1 != 2'), TRUE);
+    assert.equal(compileAndRun('3 > 2'), TRUE);
+    assert.equal(compileAndRun('2 < 3'), TRUE);
+    assert.equal(compileAndRun('1 == 2'), FALSE);
+  });
+
+  it('folds string concatenation', () => {
+    const result = compileAndRun('"hello" + " " + "world"');
+    assert.ok(result instanceof MonkeyString);
+    assert.equal(result.value, 'hello world');
+  });
+
+  it('emits fewer instructions for constant expressions', () => {
+    // Verify that 1 + 2 produces a single OpConstant (value 3)
+    // rather than OpConstant(1), OpConstant(2), OpAdd
+    const program = parse('1 + 2');
+    const compiler = new Compiler();
+    compiler.compile(program);
+    const bc = compiler.bytecode();
+    // Should have: OpConstant(3), OpPop — 2 instructions
+    assert.equal(bc.constants.length, 1);
+    assert.ok(bc.constants[0] instanceof MonkeyInteger);
+    assert.equal(bc.constants[0].value, 3);
+  });
+
+  it('does not fold when variables are involved', () => {
+    // Should still work correctly with mixed constant/variable expressions
+    testIntegerObject(compileAndRun('let x = 5; x + 1'), 6);
+    testIntegerObject(compileAndRun('let x = 5; 1 + x'), 6);
+  });
+
+  it('division by zero is not folded', () => {
+    // 1 / 0 should not be folded — let runtime handle it
+    const program = parse('1 / 0');
+    const compiler = new Compiler();
+    compiler.compile(program);
+    const bc = compiler.bytecode();
+    // Should have 2 constants (1 and 0), not 1 folded constant
+    assert.equal(bc.constants.length, 2);
+  });
+});
