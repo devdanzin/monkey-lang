@@ -1,7 +1,7 @@
 status: done
-mode: EXPLORE
-task: Dispatch strategies deep dive — threaded code, inline caching, opcode specialization
-context: Wrote comprehensive lesson on dispatch strategies. Covered computed gotos, switch dispatch, inline caching (PEP 659), superinstructions, and ranked applicability for JS-based Monkey VM. Top win: specialized arithmetic opcodes.
+mode: MAINTAIN
+task: Update compiler notes with research findings, git commit
+context: Updated compiler-vm.md with optimization roadmap from evening research (dispatch strategies, Lua/CPython comparison). Cross-referenced lesson files. Committed.
 context-files: lessons/dispatch-strategies.md, lessons/vm-internals-lua-cpython.md, lessons/compiler-vm.md
-next: 8:45 MAINTAIN — Update compiler notes with research findings, git commit
-updated: 2026-03-20T20:42:00-06:00
+next: 9:00 THINK — Day retrospective: lessons, what worked, prep tomorrow direction
+updated: 2026-03-20T20:48:00-06:00
