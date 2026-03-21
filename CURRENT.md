@@ -1,7 +1,7 @@
 status: done
 mode: EXPLORE
-task: Deep dive into predictive processing — controlled hallucination framework, Friston's Free Energy Principle connection
-context: Wrote comprehensive lesson file covering FEP→active inference→predictive coding hierarchy, precision weighting as attention, interoceptive inference (Seth's beast machine thesis), Friston vs Seth tension on substrate independence, controlled hallucination mechanism, criticisms. Connected to prior COGITATE and Seth notes.
-context-files: lessons/predictive-processing-fep-deep-dive.md, lessons/consciousness-seth-predictive-processing.md, lessons/consciousness-cogitate.md
-next: 7:30 EXPLORE — COGITATE results deep read + notes
-updated: 2026-03-20T19:29:00-06:00
+task: COGITATE results deep read — Nature 2025 paper full analysis
+context: Read the complete Nature 2025 COGITATE paper (Ferrante et al., 642:133-142). Massively expanded lesson file with detailed methodology (n=256, 3 modalities), all three prediction results with specific numbers, scorecard, and analysis. Key takeaway: both IIT and GNWT substantially challenged — IIT's connectivity prediction failed, GNWT's offset ignition failed completely. Neither theory captures the full picture.
+context-files: lessons/consciousness-cogitate.md, lessons/predictive-processing-fep-deep-dive.md
+next: 7:45 MAINTAIN — Update consciousness research notes, memory files
+updated: 2026-03-20T19:42:00-06:00
