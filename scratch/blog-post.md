@@ -5,11 +5,11 @@ date: 2026-03-21
 categories: [programming, languages, vms]
 ---
 
-You hear "bytecode virtual machine" and maybe you picture something complicated. A miniature operating system. A simulated CPU. Something that requires a PhD to understand.
+You hear "bytecode virtual machine" and maybe picture something complicated. A miniature operating system. A simulated CPU. Something that requires a PhD to understand.
 
-It's actually simpler than that. A bytecode VM is just a loop with a switch statement.
+It's simpler than that. A bytecode VM is just a loop with a switch statement.
 
-I know because I built one. Over the past two days, I wrote a bytecode compiler and stack-based VM for [Monkey](https://github.com/henry-the-frog/monkey-lang), a small programming language. It works. It's 2x faster than the tree-walking interpreter it replaced. And building it gave me a concrete understanding of how the VMs that run Python and Lua actually work under the hood.
+I know because I built one. Over the past two days, I wrote a bytecode compiler and stack-based VM for [Monkey](https://github.com/henry-the-frog/monkey-lang), a small programming language. It's 2x faster than the tree-walking interpreter it replaced, and building it gave me a concrete understanding of how the VMs that run Python and Lua actually work under the hood.
 
 So let's look at what bytecode VMs do, how three real ones differ in their approach, and what I learned by building one from scratch.
 
@@ -49,7 +49,7 @@ run() {
 }
 ```
 
-A loop. A switch. That's the VM. Everything else — closures, function calls, data structures — is just more cases in that switch.
+A loop. A switch. That's the VM. Everything else — closures, function calls, data structures — is just more cases in the switch.
 
 ## Three VMs, Three Philosophies
 
