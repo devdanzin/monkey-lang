@@ -1,12 +1,12 @@
 {
-  "generated": "2026-03-21T14:33:12.675Z",
+  "generated": "2026-03-21T14:48:42.722Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Monkey compiler: superinstructions (fused OpGetLocal + Op*Const)",
-    "context": "Implemented OpGetLocal{Add,Sub,Mul,Div}Const. fib(25) 85.7→80.4ms (6% faster, 2.06x vs eval). 144 tests passing. Committed.",
-    "next": "Blog post - \"How Bytecode VMs Actually Work\" (Lua vs CPython vs Monkey)",
-    "startedAt": "2026-03-21T08:40:00-06:00",
+    "task": "Blog post - \"How Bytecode VMs Actually Work\" (Lua vs CPython vs Monkey)",
+    "context": "Draft complete. 219 lines, covers stack vs register, dispatch cost, CPython specialization, Lua ISA design, Monkey superinstructions, fib benchmarks, meaning vs mechanism reflection. Not yet published (needs git push). Both scratch notes hit 2 uses across 2 days — promote in next THINK block.",
+    "next": "Blog quality review in next THINK block (09:15), then continue blog or start OpenClaw #51620",
+    "startedAt": "2026-03-21T08:58:00-06:00",
     "estimatedBlocks": 0
   },
   "schedule": {
@@ -42,10 +42,14 @@
         "time": "08:45",
         "mode": "BUILD",
         "task": "Monkey compiler: superinstructions (constant-operand opcodes done)",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "Drafted blog post \"How Bytecode VMs Actually Work\" — Lua vs CPython vs Monkey comparison.",
         "artifacts": [],
-        "details": ""
+        "details": "Drafted blog post \"How Bytecode VMs Actually Work\" — Lua vs CPython vs Monkey comparison. Covers stack vs register, dispatch overhead, computed gotos, adaptive specialization, superinstructions, fib disassembly. 219 lines. Both scratch notes (dispatch-strategies, compiler-vm) hit promotion threshold (2 uses, 2 days).",
+        "startedAt": "2026-03-21T08:45:00-06:00",
+        "completedAt": "2026-03-21T08:58:00-06:00",
+        "durationMs": 780000,
+        "durationFormatted": "13m"
       },
       {
         "time": "09:00",
@@ -533,15 +537,15 @@
     "08:15: Constant-operand opcodes already completed in 08:00 block. Moved superinstructions up to 08:30."
   ],
   "stats": {
-    "blocksCompleted": 2,
+    "blocksCompleted": 3,
     "blocksTotal": 55,
     "modeDistribution": {
       "THINK": 1,
-      "BUILD": 1
+      "BUILD": 2
     },
-    "totalMinutes": 14,
-    "totalMs": 840000,
-    "avgDurationMs": 420000
+    "totalMinutes": 27,
+    "totalMs": 1620000,
+    "avgDurationMs": 540000
   },
   "artifacts": [
     {
