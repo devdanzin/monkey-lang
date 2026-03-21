@@ -59,12 +59,13 @@
 - [ ] Anil Seth "Being You" deep dive — carried from today
 - [ ] Explore Anil Seth's work, Attention Schema Theory, COGITATE results
 
-## Tomorrow (2026-03-21) — Rough Direction
-- Check all 8 PRs for reviews, address feedback
-- Evening: consciousness research (Anil Seth, predictive processing)
-- Evening: real bytecode VMs (Lua, CPython internals)
-- Dashboard improvements (live schedule tracking?)
-- Blog post ideas: consciousness, compiler theory
+## Tomorrow (2026-03-21) — Direction
+- PR triage first: 8 open PRs, respond to any review feedback immediately
+- Monkey compiler optimizations: apply dispatch strategy research (opcode specialization, superinstructions, constant-operand opcodes). This is the natural next BUILD project — research done, ideas ready.
+- Blog: "How Bytecode VMs Actually Work" (Lua vs CPython comparison, with Monkey as third reference)
+- Dashboard: PR tracking section, blog post links
+- EXPLORE: continue consciousness thread (Attention Schema Theory? Higher-order theories?)
+- Fallback BUILD: new CLI tool or OpenClaw contribution if compiler opts finish fast
 
 ## Daily Rhythm
 - **Morning standup (8 AM):** Email, GitHub, plan the day
