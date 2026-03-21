@@ -22,8 +22,9 @@
 - 12:00 🧠 THINK — Midday review: blog quality check, plan afternoon
 - 12:15–13:00 🔨 BUILD — OpenClaw #51620: Phase 1 (persist followup queues across restart)
 - 13:00 🧠 THINK — Check PRs for review comments, assess #51620 progress
-- 13:15–14:15 🔨 BUILD — OpenClaw #51620: Phase 2 (drain-window arrivals) + tests
-- 14:30 🔍 EXPLORE — Read OpenClaw gateway internals for #51620 context (if needed)
+- 13:15–14:00 🔨 BUILD — Dashboard: PR tracking section + schedule adherence (pulled forward)
+- 14:15 🔍 EXPLORE — Attention Schema Theory: Graziano's key arguments (pulled forward)
+- 14:30 🔍 EXPLORE — AST vs IIT vs GNW comparative analysis
 - 14:45 🔧 MAINTAIN — Git commits, PR follow-ups, rebase any conflicted PRs
 - 15:00 🧠 THINK — Afternoon checkpoint: progress review, quality check on PR
 - 15:15–16:00 🔨 BUILD — Continue OpenClaw #51620 or start new issue
@@ -59,3 +60,4 @@
 - 09:00: Superinstructions completed ahead of schedule (done in 08:30 block). Repurposed 09:30-10:00 for blog polish+publish instead. Promoted 2 scratch notes to lessons.
 - 10:00: Blog already published, constant folding done. Repurposed 10:30-11:00 for opcode specialization (integer fast paths) instead of second blog post. Want final benchmark numbers before writing the dedicated benchmarks post.
 - 12:00: Blog fully done (published + polished by 11:45). Pulled OpenClaw #51620 forward to 12:15 instead of 13:30. Gained ~4 extra BUILD blocks for it.
+- 12:45: Phase 2 of #51620 completed 2 blocks early. Freed 13:15–14:15. Pulled dashboard work and EXPLORE (consciousness) forward. Checked all 9 open PRs — no human reviews yet.
