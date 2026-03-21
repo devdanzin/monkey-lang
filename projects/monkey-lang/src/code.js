@@ -63,6 +63,13 @@ export const Opcodes = {
   OpSubConst:       0x21,
   OpMulConst:       0x22,
   OpDivConst:       0x23,
+
+  // Superinstructions: fused OpGetLocal + Op*Const
+  // Left operand from local slot, right from constant pool
+  OpGetLocalAddConst: 0x24,
+  OpGetLocalSubConst: 0x25,
+  OpGetLocalMulConst: 0x26,
+  OpGetLocalDivConst: 0x27,
 };
 
 // Opcode definitions: [name, ...operandWidths]
@@ -102,6 +109,10 @@ const definitions = {
   [Opcodes.OpSubConst]:       ['OpSubConst', 2],
   [Opcodes.OpMulConst]:       ['OpMulConst', 2],
   [Opcodes.OpDivConst]:       ['OpDivConst', 2],
+  [Opcodes.OpGetLocalAddConst]: ['OpGetLocalAddConst', 1, 2],
+  [Opcodes.OpGetLocalSubConst]: ['OpGetLocalSubConst', 1, 2],
+  [Opcodes.OpGetLocalMulConst]: ['OpGetLocalMulConst', 1, 2],
+  [Opcodes.OpGetLocalDivConst]: ['OpGetLocalDivConst', 1, 2],
 };
 
 /**

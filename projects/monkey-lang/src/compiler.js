@@ -265,8 +265,19 @@ export class Compiler {
   }
 
   /**
+   * Map from generic arithmetic op to its GetLocal*Const superinstruction.
+   */
+  static GET_LOCAL_CONST_OPS = {
+    [Opcodes.OpAdd]: Opcodes.OpGetLocalAddConst,
+    [Opcodes.OpSub]: Opcodes.OpGetLocalSubConst,
+    [Opcodes.OpMul]: Opcodes.OpGetLocalMulConst,
+    [Opcodes.OpDiv]: Opcodes.OpGetLocalDivConst,
+  };
+
+  /**
    * Peephole optimization: if the last instruction was OpConstant,
    * fuse it with the arithmetic op into a single constant-operand opcode.
+   * If OpGetLocal preceded OpConstant, fuse all three into OpGetLocal*Const.
    */
   emitArithOrConst(genericOp, constOp) {
     const scope = this.currentScope();
@@ -276,12 +287,30 @@ export class Compiler {
       const ins = scope.instructions;
       const constIdx = (ins[constPos + 1] << 8) | ins[constPos + 2];
 
-      // Remove the OpConstant instruction
-      scope.instructions = scope.instructions.slice(0, constPos);
-      scope.lastInstruction = scope.previousInstruction;
+      // Check if previous instruction was OpGetLocal — if so, triple-fuse
+      const prevOp = scope.previousInstruction.opcode;
+      const prevPos = scope.previousInstruction.position;
+      const superOp = Compiler.GET_LOCAL_CONST_OPS[genericOp];
 
-      // Emit fused opcode
-      this.emit(constOp, constIdx);
+      if (prevOp === Opcodes.OpGetLocal && superOp !== undefined) {
+        const localIdx = ins[prevPos + 1];
+
+        // Remove both OpGetLocal and OpConstant
+        scope.instructions = scope.instructions.slice(0, prevPos);
+        // Reset last/previous (previousInstruction is now unknown, but we'll set it via emit)
+        scope.lastInstruction = new EmittedInstruction(undefined, 0);
+        scope.previousInstruction = new EmittedInstruction(undefined, 0);
+
+        // Emit fused superinstruction: OpGetLocal*Const localIdx constIdx
+        this.emit(superOp, localIdx, constIdx);
+      } else {
+        // Remove the OpConstant instruction
+        scope.instructions = scope.instructions.slice(0, constPos);
+        scope.lastInstruction = scope.previousInstruction;
+
+        // Emit fused opcode
+        this.emit(constOp, constIdx);
+      }
     } else {
       this.emit(genericOp);
     }

@@ -427,6 +427,34 @@ export class VM {
           break;
         }
 
+        // Superinstructions: fused OpGetLocal + Op*Const
+        case Opcodes.OpGetLocalAddConst:
+        case Opcodes.OpGetLocalSubConst:
+        case Opcodes.OpGetLocalMulConst:
+        case Opcodes.OpGetLocalDivConst: {
+          const localIdx3 = ins[ip + 1];
+          const constIdx4 = (ins[ip + 2] << 8) | ins[ip + 3];
+          this.currentFrame().ip += 3;
+          const leftVal = this.stack[this.currentFrame().basePointer + localIdx3];
+          const rightVal = this.constants[constIdx4];
+
+          if (leftVal instanceof MonkeyInteger && rightVal instanceof MonkeyInteger) {
+            let result;
+            switch (op) {
+              case Opcodes.OpGetLocalAddConst: result = leftVal.value + rightVal.value; break;
+              case Opcodes.OpGetLocalSubConst: result = leftVal.value - rightVal.value; break;
+              case Opcodes.OpGetLocalMulConst: result = leftVal.value * rightVal.value; break;
+              case Opcodes.OpGetLocalDivConst: result = Math.trunc(leftVal.value / rightVal.value); break;
+            }
+            this.push(new MonkeyInteger(result));
+          } else if (leftVal instanceof MonkeyString && rightVal instanceof MonkeyString && op === Opcodes.OpGetLocalAddConst) {
+            this.push(new MonkeyString(leftVal.value + rightVal.value));
+          } else {
+            throw new Error(`unsupported types for local+const op: ${leftVal.type()} and ${rightVal.type()}`);
+          }
+          break;
+        }
+
         default:
           throw new Error(`unknown opcode: ${op}`);
       }

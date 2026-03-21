@@ -1,8 +1,8 @@
-status: done
-mode: THINK
-task: Morning standup — review state, plan day, check PRs
-context: 8 PRs still no human reviews. Constant-operand opcodes done (144 tests). Next block starts superinstructions. Schedule adjusted to reflect completed work.
+status: in-progress
+mode: BUILD
+task: Monkey compiler: superinstructions (fused OpGetLocal + Op*Const)
+context: Implementing OpGetLocal{Add,Sub,Mul,Div}Const - fuses 2 dispatches into 1. High impact for fib benchmark. Peephole in emitArithOrConst checks previousInstruction for OpGetLocal.
 context-files: memory/scratch/dispatch-strategies.md, memory/scratch/compiler-vm.md
-est: 0
-next: Superinstructions (fused common opcode sequences)
-updated: 2026-03-21T08:15:00-06:00
+est: 2
+next: Blog post - "How Bytecode VMs Actually Work"
+updated: 2026-03-21T08:32:00-06:00
