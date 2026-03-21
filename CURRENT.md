@@ -1,8 +1,8 @@
 status: done
-mode: EXPLORE
-task: Deep read Lua 5.4 source — lopcodes.c, lvm.c for blog accuracy
-context: Read full lopcodes.h (82 opcodes, 5 instruction formats) and key sections of lvm.c. Documented arithmetic macro system, pc++ metamethod skip trick, FORLOOP counter optimization, RETURN0/1 inlining, same-C-frame Lua calls, and k-bit dual register/constant encoding. Updated scratch note with detailed findings.
-context-files: lessons/dispatch-strategies.md, lessons/compiler-vm-design.md, memory/scratch/vm-internals-lua-cpython.md
+mode: THINK
+task: 11:00 THINK — Promoted vm-internals to lesson, assessed progress, planned next stretch
+context: Promoted vm-internals-lua-cpython scratch note to lessons/vm-internals-production.md (3rd lesson). Morning very productive — all optimizations shipped, blog published. Next: update blog with Lua source findings (pc++ trick, FORLOOP counter, arithmetic macros).
+context-files: lessons/vm-internals-production.md, lessons/dispatch-strategies.md
 est: 0
-next: 11:30 BUILD — Continue blog post, incorporate Lua/CPython specifics
-updated: 2026-03-21T10:58:00-06:00
+next: 11:30 BUILD — Update blog post with Lua/CPython source-level findings
+updated: 2026-03-21T11:05:00-06:00
