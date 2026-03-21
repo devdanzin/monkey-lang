@@ -1,5 +1,5 @@
 ---
-uses: 2
+uses: 3
 created: 2026-03-20
 last-used: 2026-03-21
 topics: vm,internals,lua,cpython
@@ -102,6 +102,39 @@ My Monkey VM uses the equivalent of switch dispatch (JavaScript switch statement
 2. **Constant-operand opcodes**: Like Lua's `OP_ADDK` — `OP_ADD_CONST i` that adds a constant directly without loading it.
 3. **Register-based redesign**: Would require a register allocator but could halve instruction count. Linear scan allocation is straightforward for a language like Monkey.
 4. **Superinstructions**: Combine common sequences (LOAD_CONST + ADD → ADD_CONST). Like Lua's approach but post-hoc.
+
+## Findings from Source Reading (2026-03-21)
+
+### Arithmetic Macro System (lvm.c:884-1053)
+Lua uses a layered macro system for arithmetic — extremely elegant:
+- `op_arith(L, iop, fop)` — register+register, integer fast path then float fallback
+- `op_arithK(L, iop, fop)` — register+constant from K[]
+- `op_arithI(L, iop, fop)` — register+signed immediate (8-bit, encoded in sC field)
+- All check `ttisinteger()` first for the fast path. If both operands are integers, compute and `pc++` (skip metamethod handler). Float path tries `tonumberns()`.
+- The `pc++` trick: every arithmetic opcode is followed by `OP_MMBIN`/`OP_MMBINI`/`OP_MMBINK`. On success, the arithmetic handler increments pc to skip it. On failure (type mismatch), execution falls through to the metamethod call. Zero-cost when types match.
+
+### Comparison with Immediate (op_orderI)
+`OP_LTI`, `OP_LEI`, `OP_GTI`, `OP_GEI` — compare register vs signed 8-bit immediate.
+- Integer fast path: direct C comparison
+- Float path: cast immediate to float, compare
+- Fallback: metamethod call via `luaT_callorderiTM`
+- The `inv` parameter handles flipped operand order for metamethods (clever)
+- `OP_EQI` is hand-written (not macro) — simpler since equality doesn't need ordering metamethods
+
+### FORLOOP Counter Trick
+`OP_FORLOOP` doesn't compare against a limit each iteration. Instead, `OP_FORPREP` pre-computes an iteration *count* and stores it in R[A+1]. Each loop iteration just decrements the count and checks `count > 0`. This avoids a comparison AND avoids overflow issues with the limit check.
+
+### RETURN0/RETURN1 Inlining
+These specialized return opcodes inline the entire `poscall` logic for the fast path (no hooks active). `RETURN0` just adjusts the stack and nils out expected results. `RETURN1` copies one value and adjusts. The generic `OP_RETURN` only fires for multi-return. This avoids a function call for the most common return patterns.
+
+### OP_CALL: Same C Frame for Lua Calls
+When calling a Lua function, `OP_CALL` does `goto startfunc` instead of recursing into `luaV_execute`. This means **all Lua-to-Lua calls execute in the same C stack frame**. Only C calls use real C recursion. This prevents C stack overflow on deep Lua recursion.
+
+### The `k` Bit
+In iABC format, the `k` bit (position 16) determines whether C is a register index or constant pool index. `RKC(i)` macro: `TESTARG_k(i) ? k[C] : R[C]`. One bit doubles the instruction's flexibility without needing separate opcodes.
+
+### vmfetch + Trap System
+Every instruction fetch checks a `trap` flag for hooks/signals. This is how debug hooks and coroutine yields work — the trap is set externally, and the next vmfetch detects it. Tight loops (FORLOOP) call `updatetrap(ci)` to allow breaking.
 
 ## Key Takeaway
 
