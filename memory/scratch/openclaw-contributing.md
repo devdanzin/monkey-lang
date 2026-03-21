@@ -1,7 +1,7 @@
 ---
-uses: 1
+uses: 2
 created: 2026-03-20
-last-used: 2026-03-20
+last-used: 2026-03-21
 topics: openclaw,contributing
 ---
 # OpenClaw Contributing
