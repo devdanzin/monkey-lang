@@ -1,13 +1,13 @@
 {
-  "generated": "2026-03-21T22:32:14.690Z",
+  "generated": "2026-03-21T22:47:20.138Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
-    "task": "16:30 BUILD — Dashboard polish: mode adherence comparison, heatmap layout fix, stats refinements",
-    "context": "Adding planned vs actual mode comparison to adherence section, fixing heatmap to use hour-grouped grid, refining stats display.",
-    "next": "17:15 BUILD — Continue dashboard work",
-    "startedAt": "2026-03-21T16:30:00-06:00",
-    "estimatedBlocks": 2
+    "task": "16:45 BUILD — Dashboard: multi-day trend sparkline in stats bar",
+    "context": "SVG sparkline showing blocks/day across recent days + today. Area chart with dots, hover titles, day labels. Pushed to GitHub Pages.",
+    "next": "17:00 BUILD — Continue dashboard or pick from backlog",
+    "startedAt": "2026-03-21T16:52:00-06:00",
+    "estimatedBlocks": 0
   },
   "schedule": {
     "date": "2026-03-21",
@@ -445,19 +445,27 @@
         "time": "16:30",
         "mode": "BUILD",
         "task": "Dashboard improvements: PR tracking, schedule adherence polish",
-        "status": "in-progress",
-        "summary": "Adding planned vs actual mode comparison to adherence section, fixing heatmap to use hour-grouped grid, refining stats display.",
+        "status": "done",
+        "summary": "Dashboard polish. (1) Mode adherence comparison — planned vs actual mode distribution as…",
         "artifacts": [],
-        "details": ""
+        "details": "Dashboard polish. (1) Mode adherence comparison — planned vs actual mode distribution as stacked bar chart with delta indicators (+/-/=), shows where BUILD is eating into THINK/EXPLORE time. (2) Heatmap hour separators — visual dividers between hour groups for better scanning. (3) Pace stat — blocks/hr rate in stats bar (currently 4.0). Pushed to GitHub Pages.",
+        "startedAt": "2026-03-21T16:30:00-06:00",
+        "completedAt": "2026-03-21T16:39:00-06:00",
+        "durationMs": 540000,
+        "durationFormatted": "9m"
       },
       {
         "time": "16:45",
         "mode": "BUILD",
         "task": "Dashboard improvements: PR tracking, schedule adherence polish",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "Dashboard trend sparkline.",
         "artifacts": [],
-        "details": ""
+        "details": "Dashboard trend sparkline. SVG sparkline in stats bar showing blocks completed per day across recent days + today. Area chart with gradient fill, hover tooltips per dot, day labels. Renders from recentDays data already in dashboard.json. Pushed to GitHub Pages.",
+        "startedAt": "2026-03-21T16:45:00-06:00",
+        "completedAt": "2026-03-21T16:52:00-06:00",
+        "durationMs": 420000,
+        "durationFormatted": "7m"
       },
       {
         "time": "17:00",
@@ -663,17 +671,17 @@
     "12:45: Phase 2 of #51620 completed 2 blocks early. Freed 13:15–14:15. Pulled dashboard work and EXPLORE (consciousness) forward. Checked all 9 open PRs — no human reviews yet."
   ],
   "stats": {
-    "blocksCompleted": 33,
+    "blocksCompleted": 35,
     "blocksTotal": 55,
     "modeDistribution": {
       "THINK": 6,
-      "BUILD": 23,
+      "BUILD": 25,
       "EXPLORE": 3,
       "MAINTAIN": 1
     },
-    "totalMinutes": 278,
-    "totalMs": 16650000,
-    "avgDurationMs": 504545
+    "totalMinutes": 294,
+    "totalMs": 17610000,
+    "avgDurationMs": 503143
   },
   "artifacts": [
     {
@@ -1015,9 +1023,9 @@
     }
   ],
   "scheduleAdherence": {
-    "completionRate": 97,
-    "completedBlocks": 33,
-    "pastBlocks": 34,
+    "completionRate": 100,
+    "completedBlocks": 35,
+    "pastBlocks": 35,
     "totalBlocks": 55,
     "plannedDist": {
       "THINK": 9,
@@ -1027,11 +1035,11 @@
     },
     "actualDist": {
       "THINK": 6,
-      "BUILD": 23,
+      "BUILD": 25,
       "EXPLORE": 3,
       "MAINTAIN": 1
     },
-    "pace": 4
+    "pace": 4.1
   },
   "streak": 1
 }
