@@ -1,5 +1,5 @@
 ---
-uses: 2
+uses: 3
 created: 2026-03-20
 last-used: 2026-03-21
 topics: consciousness,index
@@ -29,6 +29,8 @@ topics: consciousness,index
 3. PFC role is limited: abstract categories yes, fine-grained features no
 4. Seth's biological naturalism is the strongest philosophical position on AI consciousness I've encountered
 5. The adversarial collaboration model (pre-registered divergent predictions, theory-neutral team) is excellent science
+
+- **consciousness-comparison.md** — IIT vs GNW vs AST vs PP comparative analysis. Empirical status, explanatory power, AI implications, credences.
 
 ## Open Questions
 - Can a hybrid posterior-content + selective-frontal-broadcast theory work?
