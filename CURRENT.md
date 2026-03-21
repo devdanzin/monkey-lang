@@ -1,7 +1,7 @@
 status: done
 mode: EXPLORE
-task: Compiler theory: study real bytecode VMs (Lua, CPython internals)
-context: Deep dive into Lua 5.4 register-based VM and CPython stack-based VM. Wrote comprehensive lesson file comparing instruction formats, dispatch strategies, closure implementations, and performance tradeoffs.
-context-files: lessons/compiler-vm.md, lessons/vm-internals-lua-cpython.md
-next: 8:30 EXPLORE — Compare register vs stack VMs, take notes (partially done — continue with deeper dispatch analysis or start Monkey improvements)
-updated: 2026-03-20T20:27:00-06:00
+task: Dispatch strategies deep dive — threaded code, inline caching, opcode specialization
+context: Wrote comprehensive lesson on dispatch strategies. Covered computed gotos, switch dispatch, inline caching (PEP 659), superinstructions, and ranked applicability for JS-based Monkey VM. Top win: specialized arithmetic opcodes.
+context-files: lessons/dispatch-strategies.md, lessons/vm-internals-lua-cpython.md, lessons/compiler-vm.md
+next: 8:45 MAINTAIN — Update compiler notes with research findings, git commit
+updated: 2026-03-20T20:42:00-06:00

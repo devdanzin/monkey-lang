@@ -87,6 +87,9 @@ Computed gotos turn the switch into a direct jump through a label address table,
 
 My Monkey VM uses the equivalent of switch dispatch (JavaScript switch statement). Moving to computed gotos isn't possible in JS, but **inline caching** and **opcode specialization** (CPython 3.11 style) would be interesting next steps.
 
+## See Also
+- `lessons/dispatch-strategies.md` — deep dive on dispatch techniques and what's applicable to a JS-based VM
+
 ## Ideas for Monkey VM
 
 1. **Specialized arithmetic opcodes**: `OP_ADD_INT` that skips type checking when both operands are integers. Fall back to generic `OP_ADD` on type mismatch.
