@@ -1,8 +1,8 @@
 status: done
-mode: THINK
-task: 17:00 THINK — Late afternoon review, plan evening direction
-context: Day 6 review complete. 36/37 blocks (97%). Dashboard feature-complete. Evening plan confirmed — no adjustments.
+mode: BUILD
+task: 17:15 BUILD — Dashboard test fix + polish
+context: Fixed test hang (gh CLI calls with 15s+10s×9 timeouts). Added SKIP_GH env var to skip gh calls in tests. All 15 tests pass instantly now.
 context-files: 
 est: 0
-next: 17:15 BUILD — Dashboard final polish or backlog item
-updated: 2026-03-21T17:02:00-06:00
+next: 17:30 BUILD — Polish and test dashboard changes
+updated: 2026-03-21T17:25:00-06:00
