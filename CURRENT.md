@@ -1,7 +1,7 @@
 status: done
-mode: THINK
-task: Day 5 retrospective — lessons, what worked, prep tomorrow direction
-context: Reviewed full day (38+ blocks). Reflections already updated. TASKS.md updated with tomorrow direction — compiler optimizations as main BUILD project, PR triage first. Themed EXPLORE blocks confirmed as best research pattern.
-context-files: lessons/dispatch-strategies.md, lessons/vm-internals-lua-cpython.md, lessons/compiler-vm.md
-next: 9:15 EXPLORE — Free explore
-updated: 2026-03-20T21:03:00-06:00
+mode: EXPLORE
+task: Free explore — tracing JIT compilation deep dive (LuaJIT, PyPy, meta-tracing)
+context: Wrote comprehensive lesson file covering tracing JIT architecture, LuaJIT internals (dual IR, trace trees, DynASM, side traces), PyPy meta-tracing (trace the interpreter, Futamura projections), method vs tracing JIT tradeoffs, and connections to Monkey VM optimization. Cross-referenced from dispatch-strategies.md.
+context-files: lessons/tracing-jit-compilation.md, lessons/dispatch-strategies.md
+next: 9:30 BUILD — Polish/fix anything from the day
+updated: 2026-03-20T21:28:00-06:00

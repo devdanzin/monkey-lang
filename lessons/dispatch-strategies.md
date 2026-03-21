@@ -118,6 +118,10 @@ First time a function is called, rewrite its bytecode with optimized versions. S
    - Not even new opcodes — just add `if (typeof left === 'number' && typeof right === 'number')` fast path in existing OpAdd handler before the full object-type dispatch
    - This is essentially manual specialization without bytecode rewriting
 
+## See Also
+- `lessons/tracing-jit-compilation.md` — deep dive on tracing JITs (LuaJIT, PyPy, meta-tracing)
+- `lessons/vm-internals-lua-cpython.md` — production VM architecture comparison
+
 ## Key Takeaway
 
 The hierarchy of interpreter optimization:
