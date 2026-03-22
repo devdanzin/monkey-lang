@@ -1,8 +1,8 @@
 ---
-uses: 1
+uses: 2
 created: 2026-03-20
-last-used: 2026-03-20
-topics: tracing,jit,compilation
+last-used: 2026-03-21
+topics: tracing,jit,compilation,luajit,snapshots,ir
 ---
 # Tracing JIT Compilation: How LuaJIT and PyPy Work
 
@@ -194,6 +194,119 @@ CPython 3.13 introduced an experimental **copy-and-patch JIT** — pre-compiled 
 - PEP 659: Specializing Adaptive Interpreter (CPython 3.11+)
 - Cloudflare/King's College LuaJIT project (2017+)
 - Pall, LuaJIT 2.0 design docs (scattered across mailing list)
+
+## Deep Dive: LuaJIT Trace Recording Internals (from source)
+
+Source: LuaJIT v2.1 (`lj_trace.c`, `lj_record.c`, `lj_jit.h`, `lj_ir.h`, `lj_snap.c`)
+
+### The IR Format (lj_ir.h)
+
+Each IR instruction is a compact `IRIns` struct: opcode (8-bit), type+flags (8-bit), op1 (16-bit ref or literal), op2 (16-bit ref or literal). Constants grow downward from `REF_BIAS`, regular instructions grow upward. This biased indexing means constants and instructions share one array with no branching to distinguish them.
+
+**~90 IR opcodes** organized into categories:
+- **Guards**: LT/GE/LE/GT/ULT/UGE/ULE/UGT/EQ/NE + ABC (array bounds check) + RETF
+- **Arithmetic**: ADD/SUB/MUL/DIV/MOD/POW/NEG + overflow-checking variants (ADDOV/SUBOV/MULOV)
+- **Memory refs**: AREF (array), HREFK (hash const key), HREF (hash), FREF (field), UREFO/UREFC (upvalue open/closed), STRREF, LREF
+- **Loads/Stores**: ALOAD/ASTORE, HLOAD/HSTORE, ULOAD/USTORE, FLOAD/FSTORE, XLOAD/XSTORE, SLOAD (stack load — the key one), VLOAD
+- **Allocations**: SNEW (string), TNEW (table), TDUP (table dup), CNEW/CNEWI (cdata)
+- **Control**: LOOP, PHI, RENAME
+- **Type conversions**: CONV, TOBIT, TOSTR, STRTO
+
+Key insight: **SLOAD** is the bridge between the Lua stack and SSA IR. It loads a value from a specific stack slot with mode flags: TYPECHECK (emit a guard for the type), CONVERT (number→int conversion), READONLY (slot won't be modified), PARENT (inherited from parent trace), INHERIT (value available to side traces). This is how the tracer "imports" Lua values into the IR world.
+
+The `emitir(ot, a, b)` macro is how recording works: set up an IR instruction, then pass it through `lj_opt_fold()` — the FOLD optimization pass runs *during recording*, not after. This means constant folding, algebraic simplification, and CSE happen incrementally as the trace is built. Brilliant design: optimization cost is amortized across recording rather than paid all at once.
+
+### Type System
+
+~25 IR types including NIL, FALSE, TRUE, LIGHTUD, STR, THREAD, PROTO, FUNC, CDATA, TAB, UDATA, then numeric: FLOAT, NUM (double), I8, U8, I16, U16, INT, U32, I64, U64. The GUARD flag (0x80) marks an instruction as a guard — if it fails at runtime, execution exits the trace.
+
+### Snapshot System (lj_snap.c, lj_jit.h)
+
+Snapshots are the mechanism for **deoptimization**. Each snapshot captures the state of all Lua stack slots at a specific point in the trace, so that if a guard fails, the interpreter can resume from exactly that point.
+
+```c
+typedef struct SnapShot {
+  uint32_t mapofs;    // Offset into snapshot map array
+  IRRef1 ref;         // First IR ref for this snapshot
+  uint16_t mcofs;     // Offset into machine code (for side exit patching)
+  uint8_t nslots;     // Number of valid slots
+  uint8_t topslot;    // Maximum frame extent
+  uint8_t nent;       // Number of compressed entries
+  uint8_t count;      // Count of taken exits (for side trace triggering)
+} SnapShot;
+```
+
+**Compressed snapshot entries** (`SnapEntry` = uint32_t): pack slot number (top 8 bits) + flags (FRAME/CONT/NORESTORE/KEYINDEX) + IR ref (bottom 16 bits). The NORESTORE flag is crucial for performance: slots that haven't been modified since they were loaded don't need to be written back on exit.
+
+The snapshot generation is smart about **elision**: if a slot still holds its original SLOAD value (unmodified, non-inherited), it's skipped entirely. This keeps snapshots compact — most slots are unchanged between iterations.
+
+`snap->count` tracks how many times an exit has been taken. When it hits the `hotexit` threshold (default: 10), a **side trace** is spawned from that exit point. `SNAPCOUNT_DONE` (255) means a side trace has already been compiled and linked.
+
+### Trace Lifecycle (lj_trace.c)
+
+**State machine**: IDLE → START → RECORD → END → ASM → (back to IDLE or ERR)
+
+1. **Hot detection**: Backward jumps (FORL, ITERL, LOOP) and function entries (FUNCF) have hotcounters. When a counter hits 0 (after `hotloop` decrements, default 56), `trace_start()` fires.
+
+2. **trace_start()**: Allocates a trace number, zeros out `J->cur`, sets up the IR/snapshot buffers, calls `lj_record_setup()` to begin recording.
+
+3. **Recording** (`lj_record.c`): Each bytecode instruction is "recorded" — instead of just executing it, the recorder also emits IR instructions via `emitir()`. The `emitir` macro passes through `lj_opt_fold()`, so optimizations happen inline. Recording continues until:
+   - The loop header is reached again → `LJ_TRLINK_LOOP` (self-loop)
+   - A function return matches the trace start → `LJ_TRLINK_RETURN`
+   - Another trace is reached → `LJ_TRLINK_ROOT` or `LJ_TRLINK_STITCH`
+   - Recursion detected → `LJ_TRLINK_TAILREC`/`LJ_TRLINK_UPREC`/`LJ_TRLINK_DOWNREC`
+   - An error/limit hit → abort
+
+4. **trace_stop()**: Patches the original bytecode to jump directly to the compiled trace:
+   - `BC_LOOP` → `BC_JLOOP` (with trace number in D operand)
+   - `BC_FORL` → `BC_JFORL` + patches `BC_FORI` → `BC_JFORI`
+   - Side traces: `lj_asm_patchexit()` patches the parent trace's machine code exit to jump to the new side trace's machine code
+   
+5. **Assembly** (`lj_asm.c`): The optimized IR is compiled to machine code via DynASM. Linear scan register allocation (traces are linear → nearly optimal).
+
+### Penalty System
+
+When a trace aborts, the starting bytecode gets a **penalty** — its hotcount is reset to a higher value (doubling each time with some randomness). After enough failures, the bytecode is **blacklisted** by replacing it with an `ILOOP` variant that never triggers tracing again. The penalty cache is a round-robin array of 64 slots.
+
+The randomness (`PENALTY_RNDBITS = 4`) is subtle: it prevents pathological synchronization where the same trace keeps trying and failing at exactly the same intervals.
+
+### Trace Stitching
+
+A newer feature (controlled by `minstitch` parameter, default 0 = disabled): instead of one trace calling a function and recording inline, the trace can "stitch" to another trace. This avoids the function call from bloating the parent trace. `LJ_TRLINK_STITCH` links the parent trace to the child at the call site.
+
+### Key Parameters (from JIT_PARAMDEF)
+
+| Parameter | Default | Purpose |
+|-----------|---------|---------|
+| maxtrace | 1000 | Max traces in cache |
+| maxrecord | 4000 | Max IR instructions per trace |
+| maxirconst | 500 | Max IR constants per trace |
+| maxside | 100 | Max side traces per root |
+| maxsnap | 500 | Max snapshots per trace |
+| hotloop | 56 | Iterations before tracing starts |
+| hotexit | 10 | Exit count before side trace |
+| tryside | 4 | Attempts to compile side trace |
+| instunroll | 4 | Max unroll for unstable loops |
+| loopunroll | 15 | Max loop unroll in side traces |
+| callunroll | 3 | Max unroll for recursive calls |
+| sizemcode | 64KB | Machine code area size |
+| maxmcode | 2MB | Total machine code limit |
+
+### Optimization Flags (-O)
+
+Level 3 (default) enables: fold, cse, dce, fwd (store-to-load forwarding), dse (dead store elimination), narrow (number→integer narrowing), loop (loop optimization), abc (array bounds check elimination), sink (allocation sinking/removal), fuse (instruction fusion). FMA is available but not default.
+
+### Architectural Insights from Source Reading
+
+1. **The IR is built optimized.** Unlike most compilers (build IR → optimize → emit), LuaJIT runs fold/CSE *during* IR emission. This means the IR is never in an unoptimized state. Fewer passes = faster compilation.
+
+2. **Snapshots are the cost of speculation.** Every guard needs a snapshot (or shares one nearby). The 500-snapshot limit per trace is a real constraint — complex control flow generates many guards, each needing a way to deoptimize. This is why simple loops trace well and complex branchy code doesn't.
+
+3. **Bytecode patching is the entry mechanism.** The interpreter doesn't check "is there a trace for this PC?" on every iteration. Instead, the bytecode itself is rewritten so the normal dispatch path leads directly into the trace. Zero overhead when traces exist; zero overhead when they don't.
+
+4. **The penalty system is evolutionary.** Failed traces don't immediately blacklist — they back off exponentially with jitter. This handles transient failures (e.g., first call hasn't warmed up yet) while eventually giving up on genuinely untraceable code.
+
+5. **Trace linking is direct.** Side traces don't go through any dispatch — `lj_asm_patchexit` literally patches the parent trace's machine code to jump to the child trace's machine code. This is zero-overhead trace-to-trace transitions.
 
 ## See Also
 - `lessons/dispatch-strategies.md` — optimization techniques applicable to JS-based VMs

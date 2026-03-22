@@ -1,8 +1,8 @@
 status: done
-mode: THINK
-task: 20:00 THINK — Reflect on consciousness research, promote eligible scratch notes
-context: Promoted consciousness-cogitate and consciousness-index to lessons/consciousness-research.md (5th lesson). Schedule on track, 46/55 blocks done. Next: LuaJIT tracing deep dive.
-context-files: memory/scratch/cpython-ceval-dispatch.md, memory/scratch/tracing-jit-compilation.md
+mode: EXPLORE
+task: 20:15 EXPLORE — Tracing JIT deep dive: LuaJIT trace recording mechanics
+context: Deep-dived into LuaJIT source (lj_trace.c, lj_record.c, lj_ir.h, lj_jit.h, lj_snap.c). Documented IR format, snapshot system, trace lifecycle, penalty system, trace stitching, optimization flags. Updated tracing-jit-compilation scratch note with source-level findings.
+context-files: memory/scratch/tracing-jit-compilation.md, memory/scratch/cpython-ceval-dispatch.md
 est: 0
-next: 20:15 EXPLORE — Tracing JIT deep dive: LuaJIT trace recording mechanics
-updated: 2026-03-21T20:05:00-06:00
+next: 20:30 EXPLORE — Continue: copy-and-patch compilation (new CPython JIT)
+updated: 2026-03-21T20:28:00-06:00
