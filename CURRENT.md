@@ -1,8 +1,8 @@
-status: done
+status: in-progress
 mode: BUILD
-task: 13:15 BUILD — Inline side trace code into root trace guard exits
-context: Done. Added __sideTraces param to compiled traces. Guard exits check for side traces inline and call them directly, then continue loop on loop_back. Added __reloadPromoted() for re-reading promoted vars. 178/178 tests. Hot loop 20.3x, nested 4.2x.
+task: 13:45 BUILD — Optimize FunctionCompiler for raw integer arithmetic
+context: FunctionCompiler works (fib(25) 5.0x JIT/VM) but uses boxed MonkeyInteger for all ops. Tracing JIT gets 20x on loops with raw ints. Converting FunctionCompiler to use raw int fast paths should push fib(25) to 10x+.
 context-files: memory/scratch/side-trace-design.md, memory/scratch/tracing-jit-compilation.md
-est: 0
-next: 13:30 BUILD — Continue inlining: true IR-level side trace merging (or move to fib tracing)
-updated: 2026-03-22T13:22:00-06:00
+est: 2
+next: 14:15 BUILD — Comprehensive benchmark suite + tests
+updated: 2026-03-22T13:45:00-06:00

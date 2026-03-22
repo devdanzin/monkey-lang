@@ -150,7 +150,7 @@ export class VM {
 
   run() {
     let ip, ins, op;
-    const recording = () => this.recorder && this.recorder.recording;
+    const recording = () => this.recorder && this.recorder.recording && !(this.recorder._skipDepth > 0);
 
     while (this.currentFrame().ip < this.currentFrame().instructions().length - 1) {
       this.currentFrame().ip++;
@@ -502,6 +502,47 @@ export class VM {
               throw new Error(`wrong number of arguments: want=${callee.fn.numParameters}, got=${numArgs}`);
             }
 
+            // Check for compiled function trace (when not recording)
+            if (this.jit && !recording()) {
+              const funcTrace = this.jit.getFuncTrace(callee.fn);
+              if (funcTrace && funcTrace.compiled) {
+                // Execute the compiled function trace directly
+                const result = this._executeFuncTrace(funcTrace, callee, numArgs);
+                if (result && !result.exit) {
+                  // Success — result is a MonkeyObject
+                  this.sp = this.sp - numArgs - 1; // pop args + closure
+                  this.push(result);
+                  break;
+                }
+                // Guard failure — fall through to interpreter
+              }
+            }
+
+            // If recording a function trace and this is a recursive call
+            if (recording() && this.recorder.isFuncTrace &&
+                callee.fn === this.recorder.tracedFn) {
+              // Emit SELF_CALL IR — the compiled trace will call itself
+              const argRefs = [];
+              for (let i = 0; i < numArgs; i++) {
+                argRefs.unshift(this.recorder.popRef());
+              }
+              this.recorder.popRef(); // pop the closure ref
+
+              const ref = this.recorder.trace.addInst(IR.SELF_CALL, { args: argRefs });
+              // Execute the call normally in the interpreter
+              const frame = new Frame(callee, this.sp - numArgs);
+              this.pushFrame(frame);
+              this.sp = frame.basePointer + callee.fn.numLocals;
+
+              // Stop recording into the callee — we don't trace the recursive body,
+              // the compiled code will handle it via self-call
+              this.recorder._skipDepth = (this.recorder._skipDepth || 0) + 1;
+              this.recorder._skipReturnFrame = this.framesIndex; // return when we pop back to this
+              // We'll push the ref when we return from this call
+              this.recorder._pendingSelfCallRef = ref;
+              break;
+            }
+
             // If recording, try to inline the call into the trace
             if (recording()) {
               const rootBp = this.frames[this.recorder.startFrame - 1].basePointer;
@@ -535,6 +576,17 @@ export class VM {
             const frame = new Frame(callee, this.sp - numArgs);
             this.pushFrame(frame);
             this.sp = frame.basePointer + callee.fn.numLocals;
+
+            // Hot function detection — compile function directly (method JIT)
+            if (this.jit && !recording() && !this.jit.getFuncTrace(callee.fn)) {
+              if (this.jit.countFuncCall(callee.fn)) {
+                const trace = this.jit.compileFunction(callee.fn, this.constants, this);
+                if (trace) {
+                  this.jit.funcTraces.set(callee.fn, trace);
+                  this.jit.traceCount++;
+                }
+              }
+            }
           } else if (callee instanceof MonkeyBuiltin) {
             if (recording()) { this.recorder.abort(); this.recorder = null; }
             const args = this.stack.slice(this.sp - numArgs, this.sp);
@@ -549,6 +601,42 @@ export class VM {
 
         case Opcodes.OpReturnValue: {
           const returnValue = this.pop();
+
+          // Handle return from skipped recursive call during function trace recording
+          if (this.recorder && this.recorder.recording && this.recorder._skipDepth > 0) {
+            const frame = this.popFrame();
+            this.sp = frame.basePointer - 1;
+            this.push(returnValue);
+            // Only resume recording when we've popped back to the right frame
+            if (this.framesIndex < this.recorder._skipReturnFrame) {
+              this.recorder._skipDepth--;
+              if (this.recorder._skipDepth === 0 && this.recorder._pendingSelfCallRef !== undefined) {
+                // Push the self-call ref as the result
+                this.recorder.pushRef(this.recorder._pendingSelfCallRef);
+                this.recorder._pendingSelfCallRef = undefined;
+              }
+            }
+            break;
+          }
+
+          // Handle return from function trace recording (not inlined — at root frame)
+          if (recording() && this.recorder.isFuncTrace &&
+              this.recorder.inlineDepth === 0 &&
+              this.framesIndex === this.recorder.startFrame) {
+            // Emit FUNC_RETURN and stop recording
+            const retRef = this.recorder.popRef();
+            this.recorder.trace.addInst(IR.FUNC_RETURN, { ref: retRef });
+            const trace = this.recorder.stop();
+            if (trace && this.jit && this.jit.compile(trace, this)) {
+              this.jit.storeFuncTrace(trace);
+            }
+            this.recorder = null;
+            // Normal return
+            const frame = this.popFrame();
+            this.sp = frame.basePointer - 1;
+            this.push(returnValue);
+            break;
+          }
 
           if (recording() && this.recorder.inlineDepth > 0) {
             // Returning from an inlined function — don't stop recording
@@ -570,6 +658,38 @@ export class VM {
         }
 
         case Opcodes.OpReturn: {
+          // Handle return from skipped recursive call (return NULL)
+          if (this.recorder && this.recorder.recording && this.recorder._skipDepth > 0) {
+            const frame2 = this.popFrame();
+            this.sp = frame2.basePointer - 1;
+            this.push(NULL);
+            if (this.framesIndex < this.recorder._skipReturnFrame) {
+              this.recorder._skipDepth--;
+              if (this.recorder._skipDepth === 0 && this.recorder._pendingSelfCallRef !== undefined) {
+                this.recorder.pushRef(this.recorder._pendingSelfCallRef);
+                this.recorder._pendingSelfCallRef = undefined;
+              }
+            }
+            break;
+          }
+
+          // Handle return from function trace recording (return NULL)
+          if (recording() && this.recorder.isFuncTrace &&
+              this.recorder.inlineDepth === 0 &&
+              this.framesIndex === this.recorder.startFrame) {
+            const nullRef = this.recorder.trace.addInst(IR.CONST_NULL);
+            this.recorder.trace.addInst(IR.FUNC_RETURN, { ref: nullRef });
+            const trace = this.recorder.stop();
+            if (trace && this.jit && this.jit.compile(trace, this)) {
+              this.jit.storeFuncTrace(trace);
+            }
+            this.recorder = null;
+            const frame2 = this.popFrame();
+            this.sp = frame2.basePointer - 1;
+            this.push(NULL);
+            break;
+          }
+
           if (recording() && this.recorder.inlineDepth > 0) {
             // Returning NULL from an inlined function
             this.recorder.leaveInlineFrame();
@@ -885,6 +1005,68 @@ export class VM {
     this.recorder.startSideTrace(parentTrace, guardIdx, exitIp, this._closureId());
   }
 
+  // Execute a compiled function trace
+  _executeFuncTrace(trace, closure, numArgs) {
+    const bp = this.sp - numArgs;
+    const allConsts = this._traceConsts.length > 0
+      ? [...this.constants, ...this._traceConsts]
+      : this.constants;
+
+    // Collect args from the stack
+    const args = new Array(numArgs);
+    for (let i = 0; i < numArgs; i++) {
+      args[i] = this.stack[bp + i];
+    }
+
+    const compiler = trace._compiler;
+    const isRaw = compiler && compiler._isRaw;
+
+    // Self-call: the compiled trace calls itself for recursion
+    const self = (callArgs) => {
+      return trace.compiled(
+        callArgs, this.globals, allConsts, closure.free,
+        MonkeyInteger, MonkeyBoolean, MonkeyString,
+        TRUE, FALSE, NULL,
+        cachedInteger,
+        this.isTruthy,
+        self, selfRaw,
+      );
+    };
+
+    // Raw self-call: takes raw numbers, returns raw number
+    const selfRaw = isRaw ? (callArgs) => {
+      // callArgs are already raw numbers from the raw-compiled code
+      // We need to box them for the compiled function (which unboxes on entry)
+      const boxedArgs = callArgs.map(v => cachedInteger(v));
+      const result = trace.compiled(
+        boxedArgs, this.globals, allConsts, closure.free,
+        MonkeyInteger, MonkeyBoolean, MonkeyString,
+        TRUE, FALSE, NULL,
+        cachedInteger,
+        this.isTruthy,
+        self, selfRaw,
+      );
+      // Result is a MonkeyInteger (boxed by the return statement) — unbox it
+      return result && result.value !== undefined ? result.value : 0;
+    } : undefined;
+
+    const result = trace.compiled(
+      args, this.globals, allConsts, closure.free,
+      MonkeyInteger, MonkeyBoolean, MonkeyString,
+      TRUE, FALSE, NULL,
+      cachedInteger,
+      this.isTruthy,
+      self, selfRaw,
+    );
+    trace.executionCount++;
+
+    // null means guard failure
+    if (result === null) {
+      return { exit: 'guard', ip: 0 };
+    }
+    return result;
+  }
+
   // Execute a compiled side trace
   _executeSideTrace(sideTrace, parentTrace, allConsts) {
     const frame = this.currentFrame();
@@ -906,8 +1088,11 @@ export class VM {
   _record(op, ip, ins) {
     if (!this.recorder || !this.recorder.recording) return;
 
-    // Check if we've looped back to the start (trace complete)
-    if (this.recorder.instrCount > 0 && ip === this.recorder.startIp) {
+    // Skip recording while inside recursive calls in function traces
+    if (this.recorder._skipDepth > 0) return;
+
+    // Check if we've looped back to the start (trace complete) — loop traces only
+    if (!this.recorder.isFuncTrace && this.recorder.instrCount > 0 && ip === this.recorder.startIp) {
       const trace = this.recorder.stop();
       if (trace && this.jit.compile(trace, this)) {
         this.jit.storeTrace(trace);

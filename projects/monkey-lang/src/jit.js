@@ -28,6 +28,7 @@ const MAX_TRACES = 64;           // max compiled traces
 const HOT_EXIT_THRESHOLD = 8;    // guard exit count before side trace
 const MAX_SIDE_TRACES = 4;       // max side traces per root trace
 const MAX_INLINE_DEPTH = 3;      // max function inlining depth during tracing
+const HOT_FUNC_THRESHOLD = 16;   // calls before function trace recording
 
 // --- IR Opcodes ---
 // Linear SSA-style IR. Each instruction produces a value (referenced by index).
@@ -78,6 +79,10 @@ export const IR = {
   LOOP_START:   'loop_start',
   LOOP_END:     'loop_end',      // back-edge: jump to loop start
 
+  // Function traces (recursive call support)
+  SELF_CALL:    'self_call',     // args: ref[] — recursive call to the traced function
+  FUNC_RETURN:  'func_return',   // ref: return value from function trace
+
   // Function calls (bail out to interpreter for now)
   CALL:         'call',          // closure: ref, args: ref[], numArgs: number
 
@@ -114,6 +119,10 @@ export class Trace {
     this.isSideTrace = false;
     this.parentTrace = null;
     this.parentGuardIdx = -1;
+    // Function trace support
+    this.isFuncTrace = false;     // true if this traces a function entry (not a loop)
+    this.numArgs = 0;             // number of args for function traces
+    this.tracedFn = null;         // the CompiledFunction being traced
   }
 
   addInst(op, operands = {}) {
@@ -194,12 +203,42 @@ export class TraceRecorder {
     this.trace.addInst(IR.LOOP_START);
   }
 
+  // Start recording a function trace (triggered by hot function entry)
+  startFuncTrace(frameId, fn, numArgs) {
+    this.trace = new Trace(frameId, 0); // startIp=0 (function entry)
+    this.trace.isFuncTrace = true;
+    this.trace.numArgs = numArgs;
+    this.trace.tracedFn = fn;
+    this.recording = true;
+    this.startIp = 0;
+    this.startFrame = this.vm.framesIndex;
+    this.irStack = [];
+    this.loopHeaderSeen = false;
+    this.instrCount = 0;
+    this.typeMap.clear();
+    this.isSideTrace = false;
+    this.isFuncTrace = true;
+    this.tracedFn = fn;
+
+    // Load args as LOAD_LOCAL with guard
+    for (let i = 0; i < numArgs; i++) {
+      const ref = this.trace.addInst(IR.LOAD_LOCAL, { slot: i });
+      this.pushRef(ref);
+      // We'll pop these immediately — they're in the right slots
+    }
+    // Clear the stack — args will be accessed via LOAD_LOCAL as the function executes
+    this.irStack = [];
+  }
+
   stop() {
     if (!this.recording) return null;
     this.recording = false;
     // For side traces ending at parent loop header, emit LOOP_END so the
     // compiled function returns { exit: "loop_back" }
-    this.trace.addInst(IR.LOOP_END);
+    // For function traces, we don't emit LOOP_END — FUNC_RETURN is emitted during recording
+    if (!this.trace.isFuncTrace) {
+      this.trace.addInst(IR.LOOP_END);
+    }
     const trace = this.trace;
     this.trace = null;
     return trace;
@@ -392,6 +431,8 @@ export class JIT {
   constructor() {
     this.hotCounts = new Map();    // "frameId:ip" → count
     this.traces = new Map();       // "frameId:ip" → Trace
+    this.funcTraces = new Map();   // CompiledFunction → Trace (function entry traces)
+    this.funcCallCounts = new Map(); // CompiledFunction → count
     this.traceCount = 0;
     this.enabled = true;
   }
@@ -436,6 +477,49 @@ export class JIT {
     if (trace.sideTraces.size >= MAX_SIDE_TRACES) return false;
     const exitCount = trace.sideExits.get(guardIdx) || 0;
     return exitCount >= HOT_EXIT_THRESHOLD;
+  }
+
+  // Count a function call. Returns true if hot enough to trace.
+  countFuncCall(fn) {
+    const count = (this.funcCallCounts.get(fn) || 0) + 1;
+    this.funcCallCounts.set(fn, count);
+    return count >= HOT_FUNC_THRESHOLD;
+  }
+
+  // Get a compiled function trace
+  getFuncTrace(fn) {
+    return this.funcTraces.get(fn) || null;
+  }
+
+  // Store a compiled function trace
+  storeFuncTrace(trace) {
+    if (trace.tracedFn) {
+      this.funcTraces.set(trace.tracedFn, trace);
+      this.traceCount++;
+    }
+  }
+
+  // Compile a function directly (method JIT, not tracing)
+  compileFunction(fn, constants, vm) {
+    // Only compile functions that have self-recursive calls (OpCurrentClosure)
+    const ins = fn.instructions;
+    let hasSelfCall = false;
+    for (let i = 0; i < ins.length; i++) {
+      if (ins[i] === Opcodes.OpCurrentClosure) { hasSelfCall = true; break; }
+    }
+    if (!hasSelfCall) return null;
+
+    const compiler = new FunctionCompiler(fn, constants, vm);
+    const compiled = compiler.compileSwitch();
+    if (!compiled) return null;
+
+    const trace = new Trace(fn, 0);
+    trace.isFuncTrace = true;
+    trace.tracedFn = fn;
+    trace.compiled = compiled;
+    trace._compiler = compiler;
+    trace._compiledSource = compiler._compiledSource;
+    return trace;
   }
 
   // Compile a trace to a JavaScript function
@@ -548,6 +632,11 @@ export class TraceCompiler {
   compile() {
     const ir = this.trace.ir;
     const varNames = new Map(); // IR id → JS variable name
+
+    // Function traces get a completely different compilation path
+    if (this.trace.isFuncTrace) {
+      return this._compileFuncTrace(ir, varNames);
+    }
 
     // Analyze which globals/locals can be promoted to raw JS variables
     const promotable = this._analyzePromotable();
@@ -909,6 +998,37 @@ export class TraceCompiler {
           this.lines.push(`  ${this._emitReturn(`{ exit: "call", ip: ${this.trace.startIp} }`)}`);
           break;
 
+        case IR.SELF_CALL: {
+          // Recursive call to the traced function itself
+          // Args are IR refs — we need to box them and call our compiled function
+          const argRefs = inst.operands.args;
+          const argVars = argRefs.map(ref => {
+            const refInst = ir[ref];
+            if (refInst && this._isRawInt(refInst)) {
+              return `__cachedInteger(${varNames.get(ref)})`;
+            }
+            return varNames.get(ref);
+          });
+          // __self is the compiled function trace passed as a parameter
+          // We call through __selfCall which handles setup
+          this.lines.push(`  const ${v}_boxed = __selfCall(${argVars.join(', ')});`);
+          // The result is a MonkeyObject — unbox if needed later
+          this.lines.push(`  const ${v} = ${v}_boxed;`);
+          break;
+        }
+
+        case IR.FUNC_RETURN: {
+          // Return from function trace
+          const ref = varNames.get(inst.operands.ref);
+          const refInst = ir[inst.operands.ref];
+          if (refInst && this._isRawInt(refInst)) {
+            this.lines.push(`  return __cachedInteger(${ref});`);
+          } else {
+            this.lines.push(`  return ${ref};`);
+          }
+          break;
+        }
+
         case IR.EXEC_TRACE: {
           // Trace stitching: call an inner compiled trace function
           // Write back promoted vars before calling (inner trace reads from stack/globals)
@@ -956,6 +1076,261 @@ export class TraceCompiler {
       return fn;
     } catch (e) {
       // Compilation failed — trace had issues
+      return null;
+    }
+  }
+
+  // Compile a function trace — straight-line code, takes args, returns value
+  _compileFuncTrace(ir, varNames) {
+    this.lines.push('"use strict";');
+
+    for (let i = 0; i < ir.length; i++) {
+      const inst = ir[i];
+      if (!inst) continue;
+      const v = this.freshVar();
+      varNames.set(i, v);
+
+      switch (inst.op) {
+        case IR.LOAD_LOCAL: {
+          // In function traces, locals are read from __stack[__bp + slot]
+          this.lines.push(`  const ${v} = __stack[__bp + ${inst.operands.slot}];`);
+          break;
+        }
+
+        case IR.LOAD_GLOBAL: {
+          this.lines.push(`  const ${v} = __globals[${inst.operands.index}];`);
+          break;
+        }
+
+        case IR.LOAD_FREE:
+          this.lines.push(`  const ${v} = __free[${inst.operands.index}];`);
+          break;
+
+        case IR.LOAD_CONST:
+          this.lines.push(`  const ${v} = __consts[${inst.operands.index}];`);
+          break;
+
+        case IR.CONST_INT:
+          this.lines.push(`  const ${v} = ${inst.operands.value};`);
+          break;
+
+        case IR.CONST_BOOL:
+          if (inst.operands.ref !== undefined) {
+            const rawRef = varNames.get(inst.operands.ref);
+            this.lines.push(`  const ${v} = ${rawRef} ? __TRUE : __FALSE;`);
+          } else {
+            this.lines.push(`  const ${v} = ${inst.operands.value} ? __TRUE : __FALSE;`);
+          }
+          break;
+
+        case IR.CONST_NULL:
+          this.lines.push(`  const ${v} = __NULL;`);
+          break;
+
+        case IR.CONST_OBJ:
+          this.lines.push(`  const ${v} = __consts[${inst.operands.constIdx}];`);
+          break;
+
+        case IR.STORE_LOCAL: {
+          const valRef = varNames.get(inst.operands.value);
+          const valInst = ir[inst.operands.value];
+          if (valInst && this._isRawInt(valInst)) {
+            this.lines.push(`  __stack[__bp + ${inst.operands.slot}] = __cachedInteger(${valRef});`);
+          } else {
+            this.lines.push(`  __stack[__bp + ${inst.operands.slot}] = ${valRef};`);
+          }
+          this.lines.push(`  const ${v} = undefined;`);
+          break;
+        }
+
+        case IR.STORE_GLOBAL: {
+          const valRef = varNames.get(inst.operands.value);
+          const valInst = ir[inst.operands.value];
+          if (valInst && this._isRawInt(valInst)) {
+            this.lines.push(`  __globals[${inst.operands.index}] = __cachedInteger(${valRef});`);
+          } else {
+            this.lines.push(`  __globals[${inst.operands.index}] = ${valRef};`);
+          }
+          this.lines.push(`  const ${v} = undefined;`);
+          break;
+        }
+
+        case IR.GUARD_INT: {
+          const ref = varNames.get(inst.operands.ref);
+          this.lines.push(`  if (!(${ref} instanceof __MonkeyInteger)) return { exit: "guard", ip: 0 };`);
+          this.lines.push(`  const ${v} = ${ref};`);
+          break;
+        }
+
+        case IR.GUARD_BOOL: {
+          const ref = varNames.get(inst.operands.ref);
+          this.lines.push(`  if (!(${ref} instanceof __MonkeyBoolean)) return { exit: "guard", ip: 0 };`);
+          this.lines.push(`  const ${v} = ${ref};`);
+          break;
+        }
+
+        case IR.GUARD_TRUTHY: {
+          const ref = varNames.get(inst.operands.ref);
+          const refInst = ir[inst.operands.ref];
+          let condition;
+          if (refInst && refInst.op === IR.CONST_BOOL && refInst.operands.ref !== undefined) {
+            condition = `!${varNames.get(refInst.operands.ref)}`;
+          } else {
+            condition = `typeof ${ref} === 'boolean' ? !${ref} : !__isTruthy(${ref})`;
+          }
+          this.lines.push(`  if (${condition}) return { exit: "guard", ip: 0 };`);
+          this.lines.push(`  const ${v} = true;`);
+          break;
+        }
+
+        case IR.GUARD_FALSY: {
+          const ref = varNames.get(inst.operands.ref);
+          const refInst = ir[inst.operands.ref];
+          let condition;
+          if (refInst && refInst.op === IR.CONST_BOOL && refInst.operands.ref !== undefined) {
+            condition = `${varNames.get(refInst.operands.ref)}`;
+          } else {
+            condition = `typeof ${ref} === 'boolean' ? ${ref} : __isTruthy(${ref})`;
+          }
+          this.lines.push(`  if (${condition}) return { exit: "guard", ip: 0 };`);
+          this.lines.push(`  const ${v} = true;`);
+          break;
+        }
+
+        case IR.UNBOX_INT: {
+          const ref = varNames.get(inst.operands.ref);
+          this.lines.push(`  const ${v} = ${ref}.value;`);
+          break;
+        }
+
+        case IR.BOX_INT: {
+          const ref = varNames.get(inst.operands.ref);
+          this.lines.push(`  const ${v} = __cachedInteger(${ref});`);
+          break;
+        }
+
+        case IR.ADD_INT: {
+          const l = varNames.get(inst.operands.left);
+          const r = varNames.get(inst.operands.right);
+          this.lines.push(`  const ${v} = (${l} + ${r});`);
+          break;
+        }
+
+        case IR.SUB_INT: {
+          const l = varNames.get(inst.operands.left);
+          const r = varNames.get(inst.operands.right);
+          this.lines.push(`  const ${v} = (${l} - ${r});`);
+          break;
+        }
+
+        case IR.MUL_INT: {
+          const l = varNames.get(inst.operands.left);
+          const r = varNames.get(inst.operands.right);
+          this.lines.push(`  const ${v} = (${l} * ${r});`);
+          break;
+        }
+
+        case IR.DIV_INT: {
+          const l = varNames.get(inst.operands.left);
+          const r = varNames.get(inst.operands.right);
+          this.lines.push(`  const ${v} = Math.trunc(${l} / ${r});`);
+          break;
+        }
+
+        case IR.EQ: {
+          const l = varNames.get(inst.operands.left);
+          const r = varNames.get(inst.operands.right);
+          this.lines.push(`  const ${v} = ${l} === ${r};`);
+          break;
+        }
+
+        case IR.NEQ: {
+          const l = varNames.get(inst.operands.left);
+          const r = varNames.get(inst.operands.right);
+          this.lines.push(`  const ${v} = ${l} !== ${r};`);
+          break;
+        }
+
+        case IR.GT: {
+          const l = varNames.get(inst.operands.left);
+          const r = varNames.get(inst.operands.right);
+          this.lines.push(`  const ${v} = ${l} > ${r};`);
+          break;
+        }
+
+        case IR.LT: {
+          const l = varNames.get(inst.operands.left);
+          const r = varNames.get(inst.operands.right);
+          this.lines.push(`  const ${v} = ${l} < ${r};`);
+          break;
+        }
+
+        case IR.NEG: {
+          const ref = varNames.get(inst.operands.ref);
+          this.lines.push(`  const ${v} = -${ref};`);
+          break;
+        }
+
+        case IR.NOT: {
+          const ref = varNames.get(inst.operands.ref);
+          this.lines.push(`  const ${v} = (typeof ${ref} === 'boolean') ? !${ref} : !__isTruthy(${ref});`);
+          break;
+        }
+
+        case IR.CONCAT: {
+          const l = varNames.get(inst.operands.left);
+          const r = varNames.get(inst.operands.right);
+          this.lines.push(`  const ${v} = new __MonkeyString(${l}.value + ${r}.value);`);
+          break;
+        }
+
+        case IR.SELF_CALL: {
+          const argRefs = inst.operands.args;
+          const argVars = argRefs.map(ref => {
+            const refInst = ir[ref];
+            if (refInst && this._isRawInt(refInst)) {
+              return `__cachedInteger(${varNames.get(ref)})`;
+            }
+            return varNames.get(ref);
+          });
+          this.lines.push(`  const ${v} = __selfCall(${argVars.join(', ')});`);
+          break;
+        }
+
+        case IR.FUNC_RETURN: {
+          const ref = varNames.get(inst.operands.ref);
+          const refInst = ir[inst.operands.ref];
+          if (refInst && this._isRawInt(refInst)) {
+            this.lines.push(`  return __cachedInteger(${ref});`);
+          } else {
+            this.lines.push(`  return ${ref};`);
+          }
+          break;
+        }
+
+        // Skip loop control IR in func traces
+        case IR.LOOP_START:
+        case IR.LOOP_END:
+          break;
+
+        default:
+          this.lines.push(`  /* unknown IR: ${inst.op} */`);
+      }
+    }
+
+    const body = this.lines.join('\n');
+    this.trace._compiledSource = body;
+
+    try {
+      const fn = new Function(
+        '__stack', '__sp', '__bp', '__globals', '__consts', '__free',
+        '__MonkeyInteger', '__MonkeyBoolean', '__MonkeyString',
+        '__TRUE', '__FALSE', '__NULL',
+        '__cachedInteger', '__isTruthy', '__selfCall',
+        body
+      );
+      return fn;
+    } catch (e) {
       return null;
     }
   }
@@ -1144,7 +1519,8 @@ export class TraceOptimizer {
           inst.op === IR.GUARD_STRING || inst.op === IR.GUARD_TRUTHY ||
           inst.op === IR.GUARD_FALSY ||
           inst.op === IR.LOOP_START || inst.op === IR.LOOP_END ||
-          inst.op === IR.CALL || inst.op === IR.EXEC_TRACE) {
+          inst.op === IR.CALL || inst.op === IR.EXEC_TRACE ||
+          inst.op === IR.SELF_CALL || inst.op === IR.FUNC_RETURN) {
         live.add(i);
       }
     }
@@ -1167,6 +1543,15 @@ export class TraceOptimizer {
               (key === 'value' && VALUE_IS_REF.has(inst.op))) {
             live.add(val);
             changed = true;
+          }
+          // Handle SELF_CALL args array
+          if (key === 'args' && Array.isArray(ops[key])) {
+            for (const argRef of ops[key]) {
+              if (typeof argRef === 'number' && argRef >= 0 && argRef < ir.length && ir[argRef] && !live.has(argRef)) {
+                live.add(argRef);
+                changed = true;
+              }
+            }
           }
         }
       }
@@ -1206,7 +1591,13 @@ export class TraceOptimizer {
     for (const inst of newIr) {
       const ops = inst.operands;
       for (const key of Object.keys(ops)) {
-        if (typeof ops[key] !== 'number') continue;
+        if (typeof ops[key] !== 'number') {
+          // Handle args array (for SELF_CALL)
+          if (key === 'args' && Array.isArray(ops[key])) {
+            ops[key] = ops[key].map(ref => remap.has(ref) ? remap.get(ref) : ref);
+          }
+          continue;
+        }
         // 'ref', 'left', 'right' are always IR references
         if (key === 'ref' || key === 'left' || key === 'right') {
           if (remap.has(ops[key])) ops[key] = remap.get(ops[key]);
@@ -1220,5 +1611,816 @@ export class TraceOptimizer {
     }
 
     this.trace.ir = newIr;
+  }
+}
+
+// --- Function Compiler ---
+// Direct bytecode → JS compilation for hot recursive functions.
+// Emits a flat JS function that interprets the bytecode without dispatch overhead.
+// Each bytecode instruction becomes inline JS. Self-calls use the compiled function.
+
+export class FunctionCompiler {
+  constructor(fn, constants, vm) {
+    this.fn = fn;
+    this.constants = constants;
+    this.vm = vm;
+    this._compiledSource = null;
+  }
+
+  compile() {
+    const ins = this.fn.instructions;
+    const numLocals = this.fn.numLocals;
+
+    // Build a set of jump targets (for label generation)
+    const jumpTargets = new Set();
+    let ip = 0;
+    while (ip < ins.length) {
+      const op = ins[ip];
+      const def = lookup(op);
+      const widths = def ? def.operandWidths : [];
+      let offset = ip + 1;
+      for (const w of widths) {
+        if (w === 2) {
+          const target = (ins[offset] << 8) | ins[offset + 1];
+          if (op === Opcodes.OpJump || op === Opcodes.OpJumpNotTruthy) {
+            jumpTargets.add(target);
+          }
+          offset += 2;
+        } else {
+          offset += 1;
+        }
+      }
+      ip = offset;
+    }
+
+    const lines = [];
+    lines.push('"use strict";');
+    // Local variables (args are pre-loaded, rest are null)
+    lines.push(`const __s = new Array(32);`); // operand stack
+    lines.push(`let __sp = 0;`);
+    for (let i = 0; i < numLocals; i++) {
+      lines.push(`let __l${i} = __args[${i}] !== undefined ? __args[${i}] : __NULL;`);
+    }
+
+    // Walk bytecode and emit inline JS for each instruction
+    ip = 0;
+    while (ip < ins.length) {
+      // Emit label if this is a jump target
+      if (jumpTargets.has(ip)) {
+        // We use a flat switch-based approach instead
+      }
+
+      const op = ins[ip];
+
+      switch (op) {
+        case Opcodes.OpConstant: {
+          const constIdx = (ins[ip + 1] << 8) | ins[ip + 2];
+          ip += 3;
+          const constVal = this.constants[constIdx];
+          if (constVal instanceof MonkeyInteger) {
+            lines.push(`__s[__sp++] = __cachedInteger(${constVal.value});`);
+          } else if (constVal instanceof MonkeyBoolean) {
+            lines.push(`__s[__sp++] = ${constVal.value ? '__TRUE' : '__FALSE'};`);
+          } else {
+            lines.push(`__s[__sp++] = __consts[${constIdx}];`);
+          }
+          break;
+        }
+
+        case Opcodes.OpGetLocal: {
+          const slot = ins[ip + 1];
+          ip += 2;
+          lines.push(`__s[__sp++] = __l${slot};`);
+          break;
+        }
+
+        case Opcodes.OpSetLocal: {
+          const slot = ins[ip + 1];
+          ip += 2;
+          lines.push(`__l${slot} = __s[--__sp];`);
+          break;
+        }
+
+        case Opcodes.OpGetGlobal: {
+          const idx = (ins[ip + 1] << 8) | ins[ip + 2];
+          ip += 3;
+          lines.push(`__s[__sp++] = __globals[${idx}];`);
+          break;
+        }
+
+        case Opcodes.OpSetGlobal: {
+          const idx = (ins[ip + 1] << 8) | ins[ip + 2];
+          ip += 3;
+          lines.push(`__globals[${idx}] = __s[--__sp];`);
+          break;
+        }
+
+        case Opcodes.OpGetFree: {
+          const idx = ins[ip + 1];
+          ip += 2;
+          lines.push(`__s[__sp++] = __free[${idx}];`);
+          break;
+        }
+
+        case Opcodes.OpAdd:
+          ip += 1;
+          lines.push(`{ const r = __s[--__sp], l = __s[--__sp]; __s[__sp++] = __cachedInteger(l.value + r.value); }`);
+          break;
+
+        case Opcodes.OpSub:
+          ip += 1;
+          lines.push(`{ const r = __s[--__sp], l = __s[--__sp]; __s[__sp++] = __cachedInteger(l.value - r.value); }`);
+          break;
+
+        case Opcodes.OpMul:
+          ip += 1;
+          lines.push(`{ const r = __s[--__sp], l = __s[--__sp]; __s[__sp++] = __cachedInteger(l.value * r.value); }`);
+          break;
+
+        case Opcodes.OpDiv:
+          ip += 1;
+          lines.push(`{ const r = __s[--__sp], l = __s[--__sp]; __s[__sp++] = __cachedInteger(Math.trunc(l.value / r.value)); }`);
+          break;
+
+        case Opcodes.OpEqual:
+          ip += 1;
+          lines.push(`{ const r = __s[--__sp], l = __s[--__sp]; __s[__sp++] = l.value === r.value ? __TRUE : __FALSE; }`);
+          break;
+
+        case Opcodes.OpNotEqual:
+          ip += 1;
+          lines.push(`{ const r = __s[--__sp], l = __s[--__sp]; __s[__sp++] = l.value !== r.value ? __TRUE : __FALSE; }`);
+          break;
+
+        case Opcodes.OpGreaterThan:
+          ip += 1;
+          lines.push(`{ const r = __s[--__sp], l = __s[--__sp]; __s[__sp++] = l.value > r.value ? __TRUE : __FALSE; }`);
+          break;
+
+        case Opcodes.OpMinus:
+          ip += 1;
+          lines.push(`{ const v = __s[--__sp]; __s[__sp++] = __cachedInteger(-v.value); }`);
+          break;
+
+        case Opcodes.OpBang:
+          ip += 1;
+          lines.push(`{ const v = __s[--__sp]; __s[__sp++] = __isTruthy(v) ? __FALSE : __TRUE; }`);
+          break;
+
+        case Opcodes.OpTrue:
+          ip += 1;
+          lines.push(`__s[__sp++] = __TRUE;`);
+          break;
+
+        case Opcodes.OpFalse:
+          ip += 1;
+          lines.push(`__s[__sp++] = __FALSE;`);
+          break;
+
+        case Opcodes.OpNull:
+          ip += 1;
+          lines.push(`__s[__sp++] = __NULL;`);
+          break;
+
+        case Opcodes.OpPop:
+          ip += 1;
+          lines.push(`--__sp;`);
+          break;
+
+        case Opcodes.OpReturnValue:
+          ip += 1;
+          lines.push(`return __s[--__sp];`);
+          break;
+
+        case Opcodes.OpReturn:
+          ip += 1;
+          lines.push(`return __NULL;`);
+          break;
+
+        case Opcodes.OpCurrentClosure:
+          ip += 1;
+          // Push a sentinel — we'll handle this in OpCall
+          lines.push(`__s[__sp++] = __SELF_MARKER;`);
+          break;
+
+        case Opcodes.OpCall: {
+          const numArgs = ins[ip + 1];
+          ip += 2;
+          // Check if the callee is our self-marker (recursive call)
+          const argExprs = [];
+          for (let i = numArgs - 1; i >= 0; i--) {
+            argExprs.unshift(`a${i}`);
+          }
+          lines.push(`{`);
+          lines.push(`  const __callArgs = new Array(${numArgs});`);
+          for (let i = numArgs - 1; i >= 0; i--) {
+            lines.push(`  __callArgs[${i}] = __s[--__sp];`);
+          }
+          lines.push(`  const __callee = __s[--__sp];`);
+          lines.push(`  if (__callee === __SELF_MARKER) {`);
+          lines.push(`    __s[__sp++] = __self(__callArgs);`);
+          lines.push(`  } else {`);
+          // Non-self call — bail to indicate we can't handle this
+          lines.push(`    return null; /* bail: non-self call */`);
+          lines.push(`  }`);
+          lines.push(`}`);
+          break;
+        }
+
+        case Opcodes.OpJump: {
+          const target = (ins[ip + 1] << 8) | ins[ip + 2];
+          ip += 3;
+          // For structured if/else, jumps go forward. We'll handle this
+          // by noting it and continuing. The emitted code uses labels.
+          // For now, emit a goto-like construct using a loop+switch pattern
+          // Actually, for the common pattern (if/else), this jump skips the else.
+          // We'll emit it as a block closing.
+          lines.push(`/* jump to ${target} */`);
+          break;
+        }
+
+        case Opcodes.OpJumpNotTruthy: {
+          const target = (ins[ip + 1] << 8) | ins[ip + 2];
+          ip += 3;
+          lines.push(`if (!__isTruthy(__s[--__sp])) {`);
+          lines.push(`  /* jump to ${target} — will be closed by jump/target */`);
+          break;
+        }
+
+        // Superinstructions
+        case Opcodes.OpGetLocalSubConst: {
+          const slot = ins[ip + 1];
+          const constIdx = (ins[ip + 2] << 8) | ins[ip + 3];
+          ip += 4;
+          const constVal = this.constants[constIdx];
+          if (constVal instanceof MonkeyInteger) {
+            lines.push(`__s[__sp++] = __cachedInteger(__l${slot}.value - ${constVal.value});`);
+          } else {
+            lines.push(`__s[__sp++] = __cachedInteger(__l${slot}.value - __consts[${constIdx}].value);`);
+          }
+          break;
+        }
+
+        default: {
+          // Unknown op — bail
+          ip += 1;
+          const def = lookup(op);
+          if (def && def.operandWidths) {
+            for (const w of def.operandWidths) ip += w;
+          }
+          return null;
+        }
+      }
+    }
+
+    // This approach has a problem: the jump/branch structure is not properly
+    // handled. We need to restructure the bytecode into structured control flow.
+    // For the common if/else pattern in recursive functions, let me use a
+    // different approach: a goto-simulation with a while+switch loop.
+
+    return null; // The flat approach doesn't handle control flow well
+  }
+
+  // Compile using a while+switch interpreter (eliminates dispatch overhead via V8 JIT)
+  // Uses raw JS numbers internally for integer-heavy functions (like fib)
+  compileSwitch() {
+    const ins = this.fn.instructions;
+    const numLocals = this.fn.numLocals;
+
+    // Analyze: can we use raw integers? Check if all arithmetic is integer-based
+    // and there are no string ops or complex features that need boxed values.
+    const canUseRawInts = this._canUseRawInts();
+
+    if (canUseRawInts) {
+      return this._compileSwitchRaw();
+    }
+
+    const lines = [];
+    lines.push('"use strict";');
+    lines.push(`const __s = [];`);
+    lines.push(`let __sp = 0;`);
+    for (let i = 0; i < numLocals; i++) {
+      lines.push(`let __l${i} = ${i} < __args.length ? __args[${i}] : __NULL;`);
+    }
+
+    // Find all instruction boundaries
+    const boundaries = new Set([0]);
+    let ip = 0;
+    while (ip < ins.length) {
+      const op = ins[ip];
+      const def = lookup(op);
+      const widths = def ? def.operandWidths : [];
+      let nextIp = ip + 1;
+      for (const w of widths) nextIp += w;
+
+      if (op === Opcodes.OpJump) {
+        const target = (ins[ip + 1] << 8) | ins[ip + 2];
+        boundaries.add(target);
+        boundaries.add(nextIp);
+      } else if (op === Opcodes.OpJumpNotTruthy) {
+        const target = (ins[ip + 1] << 8) | ins[ip + 2];
+        boundaries.add(target);
+        boundaries.add(nextIp);
+      } else if (op === Opcodes.OpReturnValue || op === Opcodes.OpReturn) {
+        boundaries.add(nextIp);
+      }
+      ip = nextIp;
+    }
+
+    // Sort boundaries
+    const blocks = [...boundaries].sort((a, b) => a - b);
+
+    // Emit a switch-based interpreter
+    lines.push(`let __pc = 0;`);
+    lines.push(`while (true) {`);
+    lines.push(`  switch (__pc) {`);
+
+    for (let bi = 0; bi < blocks.length; bi++) {
+      const blockStart = blocks[bi];
+      const blockEnd = bi + 1 < blocks.length ? blocks[bi + 1] : ins.length;
+      if (blockStart >= ins.length) continue;
+
+      lines.push(`    case ${blockStart}: {`);
+
+      ip = blockStart;
+      while (ip < blockEnd && ip < ins.length) {
+        const op = ins[ip];
+
+        switch (op) {
+          case Opcodes.OpConstant: {
+            const constIdx = (ins[ip + 1] << 8) | ins[ip + 2];
+            ip += 3;
+            const constVal = this.constants[constIdx];
+            if (constVal instanceof MonkeyInteger) {
+              lines.push(`      __s[__sp++] = __cachedInteger(${constVal.value});`);
+            } else if (constVal instanceof MonkeyBoolean) {
+              lines.push(`      __s[__sp++] = ${constVal.value ? '__TRUE' : '__FALSE'};`);
+            } else {
+              lines.push(`      __s[__sp++] = __consts[${constIdx}];`);
+            }
+            break;
+          }
+
+          case Opcodes.OpGetLocal: {
+            const slot = ins[ip + 1];
+            ip += 2;
+            lines.push(`      __s[__sp++] = __l${slot};`);
+            break;
+          }
+
+          case Opcodes.OpSetLocal: {
+            const slot = ins[ip + 1];
+            ip += 2;
+            lines.push(`      __l${slot} = __s[--__sp];`);
+            break;
+          }
+
+          case Opcodes.OpGetGlobal: {
+            const idx = (ins[ip + 1] << 8) | ins[ip + 2];
+            ip += 3;
+            lines.push(`      __s[__sp++] = __globals[${idx}];`);
+            break;
+          }
+
+          case Opcodes.OpSetGlobal: {
+            const idx = (ins[ip + 1] << 8) | ins[ip + 2];
+            ip += 3;
+            lines.push(`      __globals[${idx}] = __s[--__sp];`);
+            break;
+          }
+
+          case Opcodes.OpGetFree: {
+            const idx = ins[ip + 1];
+            ip += 2;
+            lines.push(`      __s[__sp++] = __free[${idx}];`);
+            break;
+          }
+
+          case Opcodes.OpAdd: ip += 1;
+            lines.push(`      { const r = __s[--__sp], l = __s[--__sp]; if (l instanceof __MonkeyString) __s[__sp++] = new __MonkeyString(l.value + r.value); else __s[__sp++] = __cachedInteger(l.value + r.value); }`);
+            break;
+          case Opcodes.OpSub: ip += 1;
+            lines.push(`      { const r = __s[--__sp], l = __s[--__sp]; __s[__sp++] = __cachedInteger(l.value - r.value); }`);
+            break;
+          case Opcodes.OpMul: ip += 1;
+            lines.push(`      { const r = __s[--__sp], l = __s[--__sp]; __s[__sp++] = __cachedInteger(l.value * r.value); }`);
+            break;
+          case Opcodes.OpDiv: ip += 1;
+            lines.push(`      { const r = __s[--__sp], l = __s[--__sp]; __s[__sp++] = __cachedInteger(Math.trunc(l.value / r.value)); }`);
+            break;
+
+          case Opcodes.OpEqual: ip += 1;
+            lines.push(`      { const r = __s[--__sp], l = __s[--__sp]; __s[__sp++] = (l === r || l.value === r.value) ? __TRUE : __FALSE; }`);
+            break;
+          case Opcodes.OpNotEqual: ip += 1;
+            lines.push(`      { const r = __s[--__sp], l = __s[--__sp]; __s[__sp++] = (l !== r && l.value !== r.value) ? __TRUE : __FALSE; }`);
+            break;
+          case Opcodes.OpGreaterThan: ip += 1;
+            lines.push(`      { const r = __s[--__sp], l = __s[--__sp]; __s[__sp++] = l.value > r.value ? __TRUE : __FALSE; }`);
+            break;
+
+          case Opcodes.OpMinus: ip += 1;
+            lines.push(`      { const v = __s[--__sp]; __s[__sp++] = __cachedInteger(-v.value); }`);
+            break;
+          case Opcodes.OpBang: ip += 1;
+            lines.push(`      { const v = __s[--__sp]; __s[__sp++] = __isTruthy(v) ? __FALSE : __TRUE; }`);
+            break;
+
+          case Opcodes.OpTrue: ip += 1;
+            lines.push(`      __s[__sp++] = __TRUE;`); break;
+          case Opcodes.OpFalse: ip += 1;
+            lines.push(`      __s[__sp++] = __FALSE;`); break;
+          case Opcodes.OpNull: ip += 1;
+            lines.push(`      __s[__sp++] = __NULL;`); break;
+
+          case Opcodes.OpPop: ip += 1;
+            lines.push(`      --__sp;`); break;
+
+          case Opcodes.OpReturnValue: ip += 1;
+            lines.push(`      return __s[--__sp];`);
+            break;
+
+          case Opcodes.OpReturn: ip += 1;
+            lines.push(`      return __NULL;`);
+            break;
+
+          case Opcodes.OpCurrentClosure: ip += 1;
+            lines.push(`      __s[__sp++] = null; /* self marker */`);
+            break;
+
+          case Opcodes.OpCall: {
+            const numArgs = ins[ip + 1];
+            ip += 2;
+            lines.push(`      {`);
+            lines.push(`        const __callArgs = new Array(${numArgs});`);
+            for (let i = numArgs - 1; i >= 0; i--) {
+              lines.push(`        __callArgs[${i}] = __s[--__sp];`);
+            }
+            lines.push(`        --__sp; /* pop callee */`);
+            lines.push(`        __s[__sp++] = __self(__callArgs);`);
+            lines.push(`      }`);
+            break;
+          }
+
+          case Opcodes.OpJump: {
+            const target = (ins[ip + 1] << 8) | ins[ip + 2];
+            ip += 3;
+            lines.push(`      __pc = ${target}; continue;`);
+            break;
+          }
+
+          case Opcodes.OpJumpNotTruthy: {
+            const target = (ins[ip + 1] << 8) | ins[ip + 2];
+            ip += 3;
+            lines.push(`      if (!__isTruthy(__s[--__sp])) { __pc = ${target}; continue; }`);
+            break;
+          }
+
+          case Opcodes.OpGetLocalSubConst: {
+            const slot = ins[ip + 1];
+            const constIdx = (ins[ip + 2] << 8) | ins[ip + 3];
+            ip += 4;
+            const constVal = this.constants[constIdx];
+            if (constVal instanceof MonkeyInteger) {
+              lines.push(`      __s[__sp++] = __cachedInteger(__l${slot}.value - ${constVal.value});`);
+            } else {
+              lines.push(`      __s[__sp++] = __cachedInteger(__l${slot}.value - __consts[${constIdx}].value);`);
+            }
+            break;
+          }
+
+          default: {
+            // Unknown opcode — can't compile
+            return null;
+          }
+        }
+      }
+
+      // Fall through to next block
+      if (bi + 1 < blocks.length && blocks[bi + 1] < ins.length) {
+        lines.push(`      __pc = ${blocks[bi + 1]}; continue;`);
+      }
+      lines.push(`    }`);
+    }
+
+    lines.push(`  }`); // end switch
+    lines.push(`  break;`); // end while (shouldn't reach here)
+    lines.push(`}`); // end while
+
+    const body = lines.join('\n');
+    this._compiledSource = body;
+
+    try {
+      const fn = new Function(
+        '__args', '__globals', '__consts', '__free',
+        '__MonkeyInteger', '__MonkeyBoolean', '__MonkeyString',
+        '__TRUE', '__FALSE', '__NULL',
+        '__cachedInteger', '__isTruthy', '__self',
+        body
+      );
+      return fn;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Check if this function can be compiled with raw integer optimization
+  _canUseRawInts() {
+    const ins = this.fn.instructions;
+    const referencedConsts = new Set();
+    let ip = 0;
+    while (ip < ins.length) {
+      const op = ins[ip];
+      const def = lookup(op);
+      const widths = def ? def.operandWidths : [];
+      let nextIp = ip + 1;
+
+      // Track which constants this function actually references
+      if (op === Opcodes.OpConstant) {
+        const idx = (ins[ip + 1] << 8) | ins[ip + 2];
+        referencedConsts.add(idx);
+      }
+      if (op === Opcodes.OpGetLocalSubConst) {
+        const idx = (ins[ip + 2] << 8) | ins[ip + 3];
+        referencedConsts.add(idx);
+      }
+
+      for (const w of widths) nextIp += w;
+
+      switch (op) {
+        case Opcodes.OpConstant:
+        case Opcodes.OpGetLocal:
+        case Opcodes.OpSetLocal:
+        case Opcodes.OpAdd:
+        case Opcodes.OpSub:
+        case Opcodes.OpMul:
+        case Opcodes.OpDiv:
+        case Opcodes.OpEqual:
+        case Opcodes.OpNotEqual:
+        case Opcodes.OpGreaterThan:
+        case Opcodes.OpMinus:
+        case Opcodes.OpBang:
+        case Opcodes.OpTrue:
+        case Opcodes.OpFalse:
+        case Opcodes.OpNull:
+        case Opcodes.OpPop:
+        case Opcodes.OpReturnValue:
+        case Opcodes.OpReturn:
+        case Opcodes.OpJump:
+        case Opcodes.OpJumpNotTruthy:
+        case Opcodes.OpCurrentClosure:
+        case Opcodes.OpCall:
+        case Opcodes.OpGetLocalSubConst:
+        case Opcodes.OpGetGlobal:
+        case Opcodes.OpSetGlobal:
+        case Opcodes.OpGetFree:
+          break;
+        default:
+          return false;
+      }
+      ip = nextIp;
+    }
+    // Only check constants actually referenced by this function
+    for (const idx of referencedConsts) {
+      const c = this.constants[idx];
+      if (c instanceof MonkeyInteger || c instanceof MonkeyBoolean) continue;
+      return false;
+    }
+    return true;
+  }
+
+  // Compile with raw JS numbers — no boxing for integer arithmetic
+  // Generates TWO functions: inner (raw args/return) and outer (boxed wrapper)
+  _compileSwitchRaw() {
+    const ins = this.fn.instructions;
+    const numLocals = this.fn.numLocals;
+    const numParams = this.fn.numParameters;
+
+    const lines = [];
+    lines.push('"use strict";');
+    // Inner raw function — takes raw numbers, returns raw number
+    lines.push(`function __rawFib(__rawArgs) {`);
+    for (let i = 0; i < numLocals; i++) {
+      if (i < numParams) {
+        lines.push(`  let __l${i} = __rawArgs[${i}];`);
+      } else {
+        lines.push(`  let __l${i} = 0;`);
+      }
+    }
+    lines.push(`  const __s = [];`);
+    lines.push(`  let __sp = 0;`);
+
+    // Find all instruction boundaries
+    const boundaries = new Set([0]);
+    let ip = 0;
+    while (ip < ins.length) {
+      const op = ins[ip];
+      const def = lookup(op);
+      const widths = def ? def.operandWidths : [];
+      let nextIp = ip + 1;
+      for (const w of widths) nextIp += w;
+
+      if (op === Opcodes.OpJump) {
+        const target = (ins[ip + 1] << 8) | ins[ip + 2];
+        boundaries.add(target);
+        boundaries.add(nextIp);
+      } else if (op === Opcodes.OpJumpNotTruthy) {
+        const target = (ins[ip + 1] << 8) | ins[ip + 2];
+        boundaries.add(target);
+        boundaries.add(nextIp);
+      } else if (op === Opcodes.OpReturnValue || op === Opcodes.OpReturn) {
+        boundaries.add(nextIp);
+      }
+      ip = nextIp;
+    }
+
+    const blocks = [...boundaries].sort((a, b) => a - b);
+
+    lines.push(`  let __pc = 0;`);
+    lines.push(`  while (true) {`);
+    lines.push(`    switch (__pc) {`);
+
+    for (let bi = 0; bi < blocks.length; bi++) {
+      const blockStart = blocks[bi];
+      const blockEnd = bi + 1 < blocks.length ? blocks[bi + 1] : ins.length;
+      if (blockStart >= ins.length) continue;
+
+      lines.push(`      case ${blockStart}: {`);
+
+      ip = blockStart;
+      while (ip < blockEnd && ip < ins.length) {
+        const op = ins[ip];
+
+        switch (op) {
+          case Opcodes.OpConstant: {
+            const constIdx = (ins[ip + 1] << 8) | ins[ip + 2];
+            ip += 3;
+            const constVal = this.constants[constIdx];
+            if (constVal instanceof MonkeyInteger) {
+              lines.push(`        __s[__sp++] = ${constVal.value};`);
+            } else if (constVal instanceof MonkeyBoolean) {
+              lines.push(`        __s[__sp++] = ${constVal.value};`);
+            } else {
+              return null;
+            }
+            break;
+          }
+
+          case Opcodes.OpGetLocal: {
+            const slot = ins[ip + 1]; ip += 2;
+            lines.push(`        __s[__sp++] = __l${slot};`);
+            break;
+          }
+          case Opcodes.OpSetLocal: {
+            const slot = ins[ip + 1]; ip += 2;
+            lines.push(`        __l${slot} = __s[--__sp];`);
+            break;
+          }
+
+          case Opcodes.OpGetGlobal: {
+            const idx = (ins[ip + 1] << 8) | ins[ip + 2]; ip += 3;
+            lines.push(`        __s[__sp++] = __globals[${idx}].value;`);
+            break;
+          }
+          case Opcodes.OpSetGlobal: {
+            const idx = (ins[ip + 1] << 8) | ins[ip + 2]; ip += 3;
+            lines.push(`        __globals[${idx}] = __cachedInteger(__s[--__sp]);`);
+            break;
+          }
+
+          case Opcodes.OpGetFree: {
+            const idx = ins[ip + 1]; ip += 2;
+            lines.push(`        __s[__sp++] = __free[${idx}].value !== undefined ? __free[${idx}].value : __free[${idx}];`);
+            break;
+          }
+
+          case Opcodes.OpAdd: ip += 1;
+            lines.push(`        { const r = __s[--__sp]; __s[__sp - 1] += r; }`);
+            break;
+          case Opcodes.OpSub: ip += 1;
+            lines.push(`        { const r = __s[--__sp]; __s[__sp - 1] -= r; }`);
+            break;
+          case Opcodes.OpMul: ip += 1;
+            lines.push(`        { const r = __s[--__sp]; __s[__sp - 1] *= r; }`);
+            break;
+          case Opcodes.OpDiv: ip += 1;
+            lines.push(`        { const r = __s[--__sp]; __s[__sp - 1] = Math.trunc(__s[__sp - 1] / r); }`);
+            break;
+
+          case Opcodes.OpEqual: ip += 1;
+            lines.push(`        { const r = __s[--__sp]; __s[__sp - 1] = __s[__sp - 1] === r; }`);
+            break;
+          case Opcodes.OpNotEqual: ip += 1;
+            lines.push(`        { const r = __s[--__sp]; __s[__sp - 1] = __s[__sp - 1] !== r; }`);
+            break;
+          case Opcodes.OpGreaterThan: ip += 1;
+            lines.push(`        { const r = __s[--__sp]; __s[__sp - 1] = __s[__sp - 1] > r; }`);
+            break;
+
+          case Opcodes.OpMinus: ip += 1;
+            lines.push(`        __s[__sp - 1] = -__s[__sp - 1];`);
+            break;
+          case Opcodes.OpBang: ip += 1;
+            lines.push(`        __s[__sp - 1] = !__s[__sp - 1];`);
+            break;
+
+          case Opcodes.OpTrue: ip += 1;
+            lines.push(`        __s[__sp++] = true;`); break;
+          case Opcodes.OpFalse: ip += 1;
+            lines.push(`        __s[__sp++] = false;`); break;
+          case Opcodes.OpNull: ip += 1;
+            lines.push(`        __s[__sp++] = 0;`); break;
+
+          case Opcodes.OpPop: ip += 1;
+            lines.push(`        --__sp;`); break;
+
+          case Opcodes.OpReturnValue: ip += 1;
+            // Return raw number
+            lines.push(`        return __s[--__sp];`);
+            break;
+
+          case Opcodes.OpReturn: ip += 1;
+            lines.push(`        return 0;`);
+            break;
+
+          case Opcodes.OpCurrentClosure: ip += 1;
+            lines.push(`        __s[__sp++] = null;`);
+            break;
+
+          case Opcodes.OpCall: {
+            const numArgs = ins[ip + 1]; ip += 2;
+            // Self-call with raw numbers — direct recursion, no boxing
+            lines.push(`        {`);
+            lines.push(`          const __ca = new Array(${numArgs});`);
+            for (let i = numArgs - 1; i >= 0; i--) {
+              lines.push(`          __ca[${i}] = __s[--__sp];`);
+            }
+            lines.push(`          --__sp;`);
+            lines.push(`          __s[__sp++] = __rawFib(__ca);`);
+            lines.push(`        }`);
+            break;
+          }
+
+          case Opcodes.OpJump: {
+            const target = (ins[ip + 1] << 8) | ins[ip + 2]; ip += 3;
+            lines.push(`        __pc = ${target}; continue;`);
+            break;
+          }
+
+          case Opcodes.OpJumpNotTruthy: {
+            const target = (ins[ip + 1] << 8) | ins[ip + 2]; ip += 3;
+            lines.push(`        if (!__s[--__sp]) { __pc = ${target}; continue; }`);
+            break;
+          }
+
+          case Opcodes.OpGetLocalSubConst: {
+            const slot = ins[ip + 1];
+            const constIdx = (ins[ip + 2] << 8) | ins[ip + 3]; ip += 4;
+            const constVal = this.constants[constIdx];
+            if (constVal instanceof MonkeyInteger) {
+              lines.push(`        __s[__sp++] = __l${slot} - ${constVal.value};`);
+            } else {
+              return null;
+            }
+            break;
+          }
+
+          default:
+            return null;
+        }
+      }
+
+      if (bi + 1 < blocks.length && blocks[bi + 1] < ins.length) {
+        lines.push(`        __pc = ${blocks[bi + 1]}; continue;`);
+      }
+      lines.push(`      }`);
+    }
+
+    lines.push(`    }`); // end switch
+    lines.push(`    break;`);
+    lines.push(`  }`); // end while
+    lines.push(`}`); // end __rawFib
+
+    // Outer wrapper: unboxes args, calls raw, boxes result
+    lines.push(`const __ra = new Array(__args.length);`);
+    lines.push(`for (let i = 0; i < __args.length; i++) __ra[i] = __args[i] && __args[i].value !== undefined ? __args[i].value : 0;`);
+    lines.push(`return __cachedInteger(__rawFib(__ra));`);
+
+    const body = lines.join('\n');
+    this._compiledSource = body;
+    this._isRaw = true;
+
+    try {
+      const fn = new Function(
+        '__args', '__globals', '__consts', '__free',
+        '__MonkeyInteger', '__MonkeyBoolean', '__MonkeyString',
+        '__TRUE', '__FALSE', '__NULL',
+        '__cachedInteger', '__isTruthy', '__self', '__selfRaw',
+        body
+      );
+      return fn;
+    } catch (e) {
+      return null;
+    }
   }
 }
