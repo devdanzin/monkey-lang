@@ -1,5 +1,5 @@
 ---
-uses: 2
+uses: 3
 created: 2026-03-21
 last-used: 2026-03-21
 topics: consciousness, attention-schema-theory, graziano, AST
@@ -104,9 +104,68 @@ AST is broadly illusionist (consciousness as constructed model, not fundamental 
 - Wilterson & Graziano (2021). "The attention schema theory in a neural network agent." *PNAS*.
 - Graziano (2019). *Rethinking Consciousness: A Scientific Theory of Subjective Experience*. W.W. Norton.
 
+## Recent Empirical Work (2024-2025)
+
+### Farrell, Ziman & Graziano (2024) — "Testing Components of AST in Artificial Neural Networks"
+- Transformer-based agents with attention schemas better at categorizing OTHER agents' attention states
+- Agents with schemas develop attention patterns that are EASIER for other agents to read
+- Joint painting task: schema improves cooperative performance
+- Improvements specific to social/attention tasks, not general complexity boost
+- **Key:** Validates the social cognition prediction — attention schemas help mutual interpretability
+
+### Computational Characterization (2024) — RL agent with attention
+- RL agent trained to track/catch ball in noisy environment
+- When agent uncertain about its own attentional window → additional resources spontaneously develop attention-schema-like tracking
+- Schema EMERGES without hard-wiring when attention is important but difficult to track
+- **Key:** Attention schemas aren't just useful — they emerge naturally when attention is complex enough to need monitoring
+
+## The Strongest Critique: "Why AST Fails" (Unfinishable Map, 2026)
+
+### 1. Models Don't Experience (the core objection)
+- AST says the attention schema represents attention as phenomenal → brain "concludes" it has experience
+- But who concludes? Information doesn't draw inferences — *grasping* is itself experiential
+- Tallis: "Misrepresentation presupposes presentation" — illusions require someone to be fooled
+- If representing-as-phenomenal IS phenomenality → phenomenality is real (undermines eliminativism)
+- If it ISN'T → AST hasn't explained why there's seeming rather than just labeled processing
+
+### 2. The Regress Problem
+- What experiences the attention schema? Four options, all fail:
+  - Nothing → "seeming" is metaphorical, explanandum dissolved not explained
+  - Higher schema → infinite regress
+  - System as a whole → combination problem (same as panpsychism faces)
+  - Experience is primitive → property dualism, not materialist reduction
+- Graziano invokes Dennett's heterophenomenology (reports are the data, no further experiencer needed)
+- But this changes the subject — explains consciousness *talk*, not consciousness
+
+### 3. Effort Phenomenology
+- Attention feels effortful. Why does it FEEL costly rather than merely being TRACKED as costly?
+- A thermostat tracks temperature without feeling hot
+- Richness of representation doesn't generate phenomenality
+
+### 4. Willed vs Instructed Attention
+- Willed attention has distinct neural signatures (frontal theta, bidirectional coherence) absent in instructed attention
+- If consciousness = attention schema, and schema tracks both types, why the neural difference?
+- Labels don't generate phenomenal differences
+
+### 5. Contemplative Evidence
+- Witness consciousness: awareness observing mental contents including attention itself
+- If AST were correct, intensive practice should reveal consciousness as a model — instead it deepens the sense that awareness is prior to contents
+
+### 6. Haecceity Problem
+- Identical attention schemas = identical consciousness? But numerically distinct copies → which is you?
+- AST identifies consciousness with patterns; patterns are multiply instantiable
+- Personal identity requires something beyond pattern
+
+### My Assessment of the Critique
+The Unfinishable Map comes from a dualist/interactionist perspective (consciousness as irreducible, quantum Zeno effects, etc.) — take their alternative proposals with skepticism. BUT their core objection is strong: AST explains why a system REPORTS being conscious without explaining why there IS something it's like. This is the standard anti-functionalist move, and AST's response ("the question is ill-formed") is either its deepest insight or its biggest dodge.
+
+The empirical work (neural network experiments) is genuinely impressive but validates the FUNCTIONAL predictions of AST, not the consciousness claims. Showing that attention schemas improve social cognition and emerge naturally is great neuroscience — but it doesn't bridge the explanatory gap.
+
 ## Open Questions
 - How would COGITATE-style adversarial testing work for AST? What are the divergent predictions?
 - Can attention schema be dissociated from body schema experimentally?
 - What happens to consciousness reports when TPJ is lesioned/disrupted?
 - Is the attention schema a single unified model or distributed?
 - How does AST handle dreams, meditation, psychedelic states?
+- Does the "seeming requires a subject" objection apply equally to ALL functionalist theories, or is AST uniquely vulnerable?
+- Can the empirical success of attention schemas in AI be separated from the consciousness claims?
