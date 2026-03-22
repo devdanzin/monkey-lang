@@ -1,8 +1,8 @@
-status: in-progress
+status: done
 mode: BUILD
-task: 16:30 BUILD — Monkey JIT: polish, README, edge cases
-context: 197 tests, 9.1x aggregate speedup. All major features done. Focus: README docs, error handling, any remaining edge cases.
+task: 16:30 BUILD — Monkey JIT: README docs + 3 more integration tests
+context: Updated README with full JIT architecture docs, benchmark table, diagram. Added 3 integration tests (200 total). All passing. Pushed to GitHub.
 context-files: lessons/tracing-jit.md
-est: 2
-next: 17:15 BUILD — Blog update or JIT polish
-updated: 2026-03-22T16:30:00-06:00
+est: 1
+next: 17:00 BUILD — Continue JIT polish or start blog post on JIT
+updated: 2026-03-22T16:40:00-06:00
