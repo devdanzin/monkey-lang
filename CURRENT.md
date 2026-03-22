@@ -1,8 +1,8 @@
 status: done
 mode: BUILD
-task: 13:45 BUILD — FunctionCompiler with raw integer optimization
-context: Implemented method JIT for recursive functions. Raw integer mode eliminates all boxing in self-recursive calls. fib(25) 10.4x JIT/VM. Key insight: inner function takes/returns raw JS numbers, only boxes at VM boundary.
-context-files: memory/scratch/side-trace-design.md, memory/scratch/tracing-jit-compilation.md
+task: 14:15 BUILD — Additional JIT tests + benchmark correctness validation
+context: Added 7 new JIT integration tests (FunctionCompiler, recursive fib, loop+recursive combo, negative numbers, multiplication). Added 3 stress benchmarks (fib(30), loop+fib, factorial). Fixed expected values. All 185 tests passing.
+context-files: memory/scratch/tracing-jit-compilation.md
 est: 0
-next: 14:15 BUILD — Comprehensive benchmark suite + tests
-updated: 2026-03-22T14:00:00-06:00
+next: 14:45 MAINTAIN — Commit, push, promote tracing-jit scratch note to lessons/
+updated: 2026-03-22T14:13:00-06:00

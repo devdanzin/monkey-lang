@@ -299,4 +299,112 @@ describe('JIT VM integration', () => {
     // sum of 2*i for i=0..199 = 2 * (199*200/2) = 39800
     assert.equal(result.value, 39800);
   });
+
+  // === FunctionCompiler (method JIT) tests ===
+
+  it('should JIT-compile recursive fibonacci with raw integers', () => {
+    const { result, vm } = compileAndRunJIT(`
+      let fib = fn(n) { if (n < 2) { n } else { fib(n-1) + fib(n-2) } };
+      fib(20)
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    assert.equal(result.value, 6765);
+    // Should have a function trace compiled
+    assert.ok(vm.jit.traceCount >= 1, 'should have at least one trace (function JIT)');
+  });
+
+  it('should JIT-compile recursive function with multiple base cases', () => {
+    const { result } = compileAndRunJIT(`
+      let f = fn(n) {
+        if (n == 0) { 1 }
+        else { if (n == 1) { 1 } else { f(n-1) + f(n-2) } }
+      };
+      f(15)
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    assert.equal(result.value, 987);
+  });
+
+  it('should handle recursive function returning non-integer base case', () => {
+    // Recursive tail: returns 0 (still integer, but tests base case paths)
+    const { result } = compileAndRunJIT(`
+      let countdown = fn(n) { if (n == 0) { 0 } else { countdown(n - 1) } };
+      countdown(100)
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    assert.equal(result.value, 0);
+  });
+
+  it('should produce identical results JIT vs non-JIT for fib(25)', () => {
+    const input = `
+      let fib = fn(n) { if (n < 2) { n } else { fib(n-1) + fib(n-2) } };
+      fib(25)
+    `;
+    const program = parse(input);
+
+    // Non-JIT
+    const c1 = new Compiler();
+    c1.compile(program);
+    const vm1 = new VM(c1.bytecode());
+    vm1.run();
+    const noJit = vm1.lastPoppedStackElem();
+
+    // JIT
+    const c2 = new Compiler();
+    c2.compile(program);
+    const vm2 = new VM(c2.bytecode());
+    vm2.enableJIT();
+    vm2.run();
+    const withJit = vm2.lastPoppedStackElem();
+
+    assert.equal(noJit.value, 75025);
+    assert.equal(withJit.value, 75025);
+    assert.equal(noJit.value, withJit.value);
+  });
+
+  it('should handle loop + recursive function together', () => {
+    // Tests that loop tracing and function JIT coexist
+    const { result } = compileAndRunJIT(`
+      let fib = fn(n) { if (n < 2) { n } else { fib(n-1) + fib(n-2) } };
+      let sum = 0;
+      let i = 0;
+      while (i < 10) {
+        sum = sum + fib(i);
+        i = i + 1;
+      }
+      sum
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    // fib(0..9) = 0,1,1,2,3,5,8,13,21,34 → sum = 88
+    assert.equal(result.value, 88);
+  });
+
+  it('should handle arithmetic with negative numbers in JIT', () => {
+    const { result } = compileAndRunJIT(`
+      let sum = 0;
+      let i = 0;
+      while (i < 100) {
+        sum = sum + (i - 50);
+        i = i + 1;
+      }
+      sum
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    // sum of (i-50) for i=0..99 = sum(i) - 5000 = 4950 - 5000 = -50
+    assert.equal(result.value, -50);
+  });
+
+  it('should handle multiplication in traced loops', () => {
+    const { result } = compileAndRunJIT(`
+      let product = 1;
+      let i = 1;
+      while (i < 11) {
+        product = product * i;
+        i = i + 1;
+      }
+      product
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    assert.equal(result.value, 3628800); // 10!
+  });
 });

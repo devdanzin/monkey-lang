@@ -98,8 +98,7 @@ const BENCHMARKS = [
       while (i < 5000) { sum = sum + add_sq(i, 1); i = i + 1; }
       sum
     `,
-    // sum(i^2, 0..4999) + 5000 = 4999*5000*9999/6 + 5000 = 41662500000 + 5000
-    expected: null, // compute dynamically
+    expected: 41654172500,
   },
   {
     name: 'inline: fn with conditional (stable)',
@@ -110,7 +109,7 @@ const BENCHMARKS = [
       while (i < 5001) { sum = sum + check(i); i = i + 1; }
       sum
     `,
-    expected: null,
+    expected: 25005000,
   },
 
   // === Recursive (not traceable — baseline comparison) ===
@@ -159,6 +158,37 @@ const BENCHMARKS = [
       len(repeat("ab", 100))
     `,
     expected: 200,
+  },
+
+  // === Stress tests ===
+  {
+    name: 'fib(30) raw integer JIT',
+    category: 'stress',
+    input: `
+      let fib = fn(n) { if (n < 2) { n } else { fib(n-1) + fib(n-2) } };
+      fib(30)
+    `,
+    expected: 832040,
+  },
+  {
+    name: 'loop calling recursive fn',
+    category: 'stress',
+    input: `
+      let fib = fn(n) { if (n < 2) { n } else { fib(n-1) + fib(n-2) } };
+      let sum = 0; let i = 0;
+      while (i < 20) { sum = sum + fib(i); i = i + 1; }
+      sum
+    `,
+    expected: 10945,
+  },
+  {
+    name: 'factorial(20) recursive',
+    category: 'stress',
+    input: `
+      let fact = fn(n) { if (n < 2) { 1 } else { n * fact(n-1) } };
+      fact(20)
+    `,
+    expected: 2432902008176640000,
   },
 ];
 
