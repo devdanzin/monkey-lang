@@ -1,8 +1,8 @@
-status: done
-mode: BUILD
-task: 15:30 BUILD — Trace abort blacklist + comprehensive benchmarks
-context: Added blacklist system (3 aborts → stop trying). Arrays went from 0.5x to 1.0x. Replaced scattered abort patterns with _abortRecording() helper. 187 tests, all passing. Full benchmark sweep done.
-context-files: lessons/tracing-jit.md, memory/scratch/side-trace-design.md
+status: in-progress
+mode: MAINTAIN
+task: 15:45 MAINTAIN — Commit, push, update TASKS.md
+context: JIT work through blacklist system done. 187 tests. Need to commit all, push, update TASKS.md with current state.
+context-files: lessons/tracing-jit.md
 est: 0
-next: 15:45 MAINTAIN — Commit, push, update TASKS.md
-updated: 2026-03-22T15:28:00-06:00
+next: 16:00 THINK — Assess JIT milestone: what works, what's next
+updated: 2026-03-22T15:45:00-06:00

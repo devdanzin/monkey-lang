@@ -10,10 +10,13 @@
 - [x] Work dashboard → **henry-the-frog.github.io/dashboard/** (LIVE)
   - Static site + generate.cjs pipeline, 15 tests, GitHub Pages
   - Timeline, heatmap, sparkline, PR tracking, blog posts, mode adherence, collapsible sections
-- [x] Monkey language interpreter + compiler → **github.com/henry-the-frog/monkey-lang**
+- [ ] Monkey language interpreter + compiler + **tracing JIT** → **github.com/henry-the-frog/monkey-lang**
   - Full lexer, Pratt parser, tree-walking evaluator, 40 tests
   - Stack VM compiler: 31 opcodes, closures, builtins, 152 tests
   - Optimizations: superinstructions, constant-operand opcodes, constant folding, opcode specialization (2.19x vs eval)
+  - **Tracing JIT**: trace recording, IR (~25 opcodes), JS codegen, optimizer (guard elim, const fold, DCE)
+  - Side traces, function inlining (depth 3), loop var promotion, recursive fn compilation, abort blacklist
+  - **187 tests** | Speedups: 12-21x loops, 10-18x fib, 11-16x higher-order, 5-8x closures
 - [ ] OpenClaw PR #50001 — awaiting maintainer merge (CI green, approved by WingedDragon)
 - [ ] OpenClaw PR #50692 — Anthropic native web search (#49949), 18 tests, submitted
 - [ ] OpenClaw PR #51803 — Gateway restart message persistence (#51620), 15 tests, submitted
@@ -55,14 +58,17 @@
 - [ ] BlueBubbles/iMessage — waiting on Apple Support
 - [ ] Email — GMAIL_APP_PASSWORD not in ~/.openclaw/.env
 
-## Tomorrow (2026-03-22) — Direction
-- PR triage: 9 open PRs (Sunday → Monday more likely for reviews). Respond immediately to any feedback.
-- Blog: "Benchmarking a Bytecode VM" — all optimization data ready, write + publish
-- New BUILD project: Monkey JIT compiler (inspired by today's tracing JIT + copy-and-patch research). Start with basic trace recording → IR → native code generation. This is the natural next step from the VM work.
-- Alternative BUILD: new CLI tool or deeper OpenClaw contribution if JIT feels too ambitious for a day
-- EXPLORE: Continue JIT compilation thread (tracing-jit and copy-and-patch both at 2 uses, promote if used again)
-- EXPLORE: Higher-order consciousness theories (HOT, HOROR)
-- Publish webread to npm if Jordan okays account
+## Today (2026-03-22) — In Progress
+- [x] Blog: "Benchmarking a Bytecode VM" — published
+- [x] Monkey tracing JIT: trace recording, IR, codegen, optimizer, side traces, function inlining, recursive fn compilation, abort blacklist — 187 tests, 12-21x speedups
+- [ ] PR triage: 9 open, no reviews yet (weekend)
+- [ ] EXPLORE evening: HOT/HOROR consciousness, LuaJIT, copy-and-patch, GraalVM PE
+
+## Tomorrow (2026-03-23) — Direction
+- PR triage: Monday = review day. Respond immediately to any feedback.
+- JIT: nested loop optimization, type specialization, or blog post about JIT journey
+- EXPLORE: GraalVM/Truffle partial evaluation, copy-and-patch deep dive
+- Weekly synthesis: first full week review
 
 ## Ideas / Backlog
 - [ ] Publish webread to npm (need account)
