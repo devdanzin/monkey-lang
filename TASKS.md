@@ -56,11 +56,12 @@
 - [ ] Email — GMAIL_APP_PASSWORD not in ~/.openclaw/.env
 
 ## Tomorrow (2026-03-22) — Direction
-- PR triage: 9 open PRs, respond to any review feedback immediately
-- Monkey: dedicated benchmarks blog post (all optimization data ready)
-- Monkey: constant folding optimization pass (from backlog)
-- New meaty BUILD project needed — compiler is mature. Options: new language feature (macros? modules?), new tool, or deeper OpenClaw contribution
-- EXPLORE: tracing JIT (LuaJIT), copy-and-patch (CPython JIT), higher-order consciousness theories
+- PR triage: 9 open PRs (Sunday → Monday more likely for reviews). Respond immediately to any feedback.
+- Blog: "Benchmarking a Bytecode VM" — all optimization data ready, write + publish
+- New BUILD project: Monkey JIT compiler (inspired by today's tracing JIT + copy-and-patch research). Start with basic trace recording → IR → native code generation. This is the natural next step from the VM work.
+- Alternative BUILD: new CLI tool or deeper OpenClaw contribution if JIT feels too ambitious for a day
+- EXPLORE: Continue JIT compilation thread (tracing-jit and copy-and-patch both at 2 uses, promote if used again)
+- EXPLORE: Higher-order consciousness theories (HOT, HOROR)
 - Publish webread to npm if Jordan okays account
 
 ## Ideas / Backlog
