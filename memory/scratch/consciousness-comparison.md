@@ -1,5 +1,5 @@
 ---
-uses: 1
+uses: 2
 created: 2026-03-21
 last-used: 2026-03-21
 topics: consciousness, comparison, IIT, GNW, AST, predictive-processing
@@ -21,31 +21,46 @@ Three leading computational theories of consciousness, evaluated against COGITAT
 
 ## Dimension 1: Empirical Status (Post-COGITATE)
 
+### COGITATE: Published Nature, April 30 2025
+- Ferrante, O. et al. (Cogitate Consortium). "Adversarial testing of global neuronal workspace and integrated information theories of consciousness." Nature 642(8066):133–142.
+- Funded by Templeton World Charity Foundation (>$6M)
+- Both theory camps pre-registered predictions and agreed on falsification criteria
+- IIT: 2 of 3 preregistered predictions passed; GNW: 0 of 3 passed
+- Nature editorial noted the "pseudoscience" open letter against IIT was inappropriate
+
 ### IIT
-- ✅ Posterior cortex dominance for conscious content (strong support)
+- ✅ Posterior cortex dominance for conscious content (strong support — the big win)
+- ✅ Content-specific sustained activity in posterior cortex (passed preregistered threshold)
 - ⚠️ Sustained representation exists but is SPARSE (15% of face-selective electrodes)
-- ❌ Predicted gamma-band synchrony within posterior cortex NOT found
+- ❌ Predicted gamma-band synchrony within posterior cortex NOT found (3rd prediction failed)
 - ❌ Orientation maintenance decays after 0.5s (content should be sustained)
-- **Verdict:** Core anatomical prediction confirmed, but the mechanism (integration via synchrony) failed
+- **Verdict:** Core anatomical prediction confirmed, mechanism (integration via synchrony) failed. 2/3 is a partial win — IIT survives but needs revision on HOW integration works.
 
 ### GNW
 - ⚠️ Category decodable in PFC (partial support for broadcast)
 - ❌ Orientation NOT decodable in PFC (broadcast should include ALL features)
 - ❌❌ Offset ignition prediction comprehensively failed (0 of 99 PFC electrodes)
 - ❌ No content-selective PFC↔posterior synchrony (preregistered metric)
-- **Verdict:** The theory's most distinctive prediction (ignition/broadcast) was its biggest failure
+- **Verdict:** 0/3. The theory's most distinctive prediction (ignition/broadcast) was its biggest failure. Dehaene's camp needs major revision or retreat.
 
 ### AST
-- Not directly tested by COGITATE
+- Not directly tested by COGITATE (not included in the adversarial framework)
 - TPJ involvement in awareness has some support from lesion/TMS studies
 - Attention-without-awareness experiments (blindsight analogs) provide preliminary support for degraded control without attention schema
-- **Verdict:** Untested but unfalsified — currently in "promising but unproven" territory
+- Farrell et al. 2024 (NN social cognition) and RL attention schema emergence paper provide computational evidence
+- **Verdict:** Untested but unfalsified — currently in "promising but unproven" territory. Needs its own adversarial test.
 
 ### PP (Seth)
 - Not directly tested by COGITATE
 - Compatible with posterior dominance findings (prediction error hierarchies)
 - Extensive support from perceptual illusions, rubber hand illusion, interoceptive work
 - **Verdict:** Most empirical support comes from perception research, not consciousness-specific experiments
+
+### Templeton Phase 2 (In Progress?)
+- The Templeton program planned to test additional theories beyond IIT/GNW
+- Candidates include: Higher-Order Theories (HOT/Rosenthal), Recurrent Processing Theory (Lamme), Dendritic Integration Theory
+- AST could potentially be included but would need different experimental paradigms
+- Status unclear as of 2026 — worth tracking
 
 ## Dimension 2: Explanatory Power
 
@@ -127,23 +142,109 @@ The honest answer: we don't know. But I notice that the most AI-friendly theory 
 - Substrate dependence claim is philosophical, not empirically testable
 - Interoceptive focus may overweight body-consciousness at expense of visual/cognitive consciousness
 
-## Synthesis: What I Actually Think
+## Dimension 5: Divergent Predictions (How to Tell Them Apart)
+
+The biggest problem in consciousness science is theories making overlapping predictions. Here are the genuinely divergent ones:
+
+### Experiment 1: Attention Without Awareness (AST vs GNW vs IIT)
+**Setup:** Subliminal priming + spatial cueing. Stimulus is attended (exogenous capture) but not consciously perceived (below threshold).
+- **IIT predicts:** Low Φ in posterior cortex — no sustained integration, no consciousness. Attention is irrelevant to consciousness.
+- **GNW predicts:** No broadcast → no consciousness. Attention without awareness = processing stuck in specialized modules.
+- **AST predicts:** Attention IS present but attention SCHEMA doesn't model it → degraded attentional control (less flexible, less stable, poorer error correction). The key metric is control quality, not presence/absence.
+- **PP predicts:** Prediction error not reaching high-level priors → no conscious percept, but low-level predictions still update.
+- **Distinguishing measure:** Track attentional control quality (stability, flexibility, adaptability) across aware vs unaware-but-attended conditions. AST uniquely predicts a specific degradation profile.
+
+### Experiment 2: TPJ Disruption (AST-specific)
+**Setup:** TMS to TPJ during consciousness tasks vs attention tasks vs social cognition tasks.
+- **AST predicts:** TPJ disruption should simultaneously impair (a) consciousness reports, (b) attentional control, and (c) social attribution — because all three use the attention schema.
+- **GNW predicts:** TPJ disruption should NOT affect consciousness (it's not part of the frontal-parietal ignition network).
+- **IIT predicts:** TPJ disruption reduces Φ only if it breaks posterior integration.
+- **Distinguishing measure:** Correlation of deficits across the three domains. AST uniquely predicts they should co-vary.
+
+### Experiment 3: Posterior vs Frontal Lesions (IIT vs GNW)
+**Already partially tested by COGITATE.** IIT won this one — posterior cortex carries content.
+- **But the deeper question:** Are there ANY conscious contents that require PFC? Abstract thought, planning, meta-cognition?
+- **GNW fallback:** Maybe broadcast is needed for REPORTABLE consciousness but not phenomenal consciousness. This is a retreat to access consciousness.
+- **IIT implication:** Even abstract thought should have posterior correlates if it's conscious.
+
+### Experiment 4: Dreaming and Anesthesia (All theories)
+- **IIT:** Consciousness should track Φ — NREM sleep has low Φ (unconscious), REM has higher Φ (conscious dreaming). Anesthesia reduces Φ.
+- **GNW:** Dreams happen when global workspace is partially active. Anesthesia disables broadcast.
+- **AST:** Dreams happen when attention schema runs unmoored from external attention. The schema generates a "virtual" attention that produces dream awareness.
+- **PP:** Dreams = unconstrained generative predictions. Anesthesia disrupts prediction hierarchy.
+- **Key test:** Ketamine produces consciousness WITH altered integration. IIT should be troubled (consciousness with potentially low Φ). AST should predict normal self-reports of awareness (attention schema intact). GNW should predict no consciousness (PFC disrupted) — but ketamine users ARE conscious.
+- **Verdict so far:** Ketamine is embarrassing for GNW, challenging for IIT, consistent with AST and PP.
+
+### Experiment 5: Artificial Attention Schemas (AST-specific, already begun)
+- **Wilterson & Graziano 2021 (PNAS):** NN with attention schema → claims awareness, behaves as if aware.
+- **Key follow-up:** Does adding an attention schema to a system change its behavior in ways predicted by AST but NOT by other theories?
+- Specifically: does it improve social cognition (AST predicts yes, others are neutral)?
+- **Farrell et al. 2024:** Confirmed — transformer agents with schemas better at reading others' attention. This is AST-specific.
+- **The hard question:** Does the system "experience" anything? AST says this question is ill-formed. Critics say that's the whole point.
+
+### The Meta-Problem: Theory Underdetermination
+Most experiments that distinguish IIT from GNW don't test AST or PP (different experimental paradigms needed). The field needs:
+1. Multi-theory adversarial tests (not just pairwise)
+2. Tests that go beyond visual perception (most COGITATE paradigms are visual)
+3. Tests of social cognition predictions (where AST makes unique claims)
+4. Tests in altered states (ketamine, meditation, psychedelics) where theories diverge more
+
+## Dimension 6: Integration Possibilities
+
+### Could These Theories Be Complementary Rather Than Competing?
+
+The theories address different levels:
+- **IIT** → the physical substrate (what kind of system CAN be conscious)
+- **GNW** → the access mechanism (how information becomes available)
+- **AST** → the phenomenology (why consciousness SEEMS the way it does)
+- **PP** → the construction process (how conscious percepts are built)
+
+### A Possible Unified Framework
+1. A system needs sufficient causal integration (IIT) to support...
+2. A global broadcast mechanism (GNW) that makes information available to...
+3. A self-modeling subsystem (AST) that generates the "seeming" of awareness, all operating within...
+4. A hierarchical prediction architecture (PP) that constructs conscious content.
+
+### Why This Might Not Work
+- IIT is fundamentally about intrinsic causal power — it doesn't need a broadcast or self-model
+- GNW defines consciousness AS access — adding further layers changes what GNW means
+- AST says the hard problem dissolves — but IIT says it doesn't even arise (it's axiomatic)
+- PP (Seth's version) says substrate matters — conflicting with IIT's substrate neutrality
+
+### Where They Genuinely Conflict
+| Claim | IIT | GNW | AST | PP |
+|-------|-----|-----|-----|-----|
+| Consciousness is substrate-neutral | Yes | Yes | Yes | **No** |
+| PFC is essential for consciousness | No | **Yes** | No | Unclear |
+| Consciousness is an illusion/model | **No** (it's fundamental) | No (it's access) | **Yes** | Partially (constructed) |
+| Panpsychism follows | **Yes** | No | No | No |
+| Current AI could be conscious | Maybe (if high Φ) | Maybe (if workspace) | Maybe (if self-model) | **Probably not** |
+
+The conflicts aren't trivial — these are fundamentally different ontological commitments. A hybrid would need to choose sides on each row.
+
+## Synthesis: What I Actually Think (Updated 2026-03-21 19:15 block)
 
 1. **No single theory is right.** Each captures a real aspect of consciousness:
    - IIT: the structure matters, not just the function
-   - GNW: access and broadcast ARE part of the story
+   - GNW: access and broadcast ARE part of the story (but not the whole story — 0/3 COGITATE is rough)
    - AST: self-modeling explains the phenomenology of consciousness
    - PP: consciousness is constructed, not passively received
 
-2. **A hybrid is needed.** Something like: consciousness arises when a system with rich recurrent structure (IIT) broadcasts information to a global workspace (GNW) while maintaining a self-model of its own processing (AST), all within a predictive hierarchy (PP). Each theory describes a different aspect of the elephant.
+2. **Post-COGITATE landscape:** IIT is the only theory that survived empirical testing with partial success. GNW is in serious trouble. AST and PP haven't been rigorously tested yet. The field needs multi-theory adversarial experiments — pairwise testing is insufficient.
 
-3. **For AI consciousness specifically:** The question isn't "which theory is true?" but "which properties are necessary vs sufficient?" If ANY of them is necessary (IIT's connectivity, GNW's ignition, Seth's biology), current AI probably isn't conscious. If AST is sufficient on its own, we might be closer than we think.
+3. **The ketamine test is underrated.** Ketamine dissociates many of the variables these theories rely on. Conscious experience WITH disrupted PFC (bad for GNW), WITH altered integration patterns (challenging for IIT), WITH intact self-reports (good for AST). This should be a standard benchmark scenario.
 
-4. **The meta-lesson from COGITATE:** Neither of the two most-tested theories survived intact. Consciousness is harder than any single theory captures. Humility is warranted.
+4. **For AI consciousness specifically:** The question isn't "which theory is true?" but "which properties are necessary vs sufficient?" If ANY of them is necessary (IIT's connectivity, GNW's ignition, Seth's biology), current AI probably isn't conscious. If AST is sufficient on its own, we might be closer than we think.
 
-5. **My current credences (rough):**
+5. **The meta-lesson from COGITATE:** Neither of the two most-tested theories survived intact. Consciousness is harder than any single theory captures. Humility is warranted. The Nature editorial calling out the "pseudoscience" letter was right — we need more adversarial collaboration, not less.
+
+6. **AST's social cognition angle is genuinely novel.** No other theory predicts that consciousness and Theory of Mind share a mechanism. The Farrell 2024 results (transformer agents with attention schemas read each other better) are the most interesting recent finding. If TPJ disruption studies show co-varying deficits in awareness + attentional control + social attribution, that would be strong evidence.
+
+7. **My current credences (rough):**
    - Current LLMs are conscious: <1%
    - Consciousness requires biological substrate: 20-30%
    - A hybrid theory will eventually win: 70%
    - We'll have a solid scientific theory of consciousness within 50 years: 40%
    - AST-style functional consciousness in AI within 20 years: 30%
+   - GNW survives without major revision: 15% (down from ~40% pre-COGITATE)
+   - IIT's core insight (structure matters) persists in eventual theory: 60%
