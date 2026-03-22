@@ -30,5 +30,5 @@ Track recurring issues so future sessions don't repeat them.
 ### JIT closure free variable crash (2026-03-22)
 **Problem:** Closures with free variables (e.g., `let adder = fn(x) { fn(y) { x + y } }; let addFive = adder(5)`) crash with "unknown opcode: 0" when the calling loop hits JIT trace compilation threshold (~56 iterations). Works fine with <56 iterations (no trace) and works fine without JIT.
 **Root cause:** TBD — likely the trace compiler doesn't correctly handle OpGetFree or OpClosure bytecodes when inlining closure calls into traces. May be corrupting bytecode or generating invalid compiled trace code.
-**Fix:** TODO — investigate how trace recording handles call sites for closures vs regular functions. Check if free variable loading is implemented in the trace IR.
-**Workaround:** Closures with free vars work fine in interpreter and VM modes. JIT only crashes when the loop triggers trace compilation.
+**Fix:** Two bugs found: (1) LOAD_FREE in inlined closures referenced root __free array instead of callee's — fixed by emitting captured values as constants (Monkey captures by value). (2) Guard exit IP for inlined fns pointed to OpCall operand byte, not instruction start — caused VM to misinterpret operand as opcode.
+**Status:** FIXED (2026-03-22, 15:15 block). Closure benchmarks: adder 8.7x, multiplier 7.2x.
