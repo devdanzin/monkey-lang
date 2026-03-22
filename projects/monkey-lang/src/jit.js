@@ -251,12 +251,15 @@ export class TraceRecorder {
   }
 
   // Get the appropriate exit IP for guard failures.
-  // Inside inlined functions, guards should exit to the trace's startIp
-  // (bail out and let the interpreter re-execute from the loop header)
-  // because callee IPs are meaningless in the caller's frame.
+  // Inside inlined functions, guards should exit to the outermost callSiteIp
+  // (the call instruction in the root frame) so the interpreter resumes at the
+  // call site and side traces can record the correct alternate path.
+  // Callee IPs are meaningless in the caller's frame.
   getGuardExitIp() {
     if (this.inlineDepth > 0) {
-      return this.trace.startIp; // bail to loop header
+      // Return the outermost (bottom) inlined frame's callSiteIp
+      // This is the IP in the root frame where the call chain started
+      return this.inlineFrames[0].callSiteIp;
     }
     return null; // use the normal exit IP
   }
@@ -273,18 +276,19 @@ export class TraceRecorder {
 
   // Record a guard for a value's type
   guardType(ref, value) {
+    const exitIp = this.getGuardExitIp();
     if (value instanceof MonkeyInteger) {
-      const gid = this.trace.addInst(IR.GUARD_INT, { ref });
+      const gid = this.trace.addInst(IR.GUARD_INT, { ref, exitIp });
       this.typeMap.set(ref, 'int');
       this.trace.guardCount++;
       return 'int';
     } else if (value instanceof MonkeyBoolean) {
-      const gid = this.trace.addInst(IR.GUARD_BOOL, { ref });
+      const gid = this.trace.addInst(IR.GUARD_BOOL, { ref, exitIp });
       this.typeMap.set(ref, 'bool');
       this.trace.guardCount++;
       return 'bool';
     } else if (value instanceof MonkeyString) {
-      const gid = this.trace.addInst(IR.GUARD_STRING, { ref });
+      const gid = this.trace.addInst(IR.GUARD_STRING, { ref, exitIp });
       this.typeMap.set(ref, 'string');
       this.trace.guardCount++;
       return 'string';
@@ -688,7 +692,8 @@ export class TraceCompiler {
             inst._promotedRaw = true;
           } else {
             const ref = varNames.get(inst.operands.ref);
-            const ret = this._emitReturn(`{ exit: "guard", guardIdx: ${i}, ip: ${this.trace.startIp} }`);
+            const exitIp = inst.operands.exitIp != null ? inst.operands.exitIp : this.trace.startIp;
+            const ret = this._emitReturn(`{ exit: "guard", guardIdx: ${i}, ip: ${exitIp} }`);
             this.lines.push(`  if (!(${ref} instanceof __MonkeyInteger)) ${ret}`);
             this.lines.push(`  const ${v} = ${ref};`);
           }
@@ -697,7 +702,8 @@ export class TraceCompiler {
 
         case IR.GUARD_BOOL: {
           const ref = varNames.get(inst.operands.ref);
-          const ret = this._emitReturn(`{ exit: "guard", guardIdx: ${i}, ip: ${this.trace.startIp} }`);
+          const exitIp = inst.operands.exitIp != null ? inst.operands.exitIp : this.trace.startIp;
+          const ret = this._emitReturn(`{ exit: "guard", guardIdx: ${i}, ip: ${exitIp} }`);
           this.lines.push(`  if (!(${ref} instanceof __MonkeyBoolean)) ${ret}`);
           this.lines.push(`  const ${v} = ${ref};`);
           break;
@@ -705,7 +711,8 @@ export class TraceCompiler {
 
         case IR.GUARD_STRING: {
           const ref = varNames.get(inst.operands.ref);
-          const ret = this._emitReturn(`{ exit: "guard", guardIdx: ${i}, ip: ${this.trace.startIp} }`);
+          const exitIp = inst.operands.exitIp != null ? inst.operands.exitIp : this.trace.startIp;
+          const ret = this._emitReturn(`{ exit: "guard", guardIdx: ${i}, ip: ${exitIp} }`);
           this.lines.push(`  if (!(${ref} instanceof __MonkeyString)) ${ret}`);
           this.lines.push(`  const ${v} = ${ref};`);
           break;

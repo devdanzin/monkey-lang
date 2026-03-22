@@ -279,4 +279,24 @@ describe('JIT VM integration', () => {
     assert.ok(result instanceof MonkeyInteger);
     assert.equal(result.value, 4999950000);
   });
+
+  it('should handle guard failures inside inlined functions (side trace IP fix)', () => {
+    // Bug: guards inside inlined functions exited to loop header instead of call site,
+    // causing side trace recording to start at the wrong IP.
+    // This test: inlined function receives ints most of the time, triggering type guards.
+    // When the guard fails (different type), the exit IP should be the call site.
+    const { result } = compileAndRunJIT(`
+      let double = fn(x) { x + x };
+      let sum = 0;
+      let i = 0;
+      while (i < 200) {
+        sum = sum + double(i);
+        i = i + 1;
+      }
+      sum
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    // sum of 2*i for i=0..199 = 2 * (199*200/2) = 39800
+    assert.equal(result.value, 39800);
+  });
 });

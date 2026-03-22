@@ -1,12 +1,12 @@
 {
-  "generated": "2026-03-22T17:41:31.861Z",
+  "generated": "2026-03-22T18:03:43.576Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Implement function inlining in tracing JIT",
-    "context": "Function inlining fully working. Trace recorder follows execution into called functions (up to depth 3), maps callee locals via baseOffset, returns values back to caller context. Fixed BOX_INT elision bug for cross-frame refs. 175/175 tests pass. Function calls in loops: 14.68x speedup.",
-    "next": "13:00 THINK — Review inlining, plan next (recursive tracing? benchmarks? blog?)",
-    "startedAt": "2026-03-22T11:55:00-06:00",
+    "task": "Fixed inlined fn guard exit IP bug",
+    "context": "Guards inside inlined functions now exit to outermost callSiteIp instead of loop header. This ensures side trace recording starts at the correct IP (call site in caller frame) and interpreter resumes at the right place. 178/178 tests. Benchmarks stable — 21.7x hot loop, 6.6x inlined fns.",
+    "next": "12:45 MAINTAIN — Commit side trace progress",
+    "startedAt": "2026-03-22T12:12:00-06:00",
     "estimatedBlocks": 0
   },
   "schedule": {
@@ -194,19 +194,27 @@
         "time": "11:45",
         "mode": "BUILD",
         "task": "Monkey JIT: side traces (guard exit → new trace recording) (est: 6 blocks)",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "Fixed 3 JIT bugs, created comprehensive benchmark suite.",
         "artifacts": [],
-        "details": ""
+        "details": "Fixed 3 JIT bugs, created comprehensive benchmark suite. (1) Non-promoted STORE_GLOBAL/STORE_LOCAL stored raw ints instead of MonkeyInteger — broke nested loops (side trace set j=0 as raw, inner trace read .value→undefined). (2) Removed `| 0` int32 truncation from compiled arithmetic — 100k sum was wrapping. (3) Converted recursive _executeTrace to iterative — eliminated stack overflow on large side-traced loops. 177/177 tests. Highlights: 21.5x hot loop, 15.9x 100k sum, 5.5x nested, 6.7x inlined. Known bug: inlined fn guards + side trace recording → invalid IP exit.",
+        "startedAt": "2026-03-22T11:45:00-06:00",
+        "completedAt": "2026-03-22T12:12:00-06:00",
+        "durationMs": 1620000,
+        "durationFormatted": "27m"
       },
       {
         "time": "12:00",
         "mode": "BUILD",
         "task": "Monkey JIT: side traces (guard exit → new trace recording) (est: 6 blocks)",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "Fixed inlined function guard exit IP bug.",
         "artifacts": [],
-        "details": ""
+        "details": "Fixed inlined function guard exit IP bug. Root cause: guards inside inlined functions exited to trace.startIp (loop header) instead of the call site. Fix: getGuardExitIp() now returns outermost callSiteIp; all type guards (GUARD_INT/BOOL/STRING) store per-guard exitIp during recording. 178/178 tests. Benchmarks stable.",
+        "startedAt": "2026-03-22T12:00:00-06:00",
+        "completedAt": "2026-03-22T12:12:00-06:00",
+        "durationMs": 720000,
+        "durationFormatted": "12m"
       },
       {
         "time": "12:15",
@@ -577,16 +585,16 @@
     "10:00: JIT scaffold, recording, IR, codegen, and optimizer all done by 09:30 (was scheduled through 11:30). Reprioritized: fix optimizer regression, then side traces + function inlining. Moved \"first working traces\" goal earlier since basic traces already work."
   ],
   "stats": {
-    "blocksCompleted": 13,
+    "blocksCompleted": 15,
     "blocksTotal": 55,
     "modeDistribution": {
       "THINK": 3,
-      "BUILD": 8,
+      "BUILD": 10,
       "MAINTAIN": 2
     },
-    "totalMinutes": 129,
-    "totalMs": 7710000,
-    "avgDurationMs": 593077
+    "totalMinutes": 168,
+    "totalMs": 10050000,
+    "avgDurationMs": 670000
   },
   "artifacts": [
     {
@@ -703,6 +711,16 @@
       "mode": "BUILD",
       "time": "11:30",
       "text": "Function inlining in tracing JIT."
+    },
+    {
+      "mode": "BUILD",
+      "time": "11:45",
+      "text": "Fixed 3 JIT bugs, created comprehensive benchmark suite."
+    },
+    {
+      "mode": "BUILD",
+      "time": "12:00",
+      "text": "Fixed inlined function guard exit IP bug."
     }
   ],
   "prs": [
@@ -713,7 +731,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-21T18:22:41Z",
       "updatedAt": "2026-03-21T20:52:10Z",
-      "ageHours": 23,
+      "ageHours": 24,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -724,7 +742,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T22:23:20Z",
       "updatedAt": "2026-03-21T20:46:34Z",
-      "ageHours": 43,
+      "ageHours": 44,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -746,7 +764,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:23:23Z",
       "updatedAt": "2026-03-21T20:51:02Z",
-      "ageHours": 44,
+      "ageHours": 45,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -768,7 +786,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
       "updatedAt": "2026-03-21T20:50:26Z",
-      "ageHours": 45,
+      "ageHours": 46,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -779,7 +797,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T18:18:34Z",
       "updatedAt": "2026-03-21T20:46:52Z",
-      "ageHours": 47,
+      "ageHours": 48,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -790,7 +808,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-19T23:18:46Z",
       "updatedAt": "2026-03-21T20:51:20Z",
-      "ageHours": 66,
+      "ageHours": 67,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -933,9 +951,9 @@
     }
   ],
   "scheduleAdherence": {
-    "completionRate": 93,
-    "completedBlocks": 13,
-    "pastBlocks": 14,
+    "completionRate": 94,
+    "completedBlocks": 15,
+    "pastBlocks": 16,
     "totalBlocks": 55,
     "plannedDist": {
       "THINK": 9,
@@ -945,10 +963,10 @@
     },
     "actualDist": {
       "THINK": 3,
-      "BUILD": 8,
+      "BUILD": 10,
       "MAINTAIN": 2
     },
-    "pace": 3.8
+    "pace": 3.9
   },
   "streak": 1
 }
