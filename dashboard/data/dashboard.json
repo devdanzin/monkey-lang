@@ -1,12 +1,12 @@
 {
-  "generated": "2026-03-22T18:03:43.576Z",
+  "generated": "2026-03-22T18:46:32.751Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "Fixed inlined fn guard exit IP bug",
-    "context": "Guards inside inlined functions now exit to outermost callSiteIp instead of loop header. This ensures side trace recording starts at the correct IP (call site in caller frame) and interpreter resumes at the right place. 178/178 tests. Benchmarks stable — 21.7x hot loop, 6.6x inlined fns.",
-    "next": "12:45 MAINTAIN — Commit side trace progress",
-    "startedAt": "2026-03-22T12:12:00-06:00",
+    "mode": "THINK",
+    "task": "Review progress, plan next stretch (function inlining already done)",
+    "context": "Way ahead of schedule — inlining+side traces done 3h early. Next: inline side trace code into root guard exits to eliminate dispatch overhead (5.5x→target 10x+ nested). Then fib tracing. Promote tracing-jit scratch note at 14:45.",
+    "next": "13:15 BUILD — Inline side trace code into root trace guard exits",
+    "startedAt": "2026-03-22T12:48:00-06:00",
     "estimatedBlocks": 0
   },
   "schedule": {
@@ -220,19 +220,27 @@
         "time": "12:15",
         "mode": "BUILD",
         "task": "Monkey JIT: side traces (guard exit → new trace recording) (est: 6 blocks)",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "Trace stitching framework + nested loop analysis.",
         "artifacts": [],
-        "details": ""
+        "details": "Trace stitching framework + nested loop analysis.",
+        "startedAt": "2026-03-22T12:15:00-06:00",
+        "completedAt": "2026-03-22T12:30:00-06:00",
+        "durationMs": 900000,
+        "durationFormatted": "15m"
       },
       {
         "time": "12:30",
         "mode": "BUILD",
         "task": "Monkey JIT: side traces (guard exit → new trace recording) (est: 6 blocks)",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "All repos clean — JIT work committed through trace stitching (03ac40e).",
         "artifacts": [],
-        "details": ""
+        "details": "All repos clean — JIT work committed through trace stitching (03ac40e). Blog, webread, workspace all pushed. Dashboard updated. Added EXEC_TRACE IR opcode for calling inner compiled traces during outer trace execution. Key discovery: nested loops already work via side traces — inner loop is root trace, outer loop becomes a side trace off the inner trace's guard exit. The 4.5x nested perf is bottlenecked by per-iteration function call overhead in side trace dispatch (14-arg JS function call per outer iteration). Cached allConsts in dispatch path. Next: inline side trace code in root trace guard exits to eliminate dispatch overhead. 178/178 tests.",
+        "startedAt": "2026-03-22T12:30:00-06:00",
+        "completedAt": "2026-03-22T12:37:00-06:00",
+        "durationMs": 420000,
+        "durationFormatted": "7m"
       },
       {
         "time": "12:45",
@@ -246,16 +254,20 @@
       {
         "time": "13:00",
         "mode": "THINK",
-        "task": "Review side traces, plan function inlining",
-        "status": "upcoming",
-        "summary": "",
+        "task": "Review progress, replan (inlining done early)",
+        "status": "done",
+        "summary": "Way ahead of schedule — inlining+side traces done 3h early (was planned through 14:30).",
         "artifacts": [],
-        "details": ""
+        "details": "Way ahead of schedule — inlining+side traces done 3h early (was planned through 14:30). Reprioritized: inline side trace code into root guard exits to eliminate dispatch overhead (nested 5.5x→target 10x+), then fib tracing+benchmarks. tracing-jit scratch note at 4 uses — due for promotion at 14:45. Updated SCHEDULE.md.",
+        "startedAt": "2026-03-22T12:45:00-06:00",
+        "completedAt": "2026-03-22T12:48:30-06:00",
+        "durationMs": 210000,
+        "durationFormatted": "3m 30s"
       },
       {
         "time": "13:15",
         "mode": "BUILD",
-        "task": "Monkey JIT: trace through function calls (inlining) (est: 6 blocks)",
+        "task": "Monkey JIT: inline side trace code into root guards (eliminate dispatch overhead)",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -264,7 +276,7 @@
       {
         "time": "13:30",
         "mode": "BUILD",
-        "task": "Monkey JIT: trace through function calls (inlining) (est: 6 blocks)",
+        "task": "Monkey JIT: inline side trace code into root guards (eliminate dispatch overhead)",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -273,7 +285,7 @@
       {
         "time": "13:45",
         "mode": "BUILD",
-        "task": "Monkey JIT: trace through function calls (inlining) (est: 6 blocks)",
+        "task": "Monkey JIT: inline side trace code into root guards (eliminate dispatch overhead)",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -282,7 +294,7 @@
       {
         "time": "14:00",
         "mode": "BUILD",
-        "task": "Monkey JIT: trace through function calls (inlining) (est: 6 blocks)",
+        "task": "Monkey JIT: inline side trace code into root guards (eliminate dispatch overhead)",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -291,7 +303,7 @@
       {
         "time": "14:15",
         "mode": "BUILD",
-        "task": "Monkey JIT: trace through function calls (inlining) (est: 6 blocks)",
+        "task": "Monkey JIT: recursive fibonacci tracing + benchmarks",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -300,7 +312,7 @@
       {
         "time": "14:30",
         "mode": "BUILD",
-        "task": "Monkey JIT: trace through function calls (inlining) (est: 6 blocks)",
+        "task": "Continue: comprehensive benchmark suite",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -309,7 +321,7 @@
       {
         "time": "14:45",
         "mode": "MAINTAIN",
-        "task": "Commit, push",
+        "task": "Commit, push, promote tracing-jit scratch note to lessons/",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -578,23 +590,25 @@
       "GraalVM/Truffle partial evaluation deep dive"
     ],
     "adjustments": [
-      "10:00: JIT scaffold, recording, IR, codegen, and optimizer all done by 09:30 (was scheduled through 11:30). Reprioritized: fix optimizer regression, then side traces + function inlining. Moved \"first working traces\" goal earlier since basic traces already work."
+      "10:00: JIT scaffold, recording, IR, codegen, and optimizer all done by 09:30 (was scheduled through 11:30). Reprioritized: fix optimizer regression, then side traces + function inlining. Moved \"first working traces\" goal earlier since basic traces already work.",
+      "13:00: Function inlining + side traces both done by 11:30 (was scheduled through 14:30). Reprioritized: inline side trace code into root guards to eliminate dispatch overhead (nested loop bottleneck), then fib tracing + benchmarks. Freed ~4 blocks for additional optimization or exploration."
     ]
   },
   "adjustments": [
-    "10:00: JIT scaffold, recording, IR, codegen, and optimizer all done by 09:30 (was scheduled through 11:30). Reprioritized: fix optimizer regression, then side traces + function inlining. Moved \"first working traces\" goal earlier since basic traces already work."
+    "10:00: JIT scaffold, recording, IR, codegen, and optimizer all done by 09:30 (was scheduled through 11:30). Reprioritized: fix optimizer regression, then side traces + function inlining. Moved \"first working traces\" goal earlier since basic traces already work.",
+    "13:00: Function inlining + side traces both done by 11:30 (was scheduled through 14:30). Reprioritized: inline side trace code into root guards to eliminate dispatch overhead (nested loop bottleneck), then fib tracing + benchmarks. Freed ~4 blocks for additional optimization or exploration."
   ],
   "stats": {
-    "blocksCompleted": 15,
+    "blocksCompleted": 18,
     "blocksTotal": 55,
     "modeDistribution": {
-      "THINK": 3,
-      "BUILD": 10,
+      "THINK": 4,
+      "BUILD": 12,
       "MAINTAIN": 2
     },
-    "totalMinutes": 168,
-    "totalMs": 10050000,
-    "avgDurationMs": 670000
+    "totalMinutes": 193,
+    "totalMs": 11580000,
+    "avgDurationMs": 643333
   },
   "artifacts": [
     {
@@ -753,7 +767,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:39:06Z",
       "updatedAt": "2026-03-21T20:46:35Z",
-      "ageHours": 44,
+      "ageHours": 45,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -775,7 +789,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:38:20Z",
       "updatedAt": "2026-03-21T20:50:04Z",
-      "ageHours": 45,
+      "ageHours": 46,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -819,7 +833,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-18T20:02:08Z",
       "updatedAt": "2026-03-21T20:46:10Z",
-      "ageHours": 94,
+      "ageHours": 95,
       "ciStatus": "pending",
       "reviewStatus": "none"
     }
@@ -951,9 +965,9 @@
     }
   ],
   "scheduleAdherence": {
-    "completionRate": 94,
-    "completedBlocks": 15,
-    "pastBlocks": 16,
+    "completionRate": 89,
+    "completedBlocks": 17,
+    "pastBlocks": 19,
     "totalBlocks": 55,
     "plannedDist": {
       "THINK": 9,
@@ -963,10 +977,10 @@
     },
     "actualDist": {
       "THINK": 3,
-      "BUILD": 10,
+      "BUILD": 12,
       "MAINTAIN": 2
     },
-    "pace": 3.9
+    "pace": 3.8
   },
   "streak": 1
 }

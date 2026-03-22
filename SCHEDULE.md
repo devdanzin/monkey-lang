@@ -21,9 +21,11 @@
 - 11:00 🧠 THINK — Side trace architecture design
 - 11:15–12:30 🔨 BUILD — Monkey JIT: side traces (guard exit → new trace recording) (est: 6 blocks)
 - 12:45 🔧 MAINTAIN — Commit side trace progress
-- 13:00 🧠 THINK — Review side traces, plan function inlining
-- 13:15–14:30 🔨 BUILD — Monkey JIT: trace through function calls (inlining) (est: 6 blocks)
-- 14:45 🔧 MAINTAIN — Commit, push
+- 13:00 🧠 THINK — Review progress, replan (inlining done early)
+- 13:15–14:00 🔨 BUILD — Monkey JIT: inline side trace code into root guards (eliminate dispatch overhead)
+- 14:15 🔨 BUILD — Monkey JIT: recursive fibonacci tracing + benchmarks
+- 14:30 🔨 BUILD — Continue: comprehensive benchmark suite
+- 14:45 🔧 MAINTAIN — Commit, push, promote tracing-jit scratch note to lessons/
 - 15:00 🧠 THINK — Assess: what's the real speedup now? Quality check
 - 15:15–15:30 🔨 BUILD — Monkey JIT: comprehensive benchmarks + fib tracing
 - 15:45 🔧 MAINTAIN — Commit, push, update TASKS.md
@@ -57,3 +59,4 @@
 
 ## Adjustments
 - 10:00: JIT scaffold, recording, IR, codegen, and optimizer all done by 09:30 (was scheduled through 11:30). Reprioritized: fix optimizer regression, then side traces + function inlining. Moved "first working traces" goal earlier since basic traces already work.
+- 13:00: Function inlining + side traces both done by 11:30 (was scheduled through 14:30). Reprioritized: inline side trace code into root guards to eliminate dispatch overhead (nested loop bottleneck), then fib tracing + benchmarks. Freed ~4 blocks for additional optimization or exploration.
