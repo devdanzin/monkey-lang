@@ -197,7 +197,8 @@ describe('Trace compilation', () => {
         if (obj instanceof MonkeyBoolean) return obj.value;
         if (obj === NULL) return false;
         return true;
-      }
+      },
+      new Map(),
     );
 
     // Should have counted x up to 100 then exited via guard

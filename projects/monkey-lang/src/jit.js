@@ -521,6 +521,30 @@ export class TraceCompiler {
     return lines;
   }
 
+  // Emit a guard exit that inlines side trace dispatch.
+  // Instead of returning to the VM, if a side trace exists for this guard,
+  // call it directly and continue the loop on loop_back.
+  _emitGuardExit(guardIdx, exitIp, condition, exitType = 'guard') {
+    this.lines.push(`  if (${condition}) {`);
+    // Check for side trace inline — __sideTraces is the trace's sideTraces Map (passed by ref)
+    this.lines.push(`    const __st_trace = __sideTraces.get(${guardIdx});`);
+    this.lines.push(`    if (__st_trace) {`);
+    // Write back promoted vars before calling side trace
+    if (this._wbWrap) {
+      this.lines.push(`      __wb(null);`);
+    }
+    this.lines.push(`      const __sr = __st_trace.compiled(__stack, __sp, __bp, __globals, __consts, __free, __MonkeyInteger, __MonkeyBoolean, __MonkeyString, __TRUE, __FALSE, __NULL, __cachedInteger, __isTruthy, __sideTraces);`);
+    if (this._wbWrap) {
+      // Reload promoted vars after side trace (it may have modified globals/locals)
+      this.lines.push(`      __reloadPromoted();`);
+    }
+    this.lines.push(`      if (__sr && __sr.exit === 'loop_back') { continue loop; }`);
+    this.lines.push(`      ${this._emitReturn('__sr')}`);
+    this.lines.push(`    }`);
+    this.lines.push(`    ${this._emitReturn(`{ exit: "${exitType}", guardIdx: ${guardIdx}, ip: ${exitIp} }`)}`);
+    this.lines.push(`  }`);
+  }
+
   compile() {
     const ir = this.trace.ir;
     const varNames = new Map(); // IR id → JS variable name
@@ -558,6 +582,17 @@ export class TraceCompiler {
         wbStmts.push(`__stack[__bp + ${slot}] = __cachedInteger(${pv})`);
       }
       this.lines.push(`function __wb(r) { ${wbStmts.join('; ')}; return r; }`);
+      // Reload promoted vars after side trace execution (side trace may modify globals/locals)
+      const reloadStmts = [];
+      for (const idx of promotable.globals) {
+        const pv = promotedVarNames.get('g:' + idx);
+        reloadStmts.push(`${pv} = __globals[${idx}].value`);
+      }
+      for (const slot of promotable.locals) {
+        const pv = promotedVarNames.get('l:' + slot);
+        reloadStmts.push(`${pv} = __stack[__bp + ${slot}].value`);
+      }
+      this.lines.push(`function __reloadPromoted() { ${reloadStmts.join('; ')}; }`);
       this._wbWrap = true;
     } else {
       this._wbWrap = false;
@@ -696,8 +731,7 @@ export class TraceCompiler {
           } else {
             const ref = varNames.get(inst.operands.ref);
             const exitIp = inst.operands.exitIp != null ? inst.operands.exitIp : this.trace.startIp;
-            const ret = this._emitReturn(`{ exit: "guard", guardIdx: ${i}, ip: ${exitIp} }`);
-            this.lines.push(`  if (!(${ref} instanceof __MonkeyInteger)) ${ret}`);
+            this._emitGuardExit(i, exitIp, `!(${ref} instanceof __MonkeyInteger)`);
             this.lines.push(`  const ${v} = ${ref};`);
           }
           break;
@@ -706,8 +740,7 @@ export class TraceCompiler {
         case IR.GUARD_BOOL: {
           const ref = varNames.get(inst.operands.ref);
           const exitIp = inst.operands.exitIp != null ? inst.operands.exitIp : this.trace.startIp;
-          const ret = this._emitReturn(`{ exit: "guard", guardIdx: ${i}, ip: ${exitIp} }`);
-          this.lines.push(`  if (!(${ref} instanceof __MonkeyBoolean)) ${ret}`);
+          this._emitGuardExit(i, exitIp, `!(${ref} instanceof __MonkeyBoolean)`);
           this.lines.push(`  const ${v} = ${ref};`);
           break;
         }
@@ -715,37 +748,40 @@ export class TraceCompiler {
         case IR.GUARD_STRING: {
           const ref = varNames.get(inst.operands.ref);
           const exitIp = inst.operands.exitIp != null ? inst.operands.exitIp : this.trace.startIp;
-          const ret = this._emitReturn(`{ exit: "guard", guardIdx: ${i}, ip: ${exitIp} }`);
-          this.lines.push(`  if (!(${ref} instanceof __MonkeyString)) ${ret}`);
+          this._emitGuardExit(i, exitIp, `!(${ref} instanceof __MonkeyString)`);
           this.lines.push(`  const ${v} = ${ref};`);
           break;
         }
 
         case IR.GUARD_TRUTHY: {
           const ref = varNames.get(inst.operands.ref);
-          const ret = this._emitReturn(`{ exit: "guard_falsy", guardIdx: ${i}, ip: ${inst.operands.exitIp} }`);
+          const exitIp = inst.operands.exitIp != null ? inst.operands.exitIp : this.trace.startIp;
           // Optimize: if ref is a CONST_BOOL wrapping a raw comparison, test the raw bool directly
           const refInst = ir[inst.operands.ref];
+          let condition;
           if (refInst && refInst.op === IR.CONST_BOOL && refInst.operands.ref !== undefined) {
             const rawBoolVar = varNames.get(refInst.operands.ref);
-            this.lines.push(`  if (!${rawBoolVar}) ${ret}`);
+            condition = `!${rawBoolVar}`;
           } else {
-            this.lines.push(`  if (typeof ${ref} === 'boolean' ? !${ref} : !__isTruthy(${ref})) ${ret}`);
+            condition = `typeof ${ref} === 'boolean' ? !${ref} : !__isTruthy(${ref})`;
           }
+          this._emitGuardExit(i, exitIp, condition, 'guard_falsy');
           this.lines.push(`  const ${v} = true;`);
           break;
         }
 
         case IR.GUARD_FALSY: {
           const ref = varNames.get(inst.operands.ref);
-          const ret = this._emitReturn(`{ exit: "guard_truthy", guardIdx: ${i}, ip: ${inst.operands.exitIp} }`);
+          const exitIp = inst.operands.exitIp != null ? inst.operands.exitIp : this.trace.startIp;
           const refInst = ir[inst.operands.ref];
+          let condition;
           if (refInst && refInst.op === IR.CONST_BOOL && refInst.operands.ref !== undefined) {
             const rawBoolVar = varNames.get(refInst.operands.ref);
-            this.lines.push(`  if (${rawBoolVar}) ${ret}`);
+            condition = `${rawBoolVar}`;
           } else {
-            this.lines.push(`  if (typeof ${ref} === 'boolean' ? ${ref} : __isTruthy(${ref})) ${ret}`);
+            condition = `typeof ${ref} === 'boolean' ? ${ref} : __isTruthy(${ref})`;
           }
+          this._emitGuardExit(i, exitIp, condition, 'guard_truthy');
           this.lines.push(`  const ${v} = true;`);
           break;
         }
@@ -886,7 +922,7 @@ export class TraceCompiler {
           }
           // Call the inner trace function
           this.lines.push(`  const ${v}_inner = __consts[${inst.operands.constIdx}];`);
-          this.lines.push(`  let ${v} = ${v}_inner(__stack, __sp, __bp, __globals, __consts, __free, __MonkeyInteger, __MonkeyBoolean, __MonkeyString, __TRUE, __FALSE, __NULL, __cachedInteger, __isTruthy);`);
+          this.lines.push(`  let ${v} = ${v}_inner(__stack, __sp, __bp, __globals, __consts, __free, __MonkeyInteger, __MonkeyBoolean, __MonkeyString, __TRUE, __FALSE, __NULL, __cachedInteger, __isTruthy, __sideTraces);`);
           // After inner trace, reload promoted vars (inner trace may have modified them)
           for (const idx of promotable.globals) {
             const pv = promotedVarNames.get('g:' + idx);
@@ -914,7 +950,7 @@ export class TraceCompiler {
         '__stack', '__sp', '__bp', '__globals', '__consts', '__free',
         '__MonkeyInteger', '__MonkeyBoolean', '__MonkeyString',
         '__TRUE', '__FALSE', '__NULL',
-        '__cachedInteger', '__isTruthy',
+        '__cachedInteger', '__isTruthy', '__sideTraces',
         body
       );
       return fn;

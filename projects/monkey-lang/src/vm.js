@@ -837,6 +837,7 @@ export class VM {
         TRUE, FALSE, NULL,
         cachedInteger,
         this.isTruthy,
+        trace.sideTraces,
       );
       currentTrace.executionCount++;
 
@@ -846,23 +847,8 @@ export class VM {
         case 'guard_falsy':
         case 'guard_truthy':
         case 'guard':
-          // Guard failed — check for side trace first
-          if (currentTrace.sideTraces.has(result.guardIdx)) {
-            const sideTrace = currentTrace.sideTraces.get(result.guardIdx);
-            const sideResult = this._executeSideTrace(sideTrace, currentTrace, allConsts);
-            if (sideResult && sideResult.exit === 'loop_back') {
-              // Side trace completed — re-enter parent trace (iterative, not recursive)
-              currentTrace = trace; // always re-enter the root trace
-              continue;
-            }
-            // Side trace exited some other way — fall to interpreter
-            if (sideResult && sideResult.ip !== undefined) {
-              frame.ip = sideResult.ip - 1;
-            }
-            return true;
-          }
-
-          // No side trace — resume interpreter at exit IP
+          // Guard failed and no side trace was available inline
+          // (side trace dispatch is now handled in compiled code)
           if (result.ip !== undefined) {
             frame.ip = result.ip - 1;
           }
@@ -902,6 +888,7 @@ export class VM {
   // Execute a compiled side trace
   _executeSideTrace(sideTrace, parentTrace, allConsts) {
     const frame = this.currentFrame();
+    const emptySideTraces = new Map();
     const result = sideTrace.compiled(
       this.stack, this.sp, frame.basePointer,
       this.globals, allConsts, frame.closure.free,
@@ -909,6 +896,7 @@ export class VM {
       TRUE, FALSE, NULL,
       cachedInteger,
       this.isTruthy,
+      emptySideTraces,
     );
     sideTrace.executionCount++;
     return result;
