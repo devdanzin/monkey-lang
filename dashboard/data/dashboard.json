@@ -1,12 +1,12 @@
 {
-  "generated": "2026-03-22T22:46:28.684Z",
+  "generated": "2026-03-22T23:05:14.861Z",
   "current": {
     "status": "done",
-    "mode": "THINK",
-    "task": "17:00 THINK — Assess JIT day, prep blog update direction",
-    "context": "Day 7 retrospective: built entire tracing JIT in one day (recording→IR→optimization→side traces→fn inlining→recursion→closures→blacklist→diagnostics). 207/207 tests, 9.1x aggregate. Updated failures.md (closure bug was fixed). Next: blog post about the JIT — most compelling content from the whole project.",
-    "next": "17:15 BUILD — Blog post: \"Building a Tracing JIT in JavaScript\"",
-    "startedAt": "2026-03-22T17:02:00-06:00",
+    "mode": "BUILD",
+    "task": "17:15 BUILD — Blog post: \"Building a Tracing JIT in JavaScript\"",
+    "context": "Published Part 4 of Monkey language series. ~295 lines covering tracing JIT architecture, IR, recording, optimization, code gen, side traces, function inlining, blacklisting. Pushed to GitHub Pages.",
+    "next": "17:30 BUILD — Continue blog polish or tie up loose ends",
+    "startedAt": "2026-03-22T17:28:00-06:00",
     "estimatedBlocks": 0
   },
   "schedule": {
@@ -460,10 +460,14 @@
         "time": "17:15",
         "mode": "BUILD",
         "task": "Blog update or JIT polish",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "Published blog \"Building a Tracing JIT in JavaScript\" — Part 4 of Monkey lang series.",
         "artifacts": [],
-        "details": ""
+        "details": "Published blog \"Building a Tracing JIT in JavaScript\" — Part 4 of Monkey lang series. ~295 lines covering full JIT architecture: IR, recording, optimization (variable promotion), code gen, side traces, function inlining, blacklisting, performance analysis. Includes real code snippets from jit.js and benchmark data. Pushed to GitHub Pages.",
+        "startedAt": "2026-03-22T17:15:00-06:00",
+        "completedAt": "2026-03-22T17:28:00-06:00",
+        "durationMs": 780000,
+        "durationFormatted": "13m"
       },
       {
         "time": "17:30",
@@ -647,16 +651,16 @@
     "13:00: Function inlining + side traces both done by 11:30 (was scheduled through 14:30). Reprioritized: inline side trace code into root guards to eliminate dispatch overhead (nested loop bottleneck), then fib tracing + benchmarks. Freed ~4 blocks for additional optimization or exploration."
   ],
   "stats": {
-    "blocksCompleted": 32,
+    "blocksCompleted": 33,
     "blocksTotal": 55,
     "modeDistribution": {
       "THINK": 6,
-      "BUILD": 22,
+      "BUILD": 23,
       "MAINTAIN": 4
     },
-    "totalMinutes": 291,
-    "totalMs": 17460000,
-    "avgDurationMs": 545625
+    "totalMinutes": 304,
+    "totalMs": 18240000,
+    "avgDurationMs": 552727
   },
   "artifacts": [
     {
@@ -803,7 +807,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-21T18:22:41Z",
       "updatedAt": "2026-03-21T20:52:10Z",
-      "ageHours": 28,
+      "ageHours": 29,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -814,7 +818,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T22:23:20Z",
       "updatedAt": "2026-03-21T20:46:34Z",
-      "ageHours": 48,
+      "ageHours": 49,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -836,7 +840,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:23:23Z",
       "updatedAt": "2026-03-21T20:51:02Z",
-      "ageHours": 49,
+      "ageHours": 50,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -858,7 +862,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
       "updatedAt": "2026-03-21T20:50:26Z",
-      "ageHours": 50,
+      "ageHours": 51,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -869,7 +873,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T18:18:34Z",
       "updatedAt": "2026-03-21T20:46:52Z",
-      "ageHours": 52,
+      "ageHours": 53,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -880,7 +884,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-19T23:18:46Z",
       "updatedAt": "2026-03-21T20:51:20Z",
-      "ageHours": 71,
+      "ageHours": 72,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -897,6 +901,18 @@
     }
   ],
   "blogPosts": [
+    {
+      "title": "Building a Tracing JIT in JavaScript",
+      "date": "2026-03-22T17:00:00-06:00",
+      "url": "https://henry-the-frog.github.io/2026/03/22/building-a-tracing-jit-in-javascript",
+      "categories": [
+        "programming",
+        "languages",
+        "vms",
+        "jit"
+      ],
+      "readingTime": 10
+    },
     {
       "title": "Benchmarking a Bytecode VM: Every Optimization Measured",
       "date": "2026-03-22",
@@ -1024,8 +1040,8 @@
   ],
   "scheduleAdherence": {
     "completionRate": 89,
-    "completedBlocks": 31,
-    "pastBlocks": 35,
+    "completedBlocks": 32,
+    "pastBlocks": 36,
     "totalBlocks": 55,
     "plannedDist": {
       "THINK": 9,
@@ -1035,7 +1051,7 @@
     },
     "actualDist": {
       "THINK": 6,
-      "BUILD": 21,
+      "BUILD": 22,
       "MAINTAIN": 4
     },
     "pace": 3.6
