@@ -61,7 +61,7 @@ Highlights: `fib(30)` runs in **113ms** with the JIT (vs 1319ms VM, 2199ms inter
 ## Tests
 
 ```bash
-node --test    # 197 tests
+node --test    # 207 tests
 ```
 
 ## Benchmarks
