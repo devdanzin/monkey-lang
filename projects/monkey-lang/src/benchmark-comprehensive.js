@@ -160,6 +160,105 @@ const BENCHMARKS = [
     expected: 200,
   },
 
+  // === Arrays ===
+  {
+    name: 'array: build 1000 elements',
+    category: 'arrays',
+    input: `
+      let arr = [];
+      let i = 0;
+      while (i < 1000) { arr = push(arr, i); i = i + 1; }
+      len(arr)
+    `,
+    expected: 1000,
+  },
+  {
+    name: 'array: sum via index 1000',
+    category: 'arrays',
+    input: `
+      let arr = [];
+      let i = 0;
+      while (i < 1000) { arr = push(arr, i); i = i + 1; }
+      let sum = 0; let j = 0;
+      while (j < 1000) { sum = sum + arr[j]; j = j + 1; }
+      sum
+    `,
+    expected: 499500,
+  },
+  {
+    name: 'array: nested fn + array access',
+    category: 'arrays',
+    input: `
+      let get = fn(arr, i) { arr[i] };
+      let arr = [10, 20, 30, 40, 50];
+      let sum = 0; let i = 0;
+      while (i < 5000) {
+        sum = sum + get(arr, 0) + get(arr, 4);
+        i = i + 1;
+      }
+      sum
+    `,
+    expected: 300000,
+  },
+
+  // === Closures ===
+  {
+    name: 'closure: adder factory 10k',
+    category: 'closures',
+    input: `
+      let adder = fn(x) { fn(y) { x + y } };
+      let addFive = adder(5);
+      let addTen = adder(10);
+      let sum = 0; let i = 0;
+      while (i < 10000) {
+        sum = sum + addFive(i) + addTen(i);
+        i = i + 1;
+      }
+      sum
+    `,
+    expected: 100140000,
+  },
+  {
+    name: 'closure: multiplier factory 5k',
+    category: 'closures',
+    input: `
+      let multiplier = fn(x) { fn(y) { x * y } };
+      let triple = multiplier(3);
+      let sum = 0; let i = 0;
+      while (i < 5000) { sum = sum + triple(i); i = i + 1; }
+      sum
+    `,
+    expected: 37492500,
+  },
+
+  // === Higher-order functions ===
+  {
+    name: 'higher-order: apply fn 10k times',
+    category: 'higher-order',
+    input: `
+      let apply = fn(f, x) { f(x) };
+      let double = fn(x) { x * 2 };
+      let sum = 0; let i = 0;
+      while (i < 10000) { sum = sum + apply(double, i); i = i + 1; }
+      sum
+    `,
+    expected: 99990000,
+  },
+  {
+    name: 'higher-order: compose',
+    category: 'higher-order',
+    input: `
+      let compose = fn(f, g) { fn(x) { f(g(x)) } };
+      let double = fn(x) { x * 2 };
+      let inc = fn(x) { x + 1 };
+      let double_inc = compose(double, inc);
+      let sum = 0; let i = 0;
+      while (i < 5000) { sum = sum + double_inc(i); i = i + 1; }
+      sum
+    `,
+    expected: 25005000,
+  },
+
   // === Stress tests ===
   {
     name: 'fib(30) raw integer JIT',
