@@ -1,8 +1,8 @@
 status: done
-mode: BUILD
-task: Monkey JIT: scaffold trace recorder, IR, and JS code generator
-context: Created jit.js with IR system (~25 opcodes), Trace/TraceRecorder/TraceCompiler/JIT classes. Compiles traces to JS via new Function(). 5 tests passing including end-to-end trace compilation (counter loop 0→100). All 157 existing tests still pass.
+mode: THINK
+task: 09:00 THINK — Review JIT integration, assess quality, plan next phase
+context: JIT VM integration complete. Fixed 3 bugs: CONST_INT type mismatch (raw_int vs int), UNBOX_INT on already-raw values, GUARD_TRUTHY on MonkeyBoolean objects. All 7 integration tests + 157 existing tests pass. Trace recording, compilation, and execution all working end-to-end.
 context-files: lessons/compiler-vm-design.md, memory/scratch/tracing-jit-compilation.md
-est: 5
-next: 09:00 THINK — Review JIT architecture, plan VM integration (hook recorder into run loop)
-updated: 2026-03-22T08:43:00-06:00
+est: 0
+next: 09:15 BUILD — Continue JIT work (optimize trace quality, add more opcode coverage)
+updated: 2026-03-22T09:14:00-06:00

@@ -203,18 +203,24 @@ export class TraceRecorder {
     const leftRef = this.popRef();
 
     // Guard types if not already known
-    if (this.knownType(leftRef) !== 'int') {
+    if (this.knownType(leftRef) !== 'int' && this.knownType(leftRef) !== 'raw_int') {
       this.guardType(leftRef, leftVal);
     }
-    if (this.knownType(rightRef) !== 'int') {
+    if (this.knownType(rightRef) !== 'int' && this.knownType(rightRef) !== 'raw_int') {
       this.guardType(rightRef, rightVal);
     }
 
-    // Unbox
-    const leftUnboxed = this.trace.addInst(IR.UNBOX_INT, { ref: leftRef });
-    this.typeMap.set(leftUnboxed, 'raw_int');
-    const rightUnboxed = this.trace.addInst(IR.UNBOX_INT, { ref: rightRef });
-    this.typeMap.set(rightUnboxed, 'raw_int');
+    // Unbox (skip if already raw)
+    let leftUnboxed = leftRef;
+    if (this.knownType(leftRef) !== 'raw_int') {
+      leftUnboxed = this.trace.addInst(IR.UNBOX_INT, { ref: leftRef });
+      this.typeMap.set(leftUnboxed, 'raw_int');
+    }
+    let rightUnboxed = rightRef;
+    if (this.knownType(rightRef) !== 'raw_int') {
+      rightUnboxed = this.trace.addInst(IR.UNBOX_INT, { ref: rightRef });
+      this.typeMap.set(rightUnboxed, 'raw_int');
+    }
 
     // Operate on raw values
     let irOp;
@@ -239,11 +245,17 @@ export class TraceRecorder {
     const leftRef = this.popRef();
 
     if (leftVal instanceof MonkeyInteger && rightVal instanceof MonkeyInteger) {
-      if (this.knownType(leftRef) !== 'int') this.guardType(leftRef, leftVal);
-      if (this.knownType(rightRef) !== 'int') this.guardType(rightRef, rightVal);
+      if (this.knownType(leftRef) !== 'int' && this.knownType(leftRef) !== 'raw_int') this.guardType(leftRef, leftVal);
+      if (this.knownType(rightRef) !== 'int' && this.knownType(rightRef) !== 'raw_int') this.guardType(rightRef, rightVal);
 
-      const lu = this.trace.addInst(IR.UNBOX_INT, { ref: leftRef });
-      const ru = this.trace.addInst(IR.UNBOX_INT, { ref: rightRef });
+      let lu = leftRef;
+      if (this.knownType(leftRef) !== 'raw_int') {
+        lu = this.trace.addInst(IR.UNBOX_INT, { ref: leftRef });
+      }
+      let ru = rightRef;
+      if (this.knownType(rightRef) !== 'raw_int') {
+        ru = this.trace.addInst(IR.UNBOX_INT, { ref: rightRef });
+      }
 
       let irOp;
       switch (op) {
@@ -427,15 +439,15 @@ export class TraceCompiler {
 
         case IR.GUARD_TRUTHY: {
           const ref = varNames.get(inst.operands.ref);
-          // ref may be a raw JS boolean (from comparisons) or a MonkeyObject
-          this.lines.push(`  if (!${ref}) return { exit: "guard_falsy", guardIdx: ${i}, ip: ${inst.operands.exitIp} };`);
+          // ref may be a raw JS boolean or a MonkeyObject — use __isTruthy for objects
+          this.lines.push(`  if (typeof ${ref} === 'boolean' ? !${ref} : !__isTruthy(${ref})) return { exit: "guard_falsy", guardIdx: ${i}, ip: ${inst.operands.exitIp} };`);
           this.lines.push(`  const ${v} = true;`);
           break;
         }
 
         case IR.GUARD_FALSY: {
           const ref = varNames.get(inst.operands.ref);
-          this.lines.push(`  if (${ref}) return { exit: "guard_truthy", guardIdx: ${i}, ip: ${inst.operands.exitIp} };`);
+          this.lines.push(`  if (typeof ${ref} === 'boolean' ? ${ref} : __isTruthy(${ref})) return { exit: "guard_truthy", guardIdx: ${i}, ip: ${inst.operands.exitIp} };`);
           this.lines.push(`  const ${v} = true;`);
           break;
         }

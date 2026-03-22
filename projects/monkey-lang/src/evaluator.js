@@ -99,6 +99,15 @@ export function monkeyEval(node, env) {
 
   if (node instanceof AST.IfExpression) return evalIfExpression(node, env);
 
+  if (node instanceof AST.WhileExpression) return evalWhileExpression(node, env);
+
+  if (node instanceof AST.AssignExpression) {
+    const val = monkeyEval(node.value, env);
+    if (isError(val)) return val;
+    env.set(node.name.value, val);
+    return val;
+  }
+
   if (node instanceof AST.Identifier) return evalIdentifier(node, env);
 
   if (node instanceof AST.FunctionLiteral) {
@@ -212,6 +221,19 @@ function evalIfExpression(node, env) {
   if (isError(condition)) return condition;
   if (isTruthy(condition)) return monkeyEval(node.consequence, env);
   if (node.alternative) return monkeyEval(node.alternative, env);
+  return NULL;
+}
+
+function evalWhileExpression(node, env) {
+  let result = NULL;
+  while (true) {
+    const condition = monkeyEval(node.condition, env);
+    if (isError(condition)) return condition;
+    if (!isTruthy(condition)) break;
+    result = monkeyEval(node.body, env);
+    if (isError(result)) return result;
+    if (result instanceof MonkeyReturnValue) return result;
+  }
   return NULL;
 }
 

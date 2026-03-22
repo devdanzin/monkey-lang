@@ -243,6 +243,23 @@ export class Compiler {
       this.emit(node.value ? Opcodes.OpTrue : Opcodes.OpFalse);
     } else if (node instanceof ast.IfExpression) {
       return this.compileIfExpression(node);
+    } else if (node instanceof ast.WhileExpression) {
+      return this.compileWhileExpression(node);
+    } else if (node instanceof ast.AssignExpression) {
+      const sym = this.symbolTable.resolve(node.name.value);
+      if (!sym) return `undefined variable: ${node.name.value}`;
+      const err = this.compile(node.value);
+      if (err) return err;
+      // Assignment expression: set and push the value back (like other expressions)
+      if (sym.scope === 'GLOBAL') {
+        this.emit(Opcodes.OpSetGlobal, sym.index);
+        this.emit(Opcodes.OpGetGlobal, sym.index);
+      } else if (sym.scope === 'LOCAL') {
+        this.emit(Opcodes.OpSetLocal, sym.index);
+        this.emit(Opcodes.OpGetLocal, sym.index);
+      } else {
+        return `cannot assign to ${sym.scope} variable: ${node.name.value}`;
+      }
     } else if (node instanceof ast.Identifier) {
       const sym = this.symbolTable.resolve(node.value);
       if (!sym) return `undefined variable: ${node.value}`;
@@ -323,6 +340,53 @@ export class Compiler {
     this.changeOperand(jumpPos, afterAlternative);
 
     // After if/else, result type is unknown
+    this.resetIntStack();
+
+    return null;
+  }
+
+  compileWhileExpression(node) {
+    // while (condition) { body }
+    // Compiles to:
+    //   loopStart:
+    //     <condition>
+    //     OpJumpNotTruthy afterLoop
+    //     <body>
+    //     OpPop (discard body result)
+    //     OpJump loopStart        ← backward jump (JIT traces this!)
+    //   afterLoop:
+    //     OpNull                  ← while expression evaluates to null
+
+    const loopStart = this.currentInstructions().length;
+
+    // Compile condition
+    let err = this.compile(node.condition);
+    if (err) return err;
+
+    // Jump past body if condition is false
+    const jumpNotTruthyPos = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+
+    // Compile body
+    err = this.compile(node.body);
+    if (err) return err;
+
+    // Pop body result
+    if (this.lastInstructionIs(Opcodes.OpPop)) {
+      // Already has a pop — good
+    } else {
+      this.emit(Opcodes.OpPop);
+    }
+
+    // Jump back to loop start (backward jump)
+    this.emit(Opcodes.OpJump, loopStart);
+
+    // Patch conditional jump to here
+    const afterLoop = this.currentInstructions().length;
+    this.changeOperand(jumpNotTruthyPos, afterLoop);
+
+    // While evaluates to null
+    this.emit(Opcodes.OpNull);
+
     this.resetIntStack();
 
     return null;

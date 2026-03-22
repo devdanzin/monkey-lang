@@ -5,16 +5,18 @@ import * as ast from './ast.js';
 
 const Precedence = {
   LOWEST: 1,
-  EQUALS: 2,      // ==
-  LESSGREATER: 3,  // > or <
-  SUM: 4,          // +
-  PRODUCT: 5,      // *
-  PREFIX: 6,       // -X or !X
-  CALL: 7,         // myFunction(X)
-  INDEX: 8,        // array[index]
+  ASSIGN: 2,      // =
+  EQUALS: 3,      // ==
+  LESSGREATER: 4,  // > or <
+  SUM: 5,          // +
+  PRODUCT: 6,      // *
+  PREFIX: 7,       // -X or !X
+  CALL: 8,         // myFunction(X)
+  INDEX: 9,        // array[index]
 };
 
 const TOKEN_PRECEDENCE = {
+  [TokenType.ASSIGN]: Precedence.ASSIGN,
   [TokenType.EQ]: Precedence.EQUALS,
   [TokenType.NOT_EQ]: Precedence.EQUALS,
   [TokenType.LT]: Precedence.LESSGREATER,
@@ -50,6 +52,7 @@ export class Parser {
     this.registerPrefix(TokenType.FUNCTION, () => this.parseFunctionLiteral());
     this.registerPrefix(TokenType.LBRACKET, () => this.parseArrayLiteral());
     this.registerPrefix(TokenType.LBRACE, () => this.parseHashLiteral());
+    this.registerPrefix(TokenType.WHILE, () => this.parseWhileExpression());
 
     // Register infix parsers
     for (const op of [TokenType.PLUS, TokenType.MINUS, TokenType.SLASH,
@@ -59,6 +62,7 @@ export class Parser {
     }
     this.registerInfix(TokenType.LPAREN, (left) => this.parseCallExpression(left));
     this.registerInfix(TokenType.LBRACKET, (left) => this.parseIndexExpression(left));
+    this.registerInfix(TokenType.ASSIGN, (left) => this.parseAssignExpression(left));
 
     // Prime the pump
     this.nextToken();
@@ -232,6 +236,17 @@ export class Parser {
     return new ast.IfExpression(token, condition, consequence, alternative);
   }
 
+  parseWhileExpression() {
+    const token = this.curToken;
+    if (!this.expectPeek(TokenType.LPAREN)) return null;
+    this.nextToken();
+    const condition = this.parseExpression(Precedence.LOWEST);
+    if (!this.expectPeek(TokenType.RPAREN)) return null;
+    if (!this.expectPeek(TokenType.LBRACE)) return null;
+    const body = this.parseBlockStatement();
+    return new ast.WhileExpression(token, condition, body);
+  }
+
   parseFunctionLiteral() {
     const token = this.curToken;
     if (!this.expectPeek(TokenType.LPAREN)) return null;
@@ -276,6 +291,17 @@ export class Parser {
     const index = this.parseExpression(Precedence.LOWEST);
     if (!this.expectPeek(TokenType.RBRACKET)) return null;
     return new ast.IndexExpression(token, left, index);
+  }
+
+  parseAssignExpression(left) {
+    if (!(left instanceof ast.Identifier)) {
+      this.errors.push(`cannot assign to ${left.constructor.name}`);
+      return null;
+    }
+    const token = this.curToken;
+    this.nextToken();
+    const value = this.parseExpression(Precedence.LOWEST);
+    return new ast.AssignExpression(token, left, value);
   }
 
   parseHashLiteral() {

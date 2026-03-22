@@ -20,3 +20,9 @@ Track recurring issues so future sessions don't repeat them.
 **Root cause:** monkey-lang is just a directory in the workspace repo, not a git submodule or separate repo.
 **Fix:** Removed the bad remote. Future: if a project needs its own GitHub repo, either use `git subtree` or initialize it as a truly separate repo outside the workspace.
 **Prevention:** Always check `git rev-parse --show-toplevel` before adding remotes in subdirectories.
+
+### JIT raw/boxed type confusion (2026-03-22)
+**Problem:** CONST_INT IR produces raw JS numbers but typeMap marked them as 'int' (MonkeyInteger). UNBOX_INT then called .value on raw numbers → undefined → NaN → all arithmetic silently wrong. GUARD_TRUTHY used JS truthiness on MonkeyBoolean objects (always truthy as objects) → guards never fired.
+**Root cause:** Two "worlds" in the IR (raw JS values vs MonkeyObject wrappers) with inconsistent type tracking.
+**Fix:** Mark CONST_INT as 'raw_int' in typeMap. Skip UNBOX_INT and GUARD_INT when type is already 'raw_int'. Use __isTruthy() for MonkeyObject guards.
+**Prevention:** Every IR instruction must have a clear contract: does it produce raw or boxed values? Document this in the IR opcode definitions. Test with logging the generated JS source.

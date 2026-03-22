@@ -8,6 +8,7 @@ import {
   MonkeyArray, MonkeyHash, MonkeyBuiltin, MonkeyError,
   TRUE, FALSE, NULL, cachedInteger,
 } from './object.js';
+import { IR, JIT, TraceRecorder } from './jit.js';
 
 const STACK_SIZE = 2048;
 const GLOBALS_SIZE = 65536;
@@ -93,6 +94,15 @@ export class VM {
     this.frames = new Array(MAX_FRAMES);
     this.frames[0] = new Frame(mainClosure, 0);
     this.framesIndex = 1;
+
+    // JIT support
+    this.jit = null;
+    this.recorder = null;
+  }
+
+  enableJIT() {
+    this.jit = new JIT();
+    return this;
   }
 
   /** Create a VM that reuses an existing globals store (for REPL) */
@@ -139,6 +149,7 @@ export class VM {
 
   run() {
     let ip, ins, op;
+    const recording = () => this.recorder && this.recorder.recording;
 
     while (this.currentFrame().ip < this.currentFrame().instructions().length - 1) {
       this.currentFrame().ip++;
@@ -146,16 +157,41 @@ export class VM {
       ins = this.currentFrame().instructions();
       op = ins[ip];
 
+      // Check if we've looped back to trace start (recording complete)
+      if (recording() && this.recorder.instrCount > 0 && ip === this.recorder.startIp
+          && this.framesIndex === this.recorder.startFrame) {
+        const trace = this.recorder.stop();
+        if (trace && this.jit && this.jit.compile(trace, this)) {
+          this.jit.storeTrace(trace);
+          // Execute the freshly compiled trace immediately
+          this._executeTrace(trace);
+          this.recorder = null;
+          continue; // ip changed by trace; restart loop
+        }
+        this.recorder = null;
+      }
+
+      // Abort recording on too many instructions
+      if (recording() && ++this.recorder.instrCount > 200) {
+        this.recorder.abort();
+        this.recorder = null;
+      }
+
       switch (op) {
         case Opcodes.OpConstant: {
           const constIdx = (ins[ip + 1] << 8) | ins[ip + 2];
           this.currentFrame().ip += 2;
-          this.push(this.constants[constIdx]);
+          const constVal = this.constants[constIdx];
+          this.push(constVal);
+          if (recording()) {
+            this._recordPush(op, constVal, [constIdx]);
+          }
           break;
         }
 
         case Opcodes.OpPop:
           this.pop();
+          if (recording()) { this.recorder.popRef(); }
           break;
 
         case Opcodes.OpAdd:
@@ -166,6 +202,9 @@ export class VM {
           const left = this.pop();
 
           if (left instanceof MonkeyInteger && right instanceof MonkeyInteger) {
+            if (recording()) {
+              this.recorder.recordIntArith(op, left, right);
+            }
             let result;
             switch (op) {
               case Opcodes.OpAdd: result = left.value + right.value; break;
@@ -175,6 +214,7 @@ export class VM {
             }
             this.push(cachedInteger(result));
           } else if (left instanceof MonkeyString && right instanceof MonkeyString && op === Opcodes.OpAdd) {
+            if (recording()) { this.recorder.abort(); this.recorder = null; }
             this.push(new MonkeyString(left.value + right.value));
           } else {
             throw new Error(`unsupported types for ${op}: ${left.type()} and ${right.type()}`);
@@ -184,10 +224,12 @@ export class VM {
 
         case Opcodes.OpTrue:
           this.push(TRUE);
+          if (recording()) { this._recordPush(op, TRUE, []); }
           break;
 
         case Opcodes.OpFalse:
           this.push(FALSE);
+          if (recording()) { this._recordPush(op, FALSE, []); }
           break;
 
         case Opcodes.OpEqual:
@@ -197,6 +239,9 @@ export class VM {
           const left2 = this.pop();
 
           if (left2 instanceof MonkeyInteger && right2 instanceof MonkeyInteger) {
+            if (recording()) {
+              this.recorder.recordComparison(op, left2, right2);
+            }
             let result;
             switch (op) {
               case Opcodes.OpEqual: result = left2.value === right2.value; break;
@@ -205,6 +250,7 @@ export class VM {
             }
             this.push(result ? TRUE : FALSE);
           } else if (left2 instanceof MonkeyBoolean && right2 instanceof MonkeyBoolean) {
+            if (recording()) { this.recorder.abort(); this.recorder = null; }
             let result;
             switch (op) {
               case Opcodes.OpEqual: result = left2.value === right2.value; break;
@@ -223,12 +269,22 @@ export class VM {
           if (!(operand instanceof MonkeyInteger)) {
             throw new Error(`unsupported type for negation: ${operand.type()}`);
           }
+          if (recording()) {
+            const ref = this.recorder.popRef();
+            if (this.recorder.knownType(ref) !== 'int') this.recorder.guardType(ref, operand);
+            const unboxed = this.recorder.trace.addInst(IR.UNBOX_INT, { ref });
+            const negRef = this.recorder.trace.addInst(IR.NEG, { ref: unboxed });
+            const boxed = this.recorder.trace.addInst(IR.BOX_INT, { ref: negRef });
+            this.recorder.typeMap.set(boxed, 'int');
+            this.recorder.pushRef(boxed);
+          }
           this.push(cachedInteger(-operand.value));
           break;
         }
 
         case Opcodes.OpBang: {
           const operand2 = this.pop();
+          if (recording()) { this.recorder.abort(); this.recorder = null; }
           if (operand2 === TRUE) this.push(FALSE);
           else if (operand2 === FALSE) this.push(TRUE);
           else if (operand2 === NULL) this.push(TRUE);
@@ -240,47 +296,102 @@ export class VM {
           const target = (ins[ip + 1] << 8) | ins[ip + 2];
           this.currentFrame().ip += 2;
           const condition = this.pop();
-          if (!this.isTruthy(condition)) {
-            this.currentFrame().ip = target - 1; // -1 because loop increments
+          const truthy = this.isTruthy(condition);
+
+          if (recording()) {
+            const condRef = this.recorder.popRef();
+            if (truthy) {
+              // Took the fall-through path — guard that it stays truthy
+              this.recorder.trace.addInst(IR.GUARD_TRUTHY, { ref: condRef, exitIp: target });
+              this.recorder.trace.guardCount++;
+            } else {
+              // Took the jump path — guard that it stays falsy
+              this.recorder.trace.addInst(IR.GUARD_FALSY, { ref: condRef, exitIp: ip + 3 });
+              this.recorder.trace.guardCount++;
+            }
+          }
+
+          if (!truthy) {
+            this.currentFrame().ip = target - 1;
           }
           break;
         }
 
         case Opcodes.OpJump: {
           const target2 = (ins[ip + 1] << 8) | ins[ip + 2];
+
+          // Backward jump = loop back-edge
+          if (this.jit && target2 <= ip) {
+            const closureId = this._closureId();
+
+            // Check for existing compiled trace
+            const existingTrace = this.jit.getTrace(closureId, target2);
+            if (existingTrace && existingTrace.compiled && !recording()) {
+              this._executeTrace(existingTrace);
+              // After trace exits, ip is already set; continue interpreting
+              break;
+            }
+
+            // Hot counting (only when not already recording)
+            if (!recording() && this.jit.countEdge(closureId, target2)) {
+              this._startRecording(target2);
+            }
+          }
+
           this.currentFrame().ip = target2 - 1;
           break;
         }
 
         case Opcodes.OpNull:
           this.push(NULL);
+          if (recording()) { this._recordPush(op, NULL, []); }
           break;
 
         case Opcodes.OpSetGlobal: {
           const globalIdx = (ins[ip + 1] << 8) | ins[ip + 2];
           this.currentFrame().ip += 2;
-          this.globals[globalIdx] = this.pop();
+          const setGlobalVal = this.pop();
+          this.globals[globalIdx] = setGlobalVal;
+          if (recording()) {
+            const valRef = this.recorder.popRef();
+            this.recorder.trace.addInst(IR.STORE_GLOBAL, { index: globalIdx, value: valRef });
+          }
           break;
         }
 
         case Opcodes.OpGetGlobal: {
           const globalIdx2 = (ins[ip + 1] << 8) | ins[ip + 2];
           this.currentFrame().ip += 2;
-          this.push(this.globals[globalIdx2]);
+          const getGlobalVal = this.globals[globalIdx2];
+          this.push(getGlobalVal);
+          if (recording()) {
+            const ref = this.recorder.trace.addInst(IR.LOAD_GLOBAL, { index: globalIdx2 });
+            this.recorder.pushRef(ref);
+          }
           break;
         }
 
         case Opcodes.OpSetLocal: {
           const localIdx = ins[ip + 1];
           this.currentFrame().ip += 1;
-          this.stack[this.currentFrame().basePointer + localIdx] = this.pop();
+          const setVal = this.pop();
+          this.stack[this.currentFrame().basePointer + localIdx] = setVal;
+          if (recording()) {
+            const valRef = this.recorder.popRef();
+            this.recorder.trace.addInst(IR.STORE_LOCAL, { slot: localIdx, value: valRef });
+          }
           break;
         }
 
         case Opcodes.OpGetLocal: {
           const localIdx2 = ins[ip + 1];
           this.currentFrame().ip += 1;
-          this.push(this.stack[this.currentFrame().basePointer + localIdx2]);
+          const localVal = this.stack[this.currentFrame().basePointer + localIdx2];
+          this.push(localVal);
+          if (recording()) {
+            const ref = this.recorder.trace.addInst(IR.LOAD_LOCAL, { slot: localIdx2 });
+            this.recorder.pushRef(ref);
+          }
           break;
         }
 
@@ -331,6 +442,7 @@ export class VM {
         }
 
         case Opcodes.OpCall: {
+          if (recording()) { this.recorder.abort(); this.recorder = null; }
           const numArgs = ins[ip + 1];
           this.currentFrame().ip += 1;
           const callee = this.stack[this.sp - 1 - numArgs];
@@ -411,6 +523,14 @@ export class VM {
           const right4 = this.constants[constIdx3];
 
           if (left4 instanceof MonkeyInteger && right4 instanceof MonkeyInteger) {
+            if (recording()) {
+              // Left ref is already on IR stack from prior push opcode
+              // Add const ref for right, then recordIntArith pops both
+              const constRef = this.recorder.trace.addInst(IR.CONST_INT, { value: right4.value });
+              this.recorder.typeMap.set(constRef, 'raw_int');
+              this.recorder.pushRef(constRef);
+              this.recorder.recordIntArith(op, left4, right4);
+            }
             let result;
             switch (op) {
               case Opcodes.OpAddConst: result = left4.value + right4.value; break;
@@ -420,6 +540,7 @@ export class VM {
             }
             this.push(cachedInteger(result));
           } else if (left4 instanceof MonkeyString && right4 instanceof MonkeyString && op === Opcodes.OpAddConst) {
+            if (recording()) { this.recorder.abort(); this.recorder = null; }
             this.push(new MonkeyString(left4.value + right4.value));
           } else {
             throw new Error(`unsupported types for constant op: ${left4.type()} and ${right4.type()}`);
@@ -432,6 +553,7 @@ export class VM {
         case Opcodes.OpGetLocalSubConst:
         case Opcodes.OpGetLocalMulConst:
         case Opcodes.OpGetLocalDivConst: {
+          if (recording()) { this.recorder.abort(); this.recorder = null; }
           const localIdx3 = ins[ip + 1];
           const constIdx4 = (ins[ip + 2] << 8) | ins[ip + 3];
           this.currentFrame().ip += 3;
@@ -460,6 +582,7 @@ export class VM {
         case Opcodes.OpAddInt: {
           const r = this.pop();
           const l = this.pop();
+          if (recording()) { this.recorder.recordIntArith(op, l, r); }
           this.push(cachedInteger(l.value + r.value));
           break;
         }
@@ -467,6 +590,7 @@ export class VM {
         case Opcodes.OpSubInt: {
           const r = this.pop();
           const l = this.pop();
+          if (recording()) { this.recorder.recordIntArith(op, l, r); }
           this.push(cachedInteger(l.value - r.value));
           break;
         }
@@ -474,6 +598,7 @@ export class VM {
         case Opcodes.OpGreaterThanInt: {
           const r = this.pop();
           const l = this.pop();
+          if (recording()) { this.recorder.recordComparison(op, l, r); }
           this.push(l.value > r.value ? TRUE : FALSE);
           break;
         }
@@ -481,6 +606,7 @@ export class VM {
         case Opcodes.OpLessThanInt: {
           const r = this.pop();
           const l = this.pop();
+          if (recording()) { this.recorder.recordComparison(op, l, r); }
           this.push(l.value < r.value ? TRUE : FALSE);
           break;
         }
@@ -488,6 +614,7 @@ export class VM {
         case Opcodes.OpEqualInt: {
           const r = this.pop();
           const l = this.pop();
+          if (recording()) { this.recorder.recordComparison(op, l, r); }
           this.push(l.value === r.value ? TRUE : FALSE);
           break;
         }
@@ -495,6 +622,7 @@ export class VM {
         case Opcodes.OpNotEqualInt: {
           const r = this.pop();
           const l = this.pop();
+          if (recording()) { this.recorder.recordComparison(op, l, r); }
           this.push(l.value !== r.value ? TRUE : FALSE);
           break;
         }
@@ -509,5 +637,148 @@ export class VM {
     if (obj instanceof MonkeyBoolean) return obj.value;
     if (obj === NULL) return false;
     return true;
+  }
+
+  // --- JIT Integration ---
+
+  // Get a stable identity for the current closure (for trace keying)
+  _closureId() {
+    return this.currentFrame().closure.fn;
+  }
+
+  // Execute a compiled trace, returns true if trace ran (even if it exited)
+  _executeTrace(trace) {
+    const frame = this.currentFrame();
+    const result = trace.compiled(
+      this.stack, this.sp, frame.basePointer,
+      this.globals, this.constants, frame.closure.free,
+      MonkeyInteger, MonkeyBoolean, MonkeyString,
+      TRUE, FALSE, NULL,
+      cachedInteger,
+      this.isTruthy,
+    );
+    trace.executionCount++;
+
+    if (!result) return false;
+
+    switch (result.exit) {
+      case 'guard_falsy':
+      case 'guard_truthy':
+      case 'guard':
+        // Guard failed — resume interpreter at the exit IP
+        // The trace already updated stack/globals in place
+        if (result.ip !== undefined) {
+          frame.ip = result.ip - 1; // -1 because loop increments
+        }
+        // Track side exit for potential side traces later
+        trace.sideExits.set(result.guardIdx,
+          (trace.sideExits.get(result.guardIdx) || 0) + 1);
+        return true;
+      case 'max_iter':
+        // Safety bail — just continue interpreting
+        return true;
+      case 'call':
+        // Can't handle calls yet — fall back to interpreter
+        return true;
+      default:
+        return true;
+    }
+  }
+
+  // Start recording a trace at the current loop header
+  _startRecording(ip) {
+    this.recorder = new TraceRecorder(this);
+    this.recorder.start(this._closureId(), ip);
+  }
+
+  // Record the current opcode into the trace (called after execution)
+  _record(op, ip, ins) {
+    if (!this.recorder || !this.recorder.recording) return;
+
+    // Check if we've looped back to the start (trace complete)
+    if (this.recorder.instrCount > 0 && ip === this.recorder.startIp) {
+      const trace = this.recorder.stop();
+      if (trace && this.jit.compile(trace, this)) {
+        this.jit.storeTrace(trace);
+      }
+      this.recorder = null;
+      return;
+    }
+
+    // Abort on too many instructions
+    if (++this.recorder.instrCount > 200) {
+      this.recorder.abort();
+      this.recorder = null;
+      return;
+    }
+  }
+
+  // Record a value being pushed (maps VM push to IR ref tracking)
+  _recordPush(op, value, operands) {
+    if (!this.recorder || !this.recorder.recording) return;
+    const r = this.recorder;
+    const trace = r.trace;
+
+    switch (op) {
+      case Opcodes.OpConstant: {
+        if (value instanceof MonkeyInteger) {
+          const ref = trace.addInst(IR.CONST_INT, { value: value.value });
+          r.typeMap.set(ref, 'raw_int');
+          r.pushRef(ref);
+        } else if (value instanceof MonkeyBoolean) {
+          const ref = trace.addInst(IR.CONST_BOOL, { value: value.value });
+          r.typeMap.set(ref, 'bool');
+          r.pushRef(ref);
+        } else if (value instanceof MonkeyString) {
+          const ref = trace.addInst(IR.CONST_OBJ, { constIdx: operands[0] });
+          r.typeMap.set(ref, 'string');
+          r.pushRef(ref);
+        } else {
+          const ref = trace.addInst(IR.CONST_OBJ, { constIdx: operands[0] });
+          r.typeMap.set(ref, 'object');
+          r.pushRef(ref);
+        }
+        break;
+      }
+
+      case Opcodes.OpGetLocal: {
+        const ref = trace.addInst(IR.LOAD_LOCAL, { slot: operands[0] });
+        r.pushRef(ref);
+        break;
+      }
+
+      case Opcodes.OpGetGlobal: {
+        const ref = trace.addInst(IR.LOAD_GLOBAL, { index: operands[0] });
+        r.pushRef(ref);
+        break;
+      }
+
+      case Opcodes.OpGetFree: {
+        const ref = trace.addInst(IR.LOAD_FREE, { index: operands[0] });
+        r.pushRef(ref);
+        break;
+      }
+
+      case Opcodes.OpTrue: {
+        const ref = trace.addInst(IR.CONST_BOOL, { value: true });
+        r.typeMap.set(ref, 'bool');
+        r.pushRef(ref);
+        break;
+      }
+
+      case Opcodes.OpFalse: {
+        const ref = trace.addInst(IR.CONST_BOOL, { value: false });
+        r.typeMap.set(ref, 'bool');
+        r.pushRef(ref);
+        break;
+      }
+
+      case Opcodes.OpNull: {
+        const ref = trace.addInst(IR.CONST_NULL);
+        r.typeMap.set(ref, 'null');
+        r.pushRef(ref);
+        break;
+      }
+    }
   }
 }
