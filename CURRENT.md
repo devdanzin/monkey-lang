@@ -1,8 +1,8 @@
-status: done
-mode: THINK
-task: Side trace architecture design
-context: Designed VM-dispatched side traces. Parent exits check sideTraces map before falling to interpreter. Side trace records from exitIp, ends at parent loop header. ~100 lines to implement. Wrote scratch note with full design.
+status: in-progress
+mode: BUILD
+task: Implement side traces (recording + compilation + VM dispatch)
+context: Side trace design complete. Need to: 1) Add HOT_EXIT_THRESHOLD + sideTraces map to JIT/Trace, 2) Modify TraceRecorder for side trace mode, 3) Update VM._executeTrace to check sideTraces map, 4) Handle loop_back linking.
 context-files: memory/scratch/side-trace-design.md, memory/scratch/tracing-jit-compilation.md
-est: 0
-next: 11:15 BUILD — Implement side traces (recording + compilation + VM dispatch)
-updated: 2026-03-22T11:02:00-06:00
+est: 5
+next: Continue side trace implementation or start function inlining
+updated: 2026-03-22T11:16:00-06:00

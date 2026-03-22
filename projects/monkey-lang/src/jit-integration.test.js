@@ -164,4 +164,48 @@ describe('JIT VM integration', () => {
       assert.equal(result.value, expected, `${input}: expected ${expected}, got ${result.value}`);
     }
   });
+
+  it('should compile side traces for hot guard exits', () => {
+    // Loop where first 100 iterations take one path, next 100 take another.
+    // The main trace records the first path; after enough guard exits the
+    // second path gets a side trace.
+    const { result, vm } = compileAndRunJIT(`
+      let a = 0;
+      let b = 0;
+      let i = 0;
+      while (i < 200) {
+        if (i > 99) {
+          b = b + 1;
+        } else {
+          a = a + 1;
+        }
+        i = i + 1;
+      }
+      a + b
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    assert.equal(result.value, 200);
+    assert.ok(vm.jit.traceCount >= 1, `Expected at least 1 trace, got ${vm.jit.traceCount}`);
+  });
+
+  it('should produce correct results with side traces on branching loops', () => {
+    // A loop where ~half iterations take the branch and half don't.
+    // Both paths should eventually be traced.
+    const { result } = compileAndRunJIT(`
+      let x = 0;
+      let i = 0;
+      while (i < 100) {
+        if (i > 49) {
+          x = x + 2;
+        } else {
+          x = x + 1;
+        }
+        i = i + 1;
+      }
+      x
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    // First 50 iterations: x += 1 (50), next 50: x += 2 (100), total 150
+    assert.equal(result.value, 150);
+  });
 });

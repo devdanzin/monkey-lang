@@ -164,11 +164,25 @@ export class VM {
         if (trace && this.jit && this.jit.compile(trace, this)) {
           this.jit.storeTrace(trace);
           // Execute the freshly compiled trace immediately
-          this._executeTrace(trace);
+          if (!trace.isSideTrace) {
+            this._executeTrace(trace);
+          }
           this.recorder = null;
           continue; // ip changed by trace; restart loop
         }
         this.recorder = null;
+      }
+
+      // Check if side trace recording should stop (reached parent's loop header)
+      if (recording() && this.recorder.instrCount > 0
+          && this.recorder.shouldStopSideTrace(ip, this.framesIndex)) {
+        const trace = this.recorder.stop();
+        if (trace && this.jit && this.jit.compile(trace, this)) {
+          this.jit.storeTrace(trace);
+        }
+        this.recorder = null;
+        // Don't skip the instruction — we're at the parent loop header,
+        // and the parent trace will pick it up on the next back-edge
       }
 
       // Abort recording on too many instructions
@@ -689,14 +703,37 @@ export class VM {
       case 'guard_falsy':
       case 'guard_truthy':
       case 'guard':
-        // Guard failed — resume interpreter at the exit IP
-        // The trace already updated stack/globals in place
+        // Guard failed — check for side trace first
+        if (trace.sideTraces.has(result.guardIdx)) {
+          const sideTrace = trace.sideTraces.get(result.guardIdx);
+          const sideResult = this._executeSideTrace(sideTrace, trace);
+          if (sideResult && sideResult.exit === 'loop_back') {
+            // Side trace completed and wants to re-enter parent loop
+            // Re-execute the parent trace
+            return this._executeTrace(trace);
+          }
+          // Side trace exited some other way — fall to interpreter
+          if (sideResult && sideResult.ip !== undefined) {
+            frame.ip = sideResult.ip - 1;
+          }
+          return true;
+        }
+
+        // No side trace — resume interpreter at exit IP
         if (result.ip !== undefined) {
           frame.ip = result.ip - 1; // -1 because loop increments
         }
         // Track side exit for potential side traces later
         trace.sideExits.set(result.guardIdx,
           (trace.sideExits.get(result.guardIdx) || 0) + 1);
+
+        // Check if this exit is now hot enough for a side trace
+        if (this.jit && !this.recorder && this.jit.shouldRecordSideTrace(trace, result.guardIdx)) {
+          this._startSideTraceRecording(trace, result.guardIdx, result.ip);
+        }
+        return true;
+      case 'loop_back':
+        // Side trace completed, re-enter parent (shouldn't happen on root trace)
         return true;
       case 'max_iter':
         // Safety bail — just continue interpreting
@@ -713,6 +750,27 @@ export class VM {
   _startRecording(ip) {
     this.recorder = new TraceRecorder(this);
     this.recorder.start(this._closureId(), ip);
+  }
+
+  // Start recording a side trace from a guard exit
+  _startSideTraceRecording(parentTrace, guardIdx, exitIp) {
+    this.recorder = new TraceRecorder(this);
+    this.recorder.startSideTrace(parentTrace, guardIdx, exitIp, this._closureId());
+  }
+
+  // Execute a compiled side trace
+  _executeSideTrace(sideTrace, parentTrace) {
+    const frame = this.currentFrame();
+    const result = sideTrace.compiled(
+      this.stack, this.sp, frame.basePointer,
+      this.globals, this.constants, frame.closure.free,
+      MonkeyInteger, MonkeyBoolean, MonkeyString,
+      TRUE, FALSE, NULL,
+      cachedInteger,
+      this.isTruthy,
+    );
+    sideTrace.executionCount++;
+    return result;
   }
 
   // Record the current opcode into the trace (called after execution)

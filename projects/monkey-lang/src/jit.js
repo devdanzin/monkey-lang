@@ -25,6 +25,8 @@ import { CompiledFunction } from './compiler.js';
 const HOT_LOOP_THRESHOLD = 16;   // iterations before tracing starts
 const MAX_TRACE_LENGTH = 200;    // max IR instructions per trace
 const MAX_TRACES = 64;           // max compiled traces
+const HOT_EXIT_THRESHOLD = 8;    // guard exit count before side trace
+const MAX_SIDE_TRACES = 4;       // max side traces per root trace
 
 // --- IR Opcodes ---
 // Linear SSA-style IR. Each instruction produces a value (referenced by index).
@@ -104,6 +106,10 @@ export class Trace {
     this.compiled = null;         // compiled JS function
     this.executionCount = 0;
     this.sideExits = new Map();   // guard index → exit count
+    this.sideTraces = new Map();  // guard index → compiled side Trace
+    this.isSideTrace = false;
+    this.parentTrace = null;
+    this.parentGuardIdx = -1;
   }
 
   addInst(op, operands = {}) {
@@ -129,6 +135,11 @@ export class TraceRecorder {
 
     // Track types seen during recording for guards
     this.typeMap = new Map();  // IR ref → observed type
+
+    // Side trace support
+    this.isSideTrace = false;
+    this.parentTrace = null;
+    this.parentGuardIdx = -1;
   }
 
   start(frameId, ip) {
@@ -140,18 +151,51 @@ export class TraceRecorder {
     this.loopHeaderSeen = false;
     this.instrCount = 0;
     this.typeMap.clear();
+    this.isSideTrace = false;
+    this.parentTrace = null;
+    this.parentGuardIdx = -1;
 
     // Record loop start marker
+    this.trace.addInst(IR.LOOP_START);
+  }
+
+  // Start recording a side trace from a guard exit
+  startSideTrace(parentTrace, guardIdx, exitIp, frameId) {
+    this.trace = new Trace(frameId, exitIp);
+    this.trace.isSideTrace = true;
+    this.trace.parentTrace = parentTrace;
+    this.trace.parentGuardIdx = guardIdx;
+    this.recording = true;
+    this.startIp = exitIp;
+    this.startFrame = this.vm.framesIndex;
+    this.irStack = [];
+    this.loopHeaderSeen = false;
+    this.instrCount = 0;
+    this.typeMap.clear();
+    this.isSideTrace = true;
+    this.parentTrace = parentTrace;
+    this.parentGuardIdx = guardIdx;
+
+    // No LOOP_START for side traces — they're linear paths
+    // that end at the parent's loop header
     this.trace.addInst(IR.LOOP_START);
   }
 
   stop() {
     if (!this.recording) return null;
     this.recording = false;
+    // For side traces ending at parent loop header, emit LOOP_END so the
+    // compiled function returns { exit: "loop_back" }
     this.trace.addInst(IR.LOOP_END);
     const trace = this.trace;
     this.trace = null;
     return trace;
+  }
+
+  // Check if the current IP is the parent trace's loop header (side trace stop condition)
+  shouldStopSideTrace(ip, frameIndex) {
+    if (!this.isSideTrace || !this.parentTrace) return false;
+    return ip === this.parentTrace.startIp && frameIndex === this.startFrame;
   }
 
   abort() {
@@ -309,10 +353,25 @@ export class JIT {
   // Store a compiled trace
   storeTrace(trace) {
     if (this.traceCount >= MAX_TRACES) return false;
-    const key = this.traceKey(trace.frameId, trace.startIp);
-    this.traces.set(key, trace);
+    if (trace.isSideTrace && trace.parentTrace) {
+      // Store as side trace on parent
+      if (trace.parentTrace.sideTraces.size >= MAX_SIDE_TRACES) return false;
+      trace.parentTrace.sideTraces.set(trace.parentGuardIdx, trace);
+    } else {
+      const key = this.traceKey(trace.frameId, trace.startIp);
+      this.traces.set(key, trace);
+    }
     this.traceCount++;
     return true;
+  }
+
+  // Check if a guard exit is hot enough for a side trace
+  shouldRecordSideTrace(trace, guardIdx) {
+    if (!this.enabled) return false;
+    if (trace.sideTraces.has(guardIdx)) return false; // already have one
+    if (trace.sideTraces.size >= MAX_SIDE_TRACES) return false;
+    const exitCount = trace.sideExits.get(guardIdx) || 0;
+    return exitCount >= HOT_EXIT_THRESHOLD;
   }
 
   // Compile a trace to a JavaScript function
@@ -442,7 +501,12 @@ export class TraceCompiler {
           break;
 
         case IR.LOOP_END:
-          this.lines.push('  continue loop;');
+          if (this.trace.isSideTrace) {
+            // Side trace ends → return to parent trace's loop header
+            this.lines.push(`  ${this._emitReturn('{ exit: "loop_back" }')}`);
+          } else {
+            this.lines.push('  continue loop;');
+          }
           break;
 
         case IR.CONST_INT:
