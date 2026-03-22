@@ -814,64 +814,64 @@ export class VM {
     const allConsts = this._traceConsts.length > 0
       ? [...this.constants, ...this._traceConsts]
       : this.constants;
-    const result = trace.compiled(
-      this.stack, this.sp, frame.basePointer,
-      this.globals, allConsts, frame.closure.free,
-      MonkeyInteger, MonkeyBoolean, MonkeyString,
-      TRUE, FALSE, NULL,
-      cachedInteger,
-      this.isTruthy,
-    );
-    trace.executionCount++;
 
-    if (!result) return false;
+    // Iterative loop: side trace → loop_back → re-enter parent
+    let currentTrace = trace;
+    for (;;) {
+      const result = currentTrace.compiled(
+        this.stack, this.sp, frame.basePointer,
+        this.globals, allConsts, frame.closure.free,
+        MonkeyInteger, MonkeyBoolean, MonkeyString,
+        TRUE, FALSE, NULL,
+        cachedInteger,
+        this.isTruthy,
+      );
+      currentTrace.executionCount++;
 
-    switch (result.exit) {
-      case 'guard_falsy':
-      case 'guard_truthy':
-      case 'guard':
-        // Guard failed — check for side trace first
-        if (trace.sideTraces.has(result.guardIdx)) {
-          const sideTrace = trace.sideTraces.get(result.guardIdx);
-          const sideResult = this._executeSideTrace(sideTrace, trace);
-          if (sideResult && sideResult.exit === 'loop_back') {
-            // Side trace completed and wants to re-enter parent loop
-            // Re-execute the parent trace
-            return this._executeTrace(trace);
+      if (!result) return false;
+
+      switch (result.exit) {
+        case 'guard_falsy':
+        case 'guard_truthy':
+        case 'guard':
+          // Guard failed — check for side trace first
+          if (currentTrace.sideTraces.has(result.guardIdx)) {
+            const sideTrace = currentTrace.sideTraces.get(result.guardIdx);
+            const sideResult = this._executeSideTrace(sideTrace, currentTrace);
+            if (sideResult && sideResult.exit === 'loop_back') {
+              // Side trace completed — re-enter parent trace (iterative, not recursive)
+              currentTrace = trace; // always re-enter the root trace
+              continue;
+            }
+            // Side trace exited some other way — fall to interpreter
+            if (sideResult && sideResult.ip !== undefined) {
+              frame.ip = sideResult.ip - 1;
+            }
+            return true;
           }
-          // Side trace exited some other way — fall to interpreter
-          if (sideResult && sideResult.ip !== undefined) {
-            frame.ip = sideResult.ip - 1;
+
+          // No side trace — resume interpreter at exit IP
+          if (result.ip !== undefined) {
+            frame.ip = result.ip - 1;
+          }
+          trace.sideExits.set(result.guardIdx,
+            (trace.sideExits.get(result.guardIdx) || 0) + 1);
+
+          if (this.jit && !this.recorder && this.jit.shouldRecordSideTrace(trace, result.guardIdx)) {
+            this._startSideTraceRecording(trace, result.guardIdx, result.ip);
           }
           return true;
-        }
-
-        // No side trace — resume interpreter at exit IP
-        if (result.ip !== undefined) {
-          frame.ip = result.ip - 1; // -1 because loop increments
-        }
-        // Track side exit for potential side traces later
-        trace.sideExits.set(result.guardIdx,
-          (trace.sideExits.get(result.guardIdx) || 0) + 1);
-
-        // Check if this exit is now hot enough for a side trace
-        if (this.jit && !this.recorder && this.jit.shouldRecordSideTrace(trace, result.guardIdx)) {
-          this._startSideTraceRecording(trace, result.guardIdx, result.ip);
-        }
-        return true;
-      case 'loop_back':
-        // Side trace completed, re-enter parent (shouldn't happen on root trace)
-        return true;
-      case 'max_iter':
-        // Safety bail — resume interpreting from loop header
-        frame.ip = trace.startIp - 1;
-        return true;
-      case 'call':
-        // Can't handle calls yet — fall back to interpreter at loop header
-        frame.ip = trace.startIp - 1;
-        return true;
-      default:
-        return true;
+        case 'loop_back':
+          return true;
+        case 'max_iter':
+          frame.ip = trace.startIp - 1;
+          return true;
+        case 'call':
+          frame.ip = trace.startIp - 1;
+          return true;
+        default:
+          return true;
+      }
     }
   }
 

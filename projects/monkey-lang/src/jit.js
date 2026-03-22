@@ -488,6 +488,18 @@ export class TraceCompiler {
     return `return ${exitObj};`;
   }
 
+  // Check if an IR instruction produces a raw JS number (not a MonkeyInteger)
+  _isRawInt(inst) {
+    const rawOps = new Set([
+      IR.CONST_INT, IR.ADD_INT, IR.SUB_INT, IR.MUL_INT, IR.DIV_INT,
+      IR.NEG, IR.UNBOX_INT,
+    ]);
+    if (rawOps.has(inst.op)) return true;
+    // Promoted-raw loads are also raw
+    if (inst._promotedRaw) return true;
+    return false;
+  }
+
   // Emit write-back of promoted variables to globals/stack
   _emitWriteBack(promoted, promotedVarNames) {
     const lines = [];
@@ -633,7 +645,13 @@ export class TraceCompiler {
               this.lines.push(`  ${pv} = ${valRef};`);
             }
           } else {
-            this.lines.push(`  __stack[__bp + ${inst.operands.slot}] = ${valRef};`);
+            // Non-promoted local: must store a MonkeyObject, not raw values
+            const valInst = ir[inst.operands.value];
+            if (valInst && this._isRawInt(valInst)) {
+              this.lines.push(`  __stack[__bp + ${inst.operands.slot}] = __cachedInteger(${valRef});`);
+            } else {
+              this.lines.push(`  __stack[__bp + ${inst.operands.slot}] = ${valRef};`);
+            }
           }
           this.lines.push(`  const ${v} = undefined;`);
           break;
@@ -650,7 +668,13 @@ export class TraceCompiler {
               this.lines.push(`  ${pv} = ${valRef};`);
             }
           } else {
-            this.lines.push(`  __globals[${inst.operands.index}] = ${valRef};`);
+            // Non-promoted global: must store a MonkeyObject, not raw values
+            const valInst = ir[inst.operands.value];
+            if (valInst && this._isRawInt(valInst)) {
+              this.lines.push(`  __globals[${inst.operands.index}] = __cachedInteger(${valRef});`);
+            } else {
+              this.lines.push(`  __globals[${inst.operands.index}] = ${valRef};`);
+            }
           }
           this.lines.push(`  const ${v} = undefined;`);
           break;
@@ -761,28 +785,28 @@ export class TraceCompiler {
         case IR.ADD_INT: {
           const l = varNames.get(inst.operands.left);
           const r = varNames.get(inst.operands.right);
-          this.lines.push(`  const ${v} = (${l} + ${r}) | 0;`);
+          this.lines.push(`  const ${v} = (${l} + ${r});`);
           break;
         }
 
         case IR.SUB_INT: {
           const l = varNames.get(inst.operands.left);
           const r = varNames.get(inst.operands.right);
-          this.lines.push(`  const ${v} = (${l} - ${r}) | 0;`);
+          this.lines.push(`  const ${v} = (${l} - ${r});`);
           break;
         }
 
         case IR.MUL_INT: {
           const l = varNames.get(inst.operands.left);
           const r = varNames.get(inst.operands.right);
-          this.lines.push(`  const ${v} = (${l} * ${r}) | 0;`);
+          this.lines.push(`  const ${v} = (${l} * ${r});`);
           break;
         }
 
         case IR.DIV_INT: {
           const l = varNames.get(inst.operands.left);
           const r = varNames.get(inst.operands.right);
-          this.lines.push(`  const ${v} = (${l} / ${r}) | 0;`);
+          this.lines.push(`  const ${v} = Math.trunc(${l} / ${r});`);
           break;
         }
 
@@ -847,6 +871,7 @@ export class TraceCompiler {
     this.lines.push('}'); // end while loop
 
     const body = this.lines.join('\n');
+    this.trace._compiledSource = body;
 
     try {
       const fn = new Function(
@@ -997,10 +1022,10 @@ export class TraceOptimizer {
         if (leftVal !== undefined && rightVal !== undefined) {
           let result;
           switch (inst.op) {
-            case IR.ADD_INT: result = (leftVal + rightVal) | 0; break;
-            case IR.SUB_INT: result = (leftVal - rightVal) | 0; break;
-            case IR.MUL_INT: result = (leftVal * rightVal) | 0; break;
-            case IR.DIV_INT: result = (leftVal / rightVal) | 0; break;
+            case IR.ADD_INT: result = leftVal + rightVal; break;
+            case IR.SUB_INT: result = leftVal - rightVal; break;
+            case IR.MUL_INT: result = leftVal * rightVal; break;
+            case IR.DIV_INT: result = Math.trunc(leftVal / rightVal); break;
           }
           inst.op = IR.CONST_INT;
           inst.operands = { value: result };

@@ -244,4 +244,39 @@ describe('JIT VM integration', () => {
     // sum of (i*i + 1) for i=0..49 = sum(i^2) + 50 = 49*50*99/6 + 50 = 40425 + 50 = 40475
     assert.equal(result.value, 40475);
   });
+
+  it('should handle nested loops correctly at scale (regression)', () => {
+    // Bug: side trace for inner loop exit stored raw int to globals
+    // instead of MonkeyInteger, causing .value → undefined
+    const { result } = compileAndRunJIT(`
+      let sum = 0;
+      let i = 0;
+      while (i < 50) {
+        let j = 0;
+        while (j < 50) {
+          sum = sum + 1;
+          j = j + 1;
+        }
+        i = i + 1;
+      }
+      sum
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    assert.equal(result.value, 2500);
+  });
+
+  it('should handle large integer sums without overflow (regression)', () => {
+    // Bug: | 0 in compiled traces truncated to int32
+    const { result } = compileAndRunJIT(`
+      let sum = 0;
+      let i = 0;
+      while (i < 100000) {
+        sum = sum + i;
+        i = i + 1;
+      }
+      sum
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    assert.equal(result.value, 4999950000);
+  });
 });
