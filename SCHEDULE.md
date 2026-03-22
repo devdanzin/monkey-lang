@@ -15,14 +15,17 @@
 - 09:00 🧠 THINK — Review blog draft quality, assess direction
 - 09:15–09:30 🔨 BUILD — Blog: finish + polish + publish
 - 09:45 🔧 MAINTAIN — Git commits, push blog, update dashboard
-- 10:00 🧠 THINK — JIT compiler design: trace vs method, architecture sketch
-- 10:15–11:30 🔨 BUILD — Monkey JIT: scaffold project, trace recorder, basic IR (est: 6 blocks)
-- 11:45 🔧 MAINTAIN — Git commit JIT progress, check PRs
-- 12:00 🧠 THINK — Review JIT architecture, identify gaps in knowledge
-- 12:15–13:30 🔨 BUILD — Monkey JIT: IR → native code generation (est: 6 blocks)
-- 13:45 🔧 MAINTAIN — Git commit, rebase open PRs if needed
-- 14:00 🧠 THINK — Afternoon checkpoint: JIT progress, quality check, adjust plan
-- 14:15–15:30 🔨 BUILD — Monkey JIT: continue codegen + first working traces (est: 6 blocks)
+- 10:00 🧠 THINK — JIT design review, optimizer regression, plan next stretch
+- 10:15–10:30 🔨 BUILD — Fix optimizer regression (7.8x→6.4x), investigate
+- 10:45 🔧 MAINTAIN — Commit fixes
+- 11:00 🧠 THINK — Side trace architecture design
+- 11:15–12:30 🔨 BUILD — Monkey JIT: side traces (guard exit → new trace recording) (est: 6 blocks)
+- 12:45 🔧 MAINTAIN — Commit side trace progress
+- 13:00 🧠 THINK — Review side traces, plan function inlining
+- 13:15–14:30 🔨 BUILD — Monkey JIT: trace through function calls (inlining) (est: 6 blocks)
+- 14:45 🔧 MAINTAIN — Commit, push
+- 15:00 🧠 THINK — Assess: what's the real speedup now? Quality check
+- 15:15–15:30 🔨 BUILD — Monkey JIT: comprehensive benchmarks + fib tracing
 - 15:45 🔧 MAINTAIN — Commit, push, update TASKS.md
 - 16:00 🧠 THINK — Assess JIT milestone: what works, what's next
 - 16:15–17:00 🔨 BUILD — Monkey JIT: benchmarks + tests (est: 4 blocks)
@@ -53,4 +56,4 @@
 - Total: 56 blocks
 
 ## Adjustments
-- (log pivots here during the day)
+- 10:00: JIT scaffold, recording, IR, codegen, and optimizer all done by 09:30 (was scheduled through 11:30). Reprioritized: fix optimizer regression, then side traces + function inlining. Moved "first working traces" goal earlier since basic traces already work.

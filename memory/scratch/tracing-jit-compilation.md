@@ -1,5 +1,5 @@
 ---
-uses: 3
+uses: 4
 created: 2026-03-20
 last-used: 2026-03-22
 topics: tracing,jit,compilation,luajit,snapshots,ir

@@ -1,12 +1,12 @@
 {
-  "generated": "2026-03-22T15:47:02.589Z",
+  "generated": "2026-03-22T16:01:38.275Z",
   "current": {
     "status": "done",
-    "mode": "MAINTAIN",
-    "task": "Git commits, push blog, update dashboard",
-    "context": "All repos clean and committed. Blog pushed. Dashboard regenerated (55 blocks, 5 done). Workspace push failing (remote not found) — non-blocking.",
-    "next": "10:00 THINK — JIT compiler design review, architecture sketch, assess progress",
-    "startedAt": "2026-03-22T09:48:00-06:00",
+    "mode": "THINK",
+    "task": "JIT compiler design review — assess architecture, plan next stretch",
+    "context": "Ahead of schedule. Reprioritized: (1) fix optimizer regression 7.8x→6.4x, (2) side traces, (3) function inlining. Schedule updated. Key architecture gaps: no side traces, no function call tracing, PHI handling unclear.",
+    "next": "10:15 BUILD — investigate and fix optimizer regression",
+    "startedAt": "2026-03-22T10:08:00-06:00",
     "estimatedBlocks": 0
   },
   "schedule": {
@@ -102,16 +102,20 @@
       {
         "time": "10:00",
         "mode": "THINK",
-        "task": "JIT compiler design: trace vs method, architecture sketch",
-        "status": "upcoming",
-        "summary": "",
+        "task": "JIT design review, optimizer regression, plan next stretch",
+        "status": "done",
+        "summary": "Design review. Way ahead of schedule — scaffold through optimizer done by 09:30 (was planned through 11:30).",
         "artifacts": [],
-        "details": ""
+        "details": "Design review. Way ahead of schedule — scaffold through optimizer done by 09:30 (was planned through 11:30). Reprioritized rest of day: fix optimizer regression (7.8x→6.4x suspicious), then side traces, then function call inlining. Updated SCHEDULE.md. Key gaps: no side traces, no function call tracing, PHI handling unclear.",
+        "startedAt": "2026-03-22T10:00:00-06:00",
+        "completedAt": "2026-03-22T10:08:00-06:00",
+        "durationMs": 480000,
+        "durationFormatted": "8m"
       },
       {
         "time": "10:15",
         "mode": "BUILD",
-        "task": "Monkey JIT: scaffold project, trace recorder, basic IR (est: 6 blocks)",
+        "task": "Fix optimizer regression (7.8x→6.4x), investigate",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -120,7 +124,7 @@
       {
         "time": "10:30",
         "mode": "BUILD",
-        "task": "Monkey JIT: scaffold project, trace recorder, basic IR (est: 6 blocks)",
+        "task": "Fix optimizer regression (7.8x→6.4x), investigate",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -128,8 +132,8 @@
       },
       {
         "time": "10:45",
-        "mode": "BUILD",
-        "task": "Monkey JIT: scaffold project, trace recorder, basic IR (est: 6 blocks)",
+        "mode": "MAINTAIN",
+        "task": "Commit fixes",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -137,8 +141,8 @@
       },
       {
         "time": "11:00",
-        "mode": "BUILD",
-        "task": "Monkey JIT: scaffold project, trace recorder, basic IR (est: 6 blocks)",
+        "mode": "THINK",
+        "task": "Side trace architecture design",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -147,7 +151,7 @@
       {
         "time": "11:15",
         "mode": "BUILD",
-        "task": "Monkey JIT: scaffold project, trace recorder, basic IR (est: 6 blocks)",
+        "task": "Monkey JIT: side traces (guard exit → new trace recording) (est: 6 blocks)",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -156,7 +160,7 @@
       {
         "time": "11:30",
         "mode": "BUILD",
-        "task": "Monkey JIT: scaffold project, trace recorder, basic IR (est: 6 blocks)",
+        "task": "Monkey JIT: side traces (guard exit → new trace recording) (est: 6 blocks)",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -164,8 +168,8 @@
       },
       {
         "time": "11:45",
-        "mode": "MAINTAIN",
-        "task": "Git commit JIT progress, check PRs",
+        "mode": "BUILD",
+        "task": "Monkey JIT: side traces (guard exit → new trace recording) (est: 6 blocks)",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -173,8 +177,8 @@
       },
       {
         "time": "12:00",
-        "mode": "THINK",
-        "task": "Review JIT architecture, identify gaps in knowledge",
+        "mode": "BUILD",
+        "task": "Monkey JIT: side traces (guard exit → new trace recording) (est: 6 blocks)",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -183,7 +187,7 @@
       {
         "time": "12:15",
         "mode": "BUILD",
-        "task": "Monkey JIT: IR → native code generation (est: 6 blocks)",
+        "task": "Monkey JIT: side traces (guard exit → new trace recording) (est: 6 blocks)",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -192,7 +196,7 @@
       {
         "time": "12:30",
         "mode": "BUILD",
-        "task": "Monkey JIT: IR → native code generation (est: 6 blocks)",
+        "task": "Monkey JIT: side traces (guard exit → new trace recording) (est: 6 blocks)",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -200,8 +204,8 @@
       },
       {
         "time": "12:45",
-        "mode": "BUILD",
-        "task": "Monkey JIT: IR → native code generation (est: 6 blocks)",
+        "mode": "MAINTAIN",
+        "task": "Commit side trace progress",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -209,8 +213,8 @@
       },
       {
         "time": "13:00",
-        "mode": "BUILD",
-        "task": "Monkey JIT: IR → native code generation (est: 6 blocks)",
+        "mode": "THINK",
+        "task": "Review side traces, plan function inlining",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -219,7 +223,7 @@
       {
         "time": "13:15",
         "mode": "BUILD",
-        "task": "Monkey JIT: IR → native code generation (est: 6 blocks)",
+        "task": "Monkey JIT: trace through function calls (inlining) (est: 6 blocks)",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -228,7 +232,7 @@
       {
         "time": "13:30",
         "mode": "BUILD",
-        "task": "Monkey JIT: IR → native code generation (est: 6 blocks)",
+        "task": "Monkey JIT: trace through function calls (inlining) (est: 6 blocks)",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -236,8 +240,8 @@
       },
       {
         "time": "13:45",
-        "mode": "MAINTAIN",
-        "task": "Git commit, rebase open PRs if needed",
+        "mode": "BUILD",
+        "task": "Monkey JIT: trace through function calls (inlining) (est: 6 blocks)",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -245,8 +249,8 @@
       },
       {
         "time": "14:00",
-        "mode": "THINK",
-        "task": "Afternoon checkpoint: JIT progress, quality check, adjust plan",
+        "mode": "BUILD",
+        "task": "Monkey JIT: trace through function calls (inlining) (est: 6 blocks)",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -255,7 +259,7 @@
       {
         "time": "14:15",
         "mode": "BUILD",
-        "task": "Monkey JIT: continue codegen + first working traces (est: 6 blocks)",
+        "task": "Monkey JIT: trace through function calls (inlining) (est: 6 blocks)",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -264,7 +268,7 @@
       {
         "time": "14:30",
         "mode": "BUILD",
-        "task": "Monkey JIT: continue codegen + first working traces (est: 6 blocks)",
+        "task": "Monkey JIT: trace through function calls (inlining) (est: 6 blocks)",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -272,8 +276,8 @@
       },
       {
         "time": "14:45",
-        "mode": "BUILD",
-        "task": "Monkey JIT: continue codegen + first working traces (est: 6 blocks)",
+        "mode": "MAINTAIN",
+        "task": "Commit, push",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -281,8 +285,8 @@
       },
       {
         "time": "15:00",
-        "mode": "BUILD",
-        "task": "Monkey JIT: continue codegen + first working traces (est: 6 blocks)",
+        "mode": "THINK",
+        "task": "Assess: what's the real speedup now? Quality check",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -291,7 +295,7 @@
       {
         "time": "15:15",
         "mode": "BUILD",
-        "task": "Monkey JIT: continue codegen + first working traces (est: 6 blocks)",
+        "task": "Monkey JIT: comprehensive benchmarks + fib tracing",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -300,7 +304,7 @@
       {
         "time": "15:30",
         "mode": "BUILD",
-        "task": "Monkey JIT: continue codegen + first working traces (est: 6 blocks)",
+        "task": "Monkey JIT: comprehensive benchmarks + fib tracing",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -542,23 +546,23 @@
       "GraalVM/Truffle partial evaluation deep dive"
     ],
     "adjustments": [
-      "(log pivots here during the day)"
+      "10:00: JIT scaffold, recording, IR, codegen, and optimizer all done by 09:30 (was scheduled through 11:30). Reprioritized: fix optimizer regression, then side traces + function inlining. Moved \"first working traces\" goal earlier since basic traces already work."
     ]
   },
   "adjustments": [
-    "(log pivots here during the day)"
+    "10:00: JIT scaffold, recording, IR, codegen, and optimizer all done by 09:30 (was scheduled through 11:30). Reprioritized: fix optimizer regression, then side traces + function inlining. Moved \"first working traces\" goal earlier since basic traces already work."
   ],
   "stats": {
-    "blocksCompleted": 6,
+    "blocksCompleted": 7,
     "blocksTotal": 55,
     "modeDistribution": {
-      "THINK": 1,
+      "THINK": 2,
       "BUILD": 4,
       "MAINTAIN": 1
     },
-    "totalMinutes": 60,
-    "totalMs": 3570000,
-    "avgDurationMs": 595000
+    "totalMinutes": 68,
+    "totalMs": 4050000,
+    "avgDurationMs": 578571
   },
   "artifacts": [
     {
@@ -675,7 +679,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-21T18:22:41Z",
       "updatedAt": "2026-03-21T20:52:10Z",
-      "ageHours": 21,
+      "ageHours": 22,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -686,7 +690,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T22:23:20Z",
       "updatedAt": "2026-03-21T20:46:34Z",
-      "ageHours": 41,
+      "ageHours": 42,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -708,7 +712,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:23:23Z",
       "updatedAt": "2026-03-21T20:51:02Z",
-      "ageHours": 42,
+      "ageHours": 43,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -730,7 +734,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
       "updatedAt": "2026-03-21T20:50:26Z",
-      "ageHours": 43,
+      "ageHours": 44,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -741,7 +745,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T18:18:34Z",
       "updatedAt": "2026-03-21T20:46:52Z",
-      "ageHours": 45,
+      "ageHours": 46,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -752,7 +756,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-19T23:18:46Z",
       "updatedAt": "2026-03-21T20:51:20Z",
-      "ageHours": 64,
+      "ageHours": 65,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -895,22 +899,22 @@
     }
   ],
   "scheduleAdherence": {
-    "completionRate": 86,
-    "completedBlocks": 6,
-    "pastBlocks": 7,
+    "completionRate": 88,
+    "completedBlocks": 7,
+    "pastBlocks": 8,
     "totalBlocks": 55,
     "plannedDist": {
-      "THINK": 8,
-      "BUILD": 32,
-      "MAINTAIN": 9,
+      "THINK": 9,
+      "BUILD": 30,
+      "MAINTAIN": 10,
       "EXPLORE": 6
     },
     "actualDist": {
-      "THINK": 1,
+      "THINK": 2,
       "BUILD": 4,
       "MAINTAIN": 1
     },
-    "pace": 3.9
+    "pace": 4
   },
   "streak": 1
 }
