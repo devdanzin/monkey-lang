@@ -528,7 +528,8 @@ export class TraceCompiler {
 
         case IR.NOT: {
           const ref = varNames.get(inst.operands.ref);
-          this.lines.push(`  const ${v} = !${ref};`);
+          // Handle raw bools and MonkeyObjects
+          this.lines.push(`  const ${v} = (typeof ${ref} === 'boolean') ? !${ref} : !__isTruthy(${ref});`);
           break;
         }
 

@@ -284,7 +284,15 @@ export class VM {
 
         case Opcodes.OpBang: {
           const operand2 = this.pop();
-          if (recording()) { this.recorder.abort(); this.recorder = null; }
+          if (recording()) {
+            const ref = this.recorder.popRef();
+            const notRef = this.recorder.trace.addInst(IR.NOT, { ref });
+            this.recorder.typeMap.set(notRef, 'raw_bool');
+            // Box to MonkeyBoolean
+            const boxed = this.recorder.trace.addInst(IR.CONST_BOOL, { ref: notRef });
+            this.recorder.typeMap.set(boxed, 'bool');
+            this.recorder.pushRef(boxed);
+          }
           if (operand2 === TRUE) this.push(FALSE);
           else if (operand2 === FALSE) this.push(TRUE);
           else if (operand2 === NULL) this.push(TRUE);
@@ -498,7 +506,9 @@ export class VM {
         case Opcodes.OpGetFree: {
           const freeIdx = ins[ip + 1];
           this.currentFrame().ip += 1;
-          this.push(this.currentFrame().closure.free[freeIdx]);
+          const freeVal = this.currentFrame().closure.free[freeIdx];
+          this.push(freeVal);
+          if (recording()) { this._recordPush(op, freeVal, [freeIdx]); }
           break;
         }
 
@@ -553,7 +563,6 @@ export class VM {
         case Opcodes.OpGetLocalSubConst:
         case Opcodes.OpGetLocalMulConst:
         case Opcodes.OpGetLocalDivConst: {
-          if (recording()) { this.recorder.abort(); this.recorder = null; }
           const localIdx3 = ins[ip + 1];
           const constIdx4 = (ins[ip + 2] << 8) | ins[ip + 3];
           this.currentFrame().ip += 3;
@@ -561,6 +570,20 @@ export class VM {
           const rightVal = this.constants[constIdx4];
 
           if (leftVal instanceof MonkeyInteger && rightVal instanceof MonkeyInteger) {
+            if (recording()) {
+              // Decompose superinstruction into IR: load local, const, arith
+              const localRef = this.recorder.trace.addInst(IR.LOAD_LOCAL, { slot: localIdx3 });
+              this.recorder.pushRef(localRef);
+              const constRef = this.recorder.trace.addInst(IR.CONST_INT, { value: rightVal.value });
+              this.recorder.typeMap.set(constRef, 'raw_int');
+              this.recorder.pushRef(constRef);
+              // Map superinstruction to base arith opcode for recordIntArith
+              const baseOp = op === Opcodes.OpGetLocalAddConst ? Opcodes.OpAdd
+                : op === Opcodes.OpGetLocalSubConst ? Opcodes.OpSub
+                : op === Opcodes.OpGetLocalMulConst ? Opcodes.OpMul
+                : Opcodes.OpDiv;
+              this.recorder.recordIntArith(baseOp, leftVal, rightVal);
+            }
             let result;
             switch (op) {
               case Opcodes.OpGetLocalAddConst: result = leftVal.value + rightVal.value; break;
@@ -570,6 +593,7 @@ export class VM {
             }
             this.push(cachedInteger(result));
           } else if (leftVal instanceof MonkeyString && rightVal instanceof MonkeyString && op === Opcodes.OpGetLocalAddConst) {
+            if (recording()) { this.recorder.abort(); this.recorder = null; }
             this.push(new MonkeyString(leftVal.value + rightVal.value));
           } else {
             throw new Error(`unsupported types for local+const op: ${leftVal.type()} and ${rightVal.type()}`);

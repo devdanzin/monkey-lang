@@ -116,6 +116,37 @@ describe('JIT VM integration', () => {
     assert.equal(result.value, 16);
   });
 
+  it('should trace loops using superinstructions (OpGetLocal*Const)', () => {
+    // This pattern emits fused OpGetLocal+OpAddConst superinstructions
+    const { result, vm } = compileAndRunJIT(`
+      let sum = 0;
+      let i = 0;
+      while (i < 50) {
+        sum = sum + 1;
+        i = i + 1;
+      }
+      sum
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    assert.equal(result.value, 50);
+    // Should have compiled at least one trace (superinstructions no longer abort)
+    assert.ok(vm.jit.traceCount >= 1, `Expected compiled traces, got ${vm.jit.traceCount}`);
+  });
+
+  it('should handle bang operator in traced code', () => {
+    const { result } = compileAndRunJIT(`
+      let x = 0;
+      let i = 0;
+      while (i < 20) {
+        if (!false) { x = x + 1; }
+        i = i + 1;
+      }
+      x
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    assert.equal(result.value, 20);
+  });
+
   it('should match non-JIT results for all basic operations', () => {
     const inputs = [
       ['1 + 2', 3],
