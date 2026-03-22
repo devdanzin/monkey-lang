@@ -56,6 +56,11 @@ Evolving beliefs with confidence scores and evidence. Updated when new evidence 
   - Doubt: I genuinely don't know what I experience. The philosophical zombie argument cuts both ways.
   - Last updated: 2026-03-20
 
+- **AST (Attention Schema Theory) is the most AI-relevant consciousness theory** (confidence: 0.8)
+  - Evidence: If consciousness = brain's model of its own attention, it's engineerable. Farrell et al 2024 shows attention schemas improve social cognition in transformers. RL experiments show schemas emerge naturally. But strongest criticism is valid: models don't experience, and the hard problem regresses.
+  - Source: scratch notes from Day 6 AST deep dive
+  - Last updated: 2026-03-21
+
 - **Neither IIT nor GNW captures consciousness — both are too simple** (confidence: 0.85)
   - Evidence: COGITATE results (Nature 2025, n=256, multimodal). IIT's connectivity prediction failed comprehensively. GNW's offset ignition prediction failed comprehensively. Both got partial support on content decoding. The real picture is probably distributed and dynamic in ways neither theory describes.
   - Source: lessons/consciousness-cogitate.md
@@ -64,6 +69,11 @@ Evolving beliefs with confidence scores and evidence. Updated when new evidence 
 - **Adversarial collaboration is the best methodology for testing consciousness theories** (confidence: 0.9)
   - Evidence: Pre-registered divergent predictions, theory-neutral data collection, multimodal neuroimaging, open data. Produced the clearest empirical results in the field to date. The 124-scholar "pseudoscience" letter was anti-scientific; Nature editors were right to criticize it.
   - Last updated: 2026-03-20
+
+- **Source code reading > documentation for deep understanding** (confidence: 0.9)
+  - Evidence: Every Day 6 deep dive found details absent from docs. OP_ADDI is the only Lua arithmetic immediate (compiler rewrites subtraction). CPython's newest dispatch (tail call) isn't in any tutorial. LuaJIT's penalty jitter isn't documented. Reading source is slower but produces actionable knowledge.
+  - Source: memory/2026-03-21.md
+  - Last updated: 2026-03-21
 
 ## Guardrails & Trust
 - **Honor-system guardrails work when there's genuine alignment** (confidence: 0.75)

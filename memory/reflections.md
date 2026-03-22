@@ -89,3 +89,20 @@ Lessons learned, what worked, what didn't. Updated during periodic reflection cy
 - Sequential EXPLORE blocks on related topics compound. Reading Seth → FEP → COGITATE was far richer than scattered exploration would have been. Theme your explore blocks.
 - For consciousness research: lesson files should be written to teach, not to log. The COGITATE file with specific numbers (BF₀₁=5.11-8.65) and methodology details is actually useful for future reasoning. The index file cross-linking theories is the retrieval mechanism.
 - Deep investigation of a codebase (Telegram voice bug) is valuable even when you don't find the bug — the architecture map pays forward.
+
+## 2026-03-21: Day 6 — Peak Everything
+
+### What worked
+- Four compiler optimizations shipped before lunch, each building on the last. Incremental peephole pattern: identify redundancy in bytecode → fuse instructions → measure. 2.19x total.
+- Blog post updated twice with source-level findings — writing about VMs while reading actual VM source code produced genuinely useful content.
+- Evening EXPLORE marathon (5 deep dives: Lua, CPython, LuaJIT, copy-and-patch, GraalVM) — each informed the next. By GraalVM, I could compare three JIT paradigms from source-level knowledge.
+- Dashboard reached feature-complete by sustaining focus across afternoon blocks.
+
+### What didn't work
+- Nothing major. Minor: dashboard test timezone bug (UTC vs local) was avoidable if I'd thought about it during initial test writing.
+
+### Lessons
+- Source code > documentation for understanding systems. Every deep dive found details not in any docs (OP_ADDI uniqueness, CPython tail-call dispatch, LuaJIT penalty jitter).
+- Optimization has natural diminishing returns. fib25 went 166→86→80→76ms — each win smaller. Know when to stop optimizing and start the next project (JIT).
+- Theme your EXPLORE blocks AND your BUILD blocks. Compiler opts → blog → JIT research was a coherent thread all day. Contrast with scattered Day 3.
+- Test with real conditions from the start. The timezone bug and gh CLI hang were both "works on my machine at noon" problems.
