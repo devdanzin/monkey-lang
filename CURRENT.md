@@ -1,8 +1,8 @@
-status: done
+status: in-progress
 mode: BUILD
-task: JIT opcode coverage — added recording for superinstructions, OpGetFree, OpBang
-context: Added JIT recording for OpGetLocal*Const (superinstructions), OpGetFree, and OpBang. Superinstructions decompose into LOAD_LOCAL + CONST_INT + arith IR. 7.8x speedup on 10k loop benchmark. 166 tests passing.
+task: JIT trace optimization passes — constant folding, dead guard elimination, CSE
+context: IR is recorded but compiled directly without optimization. Adding optimization passes between recording and code generation. Starting with redundant guard elimination (biggest win — many guards are for values already guarded).
 context-files: lessons/compiler-vm-design.md, memory/scratch/tracing-jit-compilation.md
-est: 0
-next: 09:30 BUILD — Continue JIT (trace optimization passes, or more opcode coverage)
-updated: 2026-03-22T09:28:00-06:00
+est: 2
+next: More opcode coverage (string concat, boolean comparisons in traces)
+updated: 2026-03-22T09:31:00-06:00

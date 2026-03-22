@@ -317,6 +317,10 @@ export class JIT {
 
   // Compile a trace to a JavaScript function
   compile(trace, vm) {
+    // Optimize the trace before compilation
+    const optimizer = new TraceOptimizer(trace);
+    optimizer.optimize();
+
     const compiler = new TraceCompiler(trace, vm);
     trace.compiled = compiler.compile();
     return trace.compiled !== null;
@@ -570,9 +574,259 @@ export class TraceCompiler {
   }
 }
 
-// --- JIT-enabled VM integration ---
-// This patches the VM's run() to support tracing.
-// Rather than modifying vm.js directly, we provide a wrapper.
+// --- Trace Optimization Passes ---
+// Run between recording and compilation to improve generated code quality.
+// Key insight from LuaJIT: optimizations on linear traces are trivially simple
+// because there's no control flow graph — just a flat instruction sequence.
 
-// createJITVM will be implemented when we integrate with the VM's run loop
-// For now, the JIT components (Trace, TraceRecorder, TraceCompiler, JIT) are standalone
+export class TraceOptimizer {
+  constructor(trace) {
+    this.trace = trace;
+  }
+
+  // Run all optimization passes in order
+  optimize() {
+    this.redundantGuardElimination();
+    this.constantFolding();
+    this.deadCodeElimination();
+    return this.trace;
+  }
+
+  // --- Pass 1: Redundant Guard Elimination ---
+  // If a value has already been guarded as a type, subsequent guards for the
+  // same ref and type are redundant. Also, constants don't need guards at all.
+  // This is the biggest win — recording often emits duplicate guards for values
+  // that are loaded and used multiple times in a loop iteration.
+  redundantGuardElimination() {
+    const ir = this.trace.ir;
+    const guardedTypes = new Map(); // ref → Set of guarded types
+
+    // First, mark all constant refs — they never need guards
+    for (let i = 0; i < ir.length; i++) {
+      const inst = ir[i];
+      if (!inst) continue;
+      if (inst.op === IR.CONST_INT) guardedTypes.set(i, new Set(['int']));
+      else if (inst.op === IR.CONST_BOOL) guardedTypes.set(i, new Set(['bool']));
+      else if (inst.op === IR.CONST_NULL) guardedTypes.set(i, new Set(['null']));
+    }
+
+    // Also mark unboxed/boxed refs
+    for (let i = 0; i < ir.length; i++) {
+      const inst = ir[i];
+      if (!inst) continue;
+      if (inst.op === IR.UNBOX_INT || inst.op === IR.BOX_INT) {
+        guardedTypes.set(i, new Set(['int']));
+      }
+      if (inst.op === IR.ADD_INT || inst.op === IR.SUB_INT ||
+          inst.op === IR.MUL_INT || inst.op === IR.DIV_INT ||
+          inst.op === IR.NEG) {
+        guardedTypes.set(i, new Set(['int']));
+      }
+    }
+
+    let eliminated = 0;
+    for (let i = 0; i < ir.length; i++) {
+      const inst = ir[i];
+      if (!inst) continue;
+
+      let guardType = null;
+      if (inst.op === IR.GUARD_INT) guardType = 'int';
+      else if (inst.op === IR.GUARD_BOOL) guardType = 'bool';
+      else if (inst.op === IR.GUARD_STRING) guardType = 'string';
+      else continue;
+
+      const ref = inst.operands.ref;
+      const known = guardedTypes.get(ref);
+      if (known && known.has(guardType)) {
+        // Already guarded or known type — eliminate
+        ir[i] = null;
+        eliminated++;
+        this.trace.guardCount--;
+      } else {
+        // Record that this ref is now guarded
+        if (!guardedTypes.has(ref)) guardedTypes.set(ref, new Set());
+        guardedTypes.get(ref).add(guardType);
+      }
+    }
+
+    // Compact: remove nulls and rebuild id mapping
+    if (eliminated > 0) this._compact();
+    return eliminated;
+  }
+
+  // --- Pass 2: Constant Folding ---
+  // Fold arithmetic on two CONST_INT values into a single CONST_INT.
+  // Also fold UNBOX_INT(CONST_INT) → same constant value, and
+  // BOX_INT of a known constant → CONST_INT.
+  constantFolding() {
+    const ir = this.trace.ir;
+    const constValues = new Map(); // ref → numeric value (for raw int constants)
+
+    let folded = 0;
+    for (let i = 0; i < ir.length; i++) {
+      const inst = ir[i];
+      if (!inst) continue;
+
+      // Track constant values
+      if (inst.op === IR.CONST_INT) {
+        constValues.set(i, inst.operands.value);
+        continue;
+      }
+
+      // UNBOX_INT of a CONST_INT → the constant's value is already raw
+      if (inst.op === IR.UNBOX_INT) {
+        const refInst = ir[inst.operands.ref];
+        if (refInst && refInst.op === IR.CONST_INT) {
+          // Replace with const_int (same value, it's already raw)
+          inst.op = IR.CONST_INT;
+          inst.operands = { value: refInst.operands.value };
+          constValues.set(i, refInst.operands.value);
+          folded++;
+          continue;
+        }
+        // If the ref has a known constant value from folding
+        if (constValues.has(inst.operands.ref)) {
+          inst.op = IR.CONST_INT;
+          inst.operands = { value: constValues.get(inst.operands.ref) };
+          constValues.set(i, inst.operands.value);
+          folded++;
+          continue;
+        }
+      }
+
+      // Fold arithmetic on two constants
+      if (inst.op === IR.ADD_INT || inst.op === IR.SUB_INT ||
+          inst.op === IR.MUL_INT || inst.op === IR.DIV_INT) {
+        const leftVal = constValues.get(inst.operands.left);
+        const rightVal = constValues.get(inst.operands.right);
+        if (leftVal !== undefined && rightVal !== undefined) {
+          let result;
+          switch (inst.op) {
+            case IR.ADD_INT: result = (leftVal + rightVal) | 0; break;
+            case IR.SUB_INT: result = (leftVal - rightVal) | 0; break;
+            case IR.MUL_INT: result = (leftVal * rightVal) | 0; break;
+            case IR.DIV_INT: result = (leftVal / rightVal) | 0; break;
+          }
+          inst.op = IR.CONST_INT;
+          inst.operands = { value: result };
+          constValues.set(i, result);
+          folded++;
+        }
+      }
+
+      // Fold comparisons on two constants
+      if (inst.op === IR.EQ || inst.op === IR.NEQ ||
+          inst.op === IR.GT || inst.op === IR.LT) {
+        const leftVal = constValues.get(inst.operands.left);
+        const rightVal = constValues.get(inst.operands.right);
+        if (leftVal !== undefined && rightVal !== undefined) {
+          let result;
+          switch (inst.op) {
+            case IR.EQ: result = leftVal === rightVal; break;
+            case IR.NEQ: result = leftVal !== rightVal; break;
+            case IR.GT: result = leftVal > rightVal; break;
+            case IR.LT: result = leftVal < rightVal; break;
+          }
+          inst.op = IR.CONST_BOOL;
+          inst.operands = { value: result };
+          folded++;
+        }
+      }
+    }
+    return folded;
+  }
+
+  // --- Pass 3: Dead Code Elimination ---
+  // Remove instructions whose results are never referenced by any live instruction.
+  // Walk backwards marking live refs, then null out dead ones.
+  deadCodeElimination() {
+    const ir = this.trace.ir;
+    const live = new Set();
+
+    // All side-effecting instructions are always live
+    for (let i = 0; i < ir.length; i++) {
+      const inst = ir[i];
+      if (!inst) continue;
+      if (inst.op === IR.STORE_LOCAL || inst.op === IR.STORE_GLOBAL ||
+          inst.op === IR.GUARD_INT || inst.op === IR.GUARD_BOOL ||
+          inst.op === IR.GUARD_STRING || inst.op === IR.GUARD_TRUTHY ||
+          inst.op === IR.GUARD_FALSY ||
+          inst.op === IR.LOOP_START || inst.op === IR.LOOP_END ||
+          inst.op === IR.CALL) {
+        live.add(i);
+      }
+    }
+
+    // BOX_INT that feeds a STORE is live (transitively)
+    // Walk live set and mark operands as live (only follow IR ref keys)
+    const VALUE_IS_REF = new Set([IR.STORE_LOCAL, IR.STORE_GLOBAL]);
+    let changed = true;
+    while (changed) {
+      changed = false;
+      for (const idx of live) {
+        const inst = ir[idx];
+        if (!inst) continue;
+        const ops = inst.operands;
+        for (const key of Object.keys(ops)) {
+          const val = ops[key];
+          if (typeof val !== 'number' || val < 0 || val >= ir.length || !ir[val] || live.has(val)) continue;
+          // Only follow keys that are IR references
+          if (key === 'ref' || key === 'left' || key === 'right' ||
+              (key === 'value' && VALUE_IS_REF.has(inst.op))) {
+            live.add(val);
+            changed = true;
+          }
+        }
+      }
+    }
+
+    let eliminated = 0;
+    for (let i = 0; i < ir.length; i++) {
+      if (ir[i] && !live.has(i)) {
+        ir[i] = null;
+        eliminated++;
+      }
+    }
+
+    if (eliminated > 0) this._compact();
+    return eliminated;
+  }
+
+  // Compact the IR array: remove nulls, remap all references
+  _compact() {
+    const ir = this.trace.ir;
+    const remap = new Map();
+    const newIr = [];
+
+    for (let i = 0; i < ir.length; i++) {
+      if (ir[i] !== null) {
+        remap.set(i, newIr.length);
+        ir[i].id = newIr.length;
+        newIr.push(ir[i]);
+      }
+    }
+
+    // Only remap operand keys that are IR references (not value/slot/index/exitIp/constIdx/numArgs)
+    const REF_KEYS = new Set(['ref', 'left', 'right', 'value']);
+    // 'value' is a ref ONLY for STORE_LOCAL/STORE_GLOBAL — not for CONST_INT etc.
+    const VALUE_IS_REF = new Set([IR.STORE_LOCAL, IR.STORE_GLOBAL]);
+
+    for (const inst of newIr) {
+      const ops = inst.operands;
+      for (const key of Object.keys(ops)) {
+        if (typeof ops[key] !== 'number') continue;
+        // 'ref', 'left', 'right' are always IR references
+        if (key === 'ref' || key === 'left' || key === 'right') {
+          if (remap.has(ops[key])) ops[key] = remap.get(ops[key]);
+        }
+        // 'value' is an IR ref only for stores
+        if (key === 'value' && VALUE_IS_REF.has(inst.op)) {
+          if (remap.has(ops[key])) ops[key] = remap.get(ops[key]);
+        }
+        // For CONST_BOOL with a 'ref' — already handled above
+      }
+    }
+
+    this.trace.ir = newIr;
+  }
+}

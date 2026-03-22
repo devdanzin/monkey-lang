@@ -3,7 +3,7 @@
 
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { IR, Trace, TraceRecorder, JIT, TraceCompiler } from './jit.js';  // Note: TraceCompiler not exported yet
+import { IR, Trace, TraceRecorder, JIT, TraceCompiler, TraceOptimizer } from './jit.js';
 import {
   MonkeyInteger, MonkeyBoolean, MonkeyString,
   TRUE, FALSE, NULL, cachedInteger,
@@ -65,6 +65,91 @@ describe('JIT hot counting', () => {
     }
     assert.equal(jit.countEdge('fn2', 10), false); // different function
     assert.equal(jit.countEdge('fn1', 10), true);  // fn1 is hot
+  });
+});
+
+describe('Trace optimization', () => {
+  it('should eliminate redundant guards', () => {
+    
+    const trace = new Trace('test', 0);
+    trace.addInst(IR.LOOP_START);
+    const load = trace.addInst(IR.LOAD_LOCAL, { slot: 0 });
+    trace.addInst(IR.GUARD_INT, { ref: load }); trace.guardCount++;
+    trace.addInst(IR.GUARD_INT, { ref: load }); trace.guardCount++; // redundant
+    trace.addInst(IR.UNBOX_INT, { ref: load });
+    trace.addInst(IR.LOOP_END);
+
+    const opt = new TraceOptimizer(trace);
+    const eliminated = opt.redundantGuardElimination();
+    assert.equal(eliminated, 1);
+    assert.equal(trace.guardCount, 1);
+  });
+
+  it('should eliminate guards on constants', () => {
+    
+    const trace = new Trace('test', 0);
+    trace.addInst(IR.LOOP_START);
+    const c = trace.addInst(IR.CONST_INT, { value: 42 });
+    trace.addInst(IR.GUARD_INT, { ref: c }); trace.guardCount++;
+    trace.addInst(IR.LOOP_END);
+
+    const opt = new TraceOptimizer(trace);
+    const eliminated = opt.redundantGuardElimination();
+    assert.equal(eliminated, 1);
+  });
+
+  it('should fold constant arithmetic', () => {
+    
+    const trace = new Trace('test', 0);
+    trace.addInst(IR.LOOP_START);
+    const a = trace.addInst(IR.CONST_INT, { value: 10 });
+    const b = trace.addInst(IR.CONST_INT, { value: 3 });
+    const sum = trace.addInst(IR.ADD_INT, { left: a, right: b });
+    trace.addInst(IR.LOOP_END);
+
+    const opt = new TraceOptimizer(trace);
+    const folded = opt.constantFolding();
+    assert.equal(folded, 1);
+    assert.equal(trace.ir[3].op, IR.CONST_INT);
+    assert.equal(trace.ir[3].operands.value, 13);
+  });
+
+  it('should not corrupt non-ref numeric operands during compaction', () => {
+    
+    const trace = new Trace('test', 0);
+    trace.addInst(IR.LOOP_START);                        // 0
+    const c20 = trace.addInst(IR.CONST_INT, { value: 20 }); // 1
+    const load = trace.addInst(IR.LOAD_LOCAL, { slot: 0 });  // 2
+    trace.addInst(IR.GUARD_INT, { ref: load }); trace.guardCount++; // 3
+    const unbox = trace.addInst(IR.UNBOX_INT, { ref: load }); // 4
+    const cmp = trace.addInst(IR.GT, { left: c20, right: unbox }); // 5
+    // Add dead instructions to trigger DCE + compaction
+    trace.addInst(IR.LOAD_LOCAL, { slot: 1 });  // 6 — dead
+    trace.addInst(IR.STORE_LOCAL, { slot: 0, value: cmp }); // 7
+    trace.addInst(IR.LOOP_END); // 8
+
+    const opt = new TraceOptimizer(trace);
+    opt.optimize();
+
+    // Find the CONST_INT — its value should still be 20
+    const constInst = trace.ir.find(i => i.op === IR.CONST_INT && i.operands.value !== undefined);
+    assert.equal(constInst.operands.value, 20, 'CONST_INT value was corrupted by compaction');
+  });
+
+  it('should eliminate dead code', () => {
+    
+    const trace = new Trace('test', 0);
+    trace.addInst(IR.LOOP_START);                          // 0
+    const dead = trace.addInst(IR.CONST_INT, { value: 99 }); // 1 — unused
+    const load = trace.addInst(IR.LOAD_LOCAL, { slot: 0 });  // 2
+    trace.addInst(IR.GUARD_INT, { ref: load }); trace.guardCount++; // 3
+    trace.addInst(IR.LOOP_END);                            // 4
+
+    const opt = new TraceOptimizer(trace);
+    const eliminated = opt.deadCodeElimination();
+    assert.ok(eliminated >= 1);
+    // CONST_INT(99) should be gone
+    assert.ok(!trace.ir.find(i => i.op === IR.CONST_INT && i.operands.value === 99));
   });
 });
 

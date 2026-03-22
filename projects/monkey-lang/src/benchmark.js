@@ -55,6 +55,18 @@ const BENCHMARKS = [
       result
     `,
   },
+  {
+    name: 'hot loop (10k iterations)',
+    input: `
+      let sum = 0;
+      let i = 0;
+      while (i < 10000) {
+        sum = sum + i;
+        i = i + 1;
+      }
+      sum
+    `,
+  },
 ];
 
 function parse(input) {
@@ -90,10 +102,26 @@ function timeVM(program, iterations = 1) {
   return { avg: times.reduce((a, b) => a + b) / times.length, result: null };
 }
 
+function timeJIT(program, iterations = 1) {
+  const compiler = new Compiler();
+  compiler.compile(program);
+  const bytecode = compiler.bytecode();
+
+  const times = [];
+  for (let i = 0; i < iterations; i++) {
+    const start = performance.now();
+    const vm = new VM(bytecode);
+    vm.enableJIT();
+    vm.run();
+    times.push(performance.now() - start);
+  }
+  return { avg: times.reduce((a, b) => a + b) / times.length, result: null };
+}
+
 console.log('Monkey Language Benchmark');
 console.log('========================\n');
-console.log(`${'Benchmark'.padEnd(35)} ${'Eval (ms)'.padStart(12)} ${'VM (ms)'.padStart(12)} ${'Speedup'.padStart(10)}`);
-console.log('-'.repeat(71));
+console.log(`${'Benchmark'.padEnd(35)} ${'Eval (ms)'.padStart(12)} ${'VM (ms)'.padStart(12)} ${'JIT (ms)'.padStart(12)} ${'JIT vs VM'.padStart(10)}`);
+console.log('-'.repeat(83));
 
 const iterations = 3;
 
@@ -103,10 +131,11 @@ for (const bench of BENCHMARKS) {
   try {
     const evalResult = timeEval(program, iterations);
     const vmResult = timeVM(program, iterations);
-    const speedup = evalResult.avg / vmResult.avg;
+    const jitResult = timeJIT(program, iterations);
+    const speedup = vmResult.avg / jitResult.avg;
 
     console.log(
-      `${bench.name.padEnd(35)} ${evalResult.avg.toFixed(2).padStart(12)} ${vmResult.avg.toFixed(2).padStart(12)} ${speedup.toFixed(2).padStart(9)}x`
+      `${bench.name.padEnd(35)} ${evalResult.avg.toFixed(2).padStart(12)} ${vmResult.avg.toFixed(2).padStart(12)} ${jitResult.avg.toFixed(2).padStart(12)} ${speedup.toFixed(2).padStart(9)}x`
     );
   } catch (err) {
     console.log(`${bench.name.padEnd(35)} ERROR: ${err.message}`);
