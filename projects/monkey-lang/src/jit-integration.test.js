@@ -441,4 +441,172 @@ describe('JIT VM integration', () => {
     // sum of (3*i + 7) for i=0..49 = 3*sum(i) + 350 = 3*1225 + 350 = 4025
     assert.equal(result.value, 4025);
   });
+
+  // === Edge cases ===
+
+  it('should handle zero-iteration loop (never triggers JIT)', () => {
+    const { result } = compileAndRunJIT(`
+      let sum = 0;
+      let i = 0;
+      while (i < 0) { sum = sum + 1; i = i + 1; }
+      sum
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    assert.equal(result.value, 0);
+  });
+
+  it('should handle loop with division', () => {
+    const { result } = compileAndRunJIT(`
+      let sum = 0;
+      let i = 1;
+      while (i < 101) {
+        sum = sum + (i / 2);
+        i = i + 1;
+      }
+      sum
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    // sum of floor(i/2) for i=1..100
+    // i=1→0, i=2→1, i=3→1, i=4→2, ... i=100→50
+    // = 2*(0+1+1+2+2+...+49+49+50) = 2*sum(k for k=0..49)*2 + 50... let me just compute
+    // Actually Monkey integer division: each i/2 truncates
+    // Pairs: (1,2)→0+1=1, (3,4)→1+2=3, ..., (99,100)→49+50=99
+    // Sum of pairs: 1+3+5+...+99 = 50 terms of odd numbers = 50^2 = 2500
+    assert.equal(result.value, 2500);
+  });
+
+  it('should handle loop counting down', () => {
+    const { result } = compileAndRunJIT(`
+      let sum = 0;
+      let i = 100;
+      while (i > 0) {
+        sum = sum + i;
+        i = i - 1;
+      }
+      sum
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    assert.equal(result.value, 5050);
+  });
+
+  it('should handle deeply nested function inlining (3 levels)', () => {
+    const { result } = compileAndRunJIT(`
+      let a = fn(x) { x + 1 };
+      let b = fn(x) { a(x) + a(x) };
+      let c = fn(x) { b(x) + 10 };
+      let sum = 0;
+      let i = 0;
+      while (i < 100) {
+        sum = sum + c(i);
+        i = i + 1;
+      }
+      sum
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    // c(i) = b(i) + 10 = (a(i) + a(i)) + 10 = (i+1 + i+1) + 10 = 2i + 12
+    // sum of (2i+12) for i=0..99 = 2*4950 + 1200 = 11100
+    assert.equal(result.value, 11100);
+  });
+
+  it('should handle loop with boolean guard (traced correctly)', () => {
+    const { result } = compileAndRunJIT(`
+      let count = 0;
+      let i = 0;
+      while (i < 50) {
+        if (true) { count = count + 1; }
+        i = i + 1;
+      }
+      count
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    assert.equal(result.value, 50);
+  });
+
+  it('should handle consecutive loops (separate traces)', () => {
+    const { result } = compileAndRunJIT(`
+      let a = 0;
+      let i = 0;
+      while (i < 100) { a = a + 1; i = i + 1; }
+      let b = 0;
+      let j = 0;
+      while (j < 200) { b = b + 2; j = j + 1; }
+      a + b
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    assert.equal(result.value, 500);
+  });
+
+  it('should handle loop where JIT and non-JIT produce same result for edge values', () => {
+    // Test with values near int32 boundaries
+    const { result } = compileAndRunJIT(`
+      let x = 1000000;
+      let i = 0;
+      while (i < 1000) {
+        x = x + 1000000;
+        i = i + 1;
+      }
+      x
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    assert.equal(result.value, 1001000000);
+  });
+
+  it('should handle loop with boolean result', () => {
+    const { result } = compileAndRunJIT(`
+      let found = false;
+      let i = 0;
+      while (i < 100) {
+        if (i == 50) { found = true; }
+        i = i + 1;
+      }
+      if (found) { 1 } else { 0 }
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    assert.equal(result.value, 1);
+  });
+
+  it('should handle closure + side trace combo', () => {
+    const { result } = compileAndRunJIT(`
+      let adder = fn(x) { fn(y) { x + y } };
+      let addOne = adder(1);
+      let addTwo = adder(2);
+      let sum = 0;
+      let i = 0;
+      while (i < 200) {
+        if (i > 99) {
+          sum = sum + addTwo(i);
+        } else {
+          sum = sum + addOne(i);
+        }
+        i = i + 1;
+      }
+      sum
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    // first 100: sum of (i+1) for i=0..99 = 4950+100 = 5050
+    // next 100: sum of (i+2) for i=100..199 = 14950+200 = 15150
+    assert.equal(result.value, 20200);
+  });
+
+  it('should handle triple-nested loops (small)', () => {
+    const { result } = compileAndRunJIT(`
+      let sum = 0;
+      let i = 0;
+      while (i < 5) {
+        let j = 0;
+        while (j < 5) {
+          let k = 0;
+          while (k < 5) {
+            sum = sum + 1;
+            k = k + 1;
+          }
+          j = j + 1;
+        }
+        i = i + 1;
+      }
+      sum
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    assert.equal(result.value, 125);
+  });
 });

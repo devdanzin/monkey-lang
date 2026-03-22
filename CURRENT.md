@@ -1,8 +1,8 @@
-status: done
-mode: THINK
-task: 16:00 THINK — Assess JIT milestone: what works, what's next
-context: Full assessment done. 187 tests, 12-21x loops, 10-18x fib. Nested loops (4-6x) is biggest perf gap. Next 4 blocks: benchmarks, tests, polish, README.
+status: in-progress
+mode: BUILD
+task: 16:15 BUILD — Monkey JIT: comprehensive benchmarks + test coverage
+context: 187 tests passing. JIT has tracing, side traces, function inlining, recursive fn compiler, blacklisting. Need: formal benchmark suite with pretty output, more edge-case tests.
 context-files: lessons/tracing-jit.md
-est: 0
-next: 16:15 BUILD — Monkey JIT: benchmarks + tests (est: 4 blocks)
-updated: 2026-03-22T16:02:00-06:00
+est: 3
+next: 17:15 BUILD — Blog update or JIT polish
+updated: 2026-03-22T16:15:00-06:00

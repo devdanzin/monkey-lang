@@ -388,3 +388,37 @@ for (const bench of BENCHMARKS) {
 }
 
 console.log('\n(Median of 5 runs. Times include compilation overhead for VM/JIT.)\n');
+
+// --- Summary ---
+const categories = {};
+let totalJitMs = 0, totalVmMs = 0, totalEvalMs = 0, totalBenches = 0;
+
+// Re-run to collect stats (we already printed above, now aggregate)
+for (const bench of BENCHMARKS) {
+  const program = parse(bench.input);
+  try {
+    const evalR = timeN(() => runEval(program), 3);
+    const vmR = timeN(() => runVM(program), 3);
+    const jitR = timeN(() => runJIT(program), 3);
+    const jitVsVm = vmR.median / jitR.median;
+
+    if (!categories[bench.category]) categories[bench.category] = { speedups: [], count: 0 };
+    categories[bench.category].speedups.push(jitVsVm);
+    categories[bench.category].count++;
+    totalJitMs += jitR.median;
+    totalVmMs += vmR.median;
+    totalEvalMs += evalR.median;
+    totalBenches++;
+  } catch (e) { /* skip */ }
+}
+
+console.log('Summary by Category');
+console.log('====================');
+for (const [cat, data] of Object.entries(categories)) {
+  const avg = data.speedups.reduce((a, b) => a + b, 0) / data.speedups.length;
+  const max = Math.max(...data.speedups);
+  const min = Math.min(...data.speedups);
+  console.log(`  ${cat.padEnd(16)} avg: ${avg.toFixed(1)}x  range: ${min.toFixed(1)}x–${max.toFixed(1)}x  (${data.count} benchmarks)`);
+}
+console.log(`\n  Overall: ${totalBenches} benchmarks, ${totalVmMs.toFixed(0)}ms VM → ${totalJitMs.toFixed(0)}ms JIT (${(totalVmMs/totalJitMs).toFixed(1)}x aggregate)`);
+console.log();

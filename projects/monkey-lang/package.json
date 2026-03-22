@@ -7,7 +7,8 @@
   "scripts": {
     "test": "node --test src/**/*.test.js",
     "repl": "node src/repl.js",
-    "benchmark": "node src/benchmark.js"
+    "benchmark": "node src/benchmark.js",
+    "benchmark:full": "node src/benchmark-comprehensive.js"
   },
   "type": "module",
   "author": "Henry",
