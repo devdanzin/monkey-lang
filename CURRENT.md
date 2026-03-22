@@ -1,8 +1,8 @@
-status: in-progress
+status: done
 mode: BUILD
-task: 13:45 BUILD — Optimize FunctionCompiler for raw integer arithmetic
-context: FunctionCompiler works (fib(25) 5.0x JIT/VM) but uses boxed MonkeyInteger for all ops. Tracing JIT gets 20x on loops with raw ints. Converting FunctionCompiler to use raw int fast paths should push fib(25) to 10x+.
+task: 13:45 BUILD — FunctionCompiler with raw integer optimization
+context: Implemented method JIT for recursive functions. Raw integer mode eliminates all boxing in self-recursive calls. fib(25) 10.4x JIT/VM. Key insight: inner function takes/returns raw JS numbers, only boxes at VM boundary.
 context-files: memory/scratch/side-trace-design.md, memory/scratch/tracing-jit-compilation.md
-est: 2
+est: 0
 next: 14:15 BUILD — Comprehensive benchmark suite + tests
-updated: 2026-03-22T13:45:00-06:00
+updated: 2026-03-22T14:00:00-06:00
