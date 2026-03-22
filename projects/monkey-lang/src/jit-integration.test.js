@@ -407,4 +407,38 @@ describe('JIT VM integration', () => {
     assert.ok(result instanceof MonkeyInteger);
     assert.equal(result.value, 3628800); // 10!
   });
+
+  it('should handle closure free variables in traced loops', () => {
+    const { result } = compileAndRunJIT(`
+      let adder = fn(x) { fn(y) { x + y } };
+      let addFive = adder(5);
+      let result = 0;
+      let i = 0;
+      while (i < 100) {
+        result = result + addFive(i);
+        i = i + 1;
+      }
+      result
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    // sum of (i+5) for i=0..99 = sum(i) + 500 = 4950 + 500 = 5450
+    assert.equal(result.value, 5450);
+  });
+
+  it('should handle multiple closure free variables', () => {
+    const { result } = compileAndRunJIT(`
+      let make = fn(a, b) { fn(x) { a * x + b } };
+      let f = make(3, 7);
+      let result = 0;
+      let i = 0;
+      while (i < 50) {
+        result = result + f(i);
+        i = i + 1;
+      }
+      result
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    // sum of (3*i + 7) for i=0..49 = 3*sum(i) + 350 = 3*1225 + 350 = 4025
+    assert.equal(result.value, 4025);
+  });
 });

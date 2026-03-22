@@ -557,7 +557,7 @@ export class VM {
               }
               this.recorder.popRef(); // pop the closure ref
 
-              if (!this.recorder.enterInlineFrame(baseOffset, callee.fn.numLocals, this.currentFrame().ip)) {
+              if (!this.recorder.enterInlineFrame(baseOffset, callee.fn.numLocals, ip)) {
                 // Too deep — abort recording
                 this.recorder.abort();
                 this.recorder = null;
@@ -742,7 +742,16 @@ export class VM {
           this.currentFrame().ip += 1;
           const freeVal = this.currentFrame().closure.free[freeIdx];
           this.push(freeVal);
-          if (recording()) { this._recordPush(op, freeVal, [freeIdx]); }
+          if (recording()) {
+            if (this.recorder.inlineDepth > 0) {
+              // Inside an inlined closure — free vars belong to the inlined closure,
+              // not the root trace's closure. Emit the value as a constant since
+              // Monkey closures capture by value (free vars don't change).
+              this._recordPushAsConst(freeVal);
+            } else {
+              this._recordPush(op, freeVal, [freeIdx]);
+            }
+          }
           break;
         }
 
@@ -1175,6 +1184,34 @@ export class VM {
         r.pushRef(ref);
         break;
       }
+    }
+  }
+
+  // Record a runtime value as a constant in the trace IR
+  // Used for inlined closure free variables (captured by value, won't change)
+  _recordPushAsConst(value) {
+    if (!this.recorder || !this.recorder.recording) return;
+    const r = this.recorder;
+    const trace = r.trace;
+
+    if (value instanceof MonkeyInteger) {
+      const ref = trace.addInst(IR.CONST_INT, { value: value.value });
+      r.typeMap.set(ref, 'raw_int');
+      r.pushRef(ref);
+    } else if (value instanceof MonkeyBoolean) {
+      const ref = trace.addInst(IR.CONST_BOOL, { value: value.value });
+      r.typeMap.set(ref, 'bool');
+      r.pushRef(ref);
+    } else if (value instanceof MonkeyString) {
+      const idx = this._ensureTraceConst(value);
+      const ref = trace.addInst(IR.CONST_OBJ, { constIdx: idx });
+      r.typeMap.set(ref, 'string');
+      r.pushRef(ref);
+    } else {
+      const idx = this._ensureTraceConst(value);
+      const ref = trace.addInst(IR.CONST_OBJ, { constIdx: idx });
+      r.typeMap.set(ref, 'object');
+      r.pushRef(ref);
     }
   }
 }
