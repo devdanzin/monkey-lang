@@ -1,13 +1,13 @@
 {
-  "generated": "2026-03-22T14:16:57.762Z",
+  "generated": "2026-03-22T15:46:08.027Z",
   "current": {
-    "status": "done",
-    "mode": "THINK",
-    "task": "08:15 THINK — Morning standup, plan the day, review JIT approach",
-    "context": "Standup complete. Blog done early. JIT architecture decided: tracing JIT targeting JS codegen. Two scratch notes ready for promotion (tracing-jit, cpython-ceval). 9 PRs open, no reviews.",
-    "next": "09:00 THINK — Review blog quality, promote scratch notes, then JIT scaffold at 09:15",
-    "startedAt": "2026-03-22T08:17:00-06:00",
-    "estimatedBlocks": 0
+    "status": "in-progress",
+    "mode": "MAINTAIN",
+    "task": "Git commits, push blog, update dashboard",
+    "context": "End of morning BUILD stretch. Need to commit all JIT work, push blog, update dashboard.",
+    "next": "10:00 THINK — JIT compiler design review, architecture sketch",
+    "startedAt": "2026-03-22T09:45:00-06:00",
+    "estimatedBlocks": 1
   },
   "schedule": {
     "date": "2026-03-22",
@@ -29,10 +29,14 @@
         "time": "08:30",
         "mode": "BUILD",
         "task": "Blog: \"Benchmarking a Bytecode VM\" draft (data ready from yesterday)",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "JIT scaffold complete.",
         "artifacts": [],
-        "details": ""
+        "details": "JIT scaffold complete. Created src/jit.js: IR system (~25 opcodes), Trace, TraceRecorder, TraceCompiler (→JS via new Function), JIT engine with hot counting. Key insight: GUARD_TRUTHY must work on raw JS booleans from comparisons, not MonkeyObjects. 5 new tests, all 157 existing tests still pass. End-to-end: counter 0→100 via compiled trace works.",
+        "startedAt": "2026-03-22T08:30:00-06:00",
+        "completedAt": "2026-03-22T08:43:00-06:00",
+        "durationMs": 780000,
+        "durationFormatted": "13m"
       },
       {
         "time": "08:45",
@@ -47,35 +51,47 @@
         "time": "09:00",
         "mode": "BUILD",
         "task": "Blog: \"Benchmarking a Bytecode VM\" draft (data ready from yesterday)",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "Fixed 3 JIT integration bugs: (1) CONST_INT typeMap was 'int' not 'raw_int' — caused…",
         "artifacts": [],
-        "details": ""
+        "details": "Fixed 3 JIT integration bugs: (1) CONST_INT typeMap was 'int' not 'raw_int' — caused UNBOX_INT to call .value on raw numbers → NaN; (2) UNBOX_INT emitted redundantly for already-raw values; (3) GUARD_TRUTHY used JS truthiness on MonkeyBoolean objects (always truthy as objects). All 7 integration + 157 existing tests pass. Pattern: type confusion at raw/boxed boundary is the #1 JIT bug class.",
+        "startedAt": "2026-03-22T09:00:00-06:00",
+        "completedAt": "2026-03-22T09:14:00-06:00",
+        "durationMs": 840000,
+        "durationFormatted": "14m"
       },
       {
         "time": "09:15",
         "mode": "BUILD",
         "task": "Blog: finish + polish + publish",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "JIT opcode coverage expansion.",
         "artifacts": [],
-        "details": ""
+        "details": "JIT opcode coverage expansion. Added recording for superinstructions (OpGetLocal*Const → decompose to LOAD_LOCAL+CONST_INT+arith IR), OpGetFree, OpBang. 7.8x speedup on 10k loop benchmark. 166 tests passing (9 JIT integration tests).",
+        "startedAt": "2026-03-22T09:15:00-06:00",
+        "completedAt": "2026-03-22T09:28:00-06:00",
+        "durationMs": 780000,
+        "durationFormatted": "13m"
       },
       {
         "time": "09:30",
         "mode": "BUILD",
         "task": "Blog: finish + polish + publish",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "JIT trace optimization passes.",
         "artifacts": [],
-        "details": ""
+        "details": "JIT trace optimization passes. Added TraceOptimizer with 3 passes (redundant guard elimination, constant folding, DCE). Fixed critical compaction bug — _compact() was remapping value/slot/index operands as IR refs, corrupting constants. 5 new tests, 171 total passing. Hot loop: 6.4x JIT vs VM.",
+        "startedAt": "2026-03-22T09:30:00-06:00",
+        "completedAt": "2026-03-22T09:43:00-06:00",
+        "durationMs": 780000,
+        "durationFormatted": "13m"
       },
       {
         "time": "09:45",
         "mode": "MAINTAIN",
         "task": "Git commits, push blog, update dashboard",
-        "status": "upcoming",
-        "summary": "",
+        "status": "in-progress",
+        "summary": "End of morning BUILD stretch. Need to commit all JIT work, push blog, update dashboard.",
         "artifacts": [],
         "details": ""
       },
@@ -529,14 +545,15 @@
     "(log pivots here during the day)"
   ],
   "stats": {
-    "blocksCompleted": 1,
+    "blocksCompleted": 5,
     "blocksTotal": 55,
     "modeDistribution": {
-      "THINK": 1
+      "THINK": 1,
+      "BUILD": 4
     },
-    "totalMinutes": 3,
-    "totalMs": 180000,
-    "avgDurationMs": 180000
+    "totalMinutes": 56,
+    "totalMs": 3360000,
+    "avgDurationMs": 672000
   },
   "artifacts": [
     {
@@ -633,7 +650,18 @@
       "modeDistribution": {}
     }
   ],
-  "todayHighlights": [],
+  "todayHighlights": [
+    {
+      "mode": "BUILD",
+      "time": "09:00",
+      "text": "Fixed 3 JIT integration bugs: (1) CONST_INT typeMap was 'int' not 'raw_int' —…"
+    },
+    {
+      "mode": "BUILD",
+      "time": "09:30",
+      "text": "JIT trace optimization passes."
+    }
+  ],
   "prs": [
     {
       "number": 51803,
@@ -642,7 +670,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-21T18:22:41Z",
       "updatedAt": "2026-03-21T20:52:10Z",
-      "ageHours": 20,
+      "ageHours": 21,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -653,7 +681,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T22:23:20Z",
       "updatedAt": "2026-03-21T20:46:34Z",
-      "ageHours": 40,
+      "ageHours": 41,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -664,7 +692,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:39:06Z",
       "updatedAt": "2026-03-21T20:46:35Z",
-      "ageHours": 41,
+      "ageHours": 42,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -675,7 +703,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:23:23Z",
       "updatedAt": "2026-03-21T20:51:02Z",
-      "ageHours": 41,
+      "ageHours": 42,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -686,7 +714,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:38:20Z",
       "updatedAt": "2026-03-21T20:50:04Z",
-      "ageHours": 42,
+      "ageHours": 43,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -697,7 +725,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
       "updatedAt": "2026-03-21T20:50:26Z",
-      "ageHours": 42,
+      "ageHours": 43,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -708,7 +736,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T18:18:34Z",
       "updatedAt": "2026-03-21T20:46:52Z",
-      "ageHours": 44,
+      "ageHours": 45,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -719,7 +747,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-19T23:18:46Z",
       "updatedAt": "2026-03-21T20:51:20Z",
-      "ageHours": 63,
+      "ageHours": 64,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -730,7 +758,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-18T20:02:08Z",
       "updatedAt": "2026-03-21T20:46:10Z",
-      "ageHours": 90,
+      "ageHours": 92,
       "ciStatus": "pending",
       "reviewStatus": "none"
     }
@@ -862,9 +890,9 @@
     }
   ],
   "scheduleAdherence": {
-    "completionRate": 100,
-    "completedBlocks": 1,
-    "pastBlocks": 1,
+    "completionRate": 71,
+    "completedBlocks": 5,
+    "pastBlocks": 7,
     "totalBlocks": 55,
     "plannedDist": {
       "THINK": 8,
@@ -873,9 +901,10 @@
       "EXPLORE": 6
     },
     "actualDist": {
-      "THINK": 1
+      "THINK": 1,
+      "BUILD": 4
     },
-    "pace": 60
+    "pace": 3.3
   },
   "streak": 1
 }
