@@ -609,4 +609,60 @@ describe('JIT VM integration', () => {
     assert.ok(result instanceof MonkeyInteger);
     assert.equal(result.value, 125);
   });
+
+  it('should handle loop with early exit condition (while with compound check)', () => {
+    const { result } = compileAndRunJIT(`
+      let x = 0;
+      let i = 0;
+      while (i < 1000) {
+        if (i > 50) {
+          x = x + 2;
+        } else {
+          x = x + 1;
+        }
+        i = i + 1;
+      }
+      x
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    assert.equal(result.value, 51 + 949 * 2); // 51 ones + 949 twos = 1949
+  });
+
+  it('should handle fibonacci in a loop (combined trace types)', () => {
+    // Compute first 20 fibonacci numbers, return the 20th
+    const { result } = compileAndRunJIT(`
+      let a = 0;
+      let b = 1;
+      let i = 0;
+      while (i < 20) {
+        let temp = a + b;
+        a = b;
+        b = temp;
+        i = i + 1;
+      }
+      b
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    assert.equal(result.value, 10946);
+  });
+
+  it('should handle alternating function calls in loop', () => {
+    const { result } = compileAndRunJIT(`
+      let addOne = fn(x) { x + 1 };
+      let double = fn(x) { x * 2 };
+      let x = 0;
+      let i = 0;
+      while (i < 100) {
+        if (i < 50) {
+          x = addOne(x);
+        } else {
+          x = double(1) + x;
+        }
+        i = i + 1;
+      }
+      x
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    assert.equal(result.value, 50 + 50 * 2); // first 50: +1 each = 50, next 50: +2 each = 100, total 150
+  });
 });
