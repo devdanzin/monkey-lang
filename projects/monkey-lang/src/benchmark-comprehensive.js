@@ -201,7 +201,7 @@ const BENCHMARKS = [
     expected: 300000,
   },
 
-  // === Closures ===
+  // === Closures (JIT bug: free variable closures crash after trace compilation — see TODO) ===
   {
     name: 'closure: adder factory 10k',
     category: 'closures',
@@ -257,6 +257,22 @@ const BENCHMARKS = [
       sum
     `,
     expected: 25005000,
+  },
+
+  // === Hash maps ===
+  {
+    name: 'hash: repeated lookups 5k',
+    category: 'hashes',
+    input: `
+      let h = {"a": 1, "b": 2, "c": 3, "d": 4, "e": 5};
+      let sum = 0; let i = 0;
+      while (i < 5000) {
+        sum = sum + h["a"] + h["c"] + h["e"];
+        i = i + 1;
+      }
+      sum
+    `,
+    expected: 45000,
   },
 
   // === Stress tests ===

@@ -26,3 +26,9 @@ Track recurring issues so future sessions don't repeat them.
 **Root cause:** Two "worlds" in the IR (raw JS values vs MonkeyObject wrappers) with inconsistent type tracking.
 **Fix:** Mark CONST_INT as 'raw_int' in typeMap. Skip UNBOX_INT and GUARD_INT when type is already 'raw_int'. Use __isTruthy() for MonkeyObject guards.
 **Prevention:** Every IR instruction must have a clear contract: does it produce raw or boxed values? Document this in the IR opcode definitions. Test with logging the generated JS source.
+
+### JIT closure free variable crash (2026-03-22)
+**Problem:** Closures with free variables (e.g., `let adder = fn(x) { fn(y) { x + y } }; let addFive = adder(5)`) crash with "unknown opcode: 0" when the calling loop hits JIT trace compilation threshold (~56 iterations). Works fine with <56 iterations (no trace) and works fine without JIT.
+**Root cause:** TBD — likely the trace compiler doesn't correctly handle OpGetFree or OpClosure bytecodes when inlining closure calls into traces. May be corrupting bytecode or generating invalid compiled trace code.
+**Fix:** TODO — investigate how trace recording handles call sites for closures vs regular functions. Check if free variable loading is implemented in the trace IR.
+**Workaround:** Closures with free vars work fine in interpreter and VM modes. JIT only crashes when the loop triggers trace compilation.

@@ -1,8 +1,8 @@
 status: done
 mode: BUILD
-task: 14:15 BUILD — Additional JIT tests + benchmark correctness validation
-context: Added 7 new JIT integration tests (FunctionCompiler, recursive fib, loop+recursive combo, negative numbers, multiplication). Added 3 stress benchmarks (fib(30), loop+fib, factorial). Fixed expected values. All 185 tests passing.
+task: 14:30 BUILD — Comprehensive benchmark suite expansion
+context: Added 8 new benchmarks (arrays, closures, higher-order, hashes). Discovered JIT bug: closures with free variables crash ("unknown opcode: 0") after trace compilation triggers (~56 iterations). Arrays also show 0 traces/regression. Higher-order fns work great (11-16x). All 185 tests still pass.
 context-files: memory/scratch/tracing-jit-compilation.md
 est: 0
 next: 14:45 MAINTAIN — Commit, push, promote tracing-jit scratch note to lessons/
-updated: 2026-03-22T14:13:00-06:00
+updated: 2026-03-22T14:28:00-06:00

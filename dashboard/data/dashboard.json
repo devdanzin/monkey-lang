@@ -1,12 +1,12 @@
 {
-  "generated": "2026-03-22T20:04:12.602Z",
+  "generated": "2026-03-22T20:20:16.650Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "14:15 BUILD — Additional JIT tests + benchmark correctness validation",
-    "context": "Added 7 new JIT integration tests (FunctionCompiler, recursive fib, loop+recursive combo, negative numbers, multiplication). Added 3 stress benchmarks (fib(30), loop+fib, factorial). Fixed expected values. All 185 tests passing.",
+    "task": "14:30 BUILD — Comprehensive benchmark suite expansion",
+    "context": "Added 8 new benchmarks (arrays, closures, higher-order, hashes). Discovered JIT bug: closures with free variables crash (\"unknown opcode: 0\") after trace compilation triggers (~56 iterations). Arrays also show 0 traces/regression. Higher-order fns work great (11-16x). All 185 tests still pass.",
     "next": "14:45 MAINTAIN — Commit, push, promote tracing-jit scratch note to lessons/",
-    "startedAt": "2026-03-22T14:13:00-06:00",
+    "startedAt": "2026-03-22T14:28:00-06:00",
     "estimatedBlocks": 0
   },
   "schedule": {
@@ -316,10 +316,14 @@
         "time": "14:15",
         "mode": "BUILD",
         "task": "Monkey JIT: recursive fibonacci tracing + benchmarks",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "Expanded comprehensive benchmark suite — added 8 new benchmarks covering arrays,…",
         "artifacts": [],
-        "details": ""
+        "details": "Expanded comprehensive benchmark suite — added 8 new benchmarks covering arrays, closures, higher-order functions, and hashes. Discovered JIT closure bug: free variable closures crash with \"unknown opcode: 0\" after trace compilation triggers. Arrays show 0 traces (JIT overhead without benefit). Higher-order fns excellent (11-16x). Lexer note: identifiers can't contain digits (add5→add + 5).",
+        "startedAt": "2026-03-22T14:15:00-06:00",
+        "completedAt": "2026-03-22T14:29:00-06:00",
+        "durationMs": 840000,
+        "durationFormatted": "14m"
       },
       {
         "time": "14:30",
@@ -611,16 +615,16 @@
     "13:00: Function inlining + side traces both done by 11:30 (was scheduled through 14:30). Reprioritized: inline side trace code into root guards to eliminate dispatch overhead (nested loop bottleneck), then fib tracing + benchmarks. Freed ~4 blocks for additional optimization or exploration."
   ],
   "stats": {
-    "blocksCompleted": 21,
+    "blocksCompleted": 22,
     "blocksTotal": 55,
     "modeDistribution": {
       "THINK": 4,
-      "BUILD": 15,
+      "BUILD": 16,
       "MAINTAIN": 2
     },
-    "totalMinutes": 213,
-    "totalMs": 12780000,
-    "avgDurationMs": 608571
+    "totalMinutes": 227,
+    "totalMs": 13620000,
+    "avgDurationMs": 619091
   },
   "artifacts": [
     {
@@ -789,7 +793,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:39:06Z",
       "updatedAt": "2026-03-21T20:46:35Z",
-      "ageHours": 46,
+      "ageHours": 47,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -811,7 +815,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:38:20Z",
       "updatedAt": "2026-03-21T20:50:04Z",
-      "ageHours": 47,
+      "ageHours": 48,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -988,8 +992,8 @@
   ],
   "scheduleAdherence": {
     "completionRate": 88,
-    "completedBlocks": 21,
-    "pastBlocks": 24,
+    "completedBlocks": 22,
+    "pastBlocks": 25,
     "totalBlocks": 55,
     "plannedDist": {
       "THINK": 9,
@@ -999,7 +1003,7 @@
     },
     "actualDist": {
       "THINK": 4,
-      "BUILD": 15,
+      "BUILD": 16,
       "MAINTAIN": 2
     },
     "pace": 3.6
