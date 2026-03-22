@@ -665,4 +665,72 @@ describe('JIT VM integration', () => {
     assert.ok(result instanceof MonkeyInteger);
     assert.equal(result.value, 50 + 50 * 2); // first 50: +1 each = 50, next 50: +2 each = 100, total 150
   });
+
+  it('should handle modular arithmetic in loop', () => {
+    const { result } = compileAndRunJIT(`
+      let sum = 0;
+      let i = 0;
+      while (i < 200) {
+        if (i / 2 * 2 == i) {
+          sum = sum + i;
+        }
+        i = i + 1;
+      }
+      sum
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    // Sum of even numbers 0..198 = 0+2+4+...+198 = 2*(0+1+2+...+99) = 2*4950 = 9900
+    assert.equal(result.value, 9900);
+  });
+
+  it('should handle deeply nested function calls', () => {
+    const { result } = compileAndRunJIT(`
+      let inc = fn(x) { x + 1 };
+      let dbl = fn(x) { x + x };
+      let apply = fn(f, x) { f(x) };
+      let x = 0;
+      let i = 0;
+      while (i < 50) {
+        x = apply(inc, x);
+        i = i + 1;
+      }
+      x
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    assert.equal(result.value, 50);
+  });
+
+  it('should handle while loop with early exit pattern', () => {
+    const { result } = compileAndRunJIT(`
+      let x = 1;
+      let i = 0;
+      while (i < 1000) {
+        x = x + x;
+        if (x > 10000) {
+          i = 1000;
+        } else {
+          i = i + 1;
+        }
+      }
+      x
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    assert.ok(result.value > 10000);
+  });
+
+  it('should report JIT stats after tracing', () => {
+    const { vm } = compileAndRunJIT(`
+      let x = 0;
+      let i = 0;
+      while (i < 100) {
+        x = x + 1;
+        i = i + 1;
+      }
+      x
+    `);
+    const stats = vm.jit.getStats();
+    assert.ok(stats.rootTraces >= 1, 'should have at least 1 root trace');
+    assert.ok(stats.totalTraces >= 1, 'should have at least 1 total trace');
+    assert.equal(stats.enabled, true);
+  });
 });

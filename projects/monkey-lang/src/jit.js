@@ -545,6 +545,68 @@ export class JIT {
     trace.compiled = compiler.compile();
     return trace.compiled !== null;
   }
+
+  // Get JIT statistics for diagnostics
+  getStats() {
+    let rootTraces = 0;
+    let sideTraceCount = 0;
+    let totalGuards = 0;
+    let totalIR = 0;
+    const traceDetails = [];
+
+    for (const [key, trace] of this.traces) {
+      rootTraces++;
+      totalGuards += trace.guards ? trace.guards.length : 0;
+      totalIR += trace.ir ? trace.ir.length : 0;
+      sideTraceCount += trace.sideTraces ? trace.sideTraces.size : 0;
+
+      traceDetails.push({
+        key,
+        irCount: trace.ir ? trace.ir.length : 0,
+        guardCount: trace.guards ? trace.guards.length : 0,
+        sideTraces: trace.sideTraces ? trace.sideTraces.size : 0,
+        hasCompiled: trace.compiled !== null,
+      });
+    }
+
+    return {
+      enabled: this.enabled,
+      rootTraces,
+      sideTraces: sideTraceCount,
+      funcTraces: this.funcTraces.size,
+      totalTraces: this.traceCount,
+      totalIR,
+      totalGuards,
+      hotSites: this.hotCounts.size,
+      blacklisted: this.blacklisted.size,
+      aborts: [...this.abortCounts.values()].reduce((a, b) => a + b, 0),
+      traces: traceDetails,
+    };
+  }
+
+  // Dump a trace's IR for debugging (returns string)
+  dumpTrace(trace) {
+    if (!trace || !trace.ir) return '(no trace)';
+    const lines = [`--- Trace ${trace.frameId}:${trace.startIp} (${trace.ir.length} IR ops, ${trace.guards ? trace.guards.length : 0} guards) ---`];
+    for (let i = 0; i < trace.ir.length; i++) {
+      const inst = trace.ir[i];
+      const ops = inst.operands || {};
+      const parts = [`  ${String(i).padStart(4, '0')} ${inst.op}`];
+      if (ops.ref !== undefined) parts.push(`ref=${ops.ref}`);
+      if (ops.left !== undefined) parts.push(`left=${ops.left}`);
+      if (ops.right !== undefined) parts.push(`right=${ops.right}`);
+      if (ops.value !== undefined) parts.push(`val=${ops.value}`);
+      if (ops.slot !== undefined) parts.push(`slot=${ops.slot}`);
+      if (ops.index !== undefined) parts.push(`idx=${ops.index}`);
+      lines.push(parts.join(' '));
+    }
+    if (trace._compiledSource) {
+      lines.push('--- Compiled JS ---');
+      lines.push(trace._compiledSource);
+    }
+    lines.push('---');
+    return lines.join('\n');
+  }
 }
 
 // --- Trace Compiler ---

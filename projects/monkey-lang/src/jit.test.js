@@ -205,4 +205,32 @@ describe('Trace compilation', () => {
     assert.equal(stack[0].value, 100);
     assert.equal(result.exit, 'guard_falsy');
   });
+
+  it('should return JIT stats', () => {
+    const jit = new JIT();
+    const stats = jit.getStats();
+    assert.equal(stats.enabled, true);
+    assert.equal(stats.rootTraces, 0);
+    assert.equal(stats.totalTraces, 0);
+    assert.equal(stats.blacklisted, 0);
+    assert.equal(stats.aborts, 0);
+    assert.ok(Array.isArray(stats.traces));
+  });
+
+  it('should dump trace IR as string', () => {
+    const jit = new JIT();
+    const trace = new Trace('test', 0);
+    trace.addInst(IR.LOOP_START);
+    trace.addInst(IR.CONST_INT, { value: 42 });
+    trace.addInst(IR.LOOP_END);
+    const dump = jit.dumpTrace(trace);
+    assert.ok(dump.includes('loop_start'));
+    assert.ok(dump.includes('const_int'));
+    assert.ok(dump.includes('val=42'));
+  });
+
+  it('should handle dumpTrace with no trace', () => {
+    const jit = new JIT();
+    assert.equal(jit.dumpTrace(null), '(no trace)');
+  });
 });
