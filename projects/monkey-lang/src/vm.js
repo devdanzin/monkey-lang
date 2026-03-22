@@ -98,6 +98,7 @@ export class VM {
     // JIT support
     this.jit = null;
     this.recorder = null;
+    this._traceConsts = [];    // extra constants referenced by traces (closures, etc.)
   }
 
   enableJIT() {
@@ -159,7 +160,8 @@ export class VM {
 
       // Check if we've looped back to trace start (recording complete)
       if (recording() && this.recorder.instrCount > 0 && ip === this.recorder.startIp
-          && this.framesIndex === this.recorder.startFrame) {
+          && this.framesIndex === this.recorder.startFrame
+          && this.recorder.inlineDepth === 0) {
         const trace = this.recorder.stop();
         if (trace && this.jit && this.jit.compile(trace, this)) {
           this.jit.storeTrace(trace);
@@ -322,13 +324,16 @@ export class VM {
 
           if (recording()) {
             const condRef = this.recorder.popRef();
+            const overrideExitIp = this.recorder.getGuardExitIp();
             if (truthy) {
               // Took the fall-through path — guard that it stays truthy
-              this.recorder.trace.addInst(IR.GUARD_TRUTHY, { ref: condRef, exitIp: target });
+              const exitIp = overrideExitIp !== null ? overrideExitIp : target;
+              this.recorder.trace.addInst(IR.GUARD_TRUTHY, { ref: condRef, exitIp });
               this.recorder.trace.guardCount++;
             } else {
               // Took the jump path — guard that it stays falsy
-              this.recorder.trace.addInst(IR.GUARD_FALSY, { ref: condRef, exitIp: ip + 3 });
+              const exitIp = overrideExitIp !== null ? overrideExitIp : ip + 3;
+              this.recorder.trace.addInst(IR.GUARD_FALSY, { ref: condRef, exitIp });
               this.recorder.trace.guardCount++;
             }
           }
@@ -342,15 +347,16 @@ export class VM {
         case Opcodes.OpJump: {
           const target2 = (ins[ip + 1] << 8) | ins[ip + 2];
 
-          // Backward jump = loop back-edge
-          if (this.jit && target2 <= ip) {
+          // Backward jump = loop back-edge (only in non-inlined context)
+          if (this.jit && target2 <= ip && !(recording() && this.recorder.inlineDepth > 0)) {
             const closureId = this._closureId();
 
             // Check for existing compiled trace
             const existingTrace = this.jit.getTrace(closureId, target2);
             if (existingTrace && existingTrace.compiled && !recording()) {
               this._executeTrace(existingTrace);
-              // After trace exits, ip is already set; continue interpreting
+              // After trace exits, ensure IP is valid
+              // If _executeTrace didn't set IP (e.g., max_iter), resume at loop header
               break;
             }
 
@@ -400,7 +406,8 @@ export class VM {
           this.stack[this.currentFrame().basePointer + localIdx] = setVal;
           if (recording()) {
             const valRef = this.recorder.popRef();
-            this.recorder.trace.addInst(IR.STORE_LOCAL, { slot: localIdx, value: valRef });
+            const absSlot = this.recorder.currentBaseOffset() + localIdx;
+            this.recorder.trace.addInst(IR.STORE_LOCAL, { slot: absSlot, value: valRef });
           }
           break;
         }
@@ -411,13 +418,21 @@ export class VM {
           const localVal = this.stack[this.currentFrame().basePointer + localIdx2];
           this.push(localVal);
           if (recording()) {
-            const ref = this.recorder.trace.addInst(IR.LOAD_LOCAL, { slot: localIdx2 });
-            this.recorder.pushRef(ref);
+            const absSlot = this.recorder.currentBaseOffset() + localIdx2;
+            // Check if this slot has a direct IR ref from inlined arg passing
+            const inlineRef = this.recorder.inlineSlotRefs.get(absSlot);
+            if (inlineRef !== undefined) {
+              this.recorder.pushRef(inlineRef);
+            } else {
+              const ref = this.recorder.trace.addInst(IR.LOAD_LOCAL, { slot: absSlot });
+              this.recorder.pushRef(ref);
+            }
           }
           break;
         }
 
         case Opcodes.OpArray: {
+          if (recording()) { this.recorder.abort(); this.recorder = null; }
           const numElements = (ins[ip + 1] << 8) | ins[ip + 2];
           this.currentFrame().ip += 2;
           const elements = this.stack.slice(this.sp - numElements, this.sp);
@@ -427,6 +442,7 @@ export class VM {
         }
 
         case Opcodes.OpHash: {
+          if (recording()) { this.recorder.abort(); this.recorder = null; }
           const numPairs = (ins[ip + 1] << 8) | ins[ip + 2];
           this.currentFrame().ip += 2;
           const pairs = new Map();
@@ -444,6 +460,7 @@ export class VM {
         }
 
         case Opcodes.OpIndex: {
+          if (recording()) { this.recorder.abort(); this.recorder = null; }
           const index = this.pop();
           const left3 = this.pop();
           if (left3 instanceof MonkeyArray && index instanceof MonkeyInteger) {
@@ -464,7 +481,6 @@ export class VM {
         }
 
         case Opcodes.OpCall: {
-          if (recording()) { this.recorder.abort(); this.recorder = null; }
           const numArgs = ins[ip + 1];
           this.currentFrame().ip += 1;
           const callee = this.stack[this.sp - 1 - numArgs];
@@ -473,10 +489,42 @@ export class VM {
             if (numArgs !== callee.fn.numParameters) {
               throw new Error(`wrong number of arguments: want=${callee.fn.numParameters}, got=${numArgs}`);
             }
+
+            // If recording, try to inline the call into the trace
+            if (recording()) {
+              const rootBp = this.frames[this.recorder.startFrame - 1].basePointer;
+              const calleeBp = this.sp - numArgs;
+              const baseOffset = calleeBp - rootBp;
+
+              // Pop the arg refs and closure ref from IR stack — they're on the VM stack now
+              // The callee will access them as locals via LOAD_LOCAL with the inlined baseOffset
+              const argRefs = [];
+              for (let i = 0; i < numArgs; i++) {
+                argRefs.unshift(this.recorder.popRef());
+              }
+              this.recorder.popRef(); // pop the closure ref
+
+              if (!this.recorder.enterInlineFrame(baseOffset, callee.fn.numLocals, this.currentFrame().ip)) {
+                // Too deep — abort recording
+                this.recorder.abort();
+                this.recorder = null;
+              } else {
+                // Map the argument IR refs to the inlined frame's local slots
+                // so that LOAD_LOCAL in the callee picks them up directly
+                // (no STORE_LOCAL needed — avoids promotion analysis issues)
+                for (let i = 0; i < numArgs; i++) {
+                  this.recorder.inlineSlotRefs.set(baseOffset + i, argRefs[i]);
+                }
+              }
+              // Continue recording into the callee — the VM pushes
+              // the frame normally, and we keep recording with the new baseOffset
+            }
+
             const frame = new Frame(callee, this.sp - numArgs);
             this.pushFrame(frame);
             this.sp = frame.basePointer + callee.fn.numLocals;
           } else if (callee instanceof MonkeyBuiltin) {
+            if (recording()) { this.recorder.abort(); this.recorder = null; }
             const args = this.stack.slice(this.sp - numArgs, this.sp);
             const result = callee.fn(...args);
             this.sp = this.sp - numArgs - 1;
@@ -489,6 +537,20 @@ export class VM {
 
         case Opcodes.OpReturnValue: {
           const returnValue = this.pop();
+
+          if (recording() && this.recorder.inlineDepth > 0) {
+            // Returning from an inlined function — don't stop recording
+            const retRef = this.recorder.popRef();
+            this.recorder.leaveInlineFrame();
+            // Pop the frame, restore sp, push return value
+            const frame = this.popFrame();
+            this.sp = frame.basePointer - 1; // -1 to also pop the function itself
+            this.push(returnValue);
+            // Push the return value's IR ref back for the caller to use
+            this.recorder.pushRef(retRef);
+            break;
+          }
+
           const frame = this.popFrame();
           this.sp = frame.basePointer - 1; // -1 to also pop the function itself
           this.push(returnValue);
@@ -496,6 +558,18 @@ export class VM {
         }
 
         case Opcodes.OpReturn: {
+          if (recording() && this.recorder.inlineDepth > 0) {
+            // Returning NULL from an inlined function
+            this.recorder.leaveInlineFrame();
+            const frame2 = this.popFrame();
+            this.sp = frame2.basePointer - 1;
+            this.push(NULL);
+            const nullRef = this.recorder.trace.addInst(IR.CONST_NULL);
+            this.recorder.typeMap.set(nullRef, 'null');
+            this.recorder.pushRef(nullRef);
+            break;
+          }
+
           const frame2 = this.popFrame();
           this.sp = frame2.basePointer - 1;
           this.push(NULL);
@@ -513,7 +587,21 @@ export class VM {
             free[i] = this.stack[this.sp - numFree + i];
           }
           this.sp -= numFree;
-          this.push(new Closure(fn, free));
+          const closure = new Closure(fn, free);
+          this.push(closure);
+
+          if (recording()) {
+            // Pop the free variable refs from IR stack
+            for (let i = 0; i < numFree; i++) {
+              this.recorder.popRef();
+            }
+            // Record the closure as a constant object
+            const closureRef = this.recorder.trace.addInst(IR.CONST_OBJ, {
+              constIdx: this._ensureTraceConst(closure)
+            });
+            this.recorder.typeMap.set(closureRef, 'object');
+            this.recorder.pushRef(closureRef);
+          }
           break;
         }
 
@@ -528,12 +616,29 @@ export class VM {
 
         case Opcodes.OpCurrentClosure:
           this.push(this.currentFrame().closure);
+          if (recording()) {
+            // Record the closure as an opaque constant object
+            // The trace will just push the same closure value
+            const closureRef = this.recorder.trace.addInst(IR.CONST_OBJ, {
+              constIdx: this._ensureTraceConst(this.currentFrame().closure)
+            });
+            this.recorder.typeMap.set(closureRef, 'object');
+            this.recorder.pushRef(closureRef);
+          }
           break;
 
         case Opcodes.OpGetBuiltin: {
           const builtinIdx = ins[ip + 1];
           this.currentFrame().ip += 1;
           this.push(BUILTINS[builtinIdx]);
+          if (recording()) {
+            // Builtins are opaque objects — record as const
+            const ref = this.recorder.trace.addInst(IR.CONST_OBJ, {
+              constIdx: this._ensureTraceConst(BUILTINS[builtinIdx])
+            });
+            this.recorder.typeMap.set(ref, 'object');
+            this.recorder.pushRef(ref);
+          }
           break;
         }
 
@@ -586,7 +691,14 @@ export class VM {
           if (leftVal instanceof MonkeyInteger && rightVal instanceof MonkeyInteger) {
             if (recording()) {
               // Decompose superinstruction into IR: load local, const, arith
-              const localRef = this.recorder.trace.addInst(IR.LOAD_LOCAL, { slot: localIdx3 });
+              const absSlot = this.recorder.currentBaseOffset() + localIdx3;
+              const inlineRef = this.recorder.inlineSlotRefs.get(absSlot);
+              let localRef;
+              if (inlineRef !== undefined) {
+                localRef = inlineRef;
+              } else {
+                localRef = this.recorder.trace.addInst(IR.LOAD_LOCAL, { slot: absSlot });
+              }
               this.recorder.pushRef(localRef);
               const constRef = this.recorder.trace.addInst(IR.CONST_INT, { value: rightVal.value });
               this.recorder.typeMap.set(constRef, 'raw_int');
@@ -679,6 +791,18 @@ export class VM {
 
   // --- JIT Integration ---
 
+  // Store a runtime object as a trace constant, returning its index
+  // Used for closures and other objects that don't exist in the bytecode constant pool
+  _ensureTraceConst(obj) {
+    let idx = this._traceConsts.indexOf(obj);
+    if (idx === -1) {
+      idx = this._traceConsts.length;
+      this._traceConsts.push(obj);
+    }
+    // Offset by constants.length so it doesn't collide with bytecode constants
+    return this.constants.length + idx;
+  }
+
   // Get a stable identity for the current closure (for trace keying)
   _closureId() {
     return this.currentFrame().closure.fn;
@@ -687,9 +811,12 @@ export class VM {
   // Execute a compiled trace, returns true if trace ran (even if it exited)
   _executeTrace(trace) {
     const frame = this.currentFrame();
+    const allConsts = this._traceConsts.length > 0
+      ? [...this.constants, ...this._traceConsts]
+      : this.constants;
     const result = trace.compiled(
       this.stack, this.sp, frame.basePointer,
-      this.globals, this.constants, frame.closure.free,
+      this.globals, allConsts, frame.closure.free,
       MonkeyInteger, MonkeyBoolean, MonkeyString,
       TRUE, FALSE, NULL,
       cachedInteger,
@@ -736,10 +863,12 @@ export class VM {
         // Side trace completed, re-enter parent (shouldn't happen on root trace)
         return true;
       case 'max_iter':
-        // Safety bail — just continue interpreting
+        // Safety bail — resume interpreting from loop header
+        frame.ip = trace.startIp - 1;
         return true;
       case 'call':
-        // Can't handle calls yet — fall back to interpreter
+        // Can't handle calls yet — fall back to interpreter at loop header
+        frame.ip = trace.startIp - 1;
         return true;
       default:
         return true;
@@ -761,9 +890,12 @@ export class VM {
   // Execute a compiled side trace
   _executeSideTrace(sideTrace, parentTrace) {
     const frame = this.currentFrame();
+    const allConsts = this._traceConsts.length > 0
+      ? [...this.constants, ...this._traceConsts]
+      : this.constants;
     const result = sideTrace.compiled(
       this.stack, this.sp, frame.basePointer,
-      this.globals, this.constants, frame.closure.free,
+      this.globals, allConsts, frame.closure.free,
       MonkeyInteger, MonkeyBoolean, MonkeyString,
       TRUE, FALSE, NULL,
       cachedInteger,

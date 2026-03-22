@@ -27,6 +27,7 @@ const MAX_TRACE_LENGTH = 200;    // max IR instructions per trace
 const MAX_TRACES = 64;           // max compiled traces
 const HOT_EXIT_THRESHOLD = 8;    // guard exit count before side trace
 const MAX_SIDE_TRACES = 4;       // max side traces per root trace
+const MAX_INLINE_DEPTH = 3;      // max function inlining depth during tracing
 
 // --- IR Opcodes ---
 // Linear SSA-style IR. Each instruction produces a value (referenced by index).
@@ -140,6 +141,15 @@ export class TraceRecorder {
     this.isSideTrace = false;
     this.parentTrace = null;
     this.parentGuardIdx = -1;
+
+    // Function inlining support
+    // Stack of inline frames: each entry is { baseOffset, numLocals, returnIrStack }
+    // baseOffset = offset from trace's __bp to this inlined frame's base pointer
+    this.inlineFrames = [];    // stack of { baseOffset, numLocals, irStackDepth, callSiteIp }
+    this.inlineDepth = 0;
+    // Maps absolute stack slot → IR ref for inlined function arguments
+    // When a callee does LOAD_LOCAL, we check this map first
+    this.inlineSlotRefs = new Map();
   }
 
   start(frameId, ip) {
@@ -202,6 +212,53 @@ export class TraceRecorder {
     this.recording = false;
     this.trace = null;
     this.irStack = [];
+    this.inlineFrames = [];
+    this.inlineDepth = 0;
+  }
+
+  // Enter an inlined function call during recording
+  // baseOffset: the callee's basePointer relative to the trace's root basePointer
+  // numLocals: callee's numLocals (to know the stack layout)
+  // callSiteIp: the IP in the caller frame right after the OpCall (for guard exit fallback)
+  enterInlineFrame(baseOffset, numLocals, callSiteIp) {
+    if (this.inlineDepth >= MAX_INLINE_DEPTH) return false;
+    this.inlineFrames.push({
+      baseOffset,
+      numLocals,
+      irStackDepth: this.irStack.length,
+      callSiteIp,  // used for guard exits inside the inlined function
+    });
+    this.inlineDepth++;
+    return true;
+  }
+
+  // Leave an inlined function call, returning the return value IR ref
+  leaveInlineFrame() {
+    if (this.inlineDepth === 0) return;
+    const frame = this.inlineFrames.pop();
+    // Clean up slot refs for this inlined frame
+    for (let i = 0; i < frame.numLocals; i++) {
+      this.inlineSlotRefs.delete(frame.baseOffset + i);
+    }
+    this.inlineDepth--;
+  }
+
+  // Get the current base offset for local variable addressing
+  // Returns 0 for root frame, or the inlined frame's baseOffset
+  currentBaseOffset() {
+    if (this.inlineFrames.length === 0) return 0;
+    return this.inlineFrames[this.inlineFrames.length - 1].baseOffset;
+  }
+
+  // Get the appropriate exit IP for guard failures.
+  // Inside inlined functions, guards should exit to the trace's startIp
+  // (bail out and let the interpreter re-execute from the loop header)
+  // because callee IPs are meaningless in the caller's frame.
+  getGuardExitIp() {
+    if (this.inlineDepth > 0) {
+      return this.trace.startIp; // bail to loop header
+    }
+    return null; // use the normal exit IP
   }
 
   // Push an IR ref onto the virtual stack
@@ -673,18 +730,27 @@ export class TraceCompiler {
 
         case IR.BOX_INT: {
           const ref = varNames.get(inst.operands.ref);
-          // Check if this BOX_INT only feeds a promoted store — if so, skip it
+          // Check if this BOX_INT only feeds promoted stores — if so, skip it
+          // Must verify no other instruction uses this value (e.g., UNBOX_INT, ADD)
           let usedByNonPromotedStore = false;
+          let usedByOtherInst = false;
           for (let j = i + 1; j < ir.length; j++) {
             const user = ir[j];
             if (!user) continue;
-            if ((user.op === IR.STORE_GLOBAL || user.op === IR.STORE_LOCAL) &&
-                user.operands.value === i) {
-              const key = user.op === IR.STORE_GLOBAL ? 'g:' + user.operands.index : 'l:' + user.operands.slot;
-              if (!promotedVarNames.has(key)) usedByNonPromotedStore = true;
+            // Check if any operand of this instruction references our BOX_INT
+            const ops = user.operands;
+            for (const key of Object.keys(ops)) {
+              if (ops[key] === i) {
+                if ((user.op === IR.STORE_GLOBAL || user.op === IR.STORE_LOCAL) && key === 'value') {
+                  const storeKey = user.op === IR.STORE_GLOBAL ? 'g:' + user.operands.index : 'l:' + user.operands.slot;
+                  if (!promotedVarNames.has(storeKey)) usedByNonPromotedStore = true;
+                } else {
+                  usedByOtherInst = true;
+                }
+              }
             }
           }
-          if (promotedVarNames.size > 0 && !usedByNonPromotedStore) {
+          if (promotedVarNames.size > 0 && !usedByNonPromotedStore && !usedByOtherInst) {
             this.lines.push(`  const ${v} = undefined; /* dead box elided */`);
           } else {
             this.lines.push(`  const ${v} = __cachedInteger(${ref});`);

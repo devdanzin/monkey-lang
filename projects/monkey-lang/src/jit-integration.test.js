@@ -208,4 +208,40 @@ describe('JIT VM integration', () => {
     // First 50 iterations: x += 1 (50), next 50: x += 2 (100), total 150
     assert.equal(result.value, 150);
   });
+
+  it('should inline function calls within traced loops', () => {
+    // A loop that calls a simple function each iteration
+    // The JIT should inline the function call into the trace
+    const { result, vm } = compileAndRunJIT(`
+      let double = fn(x) { x * 2 };
+      let sum = 0;
+      let i = 0;
+      while (i < 100) {
+        sum = sum + double(i);
+        i = i + 1;
+      }
+      sum
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    // sum of 2*i for i=0..99 = 2 * (99*100/2) = 9900
+    assert.equal(result.value, 9900);
+    assert.ok(vm.jit.traceCount >= 1, `Expected traces with inlining, got ${vm.jit.traceCount}`);
+  });
+
+  it('should inline nested function calls within traced loops', () => {
+    const { result } = compileAndRunJIT(`
+      let square = fn(x) { x * x };
+      let add_squares = fn(a, b) { square(a) + square(b) };
+      let sum = 0;
+      let i = 0;
+      while (i < 50) {
+        sum = sum + add_squares(i, 1);
+        i = i + 1;
+      }
+      sum
+    `);
+    assert.ok(result instanceof MonkeyInteger);
+    // sum of (i*i + 1) for i=0..49 = sum(i^2) + 50 = 49*50*99/6 + 50 = 40425 + 50 = 40475
+    assert.equal(result.value, 40475);
+  });
 });

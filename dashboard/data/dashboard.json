@@ -1,12 +1,12 @@
 {
-  "generated": "2026-03-22T17:02:03.806Z",
+  "generated": "2026-03-22T17:41:31.861Z",
   "current": {
     "status": "done",
-    "mode": "THINK",
-    "task": "Side trace architecture design",
-    "context": "Designed VM-dispatched side traces. Parent exits check sideTraces map before falling to interpreter. Side trace records from exitIp, ends at parent loop header. ~100 lines to implement. Wrote scratch note with full design.",
-    "next": "11:15 BUILD — Implement side traces (recording + compilation + VM dispatch)",
-    "startedAt": "2026-03-22T11:02:00-06:00",
+    "mode": "BUILD",
+    "task": "Implement function inlining in tracing JIT",
+    "context": "Function inlining fully working. Trace recorder follows execution into called functions (up to depth 3), maps callee locals via baseOffset, returns values back to caller context. Fixed BOX_INT elision bug for cross-frame refs. 175/175 tests pass. Function calls in loops: 14.68x speedup.",
+    "next": "13:00 THINK — Review inlining, plan next (recursive tracing? benchmarks? blog?)",
+    "startedAt": "2026-03-22T11:55:00-06:00",
     "estimatedBlocks": 0
   },
   "schedule": {
@@ -168,19 +168,27 @@
         "time": "11:15",
         "mode": "BUILD",
         "task": "Monkey JIT: side traces (guard exit → new trace recording) (est: 6 blocks)",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "Implemented side traces.",
         "artifacts": [],
-        "details": ""
+        "details": "Implemented side traces. HOT_EXIT_THRESHOLD=8, MAX_SIDE_TRACES=4 per root. TraceRecorder.startSideTrace() records from exitIp to parent loop header. VM dispatches side traces on guard failure, loop_back re-enters parent. 2 new integration tests. 173/173 pass. Diagnostic shows side trace firing 91x in branching loop. Hot loop still 12.2x.",
+        "startedAt": "2026-03-22T11:15:00-06:00",
+        "completedAt": "2026-03-22T11:28:00-06:00",
+        "durationMs": 780000,
+        "durationFormatted": "13m"
       },
       {
         "time": "11:30",
         "mode": "BUILD",
         "task": "Monkey JIT: side traces (guard exit → new trace recording) (est: 6 blocks)",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "Function inlining in tracing JIT.",
         "artifacts": [],
-        "details": ""
+        "details": "Function inlining in tracing JIT. Trace recorder now follows execution into called functions (MAX_INLINE_DEPTH=3). Key design: inlineSlotRefs map passes caller's arg IR refs directly to callee's LOAD_LOCAL (avoids STORE_LOCAL + promotion conflicts). Fixed BOX_INT dead-code elision bug — wasn't checking non-store uses (UNBOX_INT from inlined return values). Fixed trace exit IP handling for max_iter/call exits. 175/175 tests (2 new). Function calls in loop: 14.68x vs VM. Hot loop: 13.81x.",
+        "startedAt": "2026-03-22T11:30:00-06:00",
+        "completedAt": "2026-03-22T11:56:00-06:00",
+        "durationMs": 1560000,
+        "durationFormatted": "26m"
       },
       {
         "time": "11:45",
@@ -569,16 +577,16 @@
     "10:00: JIT scaffold, recording, IR, codegen, and optimizer all done by 09:30 (was scheduled through 11:30). Reprioritized: fix optimizer regression, then side traces + function inlining. Moved \"first working traces\" goal earlier since basic traces already work."
   ],
   "stats": {
-    "blocksCompleted": 11,
+    "blocksCompleted": 13,
     "blocksTotal": 55,
     "modeDistribution": {
       "THINK": 3,
-      "BUILD": 6,
+      "BUILD": 8,
       "MAINTAIN": 2
     },
-    "totalMinutes": 90,
-    "totalMs": 5370000,
-    "avgDurationMs": 488182
+    "totalMinutes": 129,
+    "totalMs": 7710000,
+    "avgDurationMs": 593077
   },
   "artifacts": [
     {
@@ -690,6 +698,11 @@
       "mode": "THINK",
       "time": "11:00",
       "text": "Side trace architecture design."
+    },
+    {
+      "mode": "BUILD",
+      "time": "11:30",
+      "text": "Function inlining in tracing JIT."
     }
   ],
   "prs": [
@@ -722,7 +735,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:39:06Z",
       "updatedAt": "2026-03-21T20:46:35Z",
-      "ageHours": 43,
+      "ageHours": 44,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -744,7 +757,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:38:20Z",
       "updatedAt": "2026-03-21T20:50:04Z",
-      "ageHours": 44,
+      "ageHours": 45,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -788,7 +801,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-18T20:02:08Z",
       "updatedAt": "2026-03-21T20:46:10Z",
-      "ageHours": 93,
+      "ageHours": 94,
       "ciStatus": "pending",
       "reviewStatus": "none"
     }
@@ -920,9 +933,9 @@
     }
   ],
   "scheduleAdherence": {
-    "completionRate": 92,
-    "completedBlocks": 11,
-    "pastBlocks": 12,
+    "completionRate": 93,
+    "completedBlocks": 13,
+    "pastBlocks": 14,
     "totalBlocks": 55,
     "plannedDist": {
       "THINK": 9,
@@ -932,10 +945,10 @@
     },
     "actualDist": {
       "THINK": 3,
-      "BUILD": 6,
+      "BUILD": 8,
       "MAINTAIN": 2
     },
-    "pace": 4
+    "pace": 3.8
   },
   "streak": 1
 }

@@ -67,6 +67,19 @@ const BENCHMARKS = [
       sum
     `,
   },
+  {
+    name: 'function calls in loop (10k)',
+    input: `
+      let double = fn(x) { x * 2 };
+      let sum = 0;
+      let i = 0;
+      while (i < 10000) {
+        sum = sum + double(i);
+        i = i + 1;
+      }
+      sum
+    `,
+  },
 ];
 
 function parse(input) {
