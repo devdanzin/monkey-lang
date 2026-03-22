@@ -1,8 +1,8 @@
 status: done
 mode: EXPLORE
-task: 20:15 EXPLORE — Tracing JIT deep dive: LuaJIT trace recording mechanics
-context: Deep-dived into LuaJIT source (lj_trace.c, lj_record.c, lj_ir.h, lj_jit.h, lj_snap.c). Documented IR format, snapshot system, trace lifecycle, penalty system, trace stitching, optimization flags. Updated tracing-jit-compilation scratch note with source-level findings.
-context-files: memory/scratch/tracing-jit-compilation.md, memory/scratch/cpython-ceval-dispatch.md
+task: 20:30 EXPLORE — Copy-and-patch compilation deep dive (CPython's new JIT)
+context: Read CPython JIT source (jit.c, template.c, _stencils.py, _targets.py). Documented the full pipeline: build-time template compilation via Clang → stencil extraction → runtime memcpy+patch. Key insights: compilation-is-linking, musttail+preserve_none CPS, TOS cache as register alloc lite. Created scratch note.
+context-files: memory/scratch/copy-and-patch-jit.md, memory/scratch/tracing-jit-compilation.md, memory/scratch/cpython-ceval-dispatch.md
 est: 0
-next: 20:30 EXPLORE — Continue: copy-and-patch compilation (new CPython JIT)
-updated: 2026-03-21T20:28:00-06:00
+next: 20:45 MAINTAIN — Update research notes, commit
+updated: 2026-03-21T20:43:00-06:00
