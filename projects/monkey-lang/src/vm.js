@@ -353,11 +353,23 @@ export class VM {
 
             // Check for existing compiled trace
             const existingTrace = this.jit.getTrace(closureId, target2);
-            if (existingTrace && existingTrace.compiled && !recording()) {
-              this._executeTrace(existingTrace);
-              // After trace exits, ensure IP is valid
-              // If _executeTrace didn't set IP (e.g., max_iter), resume at loop header
-              break;
+            if (existingTrace && existingTrace.compiled) {
+              if (recording() && target2 !== this.recorder.startIp
+                  && !(this.recorder.isSideTrace && existingTrace === this.recorder.parentTrace)) {
+                // Trace stitching: we're recording an outer loop and hit an inner
+                // loop that already has a compiled trace. Execute the inner trace
+                // (to advance VM state) and emit EXEC_TRACE IR so the compiled
+                // outer trace can call the inner trace at runtime.
+                const constIdx = this._ensureTraceConst(existingTrace.compiled);
+                this.recorder.trace.addInst(IR.EXEC_TRACE, { constIdx });
+                // Execute the inner trace to advance state
+                this._executeTrace(existingTrace);
+                // Continue recording from wherever the inner trace left off
+                break;
+              } else if (!recording()) {
+                this._executeTrace(existingTrace);
+                break;
+              }
             }
 
             // Hot counting (only when not already recording)
@@ -837,7 +849,7 @@ export class VM {
           // Guard failed — check for side trace first
           if (currentTrace.sideTraces.has(result.guardIdx)) {
             const sideTrace = currentTrace.sideTraces.get(result.guardIdx);
-            const sideResult = this._executeSideTrace(sideTrace, currentTrace);
+            const sideResult = this._executeSideTrace(sideTrace, currentTrace, allConsts);
             if (sideResult && sideResult.exit === 'loop_back') {
               // Side trace completed — re-enter parent trace (iterative, not recursive)
               currentTrace = trace; // always re-enter the root trace
@@ -888,11 +900,8 @@ export class VM {
   }
 
   // Execute a compiled side trace
-  _executeSideTrace(sideTrace, parentTrace) {
+  _executeSideTrace(sideTrace, parentTrace, allConsts) {
     const frame = this.currentFrame();
-    const allConsts = this._traceConsts.length > 0
-      ? [...this.constants, ...this._traceConsts]
-      : this.constants;
     const result = sideTrace.compiled(
       this.stack, this.sp, frame.basePointer,
       this.globals, allConsts, frame.closure.free,

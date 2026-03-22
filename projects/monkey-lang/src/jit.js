@@ -81,6 +81,9 @@ export const IR = {
   // Function calls (bail out to interpreter for now)
   CALL:         'call',          // closure: ref, args: ref[], numArgs: number
 
+  // Trace stitching (nested loops)
+  EXEC_TRACE:   'exec_trace',    // Execute an inner compiled trace; constIdx: index of compiled fn in consts
+
   // Boxing/unboxing
   UNBOX_INT:    'unbox_int',     // ref → raw number
   BOX_INT:      'box_int',       // raw number → MonkeyInteger
@@ -870,6 +873,32 @@ export class TraceCompiler {
           this.lines.push(`  ${this._emitReturn(`{ exit: "call", ip: ${this.trace.startIp} }`)}`);
           break;
 
+        case IR.EXEC_TRACE: {
+          // Trace stitching: call an inner compiled trace function
+          // Write back promoted vars before calling (inner trace reads from stack/globals)
+          for (const idx of promotable.globals) {
+            const pv = promotedVarNames.get('g:' + idx);
+            this.lines.push(`  __globals[${idx}] = __cachedInteger(${pv});`);
+          }
+          for (const slot of promotable.locals) {
+            const pv = promotedVarNames.get('l:' + slot);
+            this.lines.push(`  __stack[__bp + ${slot}] = __cachedInteger(${pv});`);
+          }
+          // Call the inner trace function
+          this.lines.push(`  const ${v}_inner = __consts[${inst.operands.constIdx}];`);
+          this.lines.push(`  let ${v} = ${v}_inner(__stack, __sp, __bp, __globals, __consts, __free, __MonkeyInteger, __MonkeyBoolean, __MonkeyString, __TRUE, __FALSE, __NULL, __cachedInteger, __isTruthy);`);
+          // After inner trace, reload promoted vars (inner trace may have modified them)
+          for (const idx of promotable.globals) {
+            const pv = promotedVarNames.get('g:' + idx);
+            this.lines.push(`  ${pv} = __globals[${idx}].value;`);
+          }
+          for (const slot of promotable.locals) {
+            const pv = promotedVarNames.get('l:' + slot);
+            this.lines.push(`  ${pv} = __stack[__bp + ${slot}].value;`);
+          }
+          break;
+        }
+
         default:
           this.lines.push(`  /* unknown IR: ${inst.op} */`);
       }
@@ -1079,7 +1108,7 @@ export class TraceOptimizer {
           inst.op === IR.GUARD_STRING || inst.op === IR.GUARD_TRUTHY ||
           inst.op === IR.GUARD_FALSY ||
           inst.op === IR.LOOP_START || inst.op === IR.LOOP_END ||
-          inst.op === IR.CALL) {
+          inst.op === IR.CALL || inst.op === IR.EXEC_TRACE) {
         live.add(i);
       }
     }
