@@ -189,8 +189,7 @@ export class VM {
 
       // Abort recording on too many instructions
       if (recording() && ++this.recorder.instrCount > 200) {
-        this.recorder.abort();
-        this.recorder = null;
+        this._abortRecording();
       }
 
       switch (op) {
@@ -230,7 +229,7 @@ export class VM {
             }
             this.push(cachedInteger(result));
           } else if (left instanceof MonkeyString && right instanceof MonkeyString && op === Opcodes.OpAdd) {
-            if (recording()) { this.recorder.abort(); this.recorder = null; }
+            if (recording()) { this._abortRecording(); }
             this.push(new MonkeyString(left.value + right.value));
           } else {
             throw new Error(`unsupported types for ${op}: ${left.type()} and ${right.type()}`);
@@ -266,7 +265,7 @@ export class VM {
             }
             this.push(result ? TRUE : FALSE);
           } else if (left2 instanceof MonkeyBoolean && right2 instanceof MonkeyBoolean) {
-            if (recording()) { this.recorder.abort(); this.recorder = null; }
+            if (recording()) { this._abortRecording(); }
             let result;
             switch (op) {
               case Opcodes.OpEqual: result = left2.value === right2.value; break;
@@ -444,7 +443,7 @@ export class VM {
         }
 
         case Opcodes.OpArray: {
-          if (recording()) { this.recorder.abort(); this.recorder = null; }
+          if (recording()) { this._abortRecording(); }
           const numElements = (ins[ip + 1] << 8) | ins[ip + 2];
           this.currentFrame().ip += 2;
           const elements = this.stack.slice(this.sp - numElements, this.sp);
@@ -454,7 +453,7 @@ export class VM {
         }
 
         case Opcodes.OpHash: {
-          if (recording()) { this.recorder.abort(); this.recorder = null; }
+          if (recording()) { this._abortRecording(); }
           const numPairs = (ins[ip + 1] << 8) | ins[ip + 2];
           this.currentFrame().ip += 2;
           const pairs = new Map();
@@ -472,7 +471,7 @@ export class VM {
         }
 
         case Opcodes.OpIndex: {
-          if (recording()) { this.recorder.abort(); this.recorder = null; }
+          if (recording()) { this._abortRecording(); }
           const index = this.pop();
           const left3 = this.pop();
           if (left3 instanceof MonkeyArray && index instanceof MonkeyInteger) {
@@ -559,8 +558,7 @@ export class VM {
 
               if (!this.recorder.enterInlineFrame(baseOffset, callee.fn.numLocals, ip)) {
                 // Too deep — abort recording
-                this.recorder.abort();
-                this.recorder = null;
+                this._abortRecording();
               } else {
                 // Map the argument IR refs to the inlined frame's local slots
                 // so that LOAD_LOCAL in the callee picks them up directly
@@ -588,7 +586,7 @@ export class VM {
               }
             }
           } else if (callee instanceof MonkeyBuiltin) {
-            if (recording()) { this.recorder.abort(); this.recorder = null; }
+            if (recording()) { this._abortRecording(); }
             const args = this.stack.slice(this.sp - numArgs, this.sp);
             const result = callee.fn(...args);
             this.sp = this.sp - numArgs - 1;
@@ -810,7 +808,7 @@ export class VM {
             }
             this.push(cachedInteger(result));
           } else if (left4 instanceof MonkeyString && right4 instanceof MonkeyString && op === Opcodes.OpAddConst) {
-            if (recording()) { this.recorder.abort(); this.recorder = null; }
+            if (recording()) { this._abortRecording(); }
             this.push(new MonkeyString(left4.value + right4.value));
           } else {
             throw new Error(`unsupported types for constant op: ${left4.type()} and ${right4.type()}`);
@@ -860,7 +858,7 @@ export class VM {
             }
             this.push(cachedInteger(result));
           } else if (leftVal instanceof MonkeyString && rightVal instanceof MonkeyString && op === Opcodes.OpGetLocalAddConst) {
-            if (recording()) { this.recorder.abort(); this.recorder = null; }
+            if (recording()) { this._abortRecording(); }
             this.push(new MonkeyString(leftVal.value + rightVal.value));
           } else {
             throw new Error(`unsupported types for local+const op: ${leftVal.type()} and ${rightVal.type()}`);
@@ -1008,6 +1006,14 @@ export class VM {
     this.recorder.start(this._closureId(), ip);
   }
 
+  _abortRecording() {
+    if (this.recorder && this.jit) {
+      this.jit.recordAbort(this.recorder.trace?.frameId ?? this._closureId(), this.recorder.startIp);
+    }
+    if (this.recorder) this.recorder.abort();
+    this.recorder = null;
+  }
+
   // Start recording a side trace from a guard exit
   _startSideTraceRecording(parentTrace, guardIdx, exitIp) {
     this.recorder = new TraceRecorder(this);
@@ -1112,8 +1118,7 @@ export class VM {
 
     // Abort on too many instructions
     if (++this.recorder.instrCount > 200) {
-      this.recorder.abort();
-      this.recorder = null;
+      this._abortRecording();
       return;
     }
   }

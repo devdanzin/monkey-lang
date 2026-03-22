@@ -435,6 +435,8 @@ export class JIT {
     this.funcCallCounts = new Map(); // CompiledFunction → count
     this.traceCount = 0;
     this.enabled = true;
+    this.abortCounts = new Map();  // traceKey → abort count
+    this.blacklisted = new Set();  // traceKeys that failed too many times
   }
 
   // Get a trace key for a loop back-edge
@@ -445,9 +447,20 @@ export class JIT {
   // Count a loop back-edge hit. Returns true if hot.
   countEdge(closureId, ip) {
     const key = this.traceKey(closureId, ip);
+    if (this.blacklisted.has(key)) return false;
     const count = (this.hotCounts.get(key) || 0) + 1;
     this.hotCounts.set(key, count);
     return count >= HOT_LOOP_THRESHOLD;
+  }
+
+  // Record a trace abort at a location. After 3 aborts, blacklist it.
+  recordAbort(closureId, ip) {
+    const key = this.traceKey(closureId, ip);
+    const count = (this.abortCounts.get(key) || 0) + 1;
+    this.abortCounts.set(key, count);
+    if (count >= 3) {
+      this.blacklisted.add(key);
+    }
   }
 
   // Check if we have a compiled trace for this location

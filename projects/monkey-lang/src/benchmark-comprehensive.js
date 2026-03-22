@@ -201,7 +201,7 @@ const BENCHMARKS = [
     expected: 300000,
   },
 
-  // === Closures (JIT bug: free variable closures crash after trace compilation — see TODO) ===
+  // === Closures ===
   {
     name: 'closure: adder factory 10k',
     category: 'closures',
