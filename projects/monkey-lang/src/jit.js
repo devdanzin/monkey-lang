@@ -341,17 +341,95 @@ export class TraceCompiler {
     return `v${this.varCount++}`;
   }
 
+  // Analyze which globals/locals are loop-carried: loaded and stored with int boxing.
+  // Returns sets of indices that can be promoted to raw JS variables.
+  _analyzePromotable() {
+    const ir = this.trace.ir;
+    const globalStored = new Set(); // global indices that have STORE_GLOBAL with BOX_INT
+    const localStored = new Set();
+
+    for (const inst of ir) {
+      if (!inst) continue;
+      if (inst.op === IR.STORE_GLOBAL) {
+        const valInst = ir[inst.operands.value];
+        if (valInst && valInst.op === IR.BOX_INT) {
+          globalStored.add(inst.operands.index);
+        }
+      } else if (inst.op === IR.STORE_LOCAL) {
+        const valInst = ir[inst.operands.value];
+        if (valInst && valInst.op === IR.BOX_INT) {
+          localStored.add(inst.operands.slot);
+        }
+      }
+    }
+    return { globals: globalStored, locals: localStored };
+  }
+
+  _emitReturn(exitObj) {
+    if (this._wbWrap) {
+      return `return __wb(${exitObj});`;
+    }
+    return `return ${exitObj};`;
+  }
+
+  // Emit write-back of promoted variables to globals/stack
+  _emitWriteBack(promoted, promotedVarNames) {
+    const lines = [];
+    for (const [idx] of promoted.globals) {
+      const pv = promotedVarNames.get('g:' + idx);
+      lines.push(`    __globals[${idx}] = __cachedInteger(${pv});`);
+    }
+    for (const [slot] of promoted.locals) {
+      const pv = promotedVarNames.get('l:' + slot);
+      lines.push(`    __stack[__bp + ${slot}] = __cachedInteger(${pv});`);
+    }
+    return lines;
+  }
+
   compile() {
     const ir = this.trace.ir;
     const varNames = new Map(); // IR id → JS variable name
 
-    // Function signature: receives VM state, returns { exitType, ip, ... }
-    // Parameters: stack, sp, locals (basePointer slice), globals, constants, closureFree
+    // Analyze which globals/locals can be promoted to raw JS variables
+    const promotable = this._analyzePromotable();
+    const promotedVarNames = new Map(); // 'g:N' or 'l:N' → JS let variable name
+
     this.lines.push('"use strict";');
     this.lines.push('let __iterations = 0;');
     this.lines.push('const MAX_ITER = 10000;');
+
+    // Initialize promoted variables before the loop
+    for (const idx of promotable.globals) {
+      const pv = this.freshVar();
+      promotedVarNames.set('g:' + idx, pv);
+      this.lines.push(`let ${pv} = __globals[${idx}].value;`);
+    }
+    for (const slot of promotable.locals) {
+      const pv = this.freshVar();
+      promotedVarNames.set('l:' + slot, pv);
+      this.lines.push(`let ${pv} = __stack[__bp + ${slot}].value;`);
+    }
+
+    // Generate __wb for write-back on exit
+    const hasPromoted = promotable.globals.size > 0 || promotable.locals.size > 0;
+    if (hasPromoted) {
+      const wbStmts = [];
+      for (const idx of promotable.globals) {
+        const pv = promotedVarNames.get('g:' + idx);
+        wbStmts.push(`__globals[${idx}] = __cachedInteger(${pv})`);
+      }
+      for (const slot of promotable.locals) {
+        const pv = promotedVarNames.get('l:' + slot);
+        wbStmts.push(`__stack[__bp + ${slot}] = __cachedInteger(${pv})`);
+      }
+      this.lines.push(`function __wb(r) { ${wbStmts.join('; ')}; return r; }`);
+      this._wbWrap = true;
+    } else {
+      this._wbWrap = false;
+    }
+
     this.lines.push('loop: while (true) {');
-    this.lines.push('  if (++__iterations > MAX_ITER) return { exit: "max_iter" };');
+    this.lines.push(`  if (++__iterations > MAX_ITER) ${this._emitReturn('{ exit: "max_iter" }')}`);
 
     for (let i = 0; i < ir.length; i++) {
       const inst = ir[i];
@@ -390,13 +468,29 @@ export class TraceCompiler {
           this.lines.push(`  const ${v} = __consts[${inst.operands.constIdx}];`);
           break;
 
-        case IR.LOAD_LOCAL:
-          this.lines.push(`  const ${v} = __stack[__bp + ${inst.operands.slot}];`);
+        case IR.LOAD_LOCAL: {
+          const pv = promotedVarNames.get('l:' + inst.operands.slot);
+          if (pv) {
+            // Mark this ref as promoted-raw so GUARD/UNBOX can skip
+            this.lines.push(`  const ${v} = ${pv}; /* promoted-raw */`);
+            inst._promotedRaw = true;
+          } else {
+            this.lines.push(`  const ${v} = __stack[__bp + ${inst.operands.slot}];`);
+          }
           break;
+        }
 
-        case IR.LOAD_GLOBAL:
-          this.lines.push(`  const ${v} = __globals[${inst.operands.index}];`);
+        case IR.LOAD_GLOBAL: {
+          const pv = promotedVarNames.get('g:' + inst.operands.index);
+          if (pv) {
+            // Mark this ref as promoted-raw so GUARD/UNBOX can skip
+            this.lines.push(`  const ${v} = ${pv}; /* promoted-raw */`);
+            inst._promotedRaw = true;
+          } else {
+            this.lines.push(`  const ${v} = __globals[${inst.operands.index}];`);
+          }
           break;
+        }
 
         case IR.LOAD_FREE:
           this.lines.push(`  const ${v} = __free[${inst.operands.index}];`);
@@ -408,63 +502,129 @@ export class TraceCompiler {
 
         case IR.STORE_LOCAL: {
           const valRef = varNames.get(inst.operands.value);
-          this.lines.push(`  __stack[__bp + ${inst.operands.slot}] = ${valRef};`);
-          this.lines.push(`  const ${v} = ${valRef};`);
+          const pv = promotedVarNames.get('l:' + inst.operands.slot);
+          if (pv) {
+            // Find the raw value: if value is BOX_INT, use its raw ref instead
+            const valInst = ir[inst.operands.value];
+            if (valInst && valInst.op === IR.BOX_INT) {
+              this.lines.push(`  ${pv} = ${varNames.get(valInst.operands.ref)};`);
+            } else {
+              this.lines.push(`  ${pv} = ${valRef};`);
+            }
+          } else {
+            this.lines.push(`  __stack[__bp + ${inst.operands.slot}] = ${valRef};`);
+          }
+          this.lines.push(`  const ${v} = undefined;`);
           break;
         }
 
         case IR.STORE_GLOBAL: {
           const valRef = varNames.get(inst.operands.value);
-          this.lines.push(`  __globals[${inst.operands.index}] = ${valRef};`);
-          this.lines.push(`  const ${v} = ${valRef};`);
+          const pv = promotedVarNames.get('g:' + inst.operands.index);
+          if (pv) {
+            const valInst = ir[inst.operands.value];
+            if (valInst && valInst.op === IR.BOX_INT) {
+              this.lines.push(`  ${pv} = ${varNames.get(valInst.operands.ref)};`);
+            } else {
+              this.lines.push(`  ${pv} = ${valRef};`);
+            }
+          } else {
+            this.lines.push(`  __globals[${inst.operands.index}] = ${valRef};`);
+          }
+          this.lines.push(`  const ${v} = undefined;`);
           break;
         }
 
         case IR.GUARD_INT: {
-          const ref = varNames.get(inst.operands.ref);
-          this.lines.push(`  if (!(${ref} instanceof __MonkeyInteger)) return { exit: "guard", guardIdx: ${i}, ip: ${this.trace.startIp} };`);
-          this.lines.push(`  const ${v} = ${ref};`);
+          const refInst = ir[inst.operands.ref];
+          if (refInst && refInst._promotedRaw) {
+            // Promoted var is always int — skip guard
+            this.lines.push(`  const ${v} = ${varNames.get(inst.operands.ref)};`);
+            inst._promotedRaw = true;
+          } else {
+            const ref = varNames.get(inst.operands.ref);
+            const ret = this._emitReturn(`{ exit: "guard", guardIdx: ${i}, ip: ${this.trace.startIp} }`);
+            this.lines.push(`  if (!(${ref} instanceof __MonkeyInteger)) ${ret}`);
+            this.lines.push(`  const ${v} = ${ref};`);
+          }
           break;
         }
 
         case IR.GUARD_BOOL: {
           const ref = varNames.get(inst.operands.ref);
-          this.lines.push(`  if (!(${ref} instanceof __MonkeyBoolean)) return { exit: "guard", guardIdx: ${i}, ip: ${this.trace.startIp} };`);
+          const ret = this._emitReturn(`{ exit: "guard", guardIdx: ${i}, ip: ${this.trace.startIp} }`);
+          this.lines.push(`  if (!(${ref} instanceof __MonkeyBoolean)) ${ret}`);
           this.lines.push(`  const ${v} = ${ref};`);
           break;
         }
 
         case IR.GUARD_STRING: {
           const ref = varNames.get(inst.operands.ref);
-          this.lines.push(`  if (!(${ref} instanceof __MonkeyString)) return { exit: "guard", guardIdx: ${i}, ip: ${this.trace.startIp} };`);
+          const ret = this._emitReturn(`{ exit: "guard", guardIdx: ${i}, ip: ${this.trace.startIp} }`);
+          this.lines.push(`  if (!(${ref} instanceof __MonkeyString)) ${ret}`);
           this.lines.push(`  const ${v} = ${ref};`);
           break;
         }
 
         case IR.GUARD_TRUTHY: {
           const ref = varNames.get(inst.operands.ref);
-          // ref may be a raw JS boolean or a MonkeyObject — use __isTruthy for objects
-          this.lines.push(`  if (typeof ${ref} === 'boolean' ? !${ref} : !__isTruthy(${ref})) return { exit: "guard_falsy", guardIdx: ${i}, ip: ${inst.operands.exitIp} };`);
+          const ret = this._emitReturn(`{ exit: "guard_falsy", guardIdx: ${i}, ip: ${inst.operands.exitIp} }`);
+          // Optimize: if ref is a CONST_BOOL wrapping a raw comparison, test the raw bool directly
+          const refInst = ir[inst.operands.ref];
+          if (refInst && refInst.op === IR.CONST_BOOL && refInst.operands.ref !== undefined) {
+            const rawBoolVar = varNames.get(refInst.operands.ref);
+            this.lines.push(`  if (!${rawBoolVar}) ${ret}`);
+          } else {
+            this.lines.push(`  if (typeof ${ref} === 'boolean' ? !${ref} : !__isTruthy(${ref})) ${ret}`);
+          }
           this.lines.push(`  const ${v} = true;`);
           break;
         }
 
         case IR.GUARD_FALSY: {
           const ref = varNames.get(inst.operands.ref);
-          this.lines.push(`  if (typeof ${ref} === 'boolean' ? ${ref} : __isTruthy(${ref})) return { exit: "guard_truthy", guardIdx: ${i}, ip: ${inst.operands.exitIp} };`);
+          const ret = this._emitReturn(`{ exit: "guard_truthy", guardIdx: ${i}, ip: ${inst.operands.exitIp} }`);
+          const refInst = ir[inst.operands.ref];
+          if (refInst && refInst.op === IR.CONST_BOOL && refInst.operands.ref !== undefined) {
+            const rawBoolVar = varNames.get(refInst.operands.ref);
+            this.lines.push(`  if (${rawBoolVar}) ${ret}`);
+          } else {
+            this.lines.push(`  if (typeof ${ref} === 'boolean' ? ${ref} : __isTruthy(${ref})) ${ret}`);
+          }
           this.lines.push(`  const ${v} = true;`);
           break;
         }
 
         case IR.UNBOX_INT: {
-          const ref = varNames.get(inst.operands.ref);
-          this.lines.push(`  const ${v} = ${ref}.value;`);
+          const refInst = ir[inst.operands.ref];
+          if (refInst && refInst._promotedRaw) {
+            // Already raw — just alias
+            this.lines.push(`  const ${v} = ${varNames.get(inst.operands.ref)};`);
+          } else {
+            const ref = varNames.get(inst.operands.ref);
+            this.lines.push(`  const ${v} = ${ref}.value;`);
+          }
           break;
         }
 
         case IR.BOX_INT: {
           const ref = varNames.get(inst.operands.ref);
-          this.lines.push(`  const ${v} = __cachedInteger(${ref});`);
+          // Check if this BOX_INT only feeds a promoted store — if so, skip it
+          let usedByNonPromotedStore = false;
+          for (let j = i + 1; j < ir.length; j++) {
+            const user = ir[j];
+            if (!user) continue;
+            if ((user.op === IR.STORE_GLOBAL || user.op === IR.STORE_LOCAL) &&
+                user.operands.value === i) {
+              const key = user.op === IR.STORE_GLOBAL ? 'g:' + user.operands.index : 'l:' + user.operands.slot;
+              if (!promotedVarNames.has(key)) usedByNonPromotedStore = true;
+            }
+          }
+          if (promotedVarNames.size > 0 && !usedByNonPromotedStore) {
+            this.lines.push(`  const ${v} = undefined; /* dead box elided */`);
+          } else {
+            this.lines.push(`  const ${v} = __cachedInteger(${ref});`);
+          }
           break;
         }
 
@@ -546,7 +706,7 @@ export class TraceCompiler {
 
         case IR.CALL:
           // For now, calls bail to interpreter
-          this.lines.push(`  return { exit: "call", ip: ${this.trace.startIp} };`);
+          this.lines.push(`  ${this._emitReturn(`{ exit: "call", ip: ${this.trace.startIp} }`)}`);
           break;
 
         default:
@@ -591,6 +751,11 @@ export class TraceOptimizer {
     this.deadCodeElimination();
     return this.trace;
   }
+
+  // --- Pass 0: Store-to-Load Forwarding ---
+  // If we store a value to a global/local and later load from the same slot
+  // (with no intervening store to that slot), replace the load with the stored value.
+  // This eliminates the box→store→load→guard→unbox chain across loop iterations.
 
   // --- Pass 1: Redundant Guard Elimination ---
   // If a value has already been guarded as a type, subsequent guards for the
