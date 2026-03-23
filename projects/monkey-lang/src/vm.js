@@ -542,6 +542,19 @@ export class VM {
               const resultRef = this.recorder.trace.addInst(IR.INDEX_ARRAY, { left: arrRef, right: idxUnboxed });
               this.recorder.typeMap.set(resultRef, 'object');
               this.recorder.pushRef(resultRef);
+            } else if (left3 instanceof MonkeyHash) {
+              // Record hash index access
+              const keyRef = this.recorder.popRef();
+              const hashRef = this.recorder.popRef();
+              // Guard: left must be hash
+              const exitIpH = this.recorder.getGuardExitIp();
+              this.recorder.trace.addInst(IR.GUARD_HASH, { ref: hashRef, exitIp: exitIpH });
+              this.recorder.typeMap.set(hashRef, 'hash');
+              this.recorder.trace.guardCount++;
+              // Emit index_hash — key is a MonkeyObject with hashKey()
+              const resultRef = this.recorder.trace.addInst(IR.INDEX_HASH, { left: hashRef, right: keyRef });
+              this.recorder.typeMap.set(resultRef, 'object');
+              this.recorder.pushRef(resultRef);
             } else {
               this._abortRecording();
             }

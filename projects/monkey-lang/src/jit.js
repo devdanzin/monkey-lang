@@ -91,6 +91,10 @@ export const IR = {
   GUARD_ARRAY:  'guard_array',   // ref: check this value is MonkeyArray
   GUARD_BOUNDS: 'guard_bounds',  // array: ref, index: ref → check 0 <= index < length
 
+  // Hash operations
+  GUARD_HASH:   'guard_hash',    // ref: check this value is MonkeyHash
+  INDEX_HASH:   'index_hash',    // hash: ref, key: ref → value (MonkeyObject), uses hashKey()
+
   // Trace stitching (nested loops)
   EXEC_TRACE:   'exec_trace',    // Execute an inner compiled trace; constIdx: index of compiled fn in consts
 
@@ -1009,6 +1013,22 @@ export class TraceCompiler {
           break;
         }
 
+        case IR.GUARD_HASH: {
+          const ref = varNames.get(inst.operands.ref);
+          const exitIp = inst.operands.exitIp != null ? inst.operands.exitIp : this.trace.startIp;
+          this._emitGuardExit(i, exitIp, `!(${ref} && ${ref}.pairs)`);
+          this.lines.push(`  const ${v} = ${ref};`);
+          break;
+        }
+
+        case IR.INDEX_HASH: {
+          const hash = varNames.get(inst.operands.left);
+          const key = varNames.get(inst.operands.right);
+          this.lines.push(`  const ${v}_pair = ${hash}.pairs.get(${key}.hashKey());`);
+          this.lines.push(`  const ${v} = ${v}_pair ? ${v}_pair.value : __NULL;`);
+          break;
+        }
+
         case IR.GUARD_TRUTHY: {
           const ref = varNames.get(inst.operands.ref);
           const exitIp = inst.operands.exitIp != null ? inst.operands.exitIp : this.trace.startIp;
@@ -1837,9 +1857,9 @@ export class TraceOptimizer {
     const SIDE_EFFECTS = new Set([
       IR.STORE_LOCAL, IR.STORE_GLOBAL, IR.CALL, IR.SELF_CALL,
       IR.GUARD_INT, IR.GUARD_BOOL, IR.GUARD_STRING, IR.GUARD_ARRAY, IR.GUARD_BOUNDS,
-      IR.GUARD_TRUTHY, IR.GUARD_FALSY,
+      IR.GUARD_HASH, IR.GUARD_TRUTHY, IR.GUARD_FALSY,
       IR.LOOP_START, IR.LOOP_END, IR.EXEC_TRACE, IR.FUNC_RETURN,
-      IR.INDEX_ARRAY  // Can fail if bounds guard hasn't run yet; don't hoist
+      IR.INDEX_ARRAY, IR.INDEX_HASH  // Can fail if guard hasn't run yet; don't hoist
     ]);
 
     // Iteratively find loop-invariant instructions
@@ -2342,6 +2362,7 @@ export class TraceOptimizer {
       if (inst.op === IR.STORE_LOCAL || inst.op === IR.STORE_GLOBAL ||
           inst.op === IR.GUARD_INT || inst.op === IR.GUARD_BOOL ||
           inst.op === IR.GUARD_STRING || inst.op === IR.GUARD_ARRAY ||
+          inst.op === IR.GUARD_HASH ||
           inst.op === IR.GUARD_BOUNDS || inst.op === IR.GUARD_TRUTHY ||
           inst.op === IR.GUARD_FALSY ||
           inst.op === IR.LOOP_START || inst.op === IR.LOOP_END ||

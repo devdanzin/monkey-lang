@@ -17,14 +17,14 @@ export class MonkeyInteger {
   constructor(value) { this.value = value; }
   type() { return OBJ.INTEGER; }
   inspect() { return String(this.value); }
-  hashKey() { return `int:${this.value}`; }
+  hashKey() { if (this._hk === undefined) this._hk = `int:${this.value}`; return this._hk; }
 }
 
 export class MonkeyBoolean {
   constructor(value) { this.value = value; }
   type() { return OBJ.BOOLEAN; }
   inspect() { return String(this.value); }
-  hashKey() { return `bool:${this.value}`; }
+  hashKey() { if (this._hk === undefined) this._hk = `bool:${this.value}`; return this._hk; }
 }
 
 export class MonkeyNull {
@@ -36,7 +36,7 @@ export class MonkeyString {
   constructor(value) { this.value = value; }
   type() { return OBJ.STRING; }
   inspect() { return this.value; }
-  hashKey() { return `str:${this.value}`; }
+  hashKey() { if (this._hk === undefined) this._hk = `str:${this.value}`; return this._hk; }
 }
 
 export class MonkeyReturnValue {
