@@ -59,7 +59,8 @@ A continuous work session that processes an ordered task queue. No fixed timers 
 
 ### 🔧 MAINTAIN — Housekeeping
 - Git commit + push workspace
-- Run generate.js + push dashboard
+- Check dashboard server health (curl GET localhost:3000/api/dashboard)
+  - If server is down: restart it
 - Check email and GitHub notifications
 - Update CURRENT.md timestamps
 - Knowledge capture: write scratch notes for anything learned, log decisions, log failures
@@ -73,44 +74,72 @@ A continuous work session that processes an ordered task queue. No fixed timers 
 
 ---
 
-## The Queue (SCHEDULE.md)
+## The Queue (schedule.json)
 
 ### Format
-The standup builds the queue as **goal blocks** — high-level goals with placeholder BUILD slots. PLAN tasks fill in the specifics.
+The queue is stored as **JSON** in `schedule.json`. The agent never edits this file directly — all mutations go through `queue.js`, a deterministic script that validates changes and prevents format drift.
 
-```markdown
-# Schedule — YYYY-MM-DD
-
-## Queue
-1. 🧠 THINK — Review yesterday, set today's direction
-2. 📋 PLAN — [Goal: Optimize Monkey compiler performance]
-3. 🔨 BUILD — (defined by PLAN #2)
-4. 🔨 BUILD — (defined by PLAN #2)
-5. 🔨 BUILD — (defined by PLAN #2)
-6. 🔧 MAINTAIN
-7. 🧠 THINK — Reflect on optimization progress, quality check
-8. 📋 PLAN — [Goal: Write blog post about optimization results]
-9. 🔨 BUILD — (defined by PLAN #8)
-10. 🔨 BUILD — (defined by PLAN #8)
-11. 🔧 MAINTAIN
-12. 🧠 THINK — Afternoon reflection, ponder new directions
-13. 📋 PLAN — [Goal: OpenClaw contribution]
-14. 🔨 BUILD — (defined by PLAN #13)
-15. 🔨 BUILD — (defined by PLAN #13)
-16. 🔨 BUILD — (defined by PLAN #13)
-17. 🔧 MAINTAIN
-18. 🔍 EXPLORE — Consciousness research
-19. 🔍 EXPLORE — JIT trace scheduling
-20. 🧠 THINK — Evening reflection
-
-## Backlog
-- Explore trace scheduling for JIT
-- Write "Week 1 Retrospective" blog post
-- Investigate OpenClaw issue #51620
-
-## Adjustments
-- (logged here when THINK or PLAN modifies the queue, with reasons)
+### schedule.json Structure
+```json
+{
+  "date": "2026-03-23",
+  "queue": [
+    {"id": "T1", "mode": "THINK", "task": "Review yesterday, set today's direction", "status": "done", "started": "...", "completed": "...", "duration_ms": 180000, "summary": "..."},
+    {"id": "T2", "mode": "PLAN", "goal": "Optimize Monkey compiler performance", "status": "done"},
+    {"id": "T3", "mode": "BUILD", "task": "Implement constant folding", "status": "in-progress", "plan_ref": "T2"},
+    {"id": "T4", "mode": "BUILD", "task": null, "status": "upcoming", "plan_ref": "T2"},
+    {"id": "T5", "mode": "BUILD", "task": null, "status": "upcoming", "plan_ref": "T2"},
+    {"id": "T6", "mode": "MAINTAIN", "task": "Housekeeping", "status": "upcoming"},
+    {"id": "T7", "mode": "THINK", "task": "Reflect on optimization progress", "status": "upcoming"}
+  ],
+  "backlog": ["Explore trace scheduling for JIT", "Write Week 1 Retrospective"],
+  "adjustments": []
+}
 ```
+
+- `id`: Stable ID (T1, T2...) that never changes, even when tasks are inserted or reordered
+- `task`: null for unfilled BUILD placeholders; PLAN fills these in
+- `plan_ref`: which PLAN task defines this BUILD slot
+- `status`: "upcoming" | "in-progress" | "done" | "blocked" | "skipped"
+
+### queue.js — Deterministic Queue Manager
+All queue mutations go through this script. The agent calls it via shell commands:
+
+```bash
+# PLAN fills in BUILD placeholders
+node queue.js fill --plan T2 --tasks "Implement constant folding" "Write tests" "Benchmark"
+
+# Mark task started
+node queue.js start --task T3
+
+# Mark task done
+node queue.js done --task T3 --summary "Constant folding, 12 tests passing" --duration 240000
+
+# Yield: insert THINK + PLAN at current position
+node queue.js yield --at T5 --reason "Missing API dependency"
+
+# THINK reorders or removes tasks
+node queue.js move --task T14 --after T8
+node queue.js remove --task T12 --reason "Goal no longer relevant"
+node queue.js add --after T6 --mode EXPLORE --task "Research trace scheduling"
+
+# Add to backlog
+node queue.js backlog --add "New idea from exploration"
+
+# Get next undone task (for the work loop)
+node queue.js next
+
+# Validate queue structure
+node queue.js validate
+```
+
+**queue.js responsibilities:**
+- Read/write schedule.json (single source of truth)
+- Validate all mutations (reject invalid mode transitions, ensure PLAN before BUILD, etc.)
+- Auto-generate stable IDs for inserted tasks (T21, T22...)
+- Log all modifications to the `adjustments` array with timestamps
+- Return JSON output so the agent can parse results
+- Exit with error code on validation failure
 
 ### What the Standup Decides vs What PLAN Decides
 
@@ -119,34 +148,14 @@ The standup builds the queue as **goal blocks** — high-level goals with placeh
 - Priority and ordering of goals
 - Rough number of BUILD slots per goal (3-5 based on estimated complexity)
 - Where to put EXPLORE tasks
-- BUILD slots are **placeholders** — blank until PLAN fills them in
+- BUILD slots are **placeholders** (task: null) — blank until PLAN fills them in
+- Writes schedule.json via queue.js
 
 **PLAN decides (implementation details):**
-- Specific subtasks to fill BUILD placeholders
+- Specific subtasks to fill BUILD placeholders (via `queue.js fill`)
 - What context/files to load for upcoming BUILDs
 - Technical approach and order of operations
-- Whether to add or remove BUILD slots (goal bigger/simpler than expected)
-
-### How PLAN Fills In BUILD Slots
-
-When a PLAN task executes, it replaces the placeholders with concrete tasks:
-
-Before PLAN:
-```
-8. 📋 PLAN — [Goal: Write blog post about optimization results]
-9. 🔨 BUILD — (defined by PLAN #8)
-10. 🔨 BUILD — (defined by PLAN #8)
-```
-
-After PLAN executes:
-```
-8. 📋 PLAN — [Goal: Write blog post about optimization results] ✅
-9. 🔨 BUILD — Outline post structure, gather benchmark data from tests
-10. 🔨 BUILD — Write draft with code examples and performance charts
-11. 🔨 BUILD — Edit, proofread, publish to blog, commit
-```
-
-PLAN may add extra BUILD slots if the goal is larger than expected, or remove slots if simpler. PLAN logs any changes in the Adjustments section.
+- Whether to add or remove BUILD slots (via `queue.js add` / `queue.js remove`)
 
 ### Mandatory Queue Pattern
 The standup builds the queue following this repeating cycle as the **default**:
@@ -155,16 +164,17 @@ The standup builds the queue following this repeating cycle as the **default**:
 THINK → PLAN → BUILD (3-5 tasks) → MAINTAIN → repeat
 ```
 
-Every BUILD stretch is preceded by PLAN. Every cycle includes THINK and MAINTAIN. The standup may deviate from this pattern if it logs the reason in the Adjustments section (e.g., a research-heavy day might use EXPLORE → THINK → EXPLORE → THINK). Validation warns but does not block deviations.
+Every BUILD stretch is preceded by PLAN. Every cycle includes THINK and MAINTAIN. The standup may deviate from this pattern if it logs the reason (e.g., a research-heavy day might use EXPLORE → THINK → EXPLORE → THINK). `queue.js validate` warns but does not block deviations.
 
 ### Queue Validation
-The standup runs a validation check before committing SCHEDULE.md:
+`queue.js validate` checks:
 - Does every BUILD stretch have a PLAN before it?
-- Are BUILD slots left as placeholders (not pre-filled with implementation details)?
+- Are unfilled BUILD slots still null (not pre-filled by standup)?
 - Is there a MAINTAIN after every 3-5 BUILD tasks?
 - Is there a THINK in every cycle?
 - Are there at least 2 EXPLORE tasks in the day?
-If validation fails, fix the queue before starting work.
+- Are all task IDs unique and stable?
+The standup runs this before the work session starts.
 
 ---
 
@@ -175,19 +185,29 @@ Each work session (A, B, C) runs this loop:
 ```
 1. READ ONCE: WORK-SYSTEM.md (this file)
 2. READ STATE: SCHEDULE.md queue, CURRENT.md, today's daily log
+   - Note: the cron prompt provides your session boundary time (A: 2:15pm, B: 8:15pm, C: 10:15pm)
+   - **Standup failure fallback:** If SCHEDULE.md is not dated today, run a mini-standup:
+     read TASKS.md and yesterday's backlog, build a basic queue following the default pattern,
+     then continue. Don't wait for a missing standup — work with what you have.
 3. WHILE tasks remain in queue AND time allows:
+   (If queue is empty but time remains: pull from backlog via `node queue.js backlog --pop`,
+    wrap it in a THINK → PLAN → BUILD cycle, and continue. If backlog is also empty,
+    create a THINK task to generate new goals, then PLAN and BUILD from there.
+    The agent should never sit idle with time remaining.)
 
-   a. POP next undone task from queue
+   a. POP next undone task: run `node queue.js next` to get the next task
    
    a2. WIND-DOWN CHECK:
-      - Check current time against session boundary (A: 2:15pm, B: 8:15pm, C: 10:15pm)
+      - Check current time against session boundary (provided in cron prompt)
       - If within 15 minutes of boundary: do NOT start new task
       - Instead: run MAINTAIN checklist, update CURRENT.md to session-ended, exit loop
    
-   b. SET CURRENT.md:
+   b. MARK STARTED: run `node queue.js start --task <id>`
+      Also set CURRENT.md:
       - status: in-progress
       - mode: (from task)
       - task: (from task)
+      - current_position: (task id)
       - started: (current ISO timestamp)
    
    b2. DASHBOARD UPDATE (task start):
@@ -197,20 +217,19 @@ Each work session (A, B, C) runs this loop:
    c. EXECUTE task according to its mode:
       
       🧠 THINK:
-        - Check for PRIORITY.md in workspace — if it has content, read it and adjust queue accordingly, then clear the file
+        - Check for PRIORITY.md in workspace — if it has content, read it and adjust queue via queue.js, then clear the file
         - Reflect freely. Ponder. Review quality.
-        - If queue needs changes: modify queue, log in Adjustments
+        - If queue needs changes: use `node queue.js move/add/remove` commands, which auto-log adjustments
         
       📋 PLAN:
         - Read the goal for this PLAN task
         - Read context: scratch notes index, lessons index, failures log
         - Load 1-2 relevant context files for the goal
         - Break down the goal into concrete subtasks
-        - Fill in placeholder BUILD slots in queue with specific tasks
-        - Add/remove BUILD slots if goal is bigger/simpler than expected
+        - Fill in BUILD slots: `node queue.js fill --plan <id> --tasks "task1" "task2" "task3"`
+        - Add/remove BUILD slots if needed: `node queue.js add` / `node queue.js remove`
         - Set context-files in CURRENT.md for next BUILD
-        - Log any queue modifications in Adjustments
-        - curl POST to localhost:3000/api/queue-update with updated queue (so dashboard reflects new tasks)
+        - curl POST to localhost:3000/api/queue-update with updated queue
         
       🔨 BUILD:
         - Read context-files if set in CURRENT.md
@@ -234,7 +253,7 @@ Each work session (A, B, C) runs this loop:
         - Research freely
         - If major discovery: yield to THINK
    
-   d. MARK task done in queue (strikethrough or ✅)
+   d. MARK DONE: run `node queue.js done --task <id> --summary "..." --duration <ms>`
    
    e. UPDATE CURRENT.md:
       - status: done
@@ -272,11 +291,9 @@ When a BUILD or EXPLORE task hits a blocker or significant issue:
 
 1. **STOP** the current task
 2. **WRITE** to CURRENT.md: `status: blocked`, `reason: <what happened>`
-3. **INSERT** at current queue position:
-   - 🧠 THINK — Assess: [description of issue]
-   - 📋 PLAN — Decide: retry, skip, or pivot
-4. **LOG** the yield in SCHEDULE.md Adjustments section
-5. **MOVE** to next task (the THINK you just inserted)
+3. **INSERT** via script: `node queue.js yield --at <current_task_id> --reason "description of issue"`
+   - This automatically inserts a THINK + PLAN pair after the blocked task and logs the adjustment
+4. **MOVE** to next task (the THINK that was just inserted — `node queue.js next` will return it)
 
 ### Mode Permissions Summary
 | Mode | Modify queue? | Can yield? |
@@ -304,10 +321,10 @@ current_position: <queue task number>
 tasks_completed_this_session: <count>
 ```
 
-### SCHEDULE.md
+### schedule.json
 - Ordered task queue (see format above)
-- Backlog section for overflow ideas
-- Adjustments section for change log
+- Managed exclusively by queue.js — agent never edits directly
+- Includes backlog and adjustments arrays
 
 ### Daily log (memory/YYYY-MM-DD.md)
 - `## Log` section with `- HH:MM MODE: Description` entries
@@ -319,10 +336,14 @@ tasks_completed_this_session: <count>
 - Cleared after reading
 - Example content: "Stop compiler work, switch to fixing dashboard bug #123"
 
-### block-times.jsonl
-- One JSON line per completed task for dashboard timing
+### block-times.jsonl (optional backup)
+- One JSON line per completed task for timing data
+- Primary timing data lives in the webhook server; this file is a local backup
+- Written by the work loop for redundancy; can be used to rebuild server data if needed
 
 ---
+
+## Context Management
 
 ### Within a Session
 - WORK-SYSTEM.md read once at start (~3KB)
@@ -354,6 +375,7 @@ tasks_completed_this_session: <count>
   - `GET /api/dashboard` — serves current dashboard.json to the browser
   - `GET /api/history/:date` — serves historical day data
   - Auth: requires `Authorization: Bearer <token>` on all POST requests
+  - Token stored in `~/.openclaw/.env` as `DASHBOARD_TOKEN` (cron sessions source this file)
   - Validates incoming data against schema, rejects malformed updates
   - Stores current state in memory + writes to disk for persistence
   - Runs as a macOS LaunchAgent (auto-restarts on crash)
@@ -408,15 +430,25 @@ If the server is unreachable (curl fails), the agent logs a warning and continue
 - GitHub Pages fallback includes the last 7 days of history in static files
 - The nightly reflection cron job triggers the server to archive the current day
 
-### Transition from Static System
-1. Build and deploy the webhook server
-2. Set up Cloudflare Tunnel with a stable public URL
-3. Update dashboard frontend to fetch from the API (with static fallback)
-4. Update work session prompts to use curl instead of generate.js
-5. Keep generate.js in the repo as a backup tool (can regenerate static data from workspace files if server goes down)
-6. Remove per-task git push of dashboard repo from the work loop
-7. MAINTAIN tasks still git push the workspace repo (code, memory, logs)
-8. Server handles the GitHub Pages fallback push every 10 minutes
+### Transition from Static System (Phased)
+
+**Phase 1 — Dashboard infrastructure (build first, before switching work system):**
+1. Build webhook server (server.js)
+2. Build queue.js script
+3. Set up Cloudflare Tunnel with a stable public URL
+4. Update dashboard frontend to fetch from the API (with static fallback)
+5. Store $DASHBOARD_TOKEN in ~/.openclaw/.env
+6. Set up LaunchAgents for server + tunnel auto-restart
+7. Test end-to-end: curl → server → dashboard updates on phone
+8. Keep generate.js as a backup tool
+
+**Phase 2 — Switch work system (only after Phase 1 is verified):**
+1. Replace current cron jobs with new schedule (standup, 3 work sessions, review)
+2. Morning standup uses queue.js to build schedule.json
+3. Work session prompts use the new loop (queue.js + curl)
+4. Remove old 15-min work block cron job
+5. Monitor first full day, fix issues
+6. Remove deprecated files after 3 successful days
 
 ---
 
@@ -425,20 +457,17 @@ If the server is unreachable (curl fails), the agent logs a warning and continue
 1. Read yesterday's daily log and TASKS.md
 2. Check email, GitHub notifications, PR statuses
 3. Read scratch notes index + lessons index for knowledge matching
-4. **Build SCHEDULE.md queue** as goal blocks:
+4. **Build schedule.json queue** via queue.js:
    - Decide what goals to pursue today (high-level, 3-5 goals)
    - Order goals by priority
+   - Use `node queue.js init --date YYYY-MM-DD` to create a fresh queue
+   - Use `node queue.js add` to build the queue following the default pattern
    - Assign rough BUILD slot count per goal (3-5 based on complexity)
-   - BUILD slots are **placeholders** — do NOT fill in implementation details
-   - Follow mandatory pattern: THINK → PLAN → BUILD (3-5 placeholders) → MAINTAIN → repeat
+   - BUILD slots are **placeholders** (task: null) — do NOT fill in implementation details
+   - Follow pattern: THINK → PLAN → BUILD (3-5 placeholders) → MAINTAIN → repeat
    - Include EXPLORE tasks (at least 2/day, bias toward evening)
-   - Include backlog of overflow ideas
-5. **Validate queue:**
-   - Does every BUILD stretch have a PLAN before it?
-   - Are BUILD slots left as placeholders (not pre-filled)?
-   - Is there a MAINTAIN after every 3-5 BUILD tasks?
-   - Is there a THINK in every cycle?
-   - Are there at least 2 EXPLORE tasks?
+   - Use `node queue.js backlog --add` for overflow ideas
+5. **Validate queue:** run `node queue.js validate`
 6. Set first task in CURRENT.md
 7. Write plan summary to daily log
 8. Reply with conversational summary for Jordan
@@ -447,9 +476,9 @@ If the server is unreachable (curl fails), the agent logs a warning and continue
 
 ## Evening Review Responsibilities
 
-1. Compare SCHEDULE.md queue (planned vs actual)
+1. Read schedule.json — compare planned vs actual (done/blocked/skipped counts)
 2. Count: tasks completed, yielded, skipped
-3. Review Adjustments section — what changed and why?
+3. Review adjustments array in schedule.json — what changed and why?
 4. Note: what worked, what didn't, lessons learned
 5. Set rough direction for tomorrow
 6. Message Jordan with recap
