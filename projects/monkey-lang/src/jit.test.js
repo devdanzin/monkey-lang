@@ -346,6 +346,59 @@ describe('Trace optimization', () => {
   });
 });
 
+describe('Constant propagation', () => {
+  it('should propagate constants through UNBOX_INT of known boxed value', () => {
+    const trace = new Trace('test', 0);
+    trace.addInst(IR.LOOP_START);
+    const c1 = trace.addInst(IR.CONST_INT, { value: 10 });
+    const b1 = trace.addInst(IR.BOX_INT, { ref: c1 });
+    trace.addInst(IR.STORE_LOCAL, { slot: 0, value: b1 });
+    const load = trace.addInst(IR.LOAD_LOCAL, { slot: 0 });
+    const unboxed = trace.addInst(IR.UNBOX_INT, { ref: load });
+    trace.addInst(IR.LOOP_END);
+
+    const opt = new TraceOptimizer(trace);
+    const propagated = opt.constantPropagation();
+    assert.ok(propagated >= 1, `should propagate at least 1 constant, got ${propagated}`);
+    // The UNBOX_INT should have been replaced with CONST_INT(10)
+    const unboxInst = trace.ir.find(inst => inst && inst.id === unboxed);
+    // After propagation, the instruction that was UNBOX_INT should now be CONST_INT
+    const resultInst = trace.ir[unboxed];
+    assert.equal(resultInst.op, IR.CONST_INT);
+    assert.equal(resultInst.operands.value, 10);
+  });
+
+  it('should propagate through NEG of known constant', () => {
+    const trace = new Trace('test', 0);
+    trace.addInst(IR.LOOP_START);
+    const c1 = trace.addInst(IR.CONST_INT, { value: 7 });
+    const neg = trace.addInst(IR.NEG, { ref: c1 });
+    trace.addInst(IR.LOOP_END);
+
+    const opt = new TraceOptimizer(trace);
+    const propagated = opt.constantPropagation();
+    assert.equal(propagated, 1);
+    assert.equal(trace.ir[neg].op, IR.CONST_INT);
+    assert.equal(trace.ir[neg].operands.value, -7);
+  });
+
+  it('should NOT propagate through slots modified by CALL', () => {
+    const trace = new Trace('test', 0);
+    trace.addInst(IR.LOOP_START);
+    const c1 = trace.addInst(IR.CONST_INT, { value: 5 });
+    const b1 = trace.addInst(IR.BOX_INT, { ref: c1 });
+    trace.addInst(IR.STORE_GLOBAL, { index: 0, value: b1 });
+    trace.addInst(IR.CALL, {}); // invalidates
+    const load = trace.addInst(IR.LOAD_GLOBAL, { index: 0 });
+    const unboxed = trace.addInst(IR.UNBOX_INT, { ref: load });
+    trace.addInst(IR.LOOP_END);
+
+    const opt = new TraceOptimizer(trace);
+    const propagated = opt.constantPropagation();
+    assert.equal(propagated, 0, 'should not propagate across CALL');
+  });
+});
+
 describe('Trace compilation', () => {
   it('should compile a simple counter trace to JS', () => {
     const trace = new Trace('test', 0);

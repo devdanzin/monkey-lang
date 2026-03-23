@@ -1427,6 +1427,7 @@ export class TraceOptimizer {
     this.boxUnboxElimination();
     this.commonSubexpressionElimination();
     this.redundantGuardElimination();
+    this.constantPropagation();
     this.constantFolding();
     this.deadStoreElimination();
     this.loopInvariantCodeMotion();
@@ -1928,6 +1929,127 @@ export class TraceOptimizer {
     // Compact: remove nulls and rebuild id mapping
     if (eliminated > 0) this._compact();
     return eliminated;
+  }
+
+  // --- Pass 1.5: Constant Propagation ---
+  // Track known constant values through the IR and replace references with constants.
+  // If a STORE writes a BOX_INT(CONST_INT(v)), the slot has known value v.
+  // If a subsequent LOAD reads that slot (not already eliminated by S2LF),
+  // and an UNBOX_INT follows, we can replace the unbox with CONST_INT(v).
+  // Also tracks values through arithmetic: ADD_INT(const, const) → known constant.
+  // This enables more constant folding in the next pass.
+  constantPropagation() {
+    const ir = this.trace.ir;
+    // Map: IR ref → known numeric value (raw int)
+    const knownValues = new Map();
+    // Map: slot key → known numeric value
+    const slotValues = new Map();
+
+    let propagated = 0;
+
+    // First pass: discover all known constant values
+    for (let i = 0; i < ir.length; i++) {
+      const inst = ir[i];
+      if (!inst) continue;
+
+      if (inst.op === IR.CONST_INT) {
+        knownValues.set(i, inst.operands.value);
+        continue;
+      }
+
+      // Track values through arithmetic on known constants
+      if (inst.op === IR.ADD_INT || inst.op === IR.SUB_INT ||
+          inst.op === IR.MUL_INT || inst.op === IR.DIV_INT) {
+        const lv = knownValues.get(inst.operands.left);
+        const rv = knownValues.get(inst.operands.right);
+        if (lv !== undefined && rv !== undefined) {
+          let result;
+          switch (inst.op) {
+            case IR.ADD_INT: result = lv + rv; break;
+            case IR.SUB_INT: result = lv - rv; break;
+            case IR.MUL_INT: result = lv * rv; break;
+            case IR.DIV_INT: result = Math.trunc(lv / rv); break;
+          }
+          knownValues.set(i, result);
+        }
+        continue;
+      }
+
+      // BOX_INT of a known value → known boxed constant
+      if (inst.op === IR.BOX_INT) {
+        const rv = knownValues.get(inst.operands.ref);
+        if (rv !== undefined) knownValues.set(i, rv);
+        continue;
+      }
+
+      // UNBOX_INT of a known boxed value → replace with CONST_INT
+      if (inst.op === IR.UNBOX_INT) {
+        const rv = knownValues.get(inst.operands.ref);
+        if (rv !== undefined) {
+          inst.op = IR.CONST_INT;
+          inst.operands = { value: rv };
+          knownValues.set(i, rv);
+          propagated++;
+          continue;
+        }
+      }
+
+      // Track stores: if value has known constant, slot gets that value
+      if (inst.op === IR.STORE_LOCAL) {
+        const sv = knownValues.get(inst.operands.value);
+        if (sv !== undefined) {
+          slotValues.set(`local:${inst.operands.slot}`, sv);
+        } else {
+          slotValues.delete(`local:${inst.operands.slot}`);
+        }
+        continue;
+      }
+      if (inst.op === IR.STORE_GLOBAL) {
+        const sv = knownValues.get(inst.operands.value);
+        if (sv !== undefined) {
+          slotValues.set(`global:${inst.operands.index}`, sv);
+        } else {
+          slotValues.delete(`global:${inst.operands.index}`);
+        }
+        continue;
+      }
+
+      // Loads from slots with known values
+      if (inst.op === IR.LOAD_LOCAL) {
+        const sv = slotValues.get(`local:${inst.operands.slot}`);
+        if (sv !== undefined) knownValues.set(i, sv);
+        continue;
+      }
+      if (inst.op === IR.LOAD_GLOBAL) {
+        const sv = slotValues.get(`global:${inst.operands.index}`);
+        if (sv !== undefined) knownValues.set(i, sv);
+        continue;
+      }
+
+      // NEG of known value
+      if (inst.op === IR.NEG) {
+        const rv = knownValues.get(inst.operands.ref);
+        if (rv !== undefined) {
+          inst.op = IR.CONST_INT;
+          inst.operands = { value: -rv };
+          knownValues.set(i, -rv);
+          propagated++;
+        }
+        continue;
+      }
+
+      // CALL invalidates all slot knowledge
+      if (inst.op === IR.CALL || inst.op === IR.SELF_CALL) {
+        slotValues.clear();
+      }
+
+      // LOOP_END: slot values may change on back-edge
+      if (inst.op === IR.LOOP_END) {
+        slotValues.clear();
+      }
+    }
+
+    return propagated;
   }
 
   // --- Pass 2: Constant Folding ---
