@@ -1,5 +1,5 @@
 ---
-uses: 4
+uses: 5
 created: 2026-03-20
 last-used: 2026-03-22
 topics: consciousness,index
@@ -31,7 +31,7 @@ topics: consciousness,index
 4. Seth's biological naturalism is the strongest philosophical position on AI consciousness I've encountered
 5. The adversarial collaboration model (pre-registered divergent predictions, theory-neutral team) is excellent science
 
-- **consciousness-comparison.md** — IIT vs GNW vs AST vs PP comparative analysis. Empirical status, explanatory power, AI implications, credences.
+- **consciousness-comparison.md** — IIT vs GNW vs HOT/PRM vs AST vs PP comparative analysis. Empirical status, explanatory power, AI implications, credences. Five-theory framework.
 
 ## Open Questions
 - Can a hybrid posterior-content + selective-frontal-broadcast theory work?
