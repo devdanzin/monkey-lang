@@ -105,6 +105,8 @@ The queue is stored as **JSON** in `schedule.json`. The agent never edits this f
 ### queue.js — Deterministic Queue Manager
 All queue mutations go through this script. The agent calls it via shell commands:
 
+**Error handling:** If queue.js crashes or returns an error, the agent falls back to reading schedule.json directly (it's just JSON). If schedule.json itself is corrupted, fall back to CURRENT.md + daily log to determine what was in progress, then rebuild the queue from TASKS.md backlog. Never let tooling failures block work.
+
 ```bash
 # PLAN fills in BUILD placeholders
 node queue.js fill --plan T2 --tasks "Implement constant folding" "Write tests" "Benchmark"
@@ -342,8 +344,13 @@ tasks_completed_this_session: <count>
 - WORK-SYSTEM.md read once at start (~3KB)
 - Each task adds ~3-5 messages to context
 - Compaction triggers naturally when context grows
-- Pre-compaction flush saves unsaved decisions/context to files
-- After compaction: agent re-reads CURRENT.md to re-orient
+- **Pre-compaction flush protocol:** When context is getting long (15+ tasks completed), proactively:
+  1. Write any unsaved decisions to `memory/decisions.md`
+  2. Write any unsaved scratch notes
+  3. Update CURRENT.md with full context (next task, what was just accomplished)
+  4. Git commit workspace
+  5. Reply NO_REPLY so the flush is invisible to the user
+- **After compaction recovery:** Re-read CURRENT.md and schedule.json (`node queue.js next --peek-all`). CURRENT.md has everything needed to continue — don't rely on conversation history.
 
 ### Between Sessions
 - All state lives in files (CURRENT.md, schedule.json, daily log)
@@ -491,3 +498,61 @@ If the server is unreachable (curl fails), the agent logs a warning and continue
 | Crash recovery | Next cron in 15 min | Next session at boundary (max 6hr) |
 | Task isolation | Full (fresh session) | Partial (shared session + compaction) |
 | Complexity | 56 cron triggers, complex prompts | 3 sessions, 1 loop, simple queue |
+
+---
+
+## Additional Specifications
+
+### Session Boundary Communication
+Each work session cron prompt MUST include the session boundary time explicitly:
+- Session A prompt: "Process queue. Session boundary: 2:15pm MDT."
+- Session B prompt: "Process queue. Session boundary: 8:15pm MDT."
+- Session C prompt: "Process queue. Session boundary: 10:15pm MDT."
+The agent uses this for wind-down checks. No reliance on calculating from session start.
+
+### Token Budget Guidance
+- **THINK:** 1-3 minutes (~1 tool call cycle). Read state, reflect, maybe modify queue. Don't over-think.
+- **PLAN:** 1-3 minutes. Read goal + 1-2 context files, write 3-5 BUILD subtasks. Don't over-plan.
+- **BUILD:** 5-20 minutes depending on complexity. Most tasks should complete in one BUILD slot.
+- **MAINTAIN:** 2-5 minutes. Checklist execution, not exploration.
+- **EXPLORE:** 10-20 minutes. Follow threads but timebox.
+If a BUILD task isn't done in 20 minutes, it's probably too big — yield and break it down.
+
+### Multi-Session Task Continuity
+If a task spans a session boundary (session timeout before task completes):
+1. CURRENT.md will show `status: in-progress` when the next session starts
+2. Next session: check what was done (git log, test results, file state)
+3. If task was nearly done: finish it as the first action
+4. If task had significant work remaining: mark it `status: blocked`, yield, and re-plan
+5. Don't repeat work — check git diff to see what the previous session accomplished
+
+### Backlog Management
+- Backlog items are unordered by default — THINK tasks pick the most relevant one
+- Jordan can add priority markers: `[HIGH]`, `[LOW]` prefix
+- When pulling from backlog, prefer: Jordan-flagged items > items related to current goal > oldest items
+- Backlog pruning happens during weekly synthesis (remove stale ideas)
+
+### EXPLORE Mode Guidance
+- **Sources:** EXPLORE tasks should specify what to explore (e.g., "Read LuaJIT allocation sinking paper")
+- **Evening bias:** Schedule EXPLORE tasks after 7pm when possible — BUILD energy is lower, curiosity energy is higher
+- **Output:** EXPLORE doesn't require output, but should produce at least a daily log entry. Create scratch notes for reusable knowledge.
+- **Yield trigger:** If an EXPLORE discovery changes priorities (e.g., found a critical bug pattern), yield to THINK.
+
+### MAINTAIN Checklist (Full)
+Every MAINTAIN task runs this checklist:
+1. `git add -A && git commit && git push` (workspace)
+2. Check dashboard server: `curl -s http://localhost:3000/api/dashboard`
+   - If down: restart via LaunchAgent or manual `node server.js &`
+3. Run benchmark suite if code changed: `node benchmark-runner.js --compare baseline`
+   - If regression >15%: log in failures.md, add investigation to backlog
+4. Check email (if configured and >2hr since last check)
+5. Check GitHub notifications / PR status
+6. Knowledge capture: scratch notes, decisions, failures
+7. Update CURRENT.md timestamp
+
+### Dashboard Historical Archival
+The nightly reflection cron job (11pm) archives the day:
+1. POST to `http://localhost:3000/api/archive` with `{"date": "YYYY-MM-DD"}`
+2. Server moves current state to `history/YYYY-MM-DD.json`
+3. Server resets current state for the next day
+4. If server is unreachable: the next morning standup re-initializes (no data loss — schedule.json and daily log are the source of truth)
