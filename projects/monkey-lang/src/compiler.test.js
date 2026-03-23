@@ -230,9 +230,9 @@ describe('Hash Literals', () => {
   it('hash with expressions', () => {
     const result = compileAndRun('{1: 2 + 3, 4: 5 * 6}');
     assert.ok(result instanceof MonkeyHash);
-    const pair1 = result.pairs.get('int:1');
+    const pair1 = result.pairs.get(1);
     testIntegerObject(pair1.value, 5);
-    const pair2 = result.pairs.get('int:4');
+    const pair2 = result.pairs.get(4);
     testIntegerObject(pair2.value, 30);
   });
 });

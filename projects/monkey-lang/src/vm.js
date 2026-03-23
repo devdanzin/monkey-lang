@@ -6,7 +6,7 @@ import { CompiledFunction } from './compiler.js';
 import {
   MonkeyInteger, MonkeyBoolean, MonkeyString, MonkeyNull,
   MonkeyArray, MonkeyHash, MonkeyBuiltin, MonkeyError,
-  TRUE, FALSE, NULL, cachedInteger,
+  TRUE, FALSE, NULL, cachedInteger, internString,
 } from './object.js';
 import { IR, JIT, TraceRecorder } from './jit.js';
 
@@ -502,8 +502,8 @@ export class VM {
           for (let i = 0; i < hashElems.length; i += 2) {
             const key = hashElems[i];
             const value = hashElems[i + 1];
-            if (!key.hashKey) throw new Error(`unusable as hash key: ${key.type()}`);
-            pairs.set(key.hashKey(), { key, value });
+            if (!key.fastHashKey) throw new Error(`unusable as hash key: ${key.type()}`);
+            pairs.set(key.fastHashKey(), { key, value });
           }
           this.push(new MonkeyHash(pairs));
           break;
@@ -567,8 +567,8 @@ export class VM {
               this.push(left3.elements[i]);
             }
           } else if (left3 instanceof MonkeyHash) {
-            if (!index.hashKey) throw new Error(`unusable as hash key: ${index.type()}`);
-            const pair = left3.pairs.get(index.hashKey());
+            if (!index.fastHashKey) throw new Error(`unusable as hash key: ${index.type()}`);
+            const pair = left3.pairs.get(index.fastHashKey());
             this.push(pair ? pair.value : NULL);
           } else {
             throw new Error(`index operator not supported: ${left3.type()}`);
@@ -1122,6 +1122,7 @@ export class VM {
         MonkeyInteger, MonkeyBoolean, MonkeyString,
         TRUE, FALSE, NULL,
         cachedInteger,
+        internString,
         this.isTruthy,
         trace.sideTraces,
       );
@@ -1211,6 +1212,7 @@ export class VM {
         MonkeyInteger, MonkeyBoolean, MonkeyString,
         TRUE, FALSE, NULL,
         cachedInteger,
+        internString,
         this.isTruthy,
         self, selfRaw,
       );
@@ -1226,6 +1228,7 @@ export class VM {
         MonkeyInteger, MonkeyBoolean, MonkeyString,
         TRUE, FALSE, NULL,
         cachedInteger,
+        internString,
         this.isTruthy,
         self, selfRaw,
       );
@@ -1238,6 +1241,7 @@ export class VM {
       MonkeyInteger, MonkeyBoolean, MonkeyString,
       TRUE, FALSE, NULL,
       cachedInteger,
+      internString,
       this.isTruthy,
       self, selfRaw,
     );
@@ -1260,6 +1264,7 @@ export class VM {
       MonkeyInteger, MonkeyBoolean, MonkeyString,
       TRUE, FALSE, NULL,
       cachedInteger,
+      internString,
       this.isTruthy,
       emptySideTraces,
     );

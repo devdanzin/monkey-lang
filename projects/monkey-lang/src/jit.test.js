@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import { IR, Trace, TraceRecorder, JIT, TraceCompiler, TraceOptimizer } from './jit.js';
 import {
   MonkeyInteger, MonkeyBoolean, MonkeyString,
-  TRUE, FALSE, NULL, cachedInteger,
+  TRUE, FALSE, NULL, cachedInteger, internString,
 } from './object.js';
 
 describe('IR and Trace', () => {
@@ -566,6 +566,7 @@ describe('Trace compilation', () => {
       MonkeyInteger, MonkeyBoolean, MonkeyString,
       TRUE, FALSE, NULL,
       cachedInteger,
+      internString,
       (obj) => {
         if (obj instanceof MonkeyBoolean) return obj.value;
         if (obj === NULL) return false;

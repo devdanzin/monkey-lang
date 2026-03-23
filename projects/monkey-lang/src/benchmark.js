@@ -19,14 +19,16 @@ const BENCHMARKS = [
     `,
   },
   {
-    name: 'hash access (100 lookups)',
+    name: 'hash access (10k lookups)',
     input: `
       let h = {"a": 1, "b": 2, "c": 3, "d": 4, "e": 5};
-      let access = fn(n) {
-        if (n == 0) { 0 }
-        else { h["a"] + h["b"] + h["c"] + access(n - 1) }
-      };
-      access(100)
+      let sum = 0;
+      let i = 0;
+      while (i < 10000) {
+        sum = sum + h["a"] + h["b"] + h["c"];
+        i = i + 1;
+      }
+      sum
     `,
   },
   {

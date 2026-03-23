@@ -18,6 +18,9 @@ export class MonkeyInteger {
   type() { return OBJ.INTEGER; }
   inspect() { return String(this.value); }
   hashKey() { if (this._hk === undefined) this._hk = `int:${this.value}`; return this._hk; }
+  // Fast hash key: use raw value with type tag for Map identity
+  // Integers: use number directly (no collision with strings since Map uses SameValueZero)
+  fastHashKey() { return this.value; }
 }
 
 export class MonkeyBoolean {
@@ -25,6 +28,7 @@ export class MonkeyBoolean {
   type() { return OBJ.BOOLEAN; }
   inspect() { return String(this.value); }
   hashKey() { if (this._hk === undefined) this._hk = `bool:${this.value}`; return this._hk; }
+  fastHashKey() { return this; } // singleton identity
 }
 
 export class MonkeyNull {
@@ -37,6 +41,25 @@ export class MonkeyString {
   type() { return OBJ.STRING; }
   inspect() { return this.value; }
   hashKey() { if (this._hk === undefined) this._hk = `str:${this.value}`; return this._hk; }
+  fastHashKey() { return this; } // identity — only works if interned
+}
+
+// String intern table: guarantees same-value strings share same object
+const STRING_INTERN = new Map();
+const STRING_INTERN_MAX = 4096; // prevent unbounded growth
+
+/**
+ * Get or create an interned MonkeyString. Same value → same object.
+ * This enables identity-based hash lookups (Map key = object ref).
+ */
+export function internString(value) {
+  let s = STRING_INTERN.get(value);
+  if (s !== undefined) return s;
+  s = new MonkeyString(value);
+  if (STRING_INTERN.size < STRING_INTERN_MAX) {
+    STRING_INTERN.set(value, s);
+  }
+  return s;
 }
 
 export class MonkeyReturnValue {
@@ -68,7 +91,7 @@ export class MonkeyArray {
 }
 
 export class MonkeyHash {
-  constructor(pairs) { this.pairs = pairs; } // Map<hashKey, {key, value}>
+  constructor(pairs) { this.pairs = pairs; } // Map<fastHashKey, {key, value}>
   type() { return OBJ.HASH; }
   inspect() {
     const entries = [];

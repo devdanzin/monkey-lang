@@ -3,7 +3,7 @@
 import {
   MonkeyInteger, MonkeyString, MonkeyReturnValue, MonkeyError,
   MonkeyFunction, MonkeyArray, MonkeyHash, MonkeyBuiltin,
-  Environment, TRUE, FALSE, NULL, OBJ,
+  Environment, TRUE, FALSE, NULL, OBJ, internString,
 } from './object.js';
 
 import * as AST from './ast.js';
@@ -80,7 +80,7 @@ export function monkeyEval(node, env) {
 
   // Expressions
   if (node instanceof AST.IntegerLiteral) return new MonkeyInteger(node.value);
-  if (node instanceof AST.StringLiteral) return new MonkeyString(node.value);
+  if (node instanceof AST.StringLiteral) return internString(node.value);
   if (node instanceof AST.BooleanLiteral) return nativeBoolToBooleanObject(node.value);
 
   if (node instanceof AST.PrefixExpression) {
@@ -277,10 +277,10 @@ function evalIndexExpression(left, index) {
     return left.elements[idx];
   }
   if (left.type() === OBJ.HASH) {
-    if (typeof index.hashKey !== 'function') {
+    if (typeof index.fastHashKey !== 'function') {
       return newError(`unusable as hash key: ${index.type()}`);
     }
-    const pair = left.pairs.get(index.hashKey());
+    const pair = left.pairs.get(index.fastHashKey());
     if (!pair) return NULL;
     return pair.value;
   }
@@ -292,12 +292,12 @@ function evalHashLiteral(node, env) {
   for (const [keyNode, valueNode] of node.pairs) {
     const key = monkeyEval(keyNode, env);
     if (isError(key)) return key;
-    if (typeof key.hashKey !== 'function') {
+    if (typeof key.fastHashKey !== 'function') {
       return newError(`unusable as hash key: ${key.type()}`);
     }
     const value = monkeyEval(valueNode, env);
     if (isError(value)) return value;
-    pairs.set(key.hashKey(), { key, value });
+    pairs.set(key.fastHashKey(), { key, value });
   }
   return new MonkeyHash(pairs);
 }

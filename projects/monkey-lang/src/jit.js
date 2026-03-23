@@ -702,7 +702,7 @@ export class TraceCompiler {
     if (this._wbWrap) {
       this.lines.push(`      __wb(null);`);
     }
-    this.lines.push(`      const __sr = __st_trace.compiled(__stack, __sp, __bp, __globals, __consts, __free, __MonkeyInteger, __MonkeyBoolean, __MonkeyString, __TRUE, __FALSE, __NULL, __cachedInteger, __isTruthy, __sideTraces);`);
+    this.lines.push(`      const __sr = __st_trace.compiled(__stack, __sp, __bp, __globals, __consts, __free, __MonkeyInteger, __MonkeyBoolean, __MonkeyString, __TRUE, __FALSE, __NULL, __cachedInteger, __internString, __isTruthy, __sideTraces);`);
     if (this._wbWrap) {
       // Reload promoted vars after side trace (it may have modified globals/locals)
       this.lines.push(`      __reloadPromoted();`);
@@ -1024,7 +1024,7 @@ export class TraceCompiler {
         case IR.INDEX_HASH: {
           const hash = varNames.get(inst.operands.left);
           const key = varNames.get(inst.operands.right);
-          this.lines.push(`  const ${v}_pair = ${hash}.pairs.get(${key}.hashKey());`);
+          this.lines.push(`  const ${v}_pair = ${hash}.pairs.get(${key}.fastHashKey());`);
           this.lines.push(`  const ${v} = ${v}_pair ? ${v}_pair.value : __NULL;`);
           break;
         }
@@ -1229,7 +1229,7 @@ export class TraceCompiler {
           }
           // Call the inner trace function
           this.lines.push(`  const ${v}_inner = __consts[${inst.operands.constIdx}];`);
-          this.lines.push(`  let ${v} = ${v}_inner(__stack, __sp, __bp, __globals, __consts, __free, __MonkeyInteger, __MonkeyBoolean, __MonkeyString, __TRUE, __FALSE, __NULL, __cachedInteger, __isTruthy, __sideTraces);`);
+          this.lines.push(`  let ${v} = ${v}_inner(__stack, __sp, __bp, __globals, __consts, __free, __MonkeyInteger, __MonkeyBoolean, __MonkeyString, __TRUE, __FALSE, __NULL, __cachedInteger, __internString, __isTruthy, __sideTraces);`);
           // After inner trace, reload promoted vars (inner trace may have modified them)
           for (const idx of promotable.globals) {
             const pv = promotedVarNames.get('g:' + idx);
@@ -1257,7 +1257,7 @@ export class TraceCompiler {
         '__stack', '__sp', '__bp', '__globals', '__consts', '__free',
         '__MonkeyInteger', '__MonkeyBoolean', '__MonkeyString',
         '__TRUE', '__FALSE', '__NULL',
-        '__cachedInteger', '__isTruthy', '__sideTraces',
+        '__cachedInteger', '__internString', '__isTruthy', '__sideTraces',
         body
       );
       return fn;
@@ -1513,7 +1513,7 @@ export class TraceCompiler {
         '__stack', '__sp', '__bp', '__globals', '__consts', '__free',
         '__MonkeyInteger', '__MonkeyBoolean', '__MonkeyString',
         '__TRUE', '__FALSE', '__NULL',
-        '__cachedInteger', '__isTruthy', '__selfCall',
+        '__cachedInteger', '__internString', '__isTruthy', '__selfCall',
         body
       );
       return fn;
@@ -2968,7 +2968,7 @@ export class FunctionCompiler {
         '__args', '__globals', '__consts', '__free',
         '__MonkeyInteger', '__MonkeyBoolean', '__MonkeyString',
         '__TRUE', '__FALSE', '__NULL',
-        '__cachedInteger', '__isTruthy', '__self',
+        '__cachedInteger', '__internString', '__isTruthy', '__self',
         body
       );
       return fn;
@@ -3279,7 +3279,7 @@ export class FunctionCompiler {
         '__args', '__globals', '__consts', '__free',
         '__MonkeyInteger', '__MonkeyBoolean', '__MonkeyString',
         '__TRUE', '__FALSE', '__NULL',
-        '__cachedInteger', '__isTruthy', '__self', '__selfRaw',
+        '__cachedInteger', '__internString', '__isTruthy', '__self', '__selfRaw',
         body
       );
       return fn;

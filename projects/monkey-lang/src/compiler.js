@@ -3,7 +3,7 @@
 
 import { Opcodes, make, concatInstructions } from './code.js';
 import { SymbolTable, SCOPE } from './symbol-table.js';
-import { MonkeyInteger, MonkeyString } from './object.js';
+import { MonkeyInteger, MonkeyString, internString } from './object.js';
 import * as ast from './ast.js';
 
 // Compiled function object (different from interpreted MonkeyFunction)
@@ -104,11 +104,11 @@ export class Compiler {
       }
       // String concatenation folding
       if (left instanceof MonkeyString && right instanceof MonkeyString && node.operator === '+') {
-        return new MonkeyString(left.value + right.value);
+        return internString(left.value + right.value);
       }
     }
     if (node instanceof ast.StringLiteral) {
-      return new MonkeyString(node.value);
+      return internString(node.value);
     }
     return null;
   }
@@ -237,7 +237,7 @@ export class Compiler {
       const idx = this.addConstant(new MonkeyInteger(node.value));
       this.emitInt(Opcodes.OpConstant, idx);
     } else if (node instanceof ast.StringLiteral) {
-      const idx = this.addConstant(new MonkeyString(node.value));
+      const idx = this.addConstant(internString(node.value));
       this.emit(Opcodes.OpConstant, idx);
     } else if (node instanceof ast.BooleanLiteral) {
       this.emit(node.value ? Opcodes.OpTrue : Opcodes.OpFalse);
