@@ -168,12 +168,13 @@ export class VM {
 
   run() {
     let ip, ins, op;
+    let frame = this.currentFrame();
     const recording = () => this.recorder && this.recorder.recording && !(this.recorder._skipDepth > 0);
 
-    while (this.currentFrame().ip < this.currentFrame().instructions().length - 1) {
-      this.currentFrame().ip++;
-      ip = this.currentFrame().ip;
-      ins = this.currentFrame().instructions();
+    while (frame.ip < frame.closure.fn.instructions.length - 1) {
+      frame.ip++;
+      ip = frame.ip;
+      ins = frame.closure.fn.instructions;
       op = ins[ip];
 
       // Check if we've looped back to trace start (recording complete)
@@ -213,7 +214,7 @@ export class VM {
       switch (op) {
         case Opcodes.OpConstant: {
           const constIdx = (ins[ip + 1] << 8) | ins[ip + 2];
-          this.currentFrame().ip += 2;
+          frame.ip += 2;
           const constVal = this.constants[constIdx];
           this.push(constVal);
           if (recording()) {
@@ -355,7 +356,7 @@ export class VM {
 
         case Opcodes.OpJumpNotTruthy: {
           const target = (ins[ip + 1] << 8) | ins[ip + 2];
-          this.currentFrame().ip += 2;
+          frame.ip += 2;
           const condition = this.pop();
           const truthy = this.isTruthy(condition);
 
@@ -376,7 +377,7 @@ export class VM {
           }
 
           if (!truthy) {
-            this.currentFrame().ip = target - 1;
+            frame.ip = target - 1;
           }
           break;
         }
@@ -415,7 +416,7 @@ export class VM {
             }
           }
 
-          this.currentFrame().ip = target2 - 1;
+          frame.ip = target2 - 1;
           break;
         }
 
@@ -426,7 +427,7 @@ export class VM {
 
         case Opcodes.OpSetGlobal: {
           const globalIdx = (ins[ip + 1] << 8) | ins[ip + 2];
-          this.currentFrame().ip += 2;
+          frame.ip += 2;
           const setGlobalVal = this.pop();
           this.globals[globalIdx] = setGlobalVal;
           if (recording()) {
@@ -438,7 +439,7 @@ export class VM {
 
         case Opcodes.OpGetGlobal: {
           const globalIdx2 = (ins[ip + 1] << 8) | ins[ip + 2];
-          this.currentFrame().ip += 2;
+          frame.ip += 2;
           const getGlobalVal = this.globals[globalIdx2];
           this.push(getGlobalVal);
           if (recording()) {
@@ -450,9 +451,9 @@ export class VM {
 
         case Opcodes.OpSetLocal: {
           const localIdx = ins[ip + 1];
-          this.currentFrame().ip += 1;
+          frame.ip += 1;
           const setVal = this.pop();
-          this.stack[this.currentFrame().basePointer + localIdx] = setVal;
+          this.stack[frame.basePointer + localIdx] = setVal;
           if (recording()) {
             const valRef = this.recorder.popRef();
             const absSlot = this.recorder.currentBaseOffset() + localIdx;
@@ -463,8 +464,8 @@ export class VM {
 
         case Opcodes.OpGetLocal: {
           const localIdx2 = ins[ip + 1];
-          this.currentFrame().ip += 1;
-          const localVal = this.stack[this.currentFrame().basePointer + localIdx2];
+          frame.ip += 1;
+          const localVal = this.stack[frame.basePointer + localIdx2];
           this.push(localVal);
           if (recording()) {
             const absSlot = this.recorder.currentBaseOffset() + localIdx2;
@@ -483,7 +484,7 @@ export class VM {
         case Opcodes.OpArray: {
           if (recording()) { this._abortRecording(); }
           const numElements = (ins[ip + 1] << 8) | ins[ip + 2];
-          this.currentFrame().ip += 2;
+          frame.ip += 2;
           const elements = this.stack.slice(this.sp - numElements, this.sp);
           this.sp -= numElements;
           this.push(new MonkeyArray([...elements]));
@@ -493,7 +494,7 @@ export class VM {
         case Opcodes.OpHash: {
           if (recording()) { this._abortRecording(); }
           const numPairs = (ins[ip + 1] << 8) | ins[ip + 2];
-          this.currentFrame().ip += 2;
+          frame.ip += 2;
           const pairs = new Map();
           // Stack has key, value, key, value... from bottom to top
           const hashElems = this.stack.slice(this.sp - numPairs, this.sp);
@@ -531,7 +532,7 @@ export class VM {
 
         case Opcodes.OpCall: {
           const numArgs = ins[ip + 1];
-          this.currentFrame().ip += 1;
+          frame.ip += 1;
           const callee = this.stack[this.sp - 1 - numArgs];
 
           if (callee instanceof Closure) {
@@ -567,11 +568,10 @@ export class VM {
 
               const ref = this.recorder.trace.addInst(IR.SELF_CALL, { args: argRefs });
               // Execute the call normally in the interpreter
-              const frame = new Frame(callee, this.sp - numArgs);
-              this.pushFrame(frame);
-              this.sp = frame.basePointer + callee.fn.numLocals;
-
-              // Stop recording into the callee — we don't trace the recursive body,
+              const callFrame = new Frame(callee, this.sp - numArgs);
+              this.pushFrame(callFrame);
+              this.sp = callFrame.basePointer + callee.fn.numLocals;
+              frame = callFrame;
               // the compiled code will handle it via self-call
               this.recorder._skipDepth = (this.recorder._skipDepth || 0) + 1;
               this.recorder._skipReturnFrame = this.framesIndex; // return when we pop back to this
@@ -609,9 +609,10 @@ export class VM {
               // the frame normally, and we keep recording with the new baseOffset
             }
 
-            const frame = new Frame(callee, this.sp - numArgs);
-            this.pushFrame(frame);
-            this.sp = frame.basePointer + callee.fn.numLocals;
+            const callFrame = new Frame(callee, this.sp - numArgs);
+            this.pushFrame(callFrame);
+            this.sp = callFrame.basePointer + callee.fn.numLocals;
+            frame = callFrame;
 
             // Hot function detection — compile function directly (method JIT)
             if (this.jit && !recording() && !this.jit.getFuncTrace(callee.fn)) {
@@ -640,9 +641,10 @@ export class VM {
 
           // Handle return from skipped recursive call during function trace recording
           if (this.recorder && this.recorder.recording && this.recorder._skipDepth > 0) {
-            const frame = this.popFrame();
-            this.sp = frame.basePointer - 1;
+            const retFrame = this.popFrame();
+            this.sp = retFrame.basePointer - 1;
             this.push(returnValue);
+            frame = this.currentFrame();
             // Only resume recording when we've popped back to the right frame
             if (this.framesIndex < this.recorder._skipReturnFrame) {
               this.recorder._skipDepth--;
@@ -668,9 +670,10 @@ export class VM {
             }
             this.recorder = null;
             // Normal return
-            const frame = this.popFrame();
-            this.sp = frame.basePointer - 1;
+            const retFrame = this.popFrame();
+            this.sp = retFrame.basePointer - 1;
             this.push(returnValue);
+            frame = this.currentFrame();
             break;
           }
 
@@ -679,17 +682,19 @@ export class VM {
             const retRef = this.recorder.popRef();
             this.recorder.leaveInlineFrame();
             // Pop the frame, restore sp, push return value
-            const frame = this.popFrame();
-            this.sp = frame.basePointer - 1; // -1 to also pop the function itself
+            const retFrame = this.popFrame();
+            this.sp = retFrame.basePointer - 1; // -1 to also pop the function itself
             this.push(returnValue);
+            frame = this.currentFrame();
             // Push the return value's IR ref back for the caller to use
             this.recorder.pushRef(retRef);
             break;
           }
 
-          const frame = this.popFrame();
-          this.sp = frame.basePointer - 1; // -1 to also pop the function itself
+          const retFrame = this.popFrame();
+          this.sp = retFrame.basePointer - 1; // -1 to also pop the function itself
           this.push(returnValue);
+          frame = this.currentFrame();
           break;
         }
 
@@ -699,6 +704,7 @@ export class VM {
             const frame2 = this.popFrame();
             this.sp = frame2.basePointer - 1;
             this.push(NULL);
+            frame = this.currentFrame();
             if (this.framesIndex < this.recorder._skipReturnFrame) {
               this.recorder._skipDepth--;
               if (this.recorder._skipDepth === 0 && this.recorder._pendingSelfCallRef !== undefined) {
@@ -723,6 +729,7 @@ export class VM {
             const frame2 = this.popFrame();
             this.sp = frame2.basePointer - 1;
             this.push(NULL);
+            frame = this.currentFrame();
             break;
           }
 
@@ -732,6 +739,7 @@ export class VM {
             const frame2 = this.popFrame();
             this.sp = frame2.basePointer - 1;
             this.push(NULL);
+            frame = this.currentFrame();
             const nullRef = this.recorder.trace.addInst(IR.CONST_NULL);
             this.recorder.typeMap.set(nullRef, 'null');
             this.recorder.pushRef(nullRef);
@@ -741,13 +749,14 @@ export class VM {
           const frame2 = this.popFrame();
           this.sp = frame2.basePointer - 1;
           this.push(NULL);
+          frame = this.currentFrame();
           break;
         }
 
         case Opcodes.OpClosure: {
           const constIdx2 = (ins[ip + 1] << 8) | ins[ip + 2];
           const numFree = ins[ip + 3];
-          this.currentFrame().ip += 3;
+          frame.ip += 3;
 
           const fn = this.constants[constIdx2];
           const free = new Array(numFree);
@@ -775,8 +784,8 @@ export class VM {
 
         case Opcodes.OpGetFree: {
           const freeIdx = ins[ip + 1];
-          this.currentFrame().ip += 1;
-          const freeVal = this.currentFrame().closure.free[freeIdx];
+          frame.ip += 1;
+          const freeVal = frame.closure.free[freeIdx];
           this.push(freeVal);
           if (recording()) {
             if (this.recorder.inlineDepth > 0) {
@@ -792,12 +801,12 @@ export class VM {
         }
 
         case Opcodes.OpCurrentClosure:
-          this.push(this.currentFrame().closure);
+          this.push(frame.closure);
           if (recording()) {
             // Record the closure as an opaque constant object
             // The trace will just push the same closure value
             const closureRef = this.recorder.trace.addInst(IR.CONST_OBJ, {
-              constIdx: this._ensureTraceConst(this.currentFrame().closure)
+              constIdx: this._ensureTraceConst(frame.closure)
             });
             this.recorder.typeMap.set(closureRef, 'object');
             this.recorder.pushRef(closureRef);
@@ -806,7 +815,7 @@ export class VM {
 
         case Opcodes.OpGetBuiltin: {
           const builtinIdx = ins[ip + 1];
-          this.currentFrame().ip += 1;
+          frame.ip += 1;
           this.push(BUILTINS[builtinIdx]);
           if (recording()) {
             // Builtins are opaque objects — record as const
@@ -824,7 +833,7 @@ export class VM {
         case Opcodes.OpMulConst:
         case Opcodes.OpDivConst: {
           const constIdx3 = (ins[ip + 1] << 8) | ins[ip + 2];
-          this.currentFrame().ip += 2;
+          frame.ip += 2;
           const left4 = this.pop();
           const right4 = this.constants[constIdx3];
 
@@ -861,8 +870,8 @@ export class VM {
         case Opcodes.OpGetLocalDivConst: {
           const localIdx3 = ins[ip + 1];
           const constIdx4 = (ins[ip + 2] << 8) | ins[ip + 3];
-          this.currentFrame().ip += 3;
-          const leftVal = this.stack[this.currentFrame().basePointer + localIdx3];
+          frame.ip += 3;
+          const leftVal = this.stack[frame.basePointer + localIdx3];
           const rightVal = this.constants[constIdx4];
 
           if (leftVal instanceof MonkeyInteger && rightVal instanceof MonkeyInteger) {
@@ -906,116 +915,114 @@ export class VM {
 
         // Integer-specialized opcodes: skip instanceof checks for the fast path.
         // If quickened (not compiler-emitted), deopt back to generic on type mismatch.
+        // Integer-specialized opcodes with inlined stack operations.
+        // Direct stack[] access avoids this.pop()/this.push() method call overhead.
         case Opcodes.OpAddInt: {
-          const r = this.pop();
-          const l = this.pop();
-          // Deopt guard: if either operand isn't integer, despecialize
+          const r = this.stack[--this.sp];
+          const l = this.stack[--this.sp];
           if (!(l instanceof MonkeyInteger) || !(r instanceof MonkeyInteger)) {
-            ins[ip] = Opcodes.OpAdd; // rewrite back to generic
-            // Re-execute as generic: push operands back and let next iteration handle it
-            this.push(l); this.push(r);
-            this.currentFrame().ip--; // back up to re-execute this instruction
+            ins[ip] = Opcodes.OpAdd;
+            this.stack[this.sp++] = l; this.stack[this.sp++] = r;
+            frame.ip--;
             break;
           }
           if (recording()) { this.recorder.recordIntArith(op, l, r); }
-          this.push(cachedInteger(l.value + r.value));
+          this.stack[this.sp++] = cachedInteger(l.value + r.value);
           break;
         }
 
         case Opcodes.OpSubInt: {
-          const r = this.pop();
-          const l = this.pop();
+          const r = this.stack[--this.sp];
+          const l = this.stack[--this.sp];
           if (!(l instanceof MonkeyInteger) || !(r instanceof MonkeyInteger)) {
             ins[ip] = Opcodes.OpSub;
-            this.push(l); this.push(r);
-            this.currentFrame().ip--;
+            this.stack[this.sp++] = l; this.stack[this.sp++] = r;
+            frame.ip--;
             break;
           }
           if (recording()) { this.recorder.recordIntArith(op, l, r); }
-          this.push(cachedInteger(l.value - r.value));
+          this.stack[this.sp++] = cachedInteger(l.value - r.value);
           break;
         }
 
         case Opcodes.OpMulInt: {
-          const r = this.pop();
-          const l = this.pop();
+          const r = this.stack[--this.sp];
+          const l = this.stack[--this.sp];
           if (!(l instanceof MonkeyInteger) || !(r instanceof MonkeyInteger)) {
             ins[ip] = Opcodes.OpMul;
-            this.push(l); this.push(r);
-            this.currentFrame().ip--;
+            this.stack[this.sp++] = l; this.stack[this.sp++] = r;
+            frame.ip--;
             break;
           }
           if (recording()) { this.recorder.recordIntArith(op, l, r); }
-          this.push(cachedInteger(l.value * r.value));
+          this.stack[this.sp++] = cachedInteger(l.value * r.value);
           break;
         }
 
         case Opcodes.OpDivInt: {
-          const r = this.pop();
-          const l = this.pop();
+          const r = this.stack[--this.sp];
+          const l = this.stack[--this.sp];
           if (!(l instanceof MonkeyInteger) || !(r instanceof MonkeyInteger)) {
             ins[ip] = Opcodes.OpDiv;
-            this.push(l); this.push(r);
-            this.currentFrame().ip--;
+            this.stack[this.sp++] = l; this.stack[this.sp++] = r;
+            frame.ip--;
             break;
           }
           if (recording()) { this.recorder.recordIntArith(op, l, r); }
-          this.push(cachedInteger(Math.trunc(l.value / r.value)));
+          this.stack[this.sp++] = cachedInteger(Math.trunc(l.value / r.value));
           break;
         }
 
         case Opcodes.OpGreaterThanInt: {
-          const r = this.pop();
-          const l = this.pop();
+          const r = this.stack[--this.sp];
+          const l = this.stack[--this.sp];
           if (!(l instanceof MonkeyInteger) || !(r instanceof MonkeyInteger)) {
             ins[ip] = Opcodes.OpGreaterThan;
-            this.push(l); this.push(r);
-            this.currentFrame().ip--;
+            this.stack[this.sp++] = l; this.stack[this.sp++] = r;
+            frame.ip--;
             break;
           }
           if (recording()) { this.recorder.recordComparison(op, l, r); }
-          this.push(l.value > r.value ? TRUE : FALSE);
+          this.stack[this.sp++] = (l.value > r.value ? TRUE : FALSE);
           break;
         }
 
         case Opcodes.OpLessThanInt: {
-          const r = this.pop();
-          const l = this.pop();
+          const r = this.stack[--this.sp];
+          const l = this.stack[--this.sp];
           if (!(l instanceof MonkeyInteger) || !(r instanceof MonkeyInteger)) {
-            // LessThanInt has no generic counterpart (compiler-only), so just crash
-            // or handle manually
             throw new Error(`unsupported types for LessThanInt: ${l.type()} and ${r.type()}`);
           }
           if (recording()) { this.recorder.recordComparison(op, l, r); }
-          this.push(l.value < r.value ? TRUE : FALSE);
+          this.stack[this.sp++] = (l.value < r.value ? TRUE : FALSE);
           break;
         }
 
         case Opcodes.OpEqualInt: {
-          const r = this.pop();
-          const l = this.pop();
+          const r = this.stack[--this.sp];
+          const l = this.stack[--this.sp];
           if (!(l instanceof MonkeyInteger) || !(r instanceof MonkeyInteger)) {
             ins[ip] = Opcodes.OpEqual;
-            this.push(l); this.push(r);
-            this.currentFrame().ip--;
+            this.stack[this.sp++] = l; this.stack[this.sp++] = r;
+            frame.ip--;
             break;
           }
           if (recording()) { this.recorder.recordComparison(op, l, r); }
-          this.push(l.value === r.value ? TRUE : FALSE);
+          this.stack[this.sp++] = (l.value === r.value ? TRUE : FALSE);
           break;
         }
 
         case Opcodes.OpNotEqualInt: {
-          const r = this.pop();
-          const l = this.pop();
+          const r = this.stack[--this.sp];
+          const l = this.stack[--this.sp];
           if (!(l instanceof MonkeyInteger) || !(r instanceof MonkeyInteger)) {
             ins[ip] = Opcodes.OpNotEqual;
-            this.push(l); this.push(r);
-            this.currentFrame().ip--;
+            this.stack[this.sp++] = l; this.stack[this.sp++] = r;
+            frame.ip--;
             break;
           }
           if (recording()) { this.recorder.recordComparison(op, l, r); }
-          this.push(l.value !== r.value ? TRUE : FALSE);
+          this.stack[this.sp++] = (l.value !== r.value ? TRUE : FALSE);
           break;
         }
 
