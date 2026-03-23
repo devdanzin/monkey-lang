@@ -289,6 +289,44 @@ describe('Trace optimization', () => {
     assert.equal(stores.length, 1, 'should have exactly one store to slot 0');
   });
 
+  it('should eliminate common subexpressions (duplicate loads)', () => {
+    const trace = new Trace('test', 0);
+    trace.addInst(IR.LOOP_START);
+    const l1 = trace.addInst(IR.LOAD_GLOBAL, { index: 0 });
+    trace.addInst(IR.GUARD_INT, { ref: l1 }); trace.guardCount++;
+    const u1 = trace.addInst(IR.UNBOX_INT, { ref: l1 });
+    const l2 = trace.addInst(IR.LOAD_GLOBAL, { index: 0 }); // duplicate
+    trace.addInst(IR.GUARD_INT, { ref: l2 }); trace.guardCount++;
+    const u2 = trace.addInst(IR.UNBOX_INT, { ref: l2 });
+    const add = trace.addInst(IR.ADD_INT, { left: u1, right: u2 });
+    trace.addInst(IR.LOOP_END);
+
+    const opt = new TraceOptimizer(trace);
+    const eliminated = opt.commonSubexpressionElimination();
+    assert.ok(eliminated >= 1, `should eliminate duplicate load, got ${eliminated}`);
+
+    // The duplicate LOAD_GLOBAL should be removed
+    const loads = trace.ir.filter(i => i && i.op === IR.LOAD_GLOBAL);
+    assert.equal(loads.length, 1, 'only one load should remain');
+  });
+
+  it('should NOT CSE loads across a store to the same slot', () => {
+    const trace = new Trace('test', 0);
+    trace.addInst(IR.LOOP_START);
+    const l1 = trace.addInst(IR.LOAD_GLOBAL, { index: 0 });
+    const c1 = trace.addInst(IR.CONST_INT, { value: 42 });
+    const b1 = trace.addInst(IR.BOX_INT, { ref: c1 });
+    trace.addInst(IR.STORE_GLOBAL, { index: 0, value: b1 }); // invalidates
+    const l2 = trace.addInst(IR.LOAD_GLOBAL, { index: 0 }); // NOT a duplicate
+    trace.addInst(IR.LOOP_END);
+
+    const opt = new TraceOptimizer(trace);
+    const eliminated = opt.commonSubexpressionElimination();
+    // l2 should NOT be eliminated — it loads after a store
+    const loads = trace.ir.filter(i => i && i.op === IR.LOAD_GLOBAL);
+    assert.equal(loads.length, 2, 'both loads should remain');
+  });
+
   it('should not eliminate stores separated by a load', () => {
     const trace = new Trace('test', 0);
     trace.addInst(IR.LOOP_START);

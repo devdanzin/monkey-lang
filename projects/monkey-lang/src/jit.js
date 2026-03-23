@@ -1425,6 +1425,7 @@ export class TraceOptimizer {
   optimize() {
     this.storeToLoadForwarding();
     this.boxUnboxElimination();
+    this.commonSubexpressionElimination();
     this.redundantGuardElimination();
     this.constantFolding();
     this.deadStoreElimination();
@@ -1773,6 +1774,105 @@ export class TraceOptimizer {
   // same ref and type are redundant. Also, constants don't need guards at all.
   // This is the biggest win — recording often emits duplicate guards for values
   // that are loaded and used multiple times in a loop iteration.
+  // --- Pass 1: Common Subexpression Elimination ---
+  // If two instructions have the same opcode and operands, the second is redundant.
+  // Works for pure ops (loads, arithmetic, unbox, constants) — not stores, guards, or control flow.
+  // For loads: only valid if no intervening store to the same slot.
+  //
+  // IMPORTANT: We must NOT mutate operands during the scan (via _replaceRef) because
+  // that changes keys of not-yet-processed instructions, causing false CSE matches.
+  // Instead, we collect a remap table and apply it in a single pass afterward.
+  commonSubexpressionElimination() {
+    const ir = this.trace.ir;
+    // Pure ops that can be CSE'd (no side effects, deterministic)
+    const PURE_OPS = new Set([
+      IR.CONST_INT, IR.CONST_BOOL, IR.CONST_NULL, IR.CONST_OBJ,
+      IR.LOAD_LOCAL, IR.LOAD_GLOBAL, IR.LOAD_FREE, IR.LOAD_CONST,
+      IR.ADD_INT, IR.SUB_INT, IR.MUL_INT, IR.DIV_INT,
+      IR.CONCAT, IR.EQ, IR.NEQ, IR.GT, IR.LT,
+      IR.NEG, IR.NOT, IR.UNBOX_INT, IR.BOX_INT,
+    ]);
+
+    // Build canonical key for an instruction (using ORIGINAL operands, not remapped)
+    const key = (inst) => {
+      const ops = inst.operands;
+      if (inst.op === IR.CONST_INT) return `${inst.op}:${ops.value}`;
+      if (inst.op === IR.CONST_BOOL && ops.value !== undefined) return `${inst.op}:${ops.value}`;
+      if (inst.op === IR.CONST_NULL) return inst.op;
+      if (inst.op === IR.LOAD_LOCAL) return `${inst.op}:${ops.slot}`;
+      if (inst.op === IR.LOAD_GLOBAL) return `${inst.op}:${ops.index}`;
+      if (inst.op === IR.LOAD_FREE) return `${inst.op}:${ops.index}`;
+      if (inst.op === IR.LOAD_CONST) return `${inst.op}:${ops.index}`;
+      if (ops.left !== undefined && ops.right !== undefined) return `${inst.op}:${ops.left}:${ops.right}`;
+      if (ops.ref !== undefined) return `${inst.op}:${ops.ref}`;
+      return null; // can't CSE
+    };
+
+    const seen = new Map(); // key → first IR index
+    const toEliminate = new Map(); // index → replacement index
+    let eliminated = 0;
+
+    for (let i = 0; i < ir.length; i++) {
+      const inst = ir[i];
+      if (!inst) continue;
+
+      // Stores invalidate load CSE for that slot
+      if (inst.op === IR.STORE_LOCAL) {
+        seen.delete(`${IR.LOAD_LOCAL}:${inst.operands.slot}`);
+        continue;
+      }
+      if (inst.op === IR.STORE_GLOBAL) {
+        seen.delete(`${IR.LOAD_GLOBAL}:${inst.operands.index}`);
+        continue;
+      }
+
+      // CALL invalidates all load CSE entries
+      if (inst.op === IR.CALL || inst.op === IR.SELF_CALL) {
+        for (const k of [...seen.keys()]) {
+          if (k.startsWith(IR.LOAD_LOCAL) || k.startsWith(IR.LOAD_GLOBAL) ||
+              k.startsWith(IR.LOAD_FREE)) {
+            seen.delete(k);
+          }
+        }
+        continue;
+      }
+
+      // LOOP_START / LOOP_END: clear load CSE (values may change across iterations)
+      if (inst.op === IR.LOOP_START || inst.op === IR.LOOP_END) {
+        for (const k of [...seen.keys()]) {
+          if (k.startsWith(IR.LOAD_LOCAL) || k.startsWith(IR.LOAD_GLOBAL) ||
+              k.startsWith(IR.LOAD_FREE)) {
+            seen.delete(k);
+          }
+        }
+        continue;
+      }
+
+      if (!PURE_OPS.has(inst.op)) continue;
+
+      const k = key(inst);
+      if (k === null) continue;
+
+      if (seen.has(k)) {
+        toEliminate.set(i, seen.get(k));
+        eliminated++;
+        // Don't add to seen — use the first occurrence
+      } else {
+        seen.set(k, i);
+      }
+    }
+
+    // Apply all replacements
+    if (eliminated > 0) {
+      for (const [oldRef, newRef] of toEliminate) {
+        this._replaceRef(ir, oldRef, newRef);
+        ir[oldRef] = null;
+      }
+      this._compact();
+    }
+    return eliminated;
+  }
+
   redundantGuardElimination() {
     const ir = this.trace.ir;
     const guardedTypes = new Map(); // ref → Set of guarded types
