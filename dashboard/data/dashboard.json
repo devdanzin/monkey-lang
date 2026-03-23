@@ -1,12 +1,12 @@
 {
-  "generated": "2026-03-23T00:49:17.591Z",
+  "generated": "2026-03-23T01:45:58.328Z",
   "current": {
     "status": "done",
-    "mode": "EXPLORE",
-    "task": "19:00 EXPLORE — Higher-order consciousness theories (HOT, HOROR)",
-    "context": "Created comprehensive scratch note on HOT family (Rosenthal HOT, Carruthers DHOT/HOROR, Lau PRM). Key finding: PRM is the modern neuroscience-grounded version but faces COGITATE PFC challenges. Updated index and comparison notes.",
-    "next": "19:15 EXPLORE — Continue: HOT vs AST vs IIT comparison",
-    "startedAt": "2026-03-22T19:10:00-06:00",
+    "mode": "THINK",
+    "task": "20:00 THINK — Reflect on JIT + consciousness threads, weekly patterns emerging",
+    "context": "Reviewed week patterns. JIT complete (207 tests, 9.1x). 5 consciousness theories covered. side-trace-design 2 uses same day (no promote yet). consciousness-comparison at 3 uses — check days for promotion. Evening explore blocks ahead.",
+    "next": "20:15 EXPLORE — Copy-and-patch deep dive: stencil extraction details",
+    "startedAt": "2026-03-22T20:00:00-06:00",
     "estimatedBlocks": 0
   },
   "schedule": {
@@ -564,37 +564,53 @@
         "time": "19:15",
         "mode": "EXPLORE",
         "task": "Continue: HOT vs AST vs IIT comparison",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "Integrated HOT/PRM as 5th peer theory into consciousness-comparison.md.",
         "artifacts": [],
-        "details": ""
+        "details": "Integrated HOT/PRM as 5th peer theory into consciousness-comparison.md. Added HOT across all 6 dimensions: COGITATE analysis (PFC failure challenges HOT similarly to GNW), explanatory power (HOT wins conscious/unconscious divide), AI implications (metacognition requirement — middle of optimism spectrum), weaknesses, divergent predictions, conflict table. Key insight: HOT and GNW share PFC vulnerability but HOT has narrower escape route (monitoring ≠ re-representation). Updated credences.",
+        "startedAt": "2026-03-22T19:15:00-06:00",
+        "completedAt": "2026-03-22T19:25:00-06:00",
+        "durationMs": 600000,
+        "durationFormatted": "10m"
       },
       {
         "time": "19:30",
         "mode": "EXPLORE",
         "task": "Tracing JIT: LuaJIT trace exit handling + side traces",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "LuaJIT trace exit mechanics deep dive.",
         "artifacts": [],
-        "details": ""
+        "details": "LuaJIT trace exit mechanics deep dive. Read lj_asm_x86.h (exit stub generation), lj_snap.c (snapshot restore), lj_trace.c (trace_hotside + lj_asm_patchexit). Documented full x86 exit path: guard fail → exit stub (2 bytes: push exitno + jmp) → group handler → lj_vm_exit_handler → save ExitState → lj_snap_restore (walk snapshot entries, restore stack slots, skip NORESTORE) → trace_hotside (count exits, trigger side trace at threshold 10) → lj_asm_patchexit (scan parent mcode, rewrite jcc targets to side trace mcode). Added \"Trace Exit Mechanics\" section to tracing-jit-compilation.md.",
+        "startedAt": "2026-03-22T19:30:00-06:00",
+        "completedAt": "2026-03-22T19:42:00-06:00",
+        "durationMs": 720000,
+        "durationFormatted": "12m"
       },
       {
         "time": "19:45",
         "mode": "MAINTAIN",
         "task": "Update scratch notes, increment uses",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "Updated scratch notes.",
         "artifacts": [],
-        "details": ""
+        "details": "Updated scratch notes. Incremented side-trace-design.md uses to 2. Verified tracing-jit lesson already promoted.",
+        "startedAt": "2026-03-22T19:45:00-06:00",
+        "completedAt": "2026-03-22T19:48:00-06:00",
+        "durationMs": 180000,
+        "durationFormatted": "3m"
       },
       {
         "time": "20:00",
         "mode": "THINK",
         "task": "Reflect on JIT + consciousness threads, weekly patterns emerging",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "Reflection on week patterns.",
         "artifacts": [],
-        "details": ""
+        "details": "Reflection on week patterns. JIT complete (207 tests, 9.1x), 5 consciousness theories covered. side-trace-design not yet promotable (2 uses same day). Set context-files for evening EXPLORE (copy-and-patch, GraalVM). Schedule on track.",
+        "startedAt": "2026-03-22T19:45:00-06:00",
+        "completedAt": "2026-03-22T20:00:00-06:00",
+        "durationMs": 900000,
+        "durationFormatted": "15m"
       },
       {
         "time": "20:15",
@@ -679,17 +695,17 @@
     "13:00: Function inlining + side traces both done by 11:30 (was scheduled through 14:30). Reprioritized: inline side trace code into root guards to eliminate dispatch overhead (nested loop bottleneck), then fib tracing + benchmarks. Freed ~4 blocks for additional optimization or exploration."
   ],
   "stats": {
-    "blocksCompleted": 40,
+    "blocksCompleted": 44,
     "blocksTotal": 55,
     "modeDistribution": {
-      "THINK": 7,
+      "THINK": 8,
       "BUILD": 26,
-      "MAINTAIN": 6,
-      "EXPLORE": 1
+      "MAINTAIN": 7,
+      "EXPLORE": 3
     },
-    "totalMinutes": 353,
-    "totalMs": 21187000,
-    "avgDurationMs": 529675
+    "totalMinutes": 393,
+    "totalMs": 23587000,
+    "avgDurationMs": 536068
   },
   "artifacts": [
     {
@@ -836,7 +852,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-21T18:22:41Z",
       "updatedAt": "2026-03-21T20:52:10Z",
-      "ageHours": 30,
+      "ageHours": 31,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -847,7 +863,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T22:23:20Z",
       "updatedAt": "2026-03-21T20:46:34Z",
-      "ageHours": 50,
+      "ageHours": 51,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -858,7 +874,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:39:06Z",
       "updatedAt": "2026-03-21T20:46:35Z",
-      "ageHours": 51,
+      "ageHours": 52,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -869,7 +885,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:23:23Z",
       "updatedAt": "2026-03-21T20:51:02Z",
-      "ageHours": 51,
+      "ageHours": 52,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -880,7 +896,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:38:20Z",
       "updatedAt": "2026-03-21T20:50:04Z",
-      "ageHours": 52,
+      "ageHours": 53,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -891,7 +907,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
       "updatedAt": "2026-03-21T20:50:26Z",
-      "ageHours": 52,
+      "ageHours": 53,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -924,7 +940,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-18T20:02:08Z",
       "updatedAt": "2026-03-21T20:46:10Z",
-      "ageHours": 101,
+      "ageHours": 102,
       "ciStatus": "pending",
       "reviewStatus": "none"
     }
@@ -1069,8 +1085,8 @@
   ],
   "scheduleAdherence": {
     "completionRate": 91,
-    "completedBlocks": 39,
-    "pastBlocks": 43,
+    "completedBlocks": 43,
+    "pastBlocks": 47,
     "totalBlocks": 55,
     "plannedDist": {
       "THINK": 9,
@@ -1081,7 +1097,8 @@
     "actualDist": {
       "THINK": 7,
       "BUILD": 26,
-      "MAINTAIN": 6
+      "MAINTAIN": 7,
+      "EXPLORE": 3
     },
     "pace": 3.7
   },
