@@ -1,7 +1,7 @@
 ---
-uses: 3
+uses: 4
 created: 2026-03-20
-last-used: 2026-03-21
+last-used: 2026-03-22
 topics: consciousness,index
 ---
 # Consciousness Research — Index
@@ -11,6 +11,7 @@ topics: consciousness,index
 - **consciousness-seth-predictive-processing.md** — Anil Seth's framework. Controlled hallucination, biological naturalism, 4 arguments against computational functionalism.
 - **predictive-processing-fep-deep-dive.md** — FEP (Friston), predictive coding, interoceptive inference, precision weighting, substrate dependence debate.
 - **consciousness-ast.md** — Attention Schema Theory (Graziano). Consciousness as brain's simplified model of its own attention. Most AI-friendly theory.
+- **consciousness-hot.md** — Higher-Order Theories (Rosenthal HOT, Carruthers HOROR/DHOT, Lau PRM). Meta-representation makes states conscious. PFC-centric, challenged by COGITATE.
 
 ## Theory Landscape (as of March 2026)
 
@@ -20,7 +21,7 @@ topics: consciousness,index
 | GNW (Dehaene) | Consciousness = global workspace broadcast | Category in PFC ⚠️, offset ignition ❌❌, connectivity ❌ |
 | Predictive Processing (Seth) | Consciousness = controlled hallucination via interoceptive inference | Not directly tested by COGITATE; compatible with posterior emphasis |
 | AST (Graziano) | Consciousness = brain's internal model of its own attention | Not tested by COGITATE; agnostic on posterior/frontal; TPJ focus |
-| Higher-Order Theories | Consciousness requires meta-representation | PFC orientation decoding failure challenges these too |
+| Higher-Order Theories (HOT/PRM) | Consciousness requires meta-representation (Rosenthal) or reality monitoring (Lau) | PFC orientation decoding failure challenges PFC-centric view; PRM may survive if monitoring ≠ re-representation |
 | Recurrent Processing | Consciousness = recurrent loops in visual cortex | Gets indirect support from posterior content findings |
 
 ## Key Insights

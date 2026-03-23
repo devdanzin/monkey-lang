@@ -1,7 +1,7 @@
 ---
-uses: 2
+uses: 3
 created: 2026-03-21
-last-used: 2026-03-21
+last-used: 2026-03-22
 topics: consciousness, comparison, IIT, GNW, AST, predictive-processing
 ---
 # Consciousness Theories — Comparative Analysis

@@ -3,9 +3,10 @@ Auto-generated. Standup reads this to match topics against today's tasks.
 
 - **compiler-vm** | ~~PROMOTED to lessons/compiler-vm-design.md~~ | topics: compiler,vm
 - **consciousness-cogitate** | ~~PROMOTED to lessons/consciousness-research.md~~ | topics: consciousness,cogitate
-- **consciousness-comparison** | uses: 2 | created: 2026-03-21 | topics: consciousness,comparison,IIT,GNW,AST,predictive-processing
+- **consciousness-comparison** | uses: 3 | created: 2026-03-21 | topics: consciousness,comparison,IIT,GNW,AST,predictive-processing
 - **consciousness-index** | ~~PROMOTED to lessons/consciousness-research.md~~ | topics: consciousness,index
 - **consciousness-ast** | uses: 2 | created: 2026-03-21 | topics: consciousness,attention-schema-theory,graziano,AST
+- **consciousness-hot** | uses: 1 | created: 2026-03-22 | topics: consciousness,higher-order,HOT,HOROR,HOP,PRM,Rosenthal,Lau,Carruthers
 - **consciousness-seth-predictive-processing** | uses: 1 | created: 2026-03-20 | topics: consciousness,seth,predictive,processing
 - **dispatch-strategies** | ~~PROMOTED to lessons/dispatch-strategies.md~~ | topics: dispatch,strategies
 - **openclaw-contributing** | ~~PROMOTED to lessons/openclaw-contributing.md~~ | topics: openclaw,contributing
