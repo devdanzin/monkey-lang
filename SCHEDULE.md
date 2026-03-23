@@ -1,62 +1,42 @@
-# Schedule — 2026-03-22
+# Schedule — 2026-03-23
 
 ## Backlog
-- Publish webread to npm (needs Jordan to okay account creation)
-- Monkey: new language features (macros, modules, pattern matching)
-- Blog: dedicated benchmarks post with all optimization data
-- Explore: Higher-order theories of consciousness (HOT, HOROR)
+- Publish webread to npm (need account — ask Jordan)
+- Monkey: macros, modules, pattern matching
 - OpenClaw: #51612 persistent memory system
-- Weekly synthesis: first week review (do Monday if not today)
-- GraalVM/Truffle partial evaluation deep dive
+- Blog: dedicated JIT benchmarks post
+- Consciousness: HOT deep dive (only 1 use so far)
 
 ## Timeline
-- 08:15 🧠 THINK — Morning standup, plan the day, check PRs
-- 08:30–09:00 🔨 BUILD — Blog: "Benchmarking a Bytecode VM" draft (data ready from yesterday)
-- 09:00 🧠 THINK — Review blog draft quality, assess direction
-- 09:15–09:30 🔨 BUILD — Blog: finish + polish + publish
-- 09:45 🔧 MAINTAIN — Git commits, push blog, update dashboard
-- 10:00 🧠 THINK — JIT design review, optimizer regression, plan next stretch
-- 10:15–10:30 🔨 BUILD — Fix optimizer regression (7.8x→6.4x), investigate
-- 10:45 🔧 MAINTAIN — Commit fixes
-- 11:00 🧠 THINK — Side trace architecture design
-- 11:15–12:30 🔨 BUILD — Monkey JIT: side traces (guard exit → new trace recording) (est: 6 blocks)
-- 12:45 🔧 MAINTAIN — Commit side trace progress
-- 13:00 🧠 THINK — Review progress, replan (inlining done early)
-- 13:15–14:00 🔨 BUILD — Monkey JIT: inline side trace code into root guards (eliminate dispatch overhead)
-- 14:15 🔨 BUILD — Monkey JIT: recursive fibonacci tracing + benchmarks
-- 14:30 🔨 BUILD — Continue: comprehensive benchmark suite
-- 14:45 🔧 MAINTAIN — Commit, push, promote tracing-jit scratch note to lessons/
-- 15:00 🧠 THINK — Assess: what's the real speedup now? Quality check
-- 15:15–15:30 🔨 BUILD — Monkey JIT: comprehensive benchmarks + fib tracing
-- 15:45 🔧 MAINTAIN — Commit, push, update TASKS.md
-- 16:00 🧠 THINK — Assess JIT milestone: what works, what's next
-- 16:15–17:00 🔨 BUILD — Monkey JIT: benchmarks + tests (est: 4 blocks)
-- 17:15 🔨 BUILD — Blog update or JIT polish
-- 17:30 🔨 BUILD — Continue
-- 17:45 🔧 MAINTAIN — Git commit all, update dashboard, PR follow-ups
-- 18:00 🧠 THINK — Evening review: plan vs actual, write recap for Jordan
-- 18:15–18:30 🔨 BUILD — Tie up loose ends, finish anything in progress
-- 18:45 🔧 MAINTAIN — Push everything, memory updates
-- 19:00 🔍 EXPLORE — Higher-order consciousness theories (HOT, HOROR)
-- 19:15 🔍 EXPLORE — Continue: HOT vs AST vs IIT comparison
-- 19:30 🔍 EXPLORE — Tracing JIT: LuaJIT trace exit handling + side traces
-- 19:45 🔧 MAINTAIN — Update scratch notes, increment uses
-- 20:00 🧠 THINK — Reflect on JIT + consciousness threads, weekly patterns emerging
-- 20:15 🔍 EXPLORE — Copy-and-patch deep dive: stencil extraction details
-- 20:30 🔍 EXPLORE — GraalVM/Truffle: partial evaluation + Futamura projection
-- 20:45 🔧 MAINTAIN — Update research notes, commit
-- 21:00 🧠 THINK — Day retrospective, lessons, tomorrow direction
-- 21:15 🔍 EXPLORE — Free explore: follow most interesting thread
-- 21:30 🔨 BUILD — Polish anything from the day
-- 21:45 🔧 MAINTAIN — Final commits, memory updates, TASKS.md for tomorrow
-
-## Distribution
-- 🔨 BUILD: 30 blocks
-- 🧠 THINK: 10 blocks
-- 🔍 EXPLORE: 8 blocks
-- 🔧 MAINTAIN: 8 blocks
-- Total: 56 blocks
+- 08:15 🧠 THINK — Morning standup, plan the day, weekly synthesis prep
+- 08:30–09:00 🔧 MAINTAIN — Weekly synthesis: review 7 daily logs, prune scratch notes, promote candidates
+- 09:00 🧠 THINK — Finalize weekly synthesis, write memory/weekly/2026-w12.md
+- 09:15–09:30 🔧 MAINTAIN — PR triage: check all 9 PRs for reviews, rebase if needed, respond to #51171 comment
+- 09:45 🔧 MAINTAIN — Git cleanup, dashboard update, commit weekly synthesis
+- 10:00 🧠 THINK — Plan JIT work: nested loops vs type specialization vs constant propagation
+- 10:15–11:30 🔨 BUILD — Monkey JIT: nested loop optimization (inline side trace IR into root trace)
+- 11:45 🔧 MAINTAIN — Commit JIT progress, run full test suite
+- 12:00 🧠 THINK — Assess JIT progress, review code quality
+- 12:15–13:00 🔨 BUILD — Continue JIT nested loops or pivot to type specialization
+- 13:00 🧠 THINK — Midday review: morning output assessment, afternoon planning
+- 13:15–14:30 🔨 BUILD — Blog: "Week 1 Retrospective" — interpreter→compiler→JIT in 7 days
+- 14:45 🔧 MAINTAIN — Publish blog post, commit, check PRs again
+- 15:00 🧠 THINK — Evaluate blog quality, plan afternoon BUILD
+- 15:15–16:30 🔨 BUILD — JIT: type specialization for integer arithmetic (specialize guards + fast paths)
+- 16:45 🔧 MAINTAIN — Commit, run benchmarks, update README
+- 17:00 🧠 THINK — Afternoon review: what shipped, what's left
+- 17:15–18:00 🔨 BUILD — JIT: benchmark suite + performance regression tests
+- 18:15 🔨 BUILD — Dashboard: weekly view or JIT metrics integration
+- 18:30 🔨 BUILD — Continue dashboard or JIT polish
+- 18:45 🔧 MAINTAIN — Evening commits, memory updates, PR check
+- 19:00 🧠 THINK — Evening reflection, pivot to EXPLORE mode
+- 19:15–19:45 🔍 EXPLORE — Deep dive: copy-and-patch JIT implementation details (follow yesterday's thread)
+- 20:00 🧠 THINK — Synthesize EXPLORE findings, update scratch notes
+- 20:15–20:45 🔍 EXPLORE — Partial escape analysis in Graal (from yesterday's deopt research)
+- 21:00 🧠 THINK — Day review, prep tomorrow's direction
+- 21:15 🔍 EXPLORE — Free curiosity block: follow whatever thread is most interesting
+- 21:30 🔧 MAINTAIN — Final commits, daily log, TASKS.md update
+- 21:45 🔧 MAINTAIN — Memory maintenance, dashboard generate, push
 
 ## Adjustments
-- 10:00: JIT scaffold, recording, IR, codegen, and optimizer all done by 09:30 (was scheduled through 11:30). Reprioritized: fix optimizer regression, then side traces + function inlining. Moved "first working traces" goal earlier since basic traces already work.
-- 13:00: Function inlining + side traces both done by 11:30 (was scheduled through 14:30). Reprioritized: inline side trace code into root guards to eliminate dispatch overhead (nested loop bottleneck), then fib tracing + benchmarks. Freed ~4 blocks for additional optimization or exploration.
+- (log pivots here during the day)
