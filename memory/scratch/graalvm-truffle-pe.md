@@ -1,7 +1,7 @@
 ---
-uses: 1
+uses: 2
 created: 2026-03-21
-last-used: 2026-03-21
+last-used: 2026-03-22
 topics: graalvm, truffle, partial-evaluation, jit, polyglot, futamura, sea-of-nodes
 ---
 # GraalVM/Truffle: Partial Evaluation JIT
@@ -195,6 +195,202 @@ Directly applicable ideas:
 1. **Self-specializing nodes**: even without PE, we could add type feedback to our bytecode dispatch — track what types each instruction sees and branch to specialized handlers. We already do this with OpAddInt etc.
 2. **Assumptions for deoptimization**: if we tracked "this variable is always an integer" as an assumption, we could skip type checks until the assumption breaks.
 3. **The PE concept**: our peephole optimizer is a crude form of PE — we see the program at compile time and specialize (constant folding, known-type ops). A more systematic approach would be to symbolically execute the bytecode during compilation.
+
+## Deep Dive: The Partial Evaluation Algorithm
+
+### What PE Actually Does (Mechanically)
+
+PE in Truffle/Graal is implemented as **aggressive inlining + constant folding** on the Graal IR. It's not a separate abstract interpretation — it reuses Graal's existing compiler infrastructure. The steps:
+
+1. **Root method graph construction.** Parse the `CallTarget.callDirect()` → `RootNode.execute(VirtualFrame)` bytecodes into Graal IR (sea-of-nodes graph).
+
+2. **Inlining phase.** For every method call in the graph:
+   - If the receiver is a **compilation constant** (known at compile time) and the method is monomorphic → inline it.
+   - AST node `execute()` methods are always inlined because the AST nodes are compilation constants (the tree was built before compilation started).
+   - This cascades: inlining `BinaryAddNode.execute()` reveals the specialization dispatch, which is a switch on a constant field → the branch folds → only the active specialization remains → its body gets inlined → repeat.
+   - **Inlining budget**: Truffle has an `InliningBudget` that limits graph size. When exceeded, remaining calls become regular (non-inlined) calls in the compiled code. `@TruffleBoundary` forces this.
+
+3. **Constant folding cascade.** After each round of inlining:
+   - Nodes with all-constant inputs are evaluated and replaced with constants
+   - Branches on constants are eliminated (dead path removal)
+   - Loads from constant objects with known field values fold to constants
+   - This is what eliminates the interpreter: `node.getClass()` is constant → virtual dispatch resolves → specialization field is constant → type check folds → only the fast path remains
+
+4. **Truffle-specific canonicalization.** Truffle registers custom `CanonicalizerPhase` rules:
+   - `CompilationFinal` fields are treated as constants after first read
+   - `@ExplodeLoop` unrolls loops over compilation-final arrays (like the children array of a node)
+   - Frame slot accesses through `VirtualFrame` are escape-analyzed away — the frame becomes local variables
+
+5. **Guard insertion.** Where PE assumed something was constant but it *could* change:
+   - Type specializations → guard on the specialization state (deopt if node respecializes)
+   - Stable assumptions → guard on assumption validity
+   - Shape guards on dynamic objects → guard on shape identity
+
+### The "Compilation Constant" Concept
+
+This is the central abstraction. A value is a **compilation constant** if Graal can prove its value is fixed for the lifetime of the compiled code. Sources of compilation constants:
+
+- **AST nodes themselves**: the tree is built before compilation, nodes don't move
+- **`@CompilationFinal` fields**: developer promises the field won't change (or if it does, they'll invalidate)
+- **`Assumption`-guarded values**: constant as long as the assumption holds
+- **Inlined constants from constant folding**: 2 + 3 → 5
+
+The PE algorithm is essentially: "inline everything reachable from compilation constants, fold everything that becomes constant, repeat until fixpoint."
+
+### Why This Is the First Futamura Projection
+
+The three Futamura projections (Futamura 1971/1983):
+
+**First projection: `specialize(interpreter, program) → compiled_program`**
+- Input: an interpreter `I` and a specific program `P`
+- Output: a specialized version of `I` that only handles `P` — i.e., a compiled version of `P`
+- **Truffle does exactly this.** The interpreter is the AST execute() methods. The program is the specific AST tree. PE specializes the interpreter w.r.t. that tree, producing compiled code for that specific program.
+
+**Second projection: `specialize(specializer, interpreter) → compiler`**
+- Input: a partial evaluator `S` and an interpreter `I`
+- Output: a specialized version of `S` that, given any program `P`, produces compiled code — i.e., a compiler for `I`'s language
+- **PyPy implements this** (approximately). The RPython toolchain takes an interpreter and produces a compiled binary that includes a JIT compiler for that language. The JIT is "pre-specialized" for the specific interpreter.
+- **Truffle does NOT do this** — Graal PE runs fresh each time, not pre-specialized for a particular language. But Native Image + PGO gets partway there.
+
+**Third projection: `specialize(specializer, specializer) → compiler_generator`**
+- Input: a partial evaluator specialized on itself
+- Output: a tool that takes any interpreter and produces a compiler
+- **Neither PyPy nor Truffle implements this.** It remains theoretical.
+
+### Practical difference: Truffle's first projection vs. PyPy's second
+
+PyPy: the RPython translation process happens **ahead of time** (once, at build time). The result is a binary with a baked-in JIT for that specific language. You ship the binary. Compilation at runtime is fast because the specializer itself was specialized.
+
+Truffle: PE happens **at runtime** (every time a method gets hot). Graal is a general-purpose compiler, not specialized for any particular language. This means:
+- **Slower compilation** (Graal does more work per compilation)
+- **More flexible** (any Truffle language works, no build step)
+- **Better optimization** (Graal's full optimization pipeline, not a pre-baked trace compiler)
+
+## Deep Dive: Sea-of-Nodes IR Internals
+
+### The Graph Structure
+
+Every node in the Graal IR has:
+- **Inputs** (data dependencies): edges pointing to nodes that produce values this node consumes
+- **Successors** (control flow): edges pointing to the next node(s) in control flow (only for fixed nodes)
+- **Usages** (reverse edges): automatically maintained — who uses this node's output
+
+Two kinds of nodes:
+
+**Fixed nodes** (have a place in the schedule):
+- `StartNode`, `EndNode`, `ReturnNode`
+- `IfNode` (has two successors: true branch, false branch)
+- `MergeNode` (joins multiple control flow paths)
+- `LoopBeginNode`, `LoopEndNode`
+- `DeoptimizeNode` (transfer to interpreter)
+- `InvokeNode` (method calls — fixed because they have side effects)
+- Fixed nodes form a **control flow graph** (CFG) through their successor edges
+
+**Floating nodes** (no fixed position — the scheduler decides where to put them):
+- `ConstantNode`, `ParameterNode`
+- `AddNode`, `MulNode`, `ShiftNode` (pure arithmetic)
+- `LoadFieldNode` (reads — can float if no conflicting writes)
+- `PhiNode` (at merge points and loop headers)
+- `PiNode` (type narrowing after a guard — "I know this is an Integer after the type check")
+- `FrameState` (captures interpreter state for deoptimization)
+
+### Why Floating Nodes Are Powerful
+
+Consider this code:
+```java
+for (int i = 0; i < n; i++) {
+    result += array.length * factor;
+}
+```
+
+In a traditional CFG-based IR, you'd need an explicit LICM pass to hoist `array.length * factor` out of the loop. In sea-of-nodes:
+
+- `LoadFieldNode(array, "length")` floats — its only dependency is `array` (defined outside loop)
+- `MulNode(length, factor)` floats — its only dependencies are `length` and `factor` (both outside loop)
+- The **scheduler** places both before the loop automatically, because their dependencies allow it
+
+No LICM pass needed. The IR representation *implies* optimal placement.
+
+### Global Value Numbering (GVN)
+
+Because nodes are identified by their operation + inputs (structurally), two nodes with the same operation and same inputs are **the same node**. Graal's `CanonicalizerPhase` implements this:
+
+- When creating `AddNode(x, y)`, check if one already exists → reuse it
+- This is automatic CSE/GVN without a separate pass
+- Works globally (not just within a basic block) because floating nodes aren't tied to blocks
+
+### FrameState and Deoptimization
+
+Every point where deoptimization might occur has a `FrameState` node that captures:
+- The bytecode index (bci) in the original method
+- Values of all local variables and stack slots at that point
+- Outer frame states (for inlined methods — the "virtual call stack")
+
+Frame states reference floating value nodes. This is key: the values aren't materialized until deopt actually happens. During normal execution, the compiled code doesn't maintain interpreter frames at all — it just uses registers and stack slots as Graal allocated them. Only on deopt does it reconstruct the interpreter state from the frame state metadata.
+
+This is why speculative optimization is cheap: adding a guard + deopt point doesn't require maintaining interpreter state along the fast path. The frame state is just metadata about which values *would* be in which slots *if* we needed to reconstruct the interpreter state.
+
+### Scheduling: From Sea to Sequence
+
+Before code generation, floating nodes must be pinned to specific basic blocks. Graal's scheduler:
+
+1. **Compute the earliest possible placement** for each floating node (limited by data dependencies)
+2. **Compute the latest possible placement** (limited by usages — must be before all users)
+3. **Choose the best placement** between earliest and latest, preferring:
+   - Outside loops (reduce dynamic execution count)
+   - In the same block as usage (reduce register pressure)
+   - After guards (don't compute values that might be thrown away)
+
+This is the "schedule late" principle. The slack between earliest and latest is the freedom sea-of-nodes provides.
+
+## The Full JIT Pipeline (Truffle → Machine Code)
+
+Putting it all together, when a Truffle `CallTarget` gets hot:
+
+```
+1. AST interpreter runs, nodes self-specialize
+2. Hot threshold reached → trigger compilation
+3. Truffle PE phase:
+   a. Parse root execute() to Graal IR
+   b. Inline all compilation-constant dispatches
+   c. Constant fold, canonicalize, dead code eliminate
+   d. Insert guards for speculative assumptions
+   e. Result: method-level sea-of-nodes graph
+4. Graal high-tier optimizations:
+   a. Inlining of remaining (non-PE) calls
+   b. Canonicalization + GVN
+   c. Escape analysis (virtualize allocations)
+   d. Conditional elimination (redundant guards/checks)
+   e. Loop optimizations (unrolling, peeling)
+5. Graal mid-tier:
+   a. Floating → fixed: schedule nodes
+   b. Guard lowering (convert to explicit branches + deopt calls)
+   c. Frame state assignment
+6. Graal low-tier:
+   a. Register allocation (linear scan)
+   b. Machine code emission (platform-specific backend)
+   c. Metadata: deopt info, GC maps, exception handlers
+7. Install compiled code, patch call sites
+```
+
+Total compilation time: 10-100ms for a typical method. This is why Truffle uses multi-tier: interpreter → first-tier (quick compile, modest optimization) → top-tier (Graal, full optimization). Only truly hot code gets the full treatment.
+
+## Truffle Bytecode DSL (Post-22.1)
+
+The original "AST-only" approach had a warmup problem: tree interpretation is 2-5x slower than bytecode interpretation due to virtual dispatch overhead. The Bytecode DSL fixes this:
+
+- Language developers write the same `@Specialization`-annotated node classes
+- The DSL **generates** a bytecode interpreter from these definitions
+- The generated interpreter uses a compact bytecode encoding + quickening (type-specialized bytecode rewrites)
+- PE still works: the bytecode interpreter is just Java code that Graal can partially evaluate
+- The generated code includes **boxing elimination**: specialized execute methods (`executeInt`, `executeDouble`) avoid boxing on the common path
+
+This gives Truffle languages the best of both worlds:
+- Fast interpreter mode (bytecode, not AST walking)  
+- Same compilation quality (PE still applies)
+- Same language definition (no separate AST and bytecode specifications)
+
+TruffleJS (GraalJS), TruffleRuby, and GraalPy all use the Bytecode DSL in recent versions.
 
 ## Key Papers & Resources
 - Würthinger et al. 2012: "Self-Optimizing AST Interpreters" (DLS '12) — original Truffle paper
