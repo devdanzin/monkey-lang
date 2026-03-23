@@ -308,6 +308,65 @@ Level 3 (default) enables: fold, cse, dce, fwd (store-to-load forwarding), dse (
 
 5. **Trace linking is direct.** Side traces don't go through any dispatch — `lj_asm_patchexit` literally patches the parent trace's machine code to jump to the child trace's machine code. This is zero-overhead trace-to-trace transitions.
 
+## Deep Dive: Trace Exit Mechanics (x86)
+
+Source: `lj_asm_x86.h`, `lj_trace.c`, `lj_snap.c`
+
+### Exit Stub Architecture
+
+When the assembler generates machine code for a trace, every guard (conditional branch that could fail) targets an **exit stub**. Exit stubs are grouped — `EXITSTUBS_PER_GROUP` stubs share a common trampoline. On x86:
+
+Each exit stub is just 2 bytes: `push <exitno_low_byte>` + `jmp` (short jump to the group's shared handler). The shared handler per group pushes the high byte of the exit number, stores DISPATCH, then jumps to `lj_vm_exit_handler`.
+
+So a guard failure does: `jcc exit_stub` → `push exitno_lo` → `jmp group_handler` → `push exitno_hi` → `jmp lj_vm_exit_handler`. Total overhead: ~3 instructions to reach the handler.
+
+### Exit Handler Flow
+
+`lj_vm_exit_handler` (assembly, platform-specific) saves all registers into an `ExitState` struct (all GPRs + FPRs), then calls `lj_trace_exit()`.
+
+`lj_trace_exit(J, exptr)`:
+1. Identifies the parent trace and exit number
+2. Calls `lj_snap_restore()` via protected call (it can throw on stack resize)
+3. Snapshot restore iterates the compressed snapshot entries, restoring each Lua stack slot from either a register (in ExitState), a spill slot, or a sunk allocation
+4. The `SNAP_NORESTORE` flag skips slots that haven't been modified — major optimization
+5. Returns the interpreter PC to resume at
+6. After restore: if JIT is enabled, calls `trace_hotside()` to check if this exit is hot
+
+### Side Trace Triggering
+
+`trace_hotside()`:
+- Increments `snap->count` for the exit's snapshot
+- When count reaches `hotexit` threshold (default 10), sets `J->state = LJ_TRACE_START`
+- `J->parent` is set to the parent trace number (non-zero signals "this is a side trace")
+- Recording begins at the exit's PC, same mechanism as root traces
+
+### Side Trace Linking (The Key Insight)
+
+When a side trace finishes compilation, `trace_stop()` handles the `BC_JMP` case:
+1. `lj_asm_patchexit(J, parent_trace, exitno, new_trace->mcode)` — **patches the parent's machine code directly**
+2. Scans the parent's machine code for `jcc` instructions targeting the exit stub
+3. Rewrites the jump targets to point to the side trace's machine code instead
+4. Sets `snap->count = SNAPCOUNT_DONE` (255) to prevent re-triggering
+5. Adds to the root trace's side chain (`root->nextside`)
+
+After patching: the guard branch in the parent trace jumps **directly** to the side trace's native code. No dispatch, no stub, no interpreter involvement. Zero-overhead trace-to-trace transitions.
+
+### Implications for Monkey JIT
+
+Since we use `new Function()` and can't patch machine code:
+- Our "exit stubs" are return values (`{ exit: "guard", guardIdx }`)
+- Side trace dispatch happens in the VM loop (check `trace.sideTraces.get(guardIdx)`)
+- One extra JS property lookup per guard exit vs. LuaJIT's zero-overhead direct jump
+- But: V8 will likely inline-cache the property lookup, so overhead is small in practice
+- The conceptual model is identical: hot exits spawn new traces, which handle the alternate path
+
+### Key Numbers
+- Exit stub: 2 bytes per exit (push + short jmp)
+- Group handler: ~15 bytes shared across EXITSTUBS_PER_GROUP exits
+- ExitState: saves all registers (~128 bytes on x86-64)
+- Snapshot entry: 4 bytes per slot (compressed)
+- Side trace link: patches ~6 byte jcc instruction in parent
+
 ## See Also
 - `lessons/dispatch-strategies.md` — optimization techniques applicable to JS-based VMs
 - `lessons/vm-internals-lua-cpython.md` — production VM architecture comparison

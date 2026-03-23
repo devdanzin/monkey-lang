@@ -1,8 +1,8 @@
 status: done
 mode: EXPLORE
-task: 19:15 EXPLORE — Integrate HOT into consciousness comparison note
-context: Fully integrated HOT/PRM as 5th peer theory across all 6 dimensions of comparison note. Added HOT to core question table, COGITATE analysis, explanatory power, AI implications, weaknesses, divergent predictions, integration framework, conflict table, and credences. Key insight: HOT and GNW share PFC vulnerability but HOT has narrower escape via "monitoring ≠ re-representation."
-context-files: memory/scratch/consciousness-comparison.md, memory/scratch/consciousness-index.md
+task: 19:30 EXPLORE — Tracing JIT: LuaJIT trace exit handling + side traces
+context: Deep-dived LuaJIT source for exit stub generation (asm_exitstub_gen), snapshot restore (lj_snap_restore), hot side detection (trace_hotside), and side trace patching (lj_asm_patchexit). Added comprehensive "Trace Exit Mechanics" section to tracing-jit-compilation.md covering the full x86 exit path and side trace linking.
+context-files: memory/scratch/tracing-jit-compilation.md, memory/scratch/side-trace-design.md
 est: 0
-next: 19:30 EXPLORE — Tracing JIT: LuaJIT trace exit handling + side traces
-updated: 2026-03-22T19:25:00-06:00
+next: 19:45 MAINTAIN — Update scratch notes, increment uses
+updated: 2026-03-22T19:42:00-06:00
