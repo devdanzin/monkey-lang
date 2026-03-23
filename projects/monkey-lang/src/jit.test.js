@@ -399,6 +399,95 @@ describe('Constant propagation', () => {
   });
 });
 
+describe('Algebraic simplification', () => {
+  it('should simplify x + 0 → x', () => {
+    const trace = new Trace('test', 0);
+    trace.addInst(IR.LOOP_START);
+    const x = trace.addInst(IR.CONST_INT, { value: 42 });
+    const zero = trace.addInst(IR.CONST_INT, { value: 0 });
+    const add = trace.addInst(IR.ADD_INT, { left: x, right: zero });
+    const store = trace.addInst(IR.STORE_GLOBAL, { index: 0, value: add });
+    trace.addInst(IR.LOOP_END);
+
+    const opt = new TraceOptimizer(trace);
+    const simplified = opt.algebraicSimplification();
+    assert.equal(simplified, 1);
+    const storeInst = trace.ir.find(i => i.op === IR.STORE_GLOBAL);
+    const constInst = trace.ir.find(i => i.op === IR.CONST_INT && i.operands.value === 42);
+    assert.equal(storeInst.operands.value, constInst.id);
+  });
+
+  it('should simplify x * 0 → 0', () => {
+    const trace = new Trace('test', 0);
+    trace.addInst(IR.LOOP_START);
+    const x = trace.addInst(IR.CONST_INT, { value: 42 });
+    const zero = trace.addInst(IR.CONST_INT, { value: 0 });
+    const mul = trace.addInst(IR.MUL_INT, { left: x, right: zero });
+    const store = trace.addInst(IR.STORE_GLOBAL, { index: 0, value: mul });
+    trace.addInst(IR.LOOP_END);
+
+    const opt = new TraceOptimizer(trace);
+    const simplified = opt.algebraicSimplification();
+    assert.equal(simplified, 1);
+    const storeInst = trace.ir.find(i => i.op === IR.STORE_GLOBAL);
+    const valInst = trace.ir[storeInst.operands.value];
+    assert.equal(valInst.op, IR.CONST_INT);
+    assert.equal(valInst.operands.value, 0);
+  });
+
+  it('should simplify x * 2 → x + x', () => {
+    const trace = new Trace('test', 0);
+    trace.addInst(IR.LOOP_START);
+    const x = trace.addInst(IR.CONST_INT, { value: 7 });
+    const two = trace.addInst(IR.CONST_INT, { value: 2 });
+    const mul = trace.addInst(IR.MUL_INT, { left: x, right: two });
+    const store = trace.addInst(IR.STORE_GLOBAL, { index: 0, value: mul });
+    trace.addInst(IR.LOOP_END);
+
+    const opt = new TraceOptimizer(trace);
+    const simplified = opt.algebraicSimplification();
+    assert.equal(simplified, 1);
+    const storeInst = trace.ir.find(i => i.op === IR.STORE_GLOBAL);
+    const addInst = trace.ir[storeInst.operands.value];
+    assert.equal(addInst.op, IR.ADD_INT);
+    assert.equal(addInst.operands.left, addInst.operands.right);
+  });
+
+  it('should simplify x - x → 0', () => {
+    const trace = new Trace('test', 0);
+    trace.addInst(IR.LOOP_START);
+    const x = trace.addInst(IR.CONST_INT, { value: 5 });
+    const sub = trace.addInst(IR.SUB_INT, { left: x, right: x });
+    const store = trace.addInst(IR.STORE_GLOBAL, { index: 0, value: sub });
+    trace.addInst(IR.LOOP_END);
+
+    const opt = new TraceOptimizer(trace);
+    const simplified = opt.algebraicSimplification();
+    assert.equal(simplified, 1);
+    const storeInst = trace.ir.find(i => i.op === IR.STORE_GLOBAL);
+    const valInst = trace.ir[storeInst.operands.value];
+    assert.equal(valInst.op, IR.CONST_INT);
+    assert.equal(valInst.operands.value, 0);
+  });
+
+  it('should simplify x / 1 → x', () => {
+    const trace = new Trace('test', 0);
+    trace.addInst(IR.LOOP_START);
+    const x = trace.addInst(IR.CONST_INT, { value: 99 });
+    const one = trace.addInst(IR.CONST_INT, { value: 1 });
+    const div = trace.addInst(IR.DIV_INT, { left: x, right: one });
+    const store = trace.addInst(IR.STORE_GLOBAL, { index: 0, value: div });
+    trace.addInst(IR.LOOP_END);
+
+    const opt = new TraceOptimizer(trace);
+    const simplified = opt.algebraicSimplification();
+    assert.equal(simplified, 1);
+    const storeInst = trace.ir.find(i => i.op === IR.STORE_GLOBAL);
+    const constInst = trace.ir.find(i => i.op === IR.CONST_INT && i.operands.value === 99);
+    assert.equal(storeInst.operands.value, constInst.id);
+  });
+});
+
 describe('Trace compilation', () => {
   it('should compile a simple counter trace to JS', () => {
     const trace = new Trace('test', 0);

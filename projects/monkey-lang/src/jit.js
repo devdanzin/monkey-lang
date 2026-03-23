@@ -743,7 +743,6 @@ export class TraceCompiler {
 
     this.lines.push('"use strict";');
     this.lines.push('let __iterations = 0;');
-    this.lines.push('const MAX_ITER = 10000;');
 
     // Initialize promoted variables before the loop
     for (const idx of promotable.globals) {
@@ -798,7 +797,7 @@ export class TraceCompiler {
     }
 
     this.lines.push('loop: while (true) {');
-    this.lines.push(`  if (++__iterations > MAX_ITER) ${this._emitReturn('{ exit: "max_iter" }')}`);
+    this.lines.push(`  if ((++__iterations & 0x7F) === 0 && __iterations > 100000) ${this._emitReturn('{ exit: "max_iter" }')}`);
 
     for (let i = 0; i < ir.length; i++) {
       const inst = ir[i];
@@ -830,15 +829,24 @@ export class TraceCompiler {
         case IR.CONST_BOOL:
           if (inst.operands.ref !== undefined) {
             // Check if only used by guards that read through to raw bool
+            // Only check actual IR ref keys (ref, left, right, and value for stores)
+            const REF_KEYS_FOR_USE = ['ref', 'left', 'right'];
+            const VALUE_IS_REF_FOR_USE = new Set([IR.STORE_LOCAL, IR.STORE_GLOBAL]);
             let onlyUsedByGuards = true;
             for (let j = i + 1; j < ir.length; j++) {
               const user = ir[j];
               if (!user) continue;
-              for (const key of Object.keys(user.operands)) {
-                if (user.operands[key] === i) {
-                  if (user.op !== IR.GUARD_TRUTHY && user.op !== IR.GUARD_FALSY) {
-                    onlyUsedByGuards = false;
-                  }
+              let referencesUs = false;
+              for (const key of REF_KEYS_FOR_USE) {
+                if (user.operands[key] === i) { referencesUs = true; break; }
+              }
+              if (!referencesUs && VALUE_IS_REF_FOR_USE.has(user.op) && user.operands.value === i) {
+                referencesUs = true;
+              }
+              if (referencesUs) {
+                if (user.op !== IR.GUARD_TRUTHY && user.op !== IR.GUARD_FALSY) {
+                  onlyUsedByGuards = false;
+                  break;
                 }
               }
             }
@@ -1484,6 +1492,7 @@ export class TraceOptimizer {
     this.redundantGuardElimination();
     this.constantPropagation();
     this.constantFolding();
+    this.algebraicSimplification();
     this.deadStoreElimination();
     this.loopInvariantCodeMotion();
     this.deadCodeElimination();
@@ -1610,6 +1619,80 @@ export class TraceOptimizer {
 
     if (eliminated > 0) this._compact();
     return eliminated;
+  }
+
+  // --- Pass 2.25: Algebraic Simplification (Strength Reduction) ---
+  // Simplify arithmetic with identity/absorbing elements:
+  //   x + 0 → x,  0 + x → x,  x - 0 → x
+  //   x * 1 → x,  1 * x → x,  x * 0 → 0,  0 * x → 0
+  //   x / 1 → x
+  // Also: x - x → 0, x * 2 → x + x (cheaper on some architectures)
+  algebraicSimplification() {
+    const ir = this.trace.ir;
+    // Build a map of known constant values (from CONST_INT instructions)
+    const constVals = new Map();
+    for (let i = 0; i < ir.length; i++) {
+      if (ir[i] && ir[i].op === IR.CONST_INT) {
+        constVals.set(i, ir[i].operands.value);
+      }
+    }
+
+    let simplified = 0;
+    for (let i = 0; i < ir.length; i++) {
+      const inst = ir[i];
+      if (!inst) continue;
+
+      const { left, right } = inst.operands;
+      const lv = constVals.get(left);
+      const rv = constVals.get(right);
+
+      switch (inst.op) {
+        case IR.ADD_INT:
+          if (rv === 0) { this._replaceRef(ir, i, left); ir[i] = null; simplified++; }
+          else if (lv === 0) { this._replaceRef(ir, i, right); ir[i] = null; simplified++; }
+          break;
+
+        case IR.SUB_INT:
+          if (rv === 0) { this._replaceRef(ir, i, left); ir[i] = null; simplified++; }
+          else if (left === right) {
+            // x - x → 0
+            inst.op = IR.CONST_INT;
+            inst.operands = { value: 0 };
+            constVals.set(i, 0);
+            simplified++;
+          }
+          break;
+
+        case IR.MUL_INT:
+          if (rv === 1) { this._replaceRef(ir, i, left); ir[i] = null; simplified++; }
+          else if (lv === 1) { this._replaceRef(ir, i, right); ir[i] = null; simplified++; }
+          else if (rv === 0 || lv === 0) {
+            inst.op = IR.CONST_INT;
+            inst.operands = { value: 0 };
+            constVals.set(i, 0);
+            simplified++;
+          }
+          else if (rv === 2) {
+            // x * 2 → x + x
+            inst.op = IR.ADD_INT;
+            inst.operands = { left, right: left };
+            simplified++;
+          }
+          else if (lv === 2) {
+            inst.op = IR.ADD_INT;
+            inst.operands = { left: right, right: right };
+            simplified++;
+          }
+          break;
+
+        case IR.DIV_INT:
+          if (rv === 1) { this._replaceRef(ir, i, left); ir[i] = null; simplified++; }
+          break;
+      }
+    }
+
+    if (simplified > 0) this._compact();
+    return simplified;
   }
 
   // --- Pass 2.5: Dead Store Elimination ---
