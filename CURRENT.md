@@ -1,8 +1,8 @@
-status: in-progress
+status: done
 mode: BUILD
-task: JIT trace-level integer specialization — clean codegen eliminating redundant aliases, hoisting constants, removing dead vars
-context: Morning built 9 optimizer passes, 224 tests, 14.2x loop speedup. Generated code has redundant aliases (promoted-raw vars copied multiple times), constants inside loop, dead CONST_BOOL/guard results. These waste V8 compilation time and may inhibit V8's own optimizations.
+task: JIT trace-level integer specialization — codegen cleanup
+context: Implemented alias elimination (promoted-raw loads/guards/unbox alias directly to promoted vars), constant hoisting (CONST_INT above loop), dead variable removal (guard results, store results, dead BOX_INT, CONST_BOOL guard-only). Loop body went from ~15 statements to ~6. 224 tests, 19/19 benchmarks, 8x aggregate.
 context-files: lessons/tracing-jit.md
-est: 3
-next: 14:45 MAINTAIN — commit, benchmarks, check PRs
-updated: 2026-03-23T12:45:00-06:00
+est: 0
+next: 13:15 BUILD — continue trace specialization (non-promoted paths, or move to next task)
+updated: 2026-03-23T13:00:00-06:00
