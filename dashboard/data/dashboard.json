@@ -1,12 +1,12 @@
 {
-  "generated": "2026-03-23T14:03:58.095Z",
+  "generated": "2026-03-23T14:16:34.376Z",
   "current": {
     "status": "done",
-    "mode": "MAINTAIN",
-    "task": "Weekly synthesis — write W12 report, review scratch notes, update knowledge system",
-    "context": "W12 synthesis complete. No promotions or pruning needed. All 17 scratch notes < 14 days. 8 already promoted.",
+    "mode": "THINK",
+    "task": "Morning standup — review plan, set context for day, adjust schedule",
+    "context": "Reclaimed 30 min from early synthesis. PR triage next, then early JIT start at 09:15.",
     "next": "PR triage — check all 9 PRs for reviews, rebase if needed",
-    "startedAt": "2026-03-23T08:01:00-06:00",
+    "startedAt": "2026-03-23T08:16:00-06:00",
     "estimatedBlocks": 0
   },
   "schedule": {
@@ -15,16 +15,20 @@
       {
         "time": "08:15",
         "mode": "THINK",
-        "task": "Morning standup, plan the day, weekly synthesis prep",
+        "task": "Morning standup, plan the day  (synthesis already done 08:01)",
         "status": "done",
-        "summary": "Morning standup complete.",
+        "summary": "Standup review. Synthesis done early — reclaimed 30 min, moved PR triage to 08:30, added early JIT BUILD at 09:15.",
         "artifacts": [],
-        "details": "Morning standup complete. All 9 PRs still open, no human reviews. New comment on #51171 (Telegram voice dup) and #49873 (custom skills). Built full day schedule — focus on weekly synthesis, JIT optimization, and retrospective blog."
+        "details": "Standup review. Synthesis done early — reclaimed 30 min, moved PR triage to 08:30, added early JIT BUILD at 09:15. Set context-files for JIT work (tracing-jit lesson + deopt scratch note). No relevant failure patterns for today's tasks.",
+        "startedAt": "2026-03-23T08:15:00-06:00",
+        "completedAt": "2026-03-23T08:17:00-06:00",
+        "durationMs": 120000,
+        "durationFormatted": "2m"
       },
       {
         "time": "08:30",
         "mode": "MAINTAIN",
-        "task": "Weekly synthesis: review 7 daily logs, prune scratch notes, promote candidates",
+        "task": "PR triage: check all 9 PRs for reviews, rebase if needed, respond to #51171 comment (moved up — synthesis done early)",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -33,7 +37,7 @@
       {
         "time": "08:45",
         "mode": "MAINTAIN",
-        "task": "Weekly synthesis: review 7 daily logs, prune scratch notes, promote candidates",
+        "task": "PR triage: check all 9 PRs for reviews, rebase if needed, respond to #51171 comment (moved up — synthesis done early)",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -42,7 +46,7 @@
       {
         "time": "09:00",
         "mode": "MAINTAIN",
-        "task": "Weekly synthesis: review 7 daily logs, prune scratch notes, promote candidates",
+        "task": "PR triage: check all 9 PRs for reviews, rebase if needed, respond to #51171 comment (moved up — synthesis done early)",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -50,8 +54,8 @@
       },
       {
         "time": "09:15",
-        "mode": "MAINTAIN",
-        "task": "PR triage: check all 9 PRs for reviews, rebase if needed, respond to #51171 comment",
+        "mode": "BUILD",
+        "task": "JIT: nested loop optimization (gained 30 min from synthesis finishing early)",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -59,8 +63,8 @@
       },
       {
         "time": "09:30",
-        "mode": "MAINTAIN",
-        "task": "PR triage: check all 9 PRs for reviews, rebase if needed, respond to #51171 comment",
+        "mode": "BUILD",
+        "task": "JIT: nested loop optimization (gained 30 min from synthesis finishing early)",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -69,7 +73,7 @@
       {
         "time": "09:45",
         "mode": "MAINTAIN",
-        "task": "Git cleanup, dashboard update, commit weekly synthesis",
+        "task": "Git cleanup, dashboard update, commit",
         "status": "upcoming",
         "summary": "",
         "artifacts": [],
@@ -516,11 +520,11 @@
       "Consciousness: HOT deep dive (only 1 use so far)"
     ],
     "adjustments": [
-      "(log pivots here during the day)"
+      "08:15: Weekly synthesis finished at 08:01, freeing 08:30-09:00. Moved PR triage up, added early JIT BUILD block at 09:15."
     ]
   },
   "adjustments": [
-    "(log pivots here during the day)"
+    "08:15: Weekly synthesis finished at 08:01, freeing 08:30-09:00. Moved PR triage up, added early JIT BUILD block at 09:15."
   ],
   "stats": {
     "blocksCompleted": 1,
@@ -528,9 +532,9 @@
     "modeDistribution": {
       "THINK": 1
     },
-    "totalMinutes": 5,
-    "totalMs": 0,
-    "avgDurationMs": 0
+    "totalMinutes": 2,
+    "totalMs": 120000,
+    "avgDurationMs": 120000
   },
   "artifacts": [
     {
@@ -627,13 +631,7 @@
       "modeDistribution": {}
     }
   ],
-  "todayHighlights": [
-    {
-      "mode": "THINK",
-      "time": "08:15",
-      "text": "Morning standup complete."
-    }
-  ],
+  "todayHighlights": [],
   "prs": [
     {
       "number": 51803,
@@ -664,7 +662,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:39:06Z",
       "updatedAt": "2026-03-21T20:46:35Z",
-      "ageHours": 64,
+      "ageHours": 65,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -686,7 +684,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:38:20Z",
       "updatedAt": "2026-03-21T20:50:04Z",
-      "ageHours": 65,
+      "ageHours": 66,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -874,18 +872,20 @@
     }
   ],
   "scheduleAdherence": {
-    "completionRate": 0,
-    "completedBlocks": 0,
-    "pastBlocks": 0,
+    "completionRate": 100,
+    "completedBlocks": 1,
+    "pastBlocks": 1,
     "totalBlocks": 55,
     "plannedDist": {
       "THINK": 8,
-      "MAINTAIN": 12,
-      "BUILD": 28,
+      "MAINTAIN": 10,
+      "BUILD": 30,
       "EXPLORE": 7
     },
-    "actualDist": {},
-    "pace": 0
+    "actualDist": {
+      "THINK": 1
+    },
+    "pace": 60
   },
   "streak": 2
 }
