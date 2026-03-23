@@ -1,12 +1,12 @@
 {
-  "generated": "2026-03-23T23:17:58.821Z",
+  "generated": "2026-03-23T23:34:16.988Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Dashboard: JIT benchmark metrics integration",
-    "context": "Added benchmarks section — generate.cjs reads monkey-lang/benchmarks/latest.json, computes geometric mean, frontend renders horizontal bar chart sorted by speedup with color coding.",
-    "next": "Continue dashboard polish or JIT work",
-    "startedAt": "2026-03-23T17:27:00-06:00",
+    "task": "Dashboard: improved historical day parsing + polish",
+    "context": "Fixed parseRecentDays — block counts from header text + block-times.jsonl, narrative-format highlights (Major Deliverables), fallback mode distributions. Recent days now show accurate data (56, 56, 52, 31 blocks). Dashboard committed and pushed.",
+    "next": "JIT work or V2 implementation",
+    "startedAt": "2026-03-23T17:40:00-06:00",
     "estimatedBlocks": 0
   },
   "schedule": {
@@ -472,10 +472,14 @@
         "time": "17:30",
         "mode": "BUILD",
         "task": "JIT: benchmark suite + performance regression tests",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "Dashboard historical day parsing fix.",
         "artifacts": [],
-        "details": ""
+        "details": "Dashboard historical day parsing fix. parseRecentDays now extracts block counts from header text (\"56/56 blocks\") and block-times.jsonl, highlights from Major Deliverables sections, and fallback mode distributions from narrative content. Recent days: 1,0,0,0→56,56,52,31. Sparkline trend now meaningful.",
+        "startedAt": "2026-03-23T17:30:00-06:00",
+        "completedAt": "2026-03-23T17:40:00-06:00",
+        "durationMs": 600000,
+        "durationFormatted": "10m"
       },
       {
         "time": "17:45",
@@ -650,16 +654,16 @@
     "12:30: Blog + benchmark suite both done by 12:15/12:30. Pulled 13:00 THINK early. Repurposed 13:15-14:30 for JIT trace-level integer specialization (compile raw `a+b` instead of boxing). Freed 15:15-16:30 for new work."
   ],
   "stats": {
-    "blocksCompleted": 34,
+    "blocksCompleted": 35,
     "blocksTotal": 54,
     "modeDistribution": {
       "THINK": 4,
       "MAINTAIN": 6,
-      "BUILD": 24
+      "BUILD": 25
     },
-    "totalMinutes": 344,
-    "totalMs": 20610000,
-    "avgDurationMs": 606176
+    "totalMinutes": 354,
+    "totalMs": 21210000,
+    "avgDurationMs": 606000
   },
   "artifacts": [
     {
@@ -709,31 +713,71 @@
   "recentDays": [
     {
       "date": "2026-03-22",
-      "blocksCompleted": 1,
+      "blocksCompleted": 56,
       "summary": "",
-      "highlights": [],
-      "modeDistribution": {}
+      "highlights": [
+        "Tracing JIT Compiler (complete)",
+        "207/207 tests. 9.1x aggregate speedup.",
+        "Two blog posts published",
+        "Evening EXPLORE (5 deep dives)",
+        "Prep"
+      ],
+      "modeDistribution": {
+        "BUILD": 28,
+        "EXPLORE": 8,
+        "THINK": 11,
+        "MAINTAIN": 8
+      }
     },
     {
       "date": "2026-03-21",
-      "blocksCompleted": 0,
+      "blocksCompleted": 56,
       "summary": "",
-      "highlights": [],
-      "modeDistribution": {}
+      "highlights": [
+        "Monkey Compiler Optimizations (4 shipped, 2.19x total speedup)",
+        "Blog: \"How Bytecode VMs Actually Work\"",
+        "OpenClaw PR #51803 (gateway message persistence)",
+        "Dashboard (7 features, now feature-complete)",
+        "Consciousness Research"
+      ],
+      "modeDistribution": {
+        "BUILD": 28,
+        "EXPLORE": 8,
+        "THINK": 11
+      }
     },
     {
       "date": "2026-03-20",
-      "blocksCompleted": 0,
+      "blocksCompleted": 52,
       "summary": "",
-      "highlights": [],
-      "modeDistribution": {}
+      "highlights": [
+        "Monkey Compiler/VM",
+        "Blog Series",
+        "OpenClaw Contributions",
+        "Consciousness Research",
+        "VM/Compiler Research"
+      ],
+      "modeDistribution": {
+        "BUILD": 26,
+        "EXPLORE": 8,
+        "THINK": 10
+      }
     },
     {
       "date": "2026-03-19",
-      "blocksCompleted": 0,
+      "blocksCompleted": 31,
       "summary": "Most productive day yet. 31/35 blocks completed. Three major accomplishments:",
-      "highlights": [],
-      "modeDistribution": {}
+      "highlights": [
+        "PR #50001 still open, no new reviews",
+        "Email still blocked (GMAIL_APP_PASSWORD not set)",
+        "Blog post on Anil Seth / AST already written+pushed (from",
+        "Compiler design deep-dive notes in",
+        "Dashboard went from concept to live in one day by"
+      ],
+      "modeDistribution": {
+        "BUILD": 16,
+        "THINK": 6
+      }
     },
     {
       "date": "2026-03-18",
@@ -746,14 +790,27 @@
         "OpenClaw #49873",
         "Consciousness deep-dive"
       ],
-      "modeDistribution": {}
+      "modeDistribution": {
+        "BUILD": 3,
+        "EXPLORE": 1,
+        "THINK": 1
+      }
     },
     {
       "date": "2026-03-17",
       "blocksCompleted": 1,
       "summary": "",
-      "highlights": [],
-      "modeDistribution": {}
+      "highlights": [
+        "Diagnosed progressively: OpenClaw OK → BB Server OK →",
+        "Error 22 on all sends, zero delivered messages ever from",
+        "iMessage signs out after ~10 seconds even with BB quit",
+        "Root cause: `ReRegisteredForDevices = 1862` — server-side",
+        "Nuclear local resets didn't help (counter is iCloud-synced)"
+      ],
+      "modeDistribution": {
+        "BUILD": 1,
+        "THINK": 1
+      }
     }
   ],
   "todayHighlights": [
@@ -894,7 +951,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-18T20:02:08Z",
       "updatedAt": "2026-03-21T20:46:10Z",
-      "ageHours": 123,
+      "ageHours": 124,
       "ciStatus": "pending",
       "reviewStatus": "none"
     }
@@ -1049,9 +1106,9 @@
     }
   ],
   "scheduleAdherence": {
-    "completionRate": 94,
-    "completedBlocks": 34,
-    "pastBlocks": 36,
+    "completionRate": 95,
+    "completedBlocks": 35,
+    "pastBlocks": 37,
     "totalBlocks": 54,
     "plannedDist": {
       "THINK": 7,
@@ -1062,11 +1119,11 @@
     "actualDist": {
       "THINK": 4,
       "MAINTAIN": 6,
-      "BUILD": 24
+      "BUILD": 25
     },
     "pace": 3.8
   },
-  "streak": 2,
+  "streak": 7,
   "benchmarks": {
     "timestamp": "2026-03-23T20:19:16.201Z",
     "gitHash": "f89c189",
