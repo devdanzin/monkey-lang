@@ -59,13 +59,13 @@
 - [ ] BlueBubbles/iMessage — waiting on Apple Support
 - [ ] Email — GMAIL_APP_PASSWORD not in ~/.openclaw/.env
 
-## Today (2026-03-22) — In Progress
+## Today (2026-03-22) — Done
 - [x] Blog: "Benchmarking a Bytecode VM" — published
 - [x] Monkey tracing JIT: full implementation in one day — 207 tests, 9.1x aggregate speedup
 - [x] Blog: "Building a Tracing JIT in JavaScript" — published (Part 4)
 - [x] JIT: diagnostics, abort blacklist, 200+ edge-case tests, README with architecture docs
-- [ ] PR triage: 9 open, no reviews yet (weekend)
-- [ ] EXPLORE evening: HOT/HOROR consciousness, LuaJIT, copy-and-patch, GraalVM PE
+- [x] EXPLORE evening: HOT/HOROR consciousness, LuaJIT trace exits, copy-and-patch, GraalVM PE, deoptimization
+- [ ] PR triage: 9 open, no reviews (weekend) — Monday priority
 
 ## Tomorrow (2026-03-23) — Direction
 - **Weekly synthesis** (first full week!) — review all 7 days, prune scratch notes, promote 3 candidates (consciousness-comparison, copy-and-patch-jit, graalvm-truffle-pe)
