@@ -1,8 +1,8 @@
 status: done
-mode: THINK
-task: Assess PR status, plan JIT nested loop optimization approach
-context: Nested loops already work well (13x speedup, side trace approach). Inlining side trace IR is low-priority (<0.2% overhead savings). Pivoting 09:15 BUILD to type specialization — higher impact. All 9 PRs still no human reviews.
+mode: BUILD
+task: JIT type specialization — adaptive quickening for arithmetic opcodes
+context: Implemented PEP 659-style adaptive quickening. Generic ops (OpAdd/Sub/Mul/Div/Equal/NotEqual/GreaterThan) self-specialize to Int variants after 8 consecutive integer observations. Specialized ops have deopt guards — rewrite back to generic on type mismatch. Added OpMulInt/OpDivInt opcodes. All 211 tests pass, 4 new quickening tests added.
 context-files: lessons/tracing-jit.md, memory/scratch/deoptimization-jit.md
 est: 0
-next: BUILD — JIT type specialization (specialize integer arithmetic guards + fast paths)
-updated: 2026-03-23T08:52:00-06:00
+next: MAINTAIN — Git cleanup, dashboard update, commit
+updated: 2026-03-23T09:13:00-06:00

@@ -79,6 +79,10 @@ export const Opcodes = {
   OpEqualInt:       0x2B,
   OpNotEqualInt:    0x2C,
   OpLessThanInt:    0x2D, // Unlike generic path, this is a direct opcode (no rewrite to GT)
+
+  // Additional integer-specialized opcodes (for adaptive quickening)
+  OpMulInt:         0x2E,
+  OpDivInt:         0x2F,
 };
 
 // Opcode definitions: [name, ...operandWidths]
@@ -128,6 +132,8 @@ const definitions = {
   [Opcodes.OpEqualInt]:         ['OpEqualInt'],
   [Opcodes.OpNotEqualInt]:      ['OpNotEqualInt'],
   [Opcodes.OpLessThanInt]:      ['OpLessThanInt'],
+  [Opcodes.OpMulInt]:           ['OpMulInt'],
+  [Opcodes.OpDivInt]:           ['OpDivInt'],
 };
 
 /**

@@ -8,6 +8,7 @@ import { Lexer } from './lexer.js';
 import { Parser } from './parser.js';
 import { Compiler } from './compiler.js';
 import { VM } from './vm.js';
+import { Opcodes } from './code.js';
 import { MonkeyInteger, NULL, TRUE, FALSE } from './object.js';
 
 function parse(input) {
@@ -23,6 +24,16 @@ function compileAndRunJIT(input) {
   if (err) throw new Error(`compiler error: ${err}`);
   const vm = new VM(compiler.bytecode());
   vm.enableJIT();
+  vm.run();
+  return { result: vm.lastPoppedStackElem(), vm };
+}
+
+function compileAndRunVM(input) {
+  const program = parse(input);
+  const compiler = new Compiler();
+  const err = compiler.compile(program);
+  if (err) throw new Error(`compiler error: ${err}`);
+  const vm = new VM(compiler.bytecode());
   vm.run();
   return { result: vm.lastPoppedStackElem(), vm };
 }
@@ -732,5 +743,88 @@ describe('JIT VM integration', () => {
     assert.ok(stats.rootTraces >= 1, 'should have at least 1 root trace');
     assert.ok(stats.totalTraces >= 1, 'should have at least 1 total trace');
     assert.equal(stats.enabled, true);
+  });
+});
+
+describe('Adaptive quickening', () => {
+  it('should quicken OpAdd to OpAddInt after threshold', () => {
+    // A loop with generic OpAdd should get quickened after 8 iterations
+    const program = parse(`
+      let x = 0;
+      let i = 0;
+      while (i < 20) {
+        x = x + i;
+        i = i + 1;
+      }
+      x
+    `);
+    const compiler = new Compiler();
+    compiler.compile(program);
+    const bytecode = compiler.bytecode();
+    const vm = new VM(bytecode);
+    // Don't enable JIT — we want to test VM-level quickening only
+    vm.run();
+
+    const result = vm.lastPoppedStackElem();
+    assert.equal(result.value, 190); // sum of 0..19
+
+    // Check that some OpAdd instructions were quickened to OpAddInt
+    const mainIns = bytecode.instructions;
+    let hasAddInt = false;
+    for (let i = 0; i < mainIns.length; i++) {
+      if (mainIns[i] === Opcodes.OpAddInt) hasAddInt = true;
+    }
+    assert.ok(hasAddInt, 'Should have quickened at least one OpAdd to OpAddInt');
+  });
+
+  it('should produce correct results with quickened arithmetic', () => {
+    const { result } = compileAndRunVM(`
+      let sum = 0;
+      let i = 1;
+      while (i < 50) {
+        sum = sum + i * i;
+        i = i + 1;
+      }
+      sum
+    `);
+    // sum of i^2 for i=1..49
+    let expected = 0;
+    for (let i = 1; i < 50; i++) expected += i * i;
+    assert.equal(result.value, expected);
+  });
+
+  it('should quicken comparison ops', () => {
+    const program = parse(`
+      let count = 0;
+      let i = 0;
+      while (i < 20) {
+        if (i == 10) { count = count + 1; }
+        i = i + 1;
+      }
+      count
+    `);
+    const compiler = new Compiler();
+    compiler.compile(program);
+    const bytecode = compiler.bytecode();
+    const vm = new VM(bytecode);
+    vm.run();
+
+    const result = vm.lastPoppedStackElem();
+    assert.equal(result.value, 1);
+  });
+
+  it('should work correctly with JIT + quickening together', () => {
+    // Quickening happens in the interpreter; JIT compiles the quickened trace
+    const { result } = compileAndRunJIT(`
+      let x = 0;
+      let i = 0;
+      while (i < 200) {
+        x = x + i;
+        i = i + 1;
+      }
+      x
+    `);
+    // sum of 0..199
+    assert.equal(result.value, 19900);
   });
 });

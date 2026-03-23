@@ -374,8 +374,8 @@ export class TraceRecorder {
     switch (op) {
       case Opcodes.OpAdd: case Opcodes.OpAddInt: case Opcodes.OpAddConst: irOp = IR.ADD_INT; break;
       case Opcodes.OpSub: case Opcodes.OpSubInt: case Opcodes.OpSubConst: irOp = IR.SUB_INT; break;
-      case Opcodes.OpMul: case Opcodes.OpMulConst: irOp = IR.MUL_INT; break;
-      case Opcodes.OpDiv: case Opcodes.OpDivConst: irOp = IR.DIV_INT; break;
+      case Opcodes.OpMul: case Opcodes.OpMulInt: case Opcodes.OpMulConst: irOp = IR.MUL_INT; break;
+      case Opcodes.OpDiv: case Opcodes.OpDivInt: case Opcodes.OpDivConst: irOp = IR.DIV_INT; break;
     }
     const resultRef = this.trace.addInst(irOp, { left: leftUnboxed, right: rightUnboxed });
     this.typeMap.set(resultRef, 'raw_int');
@@ -2074,24 +2074,30 @@ export class FunctionCompiler {
           case Opcodes.OpAdd: ip += 1;
             lines.push(`      { const r = __s[--__sp], l = __s[--__sp]; if (l instanceof __MonkeyString) __s[__sp++] = new __MonkeyString(l.value + r.value); else __s[__sp++] = __cachedInteger(l.value + r.value); }`);
             break;
-          case Opcodes.OpSub: ip += 1;
+          case Opcodes.OpAddInt: ip += 1;
+            lines.push(`      { const r = __s[--__sp], l = __s[--__sp]; __s[__sp++] = __cachedInteger(l.value + r.value); }`);
+            break;
+          case Opcodes.OpSub: case Opcodes.OpSubInt: ip += 1;
             lines.push(`      { const r = __s[--__sp], l = __s[--__sp]; __s[__sp++] = __cachedInteger(l.value - r.value); }`);
             break;
-          case Opcodes.OpMul: ip += 1;
+          case Opcodes.OpMul: case Opcodes.OpMulInt: ip += 1;
             lines.push(`      { const r = __s[--__sp], l = __s[--__sp]; __s[__sp++] = __cachedInteger(l.value * r.value); }`);
             break;
-          case Opcodes.OpDiv: ip += 1;
+          case Opcodes.OpDiv: case Opcodes.OpDivInt: ip += 1;
             lines.push(`      { const r = __s[--__sp], l = __s[--__sp]; __s[__sp++] = __cachedInteger(Math.trunc(l.value / r.value)); }`);
             break;
 
-          case Opcodes.OpEqual: ip += 1;
+          case Opcodes.OpEqual: case Opcodes.OpEqualInt: ip += 1;
             lines.push(`      { const r = __s[--__sp], l = __s[--__sp]; __s[__sp++] = (l === r || l.value === r.value) ? __TRUE : __FALSE; }`);
             break;
-          case Opcodes.OpNotEqual: ip += 1;
+          case Opcodes.OpNotEqual: case Opcodes.OpNotEqualInt: ip += 1;
             lines.push(`      { const r = __s[--__sp], l = __s[--__sp]; __s[__sp++] = (l !== r && l.value !== r.value) ? __TRUE : __FALSE; }`);
             break;
-          case Opcodes.OpGreaterThan: ip += 1;
+          case Opcodes.OpGreaterThan: case Opcodes.OpGreaterThanInt: ip += 1;
             lines.push(`      { const r = __s[--__sp], l = __s[--__sp]; __s[__sp++] = l.value > r.value ? __TRUE : __FALSE; }`);
+            break;
+          case Opcodes.OpLessThanInt: ip += 1;
+            lines.push(`      { const r = __s[--__sp], l = __s[--__sp]; __s[__sp++] = l.value < r.value ? __TRUE : __FALSE; }`);
             break;
 
           case Opcodes.OpMinus: ip += 1;
@@ -2230,9 +2236,17 @@ export class FunctionCompiler {
         case Opcodes.OpSub:
         case Opcodes.OpMul:
         case Opcodes.OpDiv:
+        case Opcodes.OpAddInt:
+        case Opcodes.OpSubInt:
+        case Opcodes.OpMulInt:
+        case Opcodes.OpDivInt:
         case Opcodes.OpEqual:
         case Opcodes.OpNotEqual:
         case Opcodes.OpGreaterThan:
+        case Opcodes.OpEqualInt:
+        case Opcodes.OpNotEqualInt:
+        case Opcodes.OpGreaterThanInt:
+        case Opcodes.OpLessThanInt:
         case Opcodes.OpMinus:
         case Opcodes.OpBang:
         case Opcodes.OpTrue:
@@ -2369,27 +2383,30 @@ export class FunctionCompiler {
             break;
           }
 
-          case Opcodes.OpAdd: ip += 1;
+          case Opcodes.OpAdd: case Opcodes.OpAddInt: ip += 1;
             lines.push(`        { const r = __s[--__sp]; __s[__sp - 1] += r; }`);
             break;
-          case Opcodes.OpSub: ip += 1;
+          case Opcodes.OpSub: case Opcodes.OpSubInt: ip += 1;
             lines.push(`        { const r = __s[--__sp]; __s[__sp - 1] -= r; }`);
             break;
-          case Opcodes.OpMul: ip += 1;
+          case Opcodes.OpMul: case Opcodes.OpMulInt: ip += 1;
             lines.push(`        { const r = __s[--__sp]; __s[__sp - 1] *= r; }`);
             break;
-          case Opcodes.OpDiv: ip += 1;
+          case Opcodes.OpDiv: case Opcodes.OpDivInt: ip += 1;
             lines.push(`        { const r = __s[--__sp]; __s[__sp - 1] = Math.trunc(__s[__sp - 1] / r); }`);
             break;
 
-          case Opcodes.OpEqual: ip += 1;
+          case Opcodes.OpEqual: case Opcodes.OpEqualInt: ip += 1;
             lines.push(`        { const r = __s[--__sp]; __s[__sp - 1] = __s[__sp - 1] === r; }`);
             break;
-          case Opcodes.OpNotEqual: ip += 1;
+          case Opcodes.OpNotEqual: case Opcodes.OpNotEqualInt: ip += 1;
             lines.push(`        { const r = __s[--__sp]; __s[__sp - 1] = __s[__sp - 1] !== r; }`);
             break;
-          case Opcodes.OpGreaterThan: ip += 1;
+          case Opcodes.OpGreaterThan: case Opcodes.OpGreaterThanInt: ip += 1;
             lines.push(`        { const r = __s[--__sp]; __s[__sp - 1] = __s[__sp - 1] > r; }`);
+            break;
+          case Opcodes.OpLessThanInt: ip += 1;
+            lines.push(`        { const r = __s[--__sp]; __s[__sp - 1] = __s[__sp - 1] < r; }`);
             break;
 
           case Opcodes.OpMinus: ip += 1;

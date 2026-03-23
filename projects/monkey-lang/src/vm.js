@@ -14,6 +14,24 @@ const STACK_SIZE = 2048;
 const GLOBALS_SIZE = 65536;
 const MAX_FRAMES = 1024;
 
+// Adaptive quickening: specialize generic opcodes after seeing consistent types
+const QUICKEN_THRESHOLD = 8; // executions before specializing
+// Map from generic opcode → specialized integer opcode
+const QUICKEN_MAP = {
+  [Opcodes.OpAdd]: Opcodes.OpAddInt,
+  [Opcodes.OpSub]: Opcodes.OpSubInt,
+  [Opcodes.OpMul]: Opcodes.OpMulInt,
+  [Opcodes.OpDiv]: Opcodes.OpDivInt,
+  [Opcodes.OpEqual]: Opcodes.OpEqualInt,
+  [Opcodes.OpNotEqual]: Opcodes.OpNotEqualInt,
+  [Opcodes.OpGreaterThan]: Opcodes.OpGreaterThanInt,
+};
+// Reverse map: specialized → generic (for deopt)
+const DEOPT_MAP = {};
+for (const [gen, spec] of Object.entries(QUICKEN_MAP)) {
+  DEOPT_MAP[spec] = Number(gen);
+}
+
 // Closure wraps a compiled function with its free variables
 export class Closure {
   constructor(fn, free = []) {
@@ -220,6 +238,16 @@ export class VM {
             if (recording()) {
               this.recorder.recordIntArith(op, left, right);
             }
+            // Adaptive quickening: count consecutive integer observations
+            const specOp = QUICKEN_MAP[op];
+            if (specOp !== undefined) {
+              const counters = this._getQuickenCounters(ins);
+              const count = (counters[ip] || 0) + 1;
+              counters[ip] = count;
+              if (count >= QUICKEN_THRESHOLD) {
+                ins[ip] = specOp; // Rewrite bytecode in place!
+              }
+            }
             let result;
             switch (op) {
               case Opcodes.OpAdd: result = left.value + right.value; break;
@@ -256,6 +284,16 @@ export class VM {
           if (left2 instanceof MonkeyInteger && right2 instanceof MonkeyInteger) {
             if (recording()) {
               this.recorder.recordComparison(op, left2, right2);
+            }
+            // Adaptive quickening for comparisons
+            const specOp2 = QUICKEN_MAP[op];
+            if (specOp2 !== undefined) {
+              const counters2 = this._getQuickenCounters(ins);
+              const count2 = (counters2[ip] || 0) + 1;
+              counters2[ip] = count2;
+              if (count2 >= QUICKEN_THRESHOLD) {
+                ins[ip] = specOp2;
+              }
             }
             let result;
             switch (op) {
@@ -866,11 +904,19 @@ export class VM {
           break;
         }
 
-        // Integer-specialized opcodes: skip instanceof checks entirely
-        // Compiler guarantees both operands are MonkeyInteger
+        // Integer-specialized opcodes: skip instanceof checks for the fast path.
+        // If quickened (not compiler-emitted), deopt back to generic on type mismatch.
         case Opcodes.OpAddInt: {
           const r = this.pop();
           const l = this.pop();
+          // Deopt guard: if either operand isn't integer, despecialize
+          if (!(l instanceof MonkeyInteger) || !(r instanceof MonkeyInteger)) {
+            ins[ip] = Opcodes.OpAdd; // rewrite back to generic
+            // Re-execute as generic: push operands back and let next iteration handle it
+            this.push(l); this.push(r);
+            this.currentFrame().ip--; // back up to re-execute this instruction
+            break;
+          }
           if (recording()) { this.recorder.recordIntArith(op, l, r); }
           this.push(cachedInteger(l.value + r.value));
           break;
@@ -879,14 +925,54 @@ export class VM {
         case Opcodes.OpSubInt: {
           const r = this.pop();
           const l = this.pop();
+          if (!(l instanceof MonkeyInteger) || !(r instanceof MonkeyInteger)) {
+            ins[ip] = Opcodes.OpSub;
+            this.push(l); this.push(r);
+            this.currentFrame().ip--;
+            break;
+          }
           if (recording()) { this.recorder.recordIntArith(op, l, r); }
           this.push(cachedInteger(l.value - r.value));
+          break;
+        }
+
+        case Opcodes.OpMulInt: {
+          const r = this.pop();
+          const l = this.pop();
+          if (!(l instanceof MonkeyInteger) || !(r instanceof MonkeyInteger)) {
+            ins[ip] = Opcodes.OpMul;
+            this.push(l); this.push(r);
+            this.currentFrame().ip--;
+            break;
+          }
+          if (recording()) { this.recorder.recordIntArith(op, l, r); }
+          this.push(cachedInteger(l.value * r.value));
+          break;
+        }
+
+        case Opcodes.OpDivInt: {
+          const r = this.pop();
+          const l = this.pop();
+          if (!(l instanceof MonkeyInteger) || !(r instanceof MonkeyInteger)) {
+            ins[ip] = Opcodes.OpDiv;
+            this.push(l); this.push(r);
+            this.currentFrame().ip--;
+            break;
+          }
+          if (recording()) { this.recorder.recordIntArith(op, l, r); }
+          this.push(cachedInteger(Math.trunc(l.value / r.value)));
           break;
         }
 
         case Opcodes.OpGreaterThanInt: {
           const r = this.pop();
           const l = this.pop();
+          if (!(l instanceof MonkeyInteger) || !(r instanceof MonkeyInteger)) {
+            ins[ip] = Opcodes.OpGreaterThan;
+            this.push(l); this.push(r);
+            this.currentFrame().ip--;
+            break;
+          }
           if (recording()) { this.recorder.recordComparison(op, l, r); }
           this.push(l.value > r.value ? TRUE : FALSE);
           break;
@@ -895,6 +981,11 @@ export class VM {
         case Opcodes.OpLessThanInt: {
           const r = this.pop();
           const l = this.pop();
+          if (!(l instanceof MonkeyInteger) || !(r instanceof MonkeyInteger)) {
+            // LessThanInt has no generic counterpart (compiler-only), so just crash
+            // or handle manually
+            throw new Error(`unsupported types for LessThanInt: ${l.type()} and ${r.type()}`);
+          }
           if (recording()) { this.recorder.recordComparison(op, l, r); }
           this.push(l.value < r.value ? TRUE : FALSE);
           break;
@@ -903,6 +994,12 @@ export class VM {
         case Opcodes.OpEqualInt: {
           const r = this.pop();
           const l = this.pop();
+          if (!(l instanceof MonkeyInteger) || !(r instanceof MonkeyInteger)) {
+            ins[ip] = Opcodes.OpEqual;
+            this.push(l); this.push(r);
+            this.currentFrame().ip--;
+            break;
+          }
           if (recording()) { this.recorder.recordComparison(op, l, r); }
           this.push(l.value === r.value ? TRUE : FALSE);
           break;
@@ -911,6 +1008,12 @@ export class VM {
         case Opcodes.OpNotEqualInt: {
           const r = this.pop();
           const l = this.pop();
+          if (!(l instanceof MonkeyInteger) || !(r instanceof MonkeyInteger)) {
+            ins[ip] = Opcodes.OpNotEqual;
+            this.push(l); this.push(r);
+            this.currentFrame().ip--;
+            break;
+          }
           if (recording()) { this.recorder.recordComparison(op, l, r); }
           this.push(l.value !== r.value ? TRUE : FALSE);
           break;
@@ -1012,6 +1115,15 @@ export class VM {
     }
     if (this.recorder) this.recorder.abort();
     this.recorder = null;
+  }
+
+  // Get or create quickening counters for a bytecode array.
+  // Counters track consecutive same-type observations per instruction position.
+  _getQuickenCounters(instructions) {
+    if (!instructions._quickenCounters) {
+      instructions._quickenCounters = {};
+    }
+    return instructions._quickenCounters;
   }
 
   // Start recording a side trace from a guard exit
