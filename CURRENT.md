@@ -1,8 +1,8 @@
 status: done
 mode: BUILD
-task: Critical review + fix gaps in WORK-SYSTEM-V2.md
-context: Added 10 sections to V2 doc: pre-compaction flush protocol, compaction recovery, queue.js error fallback, session boundary communication, token budget guidance, multi-session continuity, backlog management, EXPLORE guidance, full MAINTAIN checklist, dashboard archival mechanism.
+task: Dashboard: JIT benchmark metrics integration
+context: Added benchmarks section — generate.cjs reads monkey-lang/benchmarks/latest.json, computes geometric mean, frontend renders horizontal bar chart sorted by speedup with color coding.
 context-files: 
 est: 0
-next: 18:15 BUILD — Dashboard work or next schedule item
-updated: 2026-03-23T17:12:00-06:00
+next: Continue dashboard polish or JIT work
+updated: 2026-03-23T17:27:00-06:00
