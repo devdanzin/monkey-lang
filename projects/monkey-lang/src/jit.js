@@ -717,6 +717,30 @@ export class TraceCompiler {
     const promotable = this._analyzePromotable();
     const promotedVarNames = new Map(); // 'g:N' or 'l:N' → JS let variable name
 
+    // --- Pre-pass: usage analysis for dead code elimination ---
+    const usedRefs = new Set();
+    for (let i = 0; i < ir.length; i++) {
+      const inst = ir[i];
+      if (!inst) continue;
+      const ops = inst.operands;
+      for (const key of Object.keys(ops)) {
+        if (typeof ops[key] === 'number' && key !== 'value' && key !== 'slot' &&
+            key !== 'index' && key !== 'exitIp' && key !== 'constIdx') {
+          usedRefs.add(ops[key]);
+        }
+      }
+    }
+
+    // --- Pre-pass: identify loop-invariant constants to hoist ---
+    const hoistedConsts = new Map(); // IR index → { op, value }
+    for (let i = 0; i < ir.length; i++) {
+      const inst = ir[i];
+      if (!inst) continue;
+      if (inst.op === IR.CONST_INT || inst.op === IR.CONST_NULL) {
+        hoistedConsts.set(i, inst);
+      }
+    }
+
     this.lines.push('"use strict";');
     this.lines.push('let __iterations = 0;');
     this.lines.push('const MAX_ITER = 10000;');
@@ -762,11 +786,26 @@ export class TraceCompiler {
       this._wbWrap = false;
     }
 
+    // Emit hoisted constants before the loop
+    for (const [idx, inst] of hoistedConsts) {
+      const v = this.freshVar();
+      varNames.set(idx, v);
+      if (inst.op === IR.CONST_INT) {
+        this.lines.push(`const ${v} = ${inst.operands.value};`);
+      } else if (inst.op === IR.CONST_NULL) {
+        this.lines.push(`const ${v} = __NULL;`);
+      }
+    }
+
     this.lines.push('loop: while (true) {');
     this.lines.push(`  if (++__iterations > MAX_ITER) ${this._emitReturn('{ exit: "max_iter" }')}`);
 
     for (let i = 0; i < ir.length; i++) {
       const inst = ir[i];
+
+      // Skip hoisted constants — already emitted above the loop
+      if (hoistedConsts.has(i)) continue;
+
       const v = this.freshVar();
       varNames.set(i, v);
 
@@ -790,9 +829,25 @@ export class TraceCompiler {
 
         case IR.CONST_BOOL:
           if (inst.operands.ref !== undefined) {
-            // Boolean from comparison result — use the raw bool ref
-            const rawRef = varNames.get(inst.operands.ref);
-            this.lines.push(`  const ${v} = ${rawRef} ? __TRUE : __FALSE;`);
+            // Check if only used by guards that read through to raw bool
+            let onlyUsedByGuards = true;
+            for (let j = i + 1; j < ir.length; j++) {
+              const user = ir[j];
+              if (!user) continue;
+              for (const key of Object.keys(user.operands)) {
+                if (user.operands[key] === i) {
+                  if (user.op !== IR.GUARD_TRUTHY && user.op !== IR.GUARD_FALSY) {
+                    onlyUsedByGuards = false;
+                  }
+                }
+              }
+            }
+            if (onlyUsedByGuards) {
+              // Guards read through to raw bool — skip MonkeyBoolean creation
+            } else {
+              const rawRef = varNames.get(inst.operands.ref);
+              this.lines.push(`  const ${v} = ${rawRef} ? __TRUE : __FALSE;`);
+            }
           } else {
             this.lines.push(`  const ${v} = ${inst.operands.value} ? __TRUE : __FALSE;`);
           }
@@ -810,8 +865,8 @@ export class TraceCompiler {
         case IR.LOAD_LOCAL: {
           const pv = promotedVarNames.get('l:' + inst.operands.slot);
           if (pv) {
-            // Mark this ref as promoted-raw so GUARD/UNBOX can skip
-            this.lines.push(`  const ${v} = ${pv}; /* promoted-raw */`);
+            // Alias directly to promoted var — no new variable needed
+            varNames.set(i, pv);
             inst._promotedRaw = true;
           } else {
             this.lines.push(`  const ${v} = __stack[__bp + ${inst.operands.slot}];`);
@@ -822,8 +877,8 @@ export class TraceCompiler {
         case IR.LOAD_GLOBAL: {
           const pv = promotedVarNames.get('g:' + inst.operands.index);
           if (pv) {
-            // Mark this ref as promoted-raw so GUARD/UNBOX can skip
-            this.lines.push(`  const ${v} = ${pv}; /* promoted-raw */`);
+            // Alias directly to promoted var — no new variable needed
+            varNames.set(i, pv);
             inst._promotedRaw = true;
           } else {
             this.lines.push(`  const ${v} = __globals[${inst.operands.index}];`);
@@ -859,7 +914,7 @@ export class TraceCompiler {
               this.lines.push(`  __stack[__bp + ${inst.operands.slot}] = ${valRef};`);
             }
           }
-          this.lines.push(`  const ${v} = undefined;`);
+          if (usedRefs.has(i)) this.lines.push(`  const ${v} = undefined;`);
           break;
         }
 
@@ -882,15 +937,15 @@ export class TraceCompiler {
               this.lines.push(`  __globals[${inst.operands.index}] = ${valRef};`);
             }
           }
-          this.lines.push(`  const ${v} = undefined;`);
+          if (usedRefs.has(i)) this.lines.push(`  const ${v} = undefined;`);
           break;
         }
 
         case IR.GUARD_INT: {
           const refInst = ir[inst.operands.ref];
           if (refInst && refInst._promotedRaw) {
-            // Promoted var is always int — skip guard
-            this.lines.push(`  const ${v} = ${varNames.get(inst.operands.ref)};`);
+            // Promoted var is always int — alias directly, skip guard
+            varNames.set(i, varNames.get(inst.operands.ref));
             inst._promotedRaw = true;
           } else {
             const ref = varNames.get(inst.operands.ref);
@@ -930,7 +985,7 @@ export class TraceCompiler {
             condition = `typeof ${ref} === 'boolean' ? !${ref} : !__isTruthy(${ref})`;
           }
           this._emitGuardExit(i, exitIp, condition, 'guard_falsy');
-          this.lines.push(`  const ${v} = true;`);
+          if (usedRefs.has(i)) this.lines.push(`  const ${v} = true;`);
           break;
         }
 
@@ -946,15 +1001,15 @@ export class TraceCompiler {
             condition = `typeof ${ref} === 'boolean' ? ${ref} : __isTruthy(${ref})`;
           }
           this._emitGuardExit(i, exitIp, condition, 'guard_truthy');
-          this.lines.push(`  const ${v} = true;`);
+          if (usedRefs.has(i)) this.lines.push(`  const ${v} = true;`);
           break;
         }
 
         case IR.UNBOX_INT: {
           const refInst = ir[inst.operands.ref];
           if (refInst && refInst._promotedRaw) {
-            // Already raw — just alias
-            this.lines.push(`  const ${v} = ${varNames.get(inst.operands.ref)};`);
+            // Already raw — alias directly
+            varNames.set(i, varNames.get(inst.operands.ref));
           } else {
             const ref = varNames.get(inst.operands.ref);
             this.lines.push(`  const ${v} = ${ref}.value;`);
@@ -985,7 +1040,7 @@ export class TraceCompiler {
             }
           }
           if (promotedVarNames.size > 0 && !usedByNonPromotedStore && !usedByOtherInst) {
-            this.lines.push(`  const ${v} = undefined; /* dead box elided */`);
+            // Dead box — don't emit anything
           } else {
             this.lines.push(`  const ${v} = __cachedInteger(${ref});`);
           }
