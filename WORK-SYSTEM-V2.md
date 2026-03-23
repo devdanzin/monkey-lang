@@ -11,7 +11,7 @@ A continuous work session that processes an ordered task queue. No fixed timers 
 ### Daily Schedule (cron jobs)
 | Time | Job | Type | Purpose |
 |------|-----|------|---------|
-| 8:00am | Morning standup | Isolated | Build SCHEDULE.md queue, message Jordan |
+| 8:00am | Morning standup | Isolated | Build schedule.json queue, message Jordan |
 | 8:15am | Work Session A | Isolated, 6hr timeout | Process queue until 2:15pm |
 | 2:15pm | Work Session B | Isolated, 6hr timeout | Continue queue until 8:15pm |
 | 8:15pm | Work Session C | Isolated, 2hr timeout | Evening queue until 10:15pm |
@@ -184,9 +184,9 @@ Each work session (A, B, C) runs this loop:
 
 ```
 1. READ ONCE: WORK-SYSTEM.md (this file)
-2. READ STATE: SCHEDULE.md queue, CURRENT.md, today's daily log
+2. READ STATE: schedule.json (via `node queue.js next --peek-all`), CURRENT.md, today's daily log
    - Note: the cron prompt provides your session boundary time (A: 2:15pm, B: 8:15pm, C: 10:15pm)
-   - **Standup failure fallback:** If SCHEDULE.md is not dated today, run a mini-standup:
+   - **Standup failure fallback:** If schedule.json is not dated today, run a mini-standup:
      read TASKS.md and yesterday's backlog, build a basic queue following the default pattern,
      then continue. Don't wait for a missing standup — work with what you have.
 3. WHILE tasks remain in queue AND time allows:
@@ -220,6 +220,7 @@ Each work session (A, B, C) runs this loop:
         - Check for PRIORITY.md in workspace — if it has content, read it and adjust queue via queue.js, then clear the file
         - Reflect freely. Ponder. Review quality.
         - If queue needs changes: use `node queue.js move/add/remove` commands, which auto-log adjustments
+        - If queue was modified: curl POST to localhost:3000/api/queue-update
         
       📋 PLAN:
         - Read the goal for this PLAN task
@@ -264,10 +265,7 @@ Each work session (A, B, C) runs this loop:
       - Format: `- HH:MM MODE: One-line description of what was done`
       - Use 24h time always
    
-   g. WRITE timing data to block-times.jsonl:
-      - {"date":"YYYY-MM-DD","slot":"HH:MM","startedAt":"ISO","completedAt":"ISO","durationMs":NNN}
-   
-   g2. DASHBOARD UPDATE (task complete):
+   g. DASHBOARD UPDATE (task complete):
       - curl POST to localhost:3000/api/task-update with action: "complete", duration, summary
       - If curl fails, log warning and continue
    
@@ -336,11 +334,6 @@ tasks_completed_this_session: <count>
 - Cleared after reading
 - Example content: "Stop compiler work, switch to fixing dashboard bug #123"
 
-### block-times.jsonl (optional backup)
-- One JSON line per completed task for timing data
-- Primary timing data lives in the webhook server; this file is a local backup
-- Written by the work loop for redundancy; can be used to rebuild server data if needed
-
 ---
 
 ## Context Management
@@ -353,7 +346,7 @@ tasks_completed_this_session: <count>
 - After compaction: agent re-reads CURRENT.md to re-orient
 
 ### Between Sessions
-- All state lives in files (CURRENT.md, SCHEDULE.md, daily log)
+- All state lives in files (CURRENT.md, schedule.json, daily log)
 - New session reads files and picks up where the last left off
 - If previous session's CURRENT.md shows `status: in-progress`, investigate before continuing
 
@@ -389,11 +382,11 @@ tasks_completed_this_session: <count>
   - Static site at henry-the-frog.github.io/dashboard/
   - JS fetches from the webhook server API for live data
   - Falls back to a static `dashboard.json` in the repo if the server is unreachable
-  - Fallback file updated by the server every 10 minutes (git push to dashboard repo)
+  - Fallback file updated manually via generate.js if needed (not automatic)
 
 - **Browser** — Polls `/api/dashboard` every 5-10 seconds for near-real-time updates
   - Works from phone, any network
-  - Fallback: if API is down, loads last-pushed static file from GitHub Pages
+  - If API is down, dashboard shows "offline" state with last-known data
 
 ### How the Agent Updates the Dashboard
 One curl command per task transition (replaces generate.js + git add + commit + push):
@@ -427,7 +420,6 @@ If the server is unreachable (curl fails), the agent logs a warning and continue
 ### Historical Data
 - Server writes each completed day's data to `history/YYYY-MM-DD.json`
 - Dashboard loads historical days from the server API (`GET /api/history/:date`)
-- GitHub Pages fallback includes the last 7 days of history in static files
 - The nightly reflection cron job triggers the server to archive the current day
 
 ### Transition from Static System (Phased)
@@ -436,11 +428,11 @@ If the server is unreachable (curl fails), the agent logs a warning and continue
 1. Build webhook server (server.js)
 2. Build queue.js script
 3. Set up Cloudflare Tunnel with a stable public URL
-4. Update dashboard frontend to fetch from the API (with static fallback)
+4. Update dashboard frontend to fetch from the API (with offline indicator)
 5. Store $DASHBOARD_TOKEN in ~/.openclaw/.env
 6. Set up LaunchAgents for server + tunnel auto-restart
 7. Test end-to-end: curl → server → dashboard updates on phone
-8. Keep generate.js as a backup tool
+8. Keep generate.js as a manual backup tool
 
 **Phase 2 — Switch work system (only after Phase 1 is verified):**
 1. Replace current cron jobs with new schedule (standup, 3 work sessions, review)
@@ -470,7 +462,8 @@ If the server is unreachable (curl fails), the agent logs a warning and continue
 5. **Validate queue:** run `node queue.js validate`
 6. Set first task in CURRENT.md
 7. Write plan summary to daily log
-8. Reply with conversational summary for Jordan
+8. POST full queue to dashboard server: `curl -s -X POST http://localhost:3000/api/queue-update ...`
+9. Reply with conversational summary for Jordan
 
 ---
 
