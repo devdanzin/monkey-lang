@@ -210,6 +210,7 @@ Each work session (A, B, C) runs this loop:
         - Add/remove BUILD slots if goal is bigger/simpler than expected
         - Set context-files in CURRENT.md for next BUILD
         - Log any queue modifications in Adjustments
+        - curl POST to localhost:3000/api/queue-update with updated queue (so dashboard reflects new tasks)
         
       🔨 BUILD:
         - Read context-files if set in CURRENT.md
@@ -258,9 +259,9 @@ Each work session (A, B, C) runs this loop:
    i. GO TO step 3 (immediately — no waiting)
 
 4. ON SESSION EXIT:
-   - Final git commit
+   - Final git commit + push workspace
    - Update CURRENT.md with status: session-ended
-   - Run generate.js one last time
+   - curl POST to localhost:3000/api/task-update with action: "session-ended"
 ```
 
 ---
@@ -464,7 +465,7 @@ If the server is unreachable (curl fails), the agent logs a warning and continue
 | WORK-SYSTEM.md reads/day | 56 | 3 |
 | Mode enforcement | Cron schedule (structural) | Queue position (structural) |
 | Plan changes | THINK blocks only (hourly) | THINK tasks + yield protocol |
-| Dashboard freshness | Every 15 min | Every task start + completion (seconds) |
+| Dashboard freshness | Every 15 min (git push) | Real-time via webhook (~1-2 seconds) |
 | Crash recovery | Next cron in 15 min | Next session at boundary (max 6hr) |
 | Task isolation | Full (fresh session) | Partial (shared session + compaction) |
 | Complexity | 56 cron triggers, complex prompts | 3 sessions, 1 loop, simple queue |
