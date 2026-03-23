@@ -16,5 +16,5 @@ Auto-generated. Standup reads this to match topics against today's tasks.
 - **vm-internals-lua-cpython** | ~~PROMOTED to lessons/vm-internals-production.md~~ | topics: vm,internals,lua,cpython
 - **lua-source-blog-notes** | uses: 1 | created: 2026-03-21 | topics: lua,vm,blog,source-reading
 - **cpython-ceval-dispatch** | uses: 2 | created: 2026-03-21 | topics: cpython,ceval,dispatch,vm,interpreter,tail-call,tier2,jit,specialization
-- **copy-and-patch-jit** | uses: 1 | created: 2026-03-21 | topics: copy-and-patch,jit,cpython,compilation,stencils,templates
+- **copy-and-patch-jit** | uses: 2 | created: 2026-03-21 | topics: copy-and-patch,jit,cpython,compilation,stencils,templates
 - **graalvm-truffle-pe** | uses: 1 | created: 2026-03-21 | topics: graalvm,truffle,partial-evaluation,jit,polyglot,futamura,sea-of-nodes
