@@ -13,8 +13,8 @@
 - 09:00 🧠 THINK — Assess PR status, plan JIT approach (nested loops: inline side trace IR into root)
 - 09:15–09:30 🔨 BUILD — JIT: type specialization for integer arithmetic (pivoted from nested loops — already 13x, low marginal gain)
 - 09:45 🔧 MAINTAIN — Git cleanup, dashboard update, commit
-- 10:00 🧠 THINK — Plan JIT work: nested loops vs type specialization vs constant propagation
-- 10:15–11:30 🔨 BUILD — Monkey JIT: nested loop optimization (inline side trace IR into root trace)
+- 10:00 🧠 THINK — Plan JIT work: assessed optimizer gaps, pivoting to store-to-load forwarding + LICM
+- 10:15–11:30 🔨 BUILD — JIT optimizer: store-to-load forwarding + loop-invariant code motion
 - 11:45 🔧 MAINTAIN — Commit JIT progress, run full test suite
 - 12:00 🧠 THINK — Assess JIT progress, review code quality
 - 12:15–13:00 🔨 BUILD — Continue JIT nested loops or pivot to type specialization
@@ -40,4 +40,4 @@
 
 ## Adjustments
 - 08:15: Weekly synthesis finished at 08:01, freeing 08:30-09:00. Moved PR triage up, added early JIT BUILD block at 09:15.
-- 08:45: Nested loop optimization deprioritized — already 13x speedup, side trace call overhead is <0.2%. Pivoting 09:15 to type specialization (higher impact). This also consolidates with the 15:15 type specialization block.
+- 10:00: Pivoted 10:15-11:30 BUILD from nested loop inlining to JIT optimizer passes (store-to-load forwarding + LICM). Nested loops already 13x; optimizer gaps are higher impact. Constant propagation already exists for literals but not through loads.
