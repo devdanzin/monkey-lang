@@ -1,12 +1,12 @@
 {
-  "generated": "2026-03-23T19:22:10.601Z",
+  "generated": "2026-03-23T19:34:30.551Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "13:15 JIT trace-level integer specialization — algebraic simplification pass, amortized iter check, dead CONST_BOOL elimination",
-    "context": "Added 10th optimizer pass (algebraic simplification), fixed CONST_BOOL false positive from literal index matching, amortized iteration safety check. All 77 tests passing. Traces produce zero-boxing integer arithmetic. `i*2` compiles to `v+v`.",
-    "next": "13:30 BUILD — continue JIT integer specialization (extend to more patterns, or move to string interning)",
-    "startedAt": "2026-03-23T13:28:00-06:00",
+    "task": "13:30 JIT — uncompilable function tracking + algebraic simplification extensions",
+    "context": "Added uncompilableFns set to prevent repeated compilation attempts on functions with unsupported opcodes. Fixed hash access from 0.53x→0.76x, string concat from 0.77x→1.30x. Added NEG(NEG(x))→x, NEG(const)→const, x/x→1 to algebraic simplification. 33 tests, 231 total.",
+    "next": "13:45 BUILD — continue JIT improvements (consider hash index recording or more peephole patterns)",
+    "startedAt": "2026-03-23T13:42:00-06:00",
     "estimatedBlocks": 0
   },
   "schedule": {
@@ -276,10 +276,14 @@
         "time": "13:30",
         "mode": "BUILD",
         "task": "JIT: trace-level integer specialization (raw arithmetic in compiled code)",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "JIT regression fix + algebraic extensions.",
         "artifacts": [],
-        "details": ""
+        "details": "JIT regression fix + algebraic extensions. Added uncompilableFns tracking — functions that fail method compilation are marked to prevent repeated attempts. Hash access: 0.53x→0.76x, string concat: 0.77x→1.30x. Extended algebraic simplification: NEG(NEG(x))→x, NEG(const)→const, x/x→1. 2 new tests. 33 JIT tests, 231 total.",
+        "startedAt": "2026-03-23T13:30:00-06:00",
+        "completedAt": "2026-03-23T13:43:00-06:00",
+        "durationMs": 780000,
+        "durationFormatted": "13m"
       },
       {
         "time": "13:45",
@@ -598,16 +602,16 @@
     "12:30: Blog + benchmark suite both done by 12:15/12:30. Pulled 13:00 THINK early. Repurposed 13:15-14:30 for JIT trace-level integer specialization (compile raw `a+b` instead of boxing). Freed 15:15-16:30 for new work."
   ],
   "stats": {
-    "blocksCompleted": 20,
+    "blocksCompleted": 21,
     "blocksTotal": 54,
     "modeDistribution": {
       "THINK": 2,
       "MAINTAIN": 5,
-      "BUILD": 13
+      "BUILD": 14
     },
-    "totalMinutes": 184,
-    "totalMs": 11010000,
-    "avgDurationMs": 550500
+    "totalMinutes": 197,
+    "totalMs": 11790000,
+    "avgDurationMs": 561429
   },
   "artifacts": [
     {
@@ -827,7 +831,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-18T20:02:08Z",
       "updatedAt": "2026-03-21T20:46:10Z",
-      "ageHours": 119,
+      "ageHours": 120,
       "ciStatus": "pending",
       "reviewStatus": "none"
     }
@@ -983,8 +987,8 @@
   ],
   "scheduleAdherence": {
     "completionRate": 100,
-    "completedBlocks": 20,
-    "pastBlocks": 20,
+    "completedBlocks": 21,
+    "pastBlocks": 21,
     "totalBlocks": 54,
     "plannedDist": {
       "THINK": 7,
@@ -995,7 +999,7 @@
     "actualDist": {
       "THINK": 2,
       "MAINTAIN": 5,
-      "BUILD": 13
+      "BUILD": 14
     },
     "pace": 3.9
   },

@@ -615,12 +615,15 @@ export class VM {
             frame = callFrame;
 
             // Hot function detection — compile function directly (method JIT)
-            if (this.jit && !recording() && !this.jit.getFuncTrace(callee.fn)) {
+            if (this.jit && !recording() && !this.jit.getFuncTrace(callee.fn) && !this.jit.uncompilableFns.has(callee.fn)) {
               if (this.jit.countFuncCall(callee.fn)) {
                 const trace = this.jit.compileFunction(callee.fn, this.constants, this);
                 if (trace) {
                   this.jit.funcTraces.set(callee.fn, trace);
                   this.jit.traceCount++;
+                } else {
+                  // Mark as uncompilable to avoid repeated compilation attempts
+                  this.jit.uncompilableFns.add(callee.fn);
                 }
               }
             }

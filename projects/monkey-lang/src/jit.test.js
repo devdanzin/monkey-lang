@@ -486,6 +486,44 @@ describe('Algebraic simplification', () => {
     const constInst = trace.ir.find(i => i.op === IR.CONST_INT && i.operands.value === 99);
     assert.equal(storeInst.operands.value, constInst.id);
   });
+
+  it('should simplify NEG(NEG(x)) → x', () => {
+    const trace = new Trace('test', 0);
+    trace.addInst(IR.LOOP_START);
+    const loadRef = trace.addInst(IR.LOAD_LOCAL, { slot: 0 });
+    const unboxRef = trace.addInst(IR.UNBOX_INT, { ref: loadRef });
+    const neg1 = trace.addInst(IR.NEG, { ref: unboxRef });
+    const neg2 = trace.addInst(IR.NEG, { ref: neg1 });
+    const boxRef = trace.addInst(IR.BOX_INT, { ref: neg2 });
+    trace.addInst(IR.STORE_GLOBAL, { index: 0, value: boxRef });
+    trace.addInst(IR.LOOP_END);
+
+    const opt = new TraceOptimizer(trace);
+    const simplified = opt.algebraicSimplification();
+    assert.equal(simplified, 1);
+    // The outer NEG is eliminated; inner NEG remains but is now dead (DCE will clean it)
+    // BOX_INT should now reference the original unboxed value, not a NEG
+    const boxInst = trace.ir.find(i => i.op === IR.BOX_INT);
+    const boxTarget = trace.ir[boxInst.operands.ref];
+    assert.equal(boxTarget.op, IR.UNBOX_INT, 'BOX_INT should point to unboxed value, not NEG');
+  });
+
+  it('should simplify x / x → 1', () => {
+    const trace = new Trace('test', 0);
+    trace.addInst(IR.LOOP_START);
+    const loadRef = trace.addInst(IR.LOAD_LOCAL, { slot: 0 });
+    const unboxRef = trace.addInst(IR.UNBOX_INT, { ref: loadRef });
+    const divRef = trace.addInst(IR.DIV_INT, { left: unboxRef, right: unboxRef });
+    const boxRef = trace.addInst(IR.BOX_INT, { ref: divRef });
+    trace.addInst(IR.STORE_GLOBAL, { index: 0, value: boxRef });
+    trace.addInst(IR.LOOP_END);
+
+    const opt = new TraceOptimizer(trace);
+    const simplified = opt.algebraicSimplification();
+    assert.equal(simplified, 1);
+    const constInst = trace.ir.find(i => i.op === IR.CONST_INT && i.operands.value === 1);
+    assert.ok(constInst, 'x / x should be folded to CONST_INT(1)');
+  });
 });
 
 describe('Trace compilation', () => {

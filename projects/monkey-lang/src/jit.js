@@ -437,6 +437,7 @@ export class JIT {
     this.enabled = true;
     this.abortCounts = new Map();  // traceKey → abort count
     this.blacklisted = new Set();  // traceKeys that failed too many times
+    this.uncompilableFns = new Set(); // functions that failed method compilation
   }
 
   // Get a trace key for a loop back-edge
@@ -1687,7 +1688,32 @@ export class TraceOptimizer {
 
         case IR.DIV_INT:
           if (rv === 1) { this._replaceRef(ir, i, left); ir[i] = null; simplified++; }
+          else if (left === right) {
+            // x / x → 1 (assuming x != 0, safe for traced code)
+            inst.op = IR.CONST_INT;
+            inst.operands = { value: 1 };
+            constVals.set(i, 1);
+            simplified++;
+          }
           break;
+
+        case IR.NEG: {
+          const { ref } = inst.operands;
+          const refInst = ir[ref];
+          if (refInst && refInst.op === IR.NEG) {
+            // NEG(NEG(x)) → x
+            this._replaceRef(ir, i, refInst.operands.ref);
+            ir[i] = null;
+            simplified++;
+          } else if (constVals.has(ref)) {
+            // NEG(const) → const
+            inst.op = IR.CONST_INT;
+            inst.operands = { value: -constVals.get(ref) };
+            constVals.set(i, inst.operands.value);
+            simplified++;
+          }
+          break;
+        }
       }
     }
 
