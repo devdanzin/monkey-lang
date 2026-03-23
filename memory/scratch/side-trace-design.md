@@ -1,5 +1,5 @@
 ---
-uses: 1
+uses: 2
 created: 2026-03-22
 last-used: 2026-03-22
 topics: jit, side-traces, guard-exit, trace-linking
