@@ -230,6 +230,82 @@ describe('Trace optimization', () => {
     // CONST_INT(99) should be gone
     assert.ok(!trace.ir.find(i => i.op === IR.CONST_INT && i.operands.value === 99));
   });
+
+  it('should eliminate UNBOX_INT(BOX_INT(x)) → x', () => {
+    const trace = new Trace('test', 0);
+    trace.addInst(IR.LOOP_START);
+    const raw = trace.addInst(IR.CONST_INT, { value: 42 });
+    const boxed = trace.addInst(IR.BOX_INT, { ref: raw });
+    const unboxed = trace.addInst(IR.UNBOX_INT, { ref: boxed });
+    const add = trace.addInst(IR.ADD_INT, { left: unboxed, right: raw });
+    const boxResult = trace.addInst(IR.BOX_INT, { ref: add });
+    trace.addInst(IR.STORE_LOCAL, { slot: 0, value: boxResult });
+    trace.addInst(IR.LOOP_END);
+
+    const opt = new TraceOptimizer(trace);
+    const eliminated = opt.boxUnboxElimination();
+    assert.ok(eliminated >= 1, `should eliminate at least 1 box-unbox pair, got ${eliminated}`);
+    // The UNBOX_INT should be gone — ADD_INT should reference the raw CONST_INT directly
+    assert.ok(!trace.ir.find(i => i.op === IR.UNBOX_INT));
+  });
+
+  it('should eliminate BOX_INT(UNBOX_INT(x)) → x', () => {
+    const trace = new Trace('test', 0);
+    trace.addInst(IR.LOOP_START);
+    const load = trace.addInst(IR.LOAD_LOCAL, { slot: 0 });
+    trace.addInst(IR.GUARD_INT, { ref: load }); trace.guardCount++;
+    const unboxed = trace.addInst(IR.UNBOX_INT, { ref: load });
+    const reboxed = trace.addInst(IR.BOX_INT, { ref: unboxed });
+    trace.addInst(IR.STORE_LOCAL, { slot: 1, value: reboxed });
+    trace.addInst(IR.LOOP_END);
+
+    const opt = new TraceOptimizer(trace);
+    const eliminated = opt.boxUnboxElimination();
+    assert.ok(eliminated >= 1);
+    // The rebox should be gone — STORE should reference the original load
+    const store = trace.ir.find(i => i.op === IR.STORE_LOCAL && i.operands.slot === 1);
+    assert.ok(store);
+    // The value ref should point to the load, not a BOX_INT
+    const valInst = trace.ir[store.operands.value];
+    assert.ok(valInst.op !== IR.BOX_INT, 'BOX_INT(UNBOX_INT(x)) should be eliminated');
+  });
+
+  it('should eliminate dead stores (overwritten before read)', () => {
+    const trace = new Trace('test', 0);
+    trace.addInst(IR.LOOP_START);
+    const c1 = trace.addInst(IR.CONST_INT, { value: 1 });
+    const b1 = trace.addInst(IR.BOX_INT, { ref: c1 });
+    trace.addInst(IR.STORE_LOCAL, { slot: 0, value: b1 }); // dead — overwritten below
+    const c2 = trace.addInst(IR.CONST_INT, { value: 2 });
+    const b2 = trace.addInst(IR.BOX_INT, { ref: c2 });
+    trace.addInst(IR.STORE_LOCAL, { slot: 0, value: b2 }); // this one survives
+    trace.addInst(IR.LOOP_END);
+
+    const opt = new TraceOptimizer(trace);
+    const eliminated = opt.deadStoreElimination();
+    assert.ok(eliminated >= 1, `should eliminate at least 1 dead store, got ${eliminated}`);
+    // Only one STORE_LOCAL to slot 0 should remain
+    const stores = trace.ir.filter(i => i.op === IR.STORE_LOCAL && i.operands.slot === 0);
+    assert.equal(stores.length, 1, 'should have exactly one store to slot 0');
+  });
+
+  it('should not eliminate stores separated by a load', () => {
+    const trace = new Trace('test', 0);
+    trace.addInst(IR.LOOP_START);
+    const c1 = trace.addInst(IR.CONST_INT, { value: 1 });
+    const b1 = trace.addInst(IR.BOX_INT, { ref: c1 });
+    trace.addInst(IR.STORE_LOCAL, { slot: 0, value: b1 }); // needed — load follows
+    const load = trace.addInst(IR.LOAD_LOCAL, { slot: 0 });
+    trace.addInst(IR.GUARD_INT, { ref: load }); trace.guardCount++;
+    const c2 = trace.addInst(IR.CONST_INT, { value: 2 });
+    const b2 = trace.addInst(IR.BOX_INT, { ref: c2 });
+    trace.addInst(IR.STORE_LOCAL, { slot: 0, value: b2 });
+    trace.addInst(IR.LOOP_END);
+
+    const opt = new TraceOptimizer(trace);
+    const eliminated = opt.deadStoreElimination();
+    assert.equal(eliminated, 0, 'should not eliminate stores separated by a load');
+  });
 });
 
 describe('Trace compilation', () => {

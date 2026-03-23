@@ -1424,8 +1424,10 @@ export class TraceOptimizer {
   // Run all optimization passes in order
   optimize() {
     this.storeToLoadForwarding();
+    this.boxUnboxElimination();
     this.redundantGuardElimination();
     this.constantFolding();
+    this.deadStoreElimination();
     this.loopInvariantCodeMotion();
     this.deadCodeElimination();
     return this.trace;
@@ -1510,6 +1512,111 @@ export class TraceOptimizer {
         }
       }
     }
+  }
+
+  // --- Pass 0.5: Box-Unbox Elimination ---
+  // UNBOX_INT(BOX_INT(x)) → x. Also BOX_INT(UNBOX_INT(x)) → x if x is known integer.
+  // This is common after store-to-load forwarding: store(BOX_INT(raw)) → load eliminated →
+  // but downstream still does UNBOX_INT on the BOX_INT ref.
+  boxUnboxElimination() {
+    const ir = this.trace.ir;
+    let eliminated = 0;
+
+    for (let i = 0; i < ir.length; i++) {
+      const inst = ir[i];
+      if (!inst) continue;
+
+      // UNBOX_INT(BOX_INT(x)) → x
+      if (inst.op === IR.UNBOX_INT) {
+        const refInst = ir[inst.operands.ref];
+        if (refInst && refInst.op === IR.BOX_INT) {
+          // Replace all refs to this UNBOX_INT with the raw value inside BOX_INT
+          this._replaceRef(ir, i, refInst.operands.ref);
+          ir[i] = null;
+          eliminated++;
+          continue;
+        }
+      }
+
+      // BOX_INT(UNBOX_INT(x)) → x (if x is a boxed integer, this round-trips)
+      if (inst.op === IR.BOX_INT) {
+        const refInst = ir[inst.operands.ref];
+        if (refInst && refInst.op === IR.UNBOX_INT) {
+          // The original boxed value
+          this._replaceRef(ir, i, refInst.operands.ref);
+          ir[i] = null;
+          eliminated++;
+          continue;
+        }
+      }
+    }
+
+    if (eliminated > 0) this._compact();
+    return eliminated;
+  }
+
+  // --- Pass 2.5: Dead Store Elimination ---
+  // If slot X is stored twice with no intervening load of slot X, the first store is dead.
+  // Also: if a store is to a slot that is never loaded in the trace, it may be dead
+  // (but we keep it for safety — the interpreter may need it on trace exit via snapshots).
+  deadStoreElimination() {
+    const ir = this.trace.ir;
+    // Track last store index per slot
+    const lastStore = new Map(); // key → index in ir
+    const deadStores = new Set();
+
+    for (let i = 0; i < ir.length; i++) {
+      const inst = ir[i];
+      if (!inst) continue;
+
+      if (inst.op === IR.STORE_LOCAL) {
+        const key = `local:${inst.operands.slot}`;
+        if (lastStore.has(key)) {
+          // Previous store to same slot is dead (overwritten before read)
+          deadStores.add(lastStore.get(key));
+        }
+        lastStore.set(key, i);
+        continue;
+      }
+      if (inst.op === IR.STORE_GLOBAL) {
+        const key = `global:${inst.operands.index}`;
+        if (lastStore.has(key)) {
+          deadStores.add(lastStore.get(key));
+        }
+        lastStore.set(key, i);
+        continue;
+      }
+
+      // A load invalidates the "last store" — that store is needed
+      if (inst.op === IR.LOAD_LOCAL) {
+        lastStore.delete(`local:${inst.operands.slot}`);
+        continue;
+      }
+      if (inst.op === IR.LOAD_GLOBAL) {
+        lastStore.delete(`global:${inst.operands.index}`);
+        continue;
+      }
+
+      // CALL invalidates all — callee may read any global/local
+      if (inst.op === IR.CALL || inst.op === IR.SELF_CALL) {
+        lastStore.clear();
+      }
+
+      // LOOP_END: don't eliminate stores that are live across the back-edge
+      // (they feed the next iteration's loads). Clear tracking.
+      if (inst.op === IR.LOOP_END) {
+        lastStore.clear();
+      }
+    }
+
+    let eliminated = 0;
+    for (const idx of deadStores) {
+      ir[idx] = null;
+      eliminated++;
+    }
+
+    if (eliminated > 0) this._compact();
+    return eliminated;
   }
 
   // --- Pass 3.5: Loop-Invariant Code Motion ---

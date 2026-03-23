@@ -1,8 +1,9 @@
 status: done
 mode: BUILD
-task: JIT optimizer: store-to-load forwarding + LICM
-context: Implemented both passes in TraceOptimizer. S2LF tracks last store per slot, forwards loads to stored value refs, invalidates on CALL. LICM finds loop-invariant instructions (all operand refs defined pre-loop or themselves invariant, no side effects) and hoists them above LOOP_START. 4 new tests, all 215 tests passing.
+task: JIT optimizer: box-unbox elimination + dead store elimination
+context: Added two new optimizer passes. Box-unbox elimination removes UNBOX_INT(BOX_INT(x))→x and BOX_INT(UNBOX_INT(x))→x chains. Dead store elimination removes stores overwritten before any load (respects CALLs and LOOP_END boundaries). 4 new tests, all 219 tests passing. Benchmarks stable.
 context-files: lessons/tracing-jit.md
 est: 0
-next: BUILD — Continue JIT optimizer work or move to next schedule item
+next: 11:45 MAINTAIN — commit, full test suite
+updated: 2026-03-23T10:43:00-06:00
 updated: 2026-03-23T10:28:00-06:00
