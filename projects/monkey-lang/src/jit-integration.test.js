@@ -827,4 +827,33 @@ describe('Adaptive quickening', () => {
     // sum of 0..199
     assert.equal(result.value, 19900);
   });
+
+  it('should JIT-compile array index access in loops', () => {
+    const { result } = compileAndRunJIT(`
+      let arr = [10, 20, 30, 40, 50];
+      let sum = 0;
+      let i = 0;
+      while (i < 5) {
+        sum = sum + arr[i];
+        i = i + 1;
+      }
+      sum
+    `);
+    assert.equal(result.value, 150);
+  });
+
+  it('should JIT-compile array index with computed indices', () => {
+    const { result } = compileAndRunJIT(`
+      let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+      let sum = 0;
+      let i = 0;
+      while (i < 10) {
+        sum = sum + arr[i] * arr[i];
+        i = i + 1;
+      }
+      sum
+    `);
+    // 1 + 4 + 9 + 16 + 25 + 36 + 49 + 64 + 81 + 100 = 385
+    assert.equal(result.value, 385);
+  });
 });

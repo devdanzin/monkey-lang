@@ -1,12 +1,12 @@
 {
-  "generated": "2026-03-23T19:34:30.551Z",
+  "generated": "2026-03-23T19:52:45.026Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "13:30 JIT — uncompilable function tracking + algebraic simplification extensions",
-    "context": "Added uncompilableFns set to prevent repeated compilation attempts on functions with unsupported opcodes. Fixed hash access from 0.53x→0.76x, string concat from 0.77x→1.30x. Added NEG(NEG(x))→x, NEG(const)→const, x/x→1 to algebraic simplification. 33 tests, 231 total.",
-    "next": "13:45 BUILD — continue JIT improvements (consider hash index recording or more peephole patterns)",
-    "startedAt": "2026-03-23T13:42:00-06:00",
+    "task": "13:45 BUILD — JIT array index support",
+    "context": "Added INDEX_ARRAY, GUARD_ARRAY, GUARD_BOUNDS IR ops. Array access in loops now JIT-compiled. Fixed LICM hoisting INDEX_ARRAY before bounds guards by marking it side-effecting. Array sum benchmark 5.41x vs VM. 233 tests passing.",
+    "next": "14:00 THINK — Assess JIT progress, plan rest of afternoon",
+    "startedAt": "2026-03-23T14:00:00-06:00",
     "estimatedBlocks": 0
   },
   "schedule": {
@@ -289,10 +289,14 @@
         "time": "13:45",
         "mode": "BUILD",
         "task": "JIT: trace-level integer specialization (raw arithmetic in compiled code)",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "JIT array index support.",
         "artifacts": [],
-        "details": ""
+        "details": "JIT array index support. Added INDEX_ARRAY, GUARD_ARRAY, GUARD_BOUNDS IR ops to trace recorder, optimizer, and compiler. Array element access in loops now JIT-compiled instead of aborting. Fixed critical bug: LICM was hoisting INDEX_ARRAY before bounds guards — marked as side-effecting. New benchmark: array sum (1k elements, 10 passes) = 5.41x vs VM. 2 new integration tests. 233 tests passing.",
+        "startedAt": "2026-03-23T13:45:00-06:00",
+        "completedAt": "2026-03-23T14:00:00-06:00",
+        "durationMs": 900000,
+        "durationFormatted": "15m"
       },
       {
         "time": "14:00",
@@ -602,16 +606,16 @@
     "12:30: Blog + benchmark suite both done by 12:15/12:30. Pulled 13:00 THINK early. Repurposed 13:15-14:30 for JIT trace-level integer specialization (compile raw `a+b` instead of boxing). Freed 15:15-16:30 for new work."
   ],
   "stats": {
-    "blocksCompleted": 21,
+    "blocksCompleted": 22,
     "blocksTotal": 54,
     "modeDistribution": {
       "THINK": 2,
       "MAINTAIN": 5,
-      "BUILD": 14
+      "BUILD": 15
     },
-    "totalMinutes": 197,
-    "totalMs": 11790000,
-    "avgDurationMs": 561429
+    "totalMinutes": 212,
+    "totalMs": 12690000,
+    "avgDurationMs": 576818
   },
   "artifacts": [
     {
@@ -733,6 +737,11 @@
       "mode": "BUILD",
       "time": "13:15",
       "text": "JIT trace-level integer specialization."
+    },
+    {
+      "mode": "BUILD",
+      "time": "13:45",
+      "text": "JIT array index support."
     }
   ],
   "prs": [
@@ -798,7 +807,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
       "updatedAt": "2026-03-21T20:50:26Z",
-      "ageHours": 71,
+      "ageHours": 72,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -809,7 +818,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T18:18:34Z",
       "updatedAt": "2026-03-21T20:46:52Z",
-      "ageHours": 73,
+      "ageHours": 74,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -820,7 +829,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-19T23:18:46Z",
       "updatedAt": "2026-03-21T20:51:20Z",
-      "ageHours": 92,
+      "ageHours": 93,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -987,8 +996,8 @@
   ],
   "scheduleAdherence": {
     "completionRate": 100,
-    "completedBlocks": 21,
-    "pastBlocks": 21,
+    "completedBlocks": 22,
+    "pastBlocks": 22,
     "totalBlocks": 54,
     "plannedDist": {
       "THINK": 7,
@@ -999,7 +1008,7 @@
     "actualDist": {
       "THINK": 2,
       "MAINTAIN": 5,
-      "BUILD": 14
+      "BUILD": 15
     },
     "pace": 3.9
   },

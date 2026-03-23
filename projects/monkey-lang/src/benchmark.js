@@ -80,6 +80,34 @@ const BENCHMARKS = [
       sum
     `,
   },
+  {
+    name: 'array sum (1k elements, 10 passes)',
+    input: `
+      let build = fn(n) {
+        let arr = [0];
+        let i = 1;
+        while (i < n) {
+          arr = push(arr, i);
+          i = i + 1;
+        }
+        arr
+      };
+      let arr = build(1000);
+      let total = 0;
+      let pass = 0;
+      while (pass < 10) {
+        let sum = 0;
+        let j = 0;
+        while (j < 1000) {
+          sum = sum + arr[j];
+          j = j + 1;
+        }
+        total = total + sum;
+        pass = pass + 1;
+      }
+      total
+    `,
+  },
 ];
 
 function parse(input) {

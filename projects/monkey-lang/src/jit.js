@@ -86,6 +86,11 @@ export const IR = {
   // Function calls (bail out to interpreter for now)
   CALL:         'call',          // closure: ref, args: ref[], numArgs: number
 
+  // Array operations
+  INDEX_ARRAY:  'index_array',   // array: ref, index: ref → element (MonkeyObject)
+  GUARD_ARRAY:  'guard_array',   // ref: check this value is MonkeyArray
+  GUARD_BOUNDS: 'guard_bounds',  // array: ref, index: ref → check 0 <= index < length
+
   // Trace stitching (nested loops)
   EXEC_TRACE:   'exec_trace',    // Execute an inner compiled trace; constIdx: index of compiled fn in consts
 
@@ -981,6 +986,29 @@ export class TraceCompiler {
           break;
         }
 
+        case IR.GUARD_ARRAY: {
+          const ref = varNames.get(inst.operands.ref);
+          const exitIp = inst.operands.exitIp != null ? inst.operands.exitIp : this.trace.startIp;
+          this._emitGuardExit(i, exitIp, `!(${ref} && ${ref}.elements)`);
+          this.lines.push(`  const ${v} = ${ref};`);
+          break;
+        }
+
+        case IR.GUARD_BOUNDS: {
+          const arr = varNames.get(inst.operands.left);
+          const idx = varNames.get(inst.operands.right);
+          const exitIp = inst.operands.exitIp != null ? inst.operands.exitIp : this.trace.startIp;
+          this._emitGuardExit(i, exitIp, `(${idx} < 0 || ${idx} >= ${arr}.elements.length)`);
+          break;
+        }
+
+        case IR.INDEX_ARRAY: {
+          const arr = varNames.get(inst.operands.left);
+          const idx = varNames.get(inst.operands.right);
+          this.lines.push(`  const ${v} = ${arr}.elements[${idx}];`);
+          break;
+        }
+
         case IR.GUARD_TRUTHY: {
           const ref = varNames.get(inst.operands.ref);
           const exitIp = inst.operands.exitIp != null ? inst.operands.exitIp : this.trace.startIp;
@@ -1808,8 +1836,10 @@ export class TraceOptimizer {
     // Side-effecting ops cannot be hoisted
     const SIDE_EFFECTS = new Set([
       IR.STORE_LOCAL, IR.STORE_GLOBAL, IR.CALL, IR.SELF_CALL,
-      IR.GUARD_INT, IR.GUARD_BOOL, IR.GUARD_STRING, IR.GUARD_TRUTHY, IR.GUARD_FALSY,
-      IR.LOOP_START, IR.LOOP_END, IR.EXEC_TRACE, IR.FUNC_RETURN
+      IR.GUARD_INT, IR.GUARD_BOOL, IR.GUARD_STRING, IR.GUARD_ARRAY, IR.GUARD_BOUNDS,
+      IR.GUARD_TRUTHY, IR.GUARD_FALSY,
+      IR.LOOP_START, IR.LOOP_END, IR.EXEC_TRACE, IR.FUNC_RETURN,
+      IR.INDEX_ARRAY  // Can fail if bounds guard hasn't run yet; don't hoist
     ]);
 
     // Iteratively find loop-invariant instructions
@@ -2311,7 +2341,8 @@ export class TraceOptimizer {
       if (!inst) continue;
       if (inst.op === IR.STORE_LOCAL || inst.op === IR.STORE_GLOBAL ||
           inst.op === IR.GUARD_INT || inst.op === IR.GUARD_BOOL ||
-          inst.op === IR.GUARD_STRING || inst.op === IR.GUARD_TRUTHY ||
+          inst.op === IR.GUARD_STRING || inst.op === IR.GUARD_ARRAY ||
+          inst.op === IR.GUARD_BOUNDS || inst.op === IR.GUARD_TRUTHY ||
           inst.op === IR.GUARD_FALSY ||
           inst.op === IR.LOOP_START || inst.op === IR.LOOP_END ||
           inst.op === IR.CALL || inst.op === IR.EXEC_TRACE ||

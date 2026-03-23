@@ -510,9 +510,42 @@ export class VM {
         }
 
         case Opcodes.OpIndex: {
-          if (recording()) { this._abortRecording(); }
           const index = this.pop();
           const left3 = this.pop();
+          if (recording()) {
+            if (left3 instanceof MonkeyArray && index instanceof MonkeyInteger) {
+              // Record array index access
+              const idxRef = this.recorder.popRef();
+              const arrRef = this.recorder.popRef();
+              // Guard: left must be array
+              if (this.recorder.knownType(arrRef) !== 'array') {
+                const exitIp = this.recorder.getGuardExitIp();
+                this.recorder.trace.addInst(IR.GUARD_ARRAY, { ref: arrRef, exitIp });
+                this.recorder.typeMap.set(arrRef, 'array');
+                this.recorder.trace.guardCount++;
+              }
+              // Guard: index must be int
+              if (this.recorder.knownType(idxRef) !== 'int' && this.recorder.knownType(idxRef) !== 'raw_int') {
+                this.recorder.guardType(idxRef, index);
+              }
+              // Unbox index
+              let idxUnboxed = idxRef;
+              if (this.recorder.knownType(idxRef) !== 'raw_int') {
+                idxUnboxed = this.recorder.trace.addInst(IR.UNBOX_INT, { ref: idxRef });
+                this.recorder.typeMap.set(idxUnboxed, 'raw_int');
+              }
+              // Bounds guard
+              const exitIp2 = this.recorder.getGuardExitIp();
+              this.recorder.trace.addInst(IR.GUARD_BOUNDS, { left: arrRef, right: idxUnboxed, exitIp: exitIp2 });
+              this.recorder.trace.guardCount++;
+              // Emit index_array
+              const resultRef = this.recorder.trace.addInst(IR.INDEX_ARRAY, { left: arrRef, right: idxUnboxed });
+              this.recorder.typeMap.set(resultRef, 'object');
+              this.recorder.pushRef(resultRef);
+            } else {
+              this._abortRecording();
+            }
+          }
           if (left3 instanceof MonkeyArray && index instanceof MonkeyInteger) {
             const i = index.value;
             if (i < 0 || i >= left3.elements.length) {
