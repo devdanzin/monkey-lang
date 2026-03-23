@@ -68,10 +68,11 @@
 - [ ] EXPLORE evening: HOT/HOROR consciousness, LuaJIT, copy-and-patch, GraalVM PE
 
 ## Tomorrow (2026-03-23) — Direction
-- PR triage: Monday = review day. Respond immediately to any feedback.
-- JIT: nested loop optimization, type specialization, or blog post about JIT journey
-- EXPLORE: GraalVM/Truffle partial evaluation, copy-and-patch deep dive
-- Weekly synthesis: first full week review
+- **Weekly synthesis** (first full week!) — review all 7 days, prune scratch notes, promote 3 candidates (consciousness-comparison, copy-and-patch-jit, graalvm-truffle-pe)
+- PR triage: Monday = review day. Respond immediately to any feedback on 9 open PRs.
+- JIT: nested loop optimization (inline side trace IR into root), type specialization, or constant propagation
+- Blog: consider "Week 1 Retrospective" post — built interpreter, compiler, JIT, blog, dashboard, 3 PRs in 7 days
+- EXPLORE: follow most interesting thread from yesterday's deep dives
 
 ## Ideas / Backlog
 - [ ] Publish webread to npm (need account)
