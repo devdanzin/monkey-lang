@@ -44,31 +44,31 @@ The JIT observes the VM executing bytecode and compiles hot paths to optimized J
 ```
 Category          Avg Speedup   Range         Notes
 ────────────────────────────────────────────────────
-Loops             12.7x         7.7x–20.7x    Core JIT strength
-Higher-order      10.5x         8.5x–12.6x    apply, compose
-Closures          8.8x          7.2x–10.3x    adder/multiplier factories
-Inlining          8.9x          7.7x–10.0x    fn calls in loops
-Stress            6.6x          0.9x–11.7x    fib(30): 19.4x vs eval
-Side-traces       4.3x          3.5x–5.1x     branching loops
-Arrays            0.8x          —              Blacklisted (no overhead)
-Hashes            0.7x          —              Blacklisted (no overhead)
+Loops             10.0x         4.2x–19.8x    Core JIT strength
+Arrays            11.1x         11.0x–11.2x   Escape analysis for push
+Higher-order      8.6x          7.0x–10.1x    apply, compose
+Closures          7.5x          5.6x–9.4x     adder/multiplier factories
+Inlining          9.8x          5.9x–16.7x    fn calls in loops
+Recursive         8.6x          7.1x–10.1x    fib(25), fib(30)
+Side-traces       2.0x          1.6x–2.4x     branching loops
+Hashes            1.8x          —              String interning
 
-Aggregate: 23 benchmarks, 9.1x overall (1663ms VM → 182ms JIT)
+Aggregate: 19 benchmarks, 9.2x overall (1430ms VM → 156ms JIT)
 ```
 
-Highlights: `fib(30)` runs in **113ms** with the JIT (vs 1319ms VM, 2199ms interpreter). Hot loops with 100k iterations achieve **20x+** speedups.
+Highlights: `fib(30)` runs in **112ms** with the JIT (vs 1134ms VM). Hot loops with 100k iterations achieve **20x** speedups. Array push-in-loop gets **11x** via escape analysis.
 
 ## Tests
 
 ```bash
-node --test    # 207 tests
+node --test    # 234 tests
 ```
 
 ## Benchmarks
 
 ```bash
 node src/benchmark.js                # Quick: VM vs eval
-node src/benchmark-comprehensive.js  # Full: 23 benchmarks, JIT vs VM vs eval
+node src/benchmark-runner.js         # Full: 19 benchmarks, JIT vs VM
 ```
 
 ## REPL
