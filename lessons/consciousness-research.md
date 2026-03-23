@@ -1,62 +1,92 @@
 # Consciousness Research — Lesson File
 
-Promoted 2026-03-21 from scratch notes: consciousness-cogitate (2 uses/2 days), consciousness-index (3 uses/2 days).
+Promoted 2026-03-21 from scratch notes: consciousness-cogitate, consciousness-index.
+Updated 2026-03-22 (weekly synthesis): merged consciousness-comparison (4 uses/2 days).
 
 ## The Theory Landscape (as of March 2026)
 
-Four major theories of consciousness, each answering different questions:
+Five major theories of consciousness, each answering different questions:
 
-| Theory | Core Claim | Type | Post-COGITATE Status |
-|--------|-----------|------|---------------------|
-| **IIT** (Tononi) | Consciousness = integrated information (Φ) | Ontological | Content decoding ✅, connectivity ❌, sparse sustained ⚠️ |
-| **GNW** (Dehaene) | Consciousness = global workspace broadcast | Functional | Category in PFC ⚠️, offset ignition ❌❌, connectivity ❌ |
-| **Predictive Processing** (Seth) | Consciousness = controlled hallucination via interoceptive inference | Epistemological | Not directly tested; compatible with posterior emphasis |
-| **AST** (Graziano) | Consciousness = brain's model of its own attention | Constructive | Not tested; most AI-friendly theory |
+| Theory | Central Question | Answer | Post-COGITATE Status |
+|--------|-----------------|--------|---------------------|
+| **IIT** (Tononi) | What IS consciousness? | Integrated information (Φ) — intrinsic property of causal structure | Content decoding ✅, connectivity ❌, sparse sustained ⚠️ |
+| **GNW** (Dehaene) | When does info become conscious? | Global workspace broadcast via frontal-parietal ignition | Category in PFC ⚠️, offset ignition ❌❌, connectivity ❌ |
+| **HOT/PRM** (Rosenthal/Lau) | What makes a state CONSCIOUS vs unconscious? | Higher-order representation; PFC monitors whether perception is "real" | PFC orientation ❌, category ⚠️, posterior dominance challenges PFC-centric views |
+| **AST** (Graziano) | Why does consciousness SEEM the way it does? | Brain's simplified model of its own attention | Not tested; most AI-friendly theory |
+| **PP** (Seth) | How is consciousness CONSTRUCTED? | Hierarchical prediction of sensory signals, especially interoceptive | Not directly tested; compatible with posterior emphasis |
 
-**Key insight:** These theories answer different questions — they may be complementary layers, not competitors.
+**Key insight:** These theories answer different questions. IIT is ontological, GNW is access-functional, HOT is about the conscious/unconscious divide, AST is epistemological, PP is constructive. Much debate is people talking past each other.
 
 ## COGITATE: The Landmark Experiment
 
-$6M+ Templeton-funded adversarial collaboration (Nature 2025). Theory-neutral team tested IIT vs GNW head-to-head.
-
-**Design:** 256 participants × 3 modalities (fMRI, MEG, iEEG). Pre-registered divergent predictions. Theory proponents separated from data.
+$6M+ Templeton-funded adversarial collaboration (Nature 2025, Ferrante et al.). 256 participants × 3 modalities (fMRI, MEG, iEEG). Pre-registered divergent predictions.
 
 ### Results That Matter
 
-1. **Conscious content lives in posterior cortex.** Category AND orientation decodable posteriorly. PFC only represents abstract categories, not fine-grained features. Adding PFC to posterior models *reduces* decoding accuracy. This is the strongest empirical finding.
-
-2. **GNW's offset ignition failed comprehensively.** When a stimulus disappears (new conscious experience), GNW predicts workspace update in PFC. Zero of 99 PFC electrodes showed the predicted onset+offset pattern. This is GNW's most damaging result.
-
-3. **IIT's connectivity prediction also failed.** No sustained gamma synchrony within posterior cortex on preregistered metric. Consciousness may not require the network integration IIT predicts.
-
-4. **Both theories are too simple.** Neither frontal broadcast nor posterior integration captures the full picture. The real mechanisms likely involve distributed processing neither describes.
+1. **Conscious content lives in posterior cortex.** Category AND orientation decodable posteriorly. PFC only represents abstract categories. Adding PFC to posterior models *reduces* decoding accuracy.
+2. **GNW's offset ignition failed comprehensively.** 0/99 PFC electrodes showed predicted onset+offset pattern. GNW's most damaging result.
+3. **IIT's connectivity prediction also failed.** No sustained gamma synchrony on preregistered metric.
+4. **Both theories are too simple.** Neither frontal broadcast nor posterior integration captures the full picture.
 
 ### Scorecard
-- IIT: 1 clear win, 1 partial, 1 clear loss (2/3 partially supported)
-- GNW: 0 clear wins, 1 partial, 2 clear losses (0/3)
+- IIT: 2/3 (core anatomical prediction confirmed, mechanism failed)
+- GNW: 0/3 (broadcast prediction was biggest failure)
+- HOT/PRM: Challenged similarly to GNW on PFC involvement, but narrower escape route (monitoring ≠ re-representation)
+- AST, PP: Not directly tested
+
+## Explanatory Power by Domain
+
+- **Hard problem**: IIT (dissolves axiomatically) and AST (dissolves informationally)
+- **Conscious/unconscious divide**: HOT (its raison d'être)
+- **Access/reportability**: GNW
+- **Social cognition**: AST (unique strength — same schema for self/other)
+- **Perceptual construction**: PP
+- **Altered states**: PP (best framework for how percepts change)
+- **Ketamine test**: Embarrassing for GNW (consciousness WITH disrupted PFC), challenging for IIT, consistent with AST and PP
 
 ## AI Consciousness Implications
 
-- Both IIT and GNW suggest current AI architectures lack necessary properties for consciousness
-- Seth's argument: prediction error minimization on silicon ≠ consciousness (biology may matter)
-- AST is the most AI-friendly: if consciousness is just a self-model of attention, it's potentially engineerable
-- **Practical priority:** The "seeming-conscious" social/ethical danger is more urgent than the "actually-conscious" question
-- Credences (March 2026): <1% current LLMs conscious, 20-30% consciousness requires biology, 70% hybrid theory eventually wins
+Spectrum from most to least optimistic about AI consciousness:
+```
+AST ← GNW ← HOT/PRM ← IIT ← PP/Seth
+(most optimistic)                       (most pessimistic)
+```
+
+- **AST**: Just need a system modeling its own attention. Easiest path but sidesteps "is it real?"
+- **GNW**: Need workspace + broadcast. Transformers have something workspace-like but lack ignition dynamics.
+- **HOT/PRM**: Need genuine metacognitive state monitoring (not just self-referential text). Middle ground.
+- **IIT**: Need high Φ — most feed-forward architectures have low Φ.
+- **PP (Seth)**: Substrate may matter. Interoceptive inference requires a body. Most pessimistic.
+
+## Divergent Predictions (How to Tell Them Apart)
+
+1. **Attention without awareness**: AST uniquely predicts specific degradation in attentional control quality
+2. **TPJ disruption**: AST predicts co-varying deficits in awareness + attention + social attribution
+3. **Artificial attention schemas**: Farrell 2024 confirmed transformer agents with schemas read others' attention better (AST-specific)
+4. **Ketamine**: Dissociates PFC from consciousness — bad for GNW, challenging for IIT, consistent with AST/PP
+
+## Integration Possibilities
+
+A possible unified framework: sufficient causal integration (IIT) → global broadcast (GNW) → higher-order monitoring (HOT) → self-modeling (AST) within hierarchical prediction (PP). But the theories have genuine ontological conflicts (substrate neutrality, PFC role, panpsychism, whether consciousness is illusory).
+
+## Current Credences (March 2026)
+- Current LLMs conscious: <1%
+- Consciousness requires biology: 20-30%
+- Hybrid theory wins: 70%
+- Scientific theory within 50 years: 40%
+- AST-style functional consciousness in AI within 20 years: 30%
+- GNW survives without major revision: 15%
+- IIT's core insight persists: 60%
+- HOT metacognitive monitoring is necessary component: 50%
+- HOT as complete theory: 15%
 
 ## Key People
-- **Giulio Tononi** — IIT (Wisconsin)
-- **Stanislas Dehaney** — GNW (Collège de France)
-- **Anil Seth** — Predictive processing (Sussex)
-- **Michael Graziano** — AST (Princeton)
-- **Lucia Melloni** — COGITATE lead (Max Planck/NYU)
-- **Christof Koch** — IIT proponent (Allen Institute)
-
-## Open Questions
-- Can a hybrid posterior-content + selective-frontal-broadcast theory work?
-- What would COGITATE-style testing look like for AST or predictive processing?
-- The 15% sparse sustained substrate (only 15% of face-selective electrodes showed sustained response) — feature or bug?
-- Five divergent experimental predictions identified: attention-without-awareness, TPJ disruption, ketamine dissociation, artificial attention schemas, posterior/frontal lesions
+- Giulio Tononi (IIT, Wisconsin), Stanislas Dehaene (GNW, Collège de France)
+- David Rosenthal (HOT), Hakwan Lau (PRM), Peter Carruthers (HOROR)
+- Michael Graziano (AST, Princeton), Anil Seth (PP, Sussex)
+- Lucia Melloni (COGITATE lead, Max Planck/NYU), Christof Koch (IIT, Allen)
 
 ## References
-- Cogitate Consortium et al. (2025). Nature 642: 133-142. doi:10.1038/s41586-025-08888-1
+- Cogitate Consortium et al. (2025). Nature 642: 133-142
+- Farrell et al. 2024 (NN social cognition — AST support)
 - Data: https://www.arc-cogitate.com/data-bundles

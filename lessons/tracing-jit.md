@@ -1,6 +1,16 @@
-# Tracing JIT Compilation: How LuaJIT and PyPy Work
+# JIT Compilation Paradigms: Tracing, Copy-and-Patch, Partial Evaluation
 
-> Promoted from `memory/scratch/tracing-jit-compilation.md` on 2026-03-22 (4 uses across 3 days)
+> Originally promoted as tracing-jit from scratch on 2026-03-22 (4 uses/3 days).
+> Expanded 2026-03-22 (weekly synthesis): merged copy-and-patch-jit (2 uses/2 days), graalvm-truffle-pe (2 uses/2 days).
+
+Three major JIT paradigms for dynamic languages, ordered by complexity:
+1. **Copy-and-patch** (CPython 3.13+): memcpy pre-compiled templates, patch in operands. ~4K LOC, 5-9% speedup.
+2. **Tracing** (LuaJIT, PyPy): record hot execution paths, compile linear traces. ~60K LOC (LuaJIT), 2-50x speedups.
+3. **Partial evaluation** (GraalVM/Truffle): symbolically specialize interpreter on program AST. ~500K LOC, 3-30x speedups.
+
+---
+
+# Part 1: Tracing JIT — LuaJIT and PyPy
 
 A deep dive into trace-based JIT compilation — the technique that makes LuaJIT the fastest dynamic language VM and PyPy a serious Python alternative.
 
@@ -304,7 +314,81 @@ Level 3 (default) enables: fold, cse, dce, fwd (store-to-load forwarding), dse (
 
 5. **Trace linking is direct.** Side traces don't go through any dispatch — `lj_asm_patchexit` literally patches the parent trace's machine code to jump to the child trace's machine code. This is zero-overhead trace-to-trace transitions.
 
+---
+
+# Part 2: Copy-and-Patch — CPython 3.13+
+
+Based on Xu et al. 2021. Instead of building a compiler backend, **pre-compile each operation to machine code at build time**, then at runtime just **copy** the template and **patch** in runtime-specific values. It's a runtime linker.
+
+## How It Works
+
+**Build time** (Tools/jit/): For each micro-op, compile with Clang (`-Os -fno-builtin`), extract machine code bytes + relocations via `llvm-readobj`, store as C arrays. Key flags: `-Os` (not `-O2` — avoids tail-duplication/nop-padding), `-fno-stack-protector`, `-fno-asynchronous-unwind-tables`.
+
+**Runtime** (_PyJIT_Compile): Walk trace, sum stencil sizes, `mmap` contiguous region, for each uop: `memcpy` code + data, patch holes (relocations), advance pointers. Then `mprotect(PROT_EXEC|PROT_READ)`.
+
+**Template design**: `preserve_none` CC + `musttail` returns = continuation-passing style. Each uop tail-calls the next (compiles to direct jump when adjacent). TOS cache passes up to 3 values in registers between uops (poor man's register allocation).
+
+## Key Architectural Insights
+
+1. **Compilation is linking.** JIT "compilation" is just replaying object file relocations at runtime.
+2. **Optimize at the right level.** Tier-2 optimizer does constant folding/type propagation; copy-and-patch just lowers to machine code. No second optimization pass needed.
+3. **The compiler does the hard work.** Clang at build time handles instruction selection, scheduling, register allocation within each template.
+4. **Modest but compounding.** 5-9% over tier-2 interpretation. Compounds with tier-2 optimizer gains (20-40%).
+5. **`musttail` + `preserve_none` = elegant dispatch.** The calling convention IS the dispatch mechanism.
+
+## Hole Types & Platform Abstraction
+
+Holes: CODE, DATA, OPARG, OPERAND0/1, JUMP_TARGET, ERROR_TARGET, TARGET. Platform-specific patch functions: x86_64 (patch_32r, patch_64), AArch64 (patch_aarch64_26r/21r/12 + ADRP+LDR fold), i686 (patch_32). GOT eliminated at build time. All uops compile concurrently via asyncio.TaskGroup.
+
+## vs. Other JIT Approaches
+
+- vs. Tracing (LuaJIT): Much simpler (~4K vs ~60K LOC), no cross-uop optimization, no register allocation across ops
+- vs. PE (Truffle): ~4K vs ~500K LOC. No global optimization. GraalPy 3-4x > CPython; CPython JIT adds 5-9%
+- vs. Interpretation: Eliminates dispatch overhead, instruction decode; enables CPU branch prediction on actual program flow
+
+---
+
+# Part 3: Partial Evaluation — GraalVM/Truffle
+
+**Write an interpreter, get a compiler for free.** Like PyPy's meta-tracing but via partial evaluation: symbolically execute interpreter with a known program AST, constant-fold away interpretation overhead. Produces method-level IR graphs (all paths), not linear traces (one path).
+
+## How It Works
+
+1. **AST interpreter in Java** with `@Specialization`-annotated nodes (inline caching at every node)
+2. **Self-specializing execution**: nodes rewrite themselves to match observed types during warmup
+3. **Partial evaluation**: when hot, inline all execute() calls (AST nodes are compilation constants), constant-fold tree structure away, leaving only actual computation. This is the **first Futamura projection**.
+4. **Graal optimization**: sea-of-nodes IR → escape analysis, GVN, loop opts, speculative optimizations with deopt
+5. **Code generation**: register allocation, machine code emission
+
+## Sea-of-Nodes IR
+
+- **Fixed nodes** (control flow): begin, end, if, merge, loop, deopt, invoke
+- **Floating nodes** (values): arithmetic, loads, constants — scheduler decides placement
+- **Why powerful**: LICM is free (floating nodes naturally hoist), GVN is structural identity, deopt is cheap (frame states are metadata, not maintained on fast path)
+
+## Key Design Decisions
+
+- **AST not bytecode**: tree shape tells compiler operation order; self-specialization is natural on trees. Post-22.1 Bytecode DSL gives fast interpreter mode while preserving PE.
+- **`@TruffleBoundary`**: controls PE inlining depth
+- **Assumptions**: compiled code depends on runtime invariants; invalidation triggers global deoptimization
+- **Polyglot**: cross-language optimization — JS calling Ruby inlined into same compilation unit
+
+## vs. Tracing (PyPy)
+
+| Dimension | Tracing | Partial Evaluation |
+|-----------|---------|-------------------|
+| Output | Linear traces | Method-level graphs |
+| Polymorphism | Guard failures → trace explosion | Speculative specialization + deopt |
+| Warmup | Moderate | Slowest (AST interp + PE + Graal) |
+| Peak perf | Excellent on loops | Excellent on complex/branchy code |
+
+## Futamura Projections in Practice
+
+- **1st** (Truffle): specialize(interpreter, program) → compiled program. Done at runtime.
+- **2nd** (PyPy): specialize(specializer, interpreter) → compiler. Done at build time.
+- **3rd**: specialize(specializer, specializer) → compiler generator. Still theoretical.
+
 ## See Also
 - `lessons/dispatch-strategies.md` — optimization techniques applicable to JS-based VMs
-- `lessons/vm-internals-lua-cpython.md` — production VM architecture comparison
-- `lessons/compiler-vm.md` — my Monkey compiler/VM implementation notes
+- `lessons/vm-internals-production.md` — production VM architecture comparison
+- `lessons/compiler-vm-design.md` — Monkey compiler/VM implementation notes
