@@ -1,8 +1,8 @@
 status: done
 mode: BUILD
-task: Dashboard: improved historical day parsing + polish
-context: Fixed parseRecentDays — block counts from header text + block-times.jsonl, narrative-format highlights (Major Deliverables), fallback mode distributions. Recent days now show accurate data (56, 56, 52, 31 blocks). Dashboard committed and pushed.
-context-files: 
-est: 0
-next: JIT work or V2 implementation
-updated: 2026-03-23T17:40:00-06:00
+task: V2 work system: implement queue.js
+context: queue.cjs complete — all 11 commands working (next, start, done, fill, yield, move, remove, add, backlog, validate, init). CJS because workspace has "type":"module". Tested full lifecycle. Removed test schedule.json.
+context-files: WORK-SYSTEM-V2.md
+est: 2
+next: V2: dashboard webhook server or cron prompt template
+updated: 2026-03-23T17:55:00-06:00
