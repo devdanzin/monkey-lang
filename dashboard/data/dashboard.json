@@ -1,12 +1,12 @@
 {
-  "generated": "2026-03-23T22:11:55.031Z",
+  "generated": "2026-03-23T22:17:48.313Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "JIT LICM codegen for hash lookups — attempted pre-loop emission",
-    "context": "Tried to hoist hash lookups (GUARD_HASH + INDEX_HASH) before the while() loop in codegen. IR-level LICM works but codegen fails because pre-loop guard exits reference the 'loop:' label (continue loop / side trace dispatch) which doesn't exist yet. Reverted. Hash lookups remain 2.0x — bottleneck is JS Map.get() per iteration. Need proper pre-loop codegen infrastructure to fix.",
+    "task": "Lexer fix — allow digits in identifiers after first character",
+    "context": "Fixed readIdentifier() to accept digits after first char (e.g., x1, var2b). 1 new test. 234 tests, 19/19 benchmarks, 9.51x aggregate. Also reverted LICM codegen in previous block.",
     "next": "16:45 MAINTAIN — Commit, run benchmarks, update README",
-    "startedAt": "2026-03-23T16:15:00-06:00",
+    "startedAt": "2026-03-23T16:25:00-06:00",
     "estimatedBlocks": 0
   },
   "schedule": {
@@ -411,10 +411,14 @@
         "time": "16:15",
         "mode": "BUILD",
         "task": "JIT: string interning / hash consing OR Monkey string improvements",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "Fixed lexer — identifiers now allow digits after first char (x1, var2b).",
         "artifacts": [],
-        "details": ""
+        "details": "Fixed lexer — identifiers now allow digits after first char (x1, var2b). Fixes limitation found during benchmark creation. 234 tests, 19/19 benchmarks, 9.51x aggregate.",
+        "startedAt": "2026-03-23T16:15:00-06:00",
+        "completedAt": "2026-03-23T16:25:00-06:00",
+        "durationMs": 600000,
+        "durationFormatted": "10m"
       },
       {
         "time": "16:30",
@@ -634,16 +638,16 @@
     "12:30: Blog + benchmark suite both done by 12:15/12:30. Pulled 13:00 THINK early. Repurposed 13:15-14:30 for JIT trace-level integer specialization (compile raw `a+b` instead of boxing). Freed 15:15-16:30 for new work."
   ],
   "stats": {
-    "blocksCompleted": 29,
+    "blocksCompleted": 30,
     "blocksTotal": 54,
     "modeDistribution": {
       "THINK": 3,
       "MAINTAIN": 5,
-      "BUILD": 21
+      "BUILD": 22
     },
-    "totalMinutes": 302,
-    "totalMs": 18090000,
-    "avgDurationMs": 623793
+    "totalMinutes": 312,
+    "totalMs": 18690000,
+    "avgDurationMs": 623000
   },
   "artifacts": [
     {
@@ -1034,8 +1038,8 @@
   ],
   "scheduleAdherence": {
     "completionRate": 94,
-    "completedBlocks": 29,
-    "pastBlocks": 31,
+    "completedBlocks": 30,
+    "pastBlocks": 32,
     "totalBlocks": 54,
     "plannedDist": {
       "THINK": 7,
@@ -1046,7 +1050,7 @@
     "actualDist": {
       "THINK": 3,
       "MAINTAIN": 5,
-      "BUILD": 21
+      "BUILD": 22
     },
     "pace": 3.7
   },

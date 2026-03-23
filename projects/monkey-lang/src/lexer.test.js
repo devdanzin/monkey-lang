@@ -66,6 +66,18 @@ let result = add(five, ten);`;
     assert.equal(tok.literal, 'hello world');
   });
 
+  it('allows digits in identifiers after first character', () => {
+    const input = 'let x1 = a5 + var2b;';
+    const lexer = new Lexer(input);
+    const tokens = lexer.tokenize();
+    assert.equal(tokens[1].type, TokenType.IDENT);
+    assert.equal(tokens[1].literal, 'x1');
+    assert.equal(tokens[3].type, TokenType.IDENT);
+    assert.equal(tokens[3].literal, 'a5');
+    assert.equal(tokens[5].type, TokenType.IDENT);
+    assert.equal(tokens[5].literal, 'var2b');
+  });
+
   it('tokenizes all keywords', () => {
     const input = 'fn let true false if else return';
     const lexer = new Lexer(input);
