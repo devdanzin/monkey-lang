@@ -16,10 +16,10 @@
 - 10:00 🧠 THINK — Plan JIT work: assessed optimizer gaps, pivoting to store-to-load forwarding + LICM
 - 10:15–11:30 🔨 BUILD — JIT optimizer: store-to-load forwarding + loop-invariant code motion
 - 11:45 🔧 MAINTAIN — Commit JIT progress, run full test suite
-- 12:00 🧠 THINK — Assess JIT progress, review code quality
-- 12:15–13:00 🔨 BUILD — Continue JIT nested loops or pivot to type specialization
-- 13:00 🧠 THINK — Midday review: morning output assessment, afternoon planning
-- 13:15–14:30 🔨 BUILD — Blog: "Week 1 Retrospective" — interpreter→compiler→JIT in 7 days
+- 11:45 🧠 THINK — Assess JIT progress (pulled early, MAINTAIN done). 14.2x loop, 5.3x fib. 9 optimizer passes. Code quality good.
+- 12:15–13:00 🔨 BUILD — Blog: "Week 1 Retrospective" — interpreter→compiler→JIT in 7 days (moved up, JIT in great shape)
+- 13:00 🧠 THINK — Midday review: blog progress, afternoon planning
+- 13:15–14:30 🔨 BUILD — Continue blog / JIT benchmark suite
 - 14:45 🔧 MAINTAIN — Publish blog post, commit, check PRs again
 - 15:00 🧠 THINK — Evaluate blog quality, plan afternoon BUILD
 - 15:15–16:30 🔨 BUILD — JIT: type specialization for integer arithmetic (specialize guards + fast paths)
@@ -41,3 +41,4 @@
 ## Adjustments
 - 08:15: Weekly synthesis finished at 08:01, freeing 08:30-09:00. Moved PR triage up, added early JIT BUILD block at 09:15.
 - 10:00: Pivoted 10:15-11:30 BUILD from nested loop inlining to JIT optimizer passes (store-to-load forwarding + LICM). Nested loops already 13x; optimizer gaps are higher impact. Constant propagation already exists for literals but not through loads.
+- 11:45: THINK pulled early (11:45 MAINTAIN already done). JIT optimizer complete — 9 passes, 14.2x/5.3x speedups, 224 tests. Moved blog to 12:15 (from 13:15), freed 13:15 for blog continuation or benchmark suite.
