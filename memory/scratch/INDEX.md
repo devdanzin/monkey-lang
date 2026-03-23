@@ -18,3 +18,4 @@ Auto-generated. Standup reads this to match topics against today's tasks.
 - **cpython-ceval-dispatch** | uses: 2 | created: 2026-03-21 | topics: cpython,ceval,dispatch,vm,interpreter,tail-call,tier2,jit,specialization
 - **copy-and-patch-jit** | uses: 2 | created: 2026-03-21 | topics: copy-and-patch,jit,cpython,compilation,stencils,templates
 - **graalvm-truffle-pe** | uses: 2 | created: 2026-03-21 | topics: graalvm,truffle,partial-evaluation,jit,polyglot,futamura,sea-of-nodes
+- **deoptimization-jit** | uses: 1 | created: 2026-03-22 | topics: deoptimization,jit,v8,graal,truffle,guards,on-stack-replacement,speculative-optimization

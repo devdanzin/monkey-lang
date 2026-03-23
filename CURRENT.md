@@ -1,8 +1,8 @@
 status: done
-mode: THINK
-task: 21:00 THINK — Day retrospective, lessons, tomorrow direction
-context: Day 7 retro complete. 3 scratch notes queued for promotion. Monday = weekly synthesis + PR triage.
-context-files: memory/scratch/INDEX.md
+mode: EXPLORE
+task: 21:15 EXPLORE — Free explore: deoptimization in production JITs
+context: Deep dive on V8 lazy unlinking, Graal/Truffle pervasive deopt, Chris Seaton's "Deoptimizing Ruby" analysis. Created scratch note. Key insight: deopt is the enabling mechanism for speculative optimization, not just error recovery.
+context-files: memory/scratch/deoptimization-jit.md
 est: 0
-next: 21:15 EXPLORE — Free explore
-updated: 2026-03-22T21:02:00-06:00
+next: 21:30 BUILD — Polish anything from the day
+updated: 2026-03-22T21:15:00-06:00
