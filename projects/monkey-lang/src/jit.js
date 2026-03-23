@@ -1423,8 +1423,10 @@ export class TraceOptimizer {
 
   // Run all optimization passes in order
   optimize() {
+    this.storeToLoadForwarding();
     this.redundantGuardElimination();
     this.constantFolding();
+    this.loopInvariantCodeMotion();
     this.deadCodeElimination();
     return this.trace;
   }
@@ -1433,6 +1435,231 @@ export class TraceOptimizer {
   // If we store a value to a global/local and later load from the same slot
   // (with no intervening store to that slot), replace the load with the stored value.
   // This eliminates the box→store→load→guard→unbox chain across loop iterations.
+  storeToLoadForwarding() {
+    const ir = this.trace.ir;
+    // Track last stored value ref per slot: 'local:N' or 'global:N' → IR ref
+    const lastStore = new Map();
+    let forwarded = 0;
+
+    for (let i = 0; i < ir.length; i++) {
+      const inst = ir[i];
+      if (!inst) continue;
+
+      // Track stores
+      if (inst.op === IR.STORE_LOCAL) {
+        lastStore.set(`local:${inst.operands.slot}`, inst.operands.value);
+        continue;
+      }
+      if (inst.op === IR.STORE_GLOBAL) {
+        lastStore.set(`global:${inst.operands.index}`, inst.operands.value);
+        continue;
+      }
+
+      // Forward loads
+      if (inst.op === IR.LOAD_LOCAL) {
+        const key = `local:${inst.operands.slot}`;
+        const storedRef = lastStore.get(key);
+        if (storedRef !== undefined) {
+          // Replace this load with a reference to the stored value
+          // We need to remap all references to this instruction to point to storedRef
+          this._replaceRef(ir, i, storedRef);
+          ir[i] = null;
+          forwarded++;
+        }
+        continue;
+      }
+      if (inst.op === IR.LOAD_GLOBAL) {
+        const key = `global:${inst.operands.index}`;
+        const storedRef = lastStore.get(key);
+        if (storedRef !== undefined) {
+          this._replaceRef(ir, i, storedRef);
+          ir[i] = null;
+          forwarded++;
+        }
+        continue;
+      }
+
+      // CALL invalidates all stores (callee may modify anything)
+      if (inst.op === IR.CALL || inst.op === IR.SELF_CALL) {
+        lastStore.clear();
+      }
+    }
+
+    if (forwarded > 0) this._compact();
+    return forwarded;
+  }
+
+  // Replace all references to oldRef with newRef in subsequent instructions
+  _replaceRef(ir, oldRef, newRef) {
+    const REF_KEYS = ['ref', 'left', 'right'];
+    const VALUE_IS_REF = new Set([IR.STORE_LOCAL, IR.STORE_GLOBAL]);
+
+    for (let i = oldRef + 1; i < ir.length; i++) {
+      const inst = ir[i];
+      if (!inst) continue;
+      const ops = inst.operands;
+      for (const key of REF_KEYS) {
+        if (ops[key] === oldRef) ops[key] = newRef;
+      }
+      if (ops.value === oldRef && VALUE_IS_REF.has(inst.op)) {
+        ops.value = newRef;
+      }
+      if (Array.isArray(ops.args)) {
+        for (let j = 0; j < ops.args.length; j++) {
+          if (ops.args[j] === oldRef) ops.args[j] = newRef;
+        }
+      }
+    }
+  }
+
+  // --- Pass 3.5: Loop-Invariant Code Motion ---
+  // Move instructions that don't depend on loop-variant values above LOOP_START.
+  // An instruction is loop-invariant if all its operand refs are defined before the loop
+  // or are themselves loop-invariant, AND it has no side effects.
+  loopInvariantCodeMotion() {
+    const ir = this.trace.ir;
+
+    // Find LOOP_START position
+    let loopStart = -1;
+    for (let i = 0; i < ir.length; i++) {
+      if (ir[i] && ir[i].op === IR.LOOP_START) { loopStart = i; break; }
+    }
+    if (loopStart < 0) return 0; // no loop, nothing to hoist
+
+    // Instructions before loop start are "pre-loop" — their refs are loop-invariant
+    const preLoopRefs = new Set();
+    for (let i = 0; i < loopStart; i++) {
+      if (ir[i]) preLoopRefs.add(i);
+    }
+
+    // Side-effecting ops cannot be hoisted
+    const SIDE_EFFECTS = new Set([
+      IR.STORE_LOCAL, IR.STORE_GLOBAL, IR.CALL, IR.SELF_CALL,
+      IR.GUARD_INT, IR.GUARD_BOOL, IR.GUARD_STRING, IR.GUARD_TRUTHY, IR.GUARD_FALSY,
+      IR.LOOP_START, IR.LOOP_END, IR.EXEC_TRACE, IR.FUNC_RETURN
+    ]);
+
+    // Iteratively find loop-invariant instructions
+    const invariant = new Set();
+    const REF_KEYS = ['ref', 'left', 'right'];
+    const VALUE_IS_REF = new Set([IR.STORE_LOCAL, IR.STORE_GLOBAL]);
+
+    let changed = true;
+    while (changed) {
+      changed = false;
+      for (let i = loopStart + 1; i < ir.length; i++) {
+        const inst = ir[i];
+        if (!inst || invariant.has(i) || SIDE_EFFECTS.has(inst.op)) continue;
+
+        // Check all operand refs are pre-loop or invariant
+        const ops = inst.operands;
+        let allInvariant = true;
+        for (const key of REF_KEYS) {
+          if (typeof ops[key] === 'number') {
+            if (!preLoopRefs.has(ops[key]) && !invariant.has(ops[key])) {
+              allInvariant = false;
+              break;
+            }
+          }
+        }
+        if (allInvariant && typeof ops.value === 'number' && VALUE_IS_REF.has(inst.op)) {
+          if (!preLoopRefs.has(ops.value) && !invariant.has(ops.value)) {
+            allInvariant = false;
+          }
+        }
+
+        if (allInvariant) {
+          invariant.add(i);
+          changed = true;
+        }
+      }
+    }
+
+    if (invariant.size === 0) return 0;
+
+    // Move invariant instructions before LOOP_START
+    // Build new IR: [pre-loop] [hoisted invariant] [LOOP_START] [remaining loop body]
+    const preLoop = [];
+    const hoisted = [];
+    const loopBody = [];
+
+    for (let i = 0; i < ir.length; i++) {
+      if (!ir[i]) continue;
+      if (i < loopStart) {
+        preLoop.push(ir[i]);
+      } else if (i === loopStart) {
+        // Insert hoisted instructions before LOOP_START
+        // Collect them in order
+        // (they'll be inserted after preLoop, before LOOP_START)
+        loopBody.push(ir[i]); // LOOP_START itself
+      } else if (invariant.has(i)) {
+        hoisted.push(ir[i]);
+      } else {
+        loopBody.push(ir[i]);
+      }
+    }
+
+    // Rebuild: preLoop + hoisted + loopBody (which starts with LOOP_START)
+    const newIr = [...preLoop, ...hoisted, ...loopBody];
+
+    // Remap all refs
+    const remap = new Map();
+    // Build old→new index mapping
+    let newIdx = 0;
+    for (let i = 0; i < ir.length; i++) {
+      if (!ir[i]) continue;
+      // Find where this instruction ended up in newIr
+    }
+    // Simpler: build remap from old positions
+    // preLoop: indices 0..loopStart-1 (non-null) → 0..preLoop.length-1
+    // hoisted: their old indices → preLoop.length .. preLoop.length+hoisted.length-1
+    // loopBody: remaining → after hoisted
+    const oldToNew = new Map();
+    let pos = 0;
+    for (let i = 0; i < ir.length; i++) {
+      if (!ir[i]) continue;
+      if (i < loopStart) {
+        oldToNew.set(i, pos++);
+      }
+    }
+    // hoisted (in original order)
+    const hoistedOldIndices = [...invariant].sort((a, b) => a - b);
+    for (const oldIdx of hoistedOldIndices) {
+      oldToNew.set(oldIdx, pos++);
+    }
+    // LOOP_START
+    oldToNew.set(loopStart, pos++);
+    // remaining loop body (non-invariant, non-null, after loopStart)
+    for (let i = loopStart + 1; i < ir.length; i++) {
+      if (!ir[i] || invariant.has(i)) continue;
+      oldToNew.set(i, pos++);
+    }
+
+    // Apply remap to all operand refs
+    for (const inst of newIr) {
+      inst.id = oldToNew.get(inst.id) !== undefined ? oldToNew.get(inst.id) : inst.id;
+      const ops = inst.operands;
+      for (const key of REF_KEYS) {
+        if (typeof ops[key] === 'number' && oldToNew.has(ops[key])) {
+          ops[key] = oldToNew.get(ops[key]);
+        }
+      }
+      if (typeof ops.value === 'number' && VALUE_IS_REF.has(inst.op) && oldToNew.has(ops.value)) {
+        ops.value = oldToNew.get(ops.value);
+      }
+      if (Array.isArray(ops.args)) {
+        ops.args = ops.args.map(ref => oldToNew.has(ref) ? oldToNew.get(ref) : ref);
+      }
+    }
+
+    // Update ids
+    for (let i = 0; i < newIr.length; i++) {
+      newIr[i].id = i;
+    }
+
+    this.trace.ir = newIr;
+    return invariant.size;
+  }
 
   // --- Pass 1: Redundant Guard Elimination ---
   // If a value has already been guarded as a type, subsequent guards for the

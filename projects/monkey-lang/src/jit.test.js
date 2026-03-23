@@ -136,6 +136,85 @@ describe('Trace optimization', () => {
     assert.equal(constInst.operands.value, 20, 'CONST_INT value was corrupted by compaction');
   });
 
+  it('should forward store-to-load for locals', () => {
+    const trace = new Trace('test', 0);
+    trace.addInst(IR.LOOP_START);                              // 0
+    const constVal = trace.addInst(IR.CONST_INT, { value: 42 }); // 1
+    const boxed = trace.addInst(IR.BOX_INT, { ref: constVal });   // 2
+    trace.addInst(IR.STORE_LOCAL, { slot: 0, value: boxed });     // 3
+    const load = trace.addInst(IR.LOAD_LOCAL, { slot: 0 });       // 4 — should be forwarded to boxed
+    trace.addInst(IR.GUARD_INT, { ref: load }); trace.guardCount++; // 5
+    trace.addInst(IR.LOOP_END);                                   // 6
+
+    const opt = new TraceOptimizer(trace);
+    const forwarded = opt.storeToLoadForwarding();
+    assert.ok(forwarded >= 1, 'should forward at least one load');
+    // The LOAD_LOCAL should be gone
+    assert.ok(!trace.ir.find(i => i.op === IR.LOAD_LOCAL && i.operands.slot === 0),
+      'LOAD_LOCAL should be eliminated');
+  });
+
+  it('should forward store-to-load for globals', () => {
+    const trace = new Trace('test', 0);
+    trace.addInst(IR.LOOP_START);
+    const constVal = trace.addInst(IR.CONST_INT, { value: 7 });
+    const boxed = trace.addInst(IR.BOX_INT, { ref: constVal });
+    trace.addInst(IR.STORE_GLOBAL, { index: 0, value: boxed });
+    const load = trace.addInst(IR.LOAD_GLOBAL, { index: 0 });  // should be forwarded
+    trace.addInst(IR.GUARD_INT, { ref: load }); trace.guardCount++;
+    trace.addInst(IR.LOOP_END);
+
+    const opt = new TraceOptimizer(trace);
+    const forwarded = opt.storeToLoadForwarding();
+    assert.ok(forwarded >= 1);
+    assert.ok(!trace.ir.find(i => i.op === IR.LOAD_GLOBAL));
+  });
+
+  it('should not forward across a CALL (store invalidation)', () => {
+    const trace = new Trace('test', 0);
+    trace.addInst(IR.LOOP_START);
+    const constVal = trace.addInst(IR.CONST_INT, { value: 5 });
+    const boxed = trace.addInst(IR.BOX_INT, { ref: constVal });
+    trace.addInst(IR.STORE_LOCAL, { slot: 0, value: boxed });
+    trace.addInst(IR.CALL, { numArgs: 0 });  // invalidates stores
+    const load = trace.addInst(IR.LOAD_LOCAL, { slot: 0 });  // should NOT be forwarded
+    trace.addInst(IR.GUARD_INT, { ref: load }); trace.guardCount++;
+    trace.addInst(IR.LOOP_END);
+
+    const opt = new TraceOptimizer(trace);
+    const forwarded = opt.storeToLoadForwarding();
+    assert.equal(forwarded, 0, 'should not forward across CALL');
+  });
+
+  it('should hoist loop-invariant code above LOOP_START', () => {
+    const trace = new Trace('test', 0);
+    // Pre-loop: load x
+    const loadX = trace.addInst(IR.LOAD_LOCAL, { slot: 0 });       // 0
+    trace.addInst(IR.GUARD_INT, { ref: loadX }); trace.guardCount++; // 1
+    const unboxX = trace.addInst(IR.UNBOX_INT, { ref: loadX });     // 2
+    // LOOP_START
+    trace.addInst(IR.LOOP_START);                                    // 3
+    // Loop body: uses unboxX + a constant (both loop-invariant individually,
+    // but the constant is defined inside the loop)
+    const constVal = trace.addInst(IR.CONST_INT, { value: 10 });    // 4 — loop-invariant
+    const mul = trace.addInst(IR.MUL_INT, { left: unboxX, right: constVal }); // 5 — loop-invariant
+    const boxed = trace.addInst(IR.BOX_INT, { ref: mul });          // 6 — loop-invariant
+    trace.addInst(IR.STORE_LOCAL, { slot: 1, value: boxed });       // 7 — side effect, stays
+    trace.addInst(IR.LOOP_END);                                      // 8
+
+    const opt = new TraceOptimizer(trace);
+    const hoisted = opt.loopInvariantCodeMotion();
+    assert.ok(hoisted >= 2, `should hoist at least const + mul, got ${hoisted}`);
+
+    // Find LOOP_START position in optimized IR
+    const loopIdx = trace.ir.findIndex(i => i.op === IR.LOOP_START);
+    // CONST_INT(10) and MUL_INT should be before LOOP_START
+    const constIdx = trace.ir.findIndex(i => i.op === IR.CONST_INT && i.operands.value === 10);
+    const mulIdx = trace.ir.findIndex(i => i.op === IR.MUL_INT);
+    assert.ok(constIdx < loopIdx, 'CONST_INT should be hoisted before LOOP_START');
+    assert.ok(mulIdx < loopIdx, 'MUL_INT should be hoisted before LOOP_START');
+  });
+
   it('should eliminate dead code', () => {
     
     const trace = new Trace('test', 0);
