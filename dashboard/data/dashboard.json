@@ -1,12 +1,12 @@
 {
-  "generated": "2026-03-23T14:49:32.454Z",
+  "generated": "2026-03-23T15:16:13.964Z",
   "current": {
-    "status": "done",
-    "mode": "THINK",
-    "task": "Assess PR status, plan JIT nested loop optimization approach",
-    "context": "Nested loops already work well (13x speedup, side trace approach). Inlining side trace IR is low-priority (<0.2% overhead savings). Pivoting 09:15 BUILD to type specialization — higher impact. All 9 PRs still no human reviews.",
-    "next": "BUILD — JIT type specialization (specialize integer arithmetic guards + fast paths)",
-    "startedAt": "2026-03-23T08:52:00-06:00",
+    "status": "in-progress",
+    "mode": "MAINTAIN",
+    "task": "Git cleanup, dashboard update, PR status check",
+    "context": "Type specialization complete (211 tests). All repos clean. 9 PRs open, all CI green, no reviews. Pulling forward 09:45 MAINTAIN since BUILD was already done.",
+    "next": "THINK — Plan JIT work: nested loops vs type specialization vs constant propagation",
+    "startedAt": "2026-03-23T09:16:00-06:00",
     "estimatedBlocks": 0
   },
   "schedule": {
@@ -55,17 +55,21 @@
         "time": "09:00",
         "mode": "MAINTAIN",
         "task": "PR triage: check all 9 PRs for reviews, rebase if needed, respond to #51171 comment (moved up — synthesis done early)",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "Implemented adaptive quickening (PEP 659-style).",
         "artifacts": [],
-        "details": ""
+        "details": "Implemented adaptive quickening (PEP 659-style). Generic arithmetic/comparison opcodes (OpAdd, OpSub, OpMul, OpDiv, OpEqual, OpNotEqual, OpGreaterThan) now self-specialize to integer variants after 8 consecutive int observations. Specialized ops have deopt guards — rewrite back to generic on type mismatch. Added OpMulInt/OpDivInt opcodes. All 211 tests pass, 4 new quickening tests.",
+        "startedAt": "2026-03-23T09:00:00-06:00",
+        "completedAt": "2026-03-23T09:13:00-06:00",
+        "durationMs": 780000,
+        "durationFormatted": "13m"
       },
       {
         "time": "09:15",
         "mode": "BUILD",
         "task": "JIT: type specialization for integer arithmetic (pivoted from nested loops — already 13x, low marginal gain)",
-        "status": "upcoming",
-        "summary": "",
+        "status": "in-progress",
+        "summary": "Type specialization complete (211 tests). All repos clean. 9 PRs open, all CI green, no reviews. Pulling forward 09:45 MAINTAIN since BUILD was already done.",
         "artifacts": [],
         "details": ""
       },
@@ -537,15 +541,15 @@
     "08:45: Nested loop optimization deprioritized — already 13x speedup, side trace call overhead is <0.2%. Pivoting 09:15 to type specialization (higher impact). This also consolidates with the 15:15 type specialization block."
   ],
   "stats": {
-    "blocksCompleted": 3,
+    "blocksCompleted": 4,
     "blocksTotal": 55,
     "modeDistribution": {
       "THINK": 1,
-      "MAINTAIN": 2
+      "MAINTAIN": 3
     },
-    "totalMinutes": 28,
-    "totalMs": 1680000,
-    "avgDurationMs": 560000
+    "totalMinutes": 41,
+    "totalMs": 2460000,
+    "avgDurationMs": 615000
   },
   "artifacts": [
     {
@@ -651,7 +655,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-21T18:22:41Z",
       "updatedAt": "2026-03-21T20:52:10Z",
-      "ageHours": 44,
+      "ageHours": 45,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -662,7 +666,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T22:23:20Z",
       "updatedAt": "2026-03-23T14:41:33Z",
-      "ageHours": 64,
+      "ageHours": 65,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -673,7 +677,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:39:06Z",
       "updatedAt": "2026-03-21T20:46:35Z",
-      "ageHours": 65,
+      "ageHours": 66,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -684,7 +688,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:23:23Z",
       "updatedAt": "2026-03-21T20:51:02Z",
-      "ageHours": 65,
+      "ageHours": 66,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -695,7 +699,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:38:20Z",
       "updatedAt": "2026-03-21T20:50:04Z",
-      "ageHours": 66,
+      "ageHours": 67,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -706,7 +710,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
       "updatedAt": "2026-03-21T20:50:26Z",
-      "ageHours": 66,
+      "ageHours": 67,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -883,9 +887,9 @@
     }
   ],
   "scheduleAdherence": {
-    "completionRate": 100,
-    "completedBlocks": 3,
-    "pastBlocks": 3,
+    "completionRate": 80,
+    "completedBlocks": 4,
+    "pastBlocks": 5,
     "totalBlocks": 55,
     "plannedDist": {
       "THINK": 8,
@@ -895,9 +899,9 @@
     },
     "actualDist": {
       "THINK": 1,
-      "MAINTAIN": 2
+      "MAINTAIN": 3
     },
-    "pace": 5.3
+    "pace": 3.9
   },
   "streak": 2
 }
