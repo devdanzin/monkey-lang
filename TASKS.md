@@ -16,7 +16,8 @@
   - Optimizations: superinstructions, constant-operand opcodes, constant folding, opcode specialization (2.19x vs eval)
   - **Tracing JIT**: trace recording, IR (~25 opcodes), JS codegen, optimizer (guard elim, const fold, DCE)
   - Side traces, function inlining (depth 3), loop var promotion, recursive fn compilation, abort blacklist
-  - **187 tests** | Speedups: 12-21x loops, 10-18x fib, 11-16x higher-order, 5-8x closures
+  - JIT diagnostics (getStats, dumpTrace), abort blacklist for untraceable code
+  - **207 tests** | 9.1x aggregate | Speedups: 12-21x loops, 10-18x fib, 11-16x higher-order, 5-8x closures
 - [ ] OpenClaw PR #50001 — awaiting maintainer merge (CI green, approved by WingedDragon)
 - [ ] OpenClaw PR #50692 — Anthropic native web search (#49949), 18 tests, submitted
 - [ ] OpenClaw PR #51803 — Gateway restart message persistence (#51620), 15 tests, submitted
@@ -60,7 +61,9 @@
 
 ## Today (2026-03-22) — In Progress
 - [x] Blog: "Benchmarking a Bytecode VM" — published
-- [x] Monkey tracing JIT: trace recording, IR, codegen, optimizer, side traces, function inlining, recursive fn compilation, abort blacklist — 187 tests, 12-21x speedups
+- [x] Monkey tracing JIT: full implementation in one day — 207 tests, 9.1x aggregate speedup
+- [x] Blog: "Building a Tracing JIT in JavaScript" — published (Part 4)
+- [x] JIT: diagnostics, abort blacklist, 200+ edge-case tests, README with architecture docs
 - [ ] PR triage: 9 open, no reviews yet (weekend)
 - [ ] EXPLORE evening: HOT/HOROR consciousness, LuaJIT, copy-and-patch, GraalVM PE
 
