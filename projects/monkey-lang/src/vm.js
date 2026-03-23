@@ -674,11 +674,41 @@ export class VM {
               }
             }
           } else if (callee instanceof MonkeyBuiltin) {
-            if (recording()) { this._abortRecording(); }
-            const args = this.stack.slice(this.sp - numArgs, this.sp);
-            const result = callee.fn(...args);
-            this.sp = this.sp - numArgs - 1;
-            this.push(result !== undefined ? result : NULL);
+            // Identify which builtin this is
+            const builtinIdx = BUILTINS.indexOf(callee);
+
+            if (recording() && builtinIdx === 0 && numArgs === 1) {
+              // len(x) — inline as BUILTIN_LEN
+              const argRef = this.recorder.popRef();
+              this.recorder.popRef(); // pop the builtin ref
+              const ref = this.recorder.trace.addInst(IR.BUILTIN_LEN, { ref: argRef });
+              this.recorder.typeMap.set(ref, 'raw_int');
+              this.recorder.pushRef(ref);
+              // Execute normally
+              const args = this.stack.slice(this.sp - numArgs, this.sp);
+              const result = callee.fn(...args);
+              this.sp = this.sp - numArgs - 1;
+              this.push(result !== undefined ? result : NULL);
+            } else if (recording() && builtinIdx === 5 && numArgs === 2) {
+              // push(arr, val) — inline as BUILTIN_PUSH
+              const valRef = this.recorder.popRef();
+              const arrRef = this.recorder.popRef();
+              this.recorder.popRef(); // pop the builtin ref
+              const ref = this.recorder.trace.addInst(IR.BUILTIN_PUSH, { array: arrRef, value: valRef });
+              this.recorder.typeMap.set(ref, 'object');
+              this.recorder.pushRef(ref);
+              // Execute normally
+              const args = this.stack.slice(this.sp - numArgs, this.sp);
+              const result = callee.fn(...args);
+              this.sp = this.sp - numArgs - 1;
+              this.push(result !== undefined ? result : NULL);
+            } else {
+              if (recording()) { this._abortRecording(); }
+              const args = this.stack.slice(this.sp - numArgs, this.sp);
+              const result = callee.fn(...args);
+              this.sp = this.sp - numArgs - 1;
+              this.push(result !== undefined ? result : NULL);
+            }
           } else {
             throw new Error('calling non-function/non-builtin');
           }
@@ -1119,7 +1149,7 @@ export class VM {
       const result = currentTrace.compiled(
         this.stack, this.sp, frame.basePointer,
         this.globals, allConsts, frame.closure.free,
-        MonkeyInteger, MonkeyBoolean, MonkeyString,
+        MonkeyInteger, MonkeyBoolean, MonkeyString, MonkeyArray,
         TRUE, FALSE, NULL,
         cachedInteger,
         internString,
@@ -1261,7 +1291,7 @@ export class VM {
     const result = sideTrace.compiled(
       this.stack, this.sp, frame.basePointer,
       this.globals, allConsts, frame.closure.free,
-      MonkeyInteger, MonkeyBoolean, MonkeyString,
+      MonkeyInteger, MonkeyBoolean, MonkeyString, MonkeyArray,
       TRUE, FALSE, NULL,
       cachedInteger,
       internString,

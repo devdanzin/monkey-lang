@@ -48,6 +48,7 @@ A continuous work session that processes an ordered task queue. No fixed timers 
 - Log any queue changes in Adjustments section
 - **May modify the queue**
 - **Always precedes a BUILD stretch — BUILD placeholders stay blank until PLAN fills them**
+- **Time budget: 1-3 minutes.** Read the goal, load 1-2 files, write 3-5 concrete subtasks. Don't over-plan — BUILD tasks will figure out details.
 
 ### 🔨 BUILD — Do the work
 - Write code, write blog posts, submit PRs, create tools
@@ -148,13 +149,13 @@ After PLAN executes:
 PLAN may add extra BUILD slots if the goal is larger than expected, or remove slots if simpler. PLAN logs any changes in the Adjustments section.
 
 ### Mandatory Queue Pattern
-The standup builds the queue following this repeating cycle:
+The standup builds the queue following this repeating cycle as the **default**:
 
 ```
 THINK → PLAN → BUILD (3-5 tasks) → MAINTAIN → repeat
 ```
 
-Every BUILD stretch is preceded by PLAN. Every cycle includes THINK and MAINTAIN. No exceptions.
+Every BUILD stretch is preceded by PLAN. Every cycle includes THINK and MAINTAIN. The standup may deviate from this pattern if it logs the reason in the Adjustments section (e.g., a research-heavy day might use EXPLORE → THINK → EXPLORE → THINK). Validation warns but does not block deviations.
 
 ### Queue Validation
 The standup runs a validation check before committing SCHEDULE.md:
@@ -178,6 +179,11 @@ Each work session (A, B, C) runs this loop:
 
    a. POP next undone task from queue
    
+   a2. WIND-DOWN CHECK:
+      - Check current time against session boundary (A: 2:15pm, B: 8:15pm, C: 10:15pm)
+      - If within 15 minutes of boundary: do NOT start new task
+      - Instead: run MAINTAIN checklist, update CURRENT.md to session-ended, exit loop
+   
    b. SET CURRENT.md:
       - status: in-progress
       - mode: (from task)
@@ -185,13 +191,13 @@ Each work session (A, B, C) runs this loop:
       - started: (current ISO timestamp)
    
    b2. DASHBOARD UPDATE (task start):
-      - Run: node ~/workspace/dashboard/generate.js
-      - Git commit + push dashboard repo
-      - This makes "in-progress" show on dashboard immediately
+      - curl POST to localhost:3000/api/task-update with action: "start"
+      - If curl fails, log warning and continue (dashboard never blocks work)
    
    c. EXECUTE task according to its mode:
       
       🧠 THINK:
+        - Check for PRIORITY.md in workspace — if it has content, read it and adjust queue accordingly, then clear the file
         - Reflect freely. Ponder. Review quality.
         - If queue needs changes: modify queue, log in Adjustments
         
@@ -209,12 +215,13 @@ Each work session (A, B, C) runs this loop:
         - Read context-files if set in CURRENT.md
         - Do the work
         - Write results to files
+        - Git commit changed files (not full workspace — just files this task touched)
         - If BLOCKED: yield (see Yield Protocol below)
         
       🔧 MAINTAIN:
         - Git commit + push workspace
-        - Run: node ~/workspace/dashboard/generate.js
-        - Git commit + push dashboard repo
+        - Check dashboard server health (curl GET localhost:3000/api/dashboard)
+          - If server is down: restart it (node ~/workspace/dashboard/server.js &)
         - Check email (if configured)
         - Check GitHub notifications
         - Knowledge capture:
@@ -241,9 +248,8 @@ Each work session (A, B, C) runs this loop:
       - {"date":"YYYY-MM-DD","slot":"HH:MM","startedAt":"ISO","completedAt":"ISO","durationMs":NNN}
    
    g2. DASHBOARD UPDATE (task complete):
-      - Run: node ~/workspace/dashboard/generate.js
-      - Git commit + push dashboard repo
-      - This makes "done" show on dashboard immediately
+      - curl POST to localhost:3000/api/task-update with action: "complete", duration, summary
+      - If curl fails, log warning and continue
    
    h. IF mode was BUILD or EXPLORE:
       - Did I learn something worth remembering? → scratch note
@@ -293,6 +299,7 @@ context-files: <comma-separated paths, if any>
 started: <ISO timestamp>
 completed: <ISO timestamp>
 reason: <if blocked, why>
+current_position: <queue task number>
 tasks_completed_this_session: <count>
 ```
 
@@ -305,12 +312,16 @@ tasks_completed_this_session: <count>
 - `## Log` section with `- HH:MM MODE: Description` entries
 - 24h time, one-liner per task, detail only for milestones
 
+### PRIORITY.md (optional)
+- Written by Jordan (via main session) when priorities change mid-day
+- THINK tasks check for this file and adjust queue accordingly
+- Cleared after reading
+- Example content: "Stop compiler work, switch to fixing dashboard bug #123"
+
 ### block-times.jsonl
 - One JSON line per completed task for dashboard timing
 
 ---
-
-## Context Management
 
 ### Within a Session
 - WORK-SYSTEM.md read once at start (~3KB)
@@ -336,12 +347,75 @@ tasks_completed_this_session: <count>
 
 ## Dashboard Integration
 
-- `generate.js` runs **twice per task**: at task start (in-progress) and task completion (done)
-- Dashboard shows real-time task status — in-progress appears within seconds of a task starting
-- Also runs on session exit as a final update
-- MAINTAIN tasks do the full git commit + push of the workspace; the per-task dashboard push only commits the dashboard repo
-- Dashboard shows real task durations from block-times.jsonl
-- Queue progress visible in real-time (tasks marked done in SCHEDULE.md)
+### Architecture
+- **Webhook server** — Small Node.js server running on the Mac (~50 lines)
+  - `POST /api/task-update` — receives task start/complete events from the agent
+  - `GET /api/dashboard` — serves current dashboard.json to the browser
+  - `GET /api/history/:date` — serves historical day data
+  - Auth: requires `Authorization: Bearer <token>` on all POST requests
+  - Validates incoming data against schema, rejects malformed updates
+  - Stores current state in memory + writes to disk for persistence
+  - Runs as a macOS LaunchAgent (auto-restarts on crash)
+
+- **Cloudflare Tunnel** — Exposes the local server at a public URL
+  - Free, runs as a background service
+  - Gives a stable URL like `https://henry-dash.example.com`
+  - Also runs as a LaunchAgent
+
+- **GitHub Pages** — Hosts the dashboard frontend (HTML/CSS/JS)
+  - Static site at henry-the-frog.github.io/dashboard/
+  - JS fetches from the webhook server API for live data
+  - Falls back to a static `dashboard.json` in the repo if the server is unreachable
+  - Fallback file updated by the server every 10 minutes (git push to dashboard repo)
+
+- **Browser** — Polls `/api/dashboard` every 5-10 seconds for near-real-time updates
+  - Works from phone, any network
+  - Fallback: if API is down, loads last-pushed static file from GitHub Pages
+
+### How the Agent Updates the Dashboard
+One curl command per task transition (replaces generate.js + git add + commit + push):
+
+**Task start:**
+```bash
+curl -s -X POST http://localhost:3000/api/task-update \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $DASHBOARD_TOKEN" \
+  -d '{"action":"start","task":{"id":3,"mode":"BUILD","description":"Implement constant folding"}}'
+```
+
+**Task complete:**
+```bash
+curl -s -X POST http://localhost:3000/api/task-update \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $DASHBOARD_TOKEN" \
+  -d '{"action":"complete","task":{"id":3,"duration_ms":240000,"summary":"Constant folding done, 12 tests passing"}}'
+```
+
+**Queue update (after PLAN fills in BUILD slots):**
+```bash
+curl -s -X POST http://localhost:3000/api/queue-update \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $DASHBOARD_TOKEN" \
+  -d '{"queue":[...]}'
+```
+
+If the server is unreachable (curl fails), the agent logs a warning and continues working. Dashboard availability never blocks work. MAINTAIN tasks check server health and restart if needed.
+
+### Historical Data
+- Server writes each completed day's data to `history/YYYY-MM-DD.json`
+- Dashboard loads historical days from the server API (`GET /api/history/:date`)
+- GitHub Pages fallback includes the last 7 days of history in static files
+- The nightly reflection cron job triggers the server to archive the current day
+
+### Transition from Static System
+1. Build and deploy the webhook server
+2. Set up Cloudflare Tunnel with a stable public URL
+3. Update dashboard frontend to fetch from the API (with static fallback)
+4. Update work session prompts to use curl instead of generate.js
+5. Keep generate.js in the repo as a backup tool (can regenerate static data from workspace files if server goes down)
+6. Remove per-task git push of dashboard repo from the work loop
+7. MAINTAIN tasks still git push the workspace repo (code, memory, logs)
+8. Server handles the GitHub Pages fallback push every 10 minutes
 
 ---
 

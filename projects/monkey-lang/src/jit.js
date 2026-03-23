@@ -95,6 +95,10 @@ export const IR = {
   GUARD_HASH:   'guard_hash',    // ref: check this value is MonkeyHash
   INDEX_HASH:   'index_hash',    // hash: ref, key: ref → value (MonkeyObject), uses hashKey()
 
+  // Builtin operations (inlined builtins — avoid aborting trace)
+  BUILTIN_LEN:  'builtin_len',   // ref: array or string → raw int (length)
+  BUILTIN_PUSH: 'builtin_push',  // array: ref, value: ref → new MonkeyArray
+
   // Trace stitching (nested loops)
   EXEC_TRACE:   'exec_trace',    // Execute an inner compiled trace; constIdx: index of compiled fn in consts
 
@@ -702,7 +706,7 @@ export class TraceCompiler {
     if (this._wbWrap) {
       this.lines.push(`      __wb(null);`);
     }
-    this.lines.push(`      const __sr = __st_trace.compiled(__stack, __sp, __bp, __globals, __consts, __free, __MonkeyInteger, __MonkeyBoolean, __MonkeyString, __TRUE, __FALSE, __NULL, __cachedInteger, __internString, __isTruthy, __sideTraces);`);
+    this.lines.push(`      const __sr = __st_trace.compiled(__stack, __sp, __bp, __globals, __consts, __free, __MonkeyInteger, __MonkeyBoolean, __MonkeyString, __MonkeyArray, __TRUE, __FALSE, __NULL, __cachedInteger, __internString, __isTruthy, __sideTraces);`);
     if (this._wbWrap) {
       // Reload promoted vars after side trace (it may have modified globals/locals)
       this.lines.push(`      __reloadPromoted();`);
@@ -737,6 +741,63 @@ export class TraceCompiler {
         if (typeof ops[key] === 'number' && key !== 'value' && key !== 'slot' &&
             key !== 'index' && key !== 'exitIp' && key !== 'constIdx') {
           usedRefs.add(ops[key]);
+        }
+      }
+    }
+
+    // --- Pre-pass: push-in-place escape analysis ---
+    // Detect pattern: LOAD_GLOBAL(idx) → BUILTIN_PUSH(array=load, value=v) → STORE_GLOBAL(value=push, idx)
+    // If the load ref is only used by the push, and the push ref is only used by the store,
+    // we can mutate the array in place instead of copying.
+    const pushInPlace = new Set(); // IR indices of BUILTIN_PUSH that can be done in-place
+    const pushInPlaceStore = new Set(); // IR indices of STORE_GLOBAL to skip (array already mutated)
+    {
+      // Count uses of each IR ref (including 'value' refs for stores/push)
+      const refUseCount = new Map();
+      const countUse = (ref) => { if (typeof ref === 'number') refUseCount.set(ref, (refUseCount.get(ref) || 0) + 1); };
+      for (let i = 0; i < ir.length; i++) {
+        const inst = ir[i];
+        if (!inst) continue;
+        const ops = inst.operands;
+        for (const key of Object.keys(ops)) {
+          if (key === 'slot' || key === 'index' || key === 'exitIp' || key === 'constIdx') continue;
+          if (typeof ops[key] === 'number') countUse(ops[key]);
+        }
+      }
+      for (let i = 0; i < ir.length; i++) {
+        const inst = ir[i];
+        if (!inst || inst.op !== IR.BUILTIN_PUSH) continue;
+        const arrRef = inst.operands.array;
+        const arrInst = ir[arrRef];
+        if (!arrInst) continue;
+        // Array must come from LOAD_GLOBAL or LOAD_LOCAL
+        const isGlobal = arrInst.op === IR.LOAD_GLOBAL;
+        const isLocal = arrInst.op === IR.LOAD_LOCAL;
+        if (!isGlobal && !isLocal) continue;
+        const slotKey = isGlobal ? 'index' : 'slot';
+        const sourceSlot = arrInst.operands[slotKey];
+        // The load must only be used by this push (use count = 1)
+        if ((refUseCount.get(arrRef) || 0) !== 1) continue;
+        // Find the store that uses this push result
+        const pushRef = i;
+        if ((refUseCount.get(pushRef) || 0) !== 1) continue;
+        // Find the single consumer of the push result
+        let storeIdx = -1;
+        for (let j = i + 1; j < ir.length; j++) {
+          const consumer = ir[j];
+          if (!consumer) continue;
+          if (isGlobal && consumer.op === IR.STORE_GLOBAL &&
+              consumer.operands.value === pushRef && consumer.operands.index === sourceSlot) {
+            storeIdx = j; break;
+          }
+          if (isLocal && consumer.op === IR.STORE_LOCAL &&
+              consumer.operands.value === pushRef && consumer.operands.slot === sourceSlot) {
+            storeIdx = j; break;
+          }
+        }
+        if (storeIdx !== -1) {
+          pushInPlace.add(i);
+          pushInPlaceStore.add(storeIdx);
         }
       }
     }
@@ -937,6 +998,7 @@ export class TraceCompiler {
         }
 
         case IR.STORE_GLOBAL: {
+          if (pushInPlaceStore.has(i)) break; // array mutated in place, skip store
           const valRef = varNames.get(inst.operands.value);
           const pv = promotedVarNames.get('g:' + inst.operands.index);
           if (pv) {
@@ -1026,6 +1088,32 @@ export class TraceCompiler {
           const key = varNames.get(inst.operands.right);
           this.lines.push(`  const ${v}_pair = ${hash}.pairs.get(${key}.fastHashKey());`);
           this.lines.push(`  const ${v} = ${v}_pair ? ${v}_pair.value : __NULL;`);
+          break;
+        }
+
+        case IR.BUILTIN_LEN: {
+          const ref = varNames.get(inst.operands.ref);
+          // Works for both arrays and strings
+          this.lines.push(`  const ${v} = ${ref}.elements ? ${ref}.elements.length : ${ref}.value.length;`);
+          break;
+        }
+
+        case IR.BUILTIN_PUSH: {
+          const arr = varNames.get(inst.operands.array);
+          const val = varNames.get(inst.operands.value);
+          if (pushInPlace.has(i)) {
+            // Escape analysis: old array doesn't escape, mutate in place
+            // Must box raw int values before pushing into array
+            const valInst = ir[inst.operands.value];
+            if (valInst && this._isRawInt(valInst)) {
+              this.lines.push(`  ${arr}.elements.push(__cachedInteger(${val}));`);
+            } else {
+              this.lines.push(`  ${arr}.elements.push(${val});`);
+            }
+            varNames.set(i, arr); // push result IS the same array
+          } else {
+            this.lines.push(`  const ${v} = new __MonkeyArray([...${arr}.elements, ${val}]);`);
+          }
           break;
         }
 
@@ -1229,7 +1317,7 @@ export class TraceCompiler {
           }
           // Call the inner trace function
           this.lines.push(`  const ${v}_inner = __consts[${inst.operands.constIdx}];`);
-          this.lines.push(`  let ${v} = ${v}_inner(__stack, __sp, __bp, __globals, __consts, __free, __MonkeyInteger, __MonkeyBoolean, __MonkeyString, __TRUE, __FALSE, __NULL, __cachedInteger, __internString, __isTruthy, __sideTraces);`);
+          this.lines.push(`  let ${v} = ${v}_inner(__stack, __sp, __bp, __globals, __consts, __free, __MonkeyInteger, __MonkeyBoolean, __MonkeyString, __MonkeyArray, __TRUE, __FALSE, __NULL, __cachedInteger, __internString, __isTruthy, __sideTraces);`);
           // After inner trace, reload promoted vars (inner trace may have modified them)
           for (const idx of promotable.globals) {
             const pv = promotedVarNames.get('g:' + idx);
@@ -1255,7 +1343,7 @@ export class TraceCompiler {
     try {
       const fn = new Function(
         '__stack', '__sp', '__bp', '__globals', '__consts', '__free',
-        '__MonkeyInteger', '__MonkeyBoolean', '__MonkeyString',
+        '__MonkeyInteger', '__MonkeyBoolean', '__MonkeyString', '__MonkeyArray',
         '__TRUE', '__FALSE', '__NULL',
         '__cachedInteger', '__internString', '__isTruthy', '__sideTraces',
         body
@@ -1618,7 +1706,8 @@ export class TraceOptimizer {
       for (const key of REF_KEYS) {
         if (ops[key] === oldRef) ops[key] = newRef;
       }
-      if (ops.value === oldRef && VALUE_IS_REF.has(inst.op)) {
+      if (ops.array === oldRef) ops.array = newRef;
+      if (ops.value === oldRef && (VALUE_IS_REF.has(inst.op) || inst.op === IR.BUILTIN_PUSH)) {
         ops.value = newRef;
       }
       if (Array.isArray(ops.args)) {
@@ -1859,7 +1948,8 @@ export class TraceOptimizer {
       IR.GUARD_INT, IR.GUARD_BOOL, IR.GUARD_STRING, IR.GUARD_ARRAY, IR.GUARD_BOUNDS,
       IR.GUARD_HASH, IR.GUARD_TRUTHY, IR.GUARD_FALSY,
       IR.LOOP_START, IR.LOOP_END, IR.EXEC_TRACE, IR.FUNC_RETURN,
-      IR.INDEX_ARRAY, IR.INDEX_HASH  // Can fail if guard hasn't run yet; don't hoist
+      IR.INDEX_ARRAY, IR.INDEX_HASH,  // Can fail if guard hasn't run yet; don't hoist
+      IR.BUILTIN_PUSH  // Creates new array; side-effecting
     ]);
 
     // Iteratively find loop-invariant instructions
@@ -1867,12 +1957,26 @@ export class TraceOptimizer {
     const REF_KEYS = ['ref', 'left', 'right'];
     const VALUE_IS_REF = new Set([IR.STORE_LOCAL, IR.STORE_GLOBAL]);
 
+    // Collect which locals/globals are written inside the loop
+    const writtenLocals = new Set();
+    const writtenGlobals = new Set();
+    for (let i = loopStart + 1; i < ir.length; i++) {
+      const inst = ir[i];
+      if (!inst) continue;
+      if (inst.op === IR.STORE_LOCAL) writtenLocals.add(inst.operands.slot);
+      if (inst.op === IR.STORE_GLOBAL) writtenGlobals.add(inst.operands.index);
+    }
+
     let changed = true;
     while (changed) {
       changed = false;
       for (let i = loopStart + 1; i < ir.length; i++) {
         const inst = ir[i];
         if (!inst || invariant.has(i) || SIDE_EFFECTS.has(inst.op)) continue;
+
+        // Loads from written locations are NOT loop-invariant
+        if (inst.op === IR.LOAD_LOCAL && writtenLocals.has(inst.operands.slot)) continue;
+        if (inst.op === IR.LOAD_GLOBAL && writtenGlobals.has(inst.operands.index)) continue;
 
         // Check all operand refs are pre-loop or invariant
         const ops = inst.operands;
@@ -1967,7 +2071,11 @@ export class TraceOptimizer {
           ops[key] = oldToNew.get(ops[key]);
         }
       }
-      if (typeof ops.value === 'number' && VALUE_IS_REF.has(inst.op) && oldToNew.has(ops.value)) {
+      // 'array' key is an IR ref for builtin ops
+      if (typeof ops.array === 'number' && oldToNew.has(ops.array)) {
+        ops.array = oldToNew.get(ops.array);
+      }
+      if (typeof ops.value === 'number' && (VALUE_IS_REF.has(inst.op) || inst.op === IR.BUILTIN_PUSH) && oldToNew.has(ops.value)) {
         ops.value = oldToNew.get(ops.value);
       }
       if (Array.isArray(ops.args)) {
@@ -2367,7 +2475,8 @@ export class TraceOptimizer {
           inst.op === IR.GUARD_FALSY ||
           inst.op === IR.LOOP_START || inst.op === IR.LOOP_END ||
           inst.op === IR.CALL || inst.op === IR.EXEC_TRACE ||
-          inst.op === IR.SELF_CALL || inst.op === IR.FUNC_RETURN) {
+          inst.op === IR.SELF_CALL || inst.op === IR.FUNC_RETURN ||
+          inst.op === IR.BUILTIN_PUSH) {
         live.add(i);
       }
     }
@@ -2386,8 +2495,8 @@ export class TraceOptimizer {
           const val = ops[key];
           if (typeof val !== 'number' || val < 0 || val >= ir.length || !ir[val] || live.has(val)) continue;
           // Only follow keys that are IR references
-          if (key === 'ref' || key === 'left' || key === 'right' ||
-              (key === 'value' && VALUE_IS_REF.has(inst.op))) {
+          if (key === 'ref' || key === 'left' || key === 'right' || key === 'array' ||
+              (key === 'value' && (VALUE_IS_REF.has(inst.op) || inst.op === IR.BUILTIN_PUSH))) {
             live.add(val);
             changed = true;
           }
@@ -2445,12 +2554,12 @@ export class TraceOptimizer {
           }
           continue;
         }
-        // 'ref', 'left', 'right' are always IR references
-        if (key === 'ref' || key === 'left' || key === 'right') {
+        // 'ref', 'left', 'right', 'array' are always IR references
+        if (key === 'ref' || key === 'left' || key === 'right' || key === 'array') {
           if (remap.has(ops[key])) ops[key] = remap.get(ops[key]);
         }
-        // 'value' is an IR ref only for stores
-        if (key === 'value' && VALUE_IS_REF.has(inst.op)) {
+        // 'value' is an IR ref only for stores and builtin_push
+        if (key === 'value' && (VALUE_IS_REF.has(inst.op) || inst.op === IR.BUILTIN_PUSH)) {
           if (remap.has(ops[key])) ops[key] = remap.get(ops[key]);
         }
         // For CONST_BOOL with a 'ref' — already handled above

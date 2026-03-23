@@ -5,7 +5,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { IR, Trace, TraceRecorder, JIT, TraceCompiler, TraceOptimizer } from './jit.js';
 import {
-  MonkeyInteger, MonkeyBoolean, MonkeyString,
+  MonkeyInteger, MonkeyBoolean, MonkeyString, MonkeyArray,
   TRUE, FALSE, NULL, cachedInteger, internString,
 } from './object.js';
 
@@ -563,7 +563,7 @@ describe('Trace compilation', () => {
     const stack = [cachedInteger(0)];
     const result = trace.compiled(
       stack, 1, 0, [], [], [],
-      MonkeyInteger, MonkeyBoolean, MonkeyString,
+      MonkeyInteger, MonkeyBoolean, MonkeyString, MonkeyArray,
       TRUE, FALSE, NULL,
       cachedInteger,
       internString,
