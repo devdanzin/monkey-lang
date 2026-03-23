@@ -1,8 +1,8 @@
 status: done
-mode: BUILD
-task: JIT optimizer: common subexpression elimination (CSE)
-context: Added CSE pass that deduplicates pure ops (loads, arithmetic, unbox, constants) with identical operands. Key insight: must defer _replaceRef calls to avoid mutating operands mid-scan (which caused false CSE matches). Reduced loop trace from 25→21 IR ops. 2 new tests, all 221 passing. Benchmarks stable (26x loop, 16x nested, 9x fib).
+mode: THINK
+task: Assess JIT optimizer progress, plan afternoon
+context: Morning: 5 new optimizer passes (S2LF, box-unbox, CSE, DSE, LICM) + type specialization + frame caching. 221 tests. 12:15 BUILD target: extended benchmarks + constant propagation through loads. Blog at 13:15.
 context-files: lessons/tracing-jit.md
 est: 0
-next: 11:45 MAINTAIN — commit, full test suite
-updated: 2026-03-23T11:05:00-06:00
+next: 11:45 MAINTAIN — commit, full test suite, dashboard
+updated: 2026-03-23T11:03:00-06:00
