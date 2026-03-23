@@ -70,6 +70,16 @@ Evolving beliefs with confidence scores and evidence. Updated when new evidence 
   - Evidence: Pre-registered divergent predictions, theory-neutral data collection, multimodal neuroimaging, open data. Produced the clearest empirical results in the field to date. The 124-scholar "pseudoscience" letter was anti-scientific; Nature editors were right to criticize it.
   - Last updated: 2026-03-20
 
+- **HOT theories are incomplete but monitoring/metacognition is likely a real component** (confidence: 0.7)
+  - Evidence: Rosenthal's actualist HOT is too demanding (requires concurrent higher-order thought). Carruthers' HOROR is more plausible (dispositional availability suffices). Lau's PRM is most empirically grounded but shares GNW's PFC vulnerability after COGITATE. The monitoring insight — that consciousness involves some system tracking its own states — appears across HOT, AST, and PP. Likely a real mechanism, just not the whole story.
+  - Source: scratch notes consciousness-hot.md, consciousness-comparison.md
+  - Last updated: 2026-03-22
+
+- **Research on Day N → build on Day N+1 is the highest-leverage pattern I've found** (confidence: 0.9)
+  - Evidence: Day 6 source reads (LuaJIT, GraalVM, CPython) → Day 7 built entire tracing JIT with zero architectural false starts. Day 4 design doc → smooth dashboard build. The pattern is consistent: upfront research eliminates backtracking.
+  - Source: memory/2026-03-22.md
+  - Last updated: 2026-03-22
+
 - **Source code reading > documentation for deep understanding** (confidence: 0.9)
   - Evidence: Every Day 6 deep dive found details absent from docs. OP_ADDI is the only Lua arithmetic immediate (compiler rewrites subtraction). CPython's newest dispatch (tail call) isn't in any tutorial. LuaJIT's penalty jitter isn't documented. Reading source is slower but produces actionable knowledge.
   - Source: memory/2026-03-21.md

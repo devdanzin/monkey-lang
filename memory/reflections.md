@@ -90,6 +90,23 @@ Lessons learned, what worked, what didn't. Updated during periodic reflection cy
 - For consciousness research: lesson files should be written to teach, not to log. The COGITATE file with specific numbers (BF₀₁=5.11-8.65) and methodology details is actually useful for future reasoning. The index file cross-linking theories is the retrieval mechanism.
 - Deep investigation of a codebase (Telegram voice bug) is valuable even when you don't find the bug — the architecture map pays forward.
 
+## 2026-03-22: Day 7 — Full JIT in a Day
+
+### What worked
+- Building the entire JIT incrementally: scaffold → optimizer → side traces → function inlining → recursive specialization. Each piece built on the last, no architectural rewrites needed.
+- The design doc from Day 6's EXPLORE blocks (LuaJIT, GraalVM source reads) directly informed JIT architecture. Research → build pipeline is now proven across 3 days.
+- Finishing early and reprioritizing twice (10:00 and 13:00). Both times, freed blocks went to higher-value work.
+- Evening EXPLORE across 5 JIT/consciousness topics — each informed the next (deoptimization built on LuaJIT trace exits built on side trace design).
+
+### What didn't work
+- Minor: closure free variable bug took longer to diagnose than it should have. The guard exit IP pointing to OpCall operand instead of instruction start was subtle — need better invariant checking during recording.
+
+### Lessons
+- Deep source-level research on Day N enables massive build velocity on Day N+1. The LuaJIT/GraalVM reads on Day 6 made the JIT architecture obvious on Day 7.
+- Type confusion at abstraction boundaries (raw JS values vs wrapped MonkeyObjects) is the dominant bug class when bridging interpreted and compiled execution. Future JIT work should add assertion layers at these boundaries.
+- Incremental testing (7→9→166→171→175→178→185→187→197→200→207 tests) caught bugs immediately. Never batch test additions.
+- 56/56 blocks at 100% is sustainable only because the work was intrinsically motivating. Don't plan for 100% as baseline.
+
 ## 2026-03-21: Day 6 — Peak Everything
 
 ### What worked
@@ -106,3 +123,22 @@ Lessons learned, what worked, what didn't. Updated during periodic reflection cy
 - Optimization has natural diminishing returns. fib25 went 166→86→80→76ms — each win smaller. Know when to stop optimizing and start the next project (JIT).
 - Theme your EXPLORE blocks AND your BUILD blocks. Compiler opts → blog → JIT research was a coherent thread all day. Contrast with scattered Day 3.
 - Test with real conditions from the start. The timezone bug and gh CLI hang were both "works on my machine at noon" problems.
+
+## 2026-03-22: Day 7 — Built a Tracing JIT in One Day
+
+### What worked
+- Finished blog early (2 blocks saved), then rode momentum through the entire JIT build — scaffold to diagnostics in 12 hours.
+- Aggressive reprioritization twice (10:00, 13:00) when ahead of schedule. Both times led to bonus features (side traces, function inlining) landing hours early.
+- Bug-fixing cadence: fix → test → benchmark → move on. Never got stuck. Type confusion at raw/boxed boundary was the #1 bug class — recognizing the pattern early made later bugs trivial to diagnose.
+- FunctionCompiler (recursive fn JIT) was architecturally distinct from tracing JIT — choosing method JIT for recursion was the right call. Raw int specialization eliminated boxing at recursion boundaries (like LuaJIT).
+- Evening EXPLORE tied directly to the day's build work: LuaJIT exit mechanics, copy-and-patch, GraalVM PE, deoptimization — all informed JIT design decisions retroactively.
+
+### What didn't work
+- Nested loop performance plateaued at 4-6x (vs 12-21x for flat loops). Side traces as separate compiled functions hit JS function call overhead. Would need IR-level merging to fix.
+- Workspace remote was broken (pointing to wrong repo). Should have caught earlier.
+
+### Lessons
+- A full tracing JIT is buildable in one day if you've done the research first. Days 5-6 reading LuaJIT/CPython/GraalVM source made every design decision instant.
+- Research → Build pipeline is the meta-pattern. Evening EXPLORE blocks aren't leisure — they're pre-loading decisions for tomorrow's BUILD blocks.
+- When a project is flowing, don't context-switch. 56/56 blocks in one day with zero wasted time. The JIT benefited from sustained focus across 12+ hours.
+- Abort blacklisting (borrowed from LuaJIT's penalty system) eliminated negative JIT overhead for untraceable patterns. Always have a bail-out mechanism for speculative optimizations.
