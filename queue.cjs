@@ -359,11 +359,42 @@ function getArg(args, flag, defaultVal) {
   return args[idx + 1];
 }
 
+// --- JSON stdin mode ---
+// Usage: echo '{"command":"done","task":"T3","summary":"it's done"}' | node queue.cjs --json
+// Avoids all shell quoting issues with apostrophes, quotes, etc.
+
+function argsFromJson(json) {
+  const obj = JSON.parse(json);
+  const cmd = obj.command;
+  delete obj.command;
+  const args = [];
+  for (const [k, v] of Object.entries(obj)) {
+    if (k === 'tasks' && Array.isArray(v)) {
+      args.push('--tasks', ...v);
+    } else if (typeof v === 'boolean') {
+      if (v) args.push(`--${k}`);
+    } else {
+      args.push(`--${k}`, String(v));
+    }
+  }
+  return { cmd, args };
+}
+
 // --- Main ---
 
-const args = process.argv.slice(2);
-const command = args[0];
-const restArgs = args.slice(1);
+let command, restArgs;
+
+if (process.argv.includes('--json')) {
+  // Read JSON from stdin
+  const input = fs.readFileSync(0, 'utf8').trim();
+  const parsed = argsFromJson(input);
+  command = parsed.cmd;
+  restArgs = parsed.args;
+} else {
+  const args = process.argv.slice(2);
+  command = args[0];
+  restArgs = args.slice(1);
+}
 
 try {
   const data = loadSchedule();
