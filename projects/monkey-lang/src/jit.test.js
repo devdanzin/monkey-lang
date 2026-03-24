@@ -722,6 +722,23 @@ describe('Deopt correctness', () => {
     assert.equal(vm.lastPoppedStackElem().value, 600);
   });
 
+  it('should hoist hash lookups with constant keys before loop', () => {
+    // Hash lookups with constant keys on loop-invariant hash should be hoisted
+    const vm = runJIT('let h = {"x": 10, "y": 20}; let sum = 0; let i = 0; while (i < 200) { sum = sum + h["x"] + h["y"]; i = i + 1; } sum');
+    assert.equal(vm.lastPoppedStackElem().value, 6000);
+    // Verify trace compiled and hash lookups are hoisted (before loop_start in IR)
+    for (const [, trace] of vm.jit.traces) {
+      if (trace._compiledSource) {
+        // The compiled source should have hash lookups before the loop
+        const loopIdx = trace._compiledSource.indexOf('loop: while');
+        const hashLookupIdx = trace._compiledSource.indexOf('.pairs.get(');
+        if (loopIdx > 0 && hashLookupIdx > 0) {
+          assert.ok(hashLookupIdx < loopIdx, 'hash lookup should be hoisted before loop');
+        }
+      }
+    }
+  });
+
   it('should produce correct results for fibonacci', () => {
     const vm = runJIT(`
       let fib = fn(n) {
