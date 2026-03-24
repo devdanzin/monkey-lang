@@ -24,14 +24,22 @@
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "V2 work system: standup schedule.json generation, test queue flow"
+      "status": "done",
+      "task": "V2 work system: standup schedule.json generation, test queue flow",
+      "started": "2026-03-24T14:15:22.825Z",
+      "completed": "2026-03-24T14:16:08.553Z",
+      "duration_ms": 900000,
+      "summary": "Fixed validate warnings (THINK counts as planning context), tested full queue flow: next→start→done→next cycle works, validate clean"
     },
     {
       "id": "T4",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Assess V2 progress, review PR notifications"
+      "status": "done",
+      "task": "Assess V2 progress, review PR notifications",
+      "started": "2026-03-24T14:16:17.654Z",
+      "completed": "2026-03-24T14:16:36.927Z",
+      "duration_ms": 300000,
+      "summary": "V2 queue flow verified end-to-end. 9 PRs still open, zero reviews. No new actionable notifications."
     },
     {
       "id": "T5",

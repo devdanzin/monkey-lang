@@ -291,6 +291,7 @@ function cmdValidate(args, data) {
     
     if (t.mode === 'THINK') {
       hasThinkInCycle = true;
+      lastPlanId = t.id; // THINK blocks include planning
       buildStreak = 0;
     } else if (t.mode === 'PLAN') {
       lastPlanId = t.id;
@@ -298,7 +299,7 @@ function cmdValidate(args, data) {
     } else if (t.mode === 'BUILD') {
       buildStreak++;
       if (!t.plan_ref && !lastPlanId) {
-        warnings.push(`BUILD ${t.id} has no preceding PLAN`);
+        warnings.push(`BUILD ${t.id} has no preceding THINK/PLAN`);
       }
       if (buildStreak > 5) {
         warnings.push(`BUILD streak of ${buildStreak} at ${t.id} (recommended max: 5)`);
