@@ -246,9 +246,12 @@
       "id": "T58",
       "mode": "BUILD",
       "task": "Deopt tests: verify correct snapshot restoration, no regressions",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T48",
-      "started": "2026-03-24T15:25:20.876Z"
+      "started": "2026-03-24T15:25:20.876Z",
+      "completed": "2026-03-24T15:27:06.734Z",
+      "duration_ms": 360000,
+      "summary": "10 deopt tests added: snapshot capture (3), codegen emission (2), correctness (5). All verify snapshots survive optimization, appear in compiled code, and produce correct results. 244 total tests pass."
     },
     {
       "id": "T53",
