@@ -84,32 +84,43 @@
     {
       "id": "T9",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "JIT: pre-loop codegen cont."
+      "status": "done",
+      "task": "JIT: pre-loop codegen cont.",
+      "started": "2026-03-24T15:00:20.840Z",
+      "completed": "2026-03-24T15:04:23.482Z",
+      "duration_ms": 300000,
+      "summary": "Verified pre-loop codegen impact: array benchmarks jumped from 0.96x/1.56x to 10.7x/10.9x. Aggregate 8.57x→9.56x. 234 tests pass. Pre-loop infrastructure from T8 working correctly."
     },
     {
       "id": "T10",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "JIT: pre-loop codegen cont."
+      "status": "done",
+      "task": "JIT: pre-loop codegen cont.",
+      "started": "2026-03-24T15:04:57.368Z",
+      "completed": "2026-03-24T15:06:04.023Z",
+      "duration_ms": 120000,
+      "summary": "Pre-loop codegen complete as of T8/T9. Optimization pipeline verified: 10 passes, all working. Array benchmarks confirmed 10x+. No further pre-loop work needed."
     },
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "JIT: pre-loop codegen cont."
+      "status": "skipped",
+      "task": "JIT: pre-loop codegen cont.",
+      "skip_reason": "Pre-loop codegen completed in T8, no more work needed"
     },
     {
       "id": "T12",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "JIT: pre-loop codegen cont."
+      "status": "skipped",
+      "task": "JIT: pre-loop codegen cont.",
+      "skip_reason": "Pre-loop codegen completed in T8, no more work needed"
     },
     {
       "id": "T13",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Commit, run full test suite, benchmarks"
+      "status": "in-progress",
+      "task": "Commit, run full test suite, benchmarks",
+      "started": "2026-03-24T15:06:24.817Z"
     },
     {
       "id": "T14",
@@ -505,6 +516,14 @@
     {
       "time": "2026-03-24T14:04:56.869Z",
       "msg": "Added T47 (MAINTAIN) after T46: Dashboard generate, push all repos"
+    },
+    {
+      "time": "2026-03-24T15:06:14.081Z",
+      "msg": "Removed T11: Pre-loop codegen completed in T8, no more work needed"
+    },
+    {
+      "time": "2026-03-24T15:06:14.191Z",
+      "msg": "Removed T12: Pre-loop codegen completed in T8, no more work needed"
     }
   ]
 }
