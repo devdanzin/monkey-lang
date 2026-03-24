@@ -774,9 +774,12 @@
       "id": "T99",
       "mode": "BUILD",
       "task": "Add mixed benchmark: sorting algorithm in Monkey",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T76",
-      "started": "2026-03-24T20:41:39.603Z"
+      "started": "2026-03-24T20:41:39.603Z",
+      "completed": "2026-03-24T20:42:58.479Z",
+      "duration_ms": 300000,
+      "summary": "Added dot-product-5k benchmark (29.7x!). Now 22 benchmarks, all passing. Aggregate 9.6x."
     },
     {
       "id": "T77",
@@ -802,8 +805,9 @@
     {
       "id": "T80",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Commit scheduling work"
+      "status": "in-progress",
+      "task": "Commit scheduling work",
+      "started": "2026-03-24T20:43:06.325Z"
     },
     {
       "id": "T81",
