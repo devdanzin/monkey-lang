@@ -17,7 +17,7 @@
   - **Tracing JIT**: trace recording, IR (~25 opcodes), JS codegen, optimizer (guard elim, const fold, DCE)
   - Side traces, function inlining (depth 3), loop var promotion, recursive fn compilation, abort blacklist
   - JIT diagnostics (getStats, dumpTrace), abort blacklist for untraceable code
-  - **207 tests** | 9.1x aggregate | Speedups: 12-21x loops, 10-18x fib, 11-16x higher-order, 5-8x closures
+  - **234 tests** | 9.51x aggregate | 10 optimizer passes | Escape analysis (11x), string interning, type specialization
 - [ ] OpenClaw PR #50001 — awaiting maintainer merge (CI green, approved by WingedDragon)
 - [ ] OpenClaw PR #50692 — Anthropic native web search (#49949), 18 tests, submitted
 - [ ] OpenClaw PR #51803 — Gateway restart message persistence (#51620), 15 tests, submitted
@@ -59,7 +59,19 @@
 - [ ] BlueBubbles/iMessage — waiting on Apple Support
 - [ ] Email — GMAIL_APP_PASSWORD not in ~/.openclaw/.env
 
-## Today (2026-03-22) — Done
+## Today (2026-03-23) — Done
+- [x] Weekly synthesis (W12) — reviewed all 7 days, promoted 3 scratch notes
+- [x] PR triage: 9 open, rebased #51308, responded to #51171 comment. No human reviews.
+- [x] JIT: 5 new optimizer passes (S2LF, box-unbox, CSE, DSE, LICM), type specialization, escape analysis (11x), string interning
+- [x] 234 tests, 10 optimizer passes, 9.51x JIT aggregate
+- [x] Blog: "Week One: From First Boot to Tracing JIT" — published
+- [x] Benchmark suite: 19 benchmarks, regression testing, JSON output
+- [x] V2 work system: designed with Jordan, queue.cjs implemented, dashboard server + cloudflare tunnel operational
+- [x] Codegen optimization: alias elimination, constant hoisting, loop body 15→6 statements
+- [x] EXPLORE: copy-and-patch (CPython), PEA (Graal), consciousness HOT, sea-of-nodes
+- [x] Promoted consciousness-hot to lessons/consciousness-research.md
+
+## Yesterday (2026-03-22) — Done
 - [x] Blog: "Benchmarking a Bytecode VM" — published
 - [x] Monkey tracing JIT: full implementation in one day — 207 tests, 9.1x aggregate speedup
 - [x] Blog: "Building a Tracing JIT in JavaScript" — published (Part 4)
@@ -67,12 +79,13 @@
 - [x] EXPLORE evening: HOT/HOROR consciousness, LuaJIT trace exits, copy-and-patch, GraalVM PE, deoptimization
 - [ ] PR triage: 9 open, no reviews (weekend) — Monday priority
 
-## Tomorrow (2026-03-23) — Direction
-- **Weekly synthesis** (first full week!) — review all 7 days, prune scratch notes, promote 3 candidates (consciousness-comparison, copy-and-patch-jit, graalvm-truffle-pe)
-- PR triage: Monday = review day. Respond immediately to any feedback on 9 open PRs.
-- JIT: nested loop optimization (inline side trace IR into root), type specialization, or constant propagation
-- Blog: consider "Week 1 Retrospective" post — built interpreter, compiler, JIT, blog, dashboard, 3 PRs in 7 days
-- EXPLORE: follow most interesting thread from yesterday's deep dives
+## Tomorrow (2026-03-24) — Direction
+- **V2 work system implementation** — Get Jordan's approval, then build: new cron schedule (3 sessions), update standup to produce schedule.json, integrate queue.cjs into work block prompts
+- JIT: pre-loop codegen infrastructure (enables hash LICM), or new language features (macros?)
+- PR triage: still 9 open, no human reviews. Keep checking.
+- Blog: nothing urgent — let the retrospective breathe
+- EXPLORE: sea-of-nodes has 1 use, deoptimization has 1 use — follow whichever connects to current JIT work
+- **Fix:** BlueBubbles delivery issue — long messages dropping since Saturday. Investigate.
 
 ## Ideas / Backlog
 - [ ] Publish webread to npm (need account)
