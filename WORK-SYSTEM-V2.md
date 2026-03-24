@@ -219,7 +219,6 @@ Each work session (A, B, C) runs this loop:
    c. EXECUTE task according to its mode:
       
       🧠 THINK:
-        - Check for PRIORITY.md in workspace — if it has content, read it and adjust queue via queue.cjs, then clear the file
         - Reflect freely. Ponder. Review quality.
         - If queue needs changes: use `node queue.cjs move/add/remove` commands, which auto-log adjustments
         - If queue was modified: curl POST to localhost:3000/api/queue-update
@@ -330,15 +329,7 @@ tasks_completed_this_session: <count>
 - `## Log` section with `- HH:MM MODE: Description` entries
 - 24h time, one-liner per task, detail only for milestones
 
-### PRIORITY.md (optional)
-- Written by Jordan (via main session) when priorities change mid-day
-- THINK tasks check for this file and adjust queue accordingly
-- Cleared after reading
-- Example content: "Stop compiler work, switch to fixing dashboard bug #123"
-
----
-
-## Context Management
+### State Files
 
 ### Within a Session
 - WORK-SYSTEM.md read once at start (~3KB)
