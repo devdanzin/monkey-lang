@@ -1,7 +1,7 @@
 ---
-uses: 2
+uses: 3
 created: 2026-03-22
-last-used: 2026-03-23
+last-used: 2026-03-24
 topics: deoptimization, jit, v8, graal, truffle, luajit, snapshots, on-stack-replacement, guards
 ---
 

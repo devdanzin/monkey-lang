@@ -128,7 +128,8 @@ export class Trace {
     this.compiled = null;         // compiled JS function
     this.executionCount = 0;
     this.sideExits = new Map();   // guard index → exit count
-    this.sideTraces = new Map();  // guard index → compiled side Trace
+    this.sideTraces = Object.create(null); // guard index → compiled side Trace (plain object for fast lookup)
+    this._sideTraceCount = 0;
     this.isSideTrace = false;
     this.parentTrace = null;
     this.parentGuardIdx = -1;
@@ -543,8 +544,9 @@ export class JIT {
     if (this.traceCount >= MAX_TRACES) return false;
     if (trace.isSideTrace && trace.parentTrace) {
       // Store as side trace on parent
-      if (trace.parentTrace.sideTraces.size >= MAX_SIDE_TRACES) return false;
-      trace.parentTrace.sideTraces.set(trace.parentGuardIdx, trace);
+      if (trace.parentTrace._sideTraceCount >= MAX_SIDE_TRACES) return false;
+      trace.parentTrace.sideTraces[trace.parentGuardIdx] = trace;
+      trace.parentTrace._sideTraceCount++;
     } else {
       const key = this.traceKey(trace.frameId, trace.startIp);
       this.traces.set(key, trace);
@@ -556,8 +558,8 @@ export class JIT {
   // Check if a guard exit is hot enough for a side trace
   shouldRecordSideTrace(trace, guardIdx) {
     if (!this.enabled) return false;
-    if (trace.sideTraces.has(guardIdx)) return false; // already have one
-    if (trace.sideTraces.size >= MAX_SIDE_TRACES) return false;
+    if (trace.sideTraces[guardIdx]) return false; // already have one
+    if (trace._sideTraceCount >= MAX_SIDE_TRACES) return false;
     const exitCount = trace.sideExits.get(guardIdx) || 0;
     return exitCount >= HOT_EXIT_THRESHOLD;
   }
@@ -628,13 +630,13 @@ export class JIT {
       rootTraces++;
       totalGuards += trace.guards ? trace.guards.length : 0;
       totalIR += trace.ir ? trace.ir.length : 0;
-      sideTraceCount += trace.sideTraces ? trace.sideTraces.size : 0;
+      sideTraceCount += trace.sideTraces ? trace._sideTraceCount : 0;
 
       traceDetails.push({
         key,
         irCount: trace.ir ? trace.ir.length : 0,
         guardCount: trace.guards ? trace.guards.length : 0,
-        sideTraces: trace.sideTraces ? trace.sideTraces.size : 0,
+        sideTraces: trace.sideTraces ? trace._sideTraceCount : 0,
         hasCompiled: trace.compiled !== null,
       });
     }
@@ -828,8 +830,8 @@ export class TraceCompiler {
       return;
     }
     this.lines.push(`  if (${condition}) {`);
-    // Check for side trace inline — __sideTraces is the trace's sideTraces Map (passed by ref)
-    this.lines.push(`    const __st_trace = __sideTraces.get(${guardIdx});`);
+    // Check for side trace inline — __sideTraces is a plain object indexed by guard number
+    this.lines.push(`    const __st_trace = __sideTraces[${guardIdx}];`);
     this.lines.push(`    if (__st_trace) {`);
     // Write back promoted vars before calling side trace
     if (this._wbWrap) {

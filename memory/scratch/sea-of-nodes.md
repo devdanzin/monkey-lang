@@ -1,11 +1,11 @@
 ---
-uses: 1
+uses: 2
 created: 2026-03-23
-last-used: 2026-03-23
-topics: compiler-ir, sea-of-nodes, jit, v8, graal, turbofan
+last-used: 2026-03-24
+topics: compiler-ir, sea-of-nodes, jit, v8, graal, turbofan, scheduling
 ---
 
-# Sea of Nodes IR
+# Sea of Nodes IR — Deep Dive
 
 ## Core Idea (Click & Paleczny, 1995)
 Traditional IRs have two separate structures: a data-flow graph (SSA) and a control-flow graph (basic blocks). Sea-of-nodes **merges both into one graph**. Nodes represent computations. Edges represent both data dependencies AND control dependencies. There are no basic blocks — instructions float freely in a "sea" until scheduling pins them down.
@@ -26,64 +26,126 @@ The compiler works on the floating graph. Only at the very end does a "scheduler
 ### Phi nodes → special merge nodes
 Instead of φ-functions at block boundaries, sea-of-nodes has Phi nodes that merge values at control-flow merge points (Region/Merge nodes).
 
-## Why It Matters for Optimization
+## The Three Edge Types in Detail (V8 TurboFan)
 
-**Code motion is trivial.** In a traditional IR, moving an instruction out of a loop requires:
-1. Dominator analysis
-2. Loop detection  
-3. Proving the instruction has no side effects
-4. Actually moving it and updating the CFG
+### Data edges
+- Pure data dependencies: `Add(x, y)` depends on `x` and `y`
+- SSA-like: each node produces one value, used by zero or more downstream nodes
+- These are the "free" edges — no ordering constraint beyond "input before output"
 
-In sea-of-nodes, the instruction was never "in" the loop — it just floats. The scheduler naturally places it at the latest legal point (or earliest, depending on heuristic).
+### Control edges
+- Form a control-flow graph: Start → If → Branch → Merge → End
+- Pin side-effecting operations to specific control points
+- **Only operations that affect control flow** need control edges: branches, calls, throws
+- Pure operations (arithmetic, comparisons) have NO control edges — they float
 
-**Local rewrite rules are powerful.** Most optimizations become pattern matching on small subgraphs:
-- Constant folding: match `Add(Const(3), Const(4))` → replace with `Const(7)`
-- Redundancy elimination: match duplicate nodes with same inputs → merge
-- Strength reduction: match `Mul(x, Const(2))` → `Add(x, x)`
+### Effect edges (V8's innovation)
+This is the crucial V8 extension. JavaScript has pervasive side effects:
+- Property access triggers getters/proxies
+- String operations can cause conversion
+- Array access can trigger prototype lookups
 
-No need for complex dataflow frameworks — just iterate local rules until fixpoint.
+V8 chains effect-producing operations with effect edges:
+```
+LoadNamedProperty("x", obj) --effect--> StoreNamedProperty("y", obj, val)
+```
+This prevents reordering of operations that touch the same memory, without constraining unrelated operations. It's finer-grained than control edges.
 
-**Dead code elimination is trivial.** Unreachable nodes have no users → just collect them.
+**Three chains**: data, control, effect. An operation can participate in all three:
+- `LoadProperty(object, key)`: data deps (object, key), control dep (must be in reachable block), effect dep (must read after previous write)
 
-## Who Uses It
+## Scheduling: The Final Phase
 
-- **HotSpot C2** (original, Cliff Click): Java's server JIT since ~1999
-- **V8 TurboFan**: JavaScript JIT. Extended with explicit "effect chain" edges for memory ordering
-- **Graal**: Modern Java JIT (Truffle/GraalVM). Most sophisticated implementation — supports PEA, speculative optimization, deoptimization
-- **Cranelift** (Wasmtime): Rust-based. Uses "e-graph" variant (equality saturation)
+The scheduler's job: given a floating graph, produce a linear sequence of instructions per basic block.
 
-## V8's TurboFan Extensions
+### Click's scheduling algorithm (simplified):
+1. **Compute dominator tree** from control nodes
+2. **For each floating node**, find the *latest* legal position (maximally late = minimize register pressure):
+   - Legal position = dominated by all inputs, dominates all uses
+   - "Latest legal" = in the deepest loop nest possible → wait, that's bad
+   - Actually: "earliest legal" = just after all inputs are available (minimizes live ranges in simple cases)
+   - V8 uses "late scheduling" with loop-awareness: schedule as late as possible, BUT don't push into loops
 
-TurboFan adds a third edge type beyond data and control: **effect edges**. These track which operations read/write memory, allowing the scheduler to reason about memory ordering without conflating it with control flow. This is crucial for JavaScript where property accesses have observable side effects.
+### The scheduling dilemma:
+- **Early scheduling**: reduces register pressure (value used soon after computed)
+- **Late scheduling**: moves code out of hot paths (don't compute what you won't use)
+- **Loop-aware scheduling**: never push into a loop; pull out when possible
 
-The pipeline: JavaScript → Bytecode → TurboFan graph → type feedback → lowering → scheduling → register allocation → machine code.
+V8's strategy: schedule at the "latest legal point that isn't in a deeper loop than the inputs". This automatically does LICM!
 
-## Comparison with My Tracing JIT
+## LICM Falls Out Naturally
 
-My trace-based IR is fundamentally different:
-- **Linear trace**: instructions in execution order, not a graph
-- **Implicit control**: guards + side exits, no merge points
-- **No scheduling needed**: trace IS the schedule
+This is the key insight for our JIT: in sea-of-nodes, **LICM is not an optimization pass — it's a scheduling decision**.
 
-But some SoN ideas could apply:
-- **Effect tracking**: distinguishing pure ops from side-effecting ones (I already do this for LICM)
-- **Local rewrite rules**: my optimizer passes (CSE, const prop, etc.) are essentially local pattern matches
-- **Floating invariants**: LICM is essentially "letting nodes float" above the loop
+In our linear IR, LICM is a complex pass that:
+1. Detects loop boundaries
+2. Identifies invariant instructions
+3. Checks safety (no side effects, dominates all uses)
+4. Physically moves instructions before the loop
+5. Updates all references
 
-**Key insight**: A trace compiler gets many SoN benefits for free because traces are single-path — no merge points, no need for φ-nodes, code motion is just reordering a linear list while respecting deps.
+In sea-of-nodes, the instruction was never "in" the loop. The scheduler just places it before the loop because that's the latest legal position that isn't deeper in the loop nest.
 
-## Downsides of Sea-of-Nodes
+## How This Could Improve Our Trace Compiler
 
-1. **Scheduling complexity**: The final scheduling pass is hard to get right. Poor scheduling → poor register pressure → spills
-2. **Debugging difficulty**: No obvious "where is this instruction?" — it floats
-3. **Compile time**: Graph manipulation can be slower than linear IR passes
-4. **Phase ordering**: Some optimizations interact badly when everything floats freely
+### Current limitations of linear IR:
+1. Instruction order = execution order → code motion requires physical movement
+2. LICM pass must explicitly check invariance → complex, error-prone
+3. Dead code elimination needs use-counting
+4. Multiple optimization passes have ordering dependencies
 
-## Connection to Partial Escape Analysis
+### What SoN would give us:
+1. Code motion is free (instructions float)
+2. LICM is scheduling, not optimization
+3. DCE is trivial (unreferenced nodes disappear)
+4. Optimization passes are local rewrites → simpler, composable
 
-Graal's PEA (explored earlier today) works naturally in SoN because virtual objects are just graph nodes that may or may not materialize. The path-sensitivity of PEA maps to control-flow merge points in the graph. When an object escapes on one path, materialization is inserted only on that path's control edge.
+### What SoN wouldn't help with (trace-specific):
+1. Traces are single-path → no merge points → no φ-nodes needed
+2. Guard semantics are trace-specific → need special handling
+3. Snapshots for deoptimization → need to track state at guard points
+4. Side traces → need trace linking, not standard control flow
+
+### Hybrid approach: "Floating linear IR"
+Instead of full SoN, we could add dependency edges to our linear IR:
+- Mark each instruction with its data dependencies
+- During LICM, don't need to "detect" invariance — just check if deps are loop-external
+- During scheduling (a new phase), reorder instructions to minimize register pressure
+
+This gets 80% of SoN benefits with 20% of the complexity.
+
+## Comparison: SoN vs Linear IR for Key Optimizations
+
+| Optimization | Linear IR (ours) | Sea-of-Nodes |
+|---|---|---|
+| CSE | Scan forward, match keys | Graph-local: same-input nodes → merge |
+| LICM | Complex pass, move + remap | Falls out of scheduling |
+| DCE | Use-counting + mark-sweep | Unreferenced → gone |
+| Const fold | Pattern match + replace | Local rewrite rule |
+| Scheduling | N/A (order = schedule) | Explicit scheduler needed |
+| Complexity | Lower | Higher (graph algorithms) |
+
+## Key Insight
+
+For a **trace compiler**, linear IR is actually a better fit than SoN because:
+1. Traces are single-path (no control flow merges)
+2. The "schedule" is the execution order (already determined by tracing)
+3. The only reordering we do is LICM (which is well-handled by our current pass)
+4. Guards create side exits, not control flow joins
+
+SoN shines for **method compilers** (like TurboFan) that must handle arbitrary control flow, multiple paths, and complex optimization of programs they haven't seen execute.
+
+**Conclusion: Our linear IR is the right choice for a trace JIT. The floating dependency idea could improve our LICM pass, but full SoN would add complexity without proportional benefit.**
+
+## What To Steal from SoN
+
+1. **Explicit dependency edges**: Add `deps: [ref, ...]` to IR instructions. Makes LICM trivial.
+2. **Effect edges**: Already implicit in our side-effect tracking. Could formalize.
+3. **Local rewrite rules**: Our optimizer passes already work this way. Keep it.
+4. **Late scheduling heuristic**: After optimization, reorder instructions to minimize register pressure.
 
 ## References
 - Click & Paleczny (1995). "A Simple Graph-Based Intermediate Representation" — Rice University TR95-252
 - V8 blog: "Digging into the TurboFan JIT" (2015)
 - Graal: Duboscq et al. "An Intermediate Representation for Speculative Optimizations in a Dynamic Compiler" (2013)
+- Ben Titzer's talk: "Behind TurboFan" (BlinkOn 3, 2014)

@@ -326,116 +326,150 @@
     {
       "id": "T27",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Commit V2 work, check PRs again"
+      "status": "skipped",
+      "task": "Commit V2 work, check PRs again",
+      "skip_reason": "Just did MAINTAIN: committed and pushed all work"
     },
     {
       "id": "T28",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Afternoon assessment: what shipped, pivots needed"
+      "status": "done",
+      "task": "Afternoon assessment: what shipped, pivots needed",
+      "started": "2026-03-24T15:27:38.445Z",
+      "completed": "2026-03-24T15:27:56.618Z",
+      "duration_ms": 120000,
+      "summary": "Session A shipping: pre-loop codegen verified, deopt infrastructure complete (5 BUILD tasks), 244 tests, 9.4x aggregate. Ahead of schedule. Next: repurpose T29-T32 for side trace perf or EXPLORE."
     },
     {
       "id": "T29",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "JIT: deoptimization infrastructure (snapshot-based guard exits)"
+      "status": "skipped",
+      "task": "JIT: deoptimization infrastructure (snapshot-based guard exits)",
+      "skip_reason": "Deopt infrastructure already complete in T54-T58"
     },
     {
       "id": "T30",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "JIT: deoptimization cont."
+      "status": "skipped",
+      "task": "JIT: deoptimization cont.",
+      "skip_reason": "Deopt infrastructure already complete in T54-T58"
     },
     {
       "id": "T31",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "JIT: deoptimization cont."
+      "status": "skipped",
+      "task": "JIT: deoptimization cont.",
+      "skip_reason": "Deopt infrastructure already complete in T54-T58"
     },
     {
       "id": "T32",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "JIT: deoptimization or blog post"
+      "status": "skipped",
+      "task": "JIT: deoptimization or blog post",
+      "skip_reason": "Deopt infrastructure already complete in T54-T58"
     },
     {
       "id": "T33",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Evening commits, memory updates"
+      "status": "skipped",
+      "task": "Evening commits, memory updates",
+      "skip_reason": "Redundant with completed work"
     },
     {
       "id": "T34",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Evening review, prep EXPLORE direction"
+      "status": "skipped",
+      "task": "Evening review, prep EXPLORE direction",
+      "skip_reason": "Redundant with completed work"
     },
     {
       "id": "T35",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Dashboard: integrate V2 metrics"
+      "status": "skipped",
+      "task": "Dashboard: integrate V2 metrics",
+      "skip_reason": "Redundant with completed work"
     },
     {
       "id": "T36",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Dashboard cont."
+      "status": "skipped",
+      "task": "Dashboard cont.",
+      "skip_reason": "Redundant with completed work"
     },
     {
       "id": "T37",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Commit, PR check, daily log update"
+      "status": "skipped",
+      "task": "Commit, PR check, daily log update",
+      "skip_reason": "Redundant with completed work"
     },
     {
       "id": "T38",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Pivot to EXPLORE mode"
+      "status": "done",
+      "task": "Pivot to EXPLORE mode",
+      "started": "2026-03-24T15:28:24.210Z",
+      "completed": "2026-03-24T15:28:35.769Z",
+      "duration_ms": 60000,
+      "summary": "Pivoting to EXPLORE: sea-of-nodes IR deep dive. Most interesting research direction — used by V8 TurboFan, Graal, HHVM. Could inform future optimizer architecture."
     },
     {
       "id": "T39",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Sea-of-nodes IR deep dive"
+      "status": "done",
+      "task": "Sea-of-nodes IR deep dive",
+      "started": "2026-03-24T15:28:43.044Z",
+      "completed": "2026-03-24T15:30:19.016Z",
+      "duration_ms": 600000,
+      "summary": "Sea-of-nodes deep dive. Key insight: linear IR is correct for trace JIT. SoN shines for method compilers with arbitrary control flow. Steal: explicit dependency edges for easier LICM, late scheduling heuristic. Full SoN would over-engineer traces."
     },
     {
       "id": "T40",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Sea-of-nodes cont."
+      "status": "skipped",
+      "task": "Sea-of-nodes cont.",
+      "skip_reason": "SoN exploration complete, key insight captured"
     },
     {
       "id": "T41",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Synthesize EXPLORE findings"
+      "status": "done",
+      "task": "Synthesize EXPLORE findings",
+      "started": "2026-03-24T15:30:42.280Z",
+      "completed": "2026-03-24T15:30:56.619Z",
+      "duration_ms": 120000,
+      "summary": "Synthesized: linear IR correct for traces, deopt infrastructure enables more speculation, next explore V8 deopt details for lazy deopt + OSR."
     },
     {
       "id": "T42",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Deoptimization deep dive: V8 deopt, OSR"
+      "status": "done",
+      "task": "Deoptimization deep dive: V8 deopt, OSR",
+      "started": "2026-03-24T15:31:04.683Z",
+      "completed": "2026-03-24T15:32:24.364Z",
+      "duration_ms": 480000,
+      "summary": "V8 deopt + OSR deep dive. Key findings: (1) our trace JIT already does implicit OSR entry/exit, (2) lazy deopt not needed for Monkey, (3) deopt loop prevention already handled by side traces. Global invalidation via version counters identified as future improvement."
     },
     {
       "id": "T43",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Deoptimization cont."
+      "status": "skipped",
+      "task": "Deoptimization cont.",
+      "skip_reason": "Deopt exploration complete"
     },
     {
       "id": "T44",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Day review, prep tomorrow"
+      "status": "skipped",
+      "task": "Day review, prep tomorrow",
+      "skip_reason": "Too early for day review, 4.5h left"
     },
     {
       "id": "T45",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Free curiosity: follow most interesting thread"
+      "status": "skipped",
+      "task": "Free curiosity: follow most interesting thread",
+      "skip_reason": "Pivoting to BUILD — side trace optimization more impactful"
     },
     {
       "id": "T46",
@@ -448,6 +482,13 @@
       "mode": "MAINTAIN",
       "status": "upcoming",
       "task": "Dashboard generate, push all repos"
+    },
+    {
+      "id": "T59",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Optimize side trace dispatch: reduce guard exit overhead",
+      "started": "2026-03-24T15:32:56.761Z"
     }
   ],
   "backlog": [],
@@ -739,6 +780,66 @@
     {
       "time": "2026-03-24T15:10:15.339Z",
       "msg": "Removed T53: Replaced by filled BUILD tasks T54-T58"
+    },
+    {
+      "time": "2026-03-24T15:27:33.274Z",
+      "msg": "Removed T27: Just did MAINTAIN: committed and pushed all work"
+    },
+    {
+      "time": "2026-03-24T15:28:11.631Z",
+      "msg": "Removed T29: Deopt infrastructure already complete in T54-T58"
+    },
+    {
+      "time": "2026-03-24T15:28:11.740Z",
+      "msg": "Removed T30: Deopt infrastructure already complete in T54-T58"
+    },
+    {
+      "time": "2026-03-24T15:28:11.849Z",
+      "msg": "Removed T31: Deopt infrastructure already complete in T54-T58"
+    },
+    {
+      "time": "2026-03-24T15:28:11.958Z",
+      "msg": "Removed T32: Deopt infrastructure already complete in T54-T58"
+    },
+    {
+      "time": "2026-03-24T15:28:12.071Z",
+      "msg": "Removed T33: Redundant with completed work"
+    },
+    {
+      "time": "2026-03-24T15:28:12.181Z",
+      "msg": "Removed T34: Redundant with completed work"
+    },
+    {
+      "time": "2026-03-24T15:28:12.292Z",
+      "msg": "Removed T35: Redundant with completed work"
+    },
+    {
+      "time": "2026-03-24T15:28:12.400Z",
+      "msg": "Removed T36: Redundant with completed work"
+    },
+    {
+      "time": "2026-03-24T15:28:12.509Z",
+      "msg": "Removed T37: Redundant with completed work"
+    },
+    {
+      "time": "2026-03-24T15:30:35.459Z",
+      "msg": "Removed T40: SoN exploration complete, key insight captured"
+    },
+    {
+      "time": "2026-03-24T15:32:35.998Z",
+      "msg": "Removed T43: Deopt exploration complete"
+    },
+    {
+      "time": "2026-03-24T15:32:42.089Z",
+      "msg": "Removed T44: Too early for day review, 4.5h left"
+    },
+    {
+      "time": "2026-03-24T15:32:48.358Z",
+      "msg": "Removed T45: Pivoting to BUILD — side trace optimization more impactful"
+    },
+    {
+      "time": "2026-03-24T15:32:52.762Z",
+      "msg": "Added T59 (BUILD) after end: Optimize side trace dispatch: reduce guard exit overhead"
     }
   ]
 }
