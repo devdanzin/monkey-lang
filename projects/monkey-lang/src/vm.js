@@ -1175,6 +1175,21 @@ export class VM {
           if (result.ip !== undefined) {
             frame.ip = result.ip - 1;
           }
+
+          // Restore state from snapshot if available
+          if (result.snapshot) {
+            if (result.snapshot.globals) {
+              for (const [idx, value] of Object.entries(result.snapshot.globals)) {
+                this.globals[Number(idx)] = value;
+              }
+            }
+            if (result.snapshot.locals) {
+              for (const [slot, value] of Object.entries(result.snapshot.locals)) {
+                this.stack[frame.basePointer + Number(slot)] = value;
+              }
+            }
+          }
+
           trace.sideExits.set(result.guardIdx,
             (trace.sideExits.get(result.guardIdx) || 0) + 1);
 

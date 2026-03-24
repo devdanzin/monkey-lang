@@ -213,16 +213,20 @@
       "id": "T55",
       "mode": "BUILD",
       "task": "Codegen: emit snapshot data in guard exit returns (map IR refs to JS vars)",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T48",
-      "started": "2026-03-24T15:16:21.177Z"
+      "started": "2026-03-24T15:16:21.177Z",
+      "completed": "2026-03-24T15:20:58.427Z",
+      "duration_ms": 600000,
+      "summary": "Codegen emits snapshot data in guard exit returns. Promoted globals/locals use __cachedInteger(vN) for boxing. Non-promoted use direct varName. 234 tests pass, 9.35x aggregate (no regression)."
     },
     {
       "id": "T56",
       "mode": "BUILD",
       "task": "VM: use snapshot to resume interpreter at exact bytecode position on guard exit",
-      "status": "upcoming",
-      "plan_ref": "T48"
+      "status": "in-progress",
+      "plan_ref": "T48",
+      "started": "2026-03-24T15:21:14.608Z"
     },
     {
       "id": "T57",
