@@ -14,11 +14,11 @@ Read yesterday's daily log: memory/{YESTERDAY}.md
 Read TASKS.md for ongoing projects.
 Read memory/scratch/ index and lessons/ index for knowledge context.
 
-Build today's schedule.json via queue.js:
-  node queue.js init --date {DATE}
+Build today's schedule.json via queue.cjs:
+  node queue.cjs init --date {DATE}
   Then add tasks following the THINK → PLAN → BUILD(3-5) → MAINTAIN cycle.
   Include at least 2 EXPLORE tasks (bias toward evening).
-  Validate: node queue.js validate
+  Validate: node queue.cjs validate
 
 Check email and GitHub notifications. Note anything urgent.
 
@@ -42,23 +42,23 @@ Reply with a brief, conversational summary for Jordan (what you're working on to
 Work Session A. Your session boundary is 2:15pm MDT. Today is {DATE}.
 
 Read WORK-SYSTEM-V2.md once (full file — this is your operating manual for the session).
-Read schedule.json via: node queue.js next --peek-all
+Read schedule.json via: node queue.cjs next --peek-all
 Read CURRENT.md and today's daily log: memory/{DATE}.md
 Source environment: the $DASHBOARD_TOKEN env var is available.
 
-If schedule.json is not dated today: run a mini-standup. Read TASKS.md and yesterday's backlog, build a basic queue via queue.js, then continue.
+If schedule.json is not dated today: run a mini-standup. Read TASKS.md and yesterday's backlog, build a basic queue via queue.cjs, then continue.
 
 Run the work loop from WORK-SYSTEM-V2.md:
-- Pop tasks via: node queue.js next
-- Mark started/done via: node queue.js start/done
+- Pop tasks via: node queue.cjs next
+- Mark started/done via: node queue.cjs start/done
 - Execute each task according to its mode (THINK/PLAN/BUILD/MAINTAIN/EXPLORE)
 - Update dashboard via curl after each start/complete
 - Wind down 15 minutes before 2:15pm (do MAINTAIN, then exit)
 
 Key rules:
 - BUILD cannot modify the queue (only via yield)
-- PLAN fills BUILD placeholders via: node queue.js fill
-- THINK checks PRIORITY.md and can modify queue via queue.js
+- PLAN fills BUILD placeholders via: node queue.cjs fill
+- THINK checks PRIORITY.md and can modify queue via queue.cjs
 - Dashboard curl failures are warnings, not blockers
 - Git commit after each BUILD task (just files that task touched)
 - Append to daily log after each task: "- HH:MM MODE: description"
@@ -74,24 +74,24 @@ On exit: final git commit + push, set CURRENT.md to session-ended, POST session-
 Work Session B. Your session boundary is 8:15pm MDT. Today is {DATE}.
 
 Read WORK-SYSTEM-V2.md once (full file — this is your operating manual for the session).
-Read schedule.json via: node queue.js next --peek-all
+Read schedule.json via: node queue.cjs next --peek-all
 Read CURRENT.md and today's daily log: memory/{DATE}.md
 Source environment: the $DASHBOARD_TOKEN env var is available.
 
 If CURRENT.md shows status: in-progress from a previous session, investigate before continuing (check if work was saved, if task needs retry or skip).
 
 Run the work loop from WORK-SYSTEM-V2.md:
-- Pop tasks via: node queue.js next
-- Mark started/done via: node queue.js start/done
+- Pop tasks via: node queue.cjs next
+- Mark started/done via: node queue.cjs start/done
 - Execute each task according to its mode (THINK/PLAN/BUILD/MAINTAIN/EXPLORE)
 - Update dashboard via curl after each start/complete
 - Wind down 15 minutes before 8:15pm (do MAINTAIN, then exit)
-- If queue is empty: pull from backlog via queue.js, wrap in THINK → PLAN → BUILD cycle
+- If queue is empty: pull from backlog via queue.cjs, wrap in THINK → PLAN → BUILD cycle
 
 Key rules:
 - BUILD cannot modify the queue (only via yield)
-- PLAN fills BUILD placeholders via: node queue.js fill
-- THINK checks PRIORITY.md and can modify queue via queue.js
+- PLAN fills BUILD placeholders via: node queue.cjs fill
+- THINK checks PRIORITY.md and can modify queue via queue.cjs
 - Dashboard curl failures are warnings, not blockers
 - Git commit after each BUILD task (just files that task touched)
 - Append to daily log after each task: "- HH:MM MODE: description"
@@ -107,25 +107,25 @@ On exit: final git commit + push, set CURRENT.md to session-ended, POST session-
 Work Session C (evening). Your session boundary is 10:15pm MDT. Today is {DATE}.
 
 Read WORK-SYSTEM-V2.md once (full file — this is your operating manual for the session).
-Read schedule.json via: node queue.js next --peek-all
+Read schedule.json via: node queue.cjs next --peek-all
 Read CURRENT.md and today's daily log: memory/{DATE}.md
 Source environment: the $DASHBOARD_TOKEN env var is available.
 
 If CURRENT.md shows status: in-progress from a previous session, investigate before continuing.
 
 Run the work loop from WORK-SYSTEM-V2.md:
-- Pop tasks via: node queue.js next
-- Mark started/done via: node queue.js start/done
+- Pop tasks via: node queue.cjs next
+- Mark started/done via: node queue.cjs start/done
 - Execute each task according to its mode (THINK/PLAN/BUILD/MAINTAIN/EXPLORE)
 - Update dashboard via curl after each start/complete
 - Wind down 15 minutes before 10:15pm (do MAINTAIN, then exit)
-- If queue is empty: pull from backlog via queue.js, wrap in THINK → PLAN → BUILD cycle
+- If queue is empty: pull from backlog via queue.cjs, wrap in THINK → PLAN → BUILD cycle
 - Evening sessions often have EXPLORE tasks — lean into curiosity
 
 Key rules:
 - BUILD cannot modify the queue (only via yield)
-- PLAN fills BUILD placeholders via: node queue.js fill
-- THINK checks PRIORITY.md and can modify queue via queue.js
+- PLAN fills BUILD placeholders via: node queue.cjs fill
+- THINK checks PRIORITY.md and can modify queue via queue.cjs
 - Dashboard curl failures are warnings, not blockers
 - Git commit after each BUILD task (just files that task touched)
 - Append to daily log after each task: "- HH:MM MODE: description"
