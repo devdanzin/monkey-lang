@@ -1,8 +1,8 @@
 status: done
 mode: BUILD
-task: Dashboard: weekly summary view with stacked bar chart and mode breakdown
-context: Added weekly-summary-section to dashboard with aggregate stats (total blocks, hours, avg/day, active days, best day), stacked mode bar chart per day, and weekly mode breakdown with percentages/hours. Responsive, collapsible, integrated with existing recentDays data.
+task: Dashboard: Cloudflare tunnel + static file serving
+context: Added static file serving to server.cjs (serves index.html, JS, CSS, data alongside API). Installed cloudflared, created LaunchAgent. Quick tunnel live at prefers-forecasts-asian-magical.trycloudflare.com. Limitation: URL changes on restart — need named tunnel (Cloudflare account) for permanent URL.
 context-files: WORK-SYSTEM-V2.md
 est: 0
-next: V2: Cloudflare tunnel setup OR update frontend to fetch from API
-updated: 2026-03-23T18:24:00-06:00
+next: 18:45 MAINTAIN — evening commits, memory updates, PR check
+updated: 2026-03-23T18:42:00-06:00
