@@ -1,0 +1,51 @@
+{
+  "date": "2026-03-23",
+  "queue": [
+    {
+      "id": "T1",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Goal A"
+    },
+    {
+      "id": "T2",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T1"
+    },
+    {
+      "id": "T3",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T1"
+    },
+    {
+      "id": "T4",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T1"
+    }
+  ],
+  "backlog": [],
+  "adjustments": [
+    {
+      "time": "2026-03-24T00:46:23.789Z",
+      "message": "Added T1 (PLAN): Goal A"
+    },
+    {
+      "time": "2026-03-24T00:46:23.903Z",
+      "message": "Added T2 (BUILD): placeholder"
+    },
+    {
+      "time": "2026-03-24T00:46:24.017Z",
+      "message": "Added T3 (BUILD): placeholder"
+    },
+    {
+      "time": "2026-03-24T00:46:24.131Z",
+      "message": "Added T4 (BUILD): placeholder"
+    }
+  ]
+}
