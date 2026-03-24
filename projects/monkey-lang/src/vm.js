@@ -259,14 +259,28 @@ export class VM {
             this.push(cachedInteger(result));
           } else if (left instanceof MonkeyString && right instanceof MonkeyString && op === Opcodes.OpAdd) {
             if (recording()) {
-              // Record string concatenation
+              // Record string concatenation with unbox/box for promotion
               const rRef = this.recorder.popRef();
               const lRef = this.recorder.popRef();
-              if (this.recorder.knownType(lRef) !== 'string') this.recorder.guardType(lRef, left);
-              if (this.recorder.knownType(rRef) !== 'string') this.recorder.guardType(rRef, right);
-              const concatRef = this.recorder.trace.addInst(IR.CONCAT, { left: lRef, right: rRef });
-              this.recorder.typeMap.set(concatRef, 'string');
-              this.recorder.pushRef(concatRef);
+              if (this.recorder.knownType(lRef) !== 'string' && this.recorder.knownType(lRef) !== 'raw_string') this.recorder.guardType(lRef, left);
+              if (this.recorder.knownType(rRef) !== 'string' && this.recorder.knownType(rRef) !== 'raw_string') this.recorder.guardType(rRef, right);
+              // Unbox to raw strings if needed
+              let lRaw = lRef;
+              if (this.recorder.knownType(lRef) !== 'raw_string') {
+                lRaw = this.recorder.trace.addInst(IR.UNBOX_STRING, { ref: lRef });
+                this.recorder.typeMap.set(lRaw, 'raw_string');
+              }
+              let rRaw = rRef;
+              if (this.recorder.knownType(rRef) !== 'raw_string') {
+                rRaw = this.recorder.trace.addInst(IR.UNBOX_STRING, { ref: rRef });
+                this.recorder.typeMap.set(rRaw, 'raw_string');
+              }
+              const concatRef = this.recorder.trace.addInst(IR.CONCAT, { left: lRaw, right: rRaw });
+              this.recorder.typeMap.set(concatRef, 'raw_string');
+              // Box the result
+              const boxedRef = this.recorder.trace.addInst(IR.BOX_STRING, { ref: concatRef });
+              this.recorder.typeMap.set(boxedRef, 'string');
+              this.recorder.pushRef(boxedRef);
             }
             this.push(new MonkeyString(left.value + right.value));
           } else {
@@ -954,11 +968,23 @@ export class VM {
               this.recorder.typeMap.set(constRef, 'string');
               // Now: recorder stack has [... leftRef]. We pop left and use constRef for right.
               const lRef = this.recorder.popRef();
-              if (this.recorder.knownType(lRef) !== 'string') this.recorder.guardType(lRef, left4);
-              // constRef is known string, no guard needed
-              const concatRef = this.recorder.trace.addInst(IR.CONCAT, { left: lRef, right: constRef });
-              this.recorder.typeMap.set(concatRef, 'string');
-              this.recorder.pushRef(concatRef);
+              if (this.recorder.knownType(lRef) !== 'string' && this.recorder.knownType(lRef) !== 'raw_string') this.recorder.guardType(lRef, left4);
+              // Unbox to raw strings
+              let lRaw = lRef;
+              if (this.recorder.knownType(lRef) !== 'raw_string') {
+                lRaw = this.recorder.trace.addInst(IR.UNBOX_STRING, { ref: lRef });
+                this.recorder.typeMap.set(lRaw, 'raw_string');
+              }
+              let rRaw = constRef;
+              if (this.recorder.knownType(constRef) !== 'raw_string') {
+                rRaw = this.recorder.trace.addInst(IR.UNBOX_STRING, { ref: constRef });
+                this.recorder.typeMap.set(rRaw, 'raw_string');
+              }
+              const concatRef = this.recorder.trace.addInst(IR.CONCAT, { left: lRaw, right: rRaw });
+              this.recorder.typeMap.set(concatRef, 'raw_string');
+              const boxedRef = this.recorder.trace.addInst(IR.BOX_STRING, { ref: concatRef });
+              this.recorder.typeMap.set(boxedRef, 'string');
+              this.recorder.pushRef(boxedRef);
             }
             this.push(new MonkeyString(left4.value + right4.value));
           } else {

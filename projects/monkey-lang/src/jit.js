@@ -105,6 +105,8 @@ export const IR = {
   // Boxing/unboxing
   UNBOX_INT:    'unbox_int',     // ref → raw number
   BOX_INT:      'box_int',       // raw number → MonkeyInteger
+  UNBOX_STRING: 'unbox_string',  // ref → raw JS string
+  BOX_STRING:   'box_string',    // raw JS string → MonkeyString
 };
 
 // --- IR Instruction ---
@@ -714,20 +716,24 @@ export class TraceCompiler {
   // Returns sets of indices that can be promoted to raw JS variables.
   _analyzePromotable() {
     const ir = this.trace.ir;
-    const globalStored = new Set(); // global indices that have STORE_GLOBAL with BOX_INT
-    const localStored = new Set();
+    const globalStored = new Map(); // global index → 'int' | 'string'
+    const localStored = new Map();
 
     for (const inst of ir) {
       if (!inst) continue;
       if (inst.op === IR.STORE_GLOBAL) {
         const valInst = ir[inst.operands.value];
         if (valInst && valInst.op === IR.BOX_INT) {
-          globalStored.add(inst.operands.index);
+          globalStored.set(inst.operands.index, 'int');
+        } else if (valInst && valInst.op === IR.BOX_STRING) {
+          globalStored.set(inst.operands.index, 'string');
         }
       } else if (inst.op === IR.STORE_LOCAL) {
         const valInst = ir[inst.operands.value];
         if (valInst && valInst.op === IR.BOX_INT) {
-          localStored.add(inst.operands.slot);
+          localStored.set(inst.operands.slot, 'int');
+        } else if (valInst && valInst.op === IR.BOX_STRING) {
+          localStored.set(inst.operands.slot, 'string');
         }
       }
     }
@@ -787,7 +793,12 @@ export class TraceCompiler {
         const promotedName = this._promotedVarNames ? this._promotedVarNames.get('l:' + slot) : null;
         if (promotedName) {
           // Promoted locals are always current — use the promoted variable
-          localEntries.push(`${slot}: __cachedInteger(${promotedName})`);
+          const ptype = this._promotedVarTypes ? this._promotedVarTypes.get('l:' + slot) : 'int';
+          if (ptype === 'string') {
+            localEntries.push(`${slot}: new __MonkeyString(${promotedName})`);
+          } else {
+            localEntries.push(`${slot}: __cachedInteger(${promotedName})`);
+          }
         } else {
           const varName = this._varNames ? this._varNames.get(irRef) : null;
           if (varName && this._emittedVarIds && this._emittedVarIds.has(irRef)) {
@@ -807,9 +818,13 @@ export class TraceCompiler {
         // Check if this global is promoted
         const promotedName = this._promotedVarNames ? this._promotedVarNames.get('g:' + idx) : null;
         if (promotedName) {
-          // Promoted globals: box the raw value back to MonkeyInteger
-          globalEntries.push(`${idx}: __cachedInteger(${promotedName})`);
-        } else {
+          // Promoted globals: box the raw value back to MonkeyInteger/MonkeyString
+          const ptype = this._promotedVarTypes ? this._promotedVarTypes.get('g:' + idx) : 'int';
+          if (ptype === 'string') {
+            globalEntries.push(`${idx}: new __MonkeyString(${promotedName})`);
+          } else {
+            globalEntries.push(`${idx}: __cachedInteger(${promotedName})`);
+          }        } else {
           const varName = this._varNames ? this._varNames.get(irRef) : null;
           if (varName && this._emittedVarIds && this._emittedVarIds.has(irRef)) {
             globalEntries.push(`${idx}: ${varName}`);
@@ -950,11 +965,14 @@ export class TraceCompiler {
         }
         case IR.GUARD_INT:
         case IR.GUARD_BOOL:
+        case IR.GUARD_STRING:
         case IR.GUARD_TRUTHY:
         case IR.GUARD_FALSY:
           break; // skip — parent's type guards cover these
         case IR.UNBOX_INT:
         case IR.BOX_INT:
+        case IR.UNBOX_STRING:
+        case IR.BOX_STRING:
           stVars.set(inst.id, stVars.get(inst.operands.ref));
           break;
         case IR.ADD_INT: {
@@ -1015,6 +1033,8 @@ export class TraceCompiler {
     const promotable = this._analyzePromotable();
     const promotedVarNames = new Map(); // 'g:N' or 'l:N' → JS let variable name
     this._promotedVarNames = promotedVarNames;
+    const promotedVarTypes = new Map(); // 'g:N' or 'l:N' → 'int' | 'string'
+    this._promotedVarTypes = promotedVarTypes;
 
     // --- Pre-pass: usage analysis for dead code elimination ---
     const usedRefs = new Set();
@@ -1101,14 +1121,16 @@ export class TraceCompiler {
     this.lines.push('let __iterations = 0;');
 
     // Initialize promoted variables before the loop
-    for (const idx of promotable.globals) {
+    for (const [idx, type] of promotable.globals) {
       const pv = this.freshVar();
       promotedVarNames.set('g:' + idx, pv);
+      promotedVarTypes.set('g:' + idx, type);
       this.lines.push(`let ${pv} = __globals[${idx}].value;`);
     }
-    for (const slot of promotable.locals) {
+    for (const [slot, type] of promotable.locals) {
       const pv = this.freshVar();
       promotedVarNames.set('l:' + slot, pv);
+      promotedVarTypes.set('l:' + slot, type);
       this.lines.push(`let ${pv} = __stack[__bp + ${slot}].value;`);
     }
 
@@ -1116,22 +1138,30 @@ export class TraceCompiler {
     const hasPromoted = promotable.globals.size > 0 || promotable.locals.size > 0;
     if (hasPromoted) {
       const wbStmts = [];
-      for (const idx of promotable.globals) {
+      for (const [idx, type] of promotable.globals) {
         const pv = promotedVarNames.get('g:' + idx);
-        wbStmts.push(`__globals[${idx}] = __cachedInteger(${pv})`);
+        if (type === 'string') {
+          wbStmts.push(`__globals[${idx}] = new __MonkeyString(${pv})`);
+        } else {
+          wbStmts.push(`__globals[${idx}] = __cachedInteger(${pv})`);
+        }
       }
-      for (const slot of promotable.locals) {
+      for (const [slot, type] of promotable.locals) {
         const pv = promotedVarNames.get('l:' + slot);
-        wbStmts.push(`__stack[__bp + ${slot}] = __cachedInteger(${pv})`);
+        if (type === 'string') {
+          wbStmts.push(`__stack[__bp + ${slot}] = new __MonkeyString(${pv})`);
+        } else {
+          wbStmts.push(`__stack[__bp + ${slot}] = __cachedInteger(${pv})`);
+        }
       }
       this.lines.push(`function __wb(r) { ${wbStmts.join('; ')}; return r; }`);
       // Reload promoted vars after side trace execution (side trace may modify globals/locals)
       const reloadStmts = [];
-      for (const idx of promotable.globals) {
+      for (const [idx, type] of promotable.globals) {
         const pv = promotedVarNames.get('g:' + idx);
         reloadStmts.push(`${pv} = __globals[${idx}].value`);
       }
-      for (const slot of promotable.locals) {
+      for (const [slot, type] of promotable.locals) {
         const pv = promotedVarNames.get('l:' + slot);
         reloadStmts.push(`${pv} = __stack[__bp + ${slot}].value`);
       }
@@ -1291,6 +1321,8 @@ export class TraceCompiler {
             const valInst = ir[inst.operands.value];
             if (valInst && valInst.op === IR.BOX_INT) {
               this.lines.push(`  ${pv} = ${varNames.get(valInst.operands.ref)};`);
+            } else if (valInst && valInst.op === IR.BOX_STRING) {
+              this.lines.push(`  ${pv} = ${varNames.get(valInst.operands.ref)};`);
             } else {
               this.lines.push(`  ${pv} = ${valRef};`);
             }
@@ -1331,10 +1363,17 @@ export class TraceCompiler {
         }
 
         case IR.GUARD_STRING: {
-          const ref = varNames.get(inst.operands.ref);
-          const exitIp = inst.operands.exitIp != null ? inst.operands.exitIp : this.trace.startIp;
-          this._emitGuardExit(i, exitIp, `!(${ref} instanceof __MonkeyString)`);
-          this.lines.push(`  const ${v} = ${ref};`);
+          const refInst = ir[inst.operands.ref];
+          if (refInst && refInst._promotedRaw) {
+            // Promoted string var is already raw — alias directly, skip guard
+            varNames.set(i, varNames.get(inst.operands.ref));
+            inst._promotedRaw = true;
+          } else {
+            const ref = varNames.get(inst.operands.ref);
+            const exitIp = inst.operands.exitIp != null ? inst.operands.exitIp : this.trace.startIp;
+            this._emitGuardExit(i, exitIp, `!(${ref} instanceof __MonkeyString)`);
+            this.lines.push(`  const ${v} = ${ref};`);
+          }
           break;
         }
 
@@ -1489,6 +1528,46 @@ export class TraceCompiler {
           break;
         }
 
+        case IR.UNBOX_STRING: {
+          const ref = varNames.get(inst.operands.ref);
+          // If operand is a promoted string variable, it's already raw
+          const refInst = ir[inst.operands.ref];
+          if (refInst && refInst._promotedRaw) {
+            varNames.set(i, ref);  // alias
+          } else {
+            this.lines.push(`  const ${v} = ${ref}.value;`);
+          }
+          break;
+        }
+
+        case IR.BOX_STRING: {
+          const ref = varNames.get(inst.operands.ref);
+          // Same dead-box elimination as BOX_INT: skip if only feeds promoted stores
+          let usedByNonPromotedStore = false;
+          let usedByOtherInst = false;
+          for (let j = i + 1; j < ir.length; j++) {
+            const user = ir[j];
+            if (!user) continue;
+            const ops = user.operands;
+            for (const key of Object.keys(ops)) {
+              if (ops[key] === i) {
+                if ((user.op === IR.STORE_GLOBAL || user.op === IR.STORE_LOCAL) && key === 'value') {
+                  const storeKey = user.op === IR.STORE_GLOBAL ? 'g:' + user.operands.index : 'l:' + user.operands.slot;
+                  if (!promotedVarNames.has(storeKey)) usedByNonPromotedStore = true;
+                } else {
+                  usedByOtherInst = true;
+                }
+              }
+            }
+          }
+          if (promotedVarNames.size > 0 && !usedByNonPromotedStore && !usedByOtherInst) {
+            // Dead box — don't emit anything
+          } else {
+            this.lines.push(`  const ${v} = new __MonkeyString(${ref});`);
+          }
+          break;
+        }
+
         case IR.ADD_INT: {
           const l = varNames.get(inst.operands.left);
           const r = varNames.get(inst.operands.right);
@@ -1561,7 +1640,18 @@ export class TraceCompiler {
         case IR.CONCAT: {
           const l = varNames.get(inst.operands.left);
           const r = varNames.get(inst.operands.right);
-          this.lines.push(`  const ${v} = new __MonkeyString(${l}.value + ${r}.value);`);
+          // If operands are raw strings (from UNBOX_STRING), concat directly
+          const lInst = ir[inst.operands.left];
+          const rInst = ir[inst.operands.right];
+          const lRaw = lInst && (lInst.op === IR.UNBOX_STRING || lInst._promotedRaw);
+          const rRaw = rInst && (rInst.op === IR.UNBOX_STRING || rInst._promotedRaw);
+          if (lRaw && rRaw) {
+            // Both raw strings — just JS string concat
+            this.lines.push(`  const ${v} = (${l} + ${r});`);
+          } else {
+            // Fallback: access .value
+            this.lines.push(`  const ${v} = new __MonkeyString(${l}.value + ${r}.value);`);
+          }
           break;
         }
 
@@ -1781,6 +1871,23 @@ export class TraceCompiler {
           break;
         }
 
+        case IR.UNBOX_STRING: {
+          const ref = varNames.get(inst.operands.ref);
+          const refInst = ir[inst.operands.ref];
+          if (refInst && refInst._promotedRaw) {
+            varNames.set(inst.id, ref);
+          } else {
+            this.lines.push(`  const ${v} = ${ref}.value;`);
+          }
+          break;
+        }
+
+        case IR.BOX_STRING: {
+          const ref = varNames.get(inst.operands.ref);
+          this.lines.push(`  const ${v} = new __MonkeyString(${ref});`);
+          break;
+        }
+
         case IR.ADD_INT: {
           const l = varNames.get(inst.operands.left);
           const r = varNames.get(inst.operands.right);
@@ -1850,9 +1957,18 @@ export class TraceCompiler {
         }
 
         case IR.CONCAT: {
-          const l = varNames.get(inst.operands.left);
-          const r = varNames.get(inst.operands.right);
-          this.lines.push(`  const ${v} = new __MonkeyString(${l}.value + ${r}.value);`);
+          const l = stVars.get(inst.operands.left) || varNames.get(inst.operands.left);
+          const r = stVars.get(inst.operands.right) || varNames.get(inst.operands.right);
+          // Use raw string concat when operands are from UNBOX_STRING/promoted
+          const lInst = stIR[inst.operands.left] || ir[inst.operands.left];
+          const rInst = stIR[inst.operands.right] || ir[inst.operands.right];
+          const lRaw = lInst && (lInst.op === IR.UNBOX_STRING || lInst._promotedRaw);
+          const rRaw = rInst && (rInst.op === IR.UNBOX_STRING || rInst._promotedRaw);
+          if (lRaw && rRaw) {
+            this.lines.push(`    const ${v} = (${l} + ${r});`);
+          } else {
+            this.lines.push(`    const ${v} = new __MonkeyString(${l}.value + ${r}.value);`);
+          }
           break;
         }
 
@@ -2053,6 +2169,28 @@ export class TraceOptimizer {
         const refInst = ir[inst.operands.ref];
         if (refInst && refInst.op === IR.UNBOX_INT) {
           // The original boxed value
+          this._replaceRef(ir, i, refInst.operands.ref);
+          ir[i] = null;
+          eliminated++;
+          continue;
+        }
+      }
+
+      // UNBOX_STRING(BOX_STRING(x)) → x
+      if (inst.op === IR.UNBOX_STRING) {
+        const refInst = ir[inst.operands.ref];
+        if (refInst && refInst.op === IR.BOX_STRING) {
+          this._replaceRef(ir, i, refInst.operands.ref);
+          ir[i] = null;
+          eliminated++;
+          continue;
+        }
+      }
+
+      // BOX_STRING(UNBOX_STRING(x)) → x
+      if (inst.op === IR.BOX_STRING) {
+        const refInst = ir[inst.operands.ref];
+        if (refInst && refInst.op === IR.UNBOX_STRING) {
           this._replaceRef(ir, i, refInst.operands.ref);
           ir[i] = null;
           eliminated++;
@@ -2436,6 +2574,7 @@ export class TraceOptimizer {
       IR.ADD_INT, IR.SUB_INT, IR.MUL_INT, IR.DIV_INT,
       IR.CONCAT, IR.EQ, IR.NEQ, IR.GT, IR.LT,
       IR.NEG, IR.NOT, IR.UNBOX_INT, IR.BOX_INT,
+      IR.UNBOX_STRING, IR.BOX_STRING,
     ]);
 
     // Build canonical key for an instruction (using ORIGINAL operands, not remapped)

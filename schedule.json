@@ -805,21 +805,29 @@
     {
       "id": "T80",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Commit scheduling work",
-      "started": "2026-03-24T20:43:06.325Z"
+      "started": "2026-03-24T20:43:06.325Z",
+      "completed": "2026-03-24T20:43:21.838Z",
+      "duration_ms": 120000,
+      "summary": "MAINTAIN: all committed and pushed. Dashboard synced. 246 tests, 22 benchmarks, 9.6x aggregate."
     },
     {
       "id": "T81",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Allocation sinking deep dive: Graal partial escape analysis"
+      "status": "done",
+      "task": "Allocation sinking deep dive: Graal partial escape analysis",
+      "started": "2026-03-24T20:43:30.780Z",
+      "completed": "2026-03-24T20:44:08.646Z",
+      "duration_ms": 300000,
+      "summary": "EXPLORE: Designed string variable promotion (raw JS strings instead of MonkeyString in hot loops). Follows integer promotion pattern: UNBOX_STRING/BOX_STRING/CONCAT_RAW ops. Expected impact: string concat 6.7x → 15-20x. Written up as scratch note for Session C."
     },
     {
       "id": "T82",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Free curiosity: follow most interesting thread"
+      "status": "in-progress",
+      "task": "Free curiosity: follow most interesting thread",
+      "started": "2026-03-24T20:44:18.720Z"
     },
     {
       "id": "T83",
