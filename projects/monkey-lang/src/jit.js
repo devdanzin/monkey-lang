@@ -750,17 +750,80 @@ export class TraceCompiler {
     return lines;
   }
 
+  // Emit a JS object literal for the snapshot attached to a guard instruction.
+  // Maps local/global slots to their current JS variable names at codegen time.
+  // Returns null if no snapshot is available for this guard.
+  // Only includes entries for variables that have been emitted before this guard.
+  _emitSnapshotLiteral(guardIdx) {
+    if (!this._currentIr) return null;
+    const inst = this._currentIr[guardIdx];
+    if (!inst || !inst.snapshot) return null;
+
+    const snap = inst.snapshot;
+    const parts = [];
+
+    // For locals in snapshot
+    if (snap.locals.size > 0) {
+      const localEntries = [];
+      for (const [slot, irRef] of snap.locals) {
+        // Check if this slot is promoted (has a dedicated let variable)
+        const promotedName = this._promotedVarNames ? this._promotedVarNames.get('l:' + slot) : null;
+        if (promotedName) {
+          // Promoted locals are always current — use the promoted variable
+          localEntries.push(`${slot}: __cachedInteger(${promotedName})`);
+        } else {
+          const varName = this._varNames ? this._varNames.get(irRef) : null;
+          if (varName && this._emittedVarIds && this._emittedVarIds.has(irRef)) {
+            localEntries.push(`${slot}: ${varName}`);
+          }
+        }
+      }
+      if (localEntries.length > 0) {
+        parts.push(`locals: { ${localEntries.join(', ')} }`);
+      }
+    }
+
+    // For globals in snapshot
+    if (snap.globals.size > 0) {
+      const globalEntries = [];
+      for (const [idx, irRef] of snap.globals) {
+        // Check if this global is promoted
+        const promotedName = this._promotedVarNames ? this._promotedVarNames.get('g:' + idx) : null;
+        if (promotedName) {
+          // Promoted globals: box the raw value back to MonkeyInteger
+          globalEntries.push(`${idx}: __cachedInteger(${promotedName})`);
+        } else {
+          const varName = this._varNames ? this._varNames.get(irRef) : null;
+          if (varName && this._emittedVarIds && this._emittedVarIds.has(irRef)) {
+            globalEntries.push(`${idx}: ${varName}`);
+          }
+        }
+      }
+      if (globalEntries.length > 0) {
+        parts.push(`globals: { ${globalEntries.join(', ')} }`);
+      }
+    }
+
+    if (parts.length === 0) return null;
+    return `snapshot: { ${parts.join(', ')} }`;
+  }
+
   // Emit a guard exit that inlines side trace dispatch.
   // Instead of returning to the VM, if a side trace exists for this guard,
   // call it directly and continue the loop on loop_back.
   _emitGuardExit(guardIdx, exitIp, condition, exitType = 'guard') {
+    // Build snapshot object literal if snapshot data is available
+    const snapCode = this._emitSnapshotLiteral(guardIdx);
+    const exitObjBase = `exit: "${exitType}", guardIdx: ${guardIdx}, ip: ${exitIp}`;
+    const exitObj = snapCode ? `{ ${exitObjBase}, ${snapCode} }` : `{ ${exitObjBase} }`;
+
     if (!this._inLoop) {
       // Pre-loop guard: simple exit, no side-trace dispatch, no continue loop
       this.lines.push(`  if (${condition}) {`);
       if (this._wbWrap) {
         this.lines.push(`    __wb(null);`);
       }
-      this.lines.push(`    ${this._emitReturn(`{ exit: "${exitType}", guardIdx: ${guardIdx}, ip: ${exitIp} }`)}`);
+      this.lines.push(`    ${this._emitReturn(exitObj)}`);
       this.lines.push(`  }`);
       return;
     }
@@ -780,13 +843,23 @@ export class TraceCompiler {
     this.lines.push(`      if (__sr && __sr.exit === 'loop_back') { continue loop; }`);
     this.lines.push(`      ${this._emitReturn('__sr')}`);
     this.lines.push(`    }`);
-    this.lines.push(`    ${this._emitReturn(`{ exit: "${exitType}", guardIdx: ${guardIdx}, ip: ${exitIp} }`)}`);
+    this.lines.push(`    ${this._emitReturn(exitObj)}`);
     this.lines.push(`  }`);
   }
 
   compile() {
     const ir = this.trace.ir;
-    const varNames = new Map(); // IR id → JS variable name
+    const _innerVarNames = new Map();
+    const emittedVarIds = new Set();
+    // Proxy varNames to track which IR ids have been emitted
+    const varNames = {
+      set(id, name) { _innerVarNames.set(id, name); emittedVarIds.add(id); },
+      get(id) { return _innerVarNames.get(id); },
+      has(id) { return _innerVarNames.has(id); },
+    };
+    this._varNames = varNames;
+    this._currentIr = ir;
+    this._emittedVarIds = emittedVarIds;
 
     // Function traces get a completely different compilation path
     if (this.trace.isFuncTrace) {
@@ -796,6 +869,7 @@ export class TraceCompiler {
     // Analyze which globals/locals can be promoted to raw JS variables
     const promotable = this._analyzePromotable();
     const promotedVarNames = new Map(); // 'g:N' or 'l:N' → JS let variable name
+    this._promotedVarNames = promotedVarNames;
 
     // --- Pre-pass: usage analysis for dead code elimination ---
     const usedRefs = new Set();

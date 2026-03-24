@@ -202,16 +202,20 @@
       "id": "T54",
       "mode": "BUILD",
       "task": "Snapshot capture: add snapshot field to guard IR instructions during recording",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T48",
-      "started": "2026-03-24T15:10:20.679Z"
+      "started": "2026-03-24T15:10:20.679Z",
+      "completed": "2026-03-24T15:16:04.181Z",
+      "duration_ms": 600000,
+      "summary": "Snapshot capture implemented: all guard instructions now have .snapshot field with locals/globals→IR ref maps. TraceRecorder tracks slot state, addGuardInst auto-captures. 234 tests pass, no benchmark regression (9.4x)."
     },
     {
       "id": "T55",
       "mode": "BUILD",
       "task": "Codegen: emit snapshot data in guard exit returns (map IR refs to JS vars)",
-      "status": "upcoming",
-      "plan_ref": "T48"
+      "status": "in-progress",
+      "plan_ref": "T48",
+      "started": "2026-03-24T15:16:21.177Z"
     },
     {
       "id": "T56",
