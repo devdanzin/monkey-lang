@@ -647,9 +647,12 @@
       "id": "T96",
       "mode": "BUILD",
       "task": "Benchmark verification + test for hash optimizations",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T93",
-      "started": "2026-03-24T20:30:46.849Z"
+      "started": "2026-03-24T20:30:46.849Z",
+      "completed": "2026-03-24T20:31:28.769Z",
+      "duration_ms": 300000,
+      "summary": "All 245 tests pass (+1 new hash LICM hoisting test). Hash benchmark confirmed at 4.4x (from 2.3x). Aggregate 9.4x stable."
     },
     {
       "id": "T88",
@@ -717,8 +720,9 @@
     {
       "id": "T74",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Commit allocation sinking work"
+      "status": "in-progress",
+      "task": "Commit allocation sinking work",
+      "started": "2026-03-24T20:31:37.087Z"
     },
     {
       "id": "T75",
