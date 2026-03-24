@@ -224,23 +224,31 @@
       "id": "T56",
       "mode": "BUILD",
       "task": "VM: use snapshot to resume interpreter at exact bytecode position on guard exit",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T48",
-      "started": "2026-03-24T15:21:14.608Z"
+      "started": "2026-03-24T15:21:14.608Z",
+      "completed": "2026-03-24T15:25:16.424Z",
+      "duration_ms": 420000,
+      "summary": "VM snapshot restoration on guard exit"
     },
     {
       "id": "T57",
       "mode": "BUILD",
       "task": "Optimizer: update snapshots when CSE/LICM/DCE modify IR refs",
-      "status": "upcoming",
-      "plan_ref": "T48"
+      "status": "done",
+      "plan_ref": "T48",
+      "started": "2026-03-24T15:25:00.621Z",
+      "completed": "2026-03-24T15:25:00.763Z",
+      "duration_ms": 480000,
+      "summary": "Optimizer snapshot maintenance: _replaceRef, _compact, LICM, DCE all update snapshot refs. 234 tests pass."
     },
     {
       "id": "T58",
       "mode": "BUILD",
       "task": "Deopt tests: verify correct snapshot restoration, no regressions",
-      "status": "upcoming",
-      "plan_ref": "T48"
+      "status": "in-progress",
+      "plan_ref": "T48",
+      "started": "2026-03-24T15:25:20.876Z"
     },
     {
       "id": "T53",

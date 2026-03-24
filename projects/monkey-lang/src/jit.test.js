@@ -608,3 +608,128 @@ describe('Trace compilation', () => {
     assert.equal(jit.dumpTrace(null), '(no trace)');
   });
 });
+
+// --- Deoptimization / Snapshot Tests ---
+import { VM } from './vm.js';
+import { Compiler } from './compiler.js';
+import { Lexer } from './lexer.js';
+import { Parser } from './parser.js';
+
+function runJIT(input) {
+  const l = new Lexer(input);
+  const p = new Parser(l);
+  const prog = p.parseProgram();
+  const c = new Compiler();
+  c.compile(prog);
+  const vm = new VM(c.bytecode());
+  vm.enableJIT();
+  vm.run();
+  return vm;
+}
+
+describe('Snapshot capture', () => {
+  it('should attach snapshots to guard instructions during recording', () => {
+    const vm = runJIT('let sum = 0; let i = 0; while (i < 100) { sum = sum + i; i = i + 1; } sum');
+    let snapshotCount = 0;
+    for (const [, trace] of vm.jit.traces) {
+      for (const inst of trace.ir) {
+        if (inst && inst.snapshot) {
+          snapshotCount++;
+          assert.ok(inst.snapshot.locals instanceof Map, 'snapshot.locals should be a Map');
+          assert.ok(inst.snapshot.globals instanceof Map, 'snapshot.globals should be a Map');
+        }
+      }
+    }
+    assert.ok(snapshotCount > 0, 'should have at least one guard with snapshot');
+  });
+
+  it('should track global slots in snapshots', () => {
+    const vm = runJIT('let x = 0; let y = 0; while (x < 50) { y = y + x; x = x + 1; } y');
+    for (const [, trace] of vm.jit.traces) {
+      for (const inst of trace.ir) {
+        if (inst && inst.snapshot && inst.snapshot.globals.size > 0) {
+          // At least one snapshot should reference globals
+          assert.ok(true, 'found snapshot with global refs');
+          return;
+        }
+      }
+    }
+    assert.fail('no snapshot found with global refs');
+  });
+
+  it('should have snapshots survive optimization', () => {
+    const vm = runJIT('let a = 0; while (a < 200) { a = a + 1; } a');
+    for (const [, trace] of vm.jit.traces) {
+      for (const inst of trace.ir) {
+        if (inst && inst.snapshot) {
+          // After optimization, snapshot refs should be valid (within IR range)
+          for (const ref of inst.snapshot.globals.values()) {
+            assert.ok(typeof ref === 'number', 'snapshot ref should be a number');
+            assert.ok(ref >= 0 && ref < trace.ir.length, `snapshot ref ${ref} should be within IR range [0, ${trace.ir.length})`);
+          }
+          return;
+        }
+      }
+    }
+  });
+});
+
+describe('Snapshot in compiled code', () => {
+  it('should include snapshot data in guard exit returns', () => {
+    const vm = runJIT('let i = 0; while (i < 100) { i = i + 1; } i');
+    for (const [, trace] of vm.jit.traces) {
+      if (trace.compiled) {
+        const src = trace.compiled.toString();
+        // Should contain snapshot in at least one guard exit
+        assert.ok(src.includes('snapshot'), 'compiled code should include snapshot data');
+      }
+    }
+  });
+
+  it('should use __cachedInteger for promoted globals in snapshots', () => {
+    const vm = runJIT('let sum = 0; let i = 0; while (i < 100) { sum = sum + i; i = i + 1; } sum');
+    for (const [, trace] of vm.jit.traces) {
+      if (trace.compiled) {
+        const src = trace.compiled.toString();
+        if (src.includes('snapshot')) {
+          // Promoted globals should use __cachedInteger
+          assert.ok(src.includes('__cachedInteger'), 'snapshot should box promoted globals with __cachedInteger');
+          return;
+        }
+      }
+    }
+  });
+});
+
+describe('Deopt correctness', () => {
+  it('should produce correct results for simple loop', () => {
+    const vm = runJIT('let sum = 0; let i = 0; while (i < 1000) { sum = sum + i; i = i + 1; } sum');
+    assert.equal(vm.lastPoppedStackElem().value, 499500);
+  });
+
+  it('should produce correct results for nested loops', () => {
+    const vm = runJIT('let sum = 0; let i = 0; while (i < 100) { let j = 0; while (j < 100) { sum = sum + 1; j = j + 1; } i = i + 1; } sum');
+    assert.equal(vm.lastPoppedStackElem().value, 10000);
+  });
+
+  it('should produce correct results for array operations', () => {
+    const vm = runJIT('let arr = []; let i = 0; while (i < 50) { arr = push(arr, i * 2); i = i + 1; } let sum = 0; let j = 0; while (j < 50) { sum = sum + arr[j]; j = j + 1; } sum');
+    assert.equal(vm.lastPoppedStackElem().value, 2450);
+  });
+
+  it('should produce correct results for hash operations', () => {
+    const vm = runJIT('let h = {"a": 1, "b": 2, "c": 3}; let sum = 0; let i = 0; while (i < 100) { sum = sum + h["a"] + h["b"] + h["c"]; i = i + 1; } sum');
+    assert.equal(vm.lastPoppedStackElem().value, 600);
+  });
+
+  it('should produce correct results for fibonacci', () => {
+    const vm = runJIT(`
+      let fib = fn(n) {
+        if (n < 2) { return n; }
+        return fib(n - 1) + fib(n - 2);
+      };
+      fib(20)
+    `);
+    assert.equal(vm.lastPoppedStackElem().value, 6765);
+  });
+});
