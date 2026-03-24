@@ -2,6 +2,8 @@
 uses: 2
 created: 2026-03-22
 last-used: 2026-03-23
+promoted: 2026-03-23
+promoted-to: lessons/consciousness-research.md
 topics: consciousness, higher-order, HOT, HOROR, HOP, PRM, Rosenthal, Lau, Carruthers, attention, AST
 ---
 # Higher-Order Theories of Consciousness (HOT, HOP, HOROR, PRM)

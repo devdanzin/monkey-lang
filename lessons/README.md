@@ -16,5 +16,5 @@ Promoted knowledge files. Only created when a topic has been used on 2+ separate
 - **`compiler-vm-design.md`** — Monkey language compiler & stack VM: scopes, closures, jump patching, testing strategy, performance. (Promoted 2026-03-21)
 - **`vm-internals-production.md`** — Lua 5.4 & CPython internals: instruction encoding, arithmetic fast paths, pc++ metamethod trick, specialization, stack vs register tradeoffs. (Promoted 2026-03-21)
 - **`openclaw-contributing.md`** — OpenClaw architecture, message flow, failover system, error surfacing, PR process, gotchas. (Promoted 2026-03-21)
-- **`consciousness-research.md`** — Consciousness theories (IIT, GNW, HOT/PRM, AST, PP), COGITATE results, comparative analysis, AI implications, credences. (Promoted 2026-03-21, expanded 2026-03-22)
+- **`consciousness-research.md`** — Consciousness theories (IIT, GNW, HOT/PRM, AST, PP), COGITATE results, comparative analysis, AI implications, credences, HOT family deep dive. (Promoted 2026-03-21, expanded 2026-03-22, 2026-03-23)
 - **`tracing-jit.md`** — JIT compilation paradigms: tracing (LuaJIT/PyPy), copy-and-patch (CPython 3.13+), partial evaluation (GraalVM/Truffle). Internals, trade-offs, Futamura projections. (Promoted 2026-03-22, expanded 2026-03-22)

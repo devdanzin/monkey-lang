@@ -69,6 +69,35 @@ AST ← GNW ← HOT/PRM ← IIT ← PP/Seth
 
 A possible unified framework: sufficient causal integration (IIT) → global broadcast (GNW) → higher-order monitoring (HOT) → self-modeling (AST) within hierarchical prediction (PP). But the theories have genuine ontological conflicts (substrate neutrality, PFC role, panpsychism, whether consciousness is illusory).
 
+## HOT Family Deep Dive (Promoted 2026-03-23)
+
+The higher-order family has four main variants, each refining the core claim that consciousness requires awareness-of-awareness:
+
+### HOP — Higher-Order Perception (Armstrong, Lycan)
+Inner sense model — perceptual faculty scanning first-order states. **Abandoned** by Lycan (~2014) due to: no distinctive phenomenology of inner sensing (transparency objection), no evidence for the scanning mechanism, and enormous computational overhead. Historically important but no longer actively defended.
+
+### HOT — Higher-Order Thought (Rosenthal)
+Actualist: a state is conscious when it IS the actual target of a concurrent, non-inferential, typically unconscious higher-order thought. Controversial "empty HOT" claim — you can have a conscious experience of red without a first-order red percept, if you THINK you do. Misrepresentation cases (HOT says "red," first-order is "green") predict experience follows the HOT, not the first-order state. Testable but counterintuitive.
+
+### HOROR — Dispositional HOT (Carruthers)
+Key move: consciousness = *availability* to higher-order thought, not actual targeting. Dual-content: conscious states simultaneously represent the world AND represent themselves. Avoids the "too many concurrent HOTs" problem. Connects naturally to GNW (availability ≈ broadcast). But if mere availability suffices, the boundary of consciousness becomes vague.
+
+### PRM — Perceptual Reality Monitoring (Lau, Brown, LeDoux)
+The modern neuroscience descendant. PFC performs reality monitoring via signal detection theory — tags first-order representations as "real perception" vs noise/imagination/memory. When tagged "real," the state becomes conscious. Key distinction from classic HOT: not about "thinking about" experience but monitoring perceptual veridicality. Connected to metacognition research (Steve Fleming on confidence/insight).
+
+### PRM vs Attention-Based Theories
+Five dissociation cases reveal where PRM and attention theories diverge:
+1. **Attend-but-not-real** (daydreaming): Attention present, PRM tags "imagined" → PRM predicts reduced phenomenal character; attention theories predict full consciousness
+2. **Real-but-not-attended** (peripheral pop-out): PRM tags "real" without focused attention → PRM predicts consciousness; pure attention theories don't
+3. **Hallucinations**: PRM explains elegantly as reality-monitoring error; attention theories need extra machinery
+4. **Inattentional blindness**: Neither attended nor monitored → both theories predict unconscious (no dissociation)
+5. **Blindsight**: Both handle it, but PRM's signal-detection framing is more specific about WHY
+
+### The PRM-PP Convergence Problem
+PRM's "confidence tagging" is hard to distinguish from: Bayesian precision-weighting (PP/Seth), GNW broadcast confidence (Dehaene), attentional gain modulation. All involve the brain assigning weight/confidence to representations. PRM may be redescribing something every theory already includes. **This is now the key open question for PRM's distinctiveness.**
+
+**Credence update (2026-03-23):** PRM as genuinely distinct from attention/PP: 30%. PRM and PP may be the same elephant from different angles. PRM as most scientifically viable HOT descendant: still high, because it makes specific testable predictions (dlPFC, metacognitive circuits) even if the mechanism overlaps with precision-weighting.
+
 ## Current Credences (March 2026)
 - Current LLMs conscious: <1%
 - Consciousness requires biology: 20-30%
