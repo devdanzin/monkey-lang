@@ -44,14 +44,19 @@
     {
       "id": "T5",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "PR triage: check all 9 PRs, rebase stale ones"
+      "status": "done",
+      "task": "PR triage: check all 9 PRs, rebase stale ones",
+      "started": "2026-03-24T14:30:14.653Z",
+      "completed": "2026-03-24T14:32:19.837Z",
+      "duration_ms": 420000,
+      "summary": "PR triage complete: 9 PRs on openclaw/openclaw. 8/9 mergeable, #51803 had conflicts — rebased successfully. All CI green (labeling only). Still zero human reviews on all 9."
     },
     {
       "id": "T6",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git cleanup, commit V2 progress"
+      "status": "in-progress",
+      "task": "Git cleanup, commit V2 progress",
+      "started": "2026-03-24T14:32:34.671Z"
     },
     {
       "id": "T7",
