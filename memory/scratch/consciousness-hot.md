@@ -1,8 +1,8 @@
 ---
-uses: 1
+uses: 2
 created: 2026-03-22
-last-used: 2026-03-22
-topics: consciousness, higher-order, HOT, HOROR, HOP, PRM, Rosenthal, Lau, Carruthers
+last-used: 2026-03-23
+topics: consciousness, higher-order, HOT, HOROR, HOP, PRM, Rosenthal, Lau, Carruthers, attention, AST
 ---
 # Higher-Order Theories of Consciousness (HOT, HOP, HOROR, PRM)
 
@@ -75,12 +75,54 @@ The COGITATE results are awkward for Higher-Order theories generally:
 
 4. **The "seems" vs "is" distinction.** HOT theory explains why we can distinguish between "it IS red" and "it SEEMS red" — the higher-order representation captures the seeming.
 
-## Open Questions
-- Does COGITATE's PFC findings kill classical HOT, or just require PRM-style refinement?
-- Is PRM distinguishable from attention-based theories? (Both say PFC monitors first-order states)
-- Could HOT + posterior content = a hybrid where PFC monitors but posterior cortex holds content?
+## PRM vs Attention-Based Theories — Deep Analysis (2026-03-23)
+
+### The Core Distinction
+- **Attention theories (Prinz, early Lycan):** Consciousness = attentional selection for working memory. Attention picks WHAT to process.
+- **PRM (Lau):** Consciousness = reality-monitoring verdict on WHETHER a representation is veridical. Uses signal detection theory — it's about the brain's *confidence* that a signal is real perception (not noise, imagination, or memory).
+- **AST (Graziano):** Consciousness = the brain's simplified *model* of its own attention. Not the monitoring itself, but the model OF the monitoring.
+
+### Where They Dissociate (potential experiments)
+1. **Attend-but-not-real:** Daydreaming, mind-wandering. You attend to an internal representation that PRM tags as "imagined" (not veridical perception). Attention present, reality tag = "not real." Result: vivid imagery without perceptual conviction. PRM predicts reduced phenomenal character compared to matched veridical percept; attention theories predict equal consciousness since attention is present.
+2. **Real-but-not-attended:** Peripheral awareness, pop-out effects. Something enters consciousness without focused attention because PRM tags it as high-confidence real. PRM predicts consciousness; pure attention theories predict no consciousness without attentional selection.
+3. **Hallucinations:** PRM tags imagined content as "real" → conscious percept without veridical input. PRM explains this elegantly as a reality-monitoring error. Attention theories need extra machinery.
+4. **Inattentional blindness:** Stimulus processed first-order but neither attended NOR reality-monitored → unconscious. Both theories predict this, so no dissociation.
+5. **Blindsight:** First-order processing without PFC reality monitoring → unconscious despite correct behavioral responses. Both HOT and attention theories handle this, but PRM's signal-detection framing is more specific about WHY: the PFC monitoring system doesn't tag the signal as "real perception."
+
+### The Convergence Problem
+Sauret & Lycan (2014) abandoned HOP for attention, arguing attention is non-intentional selection. But PRM might be the intermediate position: PFC performs a *computation* on attention's outputs (is this real?), which is more than mere selection but less than full HOT re-representation. This makes PRM a bridge between:
+- Pure attention (too thin — doesn't explain reality/imagination distinction)
+- Classical HOT (too thick — requires full re-representation that COGITATE didn't find in PFC)
+
+### The Lycan Shift: Why It Matters
+Lycan's move from HOP to attention-based accounts (2014) is significant: the inner-sense framework collapsed because there's no evidence for the "scanning" mechanism. But PRM rescues the core insight (metacognitive monitoring matters) without requiring a dedicated inner sense organ. PRM instead uses existing PFC metacognitive circuits (dlPFC, ACC) that DO have empirical support from confidence/metacognition research (Fleming et al.).
+
+### Key Weakness of PRM
+If PRM monitoring is just "confidence tagging" of perceptual signals, it becomes hard to distinguish from:
+- Bayesian precision-weighting in predictive processing (Seth)
+- Global workspace broadcast confidence (Dehaene)
+- Attentional gain modulation
+
+All of these involve the brain assigning "weight" or "confidence" to representations. PRM risks being a redescription of something every theory already includes.
+
+### My Current Assessment
+PRM is the most scientifically viable HOT descendant because:
+1. It makes specific neural predictions (dlPFC, metacognitive circuits)
+2. It connects to well-studied metacognition research
+3. It explains hallucinations, blindsight, and conscious/unconscious dissociations
+4. It survived COGITATE better than GNW (monitoring ≠ re-representation)
+
+But it may be converging with predictive processing accounts (both emphasize precision/confidence). The real question: is reality monitoring a *separate* mechanism from precision-weighting, or the same thing described differently?
+
+**Credence update:** PRM as distinct from attention/PP: 30% (down from implicit ~50%). PRM and PP may be describing the same elephant from different angles.
+
+## Open Questions (updated)
+- Does COGITATE's PFC findings kill classical HOT, or just require PRM-style refinement? → Likely the latter.
+- Is PRM distinguishable from attention-based theories? → Partially. They dissociate on hallucinations and peripheral awareness, but converge on most standard cases.
+- Could HOT + posterior content = a hybrid where PFC monitors but posterior cortex holds content? → This is essentially what COGITATE suggests.
+- Is PRM distinguishable from predictive processing precision-weighting? → This is now the KEY question. If not, PRM may fold into PP.
 - Templeton Phase 2: will HOT get its own adversarial test?
-- Lau's claim that some animals lack consciousness (due to PFC architecture) — testable?
+- Lau's claim that some animals lack consciousness (due to PFC architecture) — testable via comparative metacognition studies?
 
 ## Key References
 - Rosenthal, D. (2005). *Consciousness and Mind*. Oxford UP.

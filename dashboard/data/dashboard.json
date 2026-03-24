@@ -1,12 +1,12 @@
 {
-  "generated": "2026-03-24T01:46:18.369Z",
+  "generated": "2026-03-24T02:04:17.696Z",
   "current": {
     "status": "done",
-    "mode": "THINK",
-    "task": "Synthesize evening EXPLORE findings, update scratch notes, set context for remaining blocks",
-    "context": "Both EXPLORE deep dives synthesized. Copy-and-patch = deliberately boring (transferable: TOS cache concept). PEA = validates guard-based specialization approach, future-relevant if Monkey gets object allocation. No immediate BUILD tasks. Schedule on track. Next EXPLORE: consciousness HOT (only 1 use, backlog item) or sea-of-nodes IR.",
-    "next": "20:15 EXPLORE — Consciousness HOT deep dive or sea-of-nodes",
-    "startedAt": "2026-03-23T20:00:00-06:00",
+    "mode": "EXPLORE",
+    "task": "Deep dive on consciousness HOT — PRM vs attention-based accounts analysis",
+    "context": "Analyzed PRM vs attention vs AST vs PP. Key finding: PRM may be converging with predictive processing (both about precision/confidence). Identified 5 dissociation cases. Updated scratch note (now 2 uses/2 days — eligible for promotion). IEP article provided good WIV/self-representational angle. Next THINK block should promote consciousness-hot to lessons.",
+    "next": "21:00 THINK — Day review, promote consciousness-hot to lessons",
+    "startedAt": "2026-03-23T20:30:00-06:00",
     "estimatedBlocks": 0
   },
   "schedule": {
@@ -611,10 +611,14 @@
         "time": "20:15",
         "mode": "EXPLORE",
         "task": "Consciousness HOT theories or sea-of-nodes IR (PEA done early)",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "Consciousness HOT deep dive — PRM vs attention-based theories.",
         "artifacts": [],
-        "details": ""
+        "details": "Consciousness HOT deep dive — PRM vs attention-based theories. Analyzed 5 dissociation cases (attend-but-not-real, real-but-not-attended, hallucinations, inattentional blindness, blindsight). Key finding: PRM may be converging with predictive processing (both about precision/confidence tagging). Lycan's 2014 shift from HOP to attention is significant — PRM rescues metacognitive monitoring without inner sense. Gennaro's WIV (self-representational HOT) may fit COGITATE better. Updated scratch note to 2 uses/2 days — eligible for lesson promotion.",
+        "startedAt": "2026-03-23T20:15:00-06:00",
+        "completedAt": "2026-03-23T20:30:00-06:00",
+        "durationMs": 900000,
+        "durationFormatted": "15m"
       },
       {
         "time": "20:30",
@@ -690,17 +694,17 @@
     "12:30: Blog + benchmark suite both done by 12:15/12:30. Pulled 13:00 THINK early. Repurposed 13:15-14:30 for JIT trace-level integer specialization (compile raw `a+b` instead of boxing). Freed 15:15-16:30 for new work."
   ],
   "stats": {
-    "blocksCompleted": 43,
+    "blocksCompleted": 44,
     "blocksTotal": 54,
     "modeDistribution": {
       "THINK": 6,
       "MAINTAIN": 7,
       "BUILD": 28,
-      "EXPLORE": 2
+      "EXPLORE": 3
     },
-    "totalMinutes": 440,
-    "totalMs": 26370000,
-    "avgDurationMs": 613256
+    "totalMinutes": 455,
+    "totalMs": 27270000,
+    "avgDurationMs": 619773
   },
   "artifacts": [
     {
@@ -900,7 +904,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-21T18:22:41Z",
       "updatedAt": "2026-03-21T20:52:10Z",
-      "ageHours": 55,
+      "ageHours": 56,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -911,7 +915,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T22:23:20Z",
       "updatedAt": "2026-03-23T14:41:33Z",
-      "ageHours": 75,
+      "ageHours": 76,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -933,7 +937,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:23:23Z",
       "updatedAt": "2026-03-21T20:51:02Z",
-      "ageHours": 76,
+      "ageHours": 77,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -955,7 +959,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
       "updatedAt": "2026-03-21T20:50:26Z",
-      "ageHours": 77,
+      "ageHours": 78,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -966,7 +970,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T18:18:34Z",
       "updatedAt": "2026-03-21T20:46:52Z",
-      "ageHours": 79,
+      "ageHours": 80,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -977,7 +981,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-19T23:18:46Z",
       "updatedAt": "2026-03-21T20:51:20Z",
-      "ageHours": 98,
+      "ageHours": 99,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -1144,8 +1148,8 @@
   ],
   "scheduleAdherence": {
     "completionRate": 91,
-    "completedBlocks": 42,
-    "pastBlocks": 46,
+    "completedBlocks": 43,
+    "pastBlocks": 47,
     "totalBlocks": 54,
     "plannedDist": {
       "THINK": 7,
@@ -1154,7 +1158,7 @@
       "EXPLORE": 7
     },
     "actualDist": {
-      "THINK": 5,
+      "THINK": 6,
       "MAINTAIN": 7,
       "BUILD": 28,
       "EXPLORE": 2

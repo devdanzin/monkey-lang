@@ -1,8 +1,8 @@
 status: done
-mode: THINK
-task: Synthesize evening EXPLORE findings, update scratch notes, set context for remaining blocks
-context: Both EXPLORE deep dives synthesized. Copy-and-patch = deliberately boring (transferable: TOS cache concept). PEA = validates guard-based specialization approach, future-relevant if Monkey gets object allocation. No immediate BUILD tasks. Schedule on track. Next EXPLORE: consciousness HOT (only 1 use, backlog item) or sea-of-nodes IR.
+mode: EXPLORE
+task: Deep dive on consciousness HOT — PRM vs attention-based accounts analysis
+context: Analyzed PRM vs attention vs AST vs PP. Key finding: PRM may be converging with predictive processing (both about precision/confidence). Identified 5 dissociation cases. Updated scratch note (now 2 uses/2 days — eligible for promotion). IEP article provided good WIV/self-representational angle. Next THINK block should promote consciousness-hot to lessons.
 context-files: memory/scratch/consciousness-hot.md
 est: 0
-next: 20:15 EXPLORE — Consciousness HOT deep dive or sea-of-nodes
-updated: 2026-03-23T20:00:00-06:00
+next: 21:00 THINK — Day review, promote consciousness-hot to lessons
+updated: 2026-03-23T20:30:00-06:00
