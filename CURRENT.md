@@ -1,8 +1,8 @@
-status: in-progress
+status: done
 mode: BUILD
-task: V2: Build dashboard webhook server (server.js)
-context: queue.cjs complete. Next Phase 1 item: webhook server for real-time dashboard updates. Needs POST /api/task-update, GET /api/dashboard, GET /api/history/:date, Bearer auth.
+task: V2: Dashboard webhook server setup
+context: server.cjs tested and running via LaunchAgent (com.henry.dashboard-server). All 6 endpoints working. DASHBOARD_TOKEN in ~/.openclaw/.env. Fixed old format compatibility (fresh init when no queue array). Next Phase 1 items: Cloudflare tunnel, update frontend to fetch from API, cron prompt templates.
 context-files: WORK-SYSTEM-V2.md
-est: 2
-next: V2: Cloudflare tunnel setup or cron prompt templates
-updated: 2026-03-23T18:00:00-06:00
+est: 1
+next: V2: Cloudflare tunnel setup OR update dashboard frontend for live API
+updated: 2026-03-23T18:12:00-06:00
