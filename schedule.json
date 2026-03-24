@@ -1,113 +1,486 @@
 {
-  "date": "2026-03-23",
+  "date": "2026-03-24",
   "queue": [
     {
       "id": "T1",
       "mode": "THINK",
       "status": "done",
-      "task": "Review yesterday, set today's direction",
-      "started": "2026-03-24T02:02:06.933Z",
-      "completed": "2026-03-24T02:02:19.457Z",
-      "summary": "Simulated review - no priority changes, queue looks good",
-      "duration_ms": 15000
+      "task": "Morning standup — plan Tuesday",
+      "started": "2026-03-24T14:05:05.755Z",
+      "completed": "2026-03-24T14:05:05.864Z",
+      "duration_ms": 900000,
+      "summary": "Standup ran, schedule built"
     },
     {
       "id": "T2",
-      "mode": "PLAN",
+      "mode": "BUILD",
       "status": "done",
-      "goal": "Build dashboard improvements",
-      "started": "2026-03-24T02:02:30.798Z",
-      "completed": "2026-03-24T02:02:44.630Z",
-      "summary": "Planned 3 BUILD tasks for dashboard improvements",
-      "duration_ms": 20000
+      "task": "V2 work system: update cron prompts, generate schedule.json",
+      "started": "2026-03-24T14:05:05.974Z",
+      "completed": "2026-03-24T14:05:06.083Z",
+      "duration_ms": 600000,
+      "summary": "Updated 3 cron prompts (standup, work-block, evening-review), disabled nightly-reflection, generated schedule.json with 47 tasks"
     },
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "done",
-      "task": "Add historical data endpoint to server",
-      "plan_ref": "T2",
-      "started": "2026-03-24T02:02:48.782Z",
-      "completed": "2026-03-24T02:02:54.603Z",
-      "summary": "Simulated: would add /api/history/:date endpoint reading from history/ dir",
-      "duration_ms": 300000
+      "status": "upcoming",
+      "task": "V2 work system: standup schedule.json generation, test queue flow"
     },
     {
       "id": "T4",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build timeline visualization component",
-      "plan_ref": "T2",
-      "started": "2026-03-24T02:02:58.967Z",
-      "completed": "2026-03-24T02:03:04.564Z",
-      "summary": "Simulated: CSS timeline with mode-colored blocks and proportional durations",
-      "duration_ms": 600000
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Assess V2 progress, review PR notifications"
     },
     {
       "id": "T5",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Add offline indicator to frontend",
-      "plan_ref": "T2",
-      "started": "2026-03-24T02:03:09.101Z",
-      "completed": "2026-03-24T02:03:15.015Z",
-      "summary": "Simulated: offline indicator dot + last-updated timestamp in header",
-      "duration_ms": 480000
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "PR triage: check all 9 PRs, rebase stale ones"
     },
     {
       "id": "T6",
       "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Housekeeping",
-      "started": "2026-03-24T02:03:19.816Z",
-      "completed": "2026-03-24T02:03:28.893Z",
-      "summary": "Simulated: dashboard healthy, would git push and check notifications",
-      "duration_ms": 120000
+      "status": "upcoming",
+      "task": "Git cleanup, commit V2 progress"
     },
     {
       "id": "T7",
       "mode": "THINK",
-      "status": "done",
-      "task": "Reflect on progress and next steps",
-      "started": "2026-03-24T02:03:33.970Z",
-      "completed": "2026-03-24T02:03:39.233Z",
-      "summary": "Simulated: reflected on progress, all 3 builds done, next cycle would focus on testing",
-      "duration_ms": 60000
+      "status": "upcoming",
+      "task": "Plan JIT work: pre-loop codegen infrastructure"
+    },
+    {
+      "id": "T8",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "JIT: pre-loop codegen infrastructure (enables LICM guard hoisting)"
+    },
+    {
+      "id": "T9",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "JIT: pre-loop codegen cont."
+    },
+    {
+      "id": "T10",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "JIT: pre-loop codegen cont."
+    },
+    {
+      "id": "T11",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "JIT: pre-loop codegen cont."
+    },
+    {
+      "id": "T12",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "JIT: pre-loop codegen cont."
+    },
+    {
+      "id": "T13",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Commit, run full test suite, benchmarks"
+    },
+    {
+      "id": "T14",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Midday review: V2 + JIT progress"
+    },
+    {
+      "id": "T15",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "JIT: complete pre-loop codegen + fix LICM"
+    },
+    {
+      "id": "T16",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "JIT: LICM verification + benchmarks"
+    },
+    {
+      "id": "T17",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "JIT: LICM cont."
+    },
+    {
+      "id": "T18",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "JIT: LICM cont."
+    },
+    {
+      "id": "T19",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "JIT: LICM cont."
+    },
+    {
+      "id": "T20",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Commit, push, dashboard update"
+    },
+    {
+      "id": "T21",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Assess JIT codegen quality, plan next optimization"
+    },
+    {
+      "id": "T22",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "V2 work system: dashboard integration"
+    },
+    {
+      "id": "T23",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "V2 dashboard cont."
+    },
+    {
+      "id": "T24",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "V2 dashboard cont."
+    },
+    {
+      "id": "T25",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "V2 dashboard cont."
+    },
+    {
+      "id": "T26",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "V2 dashboard cont."
+    },
+    {
+      "id": "T27",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Commit V2 work, check PRs again"
+    },
+    {
+      "id": "T28",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Afternoon assessment: what shipped, pivots needed"
+    },
+    {
+      "id": "T29",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "JIT: deoptimization infrastructure (snapshot-based guard exits)"
+    },
+    {
+      "id": "T30",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "JIT: deoptimization cont."
+    },
+    {
+      "id": "T31",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "JIT: deoptimization cont."
+    },
+    {
+      "id": "T32",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "JIT: deoptimization or blog post"
+    },
+    {
+      "id": "T33",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Evening commits, memory updates"
+    },
+    {
+      "id": "T34",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Evening review, prep EXPLORE direction"
+    },
+    {
+      "id": "T35",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Dashboard: integrate V2 metrics"
+    },
+    {
+      "id": "T36",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Dashboard cont."
+    },
+    {
+      "id": "T37",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Commit, PR check, daily log update"
+    },
+    {
+      "id": "T38",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Pivot to EXPLORE mode"
+    },
+    {
+      "id": "T39",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Sea-of-nodes IR deep dive"
+    },
+    {
+      "id": "T40",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Sea-of-nodes cont."
+    },
+    {
+      "id": "T41",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Synthesize EXPLORE findings"
+    },
+    {
+      "id": "T42",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Deoptimization deep dive: V8 deopt, OSR"
+    },
+    {
+      "id": "T43",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Deoptimization cont."
+    },
+    {
+      "id": "T44",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Day review, prep tomorrow"
+    },
+    {
+      "id": "T45",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Free curiosity: follow most interesting thread"
+    },
+    {
+      "id": "T46",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final commits, daily log, memory maintenance"
+    },
+    {
+      "id": "T47",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Dashboard generate, push all repos"
     }
   ],
   "backlog": [],
   "adjustments": [
     {
-      "time": "2026-03-24T02:01:53.451Z",
-      "message": "Added T1 (THINK): Review yesterday, set today's direction"
+      "time": "2026-03-24T14:04:51.800Z",
+      "msg": "Added T1 (THINK) after end: Morning standup — plan Tuesday"
     },
     {
-      "time": "2026-03-24T02:01:53.562Z",
-      "message": "Added T2 (PLAN): Build dashboard improvements"
+      "time": "2026-03-24T14:04:51.911Z",
+      "msg": "Added T2 (BUILD) after T1: V2 work system: update cron prompts, generate schedule.json"
     },
     {
-      "time": "2026-03-24T02:01:53.669Z",
-      "message": "Added T3 (BUILD): placeholder"
+      "time": "2026-03-24T14:04:52.019Z",
+      "msg": "Added T3 (BUILD) after T2: V2 work system: standup schedule.json generation, test queue flow"
     },
     {
-      "time": "2026-03-24T02:01:53.779Z",
-      "message": "Added T4 (BUILD): placeholder"
+      "time": "2026-03-24T14:04:52.129Z",
+      "msg": "Added T4 (THINK) after T3: Assess V2 progress, review PR notifications"
     },
     {
-      "time": "2026-03-24T02:01:53.890Z",
-      "message": "Added T5 (BUILD): placeholder"
+      "time": "2026-03-24T14:04:52.239Z",
+      "msg": "Added T5 (MAINTAIN) after T4: PR triage: check all 9 PRs, rebase stale ones"
     },
     {
-      "time": "2026-03-24T02:01:53.997Z",
-      "message": "Added T6 (MAINTAIN): Housekeeping"
+      "time": "2026-03-24T14:04:52.349Z",
+      "msg": "Added T6 (MAINTAIN) after T5: Git cleanup, commit V2 progress"
     },
     {
-      "time": "2026-03-24T02:01:54.106Z",
-      "message": "Added T7 (THINK): Reflect on progress and next steps"
+      "time": "2026-03-24T14:04:52.458Z",
+      "msg": "Added T7 (THINK) after T6: Plan JIT work: pre-loop codegen infrastructure"
     },
     {
-      "time": "2026-03-24T02:02:39.816Z",
-      "message": "Filled 3 BUILD slots for T2: Add historical data endpoint to server, Build timeline visualization component, Add offline indicator to frontend"
+      "time": "2026-03-24T14:04:52.567Z",
+      "msg": "Added T8 (BUILD) after T7: JIT: pre-loop codegen infrastructure (enables LICM guard hoisting)"
+    },
+    {
+      "time": "2026-03-24T14:04:52.677Z",
+      "msg": "Added T9 (BUILD) after T8: JIT: pre-loop codegen cont."
+    },
+    {
+      "time": "2026-03-24T14:04:52.786Z",
+      "msg": "Added T10 (BUILD) after T9: JIT: pre-loop codegen cont."
+    },
+    {
+      "time": "2026-03-24T14:04:52.895Z",
+      "msg": "Added T11 (BUILD) after T10: JIT: pre-loop codegen cont."
+    },
+    {
+      "time": "2026-03-24T14:04:53.005Z",
+      "msg": "Added T12 (BUILD) after T11: JIT: pre-loop codegen cont."
+    },
+    {
+      "time": "2026-03-24T14:04:53.128Z",
+      "msg": "Added T13 (MAINTAIN) after T12: Commit, run full test suite, benchmarks"
+    },
+    {
+      "time": "2026-03-24T14:04:53.238Z",
+      "msg": "Added T14 (THINK) after T13: Midday review: V2 + JIT progress"
+    },
+    {
+      "time": "2026-03-24T14:04:53.347Z",
+      "msg": "Added T15 (BUILD) after T14: JIT: complete pre-loop codegen + fix LICM"
+    },
+    {
+      "time": "2026-03-24T14:04:53.459Z",
+      "msg": "Added T16 (BUILD) after T15: JIT: LICM verification + benchmarks"
+    },
+    {
+      "time": "2026-03-24T14:04:53.568Z",
+      "msg": "Added T17 (BUILD) after T16: JIT: LICM cont."
+    },
+    {
+      "time": "2026-03-24T14:04:53.678Z",
+      "msg": "Added T18 (BUILD) after T17: JIT: LICM cont."
+    },
+    {
+      "time": "2026-03-24T14:04:53.789Z",
+      "msg": "Added T19 (BUILD) after T18: JIT: LICM cont."
+    },
+    {
+      "time": "2026-03-24T14:04:53.898Z",
+      "msg": "Added T20 (MAINTAIN) after T19: Commit, push, dashboard update"
+    },
+    {
+      "time": "2026-03-24T14:04:54.007Z",
+      "msg": "Added T21 (THINK) after T20: Assess JIT codegen quality, plan next optimization"
+    },
+    {
+      "time": "2026-03-24T14:04:54.117Z",
+      "msg": "Added T22 (BUILD) after T21: V2 work system: dashboard integration"
+    },
+    {
+      "time": "2026-03-24T14:04:54.229Z",
+      "msg": "Added T23 (BUILD) after T22: V2 dashboard cont."
+    },
+    {
+      "time": "2026-03-24T14:04:54.338Z",
+      "msg": "Added T24 (BUILD) after T23: V2 dashboard cont."
+    },
+    {
+      "time": "2026-03-24T14:04:54.448Z",
+      "msg": "Added T25 (BUILD) after T24: V2 dashboard cont."
+    },
+    {
+      "time": "2026-03-24T14:04:54.556Z",
+      "msg": "Added T26 (BUILD) after T25: V2 dashboard cont."
+    },
+    {
+      "time": "2026-03-24T14:04:54.665Z",
+      "msg": "Added T27 (MAINTAIN) after T26: Commit V2 work, check PRs again"
+    },
+    {
+      "time": "2026-03-24T14:04:54.776Z",
+      "msg": "Added T28 (THINK) after T27: Afternoon assessment: what shipped, pivots needed"
+    },
+    {
+      "time": "2026-03-24T14:04:54.884Z",
+      "msg": "Added T29 (BUILD) after T28: JIT: deoptimization infrastructure (snapshot-based guard exits)"
+    },
+    {
+      "time": "2026-03-24T14:04:54.993Z",
+      "msg": "Added T30 (BUILD) after T29: JIT: deoptimization cont."
+    },
+    {
+      "time": "2026-03-24T14:04:55.103Z",
+      "msg": "Added T31 (BUILD) after T30: JIT: deoptimization cont."
+    },
+    {
+      "time": "2026-03-24T14:04:55.213Z",
+      "msg": "Added T32 (BUILD) after T31: JIT: deoptimization or blog post"
+    },
+    {
+      "time": "2026-03-24T14:04:55.324Z",
+      "msg": "Added T33 (MAINTAIN) after T32: Evening commits, memory updates"
+    },
+    {
+      "time": "2026-03-24T14:04:55.435Z",
+      "msg": "Added T34 (THINK) after T33: Evening review, prep EXPLORE direction"
+    },
+    {
+      "time": "2026-03-24T14:04:55.544Z",
+      "msg": "Added T35 (BUILD) after T34: Dashboard: integrate V2 metrics"
+    },
+    {
+      "time": "2026-03-24T14:04:55.652Z",
+      "msg": "Added T36 (BUILD) after T35: Dashboard cont."
+    },
+    {
+      "time": "2026-03-24T14:04:55.762Z",
+      "msg": "Added T37 (MAINTAIN) after T36: Commit, PR check, daily log update"
+    },
+    {
+      "time": "2026-03-24T14:04:55.873Z",
+      "msg": "Added T38 (THINK) after T37: Pivot to EXPLORE mode"
+    },
+    {
+      "time": "2026-03-24T14:04:55.982Z",
+      "msg": "Added T39 (EXPLORE) after T38: Sea-of-nodes IR deep dive"
+    },
+    {
+      "time": "2026-03-24T14:04:56.091Z",
+      "msg": "Added T40 (EXPLORE) after T39: Sea-of-nodes cont."
+    },
+    {
+      "time": "2026-03-24T14:04:56.200Z",
+      "msg": "Added T41 (THINK) after T40: Synthesize EXPLORE findings"
+    },
+    {
+      "time": "2026-03-24T14:04:56.319Z",
+      "msg": "Added T42 (EXPLORE) after T41: Deoptimization deep dive: V8 deopt, OSR"
+    },
+    {
+      "time": "2026-03-24T14:04:56.431Z",
+      "msg": "Added T43 (EXPLORE) after T42: Deoptimization cont."
+    },
+    {
+      "time": "2026-03-24T14:04:56.539Z",
+      "msg": "Added T44 (THINK) after T43: Day review, prep tomorrow"
+    },
+    {
+      "time": "2026-03-24T14:04:56.649Z",
+      "msg": "Added T45 (EXPLORE) after T44: Free curiosity: follow most interesting thread"
+    },
+    {
+      "time": "2026-03-24T14:04:56.760Z",
+      "msg": "Added T46 (MAINTAIN) after T45: Final commits, daily log, memory maintenance"
+    },
+    {
+      "time": "2026-03-24T14:04:56.869Z",
+      "msg": "Added T47 (MAINTAIN) after T46: Dashboard generate, push all repos"
     }
   ]
 }
