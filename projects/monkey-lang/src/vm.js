@@ -366,12 +366,12 @@ export class VM {
             if (truthy) {
               // Took the fall-through path — guard that it stays truthy
               const exitIp = overrideExitIp !== null ? overrideExitIp : target;
-              this.recorder.trace.addInst(IR.GUARD_TRUTHY, { ref: condRef, exitIp });
+              this.recorder.addGuardInst(IR.GUARD_TRUTHY, { ref: condRef, exitIp });
               this.recorder.trace.guardCount++;
             } else {
               // Took the jump path — guard that it stays falsy
               const exitIp = overrideExitIp !== null ? overrideExitIp : ip + 3;
-              this.recorder.trace.addInst(IR.GUARD_FALSY, { ref: condRef, exitIp });
+              this.recorder.addGuardInst(IR.GUARD_FALSY, { ref: condRef, exitIp });
               this.recorder.trace.guardCount++;
             }
           }
@@ -433,6 +433,7 @@ export class VM {
           if (recording()) {
             const valRef = this.recorder.popRef();
             this.recorder.trace.addInst(IR.STORE_GLOBAL, { index: globalIdx, value: valRef });
+            this.recorder.trackGlobalStore(globalIdx, valRef);
           }
           break;
         }
@@ -445,6 +446,7 @@ export class VM {
           if (recording()) {
             const ref = this.recorder.trace.addInst(IR.LOAD_GLOBAL, { index: globalIdx2 });
             this.recorder.pushRef(ref);
+            this.recorder.trackGlobalLoad(globalIdx2, ref);
           }
           break;
         }
@@ -458,6 +460,7 @@ export class VM {
             const valRef = this.recorder.popRef();
             const absSlot = this.recorder.currentBaseOffset() + localIdx;
             this.recorder.trace.addInst(IR.STORE_LOCAL, { slot: absSlot, value: valRef });
+            this.recorder.trackLocalStore(absSlot, valRef);
           }
           break;
         }
@@ -473,9 +476,11 @@ export class VM {
             const inlineRef = this.recorder.inlineSlotRefs.get(absSlot);
             if (inlineRef !== undefined) {
               this.recorder.pushRef(inlineRef);
+              this.recorder.trackLocalLoad(absSlot, inlineRef);
             } else {
               const ref = this.recorder.trace.addInst(IR.LOAD_LOCAL, { slot: absSlot });
               this.recorder.pushRef(ref);
+              this.recorder.trackLocalLoad(absSlot, ref);
             }
           }
           break;
@@ -520,7 +525,7 @@ export class VM {
               // Guard: left must be array
               if (this.recorder.knownType(arrRef) !== 'array') {
                 const exitIp = this.recorder.getGuardExitIp();
-                this.recorder.trace.addInst(IR.GUARD_ARRAY, { ref: arrRef, exitIp });
+                this.recorder.addGuardInst(IR.GUARD_ARRAY, { ref: arrRef, exitIp });
                 this.recorder.typeMap.set(arrRef, 'array');
                 this.recorder.trace.guardCount++;
               }
@@ -536,7 +541,7 @@ export class VM {
               }
               // Bounds guard
               const exitIp2 = this.recorder.getGuardExitIp();
-              this.recorder.trace.addInst(IR.GUARD_BOUNDS, { left: arrRef, right: idxUnboxed, exitIp: exitIp2 });
+              this.recorder.addGuardInst(IR.GUARD_BOUNDS, { left: arrRef, right: idxUnboxed, exitIp: exitIp2 });
               this.recorder.trace.guardCount++;
               // Emit index_array
               const resultRef = this.recorder.trace.addInst(IR.INDEX_ARRAY, { left: arrRef, right: idxUnboxed });
@@ -548,7 +553,7 @@ export class VM {
               const hashRef = this.recorder.popRef();
               // Guard: left must be hash
               const exitIpH = this.recorder.getGuardExitIp();
-              this.recorder.trace.addInst(IR.GUARD_HASH, { ref: hashRef, exitIp: exitIpH });
+              this.recorder.addGuardInst(IR.GUARD_HASH, { ref: hashRef, exitIp: exitIpH });
               this.recorder.typeMap.set(hashRef, 'hash');
               this.recorder.trace.guardCount++;
               // Emit index_hash — key is a MonkeyObject with hashKey()
@@ -964,6 +969,7 @@ export class VM {
               } else {
                 localRef = this.recorder.trace.addInst(IR.LOAD_LOCAL, { slot: absSlot });
               }
+              this.recorder.trackLocalLoad(absSlot, localRef);
               this.recorder.pushRef(localRef);
               const constRef = this.recorder.trace.addInst(IR.CONST_INT, { value: rightVal.value });
               this.recorder.typeMap.set(constRef, 'raw_int');

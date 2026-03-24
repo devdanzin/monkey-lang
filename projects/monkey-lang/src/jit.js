@@ -162,6 +162,10 @@ export class TraceRecorder {
     // Track types seen during recording for guards
     this.typeMap = new Map();  // IR ref → observed type
 
+    // Snapshot support: track current slot→IR ref mapping
+    this.localSlotRefs = new Map();   // local slot → most recent IR ref
+    this.globalSlotRefs = new Map();  // global index → most recent IR ref
+
     // Side trace support
     this.isSideTrace = false;
     this.parentTrace = null;
@@ -186,6 +190,8 @@ export class TraceRecorder {
     this.loopHeaderSeen = false;
     this.instrCount = 0;
     this.typeMap.clear();
+    this.localSlotRefs.clear();
+    this.globalSlotRefs.clear();
     this.isSideTrace = false;
     this.parentTrace = null;
     this.parentGuardIdx = -1;
@@ -207,6 +213,8 @@ export class TraceRecorder {
     this.loopHeaderSeen = false;
     this.instrCount = 0;
     this.typeMap.clear();
+    this.localSlotRefs.clear();
+    this.globalSlotRefs.clear();
     this.isSideTrace = true;
     this.parentTrace = parentTrace;
     this.parentGuardIdx = guardIdx;
@@ -229,6 +237,8 @@ export class TraceRecorder {
     this.loopHeaderSeen = false;
     this.instrCount = 0;
     this.typeMap.clear();
+    this.localSlotRefs.clear();
+    this.globalSlotRefs.clear();
     this.isSideTrace = false;
     this.isFuncTrace = true;
     this.tracedFn = fn;
@@ -319,6 +329,52 @@ export class TraceRecorder {
     return null; // use the normal exit IP
   }
 
+  // Capture a snapshot of the current interpreter state for deoptimization.
+  // Returns a map of local slots and global indices to their current IR refs.
+  // This enables the VM to restore state at the exact bytecode position when
+  // a guard fails, rather than restarting from the trace entry.
+  captureSnapshot() {
+    return {
+      locals: new Map(this.localSlotRefs),
+      globals: new Map(this.globalSlotRefs),
+      irStack: [...this.irStack], // copy of current virtual stack refs
+    };
+  }
+
+  // Update slot tracking when a local is stored
+  trackLocalStore(slot, irRef) {
+    this.localSlotRefs.set(slot, irRef);
+  }
+
+  // Update slot tracking when a local is loaded
+  trackLocalLoad(slot, irRef) {
+    if (!this.localSlotRefs.has(slot)) {
+      this.localSlotRefs.set(slot, irRef);
+    }
+  }
+
+  // Update slot tracking when a global is stored
+  trackGlobalStore(index, irRef) {
+    this.globalSlotRefs.set(index, irRef);
+  }
+
+  // Update slot tracking when a global is loaded
+  trackGlobalLoad(index, irRef) {
+    if (!this.globalSlotRefs.has(index)) {
+      this.globalSlotRefs.set(index, irRef);
+    }
+  }
+
+  // Add a guard instruction with an attached snapshot.
+  // The snapshot captures the current interpreter state (slot→IR ref mappings)
+  // so that on guard failure the VM can restore state at the exact position.
+  addGuardInst(op, operands) {
+    const gid = this.trace.addInst(op, operands);
+    const inst = this.trace.ir[gid];
+    inst.snapshot = this.captureSnapshot();
+    return gid;
+  }
+
   // Push an IR ref onto the virtual stack
   pushRef(ref) {
     this.irStack.push(ref);
@@ -333,17 +389,17 @@ export class TraceRecorder {
   guardType(ref, value) {
     const exitIp = this.getGuardExitIp();
     if (value instanceof MonkeyInteger) {
-      const gid = this.trace.addInst(IR.GUARD_INT, { ref, exitIp });
+      const gid = this.addGuardInst(IR.GUARD_INT, { ref, exitIp });
       this.typeMap.set(ref, 'int');
       this.trace.guardCount++;
       return 'int';
     } else if (value instanceof MonkeyBoolean) {
-      const gid = this.trace.addInst(IR.GUARD_BOOL, { ref, exitIp });
+      const gid = this.addGuardInst(IR.GUARD_BOOL, { ref, exitIp });
       this.typeMap.set(ref, 'bool');
       this.trace.guardCount++;
       return 'bool';
     } else if (value instanceof MonkeyString) {
-      const gid = this.trace.addInst(IR.GUARD_STRING, { ref, exitIp });
+      const gid = this.addGuardInst(IR.GUARD_STRING, { ref, exitIp });
       this.typeMap.set(ref, 'string');
       this.trace.guardCount++;
       return 'string';

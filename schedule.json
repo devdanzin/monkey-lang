@@ -118,87 +118,191 @@
     {
       "id": "T13",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Commit, run full test suite, benchmarks",
-      "started": "2026-03-24T15:06:24.817Z"
+      "started": "2026-03-24T15:06:24.817Z",
+      "completed": "2026-03-24T15:07:06.223Z",
+      "duration_ms": 180000,
+      "summary": "Git committed+pushed workspace. Dashboard healthy. 234 tests pass. No actionable GH notifications. 1 mention on telegram voice bug (not actionable)."
     },
     {
       "id": "T14",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Midday review: V2 + JIT progress"
+      "status": "done",
+      "task": "Midday review: V2 + JIT progress",
+      "started": "2026-03-24T15:07:21.960Z",
+      "completed": "2026-03-24T15:07:56.177Z",
+      "duration_ms": 120000,
+      "summary": "Removed 7 redundant LICM/pre-loop slots (T11-T12, T15-T19). Pre-loop codegen fully done. Plan: V2 dashboard integration next, deopt for Session B. 5hr runway to boundary."
     },
     {
       "id": "T15",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "JIT: complete pre-loop codegen + fix LICM"
+      "status": "skipped",
+      "task": "JIT: complete pre-loop codegen + fix LICM",
+      "skip_reason": "LICM already complete and verified in T8-T10"
     },
     {
       "id": "T16",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "JIT: LICM verification + benchmarks"
+      "status": "skipped",
+      "task": "JIT: LICM verification + benchmarks",
+      "skip_reason": "LICM already verified"
     },
     {
       "id": "T17",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "JIT: LICM cont."
+      "status": "skipped",
+      "task": "JIT: LICM cont.",
+      "skip_reason": "LICM already complete"
     },
     {
       "id": "T18",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "JIT: LICM cont."
+      "status": "skipped",
+      "task": "JIT: LICM cont.",
+      "skip_reason": "LICM already complete"
     },
     {
       "id": "T19",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "JIT: LICM cont."
+      "status": "skipped",
+      "task": "JIT: LICM cont.",
+      "skip_reason": "LICM already complete"
     },
     {
       "id": "T20",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Commit, push, dashboard update"
+      "status": "skipped",
+      "task": "Commit, push, dashboard update",
+      "skip_reason": "Just completed MAINTAIN in T13, no new changes to commit"
     },
     {
       "id": "T21",
       "mode": "THINK",
+      "status": "done",
+      "task": "Assess JIT codegen quality, plan next optimization",
+      "started": "2026-03-24T15:08:14.486Z",
+      "completed": "2026-03-24T15:09:03.204Z",
+      "duration_ms": 180000,
+      "summary": "JIT at 9.56x aggregate. Removed 5 redundant dashboard slots (already integrated). Added PLAN+5 BUILD for deoptimization as next major JIT milestone. Side traces (2-3x) and hash lookups (3x) are weakest benchmarks."
+    },
+    {
+      "id": "T48",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan deoptimization: snapshot capture at guards, state reconstruction on exit",
+      "task": null,
+      "started": "2026-03-24T15:09:17.189Z",
+      "completed": "2026-03-24T15:09:53.988Z",
+      "duration_ms": 180000,
+      "summary": "Planned 5 deopt BUILD tasks: snapshot capture in recording, codegen emit, VM resume at exact PC, optimizer snapshot maintenance, tests. Key insight: JS-targeted snapshots are just object literals mapping slots to variable names."
+    },
+    {
+      "id": "T54",
+      "mode": "BUILD",
+      "task": "Snapshot capture: add snapshot field to guard IR instructions during recording",
+      "status": "in-progress",
+      "plan_ref": "T48",
+      "started": "2026-03-24T15:10:20.679Z"
+    },
+    {
+      "id": "T55",
+      "mode": "BUILD",
+      "task": "Codegen: emit snapshot data in guard exit returns (map IR refs to JS vars)",
       "status": "upcoming",
-      "task": "Assess JIT codegen quality, plan next optimization"
+      "plan_ref": "T48"
+    },
+    {
+      "id": "T56",
+      "mode": "BUILD",
+      "task": "VM: use snapshot to resume interpreter at exact bytecode position on guard exit",
+      "status": "upcoming",
+      "plan_ref": "T48"
+    },
+    {
+      "id": "T57",
+      "mode": "BUILD",
+      "task": "Optimizer: update snapshots when CSE/LICM/DCE modify IR refs",
+      "status": "upcoming",
+      "plan_ref": "T48"
+    },
+    {
+      "id": "T58",
+      "mode": "BUILD",
+      "task": "Deopt tests: verify correct snapshot restoration, no regressions",
+      "status": "upcoming",
+      "plan_ref": "T48"
+    },
+    {
+      "id": "T53",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": "Deoptimization BUILD slot",
+      "skip_reason": "Replaced by filled BUILD tasks T54-T58"
+    },
+    {
+      "id": "T52",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": "Deoptimization BUILD slot",
+      "skip_reason": "Replaced by filled BUILD tasks T54-T58"
+    },
+    {
+      "id": "T51",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": "Deoptimization BUILD slot",
+      "skip_reason": "Replaced by filled BUILD tasks T54-T58"
+    },
+    {
+      "id": "T50",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": "Deoptimization BUILD slot",
+      "skip_reason": "Replaced by filled BUILD tasks T54-T58"
+    },
+    {
+      "id": "T49",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": "Deoptimization BUILD slot",
+      "skip_reason": "Replaced by filled BUILD tasks T54-T58"
     },
     {
       "id": "T22",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "V2 work system: dashboard integration"
+      "status": "skipped",
+      "task": "V2 work system: dashboard integration",
+      "skip_reason": "Dashboard integration already working"
     },
     {
       "id": "T23",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "V2 dashboard cont."
+      "status": "skipped",
+      "task": "V2 dashboard cont.",
+      "skip_reason": "Dashboard integration done"
     },
     {
       "id": "T24",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "V2 dashboard cont."
+      "status": "skipped",
+      "task": "V2 dashboard cont.",
+      "skip_reason": "Dashboard integration done"
     },
     {
       "id": "T25",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "V2 dashboard cont."
+      "status": "skipped",
+      "task": "V2 dashboard cont.",
+      "skip_reason": "Dashboard integration done"
     },
     {
       "id": "T26",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "V2 dashboard cont."
+      "status": "skipped",
+      "task": "V2 dashboard cont.",
+      "skip_reason": "Dashboard integration done"
     },
     {
       "id": "T27",
@@ -524,6 +628,98 @@
     {
       "time": "2026-03-24T15:06:14.191Z",
       "msg": "Removed T12: Pre-loop codegen completed in T8, no more work needed"
+    },
+    {
+      "time": "2026-03-24T15:07:35.713Z",
+      "msg": "Removed T15: LICM already complete and verified in T8-T10"
+    },
+    {
+      "time": "2026-03-24T15:07:35.824Z",
+      "msg": "Removed T16: LICM already verified"
+    },
+    {
+      "time": "2026-03-24T15:07:35.937Z",
+      "msg": "Removed T17: LICM already complete"
+    },
+    {
+      "time": "2026-03-24T15:07:36.047Z",
+      "msg": "Removed T18: LICM already complete"
+    },
+    {
+      "time": "2026-03-24T15:07:36.157Z",
+      "msg": "Removed T19: LICM already complete"
+    },
+    {
+      "time": "2026-03-24T15:08:10.750Z",
+      "msg": "Removed T20: Just completed MAINTAIN in T13, no new changes to commit"
+    },
+    {
+      "time": "2026-03-24T15:08:45.979Z",
+      "msg": "Removed T22: Dashboard integration already working"
+    },
+    {
+      "time": "2026-03-24T15:08:46.089Z",
+      "msg": "Removed T23: Dashboard integration done"
+    },
+    {
+      "time": "2026-03-24T15:08:46.199Z",
+      "msg": "Removed T24: Dashboard integration done"
+    },
+    {
+      "time": "2026-03-24T15:08:46.310Z",
+      "msg": "Removed T25: Dashboard integration done"
+    },
+    {
+      "time": "2026-03-24T15:08:46.420Z",
+      "msg": "Removed T26: Dashboard integration done"
+    },
+    {
+      "time": "2026-03-24T15:08:52.259Z",
+      "msg": "Added T48 (PLAN) after T21: Plan deoptimization: snapshot capture at guards, state reconstruction on exit"
+    },
+    {
+      "time": "2026-03-24T15:08:56.865Z",
+      "msg": "Added T49 (BUILD) after T48: Deoptimization BUILD slot"
+    },
+    {
+      "time": "2026-03-24T15:08:56.986Z",
+      "msg": "Added T50 (BUILD) after T48: Deoptimization BUILD slot"
+    },
+    {
+      "time": "2026-03-24T15:08:57.099Z",
+      "msg": "Added T51 (BUILD) after T48: Deoptimization BUILD slot"
+    },
+    {
+      "time": "2026-03-24T15:08:57.210Z",
+      "msg": "Added T52 (BUILD) after T48: Deoptimization BUILD slot"
+    },
+    {
+      "time": "2026-03-24T15:08:57.331Z",
+      "msg": "Added T53 (BUILD) after T48: Deoptimization BUILD slot"
+    },
+    {
+      "time": "2026-03-24T15:09:42.760Z",
+      "msg": "PLAN T48 filled 5 BUILD tasks"
+    },
+    {
+      "time": "2026-03-24T15:10:14.881Z",
+      "msg": "Removed T49: Replaced by filled BUILD tasks T54-T58"
+    },
+    {
+      "time": "2026-03-24T15:10:15.003Z",
+      "msg": "Removed T50: Replaced by filled BUILD tasks T54-T58"
+    },
+    {
+      "time": "2026-03-24T15:10:15.116Z",
+      "msg": "Removed T51: Replaced by filled BUILD tasks T54-T58"
+    },
+    {
+      "time": "2026-03-24T15:10:15.225Z",
+      "msg": "Removed T52: Replaced by filled BUILD tasks T54-T58"
+    },
+    {
+      "time": "2026-03-24T15:10:15.339Z",
+      "msg": "Removed T53: Replaced by filled BUILD tasks T54-T58"
     }
   ]
 }

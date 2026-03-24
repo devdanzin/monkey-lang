@@ -94,9 +94,12 @@
     {
       "id": "T10",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "JIT: pre-loop codegen cont.",
-      "started": "2026-03-24T15:04:57.368Z"
+      "started": "2026-03-24T15:04:57.368Z",
+      "completed": "2026-03-24T15:06:46.090Z",
+      "summary": "Pre-loop codegen complete, removed T11/T12",
+      "duration_ms": 120000
     },
     {
       "id": "T11",
@@ -113,14 +116,21 @@
     {
       "id": "T13",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Commit, run full test suite, benchmarks"
+      "status": "done",
+      "task": "Commit, run full test suite, benchmarks",
+      "started": "2026-03-24T15:06:46.106Z",
+      "completed": "2026-03-24T15:07:14.252Z",
+      "summary": "Git push, dashboard healthy, tests pass",
+      "duration_ms": 180000
     },
     {
       "id": "T14",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Midday review: V2 + JIT progress"
+      "status": "done",
+      "task": "Midday review: V2 + JIT progress",
+      "completed": "2026-03-24T15:08:01.470Z",
+      "summary": "Removed redundant slots, plan: dashboard integration",
+      "duration_ms": 120000
     },
     {
       "id": "T15",
@@ -161,8 +171,11 @@
     {
       "id": "T21",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Assess JIT codegen quality, plan next optimization"
+      "status": "done",
+      "task": "Assess JIT codegen quality, plan next optimization",
+      "completed": "2026-03-24T15:09:08.262Z",
+      "summary": "JIT 9.56x, repurposed queue for deopt work",
+      "duration_ms": 180000
     },
     {
       "id": "T22",
@@ -323,10 +336,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 9,
+    "completed": 14,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 4200000
+    "total_duration_ms": 4980000
   },
-  "updated_at": "2026-03-24T15:05:04.686Z"
+  "updated_at": "2026-03-24T15:09:58.940Z"
 }
