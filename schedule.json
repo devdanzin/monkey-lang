@@ -825,21 +825,29 @@
     {
       "id": "T82",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Free curiosity: follow most interesting thread",
-      "started": "2026-03-24T20:44:18.720Z"
+      "started": "2026-03-24T20:44:18.720Z",
+      "completed": "2026-03-24T20:53:30.013Z",
+      "duration_ms": 1200000,
+      "summary": "EXPLORE turned BUILD: Implemented string variable promotion. Raw JS strings in hot loops with allocation-free concat. Added UNBOX_STRING/BOX_STRING IR ops, promotion detection, box/unbox elimination for strings. String concat 6.7x → 7.6x. 246 tests, 22 benchmarks, 9.5x aggregate."
     },
     {
       "id": "T83",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Evening review, prep tomorrow"
+      "status": "done",
+      "task": "Evening review, prep tomorrow",
+      "started": "2026-03-24T20:53:46.818Z",
+      "completed": "2026-03-24T20:54:02.563Z",
+      "duration_ms": 180000,
+      "summary": "Session B review: Published blog, hash LICM (2.3x→4.4x), string JIT recording, string variable promotion (UNBOX_STRING/BOX_STRING), 3 new benchmarks. Final: 9.5x, 246 tests, 22 benchmarks. Tomorrow: trace trees, free variable promotion, complex benchmarks."
     },
     {
       "id": "T84",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final Session B commits, push all repos"
+      "status": "in-progress",
+      "task": "Final Session B commits, push all repos",
+      "started": "2026-03-24T20:54:16.135Z"
     },
     {
       "id": "T59",
