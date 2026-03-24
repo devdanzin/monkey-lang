@@ -1372,7 +1372,18 @@ export class TraceCompiler {
         case IR.INDEX_HASH: {
           const hash = varNames.get(inst.operands.left);
           const key = varNames.get(inst.operands.right);
-          this.lines.push(`  const ${v}_pair = ${hash}.pairs.get(${key}.fastHashKey());`);
+          // Cache fastHashKey() per key ref to avoid recomputing in loops
+          const keyRef = inst.operands.right;
+          if (!this._hashKeyCache) this._hashKeyCache = new Map();
+          let hashKeyVar;
+          if (this._hashKeyCache.has(keyRef)) {
+            hashKeyVar = this._hashKeyCache.get(keyRef);
+          } else {
+            hashKeyVar = `__hk${keyRef}`;
+            this.lines.push(`  const ${hashKeyVar} = ${key}.fastHashKey();`);
+            this._hashKeyCache.set(keyRef, hashKeyVar);
+          }
+          this.lines.push(`  const ${v}_pair = ${hash}.pairs.get(${hashKeyVar});`);
           this.lines.push(`  const ${v} = ${v}_pair ? ${v}_pair.value : __NULL;`);
           break;
         }
@@ -2241,7 +2252,7 @@ export class TraceOptimizer {
     const SIDE_EFFECTS = new Set([
       IR.STORE_LOCAL, IR.STORE_GLOBAL, IR.CALL, IR.SELF_CALL,
       IR.LOOP_START, IR.LOOP_END, IR.EXEC_TRACE, IR.FUNC_RETURN,
-      IR.INDEX_ARRAY, IR.INDEX_HASH,  // Can fail if guard hasn't run yet; don't hoist
+      IR.INDEX_ARRAY,  // Can fail if bounds guard hasn't run; don't hoist
       IR.BUILTIN_PUSH  // Creates new array; side-effecting
     ]);
 
