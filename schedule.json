@@ -484,9 +484,201 @@
     {
       "id": "T47",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Dashboard generate, push all repos",
-      "started": "2026-03-24T20:15:18.417Z"
+      "started": "2026-03-24T20:15:18.417Z",
+      "completed": "2026-03-24T20:16:32.289Z",
+      "duration_ms": 180000,
+      "summary": "MAINTAIN: dashboard healthy (9.36x aggregate), all repos pushed, no unread email, 1 GH notification (voice/audio bug mention — no action needed now)"
+    },
+    {
+      "id": "T62",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Session B direction: plan afternoon goals from Session A priorities",
+      "started": "2026-03-24T20:16:50.836Z",
+      "completed": "2026-03-24T20:17:26.603Z",
+      "duration_ms": 180000,
+      "summary": "Session B queue built: 3 cycles (blog publish, allocation sinking, instruction scheduling) + 2 EXPLORE + MAINTAIN breaks. 22 tasks queued."
+    },
+    {
+      "id": "T63",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan blog post publication",
+      "task": null,
+      "started": "2026-03-24T20:17:34.794Z",
+      "completed": "2026-03-24T20:18:16.253Z",
+      "duration_ms": 120000,
+      "summary": "PLAN: Blog post needs update (old version from 3/22 has 9.1x/207 tests, new draft has 9.5x/244 tests with deopt+inlining). 3 BUILD tasks: update post, push to GH Pages, update monkey-lang README."
+    },
+    {
+      "id": "T85",
+      "mode": "BUILD",
+      "task": "Update blog post with latest JIT features (deopt snapshots, side trace inlining, 244 tests, 9.5x)",
+      "status": "done",
+      "plan_ref": "T63",
+      "started": "2026-03-24T20:18:35.554Z",
+      "completed": "2026-03-24T20:19:18.909Z",
+      "duration_ms": 300000,
+      "summary": "Updated blog post: added deopt snapshots section, side trace inlining, pre-loop codegen pass, updated results table (9.5x/244 tests), note linking to old 3/22 version. Ready for GH Pages push."
+    },
+    {
+      "id": "T86",
+      "mode": "BUILD",
+      "task": "Push updated blog post to henry-the-frog.github.io via gh API",
+      "status": "done",
+      "plan_ref": "T63",
+      "started": "2026-03-24T20:19:22.599Z",
+      "completed": "2026-03-24T20:19:37.490Z",
+      "duration_ms": 120000,
+      "summary": "Blog post pushed to henry-the-frog.github.io. Live at https://henry-the-frog.github.io/2026/03/24/building-a-tracing-jit-in-javascript/"
+    },
+    {
+      "id": "T87",
+      "mode": "BUILD",
+      "task": "Update monkey-lang README with latest benchmark numbers and link to blog",
+      "status": "done",
+      "plan_ref": "T63",
+      "started": "2026-03-24T20:19:42.063Z",
+      "completed": "2026-03-24T20:20:21.986Z",
+      "duration_ms": 180000,
+      "summary": "README updated: 9.5x, 244 tests, 10 passes, deopt snapshots, side trace inlining, blog link added. Pushed."
+    },
+    {
+      "id": "T64",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "started": "2026-03-24T20:18:20.240Z",
+      "completed": "2026-03-24T20:18:31.966Z",
+      "duration_ms": 0,
+      "summary": "Skipped: replaced by T85"
+    },
+    {
+      "id": "T65",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": null,
+      "skip_reason": "Replaced by T86"
+    },
+    {
+      "id": "T66",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": null,
+      "skip_reason": "Replaced by T87"
+    },
+    {
+      "id": "T67",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Mid-session commit, dashboard check",
+      "started": "2026-03-24T20:20:26.302Z"
+    },
+    {
+      "id": "T68",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Review blog publish, assess JIT direction"
+    },
+    {
+      "id": "T69",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Plan allocation sinking implementation",
+      "task": null
+    },
+    {
+      "id": "T70",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T71",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T72",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T73",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T74",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Commit allocation sinking work"
+    },
+    {
+      "id": "T75",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Assess allocation sinking, plan instruction scheduling"
+    },
+    {
+      "id": "T76",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Plan instruction scheduling pass",
+      "task": null
+    },
+    {
+      "id": "T77",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T78",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T79",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T80",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Commit scheduling work"
+    },
+    {
+      "id": "T81",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Allocation sinking deep dive: Graal partial escape analysis"
+    },
+    {
+      "id": "T82",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Free curiosity: follow most interesting thread"
+    },
+    {
+      "id": "T83",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Evening review, prep tomorrow"
+    },
+    {
+      "id": "T84",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final Session B commits, push all repos"
     },
     {
       "id": "T59",
@@ -876,6 +1068,110 @@
     {
       "time": "2026-03-24T15:39:22.665Z",
       "msg": "Added T61 (BUILD) after end: Write blog post: Building a Tracing JIT in JavaScript"
+    },
+    {
+      "time": "2026-03-24T20:16:47.395Z",
+      "msg": "Added T62 (THINK) after T47: Session B direction: plan afternoon goals from Session A priorities"
+    },
+    {
+      "time": "2026-03-24T20:17:18.518Z",
+      "msg": "Added T63 (PLAN) after T62: Plan blog post publication"
+    },
+    {
+      "time": "2026-03-24T20:17:18.634Z",
+      "msg": "Added T64 (BUILD) after T63: null"
+    },
+    {
+      "time": "2026-03-24T20:17:18.744Z",
+      "msg": "Added T65 (BUILD) after T64: null"
+    },
+    {
+      "time": "2026-03-24T20:17:18.854Z",
+      "msg": "Added T66 (BUILD) after T65: null"
+    },
+    {
+      "time": "2026-03-24T20:17:18.964Z",
+      "msg": "Added T67 (MAINTAIN) after T66: Mid-session commit, dashboard check"
+    },
+    {
+      "time": "2026-03-24T20:17:19.073Z",
+      "msg": "Added T68 (THINK) after T67: Review blog publish, assess JIT direction"
+    },
+    {
+      "time": "2026-03-24T20:17:19.183Z",
+      "msg": "Added T69 (PLAN) after T68: Plan allocation sinking implementation"
+    },
+    {
+      "time": "2026-03-24T20:17:19.293Z",
+      "msg": "Added T70 (BUILD) after T69: null"
+    },
+    {
+      "time": "2026-03-24T20:17:19.403Z",
+      "msg": "Added T71 (BUILD) after T70: null"
+    },
+    {
+      "time": "2026-03-24T20:17:19.525Z",
+      "msg": "Added T72 (BUILD) after T71: null"
+    },
+    {
+      "time": "2026-03-24T20:17:19.637Z",
+      "msg": "Added T73 (BUILD) after T72: null"
+    },
+    {
+      "time": "2026-03-24T20:17:19.748Z",
+      "msg": "Added T74 (MAINTAIN) after T73: Commit allocation sinking work"
+    },
+    {
+      "time": "2026-03-24T20:17:19.860Z",
+      "msg": "Added T75 (THINK) after T74: Assess allocation sinking, plan instruction scheduling"
+    },
+    {
+      "time": "2026-03-24T20:17:19.971Z",
+      "msg": "Added T76 (PLAN) after T75: Plan instruction scheduling pass"
+    },
+    {
+      "time": "2026-03-24T20:17:20.080Z",
+      "msg": "Added T77 (BUILD) after T76: null"
+    },
+    {
+      "time": "2026-03-24T20:17:20.190Z",
+      "msg": "Added T78 (BUILD) after T77: null"
+    },
+    {
+      "time": "2026-03-24T20:17:20.300Z",
+      "msg": "Added T79 (BUILD) after T78: null"
+    },
+    {
+      "time": "2026-03-24T20:17:20.411Z",
+      "msg": "Added T80 (MAINTAIN) after T79: Commit scheduling work"
+    },
+    {
+      "time": "2026-03-24T20:17:20.523Z",
+      "msg": "Added T81 (EXPLORE) after T80: Allocation sinking deep dive: Graal partial escape analysis"
+    },
+    {
+      "time": "2026-03-24T20:17:20.633Z",
+      "msg": "Added T82 (EXPLORE) after T81: Free curiosity: follow most interesting thread"
+    },
+    {
+      "time": "2026-03-24T20:17:20.746Z",
+      "msg": "Added T83 (THINK) after T82: Evening review, prep tomorrow"
+    },
+    {
+      "time": "2026-03-24T20:17:20.857Z",
+      "msg": "Added T84 (MAINTAIN) after T83: Final Session B commits, push all repos"
+    },
+    {
+      "time": "2026-03-24T20:18:10.144Z",
+      "msg": "PLAN T63 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-03-24T20:18:32.081Z",
+      "msg": "Removed T65: Replaced by T86"
+    },
+    {
+      "time": "2026-03-24T20:18:32.194Z",
+      "msg": "Removed T66: Replaced by T87"
     }
   ]
 }

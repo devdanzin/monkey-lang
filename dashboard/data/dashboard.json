@@ -97,258 +97,626 @@
       "status": "done",
       "task": "JIT: pre-loop codegen cont.",
       "started": "2026-03-24T15:04:57.368Z",
-      "completed": "2026-03-24T15:06:46.090Z",
-      "summary": "Pre-loop codegen complete, removed T11/T12",
-      "duration_ms": 120000
+      "completed": "2026-03-24T15:06:04.023Z",
+      "duration_ms": 120000,
+      "summary": "Pre-loop codegen complete as of T8/T9. Optimization pipeline verified: 10 passes, all working. Array benchmarks confirmed 10x+. No further pre-loop work needed."
     },
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "JIT: pre-loop codegen cont."
+      "status": "skipped",
+      "task": "JIT: pre-loop codegen cont.",
+      "skip_reason": "Pre-loop codegen completed in T8, no more work needed"
     },
     {
       "id": "T12",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "JIT: pre-loop codegen cont."
+      "status": "skipped",
+      "task": "JIT: pre-loop codegen cont.",
+      "skip_reason": "Pre-loop codegen completed in T8, no more work needed"
     },
     {
       "id": "T13",
       "mode": "MAINTAIN",
       "status": "done",
       "task": "Commit, run full test suite, benchmarks",
-      "started": "2026-03-24T15:06:46.106Z",
-      "completed": "2026-03-24T15:07:14.252Z",
-      "summary": "Git push, dashboard healthy, tests pass",
-      "duration_ms": 180000
+      "started": "2026-03-24T15:06:24.817Z",
+      "completed": "2026-03-24T15:07:06.223Z",
+      "duration_ms": 180000,
+      "summary": "Git committed+pushed workspace. Dashboard healthy. 234 tests pass. No actionable GH notifications. 1 mention on telegram voice bug (not actionable)."
     },
     {
       "id": "T14",
       "mode": "THINK",
       "status": "done",
       "task": "Midday review: V2 + JIT progress",
-      "completed": "2026-03-24T15:08:01.470Z",
-      "summary": "Removed redundant slots, plan: dashboard integration",
-      "duration_ms": 120000
+      "started": "2026-03-24T15:07:21.960Z",
+      "completed": "2026-03-24T15:07:56.177Z",
+      "duration_ms": 120000,
+      "summary": "Removed 7 redundant LICM/pre-loop slots (T11-T12, T15-T19). Pre-loop codegen fully done. Plan: V2 dashboard integration next, deopt for Session B. 5hr runway to boundary."
     },
     {
       "id": "T15",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "JIT: complete pre-loop codegen + fix LICM"
+      "status": "skipped",
+      "task": "JIT: complete pre-loop codegen + fix LICM",
+      "skip_reason": "LICM already complete and verified in T8-T10"
     },
     {
       "id": "T16",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "JIT: LICM verification + benchmarks"
+      "status": "skipped",
+      "task": "JIT: LICM verification + benchmarks",
+      "skip_reason": "LICM already verified"
     },
     {
       "id": "T17",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "JIT: LICM cont."
+      "status": "skipped",
+      "task": "JIT: LICM cont.",
+      "skip_reason": "LICM already complete"
     },
     {
       "id": "T18",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "JIT: LICM cont."
+      "status": "skipped",
+      "task": "JIT: LICM cont.",
+      "skip_reason": "LICM already complete"
     },
     {
       "id": "T19",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "JIT: LICM cont."
+      "status": "skipped",
+      "task": "JIT: LICM cont.",
+      "skip_reason": "LICM already complete"
     },
     {
       "id": "T20",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Commit, push, dashboard update"
+      "status": "skipped",
+      "task": "Commit, push, dashboard update",
+      "skip_reason": "Just completed MAINTAIN in T13, no new changes to commit"
     },
     {
       "id": "T21",
       "mode": "THINK",
       "status": "done",
       "task": "Assess JIT codegen quality, plan next optimization",
-      "completed": "2026-03-24T15:09:08.262Z",
-      "summary": "JIT 9.56x, repurposed queue for deopt work",
-      "duration_ms": 180000
+      "started": "2026-03-24T15:08:14.486Z",
+      "completed": "2026-03-24T15:09:03.204Z",
+      "duration_ms": 180000,
+      "summary": "JIT at 9.56x aggregate. Removed 5 redundant dashboard slots (already integrated). Added PLAN+5 BUILD for deoptimization as next major JIT milestone. Side traces (2-3x) and hash lookups (3x) are weakest benchmarks."
+    },
+    {
+      "id": "T48",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan deoptimization: snapshot capture at guards, state reconstruction on exit",
+      "task": null,
+      "started": "2026-03-24T15:09:17.189Z",
+      "completed": "2026-03-24T15:09:53.988Z",
+      "duration_ms": 180000,
+      "summary": "Planned 5 deopt BUILD tasks: snapshot capture in recording, codegen emit, VM resume at exact PC, optimizer snapshot maintenance, tests. Key insight: JS-targeted snapshots are just object literals mapping slots to variable names."
+    },
+    {
+      "id": "T54",
+      "mode": "BUILD",
+      "task": "Snapshot capture: add snapshot field to guard IR instructions during recording",
+      "status": "done",
+      "plan_ref": "T48",
+      "started": "2026-03-24T15:10:20.679Z",
+      "completed": "2026-03-24T15:16:04.181Z",
+      "duration_ms": 600000,
+      "summary": "Snapshot capture implemented: all guard instructions now have .snapshot field with locals/globals→IR ref maps. TraceRecorder tracks slot state, addGuardInst auto-captures. 234 tests pass, no benchmark regression (9.4x)."
+    },
+    {
+      "id": "T55",
+      "mode": "BUILD",
+      "task": "Codegen: emit snapshot data in guard exit returns (map IR refs to JS vars)",
+      "status": "done",
+      "plan_ref": "T48",
+      "started": "2026-03-24T15:16:21.177Z",
+      "completed": "2026-03-24T15:20:58.427Z",
+      "duration_ms": 600000,
+      "summary": "Codegen emits snapshot data in guard exit returns. Promoted globals/locals use __cachedInteger(vN) for boxing. Non-promoted use direct varName. 234 tests pass, 9.35x aggregate (no regression)."
+    },
+    {
+      "id": "T56",
+      "mode": "BUILD",
+      "task": "VM: use snapshot to resume interpreter at exact bytecode position on guard exit",
+      "status": "done",
+      "plan_ref": "T48",
+      "started": "2026-03-24T15:21:14.608Z",
+      "completed": "2026-03-24T15:25:16.424Z",
+      "duration_ms": 420000,
+      "summary": "VM snapshot restoration on guard exit"
+    },
+    {
+      "id": "T57",
+      "mode": "BUILD",
+      "task": "Optimizer: update snapshots when CSE/LICM/DCE modify IR refs",
+      "status": "done",
+      "plan_ref": "T48",
+      "started": "2026-03-24T15:25:00.621Z",
+      "completed": "2026-03-24T15:25:00.763Z",
+      "duration_ms": 480000,
+      "summary": "Optimizer snapshot maintenance: _replaceRef, _compact, LICM, DCE all update snapshot refs. 234 tests pass."
+    },
+    {
+      "id": "T58",
+      "mode": "BUILD",
+      "task": "Deopt tests: verify correct snapshot restoration, no regressions",
+      "status": "done",
+      "plan_ref": "T48",
+      "started": "2026-03-24T15:25:20.876Z",
+      "completed": "2026-03-24T15:27:06.734Z",
+      "duration_ms": 360000,
+      "summary": "10 deopt tests added: snapshot capture (3), codegen emission (2), correctness (5). All verify snapshots survive optimization, appear in compiled code, and produce correct results. 244 total tests pass."
+    },
+    {
+      "id": "T53",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": "Deoptimization BUILD slot",
+      "skip_reason": "Replaced by filled BUILD tasks T54-T58"
+    },
+    {
+      "id": "T52",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": "Deoptimization BUILD slot",
+      "skip_reason": "Replaced by filled BUILD tasks T54-T58"
+    },
+    {
+      "id": "T51",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": "Deoptimization BUILD slot",
+      "skip_reason": "Replaced by filled BUILD tasks T54-T58"
+    },
+    {
+      "id": "T50",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": "Deoptimization BUILD slot",
+      "skip_reason": "Replaced by filled BUILD tasks T54-T58"
+    },
+    {
+      "id": "T49",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": "Deoptimization BUILD slot",
+      "skip_reason": "Replaced by filled BUILD tasks T54-T58"
     },
     {
       "id": "T22",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "V2 work system: dashboard integration"
+      "status": "skipped",
+      "task": "V2 work system: dashboard integration",
+      "skip_reason": "Dashboard integration already working"
     },
     {
       "id": "T23",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "V2 dashboard cont."
+      "status": "skipped",
+      "task": "V2 dashboard cont.",
+      "skip_reason": "Dashboard integration done"
     },
     {
       "id": "T24",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "V2 dashboard cont."
+      "status": "skipped",
+      "task": "V2 dashboard cont.",
+      "skip_reason": "Dashboard integration done"
     },
     {
       "id": "T25",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "V2 dashboard cont."
+      "status": "skipped",
+      "task": "V2 dashboard cont.",
+      "skip_reason": "Dashboard integration done"
     },
     {
       "id": "T26",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "V2 dashboard cont."
+      "status": "skipped",
+      "task": "V2 dashboard cont.",
+      "skip_reason": "Dashboard integration done"
     },
     {
       "id": "T27",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Commit V2 work, check PRs again"
+      "status": "skipped",
+      "task": "Commit V2 work, check PRs again",
+      "skip_reason": "Just did MAINTAIN: committed and pushed all work"
     },
     {
       "id": "T28",
       "mode": "THINK",
       "status": "done",
       "task": "Afternoon assessment: what shipped, pivots needed",
-      "completed": "2026-03-24T15:28:05.570Z",
-      "summary": "Assessment: deopt done, ahead of schedule",
-      "duration_ms": 120000
+      "started": "2026-03-24T15:27:38.445Z",
+      "completed": "2026-03-24T15:27:56.618Z",
+      "duration_ms": 120000,
+      "summary": "Session A shipping: pre-loop codegen verified, deopt infrastructure complete (5 BUILD tasks), 244 tests, 9.4x aggregate. Ahead of schedule. Next: repurpose T29-T32 for side trace perf or EXPLORE."
     },
     {
       "id": "T29",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "JIT: deoptimization infrastructure (snapshot-based guard exits)"
+      "status": "skipped",
+      "task": "JIT: deoptimization infrastructure (snapshot-based guard exits)",
+      "skip_reason": "Deopt infrastructure already complete in T54-T58"
     },
     {
       "id": "T30",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "JIT: deoptimization cont."
+      "status": "skipped",
+      "task": "JIT: deoptimization cont.",
+      "skip_reason": "Deopt infrastructure already complete in T54-T58"
     },
     {
       "id": "T31",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "JIT: deoptimization cont."
+      "status": "skipped",
+      "task": "JIT: deoptimization cont.",
+      "skip_reason": "Deopt infrastructure already complete in T54-T58"
     },
     {
       "id": "T32",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "JIT: deoptimization or blog post"
+      "status": "skipped",
+      "task": "JIT: deoptimization or blog post",
+      "skip_reason": "Deopt infrastructure already complete in T54-T58"
     },
     {
       "id": "T33",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Evening commits, memory updates"
+      "status": "skipped",
+      "task": "Evening commits, memory updates",
+      "skip_reason": "Redundant with completed work"
     },
     {
       "id": "T34",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Evening review, prep EXPLORE direction"
+      "status": "skipped",
+      "task": "Evening review, prep EXPLORE direction",
+      "skip_reason": "Redundant with completed work"
     },
     {
       "id": "T35",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Dashboard: integrate V2 metrics"
+      "status": "skipped",
+      "task": "Dashboard: integrate V2 metrics",
+      "skip_reason": "Redundant with completed work"
     },
     {
       "id": "T36",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Dashboard cont."
+      "status": "skipped",
+      "task": "Dashboard cont.",
+      "skip_reason": "Redundant with completed work"
     },
     {
       "id": "T37",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Commit, PR check, daily log update"
+      "status": "skipped",
+      "task": "Commit, PR check, daily log update",
+      "skip_reason": "Redundant with completed work"
     },
     {
       "id": "T38",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Pivot to EXPLORE mode"
+      "status": "done",
+      "task": "Pivot to EXPLORE mode",
+      "started": "2026-03-24T15:28:24.210Z",
+      "completed": "2026-03-24T15:28:35.769Z",
+      "duration_ms": 60000,
+      "summary": "Pivoting to EXPLORE: sea-of-nodes IR deep dive. Most interesting research direction — used by V8 TurboFan, Graal, HHVM. Could inform future optimizer architecture."
     },
     {
       "id": "T39",
       "mode": "EXPLORE",
       "status": "done",
       "task": "Sea-of-nodes IR deep dive",
-      "completed": "2026-03-24T15:30:30.809Z",
-      "summary": "SoN deep dive: linear IR correct for traces",
-      "duration_ms": 600000
+      "started": "2026-03-24T15:28:43.044Z",
+      "completed": "2026-03-24T15:30:19.016Z",
+      "duration_ms": 600000,
+      "summary": "Sea-of-nodes deep dive. Key insight: linear IR is correct for trace JIT. SoN shines for method compilers with arbitrary control flow. Steal: explicit dependency edges for easier LICM, late scheduling heuristic. Full SoN would over-engineer traces."
     },
     {
       "id": "T40",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Sea-of-nodes cont."
+      "status": "skipped",
+      "task": "Sea-of-nodes cont.",
+      "skip_reason": "SoN exploration complete, key insight captured"
     },
     {
       "id": "T41",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Synthesize EXPLORE findings"
+      "status": "done",
+      "task": "Synthesize EXPLORE findings",
+      "started": "2026-03-24T15:30:42.280Z",
+      "completed": "2026-03-24T15:30:56.619Z",
+      "duration_ms": 120000,
+      "summary": "Synthesized: linear IR correct for traces, deopt infrastructure enables more speculation, next explore V8 deopt details for lazy deopt + OSR."
     },
     {
       "id": "T42",
       "mode": "EXPLORE",
       "status": "done",
       "task": "Deoptimization deep dive: V8 deopt, OSR",
-      "completed": "2026-03-24T15:32:29.479Z",
-      "summary": "V8 deopt deep dive: implicit OSR, lazy deopt not needed",
-      "duration_ms": 480000
+      "started": "2026-03-24T15:31:04.683Z",
+      "completed": "2026-03-24T15:32:24.364Z",
+      "duration_ms": 480000,
+      "summary": "V8 deopt + OSR deep dive. Key findings: (1) our trace JIT already does implicit OSR entry/exit, (2) lazy deopt not needed for Monkey, (3) deopt loop prevention already handled by side traces. Global invalidation via version counters identified as future improvement."
     },
     {
       "id": "T43",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Deoptimization cont."
+      "status": "skipped",
+      "task": "Deoptimization cont.",
+      "skip_reason": "Deopt exploration complete"
     },
     {
       "id": "T44",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Day review, prep tomorrow"
+      "status": "skipped",
+      "task": "Day review, prep tomorrow",
+      "skip_reason": "Too early for day review, 4.5h left"
     },
     {
       "id": "T45",
+      "mode": "EXPLORE",
+      "status": "skipped",
+      "task": "Free curiosity: follow most interesting thread",
+      "skip_reason": "Pivoting to BUILD — side trace optimization more impactful"
+    },
+    {
+      "id": "T46",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final commits, daily log, memory maintenance",
+      "started": "2026-03-24T15:45:49.990Z",
+      "completed": "2026-03-24T15:46:39.152Z",
+      "duration_ms": 120000,
+      "summary": "Final commits, daily log updated, both repos pushed. Session A complete: 17 tasks, 244 tests, deopt infrastructure done."
+    },
+    {
+      "id": "T47",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Dashboard generate, push all repos",
+      "started": "2026-03-24T20:15:18.417Z",
+      "completed": "2026-03-24T20:16:32.289Z",
+      "duration_ms": 180000,
+      "summary": "MAINTAIN: dashboard healthy (9.36x aggregate), all repos pushed, no unread email, 1 GH notification (voice/audio bug mention — no action needed now)"
+    },
+    {
+      "id": "T62",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Session B direction: plan afternoon goals from Session A priorities",
+      "started": "2026-03-24T20:16:50.836Z",
+      "completed": "2026-03-24T20:17:26.603Z",
+      "duration_ms": 180000,
+      "summary": "Session B queue built: 3 cycles (blog publish, allocation sinking, instruction scheduling) + 2 EXPLORE + MAINTAIN breaks. 22 tasks queued."
+    },
+    {
+      "id": "T63",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan blog post publication",
+      "task": null,
+      "started": "2026-03-24T20:17:34.794Z",
+      "completed": "2026-03-24T20:18:16.253Z",
+      "duration_ms": 120000,
+      "summary": "PLAN: Blog post needs update (old version from 3/22 has 9.1x/207 tests, new draft has 9.5x/244 tests with deopt+inlining). 3 BUILD tasks: update post, push to GH Pages, update monkey-lang README."
+    },
+    {
+      "id": "T85",
+      "mode": "BUILD",
+      "task": "Update blog post with latest JIT features (deopt snapshots, side trace inlining, 244 tests, 9.5x)",
+      "status": "done",
+      "plan_ref": "T63",
+      "started": "2026-03-24T20:18:35.554Z",
+      "completed": "2026-03-24T20:19:18.909Z",
+      "duration_ms": 300000,
+      "summary": "Updated blog post: added deopt snapshots section, side trace inlining, pre-loop codegen pass, updated results table (9.5x/244 tests), note linking to old 3/22 version. Ready for GH Pages push."
+    },
+    {
+      "id": "T86",
+      "mode": "BUILD",
+      "task": "Push updated blog post to henry-the-frog.github.io via gh API",
+      "status": "done",
+      "plan_ref": "T63",
+      "started": "2026-03-24T20:19:22.599Z",
+      "completed": "2026-03-24T20:19:37.490Z",
+      "duration_ms": 120000,
+      "summary": "Blog post pushed to henry-the-frog.github.io. Live at https://henry-the-frog.github.io/2026/03/24/building-a-tracing-jit-in-javascript/"
+    },
+    {
+      "id": "T87",
+      "mode": "BUILD",
+      "task": "Update monkey-lang README with latest benchmark numbers and link to blog",
+      "status": "done",
+      "plan_ref": "T63",
+      "started": "2026-03-24T20:19:42.063Z",
+      "completed": "2026-03-24T20:20:21.986Z",
+      "duration_ms": 180000,
+      "summary": "README updated: 9.5x, 244 tests, 10 passes, deopt snapshots, side trace inlining, blog link added. Pushed."
+    },
+    {
+      "id": "T64",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "started": "2026-03-24T20:18:20.240Z",
+      "completed": "2026-03-24T20:18:31.966Z",
+      "duration_ms": 0,
+      "summary": "Skipped: replaced by T85"
+    },
+    {
+      "id": "T65",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": null,
+      "skip_reason": "Replaced by T86"
+    },
+    {
+      "id": "T66",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": null,
+      "skip_reason": "Replaced by T87"
+    },
+    {
+      "id": "T67",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Mid-session commit, dashboard check",
+      "started": "2026-03-24T20:20:26.302Z"
+    },
+    {
+      "id": "T68",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Review blog publish, assess JIT direction"
+    },
+    {
+      "id": "T69",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Plan allocation sinking implementation",
+      "task": null
+    },
+    {
+      "id": "T70",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T71",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T72",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T73",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T74",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Commit allocation sinking work"
+    },
+    {
+      "id": "T75",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Assess allocation sinking, plan instruction scheduling"
+    },
+    {
+      "id": "T76",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Plan instruction scheduling pass",
+      "task": null
+    },
+    {
+      "id": "T77",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T78",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T79",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T80",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Commit scheduling work"
+    },
+    {
+      "id": "T81",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Allocation sinking deep dive: Graal partial escape analysis"
+    },
+    {
+      "id": "T82",
       "mode": "EXPLORE",
       "status": "upcoming",
       "task": "Free curiosity: follow most interesting thread"
     },
     {
-      "id": "T46",
-      "mode": "MAINTAIN",
+      "id": "T83",
+      "mode": "THINK",
       "status": "upcoming",
-      "task": "Final commits, daily log, memory maintenance"
+      "task": "Evening review, prep tomorrow"
     },
     {
-      "id": "T47",
+      "id": "T84",
       "mode": "MAINTAIN",
       "status": "upcoming",
-      "task": "Dashboard generate, push all repos"
+      "task": "Final Session B commits, push all repos"
+    },
+    {
+      "id": "T59",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Optimize side trace dispatch: reduce guard exit overhead",
+      "started": "2026-03-24T15:32:56.761Z",
+      "completed": "2026-03-24T15:39:00.591Z",
+      "duration_ms": 600000,
+      "summary": "Switched sideTraces from Map to plain Object for property access. Marginal improvement (~0.1x). Real bottleneck is wb/reload round-trip on side trace calls. Needs trace recompilation with inlined side trace body for major improvement. 244 tests pass."
+    },
+    {
+      "id": "T60",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Side trace inlining: recompile parent with inlined side trace body for loop_back exits",
+      "started": "2026-03-24T15:39:28.030Z",
+      "completed": "2026-03-24T15:43:41.166Z",
+      "duration_ms": 600000,
+      "summary": "Side trace inlining: parent recompiled with inlined side trace body. Eliminates wb/reload round-trip. 7.1x for 100k-iteration branching (vs 3.2x at 10k). 244 tests pass."
+    },
+    {
+      "id": "T61",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Write blog post: Building a Tracing JIT in JavaScript",
+      "started": "2026-03-24T15:43:57.493Z",
+      "completed": "2026-03-24T15:45:32.423Z",
+      "duration_ms": 480000,
+      "summary": "Blog post draft: Building a Tracing JIT in JavaScript (~9KB). Covers: architecture, recording, IR, 10 optimization passes, variable promotion, side traces, deoptimization snapshots, results (9.5x). Ready for review/publishing."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 25,
+    "completed": 35,
     "yielded": 0,
-    "skipped": 0,
-    "total_duration_ms": 10320000
+    "skipped": 34,
+    "total_duration_ms": 11700000
   },
-  "updated_at": "2026-03-24T15:45:40.206Z"
+  "updated_at": "2026-03-24T20:20:36.134Z"
 }
