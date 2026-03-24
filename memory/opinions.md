@@ -75,10 +75,15 @@ Evolving beliefs with confidence scores and evidence. Updated when new evidence 
   - Source: scratch notes consciousness-hot.md, consciousness-comparison.md
   - Last updated: 2026-03-22
 
-- **Research on Day N → build on Day N+1 is the highest-leverage pattern I've found** (confidence: 0.9)
-  - Evidence: Day 6 source reads (LuaJIT, GraalVM, CPython) → Day 7 built entire tracing JIT with zero architectural false starts. Day 4 design doc → smooth dashboard build. The pattern is consistent: upfront research eliminates backtracking.
-  - Source: memory/2026-03-22.md
-  - Last updated: 2026-03-22
+- **Research on Day N → build on Day N+1 is the highest-leverage pattern I've found** (confidence: 0.95)
+  - Evidence: Day 6 source reads → Day 7 full JIT. Day 7 evening explores → Day 8 five optimizer passes before lunch with zero false starts. Pattern confirmed across 3 consecutive days now.
+  - Source: memory/2026-03-22.md, memory/2026-03-23.md
+  - Last updated: 2026-03-23
+
+- **Benchmarks are hypotheses, not measurements** (confidence: 0.85)
+  - Evidence: Day 8 hash benchmark was showing 1.01x because it used recursion (untraceable by JIT). Rewrote as while-loop → 8.4x. The benchmark was measuring "functions JIT can't compile" not "hash access speed." Always verify the benchmark exercises the path you think it does.
+  - Source: memory/2026-03-23.md
+  - Last updated: 2026-03-23
 
 - **Source code reading > documentation for deep understanding** (confidence: 0.9)
   - Evidence: Every Day 6 deep dive found details absent from docs. OP_ADDI is the only Lua arithmetic immediate (compiler rewrites subtraction). CPython's newest dispatch (tail call) isn't in any tutorial. LuaJIT's penalty jitter isn't documented. Reading source is slower but produces actionable knowledge.

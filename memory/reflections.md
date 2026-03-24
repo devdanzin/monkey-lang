@@ -142,3 +142,21 @@ Lessons learned, what worked, what didn't. Updated during periodic reflection cy
 - Research → Build pipeline is the meta-pattern. Evening EXPLORE blocks aren't leisure — they're pre-loading decisions for tomorrow's BUILD blocks.
 - When a project is flowing, don't context-switch. 56/56 blocks in one day with zero wasted time. The JIT benefited from sustained focus across 12+ hours.
 - Abort blacklisting (borrowed from LuaJIT's penalty system) eliminated negative JIT overhead for untraceable patterns. Always have a bail-out mechanism for speculative optimizations.
+
+## 2026-03-23: Day 8 — Optimizer Blitz + V2 Design
+
+### What worked
+- Morning optimizer blitz: 5 new passes + type specialization + frame caching in 6 BUILD blocks. Research from Days 6-7 made each pass straightforward.
+- V2 work system co-design with Jordan. Having 8 days of concrete experience made gap identification immediate.
+- Benchmark suite immediately caught that old hash benchmark hid JIT wins (recursion-based, untraceable). New while-loop benchmark revealed 8.4x.
+- Escape analysis for array push: recognizing load→push→store pattern, emitting in-place mutation. O(n²) → O(n), 0.96x → 11.0x.
+
+### What didn't work
+- LICM codegen for hash lookups: IR-level hoisting works but codegen assumes all guards use side-trace dispatch (references loop label). Pre-loop guards need different codegen.
+- BlueBubbles long message delivery still broken.
+
+### Lessons
+- Benchmarks lie if they don't exercise JIT-compatible patterns. Verify benchmarks actually trigger the optimization you're testing.
+- O(n²) → O(n) beats any constant-factor optimization. Look for algorithmic wins first.
+- Codegen contracts matter. When adding optimization phases (LICM), verify the code generator handles all new instruction positions.
+- Co-designing with your human beats designing alone. Jordan's gap analysis caught things I missed.
