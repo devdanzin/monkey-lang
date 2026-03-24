@@ -12,6 +12,7 @@
   const MODE_ICONS = {
     BUILD: '🔨',
     THINK: '🧠',
+    PLAN: '📋',
     EXPLORE: '🔍',
     MAINTAIN: '🔧',
   };
@@ -19,6 +20,7 @@
   const MODE_CLASS = {
     BUILD: 'mode-build',
     THINK: 'mode-think',
+    PLAN: 'mode-plan',
     EXPLORE: 'mode-explore',
     MAINTAIN: 'mode-maintain',
   };
@@ -1144,6 +1146,7 @@
     let bar = document.getElementById('workdayProgress');
     if (!bar) {
       const container = document.createElement('div');
+      container.id = 'workdayProgress';
       container.className = 'workday-progress-section';
       container.innerHTML = `
         <div class="workday-progress-track">
