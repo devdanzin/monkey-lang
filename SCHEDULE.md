@@ -32,7 +32,7 @@
 - 19:00 🧠 THINK — Evening reflection, pivot to EXPLORE mode
 - 19:15–19:45 🔍 EXPLORE — Deep dive: copy-and-patch JIT implementation details (follow yesterday's thread)
 - 20:00 🧠 THINK — Synthesize EXPLORE findings, update scratch notes
-- 20:15–20:45 🔍 EXPLORE — Partial escape analysis in Graal (from yesterday's deopt research)
+- 20:15–20:45 🔍 EXPLORE — Consciousness HOT theories or sea-of-nodes IR (PEA done early)
 - 21:00 🧠 THINK — Day review, prep tomorrow's direction
 - 21:15 🔍 EXPLORE — Free curiosity block: follow whatever thread is most interesting
 - 21:30 🔧 MAINTAIN — Final commits, daily log, TASKS.md update
