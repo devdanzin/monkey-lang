@@ -722,6 +722,11 @@ describe('Deopt correctness', () => {
     assert.equal(vm.lastPoppedStackElem().value, 600);
   });
 
+  it('should produce correct results for string concatenation', () => {
+    const vm = runJIT('let s = ""; let i = 0; while (i < 100) { s = s + "a"; i = i + 1; } len(s)');
+    assert.equal(vm.lastPoppedStackElem().value, 100);
+  });
+
   it('should hoist hash lookups with constant keys before loop', () => {
     // Hash lookups with constant keys on loop-invariant hash should be hoisted
     const vm = runJIT('let h = {"x": 10, "y": 20}; let sum = 0; let i = 0; while (i < 200) { sum = sum + h["x"] + h["y"]; i = i + 1; } sum');

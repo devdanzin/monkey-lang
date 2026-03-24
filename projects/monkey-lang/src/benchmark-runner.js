@@ -58,6 +58,10 @@ const BENCHMARKS = [
   // Hashes
   { name: 'hash:lookups-5k', category: 'hashes', expected: 45000, input: `let h = {"a": 1, "b": 2, "c": 3, "d": 4, "e": 5}; let sum = 0; let i = 0; while (i < 5000) { sum = sum + h["a"] + h["c"] + h["e"]; i = i + 1; } sum` },
 
+  // Strings
+  { name: 'string:concat-1k', category: 'strings', expected: 1000, input: `let s = ""; let i = 0; while (i < 1000) { s = s + "a"; i = i + 1; } len(s)` },
+  { name: 'string:len-check-5k', category: 'strings', expected: 25000, input: `let s = "hello"; let sum = 0; let i = 0; while (i < 5000) { sum = sum + len(s); i = i + 1; } sum` },
+
   // Mixed
   { name: 'mixed:fn-branch-10k', category: 'mixed', expected: 0, input: `let inc = fn(x) { x + 1 }; let dec = fn(x) { x - 1 }; let val = 0; let i = 0; while (i < 10000) { if (i > 4999) { val = inc(val); } else { val = dec(val); } i = i + 1; } val` },
   { name: 'mixed:loop-fib', category: 'mixed', expected: 10945, input: `let fib = fn(n) { if (n < 2) { n } else { fib(n-1) + fib(n-2) } }; let sum = 0; let i = 0; while (i < 20) { sum = sum + fib(i); i = i + 1; } sum` },

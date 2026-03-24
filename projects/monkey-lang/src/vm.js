@@ -258,7 +258,16 @@ export class VM {
             }
             this.push(cachedInteger(result));
           } else if (left instanceof MonkeyString && right instanceof MonkeyString && op === Opcodes.OpAdd) {
-            if (recording()) { this._abortRecording(); }
+            if (recording()) {
+              // Record string concatenation
+              const rRef = this.recorder.popRef();
+              const lRef = this.recorder.popRef();
+              if (this.recorder.knownType(lRef) !== 'string') this.recorder.guardType(lRef, left);
+              if (this.recorder.knownType(rRef) !== 'string') this.recorder.guardType(rRef, right);
+              const concatRef = this.recorder.trace.addInst(IR.CONCAT, { left: lRef, right: rRef });
+              this.recorder.typeMap.set(concatRef, 'string');
+              this.recorder.pushRef(concatRef);
+            }
             this.push(new MonkeyString(left.value + right.value));
           } else {
             throw new Error(`unsupported types for ${op}: ${left.type()} and ${right.type()}`);
@@ -939,7 +948,18 @@ export class VM {
             }
             this.push(cachedInteger(result));
           } else if (left4 instanceof MonkeyString && right4 instanceof MonkeyString && op === Opcodes.OpAddConst) {
-            if (recording()) { this._abortRecording(); }
+            if (recording()) {
+              // For OpAddConst, only left is on recorder stack. Push const for right first.
+              const constRef = this.recorder.trace.addInst(IR.CONST_OBJ, { constIdx: constIdx3 });
+              this.recorder.typeMap.set(constRef, 'string');
+              // Now: recorder stack has [... leftRef]. We pop left and use constRef for right.
+              const lRef = this.recorder.popRef();
+              if (this.recorder.knownType(lRef) !== 'string') this.recorder.guardType(lRef, left4);
+              // constRef is known string, no guard needed
+              const concatRef = this.recorder.trace.addInst(IR.CONCAT, { left: lRef, right: constRef });
+              this.recorder.typeMap.set(concatRef, 'string');
+              this.recorder.pushRef(concatRef);
+            }
             this.push(new MonkeyString(left4.value + right4.value));
           } else {
             throw new Error(`unsupported types for constant op: ${left4.type()} and ${right4.type()}`);
