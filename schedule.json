@@ -64,14 +64,22 @@
     {
       "id": "T7",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Plan JIT work: pre-loop codegen infrastructure"
+      "status": "done",
+      "task": "Plan JIT work: pre-loop codegen infrastructure",
+      "started": "2026-03-24T14:45:12.463Z",
+      "completed": "2026-03-24T14:46:26.810Z",
+      "duration_ms": 180000,
+      "summary": "Planned pre-loop codegen: two-phase codegen with preLoopRegion flag in _emitGuardExit. Pre-loop guards emit simple return (no continue loop, no side-trace dispatch). LICM pass will conditionally allow guard hoisting when operands are loop-invariant. Key steps: preLoopRegion flag, simplified pre-loop guard exits, selective guard hoisting in LICM, dependent load/unbox chain hoisting."
     },
     {
       "id": "T8",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "JIT: pre-loop codegen infrastructure (enables LICM guard hoisting)"
+      "status": "done",
+      "task": "JIT: pre-loop codegen infrastructure (enables LICM guard hoisting)",
+      "started": "2026-03-24T14:46:34.527Z",
+      "completed": "2026-03-24T14:51:52.959Z",
+      "duration_ms": 480000,
+      "summary": "Implemented pre-loop codegen infrastructure: (1) Added _inLoop flag to TraceCompiler, (2) LOOP_START now emits loop label during IR iteration instead of before, (3) _emitGuardExit uses simple returns (no side-trace dispatch/continue loop) when pre-loop, (4) LICM pass now allows hoisting GUARD_INT/BOOL/STRING/ARRAY/HASH/BOUNDS/TRUTHY/FALSY when operands are loop-invariant. Verified: hash benchmark hoists 9 instructions including 3 GUARD_HASH guards. 234 tests pass, no benchmark regressions."
     },
     {
       "id": "T9",

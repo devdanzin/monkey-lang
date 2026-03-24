@@ -1,7 +1,7 @@
 status: done
-mode: MAINTAIN
-task: T6 — Git cleanup, commit V2 progress
-context: PR triage done. #51803 rebased. Dashboard generated and pushed.
+mode: BUILD
+task: T8 — JIT pre-loop codegen infrastructure
+context: Implemented _inLoop flag, pre-loop guard exits, LICM guard hoisting. 9 instructions hoisted in hash benchmark. 234 tests pass.
 context-files: lessons/tracing-jit.md, memory/scratch/deoptimization-jit.md
-next: next from queue (T7+)
-updated: 2026-03-24T08:37:00-06:00
+next: next from queue
+updated: 2026-03-24T08:55:00-06:00

@@ -698,6 +698,16 @@ export class TraceCompiler {
   // Instead of returning to the VM, if a side trace exists for this guard,
   // call it directly and continue the loop on loop_back.
   _emitGuardExit(guardIdx, exitIp, condition, exitType = 'guard') {
+    if (!this._inLoop) {
+      // Pre-loop guard: simple exit, no side-trace dispatch, no continue loop
+      this.lines.push(`  if (${condition}) {`);
+      if (this._wbWrap) {
+        this.lines.push(`    __wb(null);`);
+      }
+      this.lines.push(`    ${this._emitReturn(`{ exit: "${exitType}", guardIdx: ${guardIdx}, ip: ${exitIp} }`)}`);
+      this.lines.push(`  }`);
+      return;
+    }
     this.lines.push(`  if (${condition}) {`);
     // Check for side trace inline — __sideTraces is the trace's sideTraces Map (passed by ref)
     this.lines.push(`    const __st_trace = __sideTraces.get(${guardIdx});`);
@@ -867,8 +877,7 @@ export class TraceCompiler {
       }
     }
 
-    this.lines.push('loop: while (true) {');
-    this.lines.push(`  if ((++__iterations & 0x7F) === 0 && __iterations > 100000) ${this._emitReturn('{ exit: "max_iter" }')}`);
+    this._inLoop = false;
 
     for (let i = 0; i < ir.length; i++) {
       const inst = ir[i];
@@ -881,7 +890,9 @@ export class TraceCompiler {
 
       switch (inst.op) {
         case IR.LOOP_START:
-          // Already handled by the while loop
+          this.lines.push('loop: while (true) {');
+          this.lines.push(`  if ((++__iterations & 0x7F) === 0 && __iterations > 100000) ${this._emitReturn('{ exit: "max_iter" }')}`);
+          this._inLoop = true;
           break;
 
         case IR.LOOP_END:
@@ -1945,11 +1956,18 @@ export class TraceOptimizer {
     // Side-effecting ops cannot be hoisted
     const SIDE_EFFECTS = new Set([
       IR.STORE_LOCAL, IR.STORE_GLOBAL, IR.CALL, IR.SELF_CALL,
-      IR.GUARD_INT, IR.GUARD_BOOL, IR.GUARD_STRING, IR.GUARD_ARRAY, IR.GUARD_BOUNDS,
-      IR.GUARD_HASH, IR.GUARD_TRUTHY, IR.GUARD_FALSY,
       IR.LOOP_START, IR.LOOP_END, IR.EXEC_TRACE, IR.FUNC_RETURN,
       IR.INDEX_ARRAY, IR.INDEX_HASH,  // Can fail if guard hasn't run yet; don't hoist
       IR.BUILTIN_PUSH  // Creates new array; side-effecting
+    ]);
+
+    // Guards CAN be hoisted if their operands are loop-invariant.
+    // Pre-loop guards use simplified exit codegen (no side-trace dispatch).
+    const HOISTABLE_GUARDS = new Set([
+      IR.GUARD_INT, IR.GUARD_BOOL, IR.GUARD_STRING,
+      IR.GUARD_ARRAY, IR.GUARD_HASH,
+      IR.GUARD_TRUTHY, IR.GUARD_FALSY,
+      IR.GUARD_BOUNDS
     ]);
 
     // Iteratively find loop-invariant instructions
