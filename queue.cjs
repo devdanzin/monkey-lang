@@ -243,7 +243,7 @@ function cmdAdd(args, data) {
     newTask.goal = goal || task;
     newTask.task = null;
   } else {
-    newTask.task = task;
+    newTask.task = (task === null || task === 'null' || task === '') ? null : task;
   }
   if (planRef) newTask.plan_ref = planRef;
 
@@ -374,6 +374,8 @@ function argsFromJson(json) {
       args.push('--tasks', ...v);
     } else if (typeof v === 'boolean') {
       if (v) args.push(`--${k}`);
+    } else if (v === null) {
+      args.push(`--${k}`, 'null');
     } else {
       args.push(`--${k}`, String(v));
     }
