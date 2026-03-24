@@ -1,8 +1,8 @@
 status: done
-mode: THINK
-task: Day 8 review — assess output, prep tomorrow's direction
-context: Updated TASKS.md with tomorrow plan (V2 implementation, JIT pre-loop codegen, BlueBubbles fix). No new failure patterns. All scratch notes current.
-context-files: WORK-SYSTEM-V2.md, TASKS.md
+mode: EXPLORE
+task: Deoptimization deep dive — LuaJIT snapshots + V8 FrameStates
+context: Read LuaJIT lj_snap.c source (snapshot_slots, snap_restore, snap_usedef, sunk allocation). Read V8 deoptimizer.h + deoptimize-reason.h (70+ deopt reasons, lazy unlinking). Updated scratch note to 2 uses/2 days — eligible for lesson promotion. Sketched Monkey JIT snapshot implementation.
+context-files: memory/scratch/deoptimization-jit.md
 est: 0
-next: 21:15 EXPLORE — Free curiosity, then 21:30-21:45 MAINTAIN
-updated: 2026-03-23T21:00:00-06:00
+next: 21:30 MAINTAIN — Final commits, daily log, TASKS.md update
+updated: 2026-03-23T21:15:00-06:00

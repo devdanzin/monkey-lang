@@ -1,65 +1,104 @@
 ---
-uses: 1
+uses: 2
 created: 2026-03-22
-last-used: 2026-03-22
-topics: deoptimization, jit, v8, graal, truffle, on-stack-replacement, guards
+last-used: 2026-03-23
+topics: deoptimization, jit, v8, graal, truffle, luajit, snapshots, on-stack-replacement, guards
 ---
 
 # Deoptimization in Production JITs
 
-The inverse of JIT compilation: jumping from optimized code back to interpreted/unoptimized code, restoring full interpreter state.
+The inverse of JIT compilation: jumping from optimized code back to interpreted/unoptimized code, restoring full interpreter state. **This is the enabling mechanism for aggressive speculative optimization.**
 
-## Why It Matters
-Deoptimization is what makes *speculative optimization* safe. Instead of checking every possible edge case in compiled code (overflow, type changes, method redefinition), you optimistically assume the common case and deoptimize if wrong. This dramatically simplifies generated code.
+## Core Principle
+The cheaper deopt is, the more aggressively you can speculate. Every deopt system solves the same problem: how to reconstruct interpreter-visible state from optimized (register-allocated, reordered, partially-evaluated) machine state.
 
-## V8 (TurboFan) Approach
+## LuaJIT Snapshots (Most Relevant to Monkey JIT)
 
-### Eager vs Lazy Deoptimization
-- **Eager:** Guard fails during execution → immediately deoptimize (type guard fails, overflow, out-of-bounds)
-- **Lazy:** Code is *marked* for deoptimization (e.g., method redefined, map transition) but actual deopt happens on next invocation
-- **Lazy unlinking (2017):** Instead of maintaining weak lists of all optimized functions and iterating on deopt, V8 now checks a `marked_for_deoptimization` bit in the code object prologue. If set, jumps to `CompileLazyDeoptimizedCode` builtin which resets the function's code pointer to the interpreter trampoline. Eliminated GC overhead from maintaining linked lists of optimized functions. Saved ~170KB on facebook.com (3.7% memory reduction from removing `next` pointer per JSFunction).
+### Architecture
+LuaJIT takes **snapshots** of the interpreter state at each guard point during trace recording. A snapshot maps Lua stack slots → IR references (which resolve to registers/spill slots at runtime).
 
-### Deopt Metadata
-- FrameStates in TurboFan IR capture interpreter state at each potential deopt point
-- Maps optimized registers/stack slots back to interpreter frame layout
-- Polymorphic access: decision tree with fallback to generic op (megamorphic) instead of deopt
+### Key Data Structures
+- **SnapShot**: metadata (nent, nslots, mapofs into snapmap, ref to IR position, mcofs for machine code offset)
+- **SnapEntry**: packed `slot | flags | IRref` — maps one stack slot to one IR value
+- **snapmap[]**: flat array of SnapEntries, shared across all snapshots (offset-indexed)
+- **Frame links**: appended after slot entries, encode the Lua call stack for multi-frame restoration
 
-### Monomorphism Matters
-- Monomorphic: single type guard + specialized op → can eliminate redundant guards
-- Polymorphic: decision tree of 2-4 shapes → weaker guarantees, less redundancy elimination  
-- Megamorphic: generic fallback (no deopt, but slow)
+### Snapshot Lifecycle
+1. **`lj_snap_add()`** — called after each guard IR instruction. Takes `snapshot_stack()` which iterates all slots, skipping unmodified ones (optimization: if slot is just an SLOAD of itself with no intervening store, skip it — `SNAP_NORESTORE`).
+2. **Merging** — if no IR emitted since last snapshot, or if explicitly requested and no guard emitted, the new snapshot *replaces* the previous one (saves space).
+3. **`lj_snap_purge()`** — uses bytecode dataflow analysis (`snap_usedef()`) to identify dead slots *before* taking the snapshot. Zeros them out so they don't waste snapshot space.
+4. **`lj_snap_shrink()`** — post-hoc removal of entries for slots that are dead after the snapshot point.
+5. **`lj_snap_restore()`** — THE key function. On guard failure (trace exit):
+   - Reads the exit state (registers + spill slots from `ExitState`)
+   - Walks the snapshot entries, restoring each slot from its IR ref's register/spill location
+   - Uses a **Bloom filter** (`snap_renamefilter`) for register renames (rare but handles cases where register allocator moved values after snapshot)
+   - Handles **sunk allocations** — objects that were scalar-replaced (via allocation sinking/PEA) get materialized back to heap objects at deopt time
+   - Reconstructs frame links for multi-frame call stacks
+   - Sets L->base and L->top correctly
+   - Returns the PC to resume interpretation at
 
-## HotSpot (JVM) Approach
-- On-Stack Replacement (OSR): can enter *and exit* optimized code mid-method
-- Uncommon traps: deopt points compiled as calls to VM runtime
-- Safepoints: well-defined points where thread state is consistent for GC and deopt
-- Deopt reasons tracked and used to avoid re-optimizing with same speculation
+### Key Optimization: Dead Slot Elimination
+`snap_usedef()` does a mini dataflow analysis on the *bytecode* (not IR) to find which slots are live at each snapshot point. This is critical — without it, snapshots would be huge (every slot in every frame). The analysis walks forward from the snapshot PC, tracking USE/DEF per slot.
 
-## Graal/Truffle Approach (Most Aggressive)
-Truffle uses deoptimization *pervasively* — it's the core mechanism that makes high-level interpreters fast:
+### Key Optimization: Sunk Allocation Restoration
+When allocation sinking removes a heap allocation (table, closure), the values that *would* have been in that object are kept in registers/stack. At deopt, `snap_unsink()` reconstructs the object from those scattered values. This is the same concept as Graal's PEA materialization.
 
-### Key Insight: Deopt Replaces All Runtime Checks
-Instead of checking for edge cases in compiled code:
-1. **Fixnum→Bignum overflow:** `deoptimize! if overflowed?` — no Bignum code path in compiled code at all
-2. **Monkey patching:** No check needed! Redefining a method *triggers* deopt of all affected compiled code. Zero overhead in hot path.
-3. **#binding:** Deopt reconstructs stack-allocated/scalar-replaced values back into heap objects
-4. **ObjectSpace:** Force deopt of all threads → all objects materialized on heap → walk heap
-5. **set_trace_func:** Inlined no-op method; installing trace = "redefining" it → triggers deopt
-6. **Thread#raise:** Conceptually same as method redefinition
+## V8 TurboFan Deoptimization
 
-### Partial Escape Analysis
-Objects allocated on stack (scalar replacement). On deopt, values extracted from stack and materialized as heap objects. "We know where everything is because we put it there."
+### FrameStates
+TurboFan's equivalent of LuaJIT snapshots. Nodes in the IR graph that capture the full interpreter state (bytecode offset, locals, accumulator, context, parameters) at each potential deopt point.
 
-### Transfer to Interpreter
-Truffle nodes have `transferToInterpreterAndInvalidate()` — deoptimizes current compilation, ensures node is re-profiled before next compilation. AST rewrites happen in interpreter, then recompile with new specialization.
+### Deopt Kinds
+- **Eager**: Guard fails immediately → deopt now (type check, overflow, bounds)
+- **Lazy**: Code *marked* for deopt but continues until next entry point
+  - Since 2017: lazy unlinking via `marked_for_deoptimization` bit in code prologue
+  - Triggers on: map deprecation, prototype change, property cell change
+  - Saves ~170KB on facebook.com (eliminated per-JSFunction linked list overhead)
 
-## My Monkey JIT: Comparison
-Current approach: guards + side traces (like LuaJIT). No true deoptimization — guard failure falls back to VM dispatch. This is simpler but means:
-- Can't do speculative optimizations beyond type guards
-- No way to invalidate compiled code when globals change
-- No lazy deopt for map transitions or method redefinition
+### Deopt Reasons (from source — 70+ reasons!)
+Key categories:
+- **Type mismatches**: NotASmi, NotAHeapNumber, NotAString, NotAJavaScriptObject, WrongMap, WrongInstanceType
+- **Numeric edge cases**: Overflow, MinusZero, NaN, LostPrecision, DivisionByZero
+- **Insufficient feedback**: InsufficientTypeFeedbackFor{BinaryOperation,Call,Compare,...} — not enough profiling data to speculate
+- **Structural changes**: ArrayLengthChanged, CowArrayElementsChanged, DeprecatedMap, PropertyCellChange
+- **OSR**: PrepareForOnStackReplacement, OSREarlyExit
 
-Potential improvement: add deopt metadata (snapshot of VM state at each guard) + ability to resume interpreter mid-bytecode. This is essentially what LuaJIT snapshots already do.
+### Deopt Metadata Size
+FrameStates are one of the biggest sources of IR bloat in method JITs. Every potential deopt point needs a full state snapshot. LuaJIT's approach is more compact because traces are linear — fewer deopt points per unit of compiled code.
 
-## Key Takeaway
-Deoptimization is not just error recovery — it's the *enabling mechanism* for aggressive optimization. The cheaper deopt is, the more aggressively you can speculate. V8's lazy unlinking, Graal's pervasive deopt, and LuaJIT's snapshot system are all variations on making deopt cheap enough to bet on.
+## Graal/Truffle: Deopt as Core Abstraction
+
+Truffle's key innovation: deoptimization IS the programming model. Instead of runtime checks:
+- `transferToInterpreterAndInvalidate()` — deoptimize + invalidate compilation
+- Guards in Truffle nodes → on failure, deopt to interpreter, re-specialize AST node, recompile
+- PEA + deopt = objects exist in registers until they escape; deopt materializes them
+
+This means Truffle interpreters write zero guard code — they write specialization nodes with `@Specialization` annotations, and the framework generates guards + deopt automatically.
+
+## Implications for Monkey JIT
+
+### Current State
+- Guards abort the trace → fall back to VM dispatch at the loop header
+- No snapshot of intermediate state — can only resume at trace entry point
+- No lazy invalidation — compiled traces stay valid even if globals change
+
+### What Snapshots Would Enable
+1. **Mid-trace exit**: Guard at instruction N can resume interpreter at bytecode N, not loop top. Means less repeated work on deopt.
+2. **More aggressive speculation**: Could speculate on hash shapes, string types, closure identity — anything with a cheap deopt fallback.
+3. **Global invalidation**: When a global is reassigned, mark all traces reading it for deopt. Currently impossible — traces using globals can go stale silently.
+4. **Allocation sinking**: Already have escape analysis (11x on array:build). With snapshots, could sink more allocations and rematerialize on deopt.
+
+### Implementation Sketch for Monkey
+Since Monkey JIT compiles to JavaScript (not machine code), "snapshots" would be:
+1. At each guard in IR, record: `{pc: bytecodeOffset, locals: {slot→IRRef}, stack: [IRRef...]}`
+2. In codegen, each guard exit returns the snapshot data: `return {exitType: 'guard', snap: {pc: 42, locals: {0: v3, 1: v7}}}`
+3. VM receives the snapshot, writes values back to the frame's locals/stack arrays, sets IP to snap.pc, resumes dispatch loop
+
+This is much simpler than LuaJIT's register-level restoration because JS handles all the register allocation. The snapshot is just a map of local slots to JS variable names in the compiled function.
+
+### Cost Analysis
+- **Space**: One snapshot per guard. With ~5-10 guards per trace and ~5 locals, that's ~50-100 entries. Trivial in JS.
+- **Time**: Guard exit path adds one object literal construction. Negligible vs the interpreter dispatch it replaces.
+- **Complexity**: Moderate — need to thread snapshot data through IR → optimizer → codegen. Optimizer must update snapshots when it eliminates/moves instructions.
+
+**The optimizer interaction is the hard part.** When CSE replaces a reference, or DCE removes a store, or LICM moves a load, the snapshot must still point to live values. LuaJIT solves this with IR_RENAME instructions that track register movements. In JS-targeted codegen, we'd need to ensure all snapshot-referenced variables are still in scope at the guard point.
