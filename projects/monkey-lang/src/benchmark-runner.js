@@ -65,6 +65,7 @@ const BENCHMARKS = [
   // Mixed
   { name: 'mixed:fn-branch-10k', category: 'mixed', expected: 0, input: `let inc = fn(x) { x + 1 }; let dec = fn(x) { x - 1 }; let val = 0; let i = 0; while (i < 10000) { if (i > 4999) { val = inc(val); } else { val = dec(val); } i = i + 1; } val` },
   { name: 'mixed:loop-fib', category: 'mixed', expected: 10945, input: `let fib = fn(n) { if (n < 2) { n } else { fib(n-1) + fib(n-2) } }; let sum = 0; let i = 0; while (i < 20) { sum = sum + fib(i); i = i + 1; } sum` },
+  { name: 'mixed:dot-product-5k', category: 'mixed', expected: 41654167500, input: `let dot = fn(n) { let sum = 0; let i = 0; while (i < n) { sum = sum + i * i; i = i + 1; } sum }; dot(5000)` },
 ];
 
 function parse(input) {
