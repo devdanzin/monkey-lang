@@ -547,12 +547,27 @@ export class JIT {
       if (trace.parentTrace._sideTraceCount >= MAX_SIDE_TRACES) return false;
       trace.parentTrace.sideTraces[trace.parentGuardIdx] = trace;
       trace.parentTrace._sideTraceCount++;
+      // Recompile parent to inline the side trace body
+      this._recompileWithInlinedSideTraces(trace.parentTrace);
     } else {
       const key = this.traceKey(trace.frameId, trace.startIp);
       this.traces.set(key, trace);
     }
     this.traceCount++;
     return true;
+  }
+
+  // Recompile a parent trace with inlinable side traces embedded directly.
+  // Only inlines side traces that end with loop_back and use simple arithmetic
+  // on the same globals that the parent promotes.
+  _recompileWithInlinedSideTraces(parentTrace) {
+    try {
+      const compiler = new TraceCompiler(parentTrace);
+      const newCompiled = compiler.compile();
+      if (newCompiled) parentTrace.compiled = newCompiled;
+    } catch (e) {
+      // If recompilation fails, keep the old compiled function
+    }
   }
 
   // Check if a guard exit is hot enough for a side trace
@@ -830,6 +845,15 @@ export class TraceCompiler {
       return;
     }
     this.lines.push(`  if (${condition}) {`);
+    // Check if we can inline a side trace at compile time
+    const sideTrace = this.trace.sideTraces[guardIdx];
+    if (sideTrace && this._canInlineSideTrace(sideTrace)) {
+      // Inline the side trace body directly — no function call overhead
+      this._emitInlinedSideTrace(sideTrace);
+      this.lines.push(`    continue loop;`);
+      this.lines.push(`  }`);
+      return;
+    }
     // Check for side trace inline — __sideTraces is a plain object indexed by guard number
     this.lines.push(`    const __st_trace = __sideTraces[${guardIdx}];`);
     this.lines.push(`    if (__st_trace) {`);
@@ -847,6 +871,125 @@ export class TraceCompiler {
     this.lines.push(`    }`);
     this.lines.push(`    ${this._emitReturn(exitObj)}`);
     this.lines.push(`  }`);
+  }
+
+  // Check if a side trace can be inlined into its parent.
+  // Requirements: ends with loop_end, only touches promoted globals/locals, simple body.
+  _canInlineSideTrace(sideTrace) {
+    if (!sideTrace.ir || sideTrace.ir.length === 0) return false;
+    const ir = sideTrace.ir;
+    const lastInst = ir[ir.length - 1];
+    if (!lastInst || lastInst.op !== IR.LOOP_END) return false;
+
+    // Check that all operations are simple
+    const SIMPLE_OPS = new Set([
+      IR.LOOP_START, IR.LOOP_END,
+      IR.CONST_INT, IR.CONST_BOOL,
+      IR.LOAD_GLOBAL, IR.STORE_GLOBAL,
+      IR.LOAD_LOCAL, IR.STORE_LOCAL,
+      IR.GUARD_INT, IR.GUARD_BOOL, IR.GUARD_TRUTHY, IR.GUARD_FALSY,
+      IR.UNBOX_INT, IR.BOX_INT,
+      IR.ADD_INT, IR.SUB_INT, IR.MUL_INT, IR.DIV_INT,
+      IR.GT, IR.LT, IR.EQ, IR.NEQ,
+      IR.NEG, IR.NOT,
+    ]);
+    for (const inst of ir) {
+      if (!inst) continue;
+      if (!SIMPLE_OPS.has(inst.op)) return false;
+    }
+
+    // Check it only uses globals/locals that the parent promotes
+    if (!this._promotedVarNames) return false;
+    for (const inst of ir) {
+      if (!inst) continue;
+      if (inst.op === IR.LOAD_GLOBAL || inst.op === IR.STORE_GLOBAL) {
+        if (!this._promotedVarNames.has('g:' + inst.operands.index)) return false;
+      }
+      if (inst.op === IR.LOAD_LOCAL || inst.op === IR.STORE_LOCAL) {
+        if (!this._promotedVarNames.has('l:' + inst.operands.slot)) return false;
+      }
+    }
+    return true;
+  }
+
+  // Emit the body of a side trace inline, using the parent's promoted variables.
+  _emitInlinedSideTrace(sideTrace) {
+    const ir = sideTrace.ir;
+    const stVars = new Map();
+    let vc = 0;
+
+    for (const inst of ir) {
+      if (!inst) continue;
+      switch (inst.op) {
+        case IR.LOOP_START:
+        case IR.LOOP_END:
+          break;
+        case IR.CONST_INT:
+          stVars.set(inst.id, String(inst.operands.value));
+          break;
+        case IR.CONST_BOOL:
+          stVars.set(inst.id, inst.operands.value ? 'true' : 'false');
+          break;
+        case IR.LOAD_GLOBAL:
+          stVars.set(inst.id, this._promotedVarNames.get('g:' + inst.operands.index));
+          break;
+        case IR.STORE_GLOBAL: {
+          const pv = this._promotedVarNames.get('g:' + inst.operands.index);
+          const val = stVars.get(inst.operands.value) || 'undefined';
+          this.lines.push(`    ${pv} = ${val};`);
+          break;
+        }
+        case IR.LOAD_LOCAL:
+          stVars.set(inst.id, this._promotedVarNames.get('l:' + inst.operands.slot));
+          break;
+        case IR.STORE_LOCAL: {
+          const pv = this._promotedVarNames.get('l:' + inst.operands.slot);
+          const val = stVars.get(inst.operands.value) || 'undefined';
+          this.lines.push(`    ${pv} = ${val};`);
+          break;
+        }
+        case IR.GUARD_INT:
+        case IR.GUARD_BOOL:
+        case IR.GUARD_TRUTHY:
+        case IR.GUARD_FALSY:
+          break; // skip — parent's type guards cover these
+        case IR.UNBOX_INT:
+        case IR.BOX_INT:
+          stVars.set(inst.id, stVars.get(inst.operands.ref));
+          break;
+        case IR.ADD_INT: {
+          const v = `__st${vc++}`;
+          this.lines.push(`    const ${v} = (${stVars.get(inst.operands.left)} + ${stVars.get(inst.operands.right)});`);
+          stVars.set(inst.id, v);
+          break;
+        }
+        case IR.SUB_INT: {
+          const v = `__st${vc++}`;
+          this.lines.push(`    const ${v} = (${stVars.get(inst.operands.left)} - ${stVars.get(inst.operands.right)});`);
+          stVars.set(inst.id, v);
+          break;
+        }
+        case IR.MUL_INT: {
+          const v = `__st${vc++}`;
+          this.lines.push(`    const ${v} = (${stVars.get(inst.operands.left)} * ${stVars.get(inst.operands.right)});`);
+          stVars.set(inst.id, v);
+          break;
+        }
+        case IR.DIV_INT: {
+          const v = `__st${vc++}`;
+          this.lines.push(`    const ${v} = Math.trunc(${stVars.get(inst.operands.left)} / ${stVars.get(inst.operands.right)});`);
+          stVars.set(inst.id, v);
+          break;
+        }
+        case IR.GT: case IR.LT: case IR.EQ: case IR.NEQ: {
+          const v = `__st${vc++}`;
+          const op = inst.op === IR.GT ? '>' : inst.op === IR.LT ? '<' : inst.op === IR.EQ ? '===' : '!==';
+          this.lines.push(`    const ${v} = ${stVars.get(inst.operands.left)} ${op} ${stVars.get(inst.operands.right)};`);
+          stVars.set(inst.id, v);
+          break;
+        }
+      }
+    }
   }
 
   compile() {

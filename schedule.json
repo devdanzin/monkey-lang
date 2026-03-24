@@ -486,9 +486,25 @@
     {
       "id": "T59",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Optimize side trace dispatch: reduce guard exit overhead",
-      "started": "2026-03-24T15:32:56.761Z"
+      "started": "2026-03-24T15:32:56.761Z",
+      "completed": "2026-03-24T15:39:00.591Z",
+      "duration_ms": 600000,
+      "summary": "Switched sideTraces from Map to plain Object for property access. Marginal improvement (~0.1x). Real bottleneck is wb/reload round-trip on side trace calls. Needs trace recompilation with inlined side trace body for major improvement. 244 tests pass."
+    },
+    {
+      "id": "T60",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Side trace inlining: recompile parent with inlined side trace body for loop_back exits",
+      "started": "2026-03-24T15:39:28.030Z"
+    },
+    {
+      "id": "T61",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Write blog post: Building a Tracing JIT in JavaScript"
     }
   ],
   "backlog": [],
@@ -840,6 +856,14 @@
     {
       "time": "2026-03-24T15:32:52.762Z",
       "msg": "Added T59 (BUILD) after end: Optimize side trace dispatch: reduce guard exit overhead"
+    },
+    {
+      "time": "2026-03-24T15:39:22.553Z",
+      "msg": "Added T60 (BUILD) after end: Side trace inlining: recompile parent with inlined side trace body for loop_back exits"
+    },
+    {
+      "time": "2026-03-24T15:39:22.665Z",
+      "msg": "Added T61 (BUILD) after end: Write blog post: Building a Tracing JIT in JavaScript"
     }
   ]
 }
