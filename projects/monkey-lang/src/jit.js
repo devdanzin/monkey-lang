@@ -1856,6 +1856,15 @@ export class TraceOptimizer {
           if (ops.args[j] === oldRef) ops.args[j] = newRef;
         }
       }
+      // Update snapshots: replace old ref with new ref
+      if (inst.snapshot) {
+        for (const [slot, ref] of inst.snapshot.locals) {
+          if (ref === oldRef) inst.snapshot.locals.set(slot, newRef);
+        }
+        for (const [idx, ref] of inst.snapshot.globals) {
+          if (ref === oldRef) inst.snapshot.globals.set(idx, newRef);
+        }
+      }
     }
   }
 
@@ -2228,6 +2237,15 @@ export class TraceOptimizer {
       }
       if (Array.isArray(ops.args)) {
         ops.args = ops.args.map(ref => oldToNew.has(ref) ? oldToNew.get(ref) : ref);
+      }
+      // Remap snapshot refs for deoptimization
+      if (inst.snapshot) {
+        for (const [slot, ref] of inst.snapshot.locals) {
+          if (oldToNew.has(ref)) inst.snapshot.locals.set(slot, oldToNew.get(ref));
+        }
+        for (const [idx, ref] of inst.snapshot.globals) {
+          if (oldToNew.has(ref)) inst.snapshot.globals.set(idx, oldToNew.get(ref));
+        }
       }
     }
 
@@ -2629,6 +2647,18 @@ export class TraceOptimizer {
       }
     }
 
+    // Instructions referenced by snapshots are live (needed for deoptimization)
+    for (let i = 0; i < ir.length; i++) {
+      const inst = ir[i];
+      if (!inst || !inst.snapshot) continue;
+      for (const ref of inst.snapshot.locals.values()) {
+        if (typeof ref === 'number' && ref >= 0 && ref < ir.length && ir[ref]) live.add(ref);
+      }
+      for (const ref of inst.snapshot.globals.values()) {
+        if (typeof ref === 'number' && ref >= 0 && ref < ir.length && ir[ref]) live.add(ref);
+      }
+    }
+
     // BOX_INT that feeds a STORE is live (transitively)
     // Walk live set and mark operands as live (only follow IR ref keys)
     const VALUE_IS_REF = new Set([IR.STORE_LOCAL, IR.STORE_GLOBAL]);
@@ -2711,6 +2741,15 @@ export class TraceOptimizer {
           if (remap.has(ops[key])) ops[key] = remap.get(ops[key]);
         }
         // For CONST_BOOL with a 'ref' — already handled above
+      }
+      // Remap snapshot refs
+      if (inst.snapshot) {
+        for (const [slot, ref] of inst.snapshot.locals) {
+          if (remap.has(ref)) inst.snapshot.locals.set(slot, remap.get(ref));
+        }
+        for (const [idx, ref] of inst.snapshot.globals) {
+          if (remap.has(ref)) inst.snapshot.globals.set(idx, remap.get(ref));
+        }
       }
     }
 
