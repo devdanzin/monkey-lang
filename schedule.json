@@ -474,8 +474,12 @@
     {
       "id": "T46",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final commits, daily log, memory maintenance"
+      "status": "done",
+      "task": "Final commits, daily log, memory maintenance",
+      "started": "2026-03-24T15:45:49.990Z",
+      "completed": "2026-03-24T15:46:39.152Z",
+      "duration_ms": 120000,
+      "summary": "Final commits, daily log updated, both repos pushed. Session A complete: 17 tasks, 244 tests, deopt infrastructure done."
     },
     {
       "id": "T47",
@@ -506,9 +510,12 @@
     {
       "id": "T61",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Write blog post: Building a Tracing JIT in JavaScript",
-      "started": "2026-03-24T15:43:57.493Z"
+      "started": "2026-03-24T15:43:57.493Z",
+      "completed": "2026-03-24T15:45:32.423Z",
+      "duration_ms": 480000,
+      "summary": "Blog post draft: Building a Tracing JIT in JavaScript (~9KB). Covers: architecture, recording, IR, 10 optimization passes, variable promotion, side traces, deoptimization snapshots, results (9.5x). Ready for review/publishing."
     }
   ],
   "backlog": [],
