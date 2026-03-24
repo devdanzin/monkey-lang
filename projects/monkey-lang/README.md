@@ -1,6 +1,8 @@
 # Monkey Language
 
-A JavaScript implementation of the Monkey programming language with a tree-walking interpreter, bytecode compiler + stack VM, and a **tracing JIT compiler** that achieves up to **21x speedups** over the VM.
+A JavaScript implementation of the Monkey programming language with a tree-walking interpreter, bytecode compiler + stack VM, and a **tracing JIT compiler** that achieves **9.5x average speedup** (up to 20x on hot loops).
+
+📝 **Blog post:** [Building a Tracing JIT Compiler in JavaScript](https://henry-the-frog.github.io/2026/03/24/building-a-tracing-jit-in-javascript/)
 
 Inspired by Thorsten Ball's *Writing An Interpreter In Go* and *Writing A Compiler In Go*, then taken further with LuaJIT-inspired tracing JIT compilation.
 
@@ -27,41 +29,40 @@ The JIT observes the VM executing bytecode and compiles hot paths to optimized J
 
 1. **Hot detection** — Loop back-edges have counters. After 56 iterations, trace recording begins.
 2. **Trace recording** — The VM records each operation into an SSA-style IR (intermediate representation). Function calls are inlined, branches become guards.
-3. **Optimization** — Three passes: redundant guard elimination, constant folding, dead code elimination.
+3. **Optimization** — 10 passes: store-load forwarding, box/unbox elimination, CSE, guard elimination, constant folding, algebraic simplification, LICM, dead code elimination, pre-loop codegen, snapshot maintenance.
 4. **Code generation** — Optimized IR compiles to a JavaScript function via `new Function()`.
-5. **Execution** — Compiled traces replace the interpreter for hot loops. Guard failures exit back to the VM.
+5. **Execution** — Compiled traces replace the interpreter for hot loops. Guard failures exit back to the VM with deoptimization snapshots.
 
 ### Key Features
 
-- **Side traces** — When a guard fails repeatedly (8+ times), a side trace is recorded from that exit point and linked to the parent trace
+- **Side traces with inlining** — When a guard fails repeatedly, a side trace is recorded and inlined back into the parent trace, eliminating write-back/reload overhead
 - **Function inlining** — Trace recorder follows execution across call boundaries (up to 3 levels deep), eliminating call overhead
 - **Loop variable promotion** — Loop-carried variables are promoted to raw JS `let` variables, eliminating box/unbox per iteration
+- **Deoptimization snapshots** — Each guard captures VM state for safe fallback to the interpreter when speculation fails
+- **Pre-loop codegen** — Guards hoisted before the loop by LICM emit simplified exits, enabling aggressive guard hoisting
 - **Recursive function compilation** — Self-recursive functions get a specialized method JIT with raw integer fast-path
 - **Trace blacklisting** — After 3 failed recording attempts, back-edges are blacklisted (no JIT overhead for untraceable code)
 
 ### Performance
 
 ```
-Category          Avg Speedup   Range         Notes
-────────────────────────────────────────────────────
-Loops             10.0x         4.2x–19.8x    Core JIT strength
-Arrays            11.1x         11.0x–11.2x   Escape analysis for push
-Higher-order      8.6x          7.0x–10.1x    apply, compose
-Closures          7.5x          5.6x–9.4x     adder/multiplier factories
-Inlining          9.8x          5.9x–16.7x    fn calls in loops
-Recursive         8.6x          7.1x–10.1x    fib(25), fib(30)
-Side-traces       2.0x          1.6x–2.4x     branching loops
-Hashes            1.8x          —              String interning
+Category          Avg Speedup   Notes
+──────────────────────────────────────────
+Hot loops         15-20x        Core JIT strength
+Array operations  10-11x        Pre-loop codegen
+Recursive         9-10x         fib(25), fib(30)
+Function inlining 5-13x         Calls in loops
+Closures          4-8x          adder/multiplier factories
+Side traces       3-7x          Branching (with inlining)
+Hash lookups      2-3x          String interning
 
-Aggregate: 19 benchmarks, 9.2x overall (1430ms VM → 156ms JIT)
+Aggregate: 19 benchmarks, 9.5x overall (1436ms VM → 153ms JIT)
 ```
-
-Highlights: `fib(30)` runs in **112ms** with the JIT (vs 1134ms VM). Hot loops with 100k iterations achieve **20x** speedups. Array push-in-loop gets **11x** via escape analysis.
 
 ## Tests
 
 ```bash
-node --test    # 234 tests
+node --test    # 244 tests
 ```
 
 ## Benchmarks
