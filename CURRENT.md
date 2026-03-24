@@ -1,8 +1,8 @@
-status: done
+status: in-progress
 mode: BUILD
-task: V2 work system: implement queue.js
-context: queue.cjs complete — all 11 commands working (next, start, done, fill, yield, move, remove, add, backlog, validate, init). CJS because workspace has "type":"module". Tested full lifecycle. Removed test schedule.json.
+task: V2: Build dashboard webhook server (server.js)
+context: queue.cjs complete. Next Phase 1 item: webhook server for real-time dashboard updates. Needs POST /api/task-update, GET /api/dashboard, GET /api/history/:date, Bearer auth.
 context-files: WORK-SYSTEM-V2.md
 est: 2
-next: V2: dashboard webhook server or cron prompt template
-updated: 2026-03-23T17:55:00-06:00
+next: V2: Cloudflare tunnel setup or cron prompt templates
+updated: 2026-03-23T18:00:00-06:00
