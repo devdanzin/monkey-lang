@@ -1586,3 +1586,13 @@ describe('Edge Cases', () => {
     testIntegerObject(compileAndRun('let x = 100; x += 10; x -= 5; x *= 2; x /= 7; x %= 10; x'), 0);
   });
 });
+
+describe('650th Test', () => {
+  it('Monkey is Turing-complete: Y combinator computes factorial', () => {
+    testIntegerObject(compileAndRun(`
+      let Y = fn(f) { fn(x) { f(fn(n) { x(x)(n) }) }(fn(x) { f(fn(n) { x(x)(n) }) }) };
+      let fact = Y(fn(self) { fn(n) { n == 0 ? 1 : n * self(n - 1) } });
+      fact(12)
+    `), 479001600);
+  });
+});
