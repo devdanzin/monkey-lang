@@ -76,6 +76,14 @@ const BENCHMARKS = [
     input: `let filter = fn(arr, f) { let r = []; let i = 0; while (i < len(arr)) { if (f(arr[i])) { r = push(r, arr[i]); } i = i + 1; } r }; let arr = []; let i = 0; while (i < 1000) { arr = push(arr, i); i = i + 1; } len(filter(arr, fn(x) { x > 499 }))` },
   { name: 'mixed:prime-count-500', category: 'mixed', expected: 95,
     input: `let is_prime = fn(n) { if (n < 2) { return false; } if (n < 4) { return true; } if (n % 2 == 0) { return false; } let i = 3; while (i * i < n + 1) { if (n % i == 0) { return false; } i = i + 2; } true }; let count = 0; let n = 2; while (n < 500) { if (is_prime(n)) { count = count + 1; } n = n + 1; } count` },
+
+  // New features
+  { name: 'new:for-loop-sum-10k', category: 'new-features', expected: 49995000,
+    input: `let sum = 0; for (let i = 0; i < 10000; i += 1) { sum += i; } sum` },
+  { name: 'new:for-in-sum-1k', category: 'new-features', expected: 499500,
+    input: `let arr = []; for (let i = 0; i < 1000; i += 1) { arr = push(arr, i); } let sum = 0; for (x in arr) { sum += x; } sum` },
+  { name: 'new:quicksort-100', category: 'new-features', expected: true,
+    input: `let swap = fn(a,i,j) { let t = a[i]; a[i] = a[j]; a[j] = t; }; let partition = fn(a,lo,hi) { let p = a[hi]; let i = lo; for (let j = lo; j < hi; j += 1) { if (a[j] <= p) { swap(a,i,j); i += 1; } } swap(a,i,hi); i }; let qs = fn(a,lo,hi) { if (lo < hi) { let p = partition(a,lo,hi); qs(a,lo,p-1); qs(a,p+1,hi); } }; let a = []; let s = 42; for (let i = 0; i < 100; i += 1) { s = (s * 1103515245 + 12345) % 2147483648; a = push(a, s % 1000); } qs(a, 0, 99); let ok = true; for (let i = 0; i < 99; i += 1) { if (a[i] > a[i+1]) { ok = false; break; } } ok` },
 ];
 
 function parse(input) {

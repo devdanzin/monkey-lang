@@ -414,7 +414,7 @@ export class VM {
             if (recording()) {
               this.recorder.popRef();
               this.recorder.popRef();
-              this.recorder.abortTrace('string multiplication not JIT-compiled');
+              this.recorder.abort('string multiplication not JIT-compiled');
             }
             const n = right.value;
             this.push(new MonkeyString(n > 0 ? left.value.repeat(n) : ''));
@@ -423,7 +423,7 @@ export class VM {
             if (recording()) {
               this.recorder.popRef();
               this.recorder.popRef();
-              this.recorder.abortTrace('string multiplication not JIT-compiled');
+              this.recorder.abort('string multiplication not JIT-compiled');
             }
             const n = left.value;
             this.push(new MonkeyString(n > 0 ? right.value.repeat(n) : ''));
@@ -1108,7 +1108,7 @@ export class VM {
           frame.ip += 1;
           frame.closure.free[freeIdx2] = this.pop();
           if (recording()) {
-            this.recorder.abortTrace('OpSetFree not JIT-compiled');
+            this.recorder.abort('OpSetFree not JIT-compiled');
           }
           break;
         }
@@ -1130,7 +1130,7 @@ export class VM {
           }
           this.push(val);
           if (recording()) {
-            this.recorder.abortTrace('OpSetIndex not JIT-compiled');
+            this.recorder.abort('OpSetIndex not JIT-compiled');
           }
           break;
         }
@@ -1161,7 +1161,7 @@ export class VM {
             this.push(NULL);
           }
           if (recording()) {
-            this.recorder.abortTrace('OpSlice not JIT-compiled');
+            this.recorder.abort('OpSlice not JIT-compiled');
           }
           break;
         }
@@ -1251,14 +1251,14 @@ export class VM {
           } else if (left4 instanceof MonkeyString && right4 instanceof MonkeyInteger && op === Opcodes.OpMulConst) {
             if (recording()) {
               this.recorder.popRef();
-              this.recorder.abortTrace('string multiplication not JIT-compiled');
+              this.recorder.abort('string multiplication not JIT-compiled');
             }
             const n = right4.value;
             this.push(new MonkeyString(n > 0 ? left4.value.repeat(n) : ''));
           } else if (left4 instanceof MonkeyInteger && right4 instanceof MonkeyString && op === Opcodes.OpMulConst) {
             if (recording()) {
               this.recorder.popRef();
-              this.recorder.abortTrace('string multiplication not JIT-compiled');
+              this.recorder.abort('string multiplication not JIT-compiled');
             }
             const n = left4.value;
             this.push(new MonkeyString(n > 0 ? right4.value.repeat(n) : ''));
@@ -1443,6 +1443,52 @@ export class VM {
           }
           if (recording()) { this.recorder.recordComparison(op, l, r); }
           this.stack[this.sp++] = (l.value !== r.value ? TRUE : FALSE);
+          break;
+        }
+
+        case Opcodes.OpSetFree: {
+          const fIdx = ins[ip + 1];
+          frame.ip += 1;
+          frame.closure.free[fIdx] = this.stack[--this.sp];
+          break;
+        }
+
+        case Opcodes.OpSetIndex: {
+          const val5 = this.stack[--this.sp];
+          const idx5 = this.stack[--this.sp];
+          const obj5 = this.stack[--this.sp];
+          if (obj5 instanceof MonkeyArray && idx5 instanceof MonkeyInteger) {
+            let i5 = idx5.value;
+            if (i5 < 0) i5 += obj5.elements.length;
+            if (i5 >= 0 && i5 < obj5.elements.length) obj5.elements[i5] = val5;
+          } else if (obj5 instanceof MonkeyHash && idx5.fastHashKey) {
+            obj5.pairs.set(idx5.fastHashKey(), { key: idx5, value: val5 });
+          }
+          this.stack[this.sp++] = val5;
+          break;
+        }
+
+        case Opcodes.OpSlice: {
+          const end5 = this.stack[--this.sp];
+          const start5 = this.stack[--this.sp];
+          const obj6 = this.stack[--this.sp];
+          if (obj6 instanceof MonkeyArray) {
+            const len5 = obj6.elements.length;
+            let s5 = (start5 === NULL) ? 0 : start5.value;
+            let e5 = (end5 === NULL) ? len5 : end5.value;
+            if (s5 < 0) s5 += len5; if (e5 < 0) e5 += len5;
+            if (s5 < 0) s5 = 0; if (e5 > len5) e5 = len5;
+            this.stack[this.sp++] = new MonkeyArray(obj6.elements.slice(s5, e5));
+          } else if (obj6 instanceof MonkeyString) {
+            const len5 = obj6.value.length;
+            let s5 = (start5 === NULL) ? 0 : start5.value;
+            let e5 = (end5 === NULL) ? len5 : end5.value;
+            if (s5 < 0) s5 += len5; if (e5 < 0) e5 += len5;
+            if (s5 < 0) s5 = 0; if (e5 > len5) e5 = len5;
+            this.stack[this.sp++] = new MonkeyString(obj6.value.slice(s5, e5));
+          } else {
+            this.stack[this.sp++] = NULL;
+          }
           break;
         }
 
