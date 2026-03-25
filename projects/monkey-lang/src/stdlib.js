@@ -24,9 +24,13 @@ let forEach = fn(arr, f) {
   for (x in arr) { f(x); }
 };
 
-let range = fn(n) {
+let range = fn(a, b = null) {
   let result = [];
-  for (let i = 0; i < n; i += 1) { result = push(result, i); }
+  if (b == null) {
+    for (let i = 0; i < a; i += 1) { result = push(result, i); }
+  } else {
+    for (let i = a; i < b; i += 1) { result = push(result, i); }
+  }
   result
 };
 
