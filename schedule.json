@@ -1610,15 +1610,19 @@
     {
       "id": "T156",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Default function parameters: fn(x, y = 10)",
-      "started": "2026-03-25T21:23:52.852Z"
+      "started": "2026-03-25T21:23:52.852Z",
+      "completed": "2026-03-25T21:28:52.832Z",
+      "duration_ms": 600000,
+      "summary": "Default function parameters implemented. fn(x, y = 10) works in compiler and evaluator. Also added null comparison support. 423 tests."
     },
     {
       "id": "T157",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Tests for default function parameters"
+      "status": "in-progress",
+      "task": "Tests for default function parameters",
+      "started": "2026-03-25T21:28:52.944Z"
     },
     {
       "id": "T158",

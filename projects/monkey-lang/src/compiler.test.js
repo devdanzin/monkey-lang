@@ -843,3 +843,28 @@ describe('Else-If Chains', () => {
     testStringObject(compileAndRun('let grade = fn(score) { if (score >= 90) { "A" } else if (score >= 80) { "B" } else if (score >= 70) { "C" } else { "F" } }; grade(85)'), 'B');
   });
 });
+
+describe('Default Function Parameters', () => {
+  it('use default when arg not provided', () => {
+    testIntegerObject(compileAndRun('let add = fn(a, b = 10) { a + b }; add(5)'), 15);
+  });
+  it('override default with explicit arg', () => {
+    testIntegerObject(compileAndRun('let add = fn(a, b = 10) { a + b }; add(5, 20)'), 25);
+  });
+  it('string default', () => {
+    testStringObject(compileAndRun('let greet = fn(name, greeting = "hello") { greeting + " " + name }; greet("world")'), 'hello world');
+  });
+  it('multiple defaults', () => {
+    testIntegerObject(compileAndRun('let f = fn(x, y = 1, z = 2) { x + y + z }; f(10)'), 13);
+  });
+  it('partial defaults', () => {
+    testIntegerObject(compileAndRun('let f = fn(x, y = 1, z = 2) { x + y + z }; f(10, 20)'), 32);
+  });
+  it('all args provided', () => {
+    testIntegerObject(compileAndRun('let f = fn(x, y = 1, z = 2) { x + y + z }; f(10, 20, 30)'), 60);
+  });
+  it('expression as default', () => {
+    testIntegerObject(compileAndRun('let f = fn(x, y = 2 * 3) { x + y }; f(1)'), 7);
+  });
+
+});
