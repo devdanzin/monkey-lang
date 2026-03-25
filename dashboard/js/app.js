@@ -173,7 +173,7 @@
             <div class="block-time">${esc(block.time)}</div>
             <div class="block-dot ${modeClass}"></div>
             <div class="block-content">
-              <div class="block-title">${statusLabel} ${esc(block.task)}</div>
+              <div class="block-title">${statusLabel} ${esc(block.task)}${block.status === 'done' && block.durationFormatted ? ` <span class="block-duration">${esc(block.durationFormatted)}</span>` : ''}</div>
               ${block.summary ? `<div class="block-status">${esc(block.summary)}</div>` : ''}
               ${artifactsHTML ? `<div class="block-artifacts">${artifactsHTML}</div>` : ''}
             </div>
@@ -943,7 +943,9 @@
       task: t.task || t.goal || '(placeholder)',
       status: t.status,
       summary: t.summary || '',
-      duration: t.duration_ms ? Math.round(t.duration_ms / 60000) + ' min' : '',
+      durationMs: t.duration_ms || 0,
+      durationFormatted: t.duration_ms ? (t.duration_ms >= 60000 ? Math.round(t.duration_ms / 60000) + 'm' : Math.round(t.duration_ms / 1000) + 's') : '',
+      startedAt: t.started || null,
       artifacts: [],
     }));
 
