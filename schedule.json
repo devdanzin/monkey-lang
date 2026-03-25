@@ -993,15 +993,19 @@
     {
       "id": "T99",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Tests for <= and >=",
-      "started": "2026-03-25T16:34:07.698Z"
+      "started": "2026-03-25T16:34:07.698Z",
+      "completed": "2026-03-25T16:34:38.048Z",
+      "duration_ms": 60000,
+      "summary": "8 comparison tests. 317 total."
     },
     {
       "id": "T100",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Update README, rebuild playground, push"
+      "status": "in-progress",
+      "task": "Update README, rebuild playground, push",
+      "started": "2026-03-25T16:34:51.360Z"
     },
     {
       "id": "T101",
@@ -1401,5 +1405,5 @@
       "msg": "Added T101 (MAINTAIN) after end: Session wrap at boundary"
     }
   ],
-  "updated_at": "2026-03-25T16:34:00.440Z"
+  "updated_at": "2026-03-25T16:34:38.048Z"
 }

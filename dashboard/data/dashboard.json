@@ -993,8 +993,12 @@
     {
       "id": "T99",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Tests for <= and >="
+      "status": "done",
+      "task": "Tests for <= and >=",
+      "started": "2026-03-25T16:34:07.698Z",
+      "completed": "2026-03-25T16:34:38.048Z",
+      "duration_ms": 60000,
+      "summary": "8 comparison tests. 317 total."
     },
     {
       "id": "T100",
@@ -1011,10 +1015,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 95,
+    "completed": 96,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 17235000
+    "total_duration_ms": 17295000
   },
-  "updated_at": "2026-03-25T16:34:00.440Z"
+  "updated_at": "2026-03-25T16:34:38.048Z"
 }
