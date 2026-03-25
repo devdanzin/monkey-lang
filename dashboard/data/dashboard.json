@@ -34,28 +34,40 @@
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git, dashboard, GH notifications"
+      "status": "done",
+      "task": "Housekeeping: git, dashboard, GH notifications",
+      "completed": "2026-03-25T14:29:02.561Z",
+      "summary": "Git pushed, dashboard healthy, 9 open PRs.",
+      "duration_ms": 120000
     },
     {
       "id": "T5",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Assess JIT progress, consider next optimization"
+      "status": "done",
+      "task": "Assess JIT progress, consider next optimization",
+      "completed": "2026-03-25T14:29:33.583Z",
+      "summary": "Quick win identified: UNBOX_INT CSE. PR triage next.",
+      "duration_ms": 60000
     },
     {
       "id": "T6",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "PR triage - address bot review feedback on #50692 and #51803",
-      "task": null
+      "task": null,
+      "completed": "2026-03-25T14:30:26.932Z",
+      "summary": "PR review feedback analyzed, 2 BUILD tasks filled.",
+      "duration_ms": 120000
     },
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": null,
-      "plan_ref": "T6"
+      "plan_ref": "T6",
+      "completed": "2026-03-25T14:36:04.046Z",
+      "summary": "#50692: all P0/P1/P2 review items addressed, pushed.",
+      "duration_ms": 600000
     },
     {
       "id": "T8",
@@ -136,10 +148,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 4,
+    "completed": 9,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 1110000
+    "total_duration_ms": 2610000
   },
-  "updated_at": "2026-03-25T14:27:46.152Z"
+  "updated_at": "2026-03-25T14:38:35.191Z"
 }

@@ -47,35 +47,62 @@
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git, dashboard, GH notifications",
-      "started": "2026-03-25T14:27:58.733Z"
+      "started": "2026-03-25T14:27:58.733Z",
+      "completed": "2026-03-25T14:28:58.693Z",
+      "duration_ms": 120000,
+      "summary": "Git pushed, dashboard healthy, 9 open PRs (no human reviews). #50692 has 3 reviews, #51803 has 5 reviews to address in T6."
     },
     {
       "id": "T5",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Assess JIT progress, consider next optimization"
+      "status": "done",
+      "task": "Assess JIT progress, consider next optimization",
+      "started": "2026-03-25T14:29:15.321Z",
+      "completed": "2026-03-25T14:29:28.854Z",
+      "duration_ms": 60000,
+      "summary": "JIT at 9.5x/250 tests. Weakest: nested loops 3.8x, side traces 3.1x. Quick win: UNBOX_INT CSE (3 redundant unboxes in array sum trace). Queue order good — PR triage next."
     },
     {
       "id": "T6",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "PR triage - address bot review feedback on #50692 and #51803",
-      "task": null
+      "task": null,
+      "started": "2026-03-25T14:29:57.271Z",
+      "completed": "2026-03-25T14:30:22.839Z",
+      "duration_ms": 120000,
+      "summary": "Read bot reviews. #50692: P0 stream wrapper unregistered, P1 credentialPath wrong, P1 missing from bundled registries. #51803: P1 routing preservation, P1 session triggering on replay. Filled 2 BUILD tasks."
     },
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
-      "plan_ref": "T6"
+      "status": "done",
+      "task": "Address #50692 review: wire stream wrapper, fix credentialPath, register in bundled search",
+      "plan_ref": "T6",
+      "started": "2026-03-25T14:30:39.441Z",
+      "completed": "2026-03-25T14:35:58.814Z",
+      "duration_ms": 600000,
+      "summary": "Addressed #50692 reviews: wired stream wrapper (P0), fixed credentialPath (P1), added to bundled registries (P1), restricted to direct Anthropic models (P2), fixed test identity check (P2). Pushed."
+    },
+    {
+      "id": "T21",
+      "mode": "BUILD",
+      "task": "Address #51803 review: preserve routing, trigger session on replay, add validation",
+      "status": "done",
+      "plan_ref": "T6",
+      "started": "2026-03-25T14:36:20.534Z",
+      "completed": "2026-03-25T14:38:29.901Z",
+      "duration_ms": 600000,
+      "summary": "Addressed #51803 reviews: P1 mark replayed messages as user-originated with routing hints, P2 item validation, P2 atomic write, P2 test assertion. Remaining P1s (session triggering, full routing) need deeper arch changes — tracked."
     },
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: commit, push, dashboard sync"
+      "status": "in-progress",
+      "task": "Housekeeping: commit, push, dashboard sync",
+      "started": "2026-03-25T14:38:48.487Z"
     },
     {
       "id": "T9",
@@ -229,6 +256,10 @@
     {
       "time": "2026-03-25T14:17:35.342Z",
       "msg": "PLAN T2 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-03-25T14:30:17.381Z",
+      "msg": "PLAN T6 filled 2 BUILD tasks"
     }
   ]
 }
