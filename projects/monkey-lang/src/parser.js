@@ -1,6 +1,6 @@
 // Monkey Language Parser — Pratt (Top-Down Operator Precedence)
 
-import { TokenType, Token } from './lexer.js';
+import { TokenType, Token, Lexer } from './lexer.js';
 import * as ast from './ast.js';
 
 const Precedence = {
@@ -55,6 +55,7 @@ export class Parser {
     this.registerPrefix(TokenType.IDENT, () => this.parseIdentifier());
     this.registerPrefix(TokenType.INT, () => this.parseIntegerLiteral());
     this.registerPrefix(TokenType.STRING, () => this.parseStringLiteral());
+    this.registerPrefix(TokenType.TEMPLATE_STRING, () => this.parseTemplateLiteral());
     this.registerPrefix(TokenType.TRUE, () => this.parseBooleanLiteral());
     this.registerPrefix(TokenType.FALSE, () => this.parseBooleanLiteral());
     this.registerPrefix(TokenType.BANG, () => this.parsePrefixExpression());
@@ -209,6 +210,57 @@ export class Parser {
 
   parseStringLiteral() {
     return new ast.StringLiteral(this.curToken, this.curToken.literal);
+  }
+
+  parseTemplateLiteral() {
+    const token = this.curToken;
+    const raw = token.literal;
+    const parts = [];
+    let i = 0;
+
+    while (i < raw.length) {
+      // Look for ${
+      const dollarIdx = raw.indexOf('${', i);
+      if (dollarIdx === -1) {
+        // Rest is plain string
+        parts.push(new ast.StringLiteral(token, raw.slice(i)));
+        break;
+      }
+
+      // Push the plain string before ${
+      if (dollarIdx > i) {
+        parts.push(new ast.StringLiteral(token, raw.slice(i, dollarIdx)));
+      }
+
+      // Find matching }
+      let braceCount = 1;
+      let j = dollarIdx + 2;
+      while (j < raw.length && braceCount > 0) {
+        if (raw[j] === '{') braceCount++;
+        else if (raw[j] === '}') braceCount--;
+        j++;
+      }
+
+      // Parse the expression inside ${}
+      const exprStr = raw.slice(dollarIdx + 2, j - 1);
+      const exprLexer = new Lexer(exprStr);
+      const exprParser = new Parser(exprLexer);
+      const expr = exprParser.parseExpression(Precedence.LOWEST);
+      if (exprParser.errors.length > 0) {
+        this.errors.push(...exprParser.errors);
+      }
+      parts.push(expr);
+      i = j;
+    }
+
+    if (parts.length === 0) {
+      return new ast.StringLiteral(token, '');
+    }
+    if (parts.length === 1 && parts[0] instanceof ast.StringLiteral) {
+      return parts[0];
+    }
+
+    return new ast.TemplateLiteral(token, parts);
   }
 
   parseBooleanLiteral() {

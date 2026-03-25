@@ -162,6 +162,7 @@ export function monkeyEval(node, env) {
   if (node instanceof AST.ForInExpression) return evalForInExpression(node, env);
   if (node instanceof AST.BreakStatement) return new MonkeyBreak();
   if (node instanceof AST.ContinueStatement) return new MonkeyContinue();
+  if (node instanceof AST.TemplateLiteral) return evalTemplateLiteral(node, env);
 
   if (node instanceof AST.AssignExpression) {
     const val = monkeyEval(node.value, env);
@@ -343,6 +344,16 @@ function evalForInExpression(node, env) {
     if (bodyResult instanceof MonkeyContinue) continue;
   }
   return NULL;
+}
+
+function evalTemplateLiteral(node, env) {
+  let result = '';
+  for (const part of node.parts) {
+    const val = monkeyEval(part, env);
+    if (isError(val)) return val;
+    result += val.inspect();
+  }
+  return new MonkeyString(result);
 }
 
 function evalIdentifier(node, env) {

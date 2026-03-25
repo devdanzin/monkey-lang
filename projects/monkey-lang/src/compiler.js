@@ -302,6 +302,8 @@ export class Compiler {
     } else if (node instanceof ast.StringLiteral) {
       const idx = this.addConstant(internString(node.value));
       this.emit(Opcodes.OpConstant, idx);
+    } else if (node instanceof ast.TemplateLiteral) {
+      return this.compileTemplateLiteral(node);
     } else if (node instanceof ast.BooleanLiteral) {
       this.emit(node.value ? Opcodes.OpTrue : Opcodes.OpFalse);
     } else if (node instanceof ast.IfExpression) {
@@ -611,6 +613,34 @@ export class Compiler {
     this.emit(Opcodes.OpNull);
     this.resetIntStack();
 
+    return null;
+  }
+
+  compileTemplateLiteral(node) {
+    // Compile each part as a string, then concatenate all
+    let err = this.compileTemplatePart(node.parts[0]);
+    if (err) return err;
+
+    for (let i = 1; i < node.parts.length; i++) {
+      err = this.compileTemplatePart(node.parts[i]);
+      if (err) return err;
+      this.emit(Opcodes.OpAdd); // string concatenation
+    }
+    return null;
+  }
+
+  compileTemplatePart(part) {
+    if (part instanceof ast.StringLiteral) {
+      const idx = this.addConstant(internString(part.value));
+      this.emit(Opcodes.OpConstant, idx);
+      return null;
+    }
+    // Expression part — call str(expr) to ensure string output
+    const strIdx = BUILTINS.indexOf('str');
+    this.emit(Opcodes.OpGetBuiltin, strIdx); // push str function
+    const err = this.compile(part);           // push argument
+    if (err) return err;
+    this.emit(Opcodes.OpCall, 1);             // call str(expr)
     return null;
   }
 

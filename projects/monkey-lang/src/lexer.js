@@ -5,6 +5,7 @@ export const TokenType = {
   // Literals
   INT: 'INT',
   STRING: 'STRING',
+  TEMPLATE_STRING: 'TEMPLATE_STRING', // backtick string with ${} interpolation
   IDENT: 'IDENT',
 
   // Operators
@@ -142,6 +143,17 @@ export class Lexer {
     return str;
   }
 
+  readTemplateString() {
+    const start = this.position + 1;
+    this.readChar(); // skip opening backtick
+    while (this.ch !== null && this.ch !== '`') {
+      this.readChar();
+    }
+    const str = this.input.slice(start, this.position);
+    this.readChar(); // skip closing backtick
+    return str;
+  }
+
   nextToken() {
     this.skipWhitespace();
 
@@ -246,6 +258,8 @@ export class Lexer {
       case ']': tok = new Token(TokenType.RBRACKET, ']'); break;
       case '"':
         return new Token(TokenType.STRING, this.readString());
+      case '`':
+        return new Token(TokenType.TEMPLATE_STRING, this.readTemplateString());
       case null:
         return new Token(TokenType.EOF, '');
       default:

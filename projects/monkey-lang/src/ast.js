@@ -231,3 +231,12 @@ export class ContinueStatement {
   tokenLiteral() { return this.token.literal; }
   toString() { return 'continue'; }
 }
+
+export class TemplateLiteral {
+  constructor(token, parts) {
+    this.token = token;
+    this.parts = parts; // Array of StringLiteral or Expression nodes
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return '`...`'; }
+}

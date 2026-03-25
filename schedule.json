@@ -1257,16 +1257,20 @@
       "id": "T123",
       "mode": "BUILD",
       "task": "Tests for break and continue",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T120",
-      "started": "2026-03-25T20:44:00.720Z"
+      "started": "2026-03-25T20:44:00.720Z",
+      "completed": "2026-03-25T20:44:27.595Z",
+      "duration_ms": 120000,
+      "summary": "8 break/continue tests. 392 total, all passing."
     },
     {
       "id": "T124",
       "mode": "BUILD",
       "task": "Implement string interpolation: let name = \"world\"; \"hello ${name}\"",
-      "status": "upcoming",
-      "plan_ref": "T120"
+      "status": "in-progress",
+      "plan_ref": "T120",
+      "started": "2026-03-25T20:44:32.867Z"
     },
     {
       "id": "T125",
