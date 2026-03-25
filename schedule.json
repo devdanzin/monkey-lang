@@ -1663,16 +1663,20 @@
       "id": "T161",
       "mode": "BUILD",
       "task": "Array slice syntax: arr[1:3]",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T159",
-      "started": "2026-03-25T21:32:19.223Z"
+      "started": "2026-03-25T21:32:19.223Z",
+      "completed": "2026-03-25T21:35:34.057Z",
+      "duration_ms": 300000,
+      "summary": "Array and string slicing: arr[1:3], arr[2:], arr[:3], arr[-2:]. OpSlice opcode. 430 tests."
     },
     {
       "id": "T162",
       "mode": "BUILD",
       "task": "Tests for array slicing",
-      "status": "upcoming",
-      "plan_ref": "T159"
+      "status": "in-progress",
+      "plan_ref": "T159",
+      "started": "2026-03-25T21:35:42.264Z"
     },
     {
       "id": "T163",

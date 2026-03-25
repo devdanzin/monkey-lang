@@ -868,3 +868,57 @@ describe('Default Function Parameters', () => {
   });
 
 });
+
+describe('Array and String Slicing', () => {
+  it('arr[1:3]', () => {
+    const result = compileAndRun('[1,2,3,4,5][1:3]');
+    assert.ok(result instanceof MonkeyArray);
+    assert.equal(result.elements.length, 2);
+    testIntegerObject(result.elements[0], 2);
+    testIntegerObject(result.elements[1], 3);
+  });
+  it('arr[2:]', () => {
+    const result = compileAndRun('[1,2,3,4,5][2:]');
+    assert.equal(result.elements.length, 3);
+    testIntegerObject(result.elements[0], 3);
+  });
+  it('arr[:3]', () => {
+    const result = compileAndRun('[1,2,3,4,5][:3]');
+    assert.equal(result.elements.length, 3);
+    testIntegerObject(result.elements[2], 3);
+  });
+  it('arr[-2:]', () => {
+    const result = compileAndRun('[1,2,3,4,5][-2:]');
+    assert.equal(result.elements.length, 2);
+    testIntegerObject(result.elements[0], 4);
+  });
+  it('str[1:3]', () => {
+    testStringObject(compileAndRun('"hello"[1:3]'), 'el');
+  });
+  it('str[:2]', () => {
+    testStringObject(compileAndRun('"hello"[:2]'), 'he');
+  });
+  it('str[-3:]', () => {
+    testStringObject(compileAndRun('"hello"[-3:]'), 'llo');
+  });
+  it('empty slice', () => {
+    const result = compileAndRun('[1,2,3][2:2]');
+    assert.ok(result instanceof MonkeyArray);
+    assert.equal(result.elements.length, 0);
+  });
+  it('slice variable', () => {
+    const result = compileAndRun('let a = [10,20,30,40]; a[1:3]');
+    assert.equal(result.elements.length, 2);
+    testIntegerObject(result.elements[0], 20);
+  });
+  it('null literal keyword', () => {
+    const result = compileAndRun('null');
+    assert.ok(result instanceof MonkeyNull);
+  });
+  it('null equality', () => {
+    testBooleanObject(compileAndRun('null == null'), true);
+  });
+  it('null inequality with int', () => {
+    testBooleanObject(compileAndRun('null == 5'), false);
+  });
+});
