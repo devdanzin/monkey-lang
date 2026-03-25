@@ -91,3 +91,112 @@ let result = add(five, ten);`;
     assert.equal(tokens[6].type, TokenType.RETURN);
   });
 });
+
+describe('New Tokens', () => {
+  it('lexes +=', () => {
+    const l = new Lexer('x += 1');
+    assert.equal(l.nextToken().type, 'IDENT');
+    assert.equal(l.nextToken().type, '+=');
+    assert.equal(l.nextToken().type, 'INT');
+  });
+  it('lexes -=', () => {
+    const l = new Lexer('x -= 1');
+    l.nextToken();
+    assert.equal(l.nextToken().type, '-=');
+  });
+  it('lexes *=', () => {
+    const l = new Lexer('x *= 1');
+    l.nextToken();
+    assert.equal(l.nextToken().type, '*=');
+  });
+  it('lexes /=', () => {
+    const l = new Lexer('x /= 1');
+    l.nextToken();
+    assert.equal(l.nextToken().type, '/=');
+  });
+  it('lexes %=', () => {
+    const l = new Lexer('x %= 1');
+    l.nextToken();
+    assert.equal(l.nextToken().type, '%=');
+  });
+  it('lexes ++', () => {
+    const l = new Lexer('i++');
+    l.nextToken();
+    assert.equal(l.nextToken().type, '++');
+  });
+  it('lexes --', () => {
+    const l = new Lexer('i--');
+    l.nextToken();
+    assert.equal(l.nextToken().type, '--');
+  });
+  it('lexes <=', () => {
+    const l = new Lexer('a <= b');
+    l.nextToken();
+    assert.equal(l.nextToken().type, '<=');
+  });
+  it('lexes >=', () => {
+    const l = new Lexer('a >= b');
+    l.nextToken();
+    assert.equal(l.nextToken().type, '>=');
+  });
+  it('lexes &&', () => {
+    const l = new Lexer('a && b');
+    l.nextToken();
+    assert.equal(l.nextToken().type, '&&');
+  });
+  it('lexes ||', () => {
+    const l = new Lexer('a || b');
+    l.nextToken();
+    assert.equal(l.nextToken().type, '||');
+  });
+  it('lexes =>', () => {
+    const l = new Lexer('x => y');
+    l.nextToken();
+    assert.equal(l.nextToken().type, '=>');
+  });
+  it('lexes ?', () => {
+    const l = new Lexer('a ? b : c');
+    l.nextToken();
+    assert.equal(l.nextToken().type, '?');
+  });
+  it('lexes for keyword', () => {
+    const l = new Lexer('for');
+    assert.equal(l.nextToken().type, 'FOR');
+  });
+  it('lexes break keyword', () => {
+    const l = new Lexer('break');
+    assert.equal(l.nextToken().type, 'BREAK');
+  });
+  it('lexes continue keyword', () => {
+    const l = new Lexer('continue');
+    assert.equal(l.nextToken().type, 'CONTINUE');
+  });
+  it('lexes null keyword', () => {
+    const l = new Lexer('null');
+    assert.equal(l.nextToken().type, 'NULL_LIT');
+  });
+  it('lexes match keyword', () => {
+    const l = new Lexer('match');
+    assert.equal(l.nextToken().type, 'MATCH');
+  });
+  it('lexes do keyword', () => {
+    const l = new Lexer('do');
+    assert.equal(l.nextToken().type, 'DO');
+  });
+  it('lexes template string', () => {
+    const l = new Lexer('`hello ${x}`');
+    const tok = l.nextToken();
+    assert.equal(tok.type, 'TEMPLATE_STRING');
+  });
+  it('lexes escape sequences in strings', () => {
+    const l = new Lexer('"hello\\nworld"');
+    const tok = l.nextToken();
+    assert.equal(tok.literal, 'hello\nworld');
+  });
+  it('skips multi-line comments', () => {
+    const l = new Lexer('/* comment */ 42');
+    const tok = l.nextToken();
+    assert.equal(tok.type, 'INT');
+    assert.equal(tok.literal, '42');
+  });
+});
