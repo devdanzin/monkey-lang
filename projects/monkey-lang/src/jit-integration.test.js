@@ -857,3 +857,39 @@ describe('Adaptive quickening', () => {
     assert.equal(result.value, 385);
   });
 });
+
+describe('New Features - JIT Integration', () => {
+  it('for-in sum', () => {
+    testIntegerObject(compileAndRunJIT('let s = 0; for (x in [1,2,3,4,5]) { s += x; }; s'), 15);
+  });
+  it('for loop with i++', () => {
+    testIntegerObject(compileAndRunJIT('let s = 0; for (let i = 0; i < 10; i++) { s += i; }; s'), 45);
+  });
+  it('break in for', () => {
+    testIntegerObject(compileAndRunJIT('let s = 0; for (let i = 0; i < 100; i++) { if (i == 10) { break; } s += i; }; s'), 45);
+  });
+  it('match expression', () => {
+    testStringObject(compileAndRunJIT('match (42) { 1 => "one", 42 => "answer", _ => "?" }'), 'answer');
+  });
+  it('ternary', () => {
+    testIntegerObject(compileAndRunJIT('5 > 3 ? 1 : 0'), 1);
+  });
+  it('null keyword', () => {
+    const result = compileAndRunJIT('null');
+    assert.ok(result.type() === 'NULL');
+  });
+  it('default params', () => {
+    testIntegerObject(compileAndRunJIT('let f = fn(a, b = 10) { a + b }; f(5)'), 15);
+  });
+  it('array mutation', () => {
+    testIntegerObject(compileAndRunJIT('let a = [1,2,3]; a[0] = 99; a[0]'), 99);
+  });
+  it('slicing', () => {
+    const result = compileAndRunJIT('[10,20,30,40,50][1:4]');
+    assert.ok(result.type() === 'ARRAY');
+    assert.equal(result.elements.length, 3);
+  });
+  it('destructuring', () => {
+    testIntegerObject(compileAndRunJIT('let [a, b] = [10, 20]; a * b'), 200);
+  });
+});
