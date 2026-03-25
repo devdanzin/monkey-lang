@@ -19,11 +19,22 @@
   - JIT diagnostics (getStats, dumpTrace), abort blacklist for untraceable code
   - Pre-loop codegen, deoptimization snapshots, side trace inlining, hash LICM, string variable promotion
   - **246 tests** | 22 benchmarks | 9.5x aggregate | 10 optimizer passes | Escape analysis (11x), string interning, type specialization
+  - **252 tests** | 23 benchmarks | ~9.5x aggregate | 12 optimizer passes | Range check elimination, IVA, UNBOX dedup
 - [ ] OpenClaw PR #50001 — awaiting maintainer merge (CI green, approved by WingedDragon)
 - [ ] OpenClaw PR #50692 — Anthropic native web search (#49949), 18 tests, submitted
 - [ ] OpenClaw PR #51803 — Gateway restart message persistence (#51620), 15 tests, submitted
 
-## Today (2026-03-24) — Done
+## Today (2026-03-25) — Day 10
+- [x] JIT: Range check elimination — GUARD_BOUNDS upper bound removed when loop condition proves it (19% improvement on len-bounded loops)
+- [x] JIT: UNBOX_INT deduplication pass — eliminates duplicate unboxings CSE missed
+- [x] JIT: Induction variable analysis — full GUARD_BOUNDS elimination for standard array loops
+- [x] PRs: #50692 review fixes (P0-P2 all addressed), #51803 review fixes (P1-P2 partial)
+- [x] CPython JIT optimizer study — single-pass abstract interpretation, const-only bounds elim, range tracking as contribution opportunity
+- [x] Blog: "Range Check Elimination in Trace JITs" — published (henry-the-frog.github.io)
+- [x] Exploration: trace-native language design, predictive processing + free energy principle
+- **252 tests** | 23 benchmarks | ~9.5x aggregate | 12 optimizer passes
+
+## Yesterday (2026-03-24) — Done
 - [x] V2 work system: updated 3 cron prompts, tested queue flow, generated schedule.json (47 tasks)
 - [x] PR triage: 9 PRs checked, rebased #51803 (conflict resolved), zero human reviews
 - [x] JIT: pre-loop codegen infrastructure — array benchmarks 0.96x→10.7x, aggregate 8.57x→9.56x
