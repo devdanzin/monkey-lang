@@ -289,3 +289,24 @@ describe('New Language Features (Evaluator)', () => {
     assert.equal(testEval('"abc" < "abd"').value, true);
   });
 });
+
+describe('More New Features (Evaluator)', () => {
+  it('match expression', () => {
+    assert.equal(testEval('match (2) { 1 => "one", 2 => "two", _ => "other" }').value, 'two');
+  });
+  it('destructuring', () => {
+    assert.equal(testEval('let [a, b] = [10, 20]; a + b').value, 30);
+  });
+  it('do-while', () => {
+    assert.equal(testEval('let i = 0; do { i++; } while (i < 3); i').value, 3);
+  });
+  it('i++ operator', () => {
+    assert.equal(testEval('let x = 5; x++; x').value, 6);
+  });
+  it('slicing', () => {
+    assert.equal(testEval('[1,2,3,4,5][1:3]').elements.length, 2);
+  });
+  it('array mutation', () => {
+    assert.equal(testEval('let a = [1,2,3]; a[0] = 99; a[0]').value, 99);
+  });
+});

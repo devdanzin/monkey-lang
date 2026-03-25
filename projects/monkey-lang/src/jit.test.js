@@ -1274,3 +1274,17 @@ describe('New Language Features + JIT', () => {
     assert.equal(vm.lastPoppedStackElem().value, 5950);
   });
 });
+
+describe('Do-While + JIT', () => {
+  it('do-while in hot path', () => {
+    const vm = runJIT('let sum = 0; for (let i = 0; i < 100; i++) { let j = 1; do { sum += j; j++; } while (j <= i); } sum');
+    assert.ok(vm.lastPoppedStackElem().value > 0);
+  });
+});
+
+describe('Match + JIT', () => {
+  it('match in hot loop', () => {
+    const vm = runJIT('let sum = 0; for (let i = 0; i < 100; i++) { let v = match (i % 3) { 0 => 1, 1 => 2, _ => 3 }; sum += v; } sum');
+    assert.ok(vm.lastPoppedStackElem().value > 0);
+  });
+});
