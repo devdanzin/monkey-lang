@@ -4,21 +4,37 @@
     {
       "id": "T1",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Review yesterday (35+ tasks, 9.5x JIT, deopt+inlining), set direction"
+      "status": "done",
+      "task": "Review yesterday (35+ tasks, 9.5x JIT, deopt+inlining), set direction",
+      "started": "2026-03-25T14:15:24.261Z",
+      "completed": "2026-03-25T14:16:24.214Z",
+      "duration_ms": 90000,
+      "summary": "Reviewed Day 9 (35+ tasks, 9.5x JIT). Queue order is solid. Escape analysis still worth exploring despite variable promotion covering main case. Keeping queue as-is."
     },
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "JIT escape analysis and allocation sinking",
-      "task": null
+      "task": null,
+      "started": "2026-03-25T14:16:38.908Z",
+      "completed": "2026-03-25T14:17:40.547Z",
+      "duration_ms": 120000,
+      "summary": "Pivoted from allocation sinking (limited value) to range check elimination. Filled 2 BUILD tasks: induction variable analysis for GUARD_BOUNDS elimination + tests/benchmarks."
     },
     {
       "id": "T3",
       "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Implement range check elimination for GUARD_BOUNDS (linear induction variable analysis)",
+      "plan_ref": "T2",
+      "started": "2026-03-25T14:17:57.491Z"
+    },
+    {
+      "id": "T20",
+      "mode": "BUILD",
+      "task": "Add tests for range check elimination and benchmark array-heavy workloads",
       "status": "upcoming",
-      "task": null,
       "plan_ref": "T2"
     },
     {
@@ -201,6 +217,10 @@
     {
       "time": "2026-03-25T14:01:19.175Z",
       "msg": "Added T19 (MAINTAIN) after T18: Final wrap: commit, push, daily log summary"
+    },
+    {
+      "time": "2026-03-25T14:17:35.342Z",
+      "msg": "PLAN T2 filled 2 BUILD tasks"
     }
   ]
 }

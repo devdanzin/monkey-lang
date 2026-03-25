@@ -1389,7 +1389,12 @@ export class TraceCompiler {
           const arr = varNames.get(inst.operands.left);
           const idx = varNames.get(inst.operands.right);
           const exitIp = inst.operands.exitIp != null ? inst.operands.exitIp : this.trace.startIp;
-          this._emitGuardExit(i, exitIp, `(${idx} < 0 || ${idx} >= ${arr}.elements.length)`);
+          if (inst._upperBoundProven) {
+            // Upper bound already checked by loop condition — only check lower bound
+            this._emitGuardExit(i, exitIp, `(${idx} < 0)`);
+          } else {
+            this._emitGuardExit(i, exitIp, `(${idx} < 0 || ${idx} >= ${arr}.elements.length)`);
+          }
           break;
         }
 
@@ -2040,6 +2045,7 @@ export class TraceOptimizer {
     this.boxUnboxElimination();
     this.commonSubexpressionElimination();
     this.redundantGuardElimination();
+    this.rangeCheckElimination();
     this.constantPropagation();
     this.constantFolding();
     this.algebraicSimplification();
@@ -2710,6 +2716,149 @@ export class TraceOptimizer {
     }
 
     // Compact: remove nulls and rebuild id mapping
+    if (eliminated > 0) this._compact();
+    return eliminated;
+  }
+
+  // --- Pass 1.3: Range Check Elimination ---
+  // Eliminate redundant GUARD_BOUNDS when the loop condition already implies bounds safety.
+  // Pattern: GT(BUILTIN_LEN(arr), idx) → GUARD_TRUTHY → ... → GUARD_BOUNDS(arr, idx)
+  // If the loop condition already checks idx < len(arr), the upper bound check in GUARD_BOUNDS
+  // is redundant. For the lower bound (idx >= 0), we verify the index traces back to a
+  // non-negative source (CONST_INT >= 0, or arithmetic from non-negative operands).
+  rangeCheckElimination() {
+    const ir = this.trace.ir;
+    
+    // Step 1: Find BUILTIN_LEN results and what array they reference
+    const lenToArr = new Map(); // IR idx of BUILTIN_LEN → array IR ref
+    for (let i = 0; i < ir.length; i++) {
+      const inst = ir[i];
+      if (inst && inst.op === IR.BUILTIN_LEN) {
+        lenToArr.set(i, inst.operands.ref);
+      }
+    }
+    if (lenToArr.size === 0) return 0;
+    
+    // Helper: normalize a ref through UNBOX_INT to find the underlying source
+    const normalizeRef = (ref) => {
+      const inst = ir[ref];
+      if (inst && inst.op === IR.UNBOX_INT) return inst.operands.ref;
+      return ref;
+    };
+    
+    // Step 2: Find GT/LT comparisons that compare a LEN result with an index
+    // GT(len_ref, idx_ref) means len > idx, i.e., idx < len
+    // LT(idx_ref, len_ref) means idx < len
+    // Normalize through UNBOX_INT so different unboxings of the same source match.
+    const boundedSources = new Map(); // "arr_ref:source_ref" → true
+    for (let i = 0; i < ir.length; i++) {
+      const inst = ir[i];
+      if (!inst) continue;
+      
+      let arrRef = null, idxRef = null;
+      if (inst.op === IR.GT) {
+        const leftArr = lenToArr.get(inst.operands.left);
+        if (leftArr !== undefined) {
+          arrRef = leftArr;
+          idxRef = normalizeRef(inst.operands.right);
+        }
+      } else if (inst.op === IR.LT) {
+        const rightArr = lenToArr.get(inst.operands.right);
+        if (rightArr !== undefined) {
+          arrRef = rightArr;
+          idxRef = normalizeRef(inst.operands.left);
+        }
+      }
+      
+      if (arrRef !== null && idxRef !== null) {
+        // Verify this comparison is actually guarded (followed by GUARD_TRUTHY)
+        for (let j = i + 1; j < ir.length && j < i + 5; j++) {
+          const next = ir[j];
+          if (!next) continue;
+          if (next.op === IR.CONST_BOOL && next.operands.ref === i) {
+            for (let k = j + 1; k < ir.length && k < j + 3; k++) {
+              const guard = ir[k];
+              if (guard && guard.op === IR.GUARD_TRUTHY && guard.operands.ref === j) {
+                boundedSources.set(`${arrRef}:${idxRef}`, true);
+                break;
+              }
+            }
+            break;
+          }
+          if (next.op === IR.GUARD_TRUTHY && next.operands.ref === i) {
+            boundedSources.set(`${arrRef}:${idxRef}`, true);
+            break;
+          }
+        }
+      }
+    }
+    if (boundedSources.size === 0) return 0;
+    
+    // Step 3: Check if an IR ref is provably non-negative
+    const isNonNegative = (ref, depth = 0) => {
+      if (depth > 10) return false;
+      const inst = ir[ref];
+      if (!inst) return false;
+      
+      // Constants >= 0
+      if (inst.op === IR.CONST_INT) return inst.operands.value >= 0;
+      
+      // UNBOX_INT of a promoted variable — the trace was recorded with this value,
+      // and in Monkey, array indices in while(i < len(arr)) patterns start at 0.
+      // We can't prove this statically in general, but we CAN check: if the unboxed
+      // value feeds into ADD_INT with a non-negative constant, and the initial value
+      // was non-negative, the result is non-negative.
+      if (inst.op === IR.UNBOX_INT) return false; // Conservative: can't prove
+      
+      // ADD_INT(a, b) where both are non-negative
+      if (inst.op === IR.ADD_INT) {
+        return isNonNegative(inst.operands.left, depth + 1) && 
+               isNonNegative(inst.operands.right, depth + 1);
+      }
+      
+      // MUL_INT of two non-negatives
+      if (inst.op === IR.MUL_INT) {
+        return isNonNegative(inst.operands.left, depth + 1) && 
+               isNonNegative(inst.operands.right, depth + 1);
+      }
+      
+      // BUILTIN_LEN always returns >= 0
+      if (inst.op === IR.BUILTIN_LEN) return true;
+      
+      return false;
+    };
+    
+    // Step 4: Eliminate GUARD_BOUNDS where the upper bound is already checked
+    // and the index is provably non-negative
+    let eliminated = 0;
+    for (let i = 0; i < ir.length; i++) {
+      const inst = ir[i];
+      if (!inst || inst.op !== IR.GUARD_BOUNDS) continue;
+      
+      const arrRef = inst.operands.left;
+      const idxRef = inst.operands.right;
+      // Normalize the index ref through UNBOX_INT to match what we stored
+      const normalizedIdx = normalizeRef(idxRef);
+      const key = `${arrRef}:${normalizedIdx}`;
+      
+      if (boundedSources.has(key)) {
+        // Upper bound is checked by loop condition.
+        // For lower bound: check if index is provably non-negative.
+        if (isNonNegative(idxRef)) {
+          // Both bounds proven — eliminate entirely
+          ir[i] = null;
+          eliminated++;
+          this.trace.guardCount--;
+        } else {
+          // Upper bound proven but can't prove non-negative statically.
+          // Replace GUARD_BOUNDS with a simpler lower-bound-only check.
+          // We mark it so codegen emits just `if (idx < 0)` instead of the full check.
+          inst._upperBoundProven = true;
+          eliminated++; // Still counts as an optimization (simpler check)
+        }
+      }
+    }
+    
     if (eliminated > 0) this._compact();
     return eliminated;
   }

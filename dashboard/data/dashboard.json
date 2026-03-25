@@ -4,15 +4,22 @@
     {
       "id": "T1",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Review yesterday (35+ tasks, 9.5x JIT, deopt+inlining), set direction"
+      "status": "done",
+      "task": "Review yesterday (35+ tasks, 9.5x JIT, deopt+inlining), set direction",
+      "started": "2026-03-25T14:15:37.442Z",
+      "completed": "2026-03-25T14:16:28.179Z",
+      "summary": "Reviewed Day 9. Queue order solid, keeping as-is.",
+      "duration_ms": 90000
     },
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "JIT escape analysis and allocation sinking",
-      "task": null
+      "task": null,
+      "completed": "2026-03-25T14:17:45.291Z",
+      "summary": "Pivoted to range check elimination. 2 BUILD tasks filled.",
+      "duration_ms": 120000
     },
     {
       "id": "T3",
@@ -126,10 +133,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 0,
+    "completed": 2,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 0
+    "total_duration_ms": 210000
   },
-  "updated_at": "2026-03-25T14:01:54.010Z"
+  "updated_at": "2026-03-25T14:17:45.291Z"
 }
