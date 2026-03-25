@@ -1379,3 +1379,47 @@ describe('Comprehensive Feature Tests', () => {
     `), 'seven');
   });
 });
+
+describe('Final Coverage Tests', () => {
+  it('chain of ternaries', () => {
+    testStringObject(compileAndRun('let f = fn(n) { n == 1 ? "one" : n == 2 ? "two" : n == 3 ? "three" : "many" }; f(3)'), 'three');
+  });
+  it('for-in with continue', () => {
+    testIntegerObject(compileAndRun('let s = 0; for (x in [1,2,3,4,5]) { if (x == 3) { continue; } s += x; }; s'), 12);
+  });
+  it('slice + map pattern', () => {
+    testIntegerObject(compileAndRun('let result = 0; for (x in [1,2,3,4,5][1:4]) { result += x * 2; }; result'), 18);
+  });
+  it('match returns value', () => {
+    testIntegerObject(compileAndRun('let x = match (3) { 1 => 10, 2 => 20, 3 => 30, _ => 0 }; x'), 30);
+  });
+  it('destructuring swap', () => {
+    testIntegerObject(compileAndRun('let a = 1; let b = 2; let [c, d] = [b, a]; c * 10 + d'), 21);
+  });
+  it('do-while counter', () => {
+    testIntegerObject(compileAndRun('let n = 1; do { n *= 2; } while (n < 100); n'), 128);
+  });
+  it('nested for with break', () => {
+    testIntegerObject(compileAndRun('let total = 0; for (let i = 0; i < 5; i++) { for (let j = 0; j < 5; j++) { if (i + j > 5) { break; } total++; } }; total'), 21);
+  });
+  it('string operations chain', () => {
+    testStringObject(compileAndRun('let s = "Hello World"; let words = split(s, " "); join([upper(words[0]), lower(words[1])], "_")'), 'HELLO_world');
+  });
+  it('closure + default + ternary + match', () => {
+    testStringObject(compileAndRun(`
+      let make = fn(mode = "normal") {
+        fn(x) {
+          let doubled = x * 2;
+          mode == "fancy" ?
+            match (doubled % 3) {
+              0 => \`\${doubled} (div3)\`,
+              _ => str(doubled)
+            } :
+            str(doubled)
+        }
+      };
+      let fancy = make("fancy");
+      fancy(3)
+    `), '6 (div3)');
+  });
+});
