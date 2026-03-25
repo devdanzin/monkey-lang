@@ -640,3 +640,28 @@ describe('For-In Iteration', () => {
     assert.ok(result instanceof MonkeyNull);
   });
 });
+
+describe('Negative Indexing', () => {
+  it('array[-1] returns last element', () => {
+    testIntegerObject(compileAndRun('[1, 2, 3][-1]'), 3);
+  });
+  it('array[-2] returns second to last', () => {
+    testIntegerObject(compileAndRun('[10, 20, 30][-2]'), 20);
+  });
+  it('array[-3] returns first element', () => {
+    testIntegerObject(compileAndRun('[10, 20, 30][-3]'), 10);
+  });
+  it('array[-4] out of bounds returns null', () => {
+    const result = compileAndRun('[1, 2, 3][-4]');
+    assert.ok(result instanceof MonkeyNull);
+  });
+  it('string[-1] returns last character', () => {
+    testStringObject(compileAndRun('"hello"[-1]'), 'o');
+  });
+  it('string[-2] returns second to last', () => {
+    testStringObject(compileAndRun('"hello"[-2]'), 'l');
+  });
+  it('negative index with variable', () => {
+    testIntegerObject(compileAndRun('let a = [1, 2, 3]; let i = -1; a[i]'), 3);
+  });
+});
