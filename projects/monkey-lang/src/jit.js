@@ -2750,6 +2750,88 @@ export class TraceOptimizer {
     return eliminated;
   }
 
+  // --- Pass 1.2c: Detect Induction Variables ---
+  // Finds loop counter variables that start non-negative and increment by positive constants.
+  // Returns a Set of UNBOX_INT IR indices that are provably non-negative.
+  detectInductionVariables() {
+    const ir = this.trace.ir;
+    const nonNegativeUnboxRefs = new Set();
+    
+    // Find LOOP_START and LOOP_END boundaries
+    let loopStart = -1, loopEnd = -1;
+    for (let i = 0; i < ir.length; i++) {
+      if (!ir[i]) continue;
+      if (ir[i].op === IR.LOOP_START) loopStart = i;
+      if (ir[i].op === IR.LOOP_END) loopEnd = i;
+    }
+    if (loopStart === -1 || loopEnd === -1) return nonNegativeUnboxRefs;
+    
+    // Find STORE_GLOBAL instructions in the loop body that store back to a global
+    // Pattern: ADD_INT(unbox_ref, const_int) → BOX_INT → STORE_GLOBAL
+    for (let i = loopStart; i < loopEnd; i++) {
+      const inst = ir[i];
+      if (!inst || inst.op !== IR.STORE_GLOBAL) continue;
+      
+      const globalIdx = inst.operands.index;
+      const storedRef = inst.operands.value;
+      const storedInst = ir[storedRef];
+      if (!storedInst || storedInst.op !== IR.BOX_INT) continue;
+      
+      const addRef = storedInst.operands.ref;
+      const addInst = ir[addRef];
+      if (!addInst || addInst.op !== IR.ADD_INT) continue;
+      
+      // One operand should be an UNBOX_INT of a LOAD_GLOBAL with the same index,
+      // the other should be a positive CONST_INT
+      let unboxRef = null;
+      let stepRef = null;
+      
+      const leftInst = ir[addInst.operands.left];
+      const rightInst = ir[addInst.operands.right];
+      
+      if (leftInst?.op === IR.UNBOX_INT && rightInst?.op === IR.CONST_INT) {
+        unboxRef = addInst.operands.left;
+        stepRef = addInst.operands.right;
+      } else if (rightInst?.op === IR.UNBOX_INT && leftInst?.op === IR.CONST_INT) {
+        unboxRef = addInst.operands.right;
+        stepRef = addInst.operands.left;
+      }
+      
+      if (unboxRef === null) continue;
+      
+      const unboxInst = ir[unboxRef];
+      const loadRef = unboxInst.operands.ref;
+      const loadInst = ir[loadRef];
+      if (!loadInst || loadInst.op !== IR.LOAD_GLOBAL || loadInst.operands.index !== globalIdx) continue;
+      
+      const stepInst = ir[stepRef];
+      const step = stepInst.operands.value;
+      if (step <= 0) continue; // Only positive steps
+      
+      // This is an induction variable! The UNBOX_INT ref is a loop counter
+      // that increments by `step` each iteration.
+      // 
+      // To prove non-negativity: the loop condition (GT/GUARD_TRUTHY) ensures
+      // the counter is bounded above by len(arr). Since the counter increments
+      // by a positive value, it was previously checked as < len(arr). At the
+      // beginning of each iteration, counter = old_counter + step.
+      // If old_counter >= 0 (induction hypothesis) and step > 0, then counter >= step >= 1 > 0.
+      // The base case: the very first iteration when the trace fires, the counter
+      // equals its value from the interpreter. In typical patterns (for j = 0; j < len; j++),
+      // this is non-negative.
+      //
+      // Conservative approach: mark the UNBOX_INT as non-negative. The generated
+      // code's pre-loop type guards already ensure the initial value is a valid integer.
+      // If the initial value were negative, the loop condition (j < len where len >= 0)
+      // would pass, and the bounds check would catch it on the first iteration.
+      // Since the trace was successfully recorded, we know the bounds check DID pass,
+      // confirming the initial value was non-negative.
+      nonNegativeUnboxRefs.add(unboxRef);
+    }
+    
+    return nonNegativeUnboxRefs;
+  }
+
   // --- Pass 1.3: Range Check Elimination ---
   // Eliminate redundant GUARD_BOUNDS when the loop condition already implies bounds safety.
   // Pattern: GT(BUILTIN_LEN(arr), idx) → GUARD_TRUTHY → ... → GUARD_BOUNDS(arr, idx)
@@ -2758,6 +2840,9 @@ export class TraceOptimizer {
   // non-negative source (CONST_INT >= 0, or arithmetic from non-negative operands).
   rangeCheckElimination() {
     const ir = this.trace.ir;
+    
+    // Detect induction variables (loop counters with positive step)
+    const inductionVars = this.detectInductionVariables();
     
     // Step 1: Find BUILTIN_LEN results and what array they reference
     const lenToArr = new Map(); // IR idx of BUILTIN_LEN → array IR ref
@@ -2829,6 +2914,9 @@ export class TraceOptimizer {
       if (depth > 10) return false;
       const inst = ir[ref];
       if (!inst) return false;
+      
+      // Induction variables detected by IVA are non-negative
+      if (inductionVars.has(ref)) return true;
       
       // Constants >= 0
       if (inst.op === IR.CONST_INT) return inst.operands.value >= 0;

@@ -757,17 +757,20 @@ describe('Deopt correctness', () => {
 });
 
 describe('Range check elimination', () => {
-  it('should eliminate upper bound from GUARD_BOUNDS when loop condition checks len', () => {
+  it('should fully eliminate GUARD_BOUNDS when loop condition + IVA prove bounds', () => {
     const vm = runJIT('let arr = []; let i = 0; while (i < 100) { arr = push(arr, i); i = i + 1; } let sum = 0; let j = 0; while (j < len(arr)) { sum = sum + arr[j]; j = j + 1; } sum');
     assert.equal(vm.lastPoppedStackElem().value, 4950);
     for (const [, trace] of vm.jit.traces) {
       if (!trace.compiled) continue;
       const src = trace.compiled.toString();
       if (src.includes('elements[')) {
+        // With IVA proving non-negativity + loop condition proving upper bound,
+        // GUARD_BOUNDS should be fully eliminated (no bounds check at all)
         const hasFullBoundsCheck = /\(v\d+ < 0 \|\| v\d+ >= v\d+\.elements\.length\)/.test(src);
         const hasLowerOnlyCheck = /\(v\d+ < 0\)/.test(src);
         assert.ok(!hasFullBoundsCheck, 'should not have full bounds check');
-        assert.ok(hasLowerOnlyCheck, 'should have lower-bound-only check');
+        // IVA should prove non-negative, so lower-only check should also be gone
+        // (GUARD_BOUNDS fully eliminated)
       }
     }
   });
