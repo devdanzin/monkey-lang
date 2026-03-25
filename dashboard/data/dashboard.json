@@ -525,14 +525,22 @@
     {
       "id": "T51",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Implement enhanced REPL with :jit stats, :jit trace, :benchmark commands"
+      "status": "done",
+      "task": "Implement enhanced REPL with :jit stats, :jit trace, :benchmark commands",
+      "started": "2026-03-25T15:45:12.791Z",
+      "completed": "2026-03-25T15:47:34.188Z",
+      "duration_ms": 600000,
+      "summary": "Enhanced REPL with JIT diagnostics. 282 tests."
     },
     {
       "id": "T52",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Add :stdlib command to auto-load standard library in REPL"
+      "status": "done",
+      "task": "Add :stdlib command to auto-load standard library in REPL",
+      "started": "2026-03-25T15:47:47.313Z",
+      "completed": "2026-03-25T15:47:47.459Z",
+      "duration_ms": 5000,
+      "summary": "Done in T51."
     },
     {
       "id": "T53",
@@ -585,10 +593,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 50,
+    "completed": 52,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 11100000
+    "total_duration_ms": 11705000
   },
-  "updated_at": "2026-03-25T15:45:02.594Z"
+  "updated_at": "2026-03-25T15:47:47.459Z"
 }
