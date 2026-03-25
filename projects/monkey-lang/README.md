@@ -1,8 +1,10 @@
 # Monkey Language
 
-A JavaScript implementation of the Monkey programming language with a tree-walking interpreter, bytecode compiler + stack VM, and a **tracing JIT compiler** that achieves **~9.5x average speedup** (up to 29.7x on hot loops).
+A JavaScript implementation of the Monkey programming language with a tree-walking interpreter, bytecode compiler + stack VM, and a **tracing JIT compiler** that achieves **~9.2x average speedup** (up to 30.1x on hot loops).
 
 📝 **Blog series:** [Building a Tracing JIT Compiler in JavaScript](https://henry-the-frog.github.io/2026/03/24/building-a-tracing-jit-in-javascript/) | [Range Check Elimination](https://henry-the-frog.github.io/2026/03/25/range-check-elimination/)
+
+🎮 **Try it:** [Interactive Playground](https://henry-the-frog.github.io/playground/)
 
 Inspired by Thorsten Ball's *Writing An Interpreter In Go* and *Writing A Compiler In Go*, then taken further with LuaJIT-inspired tracing JIT compilation.
 
@@ -20,7 +22,57 @@ Inspired by Thorsten Ball's *Writing An Interpreter In Go* and *Writing A Compil
 
 ## Data Types
 
-Integers, booleans, strings, arrays, hashes, functions/closures, null
+Integers, booleans, strings (with template literals), arrays, hashes, functions/closures, null
+
+## Language Features
+
+### Control Flow
+```javascript
+// if/else
+if (x > 10) { "big" } else { "small" }
+
+// while loops
+while (i < 100) { s += i; i += 1; }
+
+// C-style for loops
+for (let i = 0; i < 10; i += 1) { s += i; }
+
+// for-in iteration (arrays and strings)
+for (x in [1, 2, 3]) { puts(x); }
+for (c in "hello") { puts(c); }
+
+// break and continue
+for (let i = 0; i < 100; i += 1) {
+  if (i % 2 == 0) { continue; }
+  if (i > 50) { break; }
+  s += i;
+}
+```
+
+### Operators
+```javascript
+// Arithmetic: + - * / %
+// Comparison: == != < > <= >=
+// Logical: && || !
+// Compound assignment: += -= *= /= %=
+// String multiplication: "ha" * 3  // "hahaha"
+// Negative indexing: arr[-1]  // last element
+```
+
+### String Interpolation
+```javascript
+let name = "world";
+let greeting = `hello ${name}!`;  // "hello world!"
+let result = `${2 + 2} is ${2 + 2 == 4}`;  // "4 is true"
+```
+
+### Functions & Closures
+```javascript
+let add = fn(a, b) { a + b };
+let adder = fn(x) { fn(y) { x + y } };
+let add5 = adder(5);
+add5(3);  // 8
+```
 
 ## Tracing JIT Compiler
 
@@ -67,7 +119,7 @@ Aggregate: 26 benchmarks, ~9.2x overall (all correct)
 ## Tests
 
 ```bash
-node --test    # 317 tests
+node --test    # 400 tests
 ```
 
 ## Benchmarks
