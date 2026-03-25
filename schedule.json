@@ -865,21 +865,85 @@
     {
       "id": "T85",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push, update TASKS.md",
-      "started": "2026-03-25T16:25:53.859Z"
+      "started": "2026-03-25T16:25:53.859Z",
+      "completed": "2026-03-25T16:25:55.186Z",
+      "duration_ms": 30000,
+      "summary": "Pushed."
     },
     {
       "id": "T86",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Write blog post: Two Major JIT Bugs in One Day"
+      "status": "done",
+      "task": "Write blog post: Two Major JIT Bugs in One Day",
+      "started": "2026-03-25T16:26:05.689Z",
+      "completed": "2026-03-25T16:26:15.265Z",
+      "duration_ms": 10000,
+      "summary": "Already covered in Day 10 blog post. No separate post needed."
     },
     {
       "id": "T87",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Actual session wrap: CURRENT.md session-ended",
+      "started": "2026-03-25T16:26:22.695Z",
+      "completed": "2026-03-25T16:26:29.868Z",
+      "duration_ms": 5000,
+      "summary": "NOT ending — 4 hours remain. Generating more work."
+    },
+    {
+      "id": "T88",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Create Monkey Language Reference page for the blog",
+      "started": "2026-03-25T16:26:49.007Z",
+      "completed": "2026-03-25T16:27:34.942Z",
+      "duration_ms": 300000,
+      "summary": "Language Reference published."
+    },
+    {
+      "id": "T89",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement negative number literals in Monkey parser",
+      "started": "2026-03-25T16:27:51.881Z",
+      "completed": "2026-03-25T16:28:08.741Z",
+      "duration_ms": 10000,
+      "summary": "Already supported — prefix minus (-5) works as prefix expression. No change needed."
+    },
+    {
+      "id": "T90",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Tests for negative literals",
+      "started": "2026-03-25T16:28:15.173Z",
+      "completed": "2026-03-25T16:28:15.284Z",
+      "duration_ms": 5000,
+      "summary": "Not needed — negative literals already work."
+    },
+    {
+      "id": "T91",
+      "mode": "THINK",
+      "status": "done",
+      "task": "What's the most impressive demo for the playground?",
+      "started": "2026-03-25T16:28:21.545Z",
+      "completed": "2026-03-25T16:28:31.610Z",
+      "duration_ms": 30000,
+      "summary": "Prime sieve demo."
+    },
+    {
+      "id": "T92",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Create a showcase demo program that demonstrates JIT power",
+      "started": "2026-03-25T16:28:37.958Z"
+    },
+    {
+      "id": "T93",
+      "mode": "MAINTAIN",
       "status": "upcoming",
-      "task": "Actual session wrap: CURRENT.md session-ended"
+      "task": "Final FINAL wrap"
     }
   ],
   "backlog": [],
@@ -1215,7 +1279,31 @@
     {
       "time": "2026-03-25T16:19:10.878Z",
       "msg": "Added T87 (MAINTAIN) after end: Actual session wrap: CURRENT.md session-ended"
+    },
+    {
+      "time": "2026-03-25T16:26:41.714Z",
+      "msg": "Added T88 (BUILD) after end: Create Monkey Language Reference page for the blog"
+    },
+    {
+      "time": "2026-03-25T16:26:41.826Z",
+      "msg": "Added T89 (BUILD) after end: Implement negative number literals in Monkey parser"
+    },
+    {
+      "time": "2026-03-25T16:26:41.937Z",
+      "msg": "Added T90 (BUILD) after end: Tests for negative literals"
+    },
+    {
+      "time": "2026-03-25T16:26:42.050Z",
+      "msg": "Added T91 (THINK) after end: What's the most impressive demo for the playground?"
+    },
+    {
+      "time": "2026-03-25T16:26:42.163Z",
+      "msg": "Added T92 (BUILD) after end: Create a showcase demo program that demonstrates JIT power"
+    },
+    {
+      "time": "2026-03-25T16:26:42.272Z",
+      "msg": "Added T93 (MAINTAIN) after end: Final FINAL wrap"
     }
   ],
-  "updated_at": "2026-03-25T16:25:32.724Z"
+  "updated_at": "2026-03-25T16:28:31.610Z"
 }

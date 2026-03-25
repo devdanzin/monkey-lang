@@ -74,6 +74,8 @@ const BENCHMARKS = [
     input: `let map = fn(arr, f) { let r = []; let i = 0; while (i < len(arr)) { r = push(r, f(arr[i])); i = i + 1; } r }; let arr = []; let i = 0; while (i < 1000) { arr = push(arr, i); i = i + 1; } len(map(arr, fn(x) { x * 2 }))` },
   { name: 'stdlib:filter-gt500-1k', category: 'stdlib', expected: 500,
     input: `let filter = fn(arr, f) { let r = []; let i = 0; while (i < len(arr)) { if (f(arr[i])) { r = push(r, arr[i]); } i = i + 1; } r }; let arr = []; let i = 0; while (i < 1000) { arr = push(arr, i); i = i + 1; } len(filter(arr, fn(x) { x > 499 }))` },
+  { name: 'mixed:prime-count-500', category: 'mixed', expected: 95,
+    input: `let is_prime = fn(n) { if (n < 2) { return false; } if (n < 4) { return true; } if (n % 2 == 0) { return false; } let i = 3; while (i * i < n + 1) { if (n % i == 0) { return false; } i = i + 2; } true }; let count = 0; let n = 2; while (n < 500) { if (is_prime(n)) { count = count + 1; } n = n + 1; } count` },
 ];
 
 function parse(input) {
