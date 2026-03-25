@@ -310,3 +310,36 @@ describe('More New Features (Evaluator)', () => {
     assert.equal(testEval('let a = [1,2,3]; a[0] = 99; a[0]').value, 99);
   });
 });
+
+describe('Comprehensive Evaluator Tests', () => {
+  it('compound assignment', () => {
+    assert.equal(testEval('let x = 10; x += 5; x').value, 15);
+  });
+  it('string multiplication', () => {
+    assert.equal(testEval('"ha" * 3').value, 'hahaha');
+  });
+  it('negative indexing', () => {
+    assert.equal(testEval('[10,20,30][-1]').value, 30);
+  });
+  it('else-if chain', () => {
+    assert.equal(testEval('let x = 2; if (x == 1) { "a" } else if (x == 2) { "b" } else { "c" }').value, 'b');
+  });
+  it('match expression', () => {
+    assert.equal(testEval('match (3) { 1 => "one", 2 => "two", 3 => "three", _ => "?" }').value, 'three');
+  });
+  it('array slicing', () => {
+    assert.equal(testEval('[1,2,3,4,5][1:3]').elements.length, 2);
+  });
+  it('string slicing', () => {
+    assert.equal(testEval('"hello"[1:3]').value, 'el');
+  });
+  it('do-while', () => {
+    assert.equal(testEval('let x = 0; do { x++; } while (x < 5); x').value, 5);
+  });
+  it('destructuring let', () => {
+    assert.equal(testEval('let [a, b] = [10, 20]; a + b').value, 30);
+  });
+  it('for-in with break', () => {
+    assert.equal(testEval('let s = 0; for (x in [1,2,3,4,5]) { if (x == 4) { break; } s += x; }; s').value, 6);
+  });
+});
