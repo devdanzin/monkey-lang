@@ -1077,3 +1077,40 @@ describe('Comprehensive Feature Integration', () => {
     testIntegerObject(result, 159); // 1*100 + 5*10 + 9 = 159
   });
 });
+
+describe('Postfix Increment/Decrement', () => {
+  it('i++ increments', () => {
+    testIntegerObject(compileAndRun('let i = 0; i++; i++; i++; i'), 3);
+  });
+  it('i-- decrements', () => {
+    testIntegerObject(compileAndRun('let i = 10; i--; i--; i'), 8);
+  });
+  it('i++ in for loop', () => {
+    testIntegerObject(compileAndRun('let s = 0; for (let i = 0; i < 10; i++) { s += i; }; s'), 45);
+  });
+  it('i++ returns new value', () => {
+    testIntegerObject(compileAndRun('let i = 5; let j = i++; j'), 6);
+  });
+  it('i-- in while loop', () => {
+    testIntegerObject(compileAndRun('let i = 5; while (i > 0) { i--; } i'), 0);
+  });
+});
+
+describe('Hash Builtins', () => {
+  it('keys', () => {
+    const result = compileAndRun('keys({"a": 1, "b": 2, "c": 3})');
+    assert.ok(result instanceof MonkeyArray);
+    assert.equal(result.elements.length, 3);
+  });
+  it('values', () => {
+    const result = compileAndRun('values({"x": 10, "y": 20})');
+    assert.ok(result instanceof MonkeyArray);
+    assert.equal(result.elements.length, 2);
+  });
+  it('abs positive', () => {
+    testIntegerObject(compileAndRun('abs(42)'), 42);
+  });
+  it('abs negative', () => {
+    testIntegerObject(compileAndRun('abs(-42)'), 42);
+  });
+});

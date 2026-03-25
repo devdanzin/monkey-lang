@@ -2031,15 +2031,19 @@
     {
       "id": "T197",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement postfix increment/decrement: i++ and i--",
-      "started": "2026-03-25T22:05:59.768Z"
+      "started": "2026-03-25T22:05:59.768Z",
+      "completed": "2026-03-25T22:07:45.167Z",
+      "duration_ms": 180000,
+      "summary": "i++ and i-- postfix operators. Desugars to i = i + 1 / i = i - 1. Works in for-loops: for (let i = 0; i < 10; i++)"
     },
     {
       "id": "T198",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Tests for i++ and i--"
+      "status": "in-progress",
+      "task": "Tests for i++ and i--",
+      "started": "2026-03-25T22:07:45.307Z"
     },
     {
       "id": "T199",
