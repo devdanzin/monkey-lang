@@ -21,6 +21,8 @@ const TOKEN_PRECEDENCE = {
   [TokenType.NOT_EQ]: Precedence.EQUALS,
   [TokenType.LT]: Precedence.LESSGREATER,
   [TokenType.GT]: Precedence.LESSGREATER,
+  [TokenType.LT_EQ]: Precedence.LESSGREATER,
+  [TokenType.GT_EQ]: Precedence.LESSGREATER,
   [TokenType.PLUS]: Precedence.SUM,
   [TokenType.MINUS]: Precedence.SUM,
   [TokenType.SLASH]: Precedence.PRODUCT,
