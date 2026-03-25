@@ -695,15 +695,19 @@
     {
       "id": "T68",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Rebuild playground bundle with all fixes and publish",
-      "started": "2026-03-25T16:13:41.780Z"
+      "started": "2026-03-25T16:13:41.780Z",
+      "completed": "2026-03-25T16:14:14.455Z",
+      "duration_ms": 60000,
+      "summary": "Playground rebuilt. Published."
     },
     {
       "id": "T69",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Add comment tests to test suite"
+      "status": "in-progress",
+      "task": "Add comment tests to test suite",
+      "started": "2026-03-25T16:14:24.477Z"
     },
     {
       "id": "T70",
@@ -989,5 +993,5 @@
       "msg": "Added T71 (MAINTAIN) after end: Real final wrap: commit, push, CURRENT.md session-ended"
     }
   ],
-  "updated_at": "2026-03-25T16:13:17.148Z"
+  "updated_at": "2026-03-25T16:14:14.455Z"
 }

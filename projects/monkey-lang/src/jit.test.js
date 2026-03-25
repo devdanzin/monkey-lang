@@ -1047,3 +1047,20 @@ describe('JIT correctness sweep: VM vs JIT parity', () => {
   // Mixed operations
   it('alternating operations', () => assertJITParity('let s = 0; let i = 0; while (i < 100) { if (i % 3 == 0) { s = s + i; } if (i % 3 == 1) { s = s - 1; } if (i % 3 == 2) { s = s + 2; } i = i + 1; } s'));
 });
+
+describe('Single-line comments', () => {
+  it('ignores comments', () => {
+    const vm = runJIT('// this is a comment\n5 + 3');
+    assert.equal(vm.lastPoppedStackElem().value, 8);
+  });
+
+  it('handles inline comments', () => {
+    const vm = runJIT('let x = 10; // set x\nlet y = 20; // set y\nx + y');
+    assert.equal(vm.lastPoppedStackElem().value, 30);
+  });
+
+  it('handles multiple comment lines', () => {
+    const vm = runJIT('// line 1\n// line 2\n// line 3\n42');
+    assert.equal(vm.lastPoppedStackElem().value, 42);
+  });
+});
