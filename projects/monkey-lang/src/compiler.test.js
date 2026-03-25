@@ -700,3 +700,30 @@ describe('Break and Continue', () => {
     assert.ok(result instanceof MonkeyNull);
   });
 });
+
+describe('String Interpolation (Template Literals)', () => {
+  it('simple variable interpolation', () => {
+    testStringObject(compileAndRun('let name = "world"; `hello ${name}`'), 'hello world');
+  });
+  it('integer interpolation', () => {
+    testStringObject(compileAndRun('let x = 42; `the answer is ${x}`'), 'the answer is 42');
+  });
+  it('no interpolation', () => {
+    testStringObject(compileAndRun('`plain string`'), 'plain string');
+  });
+  it('expression interpolation', () => {
+    testStringObject(compileAndRun('let a = 3; let b = 4; `${a} + ${b} = ${a + b}`'), '3 + 4 = 7');
+  });
+  it('function call in interpolation', () => {
+    testStringObject(compileAndRun('let double = fn(x) { x * 2 }; `doubled: ${double(5)}`'), 'doubled: 10');
+  });
+  it('empty template', () => {
+    testStringObject(compileAndRun('``'), '');
+  });
+  it('boolean interpolation', () => {
+    testStringObject(compileAndRun('`is true: ${true}`'), 'is true: true');
+  });
+  it('nested interpolation in loop', () => {
+    testStringObject(compileAndRun('let s = ""; for (let i = 0; i < 3; i += 1) { s = s + `${i} `; }; s'), '0 1 2 ');
+  });
+});
