@@ -200,3 +200,38 @@ describe('New Tokens', () => {
     assert.equal(tok.literal, '42');
   });
 });
+
+describe('Lexer Edge Cases', () => {
+  it('handles empty input', () => {
+    const l = new Lexer('');
+    assert.equal(l.nextToken().type, 'EOF');
+  });
+  it('handles whitespace only', () => {
+    const l = new Lexer('   \n\t  ');
+    assert.equal(l.nextToken().type, 'EOF');
+  });
+  it('handles consecutive operators', () => {
+    const l = new Lexer('+-*/');
+    assert.equal(l.nextToken().type, 'PLUS');
+    assert.equal(l.nextToken().type, 'MINUS');
+    assert.equal(l.nextToken().type, 'ASTERISK');
+    assert.equal(l.nextToken().type, 'SLASH');
+  });
+  it('handles string with escaped quote', () => {
+    const l = new Lexer('"say \\"hello\\""');
+    const tok = l.nextToken();
+    assert.equal(tok.literal, 'say "hello"');
+  });
+  it('handles colon for hash', () => {
+    const l = new Lexer('{"a": 1}');
+    l.nextToken(); // {
+    l.nextToken(); // "a"
+    assert.equal(l.nextToken().type, ':');
+  });
+  it('handles mixed comments', () => {
+    const l = new Lexer('1 /* block */ + // line\n 2');
+    assert.equal(l.nextToken().type, 'INT');
+    assert.equal(l.nextToken().type, 'PLUS');
+    assert.equal(l.nextToken().type, 'INT');
+  });
+});

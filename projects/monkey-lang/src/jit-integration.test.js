@@ -926,3 +926,55 @@ describe('More JIT Integration', () => {
     testIntegerObject(compileAndRunJIT('(2 + 3) * (4 - 1) + 10 / 2'), 20);
   });
 });
+
+describe('Feature Integration Tests', () => {
+  it('match in function', () => {
+    testIntegerObject(compileAndRunJIT('let f = fn(x) { match (x % 4) { 0 => 1, 1 => 2, 2 => 3, _ => 4 } }; f(7)'), 4);
+  });
+  it('destructuring in loop', () => {
+    testIntegerObject(compileAndRunJIT('let s = 0; for (p in [[1,10],[2,20],[3,30]]) { let [a,b] = p; s += a + b; }; s'), 66);
+  });
+  it('do-while with mutation', () => {
+    testIntegerObject(compileAndRunJIT('let a = [0]; do { a[0]++; } while (a[0] < 5); a[0]'), 5);
+  });
+  it('ternary chain', () => {
+    testStringObject(compileAndRunJIT('let f = fn(n) { n < 0 ? "neg" : n == 0 ? "zero" : n < 10 ? "small" : "big" }; f(5)'), 'small');
+  });
+  it('null check', () => {
+    testStringObject(compileAndRunJIT('let x = null; x == null ? "yes" : "no"'), 'yes');
+  });
+  it('string template', () => {
+    testStringObject(compileAndRunJIT('let n = 42; `the answer is ${n}`'), 'the answer is 42');
+  });
+  it('array slice sum', () => {
+    testIntegerObject(compileAndRunJIT('let a = [1,2,3,4,5,6,7,8,9,10]; let s = 0; for (x in a[3:7]) { s += x; } s'), 22);
+  });
+  it('compound index', () => {
+    testIntegerObject(compileAndRunJIT('let a = [0, 0, 0]; a[1] += 42; a[1]'), 42);
+  });
+  it('keys and values', () => {
+    const result = compileAndRunJIT('let h = {"a": 1, "b": 2}; len(keys(h)) + len(values(h))');
+    testIntegerObject(result, 4);
+  });
+  it('char and ord roundtrip', () => {
+    testStringObject(compileAndRunJIT('char(ord("A") + 3)'), 'D');
+  });
+  it('indexOf builtin', () => {
+    testIntegerObject(compileAndRunJIT('indexOf("hello world", "world")'), 6);
+  });
+  it('startsWith and endsWith', () => {
+    testBooleanObject(compileAndRunJIT('startsWith("hello", "hel") && endsWith("hello", "llo")'), true);
+  });
+  it('abs builtin', () => {
+    testIntegerObject(compileAndRunJIT('abs(-99) + abs(1)'), 100);
+  });
+  it('trim builtin', () => {
+    testStringObject(compileAndRunJIT('trim("  hello  ")'), 'hello');
+  });
+  it('replace builtin', () => {
+    testStringObject(compileAndRunJIT('replace("hello world", "world", "monkey")'), 'hello monkey');
+  });
+  it('int conversion', () => {
+    testIntegerObject(compileAndRunJIT('int("42") + int("8")'), 50);
+  });
+});

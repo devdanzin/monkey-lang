@@ -253,3 +253,30 @@ describe('New Syntax Parsing', () => {
     assert.ok(prog.statements.length > 0);
   });
 });
+
+describe('Parser Edge Cases', () => {
+  it('multiple statements', () => {
+    const prog = parse('let x = 1; let y = 2; x + y');
+    assert.equal(prog.statements.length, 3);
+  });
+  it('empty block', () => {
+    const prog = parse('if (true) {}');
+    assert.ok(prog.statements.length > 0);
+  });
+  it('deeply nested expression', () => {
+    const prog = parse('((((1 + 2))))');
+    assert.ok(prog.statements.length > 0);
+  });
+  it('function with no params', () => {
+    const prog = parse('fn() { 42 }');
+    assert.ok(prog.statements.length > 0);
+  });
+  it('complex for-in', () => {
+    const prog = parse('for ([a, b] in [[1,2],[3,4]]) { a + b }');
+    assert.ok(prog.statements.length > 0);
+  });
+  it('match with multiple arms', () => {
+    const prog = parse('match (x) { 1 => "a", 2 => "b", 3 => "c", 4 => "d", _ => "e" }');
+    assert.ok(prog.statements.length > 0);
+  });
+});

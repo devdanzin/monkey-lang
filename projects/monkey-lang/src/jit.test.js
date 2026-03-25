@@ -1338,3 +1338,26 @@ describe('Real World JIT', () => {
     assert.equal(vm.lastPoppedStackElem().value, 560);
   });
 });
+
+describe('Algorithm JIT', () => {
+  it('selection sort hot', () => {
+    const vm = runJIT('let a = []; let s = 42; for (let i = 0; i < 50; i++) { s = (s * 1103515245 + 12345) % 2147483648; a = push(a, s % 100); } let n = len(a); for (let i = 0; i < n-1; i++) { let m = i; for (let j = i+1; j < n; j++) { if (a[j] < a[m]) { m = j; } } let t = a[i]; a[i] = a[m]; a[m] = t; } let ok = true; for (let i = 0; i < n-1; i++) { if (a[i] > a[i+1]) { ok = false; break; } } ok');
+    assert.equal(vm.lastPoppedStackElem().inspect(), 'true');
+  });
+  it('fibonacci in JIT', () => {
+    const vm = runJIT('let a = 0; let b = 1; for (let i = 0; i < 30; i++) { let t = b; b = a + b; a = t; } a');
+    assert.equal(vm.lastPoppedStackElem().value, 832040);
+  });
+  it('sum of cubes', () => {
+    const vm = runJIT('let s = 0; for (let i = 1; i <= 50; i++) { s += i * i * i; } s');
+    assert.equal(vm.lastPoppedStackElem().value, 1625625);
+  });
+  it('nested loop product', () => {
+    const vm = runJIT('let s = 0; for (let i = 1; i <= 10; i++) { for (let j = 1; j <= 10; j++) { s += i * j; } } s');
+    assert.equal(vm.lastPoppedStackElem().value, 3025);
+  });
+  it('array sum with for-in', () => {
+    const vm = runJIT('let a = []; for (let i = 0; i < 200; i++) { a = push(a, i); } let s = 0; for (x in a) { s += x; } s');
+    assert.equal(vm.lastPoppedStackElem().value, 19900);
+  });
+});
