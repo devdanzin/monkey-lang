@@ -409,3 +409,63 @@ describe('Algorithm Tests (Evaluator)', () => {
     assert.equal(testEval('abs(-42)').value, 42);
   });
 });
+
+describe('More Evaluator Coverage', () => {
+  it('hash literal', () => {
+    assert.equal(testEval('{"a": 1, "b": 2}["a"]').value, 1);
+  });
+  it('hash update', () => {
+    assert.equal(testEval('let h = {"x": 1}; h["x"] = 42; h["x"]').value, 42);
+  });
+  it('array first/last/rest', () => {
+    assert.equal(testEval('first([1,2,3])').value, 1);
+  });
+  it('last builtin', () => {
+    assert.equal(testEval('last([1,2,3])').value, 3);
+  });
+  it('rest builtin', () => {
+    assert.equal(testEval('len(rest([1,2,3]))').value, 2);
+  });
+  it('push builtin', () => {
+    assert.equal(testEval('len(push([1,2], 3))').value, 3);
+  });
+  it('type builtin', () => {
+    assert.equal(testEval('type(42)').value, 'INTEGER');
+  });
+  it('type of string', () => {
+    assert.equal(testEval('type("hello")').value, 'STRING');
+  });
+  it('type of array', () => {
+    assert.equal(testEval('type([1,2])').value, 'ARRAY');
+  });
+  it('type of bool', () => {
+    assert.equal(testEval('type(true)').value, 'BOOLEAN');
+  });
+  it('type of null', () => {
+    assert.equal(testEval('type(null)').value, 'NULL');
+  });
+  it('type of fn', () => {
+    assert.equal(testEval('type(fn(x) { x })').value, 'FUNCTION');
+  });
+  it('string concatenation', () => {
+    assert.equal(testEval('"hello" + " " + "world"').value, 'hello world');
+  });
+  it('string length', () => {
+    assert.equal(testEval('len("hello")').value, 5);
+  });
+  it('nested if', () => {
+    assert.equal(testEval('if (true) { if (true) { 42 } }').value, 42);
+  });
+  it('boolean negation', () => {
+    assert.equal(testEval('!true').value, false);
+  });
+  it('double negation', () => {
+    assert.equal(testEval('!!true').value, true);
+  });
+  it('prefix minus', () => {
+    assert.equal(testEval('-5').value, -5);
+  });
+  it('integer arithmetic', () => {
+    assert.equal(testEval('2 + 3 * 4 - 1').value, 13);
+  });
+});

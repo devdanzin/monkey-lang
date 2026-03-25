@@ -978,3 +978,37 @@ describe('Feature Integration Tests', () => {
     testIntegerObject(compileAndRunJIT('int("42") + int("8")'), 50);
   });
 });
+
+describe('Integration Edge Cases', () => {
+  it('empty hash', () => {
+    testIntegerObject(compileAndRunJIT('len(keys({}))'), 0);
+  });
+  it('nested array creation', () => {
+    const result = compileAndRunJIT('let m = []; for (let i = 0; i < 3; i++) { let row = []; for (let j = 0; j < 3; j++) { row = push(row, i * 3 + j); } m = push(m, row); } m[1][2]');
+    testIntegerObject(result, 5);
+  });
+  it('string repeat + slice', () => {
+    testStringObject(compileAndRunJIT('"abc" * 3'), 'abcabcabc');
+  });
+  it('closures in array', () => {
+    testIntegerObject(compileAndRunJIT('let fns = [fn(x) { x + 1 }, fn(x) { x * 2 }, fn(x) { x - 1 }]; fns[1](5)'), 10);
+  });
+  it('hash with integer keys', () => {
+    testIntegerObject(compileAndRunJIT('let h = {1: "one", 2: "two"}; len(str(h[1]))'), 3);
+  });
+  it('recursive countdown', () => {
+    testIntegerObject(compileAndRunJIT('let f = fn(n) { n == 0 ? 0 : 1 + f(n-1) }; f(100)'), 100);
+  });
+  it('multiple return paths', () => {
+    testStringObject(compileAndRunJIT('let f = fn(x) { if (x > 10) { return "big"; } if (x > 5) { return "medium"; } "small" }; f(3)'), 'small');
+  });
+  it('complex expression eval', () => {
+    testIntegerObject(compileAndRunJIT('(1 + 2) * (3 + 4) - (5 * 6) / 3'), 11);
+  });
+  it('boolean logic', () => {
+    testBooleanObject(compileAndRunJIT('(true && false) || (false || true)'), true);
+  });
+  it('chained comparison', () => {
+    testBooleanObject(compileAndRunJIT('let x = 5; x > 3 && x < 10'), true);
+  });
+});

@@ -1361,3 +1361,26 @@ describe('Algorithm JIT', () => {
     assert.equal(vm.lastPoppedStackElem().value, 19900);
   });
 });
+
+describe('JIT Correctness', () => {
+  it('nested if in loop', () => {
+    const vm = runJIT('let s = 0; for (let i = 0; i < 100; i++) { if (i % 3 == 0) { s += 3; } else if (i % 3 == 1) { s += 1; } else { s += 2; } } s');
+    assert.equal(vm.lastPoppedStackElem().value, 201);
+  });
+  it('break from nested', () => {
+    const vm = runJIT('let total = 0; for (let i = 0; i < 50; i++) { for (let j = 0; j < 50; j++) { total++; if (j >= 10) { break; } } } total');
+    assert.equal(vm.lastPoppedStackElem().value, 550);
+  });
+  it('continue in loop', () => {
+    const vm = runJIT('let s = 0; for (let i = 0; i < 100; i++) { if (i % 2 == 0) { continue; } s += i; } s');
+    assert.equal(vm.lastPoppedStackElem().value, 2500);
+  });
+  it('do-while decrement', () => {
+    const vm = runJIT('let i = 100; let s = 0; do { s += i; i--; } while (i > 0); s');
+    assert.equal(vm.lastPoppedStackElem().value, 5050);
+  });
+  it('match in loop', () => {
+    const vm = runJIT('let s = 0; for (let i = 0; i < 100; i++) { s += match (i % 4) { 0 => 1, 1 => 2, 2 => 3, _ => 4 }; } s');
+    assert.equal(vm.lastPoppedStackElem().value, 250);
+  });
+});
