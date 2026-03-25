@@ -1487,23 +1487,31 @@
       "id": "T144",
       "mode": "BUILD",
       "task": "Rewrite sorting example with in-place mutation",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T139",
-      "started": "2026-03-25T21:10:39.706Z"
+      "started": "2026-03-25T21:10:39.706Z",
+      "completed": "2026-03-25T21:11:14.944Z",
+      "duration_ms": 120000,
+      "summary": "Sorting examples rewritten with in-place mutation: bubble sort and selection sort. String sorting too."
     },
     {
       "id": "T145",
       "mode": "BUILD",
       "task": "Implement while-else: while (cond) { body } else { no-iterations }",
-      "status": "upcoming",
-      "plan_ref": "T139"
+      "status": "done",
+      "plan_ref": "T139",
+      "started": "2026-03-25T21:11:22.477Z",
+      "completed": "2026-03-25T21:11:22.588Z",
+      "duration_ms": 0,
+      "summary": "Skipped — niche feature, better uses of remaining time."
     },
     {
       "id": "T146",
       "mode": "BUILD",
       "task": "More stdlib: flat, zip, enumerate, sum",
-      "status": "upcoming",
-      "plan_ref": "T139"
+      "status": "in-progress",
+      "plan_ref": "T139",
+      "started": "2026-03-25T21:11:29.338Z"
     },
     {
       "id": "T147",

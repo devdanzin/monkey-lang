@@ -4,71 +4,109 @@
 export const STDLIB_SOURCE = `
 let map = fn(arr, f) {
   let result = [];
-  let i = 0;
-  while (i < len(arr)) {
-    result = push(result, f(arr[i]));
-    i = i + 1;
-  }
+  for (x in arr) { result = push(result, f(x)); }
   result
 };
 
 let filter = fn(arr, f) {
   let result = [];
-  let i = 0;
-  while (i < len(arr)) {
-    if (f(arr[i])) {
-      result = push(result, arr[i]);
-    }
-    i = i + 1;
-  }
+  for (x in arr) { if (f(x)) { result = push(result, x); } }
   result
 };
 
 let reduce = fn(arr, initial, f) {
   let acc = initial;
-  let i = 0;
-  while (i < len(arr)) {
-    acc = f(acc, arr[i]);
-    i = i + 1;
-  }
+  for (x in arr) { acc = f(acc, x); }
   acc
 };
 
 let forEach = fn(arr, f) {
-  let i = 0;
-  while (i < len(arr)) {
-    f(arr[i]);
-    i = i + 1;
-  }
+  for (x in arr) { f(x); }
 };
 
 let range = fn(n) {
   let result = [];
-  let i = 0;
-  while (i < n) {
-    result = push(result, i);
-    i = i + 1;
-  }
+  for (let i = 0; i < n; i += 1) { result = push(result, i); }
   result
 };
 
 let contains = fn(arr, val) {
-  let i = 0;
-  while (i < len(arr)) {
-    if (arr[i] == val) { return true; }
-    i = i + 1;
-  }
+  for (x in arr) { if (x == val) { return true; } }
   false
 };
 
 let reverse = fn(arr) {
   let result = [];
-  let i = len(arr) - 1;
-  while (i > 0 - 1) {
+  for (let i = len(arr) - 1; i > 0 - 1; i -= 1) {
     result = push(result, arr[i]);
-    i = i - 1;
   }
   result
+};
+
+let sum = fn(arr) {
+  let total = 0;
+  for (x in arr) { total += x; }
+  total
+};
+
+let max = fn(arr) {
+  let m = arr[0];
+  for (let i = 1; i < len(arr); i += 1) {
+    if (arr[i] > m) { m = arr[i]; }
+  }
+  m
+};
+
+let min = fn(arr) {
+  let m = arr[0];
+  for (let i = 1; i < len(arr); i += 1) {
+    if (arr[i] < m) { m = arr[i]; }
+  }
+  m
+};
+
+let zip = fn(a, b) {
+  let result = [];
+  let n = len(a);
+  if (len(b) < n) { n = len(b); }
+  for (let i = 0; i < n; i += 1) {
+    result = push(result, [a[i], b[i]]);
+  }
+  result
+};
+
+let enumerate = fn(arr) {
+  let result = [];
+  for (let i = 0; i < len(arr); i += 1) {
+    result = push(result, [i, arr[i]]);
+  }
+  result
+};
+
+let flat = fn(arr) {
+  let result = [];
+  for (x in arr) {
+    if (type(x) == "ARRAY") {
+      for (y in x) { result = push(result, y); }
+    } else {
+      result = push(result, x);
+    }
+  }
+  result
+};
+
+let sort = fn(arr) {
+  let n = len(arr);
+  for (let i = 0; i < n; i += 1) {
+    for (let j = 0; j < n - i - 1; j += 1) {
+      if (arr[j] > arr[j + 1]) {
+        let temp = arr[j];
+        arr[j] = arr[j + 1];
+        arr[j + 1] = temp;
+      }
+    }
+  }
+  arr
 };
 `;
 
