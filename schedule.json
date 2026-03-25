@@ -545,39 +545,59 @@
     {
       "id": "T53",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Write example programs that showcase JIT (fibonacci, array processing, fizzbuzz)",
-      "started": "2026-03-25T15:48:04.736Z"
+      "started": "2026-03-25T15:48:04.736Z",
+      "completed": "2026-03-25T15:49:12.048Z",
+      "duration_ms": 180000,
+      "summary": "4 examples: fib, fizzbuzz, arrays, strings."
     },
     {
       "id": "T54",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Commit + push enhanced REPL"
+      "status": "done",
+      "task": "Commit + push enhanced REPL",
+      "started": "2026-03-25T15:49:21.812Z",
+      "completed": "2026-03-25T15:49:23.121Z",
+      "duration_ms": 30000,
+      "summary": "Pushed."
     },
     {
       "id": "T55",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Update blog: Day 10 reflection with nested-if fix story"
+      "status": "done",
+      "task": "Update blog: Day 10 reflection with nested-if fix story",
+      "started": "2026-03-25T15:49:36.961Z",
+      "completed": "2026-03-25T15:50:32.988Z",
+      "duration_ms": 300000,
+      "summary": "Blog: Day 10 reflection. Published."
     },
     {
       "id": "T56",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Research: what makes a great programming language tutorial/playground?"
+      "status": "done",
+      "task": "Research: what makes a great programming language tutorial/playground?",
+      "started": "2026-03-25T15:50:49.010Z",
+      "completed": "2026-03-25T15:51:05.073Z",
+      "duration_ms": 60000,
+      "summary": "Playground research. Browser-based, single HTML page."
     },
     {
       "id": "T57",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Create interactive playground page for henry-the-frog.github.io"
+      "status": "done",
+      "task": "Create interactive playground page for henry-the-frog.github.io",
+      "started": "2026-03-25T15:51:11.035Z",
+      "completed": "2026-03-25T15:53:20.198Z",
+      "duration_ms": 600000,
+      "summary": "Playground published. Interactive browser JIT demo."
     },
     {
       "id": "T58",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Mid-session checkpoint: commit, push, daily log"
+      "status": "in-progress",
+      "task": "Mid-session checkpoint: commit, push, daily log",
+      "started": "2026-03-25T15:53:37.103Z"
     },
     {
       "id": "T59",
@@ -819,5 +839,5 @@
       "msg": "Added T60 (MAINTAIN) after end: Final session wrap: commit, push, CURRENT.md status: session-ended"
     }
   ],
-  "updated_at": "2026-03-25T15:47:47.459Z"
+  "updated_at": "2026-03-25T15:53:20.198Z"
 }
