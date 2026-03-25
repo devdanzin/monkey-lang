@@ -47,6 +47,47 @@ function readSchedule() {
   };
 }
 
+// --- Read rich data from generate.cjs output (dashboard.json) ---
+// These sections are refreshed periodically by MAINTAIN tasks running generate.cjs
+const RICH_KEYS = ['artifacts', 'benchmarks', 'blogPosts', 'prs', 'recentDays',
+  'streak', 'scheduleAdherence', 'todayHighlights', 'adjustments', 'blockers'];
+
+function readRichData() {
+  const f = path.join(DATA_DIR, 'rich.json');
+  if (fs.existsSync(f)) {
+    try {
+      const data = JSON.parse(fs.readFileSync(f, 'utf8'));
+      const rich = {};
+      for (const key of RICH_KEYS) {
+        if (data[key] !== undefined) rich[key] = data[key];
+      }
+      rich._richGenerated = data.generated || null;
+      return rich;
+    } catch { return {}; }
+  }
+  // Fall back to dashboard.json if rich.json doesn't exist yet
+  const f2 = path.join(DATA_DIR, 'dashboard.json');
+  if (fs.existsSync(f2)) {
+    try {
+      const data = JSON.parse(fs.readFileSync(f2, 'utf8'));
+      const rich = {};
+      for (const key of RICH_KEYS) {
+        if (data[key] !== undefined) rich[key] = data[key];
+      }
+      rich._richGenerated = data.generated || null;
+      return rich;
+    } catch { return {}; }
+  }
+  return {};
+}
+
+// --- Merge live queue + rich data ---
+function readDashboard() {
+  const live = readSchedule();
+  const rich = readRichData();
+  return { ...live, ...rich };
+}
+
 // Legacy: keep dashboard.json in sync for static fallback
 function saveToDisk(dashboard) {
   fs.writeFileSync(path.join(DATA_DIR, 'dashboard.json'), JSON.stringify(dashboard, null, 2) + '\n');
@@ -102,9 +143,32 @@ const server = http.createServer(async (req, res) => {
   const pathname = url.pathname;
 
   try {
-    // GET /api/dashboard — serve live state from schedule.json
+    // GET /api/dashboard — serve live queue + rich data merged
     if (req.method === 'GET' && pathname === '/api/dashboard') {
-      return json(res, 200, readSchedule());
+      return json(res, 200, readDashboard());
+    }
+
+    // POST /api/regenerate — trigger generate.cjs to refresh rich data
+    if (req.method === 'POST' && pathname === '/api/regenerate') {
+      if (!checkAuth(req)) return json(res, 401, { error: 'unauthorized' });
+      const { execSync } = require('child_process');
+      try {
+        execSync('node generate.cjs', { cwd: __dirname, timeout: 30000, stdio: 'pipe' });
+        // Copy rich keys from dashboard.json to rich.json
+        const dashFile = path.join(DATA_DIR, 'dashboard.json');
+        if (fs.existsSync(dashFile)) {
+          const full = JSON.parse(fs.readFileSync(dashFile, 'utf8'));
+          const rich = {};
+          for (const key of RICH_KEYS) {
+            if (full[key] !== undefined) rich[key] = full[key];
+          }
+          rich.generated = full.generated || new Date().toISOString();
+          fs.writeFileSync(path.join(DATA_DIR, 'rich.json'), JSON.stringify(rich, null, 2) + '\n');
+        }
+        return json(res, 200, { ok: true, generated: new Date().toISOString() });
+      } catch (e) {
+        return json(res, 500, { error: 'generate.cjs failed: ' + (e.stderr?.toString() || e.message) });
+      }
     }
 
     // GET /api/history/:date

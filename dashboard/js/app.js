@@ -980,11 +980,22 @@
         modeDistribution: modeDist,
         blocksYielded: blocked.length,
       },
-      schedule: { blocks },
+      schedule: { blocks, backlog: api.backlog || [] },
       blocks,
       adjustments: api.adjustments || [],
       backlog: api.backlog || [],
       updated_at: api.updated_at,
+      generated: api._richGenerated || api.updated_at,
+      // Rich data from generate.cjs (passed through from server)
+      artifacts: api.artifacts || [],
+      benchmarks: api.benchmarks || null,
+      blogPosts: api.blogPosts || [],
+      prs: api.prs || [],
+      recentDays: api.recentDays || [],
+      streak: api.streak || 0,
+      scheduleAdherence: api.scheduleAdherence || null,
+      todayHighlights: api.todayHighlights || [],
+      blockers: api.blockers || [],
     };
   }
 
