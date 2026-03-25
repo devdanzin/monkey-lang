@@ -935,8 +935,12 @@
     {
       "id": "T92",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Create a showcase demo program that demonstrates JIT power"
+      "status": "done",
+      "task": "Create a showcase demo program that demonstrates JIT power",
+      "started": "2026-03-25T16:28:37.958Z",
+      "completed": "2026-03-25T16:29:49.822Z",
+      "duration_ms": 300000,
+      "summary": "Prime sieve example + 4.0x benchmark. 27 benchmarks."
     },
     {
       "id": "T93",
@@ -947,10 +951,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 91,
+    "completed": 92,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 16625000
+    "total_duration_ms": 16925000
   },
-  "updated_at": "2026-03-25T16:28:31.610Z"
+  "updated_at": "2026-03-25T16:29:49.822Z"
 }

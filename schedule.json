@@ -935,15 +935,22 @@
     {
       "id": "T92",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Create a showcase demo program that demonstrates JIT power",
-      "started": "2026-03-25T16:28:37.958Z"
+      "started": "2026-03-25T16:28:37.958Z",
+      "completed": "2026-03-25T16:29:49.822Z",
+      "duration_ms": 300000,
+      "summary": "Prime sieve example + 4.0x benchmark. 27 benchmarks."
     },
     {
       "id": "T93",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final FINAL wrap"
+      "status": "done",
+      "task": "Final FINAL wrap",
+      "started": "2026-03-25T16:30:10.660Z",
+      "completed": "2026-03-25T16:30:10.773Z",
+      "duration_ms": 5000,
+      "summary": "Not wrapping. 3:45 until boundary. Continuing."
     }
   ],
   "backlog": [],
@@ -1305,5 +1312,5 @@
       "msg": "Added T93 (MAINTAIN) after end: Final FINAL wrap"
     }
   ],
-  "updated_at": "2026-03-25T16:28:31.610Z"
+  "updated_at": "2026-03-25T16:29:49.822Z"
 }
