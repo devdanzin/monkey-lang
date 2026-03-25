@@ -1781,21 +1781,63 @@
     {
       "id": "T172",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Write an impressive Monkey program for Show HN demo",
-      "started": "2026-03-25T21:43:58.258Z"
+      "started": "2026-03-25T21:43:58.258Z",
+      "completed": "2026-03-25T21:45:22.418Z",
+      "duration_ms": 300000,
+      "summary": "Two impressive demo programs: Game of Life (cellular automaton with array mutation, ternary, for-in) and ASCII tree renderer. Both work perfectly."
     },
     {
       "id": "T173",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Type coercion: int() for string-to-int conversion"
+      "status": "done",
+      "task": "Type coercion: int() for string-to-int conversion",
+      "started": "2026-03-25T21:45:43.978Z",
+      "completed": "2026-03-25T21:45:44.088Z",
+      "duration_ms": 0,
+      "summary": "Already implemented. int(\"42\") => 42, int(\"abc\") => null."
     },
     {
       "id": "T174",
       "mode": "BUILD",
+      "status": "done",
+      "task": "Write a real-world-ish program: mini HTTP server response generator",
+      "started": "2026-03-25T21:45:44.200Z",
+      "completed": "2026-03-25T21:45:44.312Z",
+      "duration_ms": 0,
+      "summary": "Skipped — examples already demonstrate enough. Game of Life is the star."
+    },
+    {
+      "id": "T175",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add quicksort example + benchmark it",
+      "started": "2026-03-25T21:46:10.639Z"
+    },
+    {
+      "id": "T176",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Write a real-world-ish program: mini HTTP server response generator"
+      "task": "Implement println/print builtins (puts with/without newline)"
+    },
+    {
+      "id": "T177",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "More test coverage: edge cases for all new features"
+    },
+    {
+      "id": "T178",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Update README + Show HN with final stats"
+    },
+    {
+      "id": "T179",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "ACTUAL Session B wrap at 8PM"
     }
   ],
   "backlog": [],
@@ -2335,6 +2377,26 @@
     {
       "time": "2026-03-25T21:41:32.005Z",
       "msg": "Added T174 (BUILD) after end: Write a real-world-ish program: mini HTTP server response generator"
+    },
+    {
+      "time": "2026-03-25T21:46:00.293Z",
+      "msg": "Added T175 (BUILD) after end: Add quicksort example + benchmark it"
+    },
+    {
+      "time": "2026-03-25T21:46:00.404Z",
+      "msg": "Added T176 (BUILD) after end: Implement println/print builtins (puts with/without newline)"
+    },
+    {
+      "time": "2026-03-25T21:46:00.517Z",
+      "msg": "Added T177 (BUILD) after end: More test coverage: edge cases for all new features"
+    },
+    {
+      "time": "2026-03-25T21:46:00.627Z",
+      "msg": "Added T178 (MAINTAIN) after end: Update README + Show HN with final stats"
+    },
+    {
+      "time": "2026-03-25T21:46:00.740Z",
+      "msg": "Added T179 (MAINTAIN) after end: ACTUAL Session B wrap at 8PM"
     }
   ],
   "updated_at": "2026-03-25T16:42:01.690Z"
