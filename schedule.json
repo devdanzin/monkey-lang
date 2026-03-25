@@ -1366,16 +1366,20 @@
       "id": "T133",
       "mode": "BUILD",
       "task": "Escape sequences in strings (\\n \\t \\\\ \\\")",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T132",
-      "started": "2026-03-25T20:55:29.759Z"
+      "started": "2026-03-25T20:55:29.759Z",
+      "completed": "2026-03-25T20:56:15.353Z",
+      "duration_ms": 180000,
+      "summary": "Escape sequences: \n \t \r \\\\ \\\" \\0 in both quoted strings and template literals. 400 tests passing."
     },
     {
       "id": "T134",
       "mode": "BUILD",
       "task": "Tests for escape sequences",
-      "status": "upcoming",
-      "plan_ref": "T132"
+      "status": "in-progress",
+      "plan_ref": "T132",
+      "started": "2026-03-25T20:56:21.648Z"
     },
     {
       "id": "T135",
