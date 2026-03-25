@@ -1596,3 +1596,136 @@ describe('650th Test', () => {
     `), 479001600);
   });
 });
+
+describe('Real-World Patterns', () => {
+  it('FizzBuzz complete', () => {
+    testStringObject(compileAndRun(`
+      let fizzbuzz = fn(n) {
+        match (true) {
+          n % 15 == 0 => "FizzBuzz",
+          n % 3 == 0 => "Fizz",
+          n % 5 == 0 => "Buzz",
+          _ => str(n)
+        }
+      };
+      let results = [];
+      for (let i = 1; i <= 15; i++) {
+        results = push(results, fizzbuzz(i));
+      }
+      join(results, ",")
+    `), '1,2,Fizz,4,Buzz,Fizz,7,8,Fizz,Buzz,11,Fizz,13,14,FizzBuzz');
+  });
+
+  it('matrix operations', () => {
+    testIntegerObject(compileAndRun(`
+      // 2x2 matrix multiply
+      let mat_mul = fn(a, b) {
+        [
+          [a[0][0] * b[0][0] + a[0][1] * b[1][0], a[0][0] * b[0][1] + a[0][1] * b[1][1]],
+          [a[1][0] * b[0][0] + a[1][1] * b[1][0], a[1][0] * b[0][1] + a[1][1] * b[1][1]]
+        ]
+      };
+      let A = [[1, 2], [3, 4]];
+      let B = [[5, 6], [7, 8]];
+      let C = mat_mul(A, B);
+      C[0][0] + C[0][1] + C[1][0] + C[1][1]
+    `), 134); // 19+22+43+50
+  });
+
+  it('Caesar cipher', () => {
+    testStringObject(compileAndRun(`
+      let encrypt = fn(text, shift) {
+        let result = "";
+        for (c in text) {
+          let code = ord(c);
+          if (code >= 65 && code <= 90) {
+            result = result + char((code - 65 + shift) % 26 + 65);
+          } else {
+            if (code >= 97 && code <= 122) {
+              result = result + char((code - 97 + shift) % 26 + 97);
+            } else {
+              result = result + c;
+            }
+          }
+        }
+        result
+      };
+      encrypt("Hello", 13)
+    `), 'Uryyb');
+  });
+
+  it('GCD Euclidean algorithm', () => {
+    testIntegerObject(compileAndRun(`
+      let gcd = fn(a, b) {
+        while (b != 0) {
+          let temp = b;
+          b = a % b;
+          a = temp;
+        }
+        a
+      };
+      gcd(48, 18)
+    `), 6);
+  });
+
+  it('flatten nested arrays', () => {
+    const result = compileAndRun(`
+      let flatten = fn(arr) {
+        let result = [];
+        for (x in arr) {
+          if (type(x) == "ARRAY") {
+            for (y in flatten(x)) {
+              result = push(result, y);
+            }
+          } else {
+            result = push(result, x);
+          }
+        }
+        result
+      };
+      flatten([1, [2, [3, 4]], [5, 6], 7])
+    `);
+    assert.equal(result.elements.length, 7);
+    testIntegerObject(result.elements[6], 7);
+  });
+
+  it('binary to decimal', () => {
+    testIntegerObject(compileAndRun(`
+      let bin_to_dec = fn(bits) {
+        let result = 0;
+        for (b in bits) {
+          result = result * 2 + b;
+        }
+        result
+      };
+      bin_to_dec([1, 0, 1, 1, 0])
+    `), 22);
+  });
+
+  it('palindrome check', () => {
+    testBooleanObject(compileAndRun(`
+      let is_palindrome = fn(s) {
+        let i = 0;
+        let j = len(s) - 1;
+        while (i < j) {
+          if (s[i] != s[j]) { return false; }
+          i++;
+          j--;
+        }
+        true
+      };
+      is_palindrome("racecar")
+    `), true);
+  });
+
+  it('count occurrences', () => {
+    testIntegerObject(compileAndRun(`
+      let count = fn(arr, target) {
+        let n = 0;
+        for (x in arr) { if (x == target) { n++; } }
+        n
+      };
+      count([1,2,3,2,4,2,5,2], 2)
+    `), 4);
+  });
+});
