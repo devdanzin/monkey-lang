@@ -253,7 +253,14 @@ export class VM {
           this.jit.storeTrace(trace);
           // Execute the freshly compiled trace immediately
           if (!trace.isSideTrace) {
-            this._executeTrace(trace);
+            try {
+              this._executeTrace(trace);
+            } catch (e) {
+              // Fresh trace failed — delete it
+              for (const [key, t] of this.jit.traces) {
+                if (t === trace) { this.jit.traces.delete(key); break; }
+              }
+            }
           }
           this.recorder = null;
           continue; // ip changed by trace; restart loop
@@ -524,7 +531,16 @@ export class VM {
                 // Continue recording from wherever the inner trace left off
                 break;
               } else if (!recording()) {
-                this._executeTrace(existingTrace);
+                const savedSp = this.sp;
+                try {
+                  this._executeTrace(existingTrace);
+                } catch (e) {
+                  this.sp = savedSp; // Restore sp on failure
+                  for (const [key, t] of this.jit.traces) {
+                    if (t === existingTrace) { this.jit.traces.delete(key); break; }
+                  }
+                  frame.ip = target2 - 1;
+                }
                 break;
               }
             }
@@ -723,15 +739,17 @@ export class VM {
             if (this.jit && !recording()) {
               const funcTrace = this.jit.getFuncTrace(callee.fn);
               if (funcTrace && funcTrace.compiled) {
-                // Execute the compiled function trace directly
-                const result = this._executeFuncTrace(funcTrace, callee, numArgs);
-                if (result && !result.exit) {
-                  // Success — result is a MonkeyObject
-                  this.sp = this.sp - numArgs - 1; // pop args + closure
-                  this.push(result);
-                  break;
+                try {
+                  const result = this._executeFuncTrace(funcTrace, callee, numArgs);
+                  if (result && !result.exit) {
+                    this.sp = this.sp - numArgs - 1;
+                    this.push(result);
+                    break;
+                  }
+                } catch (e) {
+                  // Func trace failed — remove it
+                  this.jit.funcTraces.delete(callee.fn);
                 }
-                // Guard failure — fall through to interpreter
               }
             }
 
@@ -855,7 +873,7 @@ export class VM {
               this.push(result !== undefined ? result : NULL);
             }
           } else {
-            throw new Error('calling non-function/non-builtin');
+            throw new Error(`calling non-function/non-builtin: got ${callee?.constructor?.name || typeof callee} (sp=${this.sp}, bp=${frame.basePointer})`);
           }
           break;
         }

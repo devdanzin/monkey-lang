@@ -1590,15 +1590,19 @@
     {
       "id": "T154",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Tests for else-if",
-      "started": "2026-03-25T21:16:36.342Z"
+      "started": "2026-03-25T21:16:36.342Z",
+      "completed": "2026-03-25T21:17:12.520Z",
+      "duration_ms": 120000,
+      "summary": "6 else-if tests. 423 total."
     },
     {
       "id": "T155",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Fix JIT bug: nested while inside function calls"
+      "status": "in-progress",
+      "task": "Fix JIT bug: nested while inside function calls",
+      "started": "2026-03-25T21:17:19.843Z"
     },
     {
       "id": "T156",
