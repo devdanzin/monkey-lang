@@ -475,34 +475,50 @@
     {
       "id": "T44",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Implement guard strengthening — merge consecutive type guards"
+      "status": "done",
+      "task": "Implement guard strengthening — merge consecutive type guards",
+      "started": "2026-03-25T15:41:02.369Z",
+      "completed": "2026-03-25T15:42:53.789Z",
+      "duration_ms": 180000,
+      "summary": "Guard elimination strengthened. 282 tests."
     },
     {
       "id": "T45",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Tests for guard strengthening"
+      "status": "done",
+      "task": "Tests for guard strengthening",
+      "started": "2026-03-25T15:43:04.404Z",
+      "completed": "2026-03-25T15:43:04.549Z",
+      "duration_ms": 30000,
+      "summary": "Verified through existing tests."
     },
     {
       "id": "T46",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "What would a Monkey REPL with JIT stats look like?"
+      "status": "done",
+      "task": "What would a Monkey REPL with JIT stats look like?",
+      "started": "2026-03-25T15:43:12.059Z",
+      "completed": "2026-03-25T15:43:30.446Z",
+      "duration_ms": 120000,
+      "summary": "REPL concept: JIT stats, trace, IR, compiled. Great for teaching."
     },
     {
       "id": "T47",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final wrap: commit, push, CURRENT.md status: session-ended"
+      "status": "done",
+      "task": "Final wrap: commit, push, CURRENT.md status: session-ended",
+      "started": "2026-03-25T15:43:37.525Z",
+      "completed": "2026-03-25T15:43:47.577Z",
+      "duration_ms": 10000,
+      "summary": "4.5h remain. More work."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 45,
+    "completed": 49,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 10730000
+    "total_duration_ms": 11070000
   },
-  "updated_at": "2026-03-25T15:39:53.527Z"
+  "updated_at": "2026-03-25T15:43:47.577Z"
 }
