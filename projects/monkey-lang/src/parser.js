@@ -25,6 +25,7 @@ const TOKEN_PRECEDENCE = {
   [TokenType.MINUS]: Precedence.SUM,
   [TokenType.SLASH]: Precedence.PRODUCT,
   [TokenType.ASTERISK]: Precedence.PRODUCT,
+  [TokenType.PERCENT]: Precedence.PRODUCT,
   [TokenType.LPAREN]: Precedence.CALL,
   [TokenType.LBRACKET]: Precedence.INDEX,
 };
@@ -56,7 +57,7 @@ export class Parser {
 
     // Register infix parsers
     for (const op of [TokenType.PLUS, TokenType.MINUS, TokenType.SLASH,
-      TokenType.ASTERISK, TokenType.EQ, TokenType.NOT_EQ,
+      TokenType.ASTERISK, TokenType.PERCENT, TokenType.EQ, TokenType.NOT_EQ,
       TokenType.LT, TokenType.GT]) {
       this.registerInfix(op, (left) => this.parseInfixExpression(left));
     }

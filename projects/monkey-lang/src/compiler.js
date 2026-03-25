@@ -100,6 +100,7 @@ export class Compiler {
           case '-': return new MonkeyInteger(left.value - right.value);
           case '*': return new MonkeyInteger(left.value * right.value);
           case '/': return right.value !== 0 ? new MonkeyInteger(Math.trunc(left.value / right.value)) : null;
+          case '%': return right.value !== 0 ? new MonkeyInteger(left.value % right.value) : null;
         }
       }
       // String concatenation folding
@@ -204,6 +205,7 @@ export class Compiler {
         case '-': this.emitArithOrConst(Opcodes.OpSub, Opcodes.OpSubConst, Opcodes.OpSubInt); break;
         case '*': this.emitArithOrConst(Opcodes.OpMul, Opcodes.OpMulConst, null); break;
         case '/': this.emitArithOrConst(Opcodes.OpDiv, Opcodes.OpDivConst, null); break;
+        case '%': this.emitArithOrConst(Opcodes.OpMod, Opcodes.OpModConst, null); break;
         case '==': this.emitCompareOrSpecialized(Opcodes.OpEqual, Opcodes.OpEqualInt); break;
         case '!=': this.emitCompareOrSpecialized(Opcodes.OpNotEqual, Opcodes.OpNotEqualInt); break;
         case '>': this.emitCompareOrSpecialized(Opcodes.OpGreaterThan, Opcodes.OpGreaterThanInt); break;

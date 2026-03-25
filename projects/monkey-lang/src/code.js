@@ -83,6 +83,9 @@ export const Opcodes = {
   // Additional integer-specialized opcodes (for adaptive quickening)
   OpMulInt:         0x2E,
   OpDivInt:         0x2F,
+  OpMod:            0x30,
+  OpModConst:       0x31,
+  OpModInt:         0x32,
 };
 
 // Opcode definitions: [name, ...operandWidths]
@@ -134,6 +137,9 @@ const definitions = {
   [Opcodes.OpLessThanInt]:      ['OpLessThanInt'],
   [Opcodes.OpMulInt]:           ['OpMulInt'],
   [Opcodes.OpDivInt]:           ['OpDivInt'],
+  [Opcodes.OpMod]:              ['OpMod'],
+  [Opcodes.OpModConst]:         ['OpModConst', 2],
+  [Opcodes.OpModInt]:           ['OpModInt'],
 };
 
 /**

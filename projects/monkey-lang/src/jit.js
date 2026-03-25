@@ -53,6 +53,7 @@ export const IR = {
   SUB_INT:      'sub_int',
   MUL_INT:      'mul_int',
   DIV_INT:      'div_int',
+  MOD_INT:      'mod_int',
 
   // String
   CONCAT:       'concat',        // left: ref, right: ref
@@ -448,6 +449,7 @@ export class TraceRecorder {
       case Opcodes.OpSub: case Opcodes.OpSubInt: case Opcodes.OpSubConst: irOp = IR.SUB_INT; break;
       case Opcodes.OpMul: case Opcodes.OpMulInt: case Opcodes.OpMulConst: irOp = IR.MUL_INT; break;
       case Opcodes.OpDiv: case Opcodes.OpDivInt: case Opcodes.OpDivConst: irOp = IR.DIV_INT; break;
+      case Opcodes.OpMod: case Opcodes.OpModInt: case Opcodes.OpModConst: irOp = IR.MOD_INT; break;
     }
     const resultRef = this.trace.addInst(irOp, { left: leftUnboxed, right: rightUnboxed });
     this.typeMap.set(resultRef, 'raw_int');
@@ -750,7 +752,7 @@ export class TraceCompiler {
   // Check if an IR instruction produces a raw JS number (not a MonkeyInteger)
   _isRawInt(inst) {
     const rawOps = new Set([
-      IR.CONST_INT, IR.ADD_INT, IR.SUB_INT, IR.MUL_INT, IR.DIV_INT,
+      IR.CONST_INT, IR.ADD_INT, IR.SUB_INT, IR.MUL_INT, IR.DIV_INT, IR.MOD_INT, IR.MOD_INT,
       IR.NEG, IR.UNBOX_INT,
     ]);
     if (rawOps.has(inst.op)) return true;
@@ -904,7 +906,7 @@ export class TraceCompiler {
       IR.LOAD_LOCAL, IR.STORE_LOCAL,
       IR.GUARD_INT, IR.GUARD_BOOL, IR.GUARD_TRUTHY, IR.GUARD_FALSY,
       IR.UNBOX_INT, IR.BOX_INT,
-      IR.ADD_INT, IR.SUB_INT, IR.MUL_INT, IR.DIV_INT,
+      IR.ADD_INT, IR.SUB_INT, IR.MUL_INT, IR.DIV_INT, IR.MOD_INT,
       IR.GT, IR.LT, IR.EQ, IR.NEQ,
       IR.NEG, IR.NOT,
     ]);
@@ -996,6 +998,12 @@ export class TraceCompiler {
         case IR.DIV_INT: {
           const v = `__st${vc++}`;
           this.lines.push(`    const ${v} = Math.trunc(${stVars.get(inst.operands.left)} / ${stVars.get(inst.operands.right)});`);
+          stVars.set(inst.id, v);
+          break;
+        }
+        case IR.MOD_INT: {
+          const v = `__st${vc++}`;
+          this.lines.push(`    const ${v} = (${stVars.get(inst.operands.left)} % ${stVars.get(inst.operands.right)});`);
           stVars.set(inst.id, v);
           break;
         }
@@ -1601,6 +1609,12 @@ export class TraceCompiler {
           break;
         }
 
+        case IR.MOD_INT: {
+          const l = varNames.get(inst.operands.left);
+          const r = varNames.get(inst.operands.right);
+          this.lines.push(`  const ${v} = (${l} % ${r});`);
+          break;
+        }
         case IR.EQ: {
           const l = varNames.get(inst.operands.left);
           const r = varNames.get(inst.operands.right);
@@ -1921,6 +1935,12 @@ export class TraceCompiler {
           break;
         }
 
+        case IR.MOD_INT: {
+          const l = varNames.get(inst.operands.left);
+          const r = varNames.get(inst.operands.right);
+          this.lines.push(`  const ${v} = (${l} % ${r});`);
+          break;
+        }
         case IR.EQ: {
           const l = varNames.get(inst.operands.left);
           const r = varNames.get(inst.operands.right);
@@ -2285,6 +2305,16 @@ export class TraceOptimizer {
           }
           break;
 
+        case IR.MOD_INT:
+          // x % 1 → 0
+          if (rv === 1) {
+            inst.op = IR.CONST_INT;
+            inst.operands = { value: 0 };
+            constVals.set(i, 0);
+            simplified++;
+          }
+          break;
+
         case IR.NEG: {
           const { ref } = inst.operands;
           const refInst = ir[ref];
@@ -2578,7 +2608,7 @@ export class TraceOptimizer {
     const PURE_OPS = new Set([
       IR.CONST_INT, IR.CONST_BOOL, IR.CONST_NULL, IR.CONST_OBJ,
       IR.LOAD_LOCAL, IR.LOAD_GLOBAL, IR.LOAD_FREE, IR.LOAD_CONST,
-      IR.ADD_INT, IR.SUB_INT, IR.MUL_INT, IR.DIV_INT,
+      IR.ADD_INT, IR.SUB_INT, IR.MUL_INT, IR.DIV_INT, IR.MOD_INT,
       IR.CONCAT, IR.EQ, IR.NEQ, IR.GT, IR.LT,
       IR.NEG, IR.NOT, IR.UNBOX_INT, IR.BOX_INT,
       IR.UNBOX_STRING, IR.BOX_STRING,
@@ -3019,6 +3049,7 @@ export class TraceOptimizer {
             case IR.SUB_INT: result = lv - rv; break;
             case IR.MUL_INT: result = lv * rv; break;
             case IR.DIV_INT: result = Math.trunc(lv / rv); break;
+            case IR.MOD_INT: result = rv !== 0 ? (lv % rv) : null; break;
           }
           knownValues.set(i, result);
         }
@@ -3154,6 +3185,7 @@ export class TraceOptimizer {
             case IR.SUB_INT: result = leftVal - rightVal; break;
             case IR.MUL_INT: result = leftVal * rightVal; break;
             case IR.DIV_INT: result = Math.trunc(leftVal / rightVal); break;
+            case IR.MOD_INT: result = rightVal !== 0 ? (leftVal % rightVal) : null; break;
           }
           inst.op = IR.CONST_INT;
           inst.operands = { value: result };

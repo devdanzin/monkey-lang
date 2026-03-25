@@ -22,6 +22,7 @@ const QUICKEN_MAP = {
   [Opcodes.OpSub]: Opcodes.OpSubInt,
   [Opcodes.OpMul]: Opcodes.OpMulInt,
   [Opcodes.OpDiv]: Opcodes.OpDivInt,
+  [Opcodes.OpMod]: Opcodes.OpModInt,
   [Opcodes.OpEqual]: Opcodes.OpEqualInt,
   [Opcodes.OpNotEqual]: Opcodes.OpNotEqualInt,
   [Opcodes.OpGreaterThan]: Opcodes.OpGreaterThanInt,
@@ -297,7 +298,8 @@ export class VM {
         case Opcodes.OpAdd:
         case Opcodes.OpSub:
         case Opcodes.OpMul:
-        case Opcodes.OpDiv: {
+        case Opcodes.OpDiv:
+        case Opcodes.OpMod: {
           const right = this.pop();
           const left = this.pop();
 
@@ -321,6 +323,7 @@ export class VM {
               case Opcodes.OpSub: result = left.value - right.value; break;
               case Opcodes.OpMul: result = left.value * right.value; break;
               case Opcodes.OpDiv: result = Math.trunc(left.value / right.value); break;
+              case Opcodes.OpMod: result = left.value % right.value; break;
             }
             this.push(cachedInteger(result));
           } else if (left instanceof MonkeyString && right instanceof MonkeyString && op === Opcodes.OpAdd) {
@@ -1004,6 +1007,7 @@ export class VM {
         case Opcodes.OpAddConst:
         case Opcodes.OpSubConst:
         case Opcodes.OpMulConst:
+        case Opcodes.OpModConst:
         case Opcodes.OpDivConst: {
           const constIdx3 = (ins[ip + 1] << 8) | ins[ip + 2];
           frame.ip += 2;
@@ -1025,6 +1029,7 @@ export class VM {
               case Opcodes.OpSubConst: result = left4.value - right4.value; break;
               case Opcodes.OpMulConst: result = left4.value * right4.value; break;
               case Opcodes.OpDivConst: result = Math.trunc(left4.value / right4.value); break;
+              case Opcodes.OpModConst: result = left4.value % right4.value; break;
             }
             this.push(cachedInteger(result));
           } else if (left4 instanceof MonkeyString && right4 instanceof MonkeyString && op === Opcodes.OpAddConst) {
@@ -1167,6 +1172,20 @@ export class VM {
           }
           if (recording()) { this.recorder.recordIntArith(op, l, r); }
           this.stack[this.sp++] = cachedInteger(Math.trunc(l.value / r.value));
+          break;
+        }
+
+        case Opcodes.OpModInt: {
+          const r = this.stack[--this.sp];
+          const l = this.stack[--this.sp];
+          if (!(l instanceof MonkeyInteger) || !(r instanceof MonkeyInteger)) {
+            ins[ip] = Opcodes.OpMod;
+            this.stack[this.sp++] = l; this.stack[this.sp++] = r;
+            frame.ip--;
+            break;
+          }
+          if (recording()) { this.recorder.recordIntArith(op, l, r); }
+          this.stack[this.sp++] = cachedInteger(l.value % r.value);
           break;
         }
 

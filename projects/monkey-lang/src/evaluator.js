@@ -265,6 +265,7 @@ function evalIntegerInfix(op, left, right) {
     case '-': return new MonkeyInteger(l - r);
     case '*': return new MonkeyInteger(l * r);
     case '/': return new MonkeyInteger(Math.trunc(l / r));
+    case '%': return new MonkeyInteger(l % r);
     case '<': return nativeBoolToBooleanObject(l < r);
     case '>': return nativeBoolToBooleanObject(l > r);
     case '==': return nativeBoolToBooleanObject(l === r);

@@ -392,15 +392,19 @@
     {
       "id": "T38",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Update monkey-lang README with all new features (stdlib, builtins, 275 tests, 12 opt passes)",
-      "started": "2026-03-25T15:19:26.539Z"
+      "started": "2026-03-25T15:19:26.539Z",
+      "completed": "2026-03-25T15:21:29.548Z",
+      "duration_ms": 300000,
+      "summary": "README updated: 275 tests, 26 benchmarks, 12 opt passes, stdlib, 15 builtins, 7 blog links, performance table, architecture diagram."
     },
     {
       "id": "T39",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Implement modulo operator for Monkey (% or mod)"
+      "status": "in-progress",
+      "task": "Implement modulo operator for Monkey (% or mod)",
+      "started": "2026-03-25T15:21:38.677Z"
     },
     {
       "id": "T40",
