@@ -1652,16 +1652,20 @@
       "id": "T160",
       "mode": "BUILD",
       "task": "Implement null keyword literal",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T159",
-      "started": "2026-03-25T21:30:53.045Z"
+      "started": "2026-03-25T21:30:53.045Z",
+      "completed": "2026-03-25T21:32:11.925Z",
+      "duration_ms": 120000,
+      "summary": "null keyword literal. null == null is true. null == 5 is false. 430 tests."
     },
     {
       "id": "T161",
       "mode": "BUILD",
       "task": "Array slice syntax: arr[1:3]",
-      "status": "upcoming",
-      "plan_ref": "T159"
+      "status": "in-progress",
+      "plan_ref": "T159",
+      "started": "2026-03-25T21:32:19.223Z"
     },
     {
       "id": "T162",

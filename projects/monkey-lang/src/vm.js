@@ -1077,12 +1077,41 @@ export class VM {
             if (index.fastHashKey) {
               obj.pairs.set(index.fastHashKey(), { key: index, value: val });
             }
-          } else if (obj instanceof MonkeyString) {
-            // Strings are immutable — no-op (or could error)
           }
-          this.push(val); // assignment returns the value
+          this.push(val);
           if (recording()) {
             this.recorder.abortTrace('OpSetIndex not JIT-compiled');
+          }
+          break;
+        }
+
+        case Opcodes.OpSlice: {
+          const end = this.pop();
+          const start = this.pop();
+          const obj = this.pop();
+          if (obj instanceof MonkeyArray) {
+            const len = obj.elements.length;
+            let s = (start === NULL) ? 0 : start.value;
+            let e = (end === NULL) ? len : end.value;
+            if (s < 0) s += len;
+            if (e < 0) e += len;
+            if (s < 0) s = 0;
+            if (e > len) e = len;
+            this.push(new MonkeyArray(obj.elements.slice(s, e)));
+          } else if (obj instanceof MonkeyString) {
+            const len = obj.value.length;
+            let s = (start === NULL) ? 0 : start.value;
+            let e = (end === NULL) ? len : end.value;
+            if (s < 0) s += len;
+            if (e < 0) e += len;
+            if (s < 0) s = 0;
+            if (e > len) e = len;
+            this.push(new MonkeyString(obj.value.slice(s, e)));
+          } else {
+            this.push(NULL);
+          }
+          if (recording()) {
+            this.recorder.abortTrace('OpSlice not JIT-compiled');
           }
           break;
         }

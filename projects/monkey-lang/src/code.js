@@ -90,6 +90,7 @@ export const Opcodes = {
   OpOr:             0x34,
   OpSetFree:        0x35, // Set free variable in closure
   OpSetIndex:       0x36, // Set element at index: arr[i] = val
+  OpSlice:          0x37, // Slice: arr[start:end]
 };
 
 // Opcode definitions: [name, ...operandWidths]
@@ -148,6 +149,7 @@ const definitions = {
   [Opcodes.OpOr]:               ['OpOr'],
   [Opcodes.OpSetFree]:          ['OpSetFree', 1],
   [Opcodes.OpSetIndex]:         ['OpSetIndex'],
+  [Opcodes.OpSlice]:            ['OpSlice'],
 };
 
 /**

@@ -210,6 +210,31 @@ export function monkeyEval(node, env) {
     }
     return val;
   }
+  if (node instanceof AST.SliceExpression) {
+    const obj = monkeyEval(node.left, env);
+    if (isError(obj)) return obj;
+    const start = node.start ? monkeyEval(node.start, env) : null;
+    if (start && isError(start)) return start;
+    const end = node.end ? monkeyEval(node.end, env) : null;
+    if (end && isError(end)) return end;
+    if (obj instanceof MonkeyArray) {
+      const len = obj.elements.length;
+      let s = start ? start.value : 0;
+      let e = end ? end.value : len;
+      if (s < 0) s += len;
+      if (e < 0) e += len;
+      return new MonkeyArray(obj.elements.slice(s, e));
+    }
+    if (obj instanceof MonkeyString) {
+      const len = obj.value.length;
+      let s = start ? start.value : 0;
+      let e = end ? end.value : len;
+      if (s < 0) s += len;
+      if (e < 0) e += len;
+      return new MonkeyString(obj.value.slice(s, e));
+    }
+    return NULL;
+  }
   if (node instanceof AST.IndexExpression) {
     const left = monkeyEval(node.left, env);
     if (isError(left)) return left;

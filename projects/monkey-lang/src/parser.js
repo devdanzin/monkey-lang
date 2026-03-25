@@ -429,7 +429,32 @@ export class Parser {
   parseIndexExpression(left) {
     const token = this.curToken;
     this.nextToken();
+
+    // Check for [:end] pattern
+    if (this.curTokenIs(TokenType.COLON)) {
+      let end = null;
+      if (!this.peekTokenIs(TokenType.RBRACKET)) {
+        this.nextToken();
+        end = this.parseExpression(Precedence.LOWEST);
+      }
+      if (!this.expectPeek(TokenType.RBRACKET)) return null;
+      return new ast.SliceExpression(token, left, null, end);
+    }
+
     const index = this.parseExpression(Precedence.LOWEST);
+
+    // Check for [start:end] pattern
+    if (this.peekTokenIs(TokenType.COLON)) {
+      this.nextToken(); // consume :
+      let end = null;
+      if (!this.peekTokenIs(TokenType.RBRACKET)) {
+        this.nextToken();
+        end = this.parseExpression(Precedence.LOWEST);
+      }
+      if (!this.expectPeek(TokenType.RBRACKET)) return null;
+      return new ast.SliceExpression(token, left, index, end);
+    }
+
     if (!this.expectPeek(TokenType.RBRACKET)) return null;
     return new ast.IndexExpression(token, left, index);
   }

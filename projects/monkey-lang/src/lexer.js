@@ -276,8 +276,8 @@ export class Lexer {
         }
         break;
       case ',': tok = new Token(TokenType.COMMA, ','); break;
-      case ';': tok = new Token(TokenType.SEMICOLON, ';'); break;
       case ':': tok = new Token(TokenType.COLON, ':'); break;
+      case ';': tok = new Token(TokenType.SEMICOLON, ';'); break;
       case '(': tok = new Token(TokenType.LPAREN, '('); break;
       case ')': tok = new Token(TokenType.RPAREN, ')'); break;
       case '{': tok = new Token(TokenType.LBRACE, '{'); break;

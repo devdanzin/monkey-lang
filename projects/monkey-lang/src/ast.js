@@ -257,3 +257,14 @@ export class NullLiteral {
   tokenLiteral() { return this.token.literal; }
   toString() { return 'null'; }
 }
+
+export class SliceExpression {
+  constructor(token, left, start, end) {
+    this.token = token;
+    this.left = left;    // the array/string
+    this.start = start;  // Expression or null (start of slice)
+    this.end = end;      // Expression or null (end of slice)
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return `${this.left}[${this.start}:${this.end}]`; }
+}

@@ -343,6 +343,23 @@ export class Compiler {
       err = this.compile(node.value);
       if (err) return err;
       this.emit(Opcodes.OpSetIndex);
+    } else if (node instanceof ast.SliceExpression) {
+      // arr[start:end] → push arr, push start (or null), push end (or null), OpSlice
+      let err = this.compile(node.left);
+      if (err) return err;
+      if (node.start) {
+        err = this.compile(node.start);
+        if (err) return err;
+      } else {
+        this.emit(Opcodes.OpNull);
+      }
+      if (node.end) {
+        err = this.compile(node.end);
+        if (err) return err;
+      } else {
+        this.emit(Opcodes.OpNull);
+      }
+      this.emit(Opcodes.OpSlice);
     } else if (node instanceof ast.BreakStatement) {
       if (this.loopStack.length === 0) return 'break outside of loop';
       this.emit(Opcodes.OpNull); // break produces null
