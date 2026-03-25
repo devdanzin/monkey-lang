@@ -1423,3 +1423,95 @@ describe('Final Coverage Tests', () => {
     `), '6 (div3)');
   });
 });
+
+describe('Stress Tests', () => {
+  it('100 element array operations', () => {
+    testIntegerObject(compileAndRun(`
+      let a = [];
+      for (let i = 0; i < 100; i++) { a = push(a, i); }
+      let sum = 0;
+      for (x in a) { sum += x; }
+      sum
+    `), 4950);
+  });
+
+  it('deeply nested if-else', () => {
+    testStringObject(compileAndRun(`
+      let classify = fn(n) {
+        if (n < 10) { "tiny" }
+        else if (n < 100) { "small" }
+        else if (n < 1000) { "medium" }
+        else if (n < 10000) { "large" }
+        else { "huge" }
+      };
+      classify(500)
+    `), 'medium');
+  });
+
+  it('recursive depth', () => {
+    testIntegerObject(compileAndRun(`
+      let sum = fn(n) { n <= 0 ? 0 : n + sum(n - 1) };
+      sum(200)
+    `), 20100);
+  });
+
+  it('string building with templates', () => {
+    testStringObject(compileAndRun(`
+      let s = "";
+      for (let i = 1; i <= 5; i++) {
+        s = \`\${s}\${i > 1 ? "," : ""}\${i}\`;
+      }
+      s
+    `), '1,2,3,4,5');
+  });
+
+  it('hash as accumulator', () => {
+    testIntegerObject(compileAndRun(`
+      let count = {};
+      let data = [1, 2, 1, 3, 2, 1, 3, 3, 3];
+      for (x in data) {
+        let key = str(x);
+        if (indexOf(str(keys(count)), key) >= 0) {
+          count[key] = count[key] + 1;
+        } else {
+          count[key] = 1;
+        }
+      }
+      count["3"]
+    `), 4);
+  });
+
+  it('counter closure', () => {
+    testIntegerObject(compileAndRun(\`
+      let counter = fn() {
+        let n = 0;
+        fn() { n = n + 1; n }
+      };
+      let c = counter();
+      c(); c(); c()
+    \`), 3);
+  });
+
+  it('quicksort correctness', () => {
+    const result = compileAndRun(`
+      let swap = fn(a, i, j) { let t = a[i]; a[i] = a[j]; a[j] = t; };
+      let qs = fn(a, lo, hi) {
+        if (lo >= hi) { return null; }
+        let p = a[hi]; let i = lo;
+        for (let j = lo; j < hi; j++) {
+          if (a[j] <= p) { swap(a, i, j); i++; }
+        }
+        swap(a, i, hi);
+        qs(a, lo, i - 1); qs(a, i + 1, hi);
+      };
+      let a = [50, 23, 9, 18, 61, 32, 99, 1, 44, 73, 5, 87, 16, 42, 70, 28, 55, 3, 91, 37];
+      qs(a, 0, len(a) - 1);
+      let sorted = true;
+      for (let i = 0; i < len(a) - 1; i++) {
+        if (a[i] > a[i+1]) { sorted = false; break; }
+      }
+      sorted ? 1 : 0
+    `);
+    testIntegerObject(result, 1);
+  });
+});
