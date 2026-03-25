@@ -1530,15 +1530,19 @@
     {
       "id": "T148",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Compound index assignment: arr[i] += val",
-      "started": "2026-03-25T21:12:58.920Z"
+      "started": "2026-03-25T21:12:58.920Z",
+      "completed": "2026-03-25T21:13:34.810Z",
+      "duration_ms": 180000,
+      "summary": "Compound index assignment: arr[i] += val works for all compound operators. Parser desugars to IndexAssignExpression."
     },
     {
       "id": "T149",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Tests for compound index assignment"
+      "status": "in-progress",
+      "task": "Tests for compound index assignment",
+      "started": "2026-03-25T21:13:34.920Z"
     },
     {
       "id": "T150",

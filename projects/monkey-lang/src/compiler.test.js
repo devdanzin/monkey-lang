@@ -799,3 +799,25 @@ describe('Array Mutation', () => {
     assert.equal(result.elements.length, 2);
   });
 });
+
+describe('Compound Index Assignment', () => {
+  it('arr[i] += val', () => {
+    const result = compileAndRun('let a = [1, 2, 3]; a[0] += 10; a');
+    assert.ok(result instanceof MonkeyArray);
+    testIntegerObject(result.elements[0], 11);
+  });
+  it('arr[i] -= val', () => {
+    const result = compileAndRun('let a = [10, 20, 30]; a[1] -= 5; a');
+    testIntegerObject(result.elements[1], 15);
+  });
+  it('arr[i] *= val', () => {
+    const result = compileAndRun('let a = [1, 2, 3]; a[-1] *= 10; a');
+    testIntegerObject(result.elements[2], 30);
+  });
+  it('compound index in loop', () => {
+    const result = compileAndRun('let a = [0, 0, 0]; for (let i = 0; i < 3; i += 1) { a[i] += i * 10; } a');
+    testIntegerObject(result.elements[0], 0);
+    testIntegerObject(result.elements[1], 10);
+    testIntegerObject(result.elements[2], 20);
+  });
+});
