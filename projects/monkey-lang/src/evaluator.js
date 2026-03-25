@@ -130,6 +130,18 @@ export function monkeyEval(node, env) {
     env.set(node.name.value, val);
     return undefined;
   }
+  if (node instanceof AST.DestructuringLet) {
+    const val = monkeyEval(node.value, env);
+    if (isError(val)) return val;
+    if (val instanceof MonkeyArray) {
+      for (let i = 0; i < node.names.length; i++) {
+        if (node.names[i]) {
+          env.set(node.names[i].value, i < val.elements.length ? val.elements[i] : NULL);
+        }
+      }
+    }
+    return undefined;
+  }
   if (node instanceof AST.ReturnStatement) {
     const val = monkeyEval(node.returnValue, env);
     if (isError(val)) return val;

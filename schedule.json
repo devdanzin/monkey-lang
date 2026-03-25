@@ -2141,15 +2141,47 @@
     {
       "id": "T208",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "More Monkey programs: tower of hanoi, binary search, linked list",
-      "started": "2026-03-25T22:20:27.880Z"
+      "started": "2026-03-25T22:20:27.880Z",
+      "completed": "2026-03-25T22:21:14.437Z",
+      "duration_ms": 180000,
+      "summary": "Binary search (uses match expression!) and Tower of Hanoi examples. 10 example programs total."
     },
     {
       "id": "T209",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Actual session end wrap",
+      "started": "2026-03-25T22:21:32.653Z",
+      "completed": "2026-03-25T22:21:32.763Z",
+      "duration_ms": 0,
+      "summary": "Not at boundary. 4 hours remain."
+    },
+    {
+      "id": "T210",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Implement destructuring: let [a, b] = [1, 2]",
+      "started": "2026-03-25T22:21:54.168Z"
+    },
+    {
+      "id": "T211",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Actual session end wrap"
+      "task": "Tests for destructuring"
+    },
+    {
+      "id": "T212",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Final final rebuild of playground + docs"
+    },
+    {
+      "id": "T213",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Session B final push at boundary"
     }
   ],
   "backlog": [],
@@ -2829,6 +2861,22 @@
     {
       "time": "2026-03-25T22:15:18.930Z",
       "msg": "Added T209 (MAINTAIN) after end: Actual session end wrap"
+    },
+    {
+      "time": "2026-03-25T22:21:44.770Z",
+      "msg": "Added T210 (BUILD) after end: Implement destructuring: let [a, b] = [1, 2]"
+    },
+    {
+      "time": "2026-03-25T22:21:44.881Z",
+      "msg": "Added T211 (BUILD) after end: Tests for destructuring"
+    },
+    {
+      "time": "2026-03-25T22:21:44.993Z",
+      "msg": "Added T212 (BUILD) after end: Final final rebuild of playground + docs"
+    },
+    {
+      "time": "2026-03-25T22:21:45.105Z",
+      "msg": "Added T213 (MAINTAIN) after end: Session B final push at boundary"
     }
   ],
   "updated_at": "2026-03-25T16:42:01.690Z"

@@ -289,3 +289,13 @@ export class MatchExpression {
   tokenLiteral() { return this.token.literal; }
   toString() { return 'match { ... }'; }
 }
+
+export class DestructuringLet {
+  constructor(token, names, value) {
+    this.token = token;
+    this.names = names;   // Array of Identifier or null (for _)
+    this.value = value;   // Expression
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return `let [${this.names.map(n => n ? n.value : '_').join(', ')}] = ...`; }
+}

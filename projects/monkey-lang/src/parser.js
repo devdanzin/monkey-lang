@@ -149,6 +149,12 @@ export class Parser {
 
   parseLetStatement() {
     const token = this.curToken;
+
+    // Check for destructuring: let [a, b] = ...
+    if (this.peekTokenIs(TokenType.LBRACKET)) {
+      return this.parseDestructuringLet(token);
+    }
+
     if (!this.expectPeek(TokenType.IDENT)) return null;
     const name = new ast.Identifier(this.curToken, this.curToken.literal);
     if (!this.expectPeek(TokenType.ASSIGN)) return null;
@@ -156,6 +162,30 @@ export class Parser {
     const value = this.parseExpression(Precedence.LOWEST);
     if (this.peekTokenIs(TokenType.SEMICOLON)) this.nextToken();
     return new ast.LetStatement(token, name, value);
+  }
+
+  parseDestructuringLet(token) {
+    this.nextToken(); // consume [
+    const names = [];
+    if (!this.peekTokenIs(TokenType.RBRACKET)) {
+      this.nextToken();
+      names.push(new ast.Identifier(this.curToken, this.curToken.literal));
+      while (this.peekTokenIs(TokenType.COMMA)) {
+        this.nextToken();
+        this.nextToken();
+        if (this.curTokenIs(TokenType.IDENT) && this.curToken.literal === '_') {
+          names.push(null); // skip this position
+        } else {
+          names.push(new ast.Identifier(this.curToken, this.curToken.literal));
+        }
+      }
+    }
+    if (!this.expectPeek(TokenType.RBRACKET)) return null;
+    if (!this.expectPeek(TokenType.ASSIGN)) return null;
+    this.nextToken();
+    const value = this.parseExpression(Precedence.LOWEST);
+    if (this.peekTokenIs(TokenType.SEMICOLON)) this.nextToken();
+    return new ast.DestructuringLet(token, names, value);
   }
 
   parseReturnStatement() {
