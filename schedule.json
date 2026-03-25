@@ -276,15 +276,19 @@
     {
       "id": "T27",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Tests and benchmarks for full bounds check elimination",
-      "started": "2026-03-25T15:02:31.058Z"
+      "started": "2026-03-25T15:02:31.058Z",
+      "completed": "2026-03-25T15:06:13.079Z",
+      "duration_ms": 300000,
+      "summary": "2 IVA tests added + benchmarked. Full GUARD_BOUNDS elimination verified. Decrementing loop exclusion verified. 252 tests, 23 benchmarks, ~9.5x."
     },
     {
       "id": "T28",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Commit, push, update TASKS.md"
+      "status": "in-progress",
+      "task": "Commit, push, update TASKS.md",
+      "started": "2026-03-25T15:06:24.455Z"
     },
     {
       "id": "T29",
