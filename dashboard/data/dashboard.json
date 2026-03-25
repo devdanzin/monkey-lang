@@ -138,9 +138,12 @@
     {
       "id": "T15",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": null,
-      "plan_ref": "T14"
+      "plan_ref": "T14",
+      "completed": "2026-03-25T14:52:22.284Z",
+      "summary": "UNBOX dedup pass. IR 6 instr shorter. 250 tests, 9.5x.",
+      "duration_ms": 600000
     },
     {
       "id": "T16",
@@ -169,10 +172,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 16,
+    "completed": 18,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 3330000
+    "total_duration_ms": 4530000
   },
-  "updated_at": "2026-03-25T14:43:56.612Z"
+  "updated_at": "2026-03-25T14:54:25.847Z"
 }

@@ -173,23 +173,31 @@
     {
       "id": "T15",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix UNBOX_INT CSE — eliminate duplicate unboxings of the same source ref",
       "plan_ref": "T14",
-      "started": "2026-03-25T14:44:05.718Z"
+      "started": "2026-03-25T14:44:05.718Z",
+      "completed": "2026-03-25T14:52:22.246Z",
+      "duration_ms": 600000,
+      "summary": "UNBOX dedup pass: eliminates duplicate unboxings CSE missed. IR 6 instructions shorter for array sum. Guard refs unified. 250 tests, 23 benchmarks, ~9.5x."
     },
     {
       "id": "T22",
       "mode": "BUILD",
       "task": "Write blog post: Range Check Elimination in Trace JITs (our approach vs CPython)",
-      "status": "upcoming",
-      "plan_ref": "T14"
+      "status": "done",
+      "plan_ref": "T14",
+      "started": "2026-03-25T14:52:39.771Z",
+      "completed": "2026-03-25T14:54:25.816Z",
+      "duration_ms": 600000,
+      "summary": "Blog post published: Range Check Elimination in Trace JITs. Covers our approach vs CPython, UNBOX normalization trick, lower-bound-only reduction, 19% benchmark improvement. Pushed to henry-the-frog.github.io."
     },
     {
       "id": "T16",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: commit, push"
+      "status": "in-progress",
+      "task": "Housekeeping: commit, push",
+      "started": "2026-03-25T14:54:45.577Z"
     },
     {
       "id": "T17",
