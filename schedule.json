@@ -1454,16 +1454,20 @@
       "id": "T141",
       "mode": "BUILD",
       "task": "Implement array mutation: arr[i] = expr",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T139",
-      "started": "2026-03-25T21:07:48.999Z"
+      "started": "2026-03-25T21:07:48.999Z",
+      "completed": "2026-03-25T21:09:50.784Z",
+      "duration_ms": 480000,
+      "summary": "Array and hash mutation implemented: arr[i] = val, hash[key] = val, supports negative indexing. OpSetIndex opcode. JIT aborts safely."
     },
     {
       "id": "T142",
       "mode": "BUILD",
       "task": "Tests for array mutation",
-      "status": "upcoming",
-      "plan_ref": "T139"
+      "status": "in-progress",
+      "plan_ref": "T139",
+      "started": "2026-03-25T21:09:57.076Z"
     },
     {
       "id": "T143",

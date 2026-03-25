@@ -751,3 +751,51 @@ describe('Escape Sequences', () => {
     testIntegerObject(compileAndRun('len("a\\nb")'), 3);
   });
 });
+
+describe('Array Mutation', () => {
+  it('set element by index', () => {
+    const result = compileAndRun('let a = [1, 2, 3]; a[0] = 10; a');
+    assert.ok(result instanceof MonkeyArray);
+    testIntegerObject(result.elements[0], 10);
+    testIntegerObject(result.elements[1], 2);
+  });
+  it('set element with negative index', () => {
+    const result = compileAndRun('let a = [1, 2, 3]; a[-1] = 99; a');
+    assert.ok(result instanceof MonkeyArray);
+    testIntegerObject(result.elements[2], 99);
+  });
+  it('swap elements', () => {
+    const result = compileAndRun('let a = [10, 20]; let temp = a[0]; a[0] = a[1]; a[1] = temp; a');
+    assert.ok(result instanceof MonkeyArray);
+    testIntegerObject(result.elements[0], 20);
+    testIntegerObject(result.elements[1], 10);
+  });
+  it('bubble sort with mutation', () => {
+    const result = compileAndRun(`
+      let a = [5, 3, 1, 4, 2];
+      let n = len(a);
+      for (let i = 0; i < n; i += 1) {
+        for (let j = 0; j < n - i - 1; j += 1) {
+          if (a[j] > a[j + 1]) {
+            let temp = a[j];
+            a[j] = a[j + 1];
+            a[j + 1] = temp;
+          }
+        }
+      }
+      a
+    `);
+    assert.ok(result instanceof MonkeyArray);
+    for (let i = 0; i < 5; i++) {
+      testIntegerObject(result.elements[i], i + 1);
+    }
+  });
+  it('assignment returns value', () => {
+    testIntegerObject(compileAndRun('let a = [0, 0]; let x = a[0] = 42; x'), 42);
+  });
+  it('out of bounds is no-op', () => {
+    const result = compileAndRun('let a = [1, 2]; a[5] = 99; a');
+    assert.ok(result instanceof MonkeyArray);
+    assert.equal(result.elements.length, 2);
+  });
+});
