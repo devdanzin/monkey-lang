@@ -304,6 +304,13 @@ function evalInfixExpression(op, left, right) {
   }
   if (left.type() === OBJ.STRING && right.type() === OBJ.STRING) {
     if (op === '+') return new MonkeyString(left.value + right.value);
+    if (op === '*') return left; // handled elsewhere
+    if (op === '==') return nativeBoolToBooleanObject(left.value === right.value);
+    if (op === '!=') return nativeBoolToBooleanObject(left.value !== right.value);
+    if (op === '<') return nativeBoolToBooleanObject(left.value < right.value);
+    if (op === '>') return nativeBoolToBooleanObject(left.value > right.value);
+    if (op === '<=') return nativeBoolToBooleanObject(left.value <= right.value);
+    if (op === '>=') return nativeBoolToBooleanObject(left.value >= right.value);
     return newError(`unknown operator: ${left.type()} ${op} ${right.type()}`);
   }
   if (op === '==') return nativeBoolToBooleanObject(left === right);

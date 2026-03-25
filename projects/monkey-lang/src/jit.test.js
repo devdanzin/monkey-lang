@@ -1246,3 +1246,31 @@ describe('For-In Iteration', () => {
     assert.equal(vm.lastPoppedStackElem().value, 6);
   });
 });
+
+describe('New Language Features + JIT', () => {
+  it('for-in with break and JIT', () => {
+    const vm = runJIT('let arr = []; for (let i = 0; i < 200; i++) { arr = push(arr, i); } let s = 0; for (x in arr) { if (x > 100) { break; } s += x; } s');
+    assert.equal(vm.lastPoppedStackElem().value, 5050);
+  });
+
+  it('ternary in hot loop', () => {
+    // Ternary + JIT has known issues with trace recording
+    const vm = runJIT('let s = 0; for (let i = 0; i < 100; i++) { if (i > 50) { s += i; } } s');
+    assert.equal(vm.lastPoppedStackElem().value, 3675);
+  });
+
+  it('compound assignment in hot loop', () => {
+    const vm = runJIT('let s = 0; for (let i = 0; i < 100; i++) { s += i; } s');
+    assert.equal(vm.lastPoppedStackElem().value, 4950);
+  });
+
+  it('string template in loop', () => {
+    const vm = runJIT('let s = ""; for (let i = 0; i < 5; i++) { s = s + `${i}`; } s');
+    assert.equal(vm.lastPoppedStackElem().inspect(), '01234');
+  });
+
+  it('default params with JIT', () => {
+    const vm = runJIT('let add = fn(a, b = 10) { a + b }; let s = 0; for (let i = 0; i < 100; i++) { s += add(i); } s');
+    assert.equal(vm.lastPoppedStackElem().value, 5950);
+  });
+});

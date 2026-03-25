@@ -244,3 +244,48 @@ a;`;
     assert.ok(result); // just verify no crash for now
   });
 });
+
+describe('New Language Features (Evaluator)', () => {
+  it('for loop', () => {
+    assert.equal(testEval('let s = 0; for (let i = 0; i < 5; i++) { s += i; }; s').value, 10);
+  });
+  it('for-in array', () => {
+    assert.equal(testEval('let s = 0; for (x in [1,2,3]) { s += x; }; s').value, 6);
+  });
+  it('break in while', () => {
+    assert.equal(testEval('let i = 0; while (true) { if (i == 5) { break; } i++; }; i').value, 5);
+  });
+  it('continue in for', () => {
+    assert.equal(testEval('let s = 0; for (let i = 0; i < 10; i++) { if (i % 2 == 0) { continue; } s += i; }; s').value, 25);
+  });
+  it('ternary', () => {
+    assert.equal(testEval('5 > 3 ? "yes" : "no"').value, 'yes');
+  });
+  it('else-if', () => {
+    assert.equal(testEval('let x = 2; if (x == 1) { "a" } else if (x == 2) { "b" } else { "c" }').value, 'b');
+  });
+  it('null literal', () => {
+    assert.ok(testEval('null').type() === 'NULL');
+  });
+  it('null equality', () => {
+    assert.equal(testEval('null == null').value, true);
+  });
+  it('default params', () => {
+    assert.equal(testEval('let f = fn(x, y = 10) { x + y }; f(5)').value, 15);
+  });
+  it('array mutation', () => {
+    assert.equal(testEval('let a = [1,2,3]; a[0] = 10; a[0]').value, 10);
+  });
+  it('negative indexing', () => {
+    assert.equal(testEval('[1,2,3][-1]').value, 3);
+  });
+  it('string template', () => {
+    assert.equal(testEval('let x = 42; `answer: ${x}`').value, 'answer: 42');
+  });
+  it('escape sequences', () => {
+    assert.equal(testEval('"hello\\nworld"').value, 'hello\nworld');
+  });
+  it('string comparison', () => {
+    assert.equal(testEval('"abc" < "abd"').value, true);
+  });
+});
