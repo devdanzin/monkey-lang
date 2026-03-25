@@ -1160,3 +1160,73 @@ describe('Array Destructuring', () => {
     testIntegerObject(compileAndRun('let pairs = [[1,2],[3,4],[5,6]]; let sum = 0; for (p in pairs) { let [a, b] = p; sum += a + b; }; sum'), 21);
   });
 });
+
+describe('Multi-line Comments', () => {
+  it('basic multi-line comment', () => {
+    testIntegerObject(compileAndRun('/* this is a comment */ 42'), 42);
+  });
+  it('inline comment', () => {
+    testIntegerObject(compileAndRun('let x /* the variable */ = 10; x'), 10);
+  });
+  it('multi-line spanning lines', () => {
+    testIntegerObject(compileAndRun('let x = 1;\n/* skip\nthis */\nlet y = 2;\nx + y'), 3);
+  });
+});
+
+describe('Comprehensive Integration', () => {
+  it('match with destructuring', () => {
+    testStringObject(compileAndRun(`
+      let classify = fn(pair) {
+        let [a, b] = pair;
+        match (true) {
+          a > b => "first bigger",
+          a < b => "second bigger",
+          _ => "equal"
+        }
+      };
+      classify([3, 7])
+    `), 'second bigger');
+  });
+  it('for-in with match and template', () => {
+    testStringObject(compileAndRun(`
+      let result = "";
+      for (x in [1, 2, 3, 4, 5]) {
+        let label = match (x % 3) {
+          0 => "fizz",
+          _ => str(x)
+        };
+        result = result + label + " ";
+      }
+      trim(result)
+    `), '1 2 fizz 4 5');
+  });
+  it('closure counter with default param', () => {
+    testIntegerObject(compileAndRun(`
+      let makeCounter = fn(start = 0) {
+        let count = start;
+        fn() { count = count + 1; count }
+      };
+      let c = makeCounter(10);
+      c(); c(); c()
+    `), 13);
+  });
+  it('quicksort with match', () => {
+    const result = compileAndRun(`
+      let swap = fn(a, i, j) { let t = a[i]; a[i] = a[j]; a[j] = t; };
+      let qs = fn(a, lo, hi) {
+        if (lo >= hi) { return null; }
+        let p = a[hi]; let i = lo;
+        for (let j = lo; j < hi; j++) {
+          if (a[j] <= p) { swap(a, i, j); i++; }
+        }
+        swap(a, i, hi);
+        qs(a, lo, i - 1);
+        qs(a, i + 1, hi);
+      };
+      let a = [9, 3, 7, 1, 5, 8, 2, 6, 4];
+      qs(a, 0, len(a) - 1);
+      a[0] * 100 + a[4] * 10 + a[8]
+    `);
+    testIntegerObject(result, 159);
+  });
+});
