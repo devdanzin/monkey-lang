@@ -2181,15 +2181,46 @@
     {
       "id": "T212",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final final rebuild of playground + docs",
-      "started": "2026-03-25T22:25:54.946Z"
+      "started": "2026-03-25T22:25:54.946Z",
+      "completed": "2026-03-25T22:26:19.849Z",
+      "duration_ms": 120000,
+      "summary": "Final rebuild: playground, README, Show HN all updated. 513 tests, 30 benchmarks, 8x JIT."
     },
     {
       "id": "T213",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Session B final push at boundary",
+      "started": "2026-03-25T22:26:26.693Z",
+      "completed": "2026-03-25T22:26:26.803Z",
+      "duration_ms": 0,
+      "summary": "3.75 hours remain."
+    },
+    {
+      "id": "T214",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Session B final push at boundary"
+      "task": "Implement const declarations: const x = 42 (immutable bindings)"
+    },
+    {
+      "id": "T215",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Implement multiline comments: /* ... */"
+    },
+    {
+      "id": "T216",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Implement single-line comments: // ..."
+    },
+    {
+      "id": "T217",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Tests for const, comments"
     }
   ],
   "backlog": [],
@@ -2885,6 +2916,22 @@
     {
       "time": "2026-03-25T22:21:45.105Z",
       "msg": "Added T213 (MAINTAIN) after end: Session B final push at boundary"
+    },
+    {
+      "time": "2026-03-25T22:26:45.482Z",
+      "msg": "Added T214 (BUILD) after end: Implement const declarations: const x = 42 (immutable bindings)"
+    },
+    {
+      "time": "2026-03-25T22:26:45.594Z",
+      "msg": "Added T215 (BUILD) after end: Implement multiline comments: /* ... */"
+    },
+    {
+      "time": "2026-03-25T22:26:45.705Z",
+      "msg": "Added T216 (BUILD) after end: Implement single-line comments: // ..."
+    },
+    {
+      "time": "2026-03-25T22:26:45.816Z",
+      "msg": "Added T217 (BUILD) after end: Tests for const, comments"
     }
   ],
   "updated_at": "2026-03-25T16:42:01.690Z"
