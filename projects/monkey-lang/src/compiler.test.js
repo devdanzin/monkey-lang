@@ -189,6 +189,24 @@ describe('String Expressions', () => {
   it('string concatenation', () => {
     testStringObject(compileAndRun('"mon" + "key"'), 'monkey');
   });
+  it('string * int repeats string', () => {
+    testStringObject(compileAndRun('"abc" * 3'), 'abcabcabc');
+  });
+  it('int * string repeats string', () => {
+    testStringObject(compileAndRun('3 * "abc"'), 'abcabcabc');
+  });
+  it('string * 0 returns empty string', () => {
+    testStringObject(compileAndRun('"abc" * 0'), '');
+  });
+  it('string * 1 returns same string', () => {
+    testStringObject(compileAndRun('"abc" * 1'), 'abc');
+  });
+  it('string * variable', () => {
+    testStringObject(compileAndRun('let n = 4; "ha" * n'), 'hahahaha');
+  });
+  it('empty string * n', () => {
+    testStringObject(compileAndRun('"" * 5'), '');
+  });
 });
 
 // --- Array literals ---
