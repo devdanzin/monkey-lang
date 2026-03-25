@@ -74,6 +74,7 @@ export class Parser {
     this.registerPrefix(TokenType.CONTINUE, () => new ast.ContinueStatement(this.curToken));
     this.registerPrefix(TokenType.NULL_LIT, () => new ast.NullLiteral(this.curToken));
     this.registerPrefix(TokenType.MATCH, () => this.parseMatchExpression());
+    this.registerPrefix(TokenType.DO, () => this.parseDoWhileExpression());
 
     // Register infix parsers
     for (const op of [TokenType.PLUS, TokenType.MINUS, TokenType.SLASH,
@@ -553,6 +554,18 @@ export class Parser {
     }
     if (!this.expectPeek(TokenType.RBRACE)) return null;
     return new ast.MatchExpression(token, subject, arms);
+  }
+
+  parseDoWhileExpression() {
+    const token = this.curToken;
+    if (!this.expectPeek(TokenType.LBRACE)) return null;
+    const body = this.parseBlockStatement();
+    if (!this.expectPeek(TokenType.WHILE)) return null;
+    if (!this.expectPeek(TokenType.LPAREN)) return null;
+    this.nextToken();
+    const condition = this.parseExpression(Precedence.LOWEST);
+    if (!this.expectPeek(TokenType.RPAREN)) return null;
+    return new ast.DoWhileExpression(token, body, condition);
   }
 
   parsePostfixExpression(left, op) {

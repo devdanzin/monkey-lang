@@ -299,3 +299,13 @@ export class DestructuringLet {
   tokenLiteral() { return this.token.literal; }
   toString() { return `let [${this.names.map(n => n ? n.value : '_').join(', ')}] = ...`; }
 }
+
+export class DoWhileExpression {
+  constructor(token, body, condition) {
+    this.token = token;
+    this.body = body;
+    this.condition = condition;
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return 'do { ... } while (...)'; }
+}

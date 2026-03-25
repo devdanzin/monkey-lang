@@ -1242,3 +1242,15 @@ describe('Destructuring For-In', () => {
     testIntegerObject(compileAndRun('let matrix = [[1,2],[3,4],[5,6]]; let sum = 0; for ([a, b] in matrix) { sum += a + b; }; sum'), 21);
   });
 });
+
+describe('Do-While Loop', () => {
+  it('basic do-while', () => {
+    testIntegerObject(compileAndRun('let i = 0; do { i++; } while (i < 5); i'), 5);
+  });
+  it('executes at least once', () => {
+    testIntegerObject(compileAndRun('let i = 10; do { i++; } while (i < 5); i'), 11);
+  });
+  it('break in do-while', () => {
+    testIntegerObject(compileAndRun('let i = 0; do { if (i == 3) { break; } i++; } while (true); i'), 3);
+  });
+});

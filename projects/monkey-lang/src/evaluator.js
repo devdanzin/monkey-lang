@@ -170,6 +170,19 @@ export function monkeyEval(node, env) {
   if (node instanceof AST.IfExpression) return evalIfExpression(node, env);
 
   if (node instanceof AST.WhileExpression) return evalWhileExpression(node, env);
+  if (node instanceof AST.DoWhileExpression) {
+    do {
+      const result = monkeyEval(node.body, env);
+      if (isError(result)) return result;
+      if (result instanceof MonkeyReturnValue) return result;
+      if (result instanceof MonkeyBreak) break;
+      if (result instanceof MonkeyContinue) continue;
+      const cond = monkeyEval(node.condition, env);
+      if (isError(cond)) return cond;
+      if (!isTruthy(cond)) break;
+    } while (true);
+    return NULL;
+  }
   if (node instanceof AST.ForExpression) return evalForExpression(node, env);
   if (node instanceof AST.ForInExpression) return evalForInExpression(node, env);
   if (node instanceof AST.BreakStatement) return new MonkeyBreak();

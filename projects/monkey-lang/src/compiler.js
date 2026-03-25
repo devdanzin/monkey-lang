@@ -340,6 +340,8 @@ export class Compiler {
       return this.compileIfExpression(node);
     } else if (node instanceof ast.WhileExpression) {
       return this.compileWhileExpression(node);
+    } else if (node instanceof ast.DoWhileExpression) {
+      return this.compileDoWhileExpression(node);
     } else if (node instanceof ast.ForExpression) {
       return this.compileForExpression(node);
     } else if (node instanceof ast.ForInExpression) {
@@ -485,6 +487,31 @@ export class Compiler {
     // After if/else, result type is unknown
     this.resetIntStack();
 
+    return null;
+  }
+
+  compileDoWhileExpression(node) {
+    const loopStart = this.currentInstructions().length;
+    this.loopStack.push({ breakPatches: [], continuePatches: [], continueTarget: loopStart });
+
+    let err = this.compile(node.body);
+    if (err) return err;
+    if (this.lastInstructionIs(Opcodes.OpPop)) {} else { this.emit(Opcodes.OpPop); }
+
+    // Condition
+    err = this.compile(node.condition);
+    if (err) return err;
+    const jumpNotTruthyPos = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+    this.emit(Opcodes.OpJump, loopStart);
+
+    const afterLoop = this.currentInstructions().length;
+    this.changeOperand(jumpNotTruthyPos, afterLoop);
+
+    const loopCtx = this.loopStack.pop();
+    for (const bp of loopCtx.breakPatches) this.changeOperand(bp, afterLoop);
+
+    this.emit(Opcodes.OpNull);
+    this.resetIntStack();
     return null;
   }
 

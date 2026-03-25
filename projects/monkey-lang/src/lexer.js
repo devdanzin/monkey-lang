@@ -58,6 +58,7 @@ export const TokenType = {
   CONTINUE: 'CONTINUE',
   NULL_LIT: 'NULL_LIT',
   MATCH: 'MATCH',
+  DO: 'DO',
   ARROW: '=>',
   UNDERSCORE: '_',
 
@@ -80,6 +81,7 @@ const KEYWORDS = {
   continue: TokenType.CONTINUE,
   null: TokenType.NULL_LIT,
   match: TokenType.MATCH,
+  do: TokenType.DO,
 };
 
 export class Token {
