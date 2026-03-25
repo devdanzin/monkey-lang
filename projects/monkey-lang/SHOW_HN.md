@@ -21,7 +21,7 @@ I built a complete implementation of the Monkey programming language in JavaScri
 Store-load forwarding, box/unbox elimination, range check elimination, induction variable analysis, side trace inlining, function inlining (depth 3), loop variable promotion, LICM, CSE, dead code elimination, algebraic simplification, constant folding.
 
 **Numbers:**
-- 534 tests, all passing
+- 550 tests, all passing
 - 30 benchmarks: 8x aggregate, 30x peak (dot product)
 - 13 example programs including Conway's Game of Life, Quicksort, Mandelbrot, and a recursive descent calculator written in Monkey itself
 - 25 built-in functions, expanded standard library
