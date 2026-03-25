@@ -26,6 +26,8 @@ export const TokenType = {
   NOT_EQ: '!=',
   PLUS_ASSIGN: '+=',
   MINUS_ASSIGN: '-=',
+  PLUS_PLUS: '++',
+  MINUS_MINUS: '--',
   ASTERISK_ASSIGN: '*=',
   SLASH_ASSIGN: '/=',
   PERCENT_ASSIGN: '%=',
@@ -200,6 +202,9 @@ export class Lexer {
         if (this.peekChar() === '=') {
           this.readChar();
           tok = new Token(TokenType.PLUS_ASSIGN, '+=');
+        } else if (this.peekChar() === '+') {
+          this.readChar();
+          tok = new Token(TokenType.PLUS_PLUS, '++');
         } else {
           tok = new Token(TokenType.PLUS, '+');
         }
@@ -208,6 +213,9 @@ export class Lexer {
         if (this.peekChar() === '=') {
           this.readChar();
           tok = new Token(TokenType.MINUS_ASSIGN, '-=');
+        } else if (this.peekChar() === '-') {
+          this.readChar();
+          tok = new Token(TokenType.MINUS_MINUS, '--');
         } else {
           tok = new Token(TokenType.MINUS, '-');
         }

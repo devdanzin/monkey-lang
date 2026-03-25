@@ -24,7 +24,9 @@ const TOKEN_PRECEDENCE = {
   [TokenType.ASTERISK_ASSIGN]: Precedence.ASSIGN,
   [TokenType.SLASH_ASSIGN]: Precedence.ASSIGN,
   [TokenType.PERCENT_ASSIGN]: Precedence.ASSIGN,
-  [TokenType.QUESTION]: Precedence.OR, // ternary has same precedence as OR
+  [TokenType.QUESTION]: Precedence.OR,
+  [TokenType.PLUS_PLUS]: Precedence.CALL,   // postfix, high precedence
+  [TokenType.MINUS_MINUS]: Precedence.CALL, // ternary has same precedence as OR
   [TokenType.EQ]: Precedence.EQUALS,
   [TokenType.NOT_EQ]: Precedence.EQUALS,
   [TokenType.AND]: Precedence.AND,
@@ -83,6 +85,8 @@ export class Parser {
     this.registerInfix(TokenType.LBRACKET, (left) => this.parseIndexExpression(left));
     this.registerInfix(TokenType.ASSIGN, (left) => this.parseAssignExpression(left));
     this.registerInfix(TokenType.QUESTION, (left) => this.parseTernaryExpression(left));
+    this.registerInfix(TokenType.PLUS_PLUS, (left) => this.parsePostfixExpression(left, '+'));
+    this.registerInfix(TokenType.MINUS_MINUS, (left) => this.parsePostfixExpression(left, '-'));
     for (const op of [TokenType.PLUS_ASSIGN, TokenType.MINUS_ASSIGN,
       TokenType.ASTERISK_ASSIGN, TokenType.SLASH_ASSIGN, TokenType.PERCENT_ASSIGN]) {
       this.registerInfix(op, (left) => this.parseCompoundAssignExpression(left));
@@ -459,6 +463,19 @@ export class Parser {
 
     if (!this.expectPeek(TokenType.RBRACKET)) return null;
     return new ast.IndexExpression(token, left, index);
+  }
+
+  parsePostfixExpression(left, op) {
+    // i++ desugars to i = i + 1, i-- desugars to i = i - 1
+    if (!(left instanceof ast.Identifier)) {
+      this.errors.push(`cannot use ${op}${op} on ${left.constructor.name}`);
+      return null;
+    }
+    const token = this.curToken;
+    const opType = op === '+' ? TokenType.PLUS : TokenType.MINUS;
+    const one = new ast.IntegerLiteral(token, 1);
+    const binExpr = new ast.InfixExpression(new Token(opType, op), left, op, one);
+    return new ast.AssignExpression(token, left, binExpr);
   }
 
   parseTernaryExpression(condition) {

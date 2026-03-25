@@ -2011,15 +2011,53 @@
     {
       "id": "T195",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "More language features: spread syntax, string methods, array methods",
-      "started": "2026-03-25T22:04:15.607Z"
+      "started": "2026-03-25T22:04:15.607Z",
+      "completed": "2026-03-25T22:05:17.698Z",
+      "duration_ms": 180000,
+      "summary": "3 new builtins: keys, values (for hashes), abs. 25 builtins total. 472 tests, 30 benchmarks."
     },
     {
       "id": "T196",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Evening wrap at 8PM (check time)",
+      "started": "2026-03-25T22:05:37.568Z",
+      "completed": "2026-03-25T22:05:37.679Z",
+      "duration_ms": 0,
+      "summary": "Skipped — 4 hours remain."
+    },
+    {
+      "id": "T197",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Implement postfix increment/decrement: i++ and i--",
+      "started": "2026-03-25T22:05:59.768Z"
+    },
+    {
+      "id": "T198",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Evening wrap at 8PM (check time)"
+      "task": "Tests for i++ and i--"
+    },
+    {
+      "id": "T199",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Implement string indexing in hash literals: {name: value} shorthand"
+    },
+    {
+      "id": "T200",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Final playground + README + Show HN update with JIT fix and all features"
+    },
+    {
+      "id": "T201",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Evening wrap checkpoint"
     }
   ],
   "backlog": [],
@@ -2647,6 +2685,26 @@
     {
       "time": "2026-03-25T22:00:10.549Z",
       "msg": "Added T196 (MAINTAIN) after end: Evening wrap at 8PM (check time)"
+    },
+    {
+      "time": "2026-03-25T22:05:49.519Z",
+      "msg": "Added T197 (BUILD) after end: Implement postfix increment/decrement: i++ and i--"
+    },
+    {
+      "time": "2026-03-25T22:05:49.627Z",
+      "msg": "Added T198 (BUILD) after end: Tests for i++ and i--"
+    },
+    {
+      "time": "2026-03-25T22:05:49.738Z",
+      "msg": "Added T199 (BUILD) after end: Implement string indexing in hash literals: {name: value} shorthand"
+    },
+    {
+      "time": "2026-03-25T22:05:49.848Z",
+      "msg": "Added T200 (BUILD) after end: Final playground + README + Show HN update with JIT fix and all features"
+    },
+    {
+      "time": "2026-03-25T22:05:49.966Z",
+      "msg": "Added T201 (MAINTAIN) after end: Evening wrap checkpoint"
     }
   ],
   "updated_at": "2026-03-25T16:42:01.690Z"
