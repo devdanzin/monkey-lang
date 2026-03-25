@@ -1138,3 +1138,38 @@ describe('String indexing', () => {
     assert.equal(vm.lastPoppedStackElem().inspect(), 'abc');
   });
 });
+
+describe('Comparison operators <= and >=', () => {
+  it('less than or equal: equal', () => {
+    const vm = runJIT('5 <= 5');
+    assert.equal(vm.lastPoppedStackElem().inspect(), 'true');
+  });
+  it('less than or equal: less', () => {
+    const vm = runJIT('4 <= 5');
+    assert.equal(vm.lastPoppedStackElem().inspect(), 'true');
+  });
+  it('less than or equal: greater', () => {
+    const vm = runJIT('6 <= 5');
+    assert.equal(vm.lastPoppedStackElem().inspect(), 'false');
+  });
+  it('greater than or equal: equal', () => {
+    const vm = runJIT('5 >= 5');
+    assert.equal(vm.lastPoppedStackElem().inspect(), 'true');
+  });
+  it('greater than or equal: greater', () => {
+    const vm = runJIT('6 >= 5');
+    assert.equal(vm.lastPoppedStackElem().inspect(), 'true');
+  });
+  it('greater than or equal: less', () => {
+    const vm = runJIT('4 >= 5');
+    assert.equal(vm.lastPoppedStackElem().inspect(), 'false');
+  });
+  it('while with <=', () => {
+    const vm = runJIT('let s = 0; let i = 1; while (i <= 10) { s = s + i; i = i + 1; } s');
+    assert.equal(vm.lastPoppedStackElem().value, 55);
+  });
+  it('while with >=', () => {
+    const vm = runJIT('let s = 0; let i = 10; while (i >= 1) { s = s + i; i = i - 1; } s');
+    assert.equal(vm.lastPoppedStackElem().value, 55);
+  });
+});

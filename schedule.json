@@ -983,15 +983,19 @@
     {
       "id": "T98",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement comparison operators <= and >=",
-      "started": "2026-03-25T16:30:52.964Z"
+      "started": "2026-03-25T16:30:52.964Z",
+      "completed": "2026-03-25T16:34:00.440Z",
+      "duration_ms": 300000,
+      "summary": "<= and >= operators. Full pipeline. 309 tests."
     },
     {
       "id": "T99",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Tests for <= and >="
+      "status": "in-progress",
+      "task": "Tests for <= and >=",
+      "started": "2026-03-25T16:34:07.698Z"
     },
     {
       "id": "T100",
@@ -1397,5 +1401,5 @@
       "msg": "Added T101 (MAINTAIN) after end: Session wrap at boundary"
     }
   ],
-  "updated_at": "2026-03-25T16:29:49.822Z"
+  "updated_at": "2026-03-25T16:34:00.440Z"
 }

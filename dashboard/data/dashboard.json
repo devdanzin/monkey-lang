@@ -945,16 +945,76 @@
     {
       "id": "T93",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final FINAL wrap",
+      "started": "2026-03-25T16:30:10.660Z",
+      "completed": "2026-03-25T16:30:10.773Z",
+      "duration_ms": 5000,
+      "summary": "Not wrapping. 3:45 until boundary. Continuing."
+    },
+    {
+      "id": "T94",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement compound assignment operators: +=, -=, *=, /=, %=",
+      "started": "2026-03-25T16:30:36.438Z",
+      "completed": "2026-03-25T16:30:45.720Z",
+      "duration_ms": 5000,
+      "summary": "Skipping compound assignment — doing <= and >= first (more useful)."
+    },
+    {
+      "id": "T95",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Final FINAL wrap"
+      "task": "Tests for compound assignment operators"
+    },
+    {
+      "id": "T96",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Implement string multiplication: str * n repeats string"
+    },
+    {
+      "id": "T97",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Tests for string multiplication"
+    },
+    {
+      "id": "T98",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement comparison operators <= and >=",
+      "started": "2026-03-25T16:30:52.964Z",
+      "completed": "2026-03-25T16:34:00.440Z",
+      "duration_ms": 300000,
+      "summary": "<= and >= operators. Full pipeline. 309 tests."
+    },
+    {
+      "id": "T99",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Tests for <= and >="
+    },
+    {
+      "id": "T100",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Update README, rebuild playground, push"
+    },
+    {
+      "id": "T101",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Session wrap at boundary"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 92,
+    "completed": 95,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 16925000
+    "total_duration_ms": 17235000
   },
-  "updated_at": "2026-03-25T16:29:49.822Z"
+  "updated_at": "2026-03-25T16:34:00.440Z"
 }
