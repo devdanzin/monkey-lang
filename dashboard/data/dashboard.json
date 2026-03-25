@@ -1033,8 +1033,12 @@
     {
       "id": "T103",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Tests for && and ||"
+      "status": "done",
+      "task": "Tests for && and ||",
+      "started": "2026-03-25T16:39:44.000Z",
+      "completed": "2026-03-25T16:40:16.158Z",
+      "duration_ms": 60000,
+      "summary": "10 &&/|| tests. 327 total."
     },
     {
       "id": "T104",
@@ -1051,8 +1055,12 @@
     {
       "id": "T106",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Plan: what would make Monkey ready for a Show HN?"
+      "status": "done",
+      "task": "Plan: what would make Monkey ready for a Show HN?",
+      "started": "2026-03-25T16:40:40.282Z",
+      "completed": "2026-03-25T16:40:57.206Z",
+      "duration_ms": 60000,
+      "summary": "Show HN ready. Story is the hook."
     },
     {
       "id": "T107",
@@ -1063,10 +1071,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 99,
+    "completed": 101,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 17660000
+    "total_duration_ms": 17780000
   },
-  "updated_at": "2026-03-25T16:39:36.883Z"
+  "updated_at": "2026-03-25T16:40:57.206Z"
 }
