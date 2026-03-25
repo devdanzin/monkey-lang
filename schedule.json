@@ -37,15 +37,19 @@
       "id": "T20",
       "mode": "BUILD",
       "task": "Add tests for range check elimination and benchmark array-heavy workloads",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T2",
-      "started": "2026-03-25T14:25:28.051Z"
+      "started": "2026-03-25T14:25:28.051Z",
+      "completed": "2026-03-25T14:27:23.927Z",
+      "duration_ms": 300000,
+      "summary": "4 range check elimination tests + array:sum-len-1000 benchmark. RCE gives 12.5x vs 10.5x (19% improvement). 250 tests, 23 benchmarks, 9.5x."
     },
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git, dashboard, GH notifications"
+      "status": "in-progress",
+      "task": "Housekeeping: git, dashboard, GH notifications",
+      "started": "2026-03-25T14:27:58.733Z"
     },
     {
       "id": "T5",
