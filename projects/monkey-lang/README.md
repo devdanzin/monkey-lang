@@ -72,7 +72,45 @@ let add = fn(a, b) { a + b };
 let adder = fn(x) { fn(y) { x + y } };
 let add5 = adder(5);
 add5(3);  // 8
+
+// Default parameters
+let greet = fn(name, greeting = "hello") { `${greeting} ${name}!` };
+greet("world");       // "hello world!"
+greet("world", "hi"); // "hi world!"
+
+// Mutable closures
+let counter = fn() {
+  let count = 0;
+  fn() { count = count + 1; count }
+};
+let c = counter();
+c(); c(); c();  // 1, 2, 3
+
+// Ternary
+let abs = fn(x) { x >= 0 ? x : 0 - x };
 ```
+
+### Array/String Operations
+```javascript
+// Mutation
+let arr = [3, 1, 2];
+arr[0] = 10;      // [10, 1, 2]
+arr[0] += 5;      // [15, 1, 2]
+
+// Slicing
+[1,2,3,4,5][1:3]  // [2, 3]
+[1,2,3,4,5][2:]   // [3, 4, 5]
+"hello"[-3:]       // "llo"
+
+// Null
+let x = null;
+x == null          // true
+```
+
+### Builtins
+`len`, `puts`, `first`, `last`, `rest`, `push`, `str`, `int`, `type`,
+`split`, `join`, `trim`, `replace`, `upper`, `lower`, `indexOf`,
+`startsWith`, `endsWith`, `char`, `ord`
 
 ## Tracing JIT Compiler
 
@@ -119,7 +157,7 @@ Aggregate: 26 benchmarks, ~9.2x overall (all correct)
 ## Tests
 
 ```bash
-node --test    # 407 tests
+node --test    # 472 tests
 ```
 
 ## Benchmarks

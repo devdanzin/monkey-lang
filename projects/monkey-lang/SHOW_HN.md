@@ -6,7 +6,7 @@
 
 **Text:**
 
-I built a complete implementation of the Monkey programming language in JavaScript — from tokenizer to tracing JIT compiler — and it achieves ~9.2x average speedup over the bytecode VM (up to 30x on hot loops).
+I built a complete implementation of the Monkey programming language in JavaScript — from tokenizer to tracing JIT compiler — and it achieves ~9x average speedup over the bytecode VM (up to 30x on hot loops).
 
 **What's Monkey?** A dynamically-typed language from Thorsten Ball's "Writing An Interpreter In Go" with integers, strings, arrays, hashes, first-class functions, and closures. I extended it with for-loops, for-in iteration, break/continue, string templates, compound assignment, and more.
 
@@ -25,7 +25,7 @@ I built a complete implementation of the Monkey programming language in JavaScri
 - LICM, CSE, dead code elimination, algebraic simplification
 
 **Numbers:**
-- 407 tests, all passing
+- 472 tests, all passing
 - 26 benchmarks: 9.2x aggregate, 30.1x peak (dot product)
 - Recursive functions: 9-10x (fib(25), fib(30))
 - Array operations: 10-12x

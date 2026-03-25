@@ -1831,15 +1831,19 @@
     {
       "id": "T177",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "More test coverage: edge cases for all new features",
-      "started": "2026-03-25T21:47:03.176Z"
+      "started": "2026-03-25T21:47:03.176Z",
+      "completed": "2026-03-25T21:47:56.129Z",
+      "duration_ms": 180000,
+      "summary": "10 edge case tests: mutable closures, hash mutation, feature integration, quicksort verification. 472 total."
     },
     {
       "id": "T178",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Update README + Show HN with final stats"
+      "status": "in-progress",
+      "task": "Update README + Show HN with final stats",
+      "started": "2026-03-25T21:47:56.239Z"
     },
     {
       "id": "T179",
