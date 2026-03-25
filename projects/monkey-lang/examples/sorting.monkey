@@ -1,34 +1,54 @@
-// Insertion sort with immutable arrays
-// Demonstrates: for-in, break, push, closures, template literals
+// Sorting algorithms with in-place mutation
+// Demonstrates: array mutation, for-loops, break, template literals
 
-let insertion_sort = fn(arr) {
-  let sorted = [];
-  for (x in arr) {
-    let inserted = false;
-    let result = [];
-    for (s in sorted) {
-      if (!inserted) {
-        if (x < s) {
-          result = push(result, x);
-          inserted = true;
-        }
+// Bubble Sort — O(n²) but simple
+let bubble_sort = fn(arr) {
+  let n = len(arr);
+  for (let i = 0; i < n; i += 1) {
+    for (let j = 0; j < n - i - 1; j += 1) {
+      if (arr[j] > arr[j + 1]) {
+        let temp = arr[j];
+        arr[j] = arr[j + 1];
+        arr[j + 1] = temp;
       }
-      result = push(result, s);
     }
-    if (!inserted) {
-      result = push(result, x);
-    }
-    sorted = result;
   }
-  sorted
+  arr
 };
 
-let data = [38, 27, 43, 3, 9, 82, 10];
-puts(`Input:  ${str(data)}`);
-let result = insertion_sort(data);
-puts(`Sorted: ${str(result)}`);
+// Selection Sort — also O(n²), fewer swaps
+let selection_sort = fn(arr) {
+  let n = len(arr);
+  for (let i = 0; i < n - 1; i += 1) {
+    let min_idx = i;
+    for (let j = i + 1; j < n; j += 1) {
+      if (arr[j] < arr[min_idx]) {
+        min_idx = j;
+      }
+    }
+    if (min_idx != i) {
+      let temp = arr[i];
+      arr[i] = arr[min_idx];
+      arr[min_idx] = temp;
+    }
+  }
+  arr
+};
 
-// Sort strings lexicographically
-let words = ["banana", "apple", "cherry", "date"];
-puts(`\nWords:  ${str(words)}`);
-puts(`Sorted: ${str(insertion_sort(words))}`);
+puts("=== Bubble Sort ===");
+let data1 = [38, 27, 43, 3, 9, 82, 10];
+puts(`Input:  ${str(data1)}`);
+bubble_sort(data1);
+puts(`Sorted: ${str(data1)}`);
+
+puts("\n=== Selection Sort ===");
+let data2 = [64, 25, 12, 22, 11];
+puts(`Input:  ${str(data2)}`);
+selection_sort(data2);
+puts(`Sorted: ${str(data2)}`);
+
+puts("\n=== Sort Strings ===");
+let words = ["banana", "apple", "cherry", "date", "elderberry"];
+puts(`Input:  ${str(words)}`);
+bubble_sort(words);
+puts(`Sorted: ${str(words)}`);
