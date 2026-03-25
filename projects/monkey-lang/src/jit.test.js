@@ -881,3 +881,70 @@ let reverse = fn(arr) { let r = []; let i = len(arr) - 1; while (i > 0 - 1) { r 
     assert.equal(vm.lastPoppedStackElem().value, 4950);
   });
 });
+
+describe('String and utility builtins', () => {
+  it('split: splits string by separator', () => {
+    const vm = runJIT('split("hello world foo", " ")');
+    assert.equal(vm.lastPoppedStackElem().inspect(), '[hello, world, foo]');
+  });
+
+  it('join: joins array with separator', () => {
+    const vm = runJIT('join(["a", "b", "c"], "-")');
+    assert.equal(vm.lastPoppedStackElem().inspect(), 'a-b-c');
+  });
+
+  it('trim: trims whitespace', () => {
+    const vm = runJIT('trim("  hello  ")');
+    assert.equal(vm.lastPoppedStackElem().inspect(), 'hello');
+  });
+
+  it('str_contains: finds substring', () => {
+    const vm = runJIT('str_contains("hello world", "world")');
+    assert.equal(vm.lastPoppedStackElem().inspect(), 'true');
+  });
+
+  it('str_contains: not found', () => {
+    const vm = runJIT('str_contains("hello world", "xyz")');
+    assert.equal(vm.lastPoppedStackElem().inspect(), 'false');
+  });
+
+  it('substr: extracts from position', () => {
+    const vm = runJIT('substr("hello world", 6)');
+    assert.equal(vm.lastPoppedStackElem().inspect(), 'world');
+  });
+
+  it('substr: extracts range', () => {
+    const vm = runJIT('substr("hello world", 0, 5)');
+    assert.equal(vm.lastPoppedStackElem().inspect(), 'hello');
+  });
+
+  it('replace: replaces all occurrences', () => {
+    const vm = runJIT('replace("a-b-c", "-", ".")');
+    assert.equal(vm.lastPoppedStackElem().inspect(), 'a.b.c');
+  });
+
+  it('int: converts string to integer', () => {
+    const vm = runJIT('int("42")');
+    assert.equal(vm.lastPoppedStackElem().value, 42);
+  });
+
+  it('str: converts integer to string', () => {
+    const vm = runJIT('str(42)');
+    assert.equal(vm.lastPoppedStackElem().inspect(), '42');
+  });
+
+  it('type: returns type name', () => {
+    const vm = runJIT('type(42)');
+    assert.equal(vm.lastPoppedStackElem().inspect(), 'INTEGER');
+  });
+
+  it('type: array type', () => {
+    const vm = runJIT('type([1,2,3])');
+    assert.equal(vm.lastPoppedStackElem().inspect(), 'ARRAY');
+  });
+
+  it('compose: split + join', () => {
+    const vm = runJIT('join(split("hello world", " "), "_")');
+    assert.equal(vm.lastPoppedStackElem().inspect(), 'hello_world');
+  });
+});
