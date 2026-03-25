@@ -2171,15 +2171,19 @@
     {
       "id": "T211",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Tests for destructuring",
-      "started": "2026-03-25T22:25:19.584Z"
+      "started": "2026-03-25T22:25:19.584Z",
+      "completed": "2026-03-25T22:25:54.834Z",
+      "duration_ms": 60000,
+      "summary": "5 destructuring tests. 513 total."
     },
     {
       "id": "T212",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Final final rebuild of playground + docs"
+      "status": "in-progress",
+      "task": "Final final rebuild of playground + docs",
+      "started": "2026-03-25T22:25:54.946Z"
     },
     {
       "id": "T213",
