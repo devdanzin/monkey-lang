@@ -1246,16 +1246,20 @@
       "id": "T122",
       "mode": "BUILD",
       "task": "Implement break and continue for while/for loops",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T120",
-      "started": "2026-03-25T20:39:09.602Z"
+      "started": "2026-03-25T20:39:09.602Z",
+      "completed": "2026-03-25T20:43:56.601Z",
+      "duration_ms": 600000,
+      "summary": "Break and continue implemented for while, for, and for-in loops. Compiler uses loop stack with deferred patching for break/continue jumps. Evaluator uses sentinel objects. 384 tests."
     },
     {
       "id": "T123",
       "mode": "BUILD",
       "task": "Tests for break and continue",
-      "status": "upcoming",
-      "plan_ref": "T120"
+      "status": "in-progress",
+      "plan_ref": "T120",
+      "started": "2026-03-25T20:44:00.720Z"
     },
     {
       "id": "T124",

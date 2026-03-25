@@ -665,3 +665,38 @@ describe('Negative Indexing', () => {
     testIntegerObject(compileAndRun('let a = [1, 2, 3]; let i = -1; a[i]'), 3);
   });
 });
+
+describe('Break and Continue', () => {
+  it('break exits while loop', () => {
+    testIntegerObject(compileAndRun('let s = 0; let i = 0; while (i < 10) { if (i == 5) { break; } s += i; i += 1; }; s'), 10);
+  });
+
+  it('continue skips iteration in for loop', () => {
+    testIntegerObject(compileAndRun('let s = 0; for (let i = 0; i < 10; i += 1) { if (i % 2 == 0) { continue; } s += i; }; s'), 25);
+  });
+
+  it('break exits for loop', () => {
+    testIntegerObject(compileAndRun('let s = 0; for (let i = 0; i < 100; i += 1) { if (i == 5) { break; } s += i; }; s'), 10);
+  });
+
+  it('break exits for-in loop', () => {
+    testIntegerObject(compileAndRun('let s = 0; for (x in [1,2,3,4,5]) { if (x == 3) { break; } s += x; }; s'), 3);
+  });
+
+  it('continue in for-in loop', () => {
+    testIntegerObject(compileAndRun('let s = 0; for (x in [1,2,3,4,5]) { if (x == 3) { continue; } s += x; }; s'), 12);
+  });
+
+  it('continue in while loop', () => {
+    testIntegerObject(compileAndRun('let s = 0; let i = 0; while (i < 10) { i += 1; if (i % 2 == 0) { continue; } s += i; }; s'), 25);
+  });
+
+  it('nested break only exits inner loop', () => {
+    testIntegerObject(compileAndRun('let s = 0; for (let i = 0; i < 3; i += 1) { for (let j = 0; j < 10; j += 1) { if (j == 2) { break; } s += 1; } }; s'), 6);
+  });
+
+  it('break with loop evaluating to null', () => {
+    const result = compileAndRun('while (true) { break; }');
+    assert.ok(result instanceof MonkeyNull);
+  });
+});
