@@ -1377,16 +1377,20 @@
       "id": "T134",
       "mode": "BUILD",
       "task": "Tests for escape sequences",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T132",
-      "started": "2026-03-25T20:56:21.648Z"
+      "started": "2026-03-25T20:56:21.648Z",
+      "completed": "2026-03-25T20:56:53.118Z",
+      "duration_ms": 120000,
+      "summary": "7 escape sequence tests. 407 total, all passing."
     },
     {
       "id": "T135",
       "mode": "BUILD",
       "task": "Demo programs: mandelbrot, sorting algorithms, fibonacci table",
-      "status": "upcoming",
-      "plan_ref": "T132"
+      "status": "in-progress",
+      "plan_ref": "T132",
+      "started": "2026-03-25T20:56:58.105Z"
     },
     {
       "id": "T136",
