@@ -209,6 +209,39 @@ describe('String Expressions', () => {
   });
 });
 
+describe('String Comparisons', () => {
+  it('equal strings', () => {
+    testBooleanObject(compileAndRun('"abc" == "abc"'), true);
+  });
+  it('unequal strings', () => {
+    testBooleanObject(compileAndRun('"abc" == "def"'), false);
+  });
+  it('not equal: different strings', () => {
+    testBooleanObject(compileAndRun('"abc" != "def"'), true);
+  });
+  it('not equal: same strings', () => {
+    testBooleanObject(compileAndRun('"abc" != "abc"'), false);
+  });
+  it('greater than: true', () => {
+    testBooleanObject(compileAndRun('"b" > "a"'), true);
+  });
+  it('greater than: false', () => {
+    testBooleanObject(compileAndRun('"a" > "b"'), false);
+  });
+  it('less than: true', () => {
+    testBooleanObject(compileAndRun('"a" < "b"'), true);
+  });
+  it('less than: false', () => {
+    testBooleanObject(compileAndRun('"b" < "a"'), false);
+  });
+  it('lexicographic: longer string', () => {
+    testBooleanObject(compileAndRun('"abc" < "abd"'), true);
+  });
+  it('empty string less than any', () => {
+    testBooleanObject(compileAndRun('"" < "a"'), true);
+  });
+});
+
 // --- Array literals ---
 describe('Array Literals', () => {
   it('empty array', () => {
