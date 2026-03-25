@@ -867,6 +867,10 @@ export class VM {
               if (!this.recorder.enterInlineFrame(baseOffset, callee.fn.numLocals, ip)) {
                 // Too deep — abort recording
                 this._abortRecording();
+              } else if (this._hasBackwardJump(callee.fn.instructions)) {
+                // Function contains a loop — don't inline, too complex
+                this.recorder.leaveInlineFrame();
+                this._abortRecording();
               } else {
                 // Map the argument IR refs to the inlined frame's local slots
                 // so that LOAD_LOCAL in the callee picks them up directly
@@ -1519,6 +1523,19 @@ export class VM {
   }
 
   // Get a stable identity for the current closure (for trace keying)
+  _hasBackwardJump(instructions) {
+    // Quick scan for backward jumps (OpJump followed by target < current position)
+    const OpJump = Opcodes.OpJump;
+    for (let i = 0; i < instructions.length - 2; i++) {
+      if (instructions[i] === OpJump) {
+        const target = (instructions[i + 1] << 8) | instructions[i + 2];
+        if (target <= i) return true;
+        i += 2; // skip operand
+      }
+    }
+    return false;
+  }
+
   _closureId() {
     return this.currentFrame().closure.fn.id;
   }

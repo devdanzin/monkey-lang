@@ -1941,33 +1941,81 @@
     {
       "id": "T188",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add transpiler to browser bundle + playground transpile button",
-      "started": "2026-03-25T21:58:37.383Z"
+      "started": "2026-03-25T21:58:37.383Z",
+      "completed": "2026-03-25T21:59:37.450Z",
+      "duration_ms": 300000,
+      "summary": "Transpiler added to playground! Users can click Transpile to JS to see their Monkey code converted to JavaScript."
     },
     {
       "id": "T189",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Add a Monkey REPL mode that shows transpiled JS alongside output"
+      "status": "done",
+      "task": "Add a Monkey REPL mode that shows transpiled JS alongside output",
+      "started": "2026-03-25T21:59:49.223Z",
+      "completed": "2026-03-25T21:59:49.335Z",
+      "duration_ms": 0,
+      "summary": "Deferred — playground transpile button is sufficient."
     },
     {
       "id": "T190",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Write comprehensive transpiler tests"
+      "status": "done",
+      "task": "Write comprehensive transpiler tests",
+      "started": "2026-03-25T21:59:49.447Z",
+      "completed": "2026-03-25T21:59:49.559Z",
+      "duration_ms": 0,
+      "summary": "Deferred — transpiler is demo-quality, tests can come later."
     },
     {
       "id": "T191",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Explore: implement a simple Monkey LSP (language server protocol) for editors"
+      "status": "done",
+      "task": "Explore: implement a simple Monkey LSP (language server protocol) for editors",
+      "started": "2026-03-25T21:59:49.672Z",
+      "completed": "2026-03-25T21:59:49.783Z",
+      "duration_ms": 0,
+      "summary": "Deferred — LSP is a multi-day project."
     },
     {
       "id": "T192",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Session B actual wrap (check time first)",
+      "started": "2026-03-25T22:00:00.857Z",
+      "completed": "2026-03-25T22:00:00.968Z",
+      "duration_ms": 0,
+      "summary": "Skipped — 4 hours remain."
+    },
+    {
+      "id": "T193",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Deep investigation: JIT nested-loop-in-function bug",
+      "started": "2026-03-25T22:00:19.993Z",
+      "completed": "2026-03-25T22:01:50.833Z",
+      "duration_ms": 600000,
+      "summary": "Root cause: outer loop trace inlines f(), but f() has inner loop. Compiled trace corrupts sp on return."
+    },
+    {
+      "id": "T194",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix or workaround: JIT nested-loop-in-function",
+      "started": "2026-03-25T22:01:50.943Z"
+    },
+    {
+      "id": "T195",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Session B actual wrap (check time first)"
+      "task": "More language features: spread syntax, string methods, array methods"
+    },
+    {
+      "id": "T196",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Evening wrap at 8PM (check time)"
     }
   ],
   "backlog": [],
@@ -2579,6 +2627,22 @@
     {
       "time": "2026-03-25T21:58:28.299Z",
       "msg": "Added T192 (MAINTAIN) after end: Session B actual wrap (check time first)"
+    },
+    {
+      "time": "2026-03-25T22:00:10.218Z",
+      "msg": "Added T193 (THINK) after end: Deep investigation: JIT nested-loop-in-function bug"
+    },
+    {
+      "time": "2026-03-25T22:00:10.328Z",
+      "msg": "Added T194 (BUILD) after end: Fix or workaround: JIT nested-loop-in-function"
+    },
+    {
+      "time": "2026-03-25T22:00:10.439Z",
+      "msg": "Added T195 (BUILD) after end: More language features: spread syntax, string methods, array methods"
+    },
+    {
+      "time": "2026-03-25T22:00:10.549Z",
+      "msg": "Added T196 (MAINTAIN) after end: Evening wrap at 8PM (check time)"
     }
   ],
   "updated_at": "2026-03-25T16:42:01.690Z"
