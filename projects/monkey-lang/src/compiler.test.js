@@ -1922,3 +1922,110 @@ describe('700 Club', () => {
     `), 42);
   });
 });
+
+describe('More Algorithms', () => {
+  it('tower of hanoi count', () => {
+    testIntegerObject(compileAndRun(`
+      let moves = 0;
+      let hanoi = fn(n, from, to, via) {
+        if (n == 0) { return null; }
+        hanoi(n-1, from, via, to);
+        moves++;
+        hanoi(n-1, via, to, from);
+      };
+      hanoi(5, "A", "C", "B");
+      moves
+    `), 31);
+  });
+  it('collatz max', () => {
+    testIntegerObject(compileAndRun(`
+      let collatz_len = fn(n) {
+        let s = 0;
+        while (n != 1) {
+          n = n % 2 == 0 ? n / 2 : n * 3 + 1;
+          s++;
+        }
+        s
+      };
+      let max_len = 0;
+      for (let i = 1; i < 100; i++) {
+        let l = collatz_len(i);
+        if (l > max_len) { max_len = l; }
+      }
+      max_len
+    `), 118);
+  });
+  it('matrix diagonal', () => {
+    testIntegerObject(compileAndRun(`
+      let m = [[1,0,0,0],[0,2,0,0],[0,0,3,0],[0,0,0,4]];
+      let trace = 0;
+      for (let i = 0; i < 4; i++) { trace += m[i][i]; }
+      trace
+    `), 10);
+  });
+  it('string compression', () => {
+    testStringObject(compileAndRun(`
+      let compress = fn(s) {
+        let result = "";
+        let i = 0;
+        while (i < len(s)) {
+          let ch = s[i];
+          let count = 1;
+          while (i + count < len(s) && s[i + count] == ch) {
+            count++;
+          }
+          result = result + ch + (count > 1 ? str(count) : "");
+          i += count;
+        }
+        result
+      };
+      compress("aaabbbccddddee")
+    `), 'a3b3c2d4e2');
+  });
+  it('dot product', () => {
+    testIntegerObject(compileAndRun(`
+      let dot = fn(a, b) {
+        let sum = 0;
+        for (let i = 0; i < len(a); i++) { sum += a[i] * b[i]; }
+        sum
+      };
+      dot([1,2,3], [4,5,6])
+    `), 32);
+  });
+  it('array rotation', () => {
+    testIntegerObject(compileAndRun(`
+      let rotate = fn(arr, k) {
+        let n = len(arr);
+        let result = [];
+        for (let i = 0; i < n; i++) {
+          result = push(result, arr[(i + k) % n]);
+        }
+        result
+      };
+      let r = rotate([1,2,3,4,5], 2);
+      r[0] * 100 + r[1] * 10 + r[2]
+    `), 345);
+  });
+  it('LCM via GCD', () => {
+    testIntegerObject(compileAndRun(`
+      let gcd = fn(a, b) { while (b != 0) { let t = b; b = a % b; a = t; } a };
+      let lcm = fn(a, b) { a / gcd(a, b) * b };
+      lcm(12, 18)
+    `), 36);
+  });
+  it('partition function', () => {
+    testIntegerObject(compileAndRun(`
+      let partition = fn(arr, pred) {
+        let yes = [];
+        let no = [];
+        for (x in arr) {
+          if (pred(x)) { yes = push(yes, x); }
+          else { no = push(no, x); }
+        }
+        [yes, no]
+      };
+      let [evens, odds] = partition([1,2,3,4,5,6], fn(x) { x % 2 == 0 });
+      len(evens) * 10 + len(odds)
+    `), 33);
+  });
+});
