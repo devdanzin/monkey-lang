@@ -1173,3 +1173,18 @@ describe('Comparison operators <= and >=', () => {
     assert.equal(vm.lastPoppedStackElem().value, 55);
   });
 });
+
+describe('Logical AND and OR', () => {
+  it('AND: both true', () => { assert.equal(runJIT('true && true').lastPoppedStackElem().inspect(), 'true'); });
+  it('AND: left false', () => { assert.equal(runJIT('false && true').lastPoppedStackElem().inspect(), 'false'); });
+  it('AND: right false', () => { assert.equal(runJIT('true && false').lastPoppedStackElem().inspect(), 'false'); });
+  it('OR: both false', () => { assert.equal(runJIT('false || false').lastPoppedStackElem().inspect(), 'false'); });
+  it('OR: left true', () => { assert.equal(runJIT('true || false').lastPoppedStackElem().inspect(), 'true'); });
+  it('OR: right true', () => { assert.equal(runJIT('false || true').lastPoppedStackElem().inspect(), 'true'); });
+  it('AND with comparisons', () => { assert.equal(runJIT('5 > 3 && 10 > 7').lastPoppedStackElem().inspect(), 'true'); });
+  it('OR with comparisons', () => { assert.equal(runJIT('5 > 10 || 10 > 7').lastPoppedStackElem().inspect(), 'true'); });
+  it('precedence: AND binds tighter than OR', () => {
+    assert.equal(runJIT('false || true && true').lastPoppedStackElem().inspect(), 'true');
+    assert.equal(runJIT('true || false && false').lastPoppedStackElem().inspect(), 'true');
+  });
+});

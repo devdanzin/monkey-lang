@@ -1013,16 +1013,60 @@
     {
       "id": "T101",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Session wrap at boundary",
+      "started": "2026-03-25T16:35:24.173Z",
+      "completed": "2026-03-25T16:35:24.285Z",
+      "duration_ms": 5000,
+      "summary": "NOT wrapping. 3:40 remain. Continuing."
+    },
+    {
+      "id": "T102",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement logical AND (&&) and OR (||) operators",
+      "started": "2026-03-25T16:35:41.189Z",
+      "completed": "2026-03-25T16:39:36.883Z",
+      "duration_ms": 300000,
+      "summary": "&& and || operators. Full pipeline. 317 tests."
+    },
+    {
+      "id": "T103",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Session wrap at boundary"
+      "task": "Tests for && and ||"
+    },
+    {
+      "id": "T104",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Implement string comparison operators (==, !=, <, >)"
+    },
+    {
+      "id": "T105",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Tests for string comparisons"
+    },
+    {
+      "id": "T106",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Plan: what would make Monkey ready for a Show HN?"
+    },
+    {
+      "id": "T107",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final push and session wrap"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 97,
+    "completed": 99,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 17355000
+    "total_duration_ms": 17660000
   },
-  "updated_at": "2026-03-25T16:35:16.378Z"
+  "updated_at": "2026-03-25T16:39:36.883Z"
 }
