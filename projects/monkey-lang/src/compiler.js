@@ -161,7 +161,7 @@ export class Compiler {
         }
       }
       // Constant comparison folding
-      if (['==', '!=', '>', '<'].includes(node.operator)) {
+      if (['==', '!=', '>', '<', '<=', '>='].includes(node.operator)) {
         const left = this.tryFoldConstant(node.left);
         const right = this.tryFoldConstant(node.right);
         if (left instanceof MonkeyInteger && right instanceof MonkeyInteger) {
@@ -171,6 +171,8 @@ export class Compiler {
             case '!=': result = left.value !== right.value; break;
             case '>': result = left.value > right.value; break;
             case '<': result = left.value < right.value; break;
+            case '<=': result = left.value <= right.value; break;
+            case '>=': result = left.value >= right.value; break;
           }
           this.emit(result ? Opcodes.OpTrue : Opcodes.OpFalse);
           return null;
@@ -194,6 +196,62 @@ export class Compiler {
           if (err) return err;
           this.emitCompareOrSpecialized(Opcodes.OpGreaterThan, Opcodes.OpGreaterThanInt);
         }
+        return null;
+      }
+
+      // Handle '<=': compile as !(left > right)
+      if (node.operator === '<=') {
+        let err = this.compile(node.left);
+        if (err) return err;
+        err = this.compile(node.right);
+        if (err) return err;
+        this.emitCompareOrSpecialized(Opcodes.OpGreaterThan, Opcodes.OpGreaterThanInt);
+        this.emit(Opcodes.OpBang);
+        return null;
+      }
+
+      // Handle '>=': compile as !(right > left) i.e. !(left < right)
+      if (node.operator === '>=') {
+        let err = this.compile(node.right);
+        if (err) return err;
+        err = this.compile(node.left);
+        if (err) return err;
+        this.emitCompareOrSpecialized(Opcodes.OpGreaterThan, Opcodes.OpGreaterThanInt);
+        this.emit(Opcodes.OpBang);
+        return null;
+      }
+
+      // Handle '&&': short-circuit AND
+      if (node.operator === '&&') {
+        let err = this.compile(node.left);
+        if (err) return err;
+        // OpJumpNotTruthy pops the condition; if falsy, jump to push false
+        const jumpFalsyPos = this.emit(Opcodes.OpJumpNotTruthy, 0xFFFF);
+        // Left was truthy: evaluate right (its result becomes the && result)
+        err = this.compile(node.right);
+        if (err) return err;
+        const jumpEndPos = this.emit(Opcodes.OpJump, 0xFFFF);
+        // Left was falsy: push false
+        this.changeOperand(jumpFalsyPos, this.currentInstructions().length);
+        this.emit(Opcodes.OpFalse);
+        this.changeOperand(jumpEndPos, this.currentInstructions().length);
+        return null;
+      }
+
+      // Handle '||': short-circuit OR
+      if (node.operator === '||') {
+        let err = this.compile(node.left);
+        if (err) return err;
+        // OpJumpNotTruthy pops the condition; if falsy, jump to evaluate right
+        const jumpFalsyPos = this.emit(Opcodes.OpJumpNotTruthy, 0xFFFF);
+        // Left was truthy: push true
+        this.emit(Opcodes.OpTrue);
+        const jumpEndPos = this.emit(Opcodes.OpJump, 0xFFFF);
+        // Left was falsy: evaluate right
+        this.changeOperand(jumpFalsyPos, this.currentInstructions().length);
+        err = this.compile(node.right);
+        if (err) return err;
+        this.changeOperand(jumpEndPos, this.currentInstructions().length);
         return null;
       }
 

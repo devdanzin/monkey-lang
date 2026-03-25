@@ -6,13 +6,15 @@ import * as ast from './ast.js';
 const Precedence = {
   LOWEST: 1,
   ASSIGN: 2,      // =
-  EQUALS: 3,      // ==
-  LESSGREATER: 4,  // > or <
-  SUM: 5,          // +
-  PRODUCT: 6,      // *
-  PREFIX: 7,       // -X or !X
-  CALL: 8,         // myFunction(X)
-  INDEX: 9,        // array[index]
+  OR: 3,           // ||
+  AND: 4,          // &&
+  EQUALS: 5,       // ==
+  LESSGREATER: 6,  // > or <
+  SUM: 7,          // +
+  PRODUCT: 8,      // *
+  PREFIX: 9,       // -X or !X
+  CALL: 10,        // myFunction(X)
+  INDEX: 11,       // array[index]
 };
 
 const TOKEN_PRECEDENCE = {
@@ -67,7 +69,8 @@ export class Parser {
     // Register infix parsers
     for (const op of [TokenType.PLUS, TokenType.MINUS, TokenType.SLASH,
       TokenType.ASTERISK, TokenType.PERCENT, TokenType.EQ, TokenType.NOT_EQ,
-      TokenType.LT, TokenType.GT]) {
+      TokenType.LT, TokenType.GT, TokenType.LT_EQ, TokenType.GT_EQ,
+      TokenType.AND, TokenType.OR]) {
       this.registerInfix(op, (left) => this.parseInfixExpression(left));
     }
     this.registerInfix(TokenType.LPAREN, (left) => this.parseCallExpression(left));
