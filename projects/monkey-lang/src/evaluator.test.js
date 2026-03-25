@@ -376,3 +376,36 @@ describe('Real World Evaluator', () => {
     assert.equal(testEval('let fib = fn(n) { let a = 0; let b = 1; for (let i = 0; i < n; i++) { let t = b; b = a + b; a = t; } a }; fib(10)').value, 55);
   });
 });
+
+describe('Algorithm Tests (Evaluator)', () => {
+  it('selection sort', () => {
+    assert.equal(testEval('let a = [5,3,1,4,2]; let n = len(a); for (let i = 0; i < n-1; i++) { let m = i; for (let j = i+1; j < n; j++) { if (a[j] < a[m]) { m = j; } } let t = a[i]; a[i] = a[m]; a[m] = t; } a[0]').value, 1);
+  });
+  it('binary search', () => {
+    assert.equal(testEval('let bs = fn(a, t, lo, hi) { if (lo > hi) { return -1; } let m = (lo + hi) / 2; if (a[m] == t) { return m; } if (a[m] < t) { return bs(a, t, m+1, hi); } bs(a, t, lo, m-1) }; let a = [2,4,6,8,10,12,14]; bs(a, 10, 0, 6)').value, 4);
+  });
+  it('power set size', () => {
+    assert.equal(testEval('let pow = fn(base, exp) { let r = 1; for (let i = 0; i < exp; i++) { r *= base; } r }; pow(2, 5)').value, 32);
+  });
+  it('count vowels', () => {
+    assert.equal(testEval('let v = fn(s) { let c = 0; for (ch in s) { if (ch == "a" || ch == "e" || ch == "i" || ch == "o" || ch == "u") { c++; } } c }; v("hello world")').value, 3);
+  });
+  it('word count', () => {
+    assert.equal(testEval('let words = split("hello beautiful world", " "); len(words)').value, 3);
+  });
+  it('sum of even fibonacci', () => {
+    assert.equal(testEval('let a = 1; let b = 2; let s = 0; while (a < 100) { if (a % 2 == 0) { s += a; } let t = b; b = a + b; a = t; } s').value, 44);
+  });
+  it('digital root', () => {
+    assert.equal(testEval('let dr = fn(n) { while (n >= 10) { let s = 0; while (n > 0) { s += n % 10; n = n / 10; } n = s; } n }; dr(493)').value, 7);
+  });
+  it('is anagram', () => {
+    assert.equal(testEval('let sorted = fn(s) { let a = []; for (c in s) { a = push(a, ord(c)); } let n = len(a); for (let i = 0; i < n; i++) { for (let j = i+1; j < n; j++) { if (a[j] < a[i]) { let t = a[i]; a[i] = a[j]; a[j] = t; } } } let r = ""; for (x in a) { r = r + char(x); } r }; sorted("listen") == sorted("silent")').value, true);
+  });
+  it('triangle numbers', () => {
+    assert.equal(testEval('let tri = fn(n) { n * (n + 1) / 2 }; tri(100)').value, 5050);
+  });
+  it('abs value', () => {
+    assert.equal(testEval('abs(-42)').value, 42);
+  });
+});
