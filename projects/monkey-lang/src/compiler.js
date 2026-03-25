@@ -307,6 +307,8 @@ export class Compiler {
       return this.compileIfExpression(node);
     } else if (node instanceof ast.WhileExpression) {
       return this.compileWhileExpression(node);
+    } else if (node instanceof ast.ForExpression) {
+      return this.compileForExpression(node);
     } else if (node instanceof ast.AssignExpression) {
       const sym = this.symbolTable.resolve(node.name.value);
       if (!sym) return `undefined variable: ${node.name.value}`;
@@ -447,6 +449,58 @@ export class Compiler {
     this.changeOperand(jumpNotTruthyPos, afterLoop);
 
     // While evaluates to null
+    this.emit(Opcodes.OpNull);
+
+    this.resetIntStack();
+
+    return null;
+  }
+
+  compileForExpression(node) {
+    // for (init; condition; update) { body }
+    // Desugars to: init; while (condition) { body; update; }
+
+    // Compile init (let statement or expression)
+    let err = this.compile(node.init);
+    if (err) return err;
+    // If init was an expression statement, pop its value
+    if (node.init instanceof ast.ExpressionStatement) {
+      // Already has OpPop from ExpressionStatement compilation
+    }
+
+    const loopStart = this.currentInstructions().length;
+
+    // Compile condition
+    err = this.compile(node.condition);
+    if (err) return err;
+
+    // Jump past body if condition is false
+    const jumpNotTruthyPos = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+
+    // Compile body
+    err = this.compile(node.body);
+    if (err) return err;
+
+    // Pop body result
+    if (this.lastInstructionIs(Opcodes.OpPop)) {
+      // Already has a pop
+    } else {
+      this.emit(Opcodes.OpPop);
+    }
+
+    // Compile update expression
+    err = this.compile(node.update);
+    if (err) return err;
+    this.emit(Opcodes.OpPop); // discard update result
+
+    // Jump back to loop start
+    this.emit(Opcodes.OpJump, loopStart);
+
+    // Patch conditional jump
+    const afterLoop = this.currentInstructions().length;
+    this.changeOperand(jumpNotTruthyPos, afterLoop);
+
+    // For evaluates to null
     this.emit(Opcodes.OpNull);
 
     this.resetIntStack();

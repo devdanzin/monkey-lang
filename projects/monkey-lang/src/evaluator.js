@@ -157,6 +157,7 @@ export function monkeyEval(node, env) {
   if (node instanceof AST.IfExpression) return evalIfExpression(node, env);
 
   if (node instanceof AST.WhileExpression) return evalWhileExpression(node, env);
+  if (node instanceof AST.ForExpression) return evalForExpression(node, env);
 
   if (node instanceof AST.AssignExpression) {
     const val = monkeyEval(node.value, env);
@@ -291,6 +292,25 @@ function evalWhileExpression(node, env) {
     result = monkeyEval(node.body, env);
     if (isError(result)) return result;
     if (result instanceof MonkeyReturnValue) return result;
+  }
+  return NULL;
+}
+
+function evalForExpression(node, env) {
+  // Evaluate init
+  const initResult = monkeyEval(node.init, env);
+  if (isError(initResult)) return initResult;
+
+  while (true) {
+    const condition = monkeyEval(node.condition, env);
+    if (isError(condition)) return condition;
+    if (!isTruthy(condition)) break;
+    const bodyResult = monkeyEval(node.body, env);
+    if (isError(bodyResult)) return bodyResult;
+    if (bodyResult instanceof MonkeyReturnValue) return bodyResult;
+    // Evaluate update
+    const updateResult = monkeyEval(node.update, env);
+    if (isError(updateResult)) return updateResult;
   }
   return NULL;
 }

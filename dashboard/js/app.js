@@ -1219,11 +1219,11 @@
     const blockEl = timeline.querySelector(`.block[data-index="${activeIdx}"]`);
     if (!blockEl) return;
 
-    // Calculate elapsed from block time (today's date + block.time)
+    // Calculate elapsed from startedAt ISO string
     const now = new Date();
-    const [h, m] = block.time.split(':').map(Number);
-    const blockStart = new Date(now);
-    blockStart.setHours(h, m, 0, 0);
+    if (!block.startedAt) return;
+    const blockStart = new Date(block.startedAt);
+    if (isNaN(blockStart.getTime())) return;
     const elapsed = Math.max(0, Math.floor((now - blockStart) / 1000));
     const elMin = Math.floor(elapsed / 60);
     const elSec = elapsed % 60;

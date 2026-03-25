@@ -65,6 +65,7 @@ export class Parser {
     this.registerPrefix(TokenType.LBRACKET, () => this.parseArrayLiteral());
     this.registerPrefix(TokenType.LBRACE, () => this.parseHashLiteral());
     this.registerPrefix(TokenType.WHILE, () => this.parseWhileExpression());
+    this.registerPrefix(TokenType.FOR, () => this.parseForExpression());
 
     // Register infix parsers
     for (const op of [TokenType.PLUS, TokenType.MINUS, TokenType.SLASH,
@@ -262,6 +263,37 @@ export class Parser {
     if (!this.expectPeek(TokenType.LBRACE)) return null;
     const body = this.parseBlockStatement();
     return new ast.WhileExpression(token, condition, body);
+  }
+
+  parseForExpression() {
+    const token = this.curToken;
+    if (!this.expectPeek(TokenType.LPAREN)) return null;
+
+    // Init: let statement or expression statement
+    this.nextToken();
+    let init;
+    if (this.curTokenIs(TokenType.LET)) {
+      init = this.parseLetStatement();
+    } else {
+      init = new ast.ExpressionStatement(this.curToken, this.parseExpression(Precedence.LOWEST));
+      if (!this.expectPeek(TokenType.SEMICOLON)) return null;
+    }
+
+    // Condition
+    this.nextToken();
+    const condition = this.parseExpression(Precedence.LOWEST);
+    if (!this.expectPeek(TokenType.SEMICOLON)) return null;
+
+    // Update
+    this.nextToken();
+    const update = this.parseExpression(Precedence.LOWEST);
+    if (!this.expectPeek(TokenType.RPAREN)) return null;
+
+    // Body
+    if (!this.expectPeek(TokenType.LBRACE)) return null;
+    const body = this.parseBlockStatement();
+
+    return new ast.ForExpression(token, init, condition, update, body);
   }
 
   parseFunctionLiteral() {

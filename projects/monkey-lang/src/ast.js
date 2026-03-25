@@ -196,3 +196,15 @@ export class AssignExpression {
   tokenLiteral() { return this.token.literal; }
   toString() { return `${this.name} = ${this.value}`; }
 }
+
+export class ForExpression {
+  constructor(token, init, condition, update, body) {
+    this.token = token;
+    this.init = init;           // LetStatement or ExpressionStatement
+    this.condition = condition; // Expression
+    this.update = update;       // Expression (e.g., i += 1)
+    this.body = body;           // BlockStatement
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return `for (...) { ... }`; }
+}

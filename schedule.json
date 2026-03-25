@@ -965,20 +965,32 @@
     {
       "id": "T95",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Tests for compound assignment operators"
+      "status": "done",
+      "task": "Tests for compound assignment operators",
+      "started": "2026-03-25T20:15:17.709Z",
+      "completed": "2026-03-25T20:19:31.694Z",
+      "duration_ms": 300000,
+      "summary": "15 compound assignment tests (10 compiler, 5 JIT). Also implemented the operators themselves (lexer + parser desugar). 341 total tests, 330 passing."
     },
     {
       "id": "T96",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Implement string multiplication: str * n repeats string"
+      "status": "done",
+      "task": "Implement string multiplication: str * n repeats string",
+      "started": "2026-03-25T20:19:38.451Z",
+      "completed": "2026-03-25T20:21:43.341Z",
+      "duration_ms": 300000,
+      "summary": "String multiplication implemented in VM (both str*n and n*str). Handles OpMul and OpMulConst paths. Graceful abort for JIT recording."
     },
     {
       "id": "T97",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Tests for string multiplication"
+      "status": "done",
+      "task": "Tests for string multiplication",
+      "started": "2026-03-25T20:21:47.114Z",
+      "completed": "2026-03-25T20:22:14.588Z",
+      "duration_ms": 120000,
+      "summary": "6 string multiplication tests added. 128 compiler tests passing, 347 total."
     },
     {
       "id": "T98",
@@ -1043,14 +1055,22 @@
     {
       "id": "T104",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Implement string comparison operators (==, !=, <, >)"
+      "status": "done",
+      "task": "Implement string comparison operators (==, !=, <, >)",
+      "started": "2026-03-25T20:22:18.290Z",
+      "completed": "2026-03-25T20:23:08.648Z",
+      "duration_ms": 180000,
+      "summary": "String comparison operators (==, !=, <, >) implemented in VM. Lexicographic ordering via JS string comparison."
     },
     {
       "id": "T105",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Tests for string comparisons"
+      "status": "done",
+      "task": "Tests for string comparisons",
+      "started": "2026-03-25T20:23:12.207Z",
+      "completed": "2026-03-25T20:23:35.470Z",
+      "duration_ms": 120000,
+      "summary": "10 string comparison tests. 138 compiler tests, 357 total."
     },
     {
       "id": "T106",
@@ -1071,6 +1091,87 @@
       "completed": "2026-03-25T16:42:01.690Z",
       "duration_ms": 60000,
       "summary": "Session A complete. 107 tasks. Extraordinary day."
+    },
+    {
+      "id": "T108",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Session B direction: decide what to build for the next 5+ hours",
+      "started": "2026-03-25T20:23:55.717Z",
+      "completed": "2026-03-25T20:24:15.626Z",
+      "duration_ms": 60000,
+      "summary": "Direction: fix 11 broken tests (<=, >=, &&, || parsers not registered), then add for-loops and major language features to make Monkey feel complete."
+    },
+    {
+      "id": "T109",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Fix 11 failing tests + plan major language features (for-loops, for-in, pattern matching)",
+      "task": null,
+      "started": "2026-03-25T20:24:19.606Z",
+      "completed": "2026-03-25T20:27:09.683Z",
+      "duration_ms": 600000,
+      "summary": "Planned: fix 11 broken tests (done inline), for-loops, for-in, negative indexing. 7 BUILD tasks created."
+    },
+    {
+      "id": "T111",
+      "mode": "BUILD",
+      "task": "Fix 11 broken tests: register <=, >=, &&, || infix parsers + compiler",
+      "status": "done",
+      "plan_ref": "T109",
+      "started": "2026-03-25T20:27:18.330Z",
+      "completed": "2026-03-25T20:27:18.441Z",
+      "duration_ms": 0,
+      "summary": "Already done during PLAN phase. 357/357 tests passing."
+    },
+    {
+      "id": "T112",
+      "mode": "BUILD",
+      "task": "Implement for-loop syntax: for (let i = 0; i < n; i += 1) { ... }",
+      "status": "in-progress",
+      "plan_ref": "T109",
+      "started": "2026-03-25T20:27:22.253Z"
+    },
+    {
+      "id": "T113",
+      "mode": "BUILD",
+      "task": "Tests for for-loops",
+      "status": "upcoming",
+      "plan_ref": "T109"
+    },
+    {
+      "id": "T114",
+      "mode": "BUILD",
+      "task": "Implement for-in iteration: for (x in array) { ... }",
+      "status": "upcoming",
+      "plan_ref": "T109"
+    },
+    {
+      "id": "T115",
+      "mode": "BUILD",
+      "task": "Tests for for-in",
+      "status": "upcoming",
+      "plan_ref": "T109"
+    },
+    {
+      "id": "T116",
+      "mode": "BUILD",
+      "task": "Implement negative indexing: arr[-1] for last element",
+      "status": "upcoming",
+      "plan_ref": "T109"
+    },
+    {
+      "id": "T117",
+      "mode": "BUILD",
+      "task": "Tests for negative indexing",
+      "status": "upcoming",
+      "plan_ref": "T109"
+    },
+    {
+      "id": "T110",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
     }
   ],
   "backlog": [],
@@ -1486,6 +1587,22 @@
     {
       "time": "2026-03-25T16:35:34.114Z",
       "msg": "Added T107 (MAINTAIN) after end: Final push and session wrap"
+    },
+    {
+      "time": "2026-03-25T20:23:52.371Z",
+      "msg": "Added T108 (THINK) after end: Session B direction: decide what to build for the next 5+ hours"
+    },
+    {
+      "time": "2026-03-25T20:24:10.473Z",
+      "msg": "Added T109 (PLAN) after T108: Fix 11 failing tests + plan major language features (for-loops, for-in, pattern matching)"
+    },
+    {
+      "time": "2026-03-25T20:24:10.583Z",
+      "msg": "Added T110 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-03-25T20:27:04.338Z",
+      "msg": "PLAN T109 filled 7 BUILD tasks"
     }
   ],
   "updated_at": "2026-03-25T16:42:01.690Z"
