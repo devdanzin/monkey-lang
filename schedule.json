@@ -2001,15 +2001,19 @@
     {
       "id": "T194",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix or workaround: JIT nested-loop-in-function",
-      "started": "2026-03-25T22:01:50.943Z"
+      "started": "2026-03-25T22:01:50.943Z",
+      "completed": "2026-03-25T22:04:06.632Z",
+      "duration_ms": 600000,
+      "summary": "JIT BUG FIXED! Abort inlining when callee has backward jumps (loops). 30/30 benchmarks correct. 472 tests. Simple 15-line fix."
     },
     {
       "id": "T195",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "More language features: spread syntax, string methods, array methods"
+      "status": "in-progress",
+      "task": "More language features: spread syntax, string methods, array methods",
+      "started": "2026-03-25T22:04:15.607Z"
     },
     {
       "id": "T196",

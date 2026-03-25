@@ -213,6 +213,32 @@ const BUILTINS = [
       return new MonkeyError(`argument to \`ord\` must be STRING`);
     return cachedInteger(args[0].value.charCodeAt(0));
   }),
+  // keys — get hash keys as array
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyHash))
+      return new MonkeyError(`argument to \`keys\` must be HASH`);
+    const keys = [];
+    for (const [, pair] of args[0].pairs) {
+      keys.push(pair.key);
+    }
+    return new MonkeyArray(keys);
+  }),
+  // values — get hash values as array
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyHash))
+      return new MonkeyError(`argument to \`values\` must be HASH`);
+    const values = [];
+    for (const [, pair] of args[0].pairs) {
+      values.push(pair.value);
+    }
+    return new MonkeyArray(values);
+  }),
+  // abs — absolute value
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyInteger))
+      return new MonkeyError(`argument to \`abs\` must be INTEGER`);
+    return cachedInteger(Math.abs(args[0].value));
+  }),
 ];
 
 export class VM {
