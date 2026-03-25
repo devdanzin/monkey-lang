@@ -7,8 +7,10 @@ import { MonkeyInteger, MonkeyString, internString } from './object.js';
 import * as ast from './ast.js';
 
 // Compiled function object (different from interpreted MonkeyFunction)
+let _cfId = 0;
 export class CompiledFunction {
   constructor(instructions, numLocals = 0, numParameters = 0) {
+    this.id = _cfId++;
     this.instructions = instructions;
     this.numLocals = numLocals;
     this.numParameters = numParameters;

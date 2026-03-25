@@ -91,6 +91,7 @@ export const IR = {
   INDEX_ARRAY:  'index_array',   // array: ref, index: ref → element (MonkeyObject)
   GUARD_ARRAY:  'guard_array',   // ref: check this value is MonkeyArray
   GUARD_BOUNDS: 'guard_bounds',  // array: ref, index: ref → check 0 <= index < length
+  GUARD_CLOSURE: 'guard_closure', // ref: closureRef, fnId: expected → check closure.fn.id matches
 
   // Hash operations
   GUARD_HASH:   'guard_hash',    // ref: check this value is MonkeyHash
@@ -387,6 +388,11 @@ export class TraceRecorder {
   // Pop an IR ref from the virtual stack
   popRef() {
     return this.irStack.pop();
+  }
+
+  // Peek at an IR ref N positions from the top (0 = top)
+  peekRef(n = 0) {
+    return this.irStack[this.irStack.length - 1 - n];
   }
 
   // Record a guard for a value's type
@@ -1432,6 +1438,21 @@ export class TraceCompiler {
           break;
         }
 
+        case IR.GUARD_CLOSURE: {
+          const closureRef = varNames.get(inst.operands.ref);
+          const fnId = inst.operands.fnId;
+          const exitIp = inst.operands.exitIp;
+          if (exitIp === -1) {
+            // Invalidate trace — return a special marker that tells the VM to blacklist this trace
+            this.lines.push(`  if (${closureRef}.fn.id !== ${fnId}) {`);
+            this.lines.push(`    return { exit: "invalidate", guardIdx: ${i} };`);
+            this.lines.push(`  }`);
+          } else {
+            this._emitGuardExit(i, exitIp, `(${closureRef}.fn.id !== ${fnId})`);
+          }
+          break;
+        }
+
         case IR.INDEX_ARRAY: {
           const arr = varNames.get(inst.operands.left);
           const idx = varNames.get(inst.operands.right);
@@ -2463,7 +2484,7 @@ export class TraceOptimizer {
       IR.GUARD_INT, IR.GUARD_BOOL, IR.GUARD_STRING,
       IR.GUARD_ARRAY, IR.GUARD_HASH,
       IR.GUARD_TRUTHY, IR.GUARD_FALSY,
-      IR.GUARD_BOUNDS
+      IR.GUARD_BOUNDS, IR.GUARD_CLOSURE
     ]);
 
     // Iteratively find loop-invariant instructions
@@ -3266,7 +3287,7 @@ export class TraceOptimizer {
           inst.op === IR.GUARD_STRING || inst.op === IR.GUARD_ARRAY ||
           inst.op === IR.GUARD_HASH ||
           inst.op === IR.GUARD_BOUNDS || inst.op === IR.GUARD_TRUTHY ||
-          inst.op === IR.GUARD_FALSY ||
+          inst.op === IR.GUARD_FALSY || inst.op === IR.GUARD_CLOSURE ||
           inst.op === IR.LOOP_START || inst.op === IR.LOOP_END ||
           inst.op === IR.CALL || inst.op === IR.EXEC_TRACE ||
           inst.op === IR.SELF_CALL || inst.op === IR.FUNC_RETURN ||

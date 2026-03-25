@@ -655,22 +655,70 @@
     {
       "id": "T64",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Update TASKS.md with final Day 10 progress"
+      "status": "done",
+      "task": "Update TASKS.md with final Day 10 progress",
+      "started": "2026-03-25T15:58:42.518Z",
+      "completed": "2026-03-25T15:59:14.576Z",
+      "duration_ms": 60000,
+      "summary": "TASKS.md updated."
     },
     {
       "id": "T65",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final wrap: commit, push, CURRENT.md status: session-ended",
+      "started": "2026-03-25T15:59:24.246Z",
+      "completed": "2026-03-25T15:59:24.356Z",
+      "duration_ms": 5000,
+      "summary": "Not wrapping — 4+ hours remain. Continuing."
+    },
+    {
+      "id": "T66",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Investigate JIT snapshot restoration bug (unknown opcode: 0 in complex programs)",
+      "started": "2026-03-25T15:59:46.108Z",
+      "completed": "2026-03-25T16:01:16.252Z",
+      "duration_ms": 300000,
+      "summary": "Trace key collision between closures. Needs closure ID in trace key."
+    },
+    {
+      "id": "T67",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Final wrap: commit, push, CURRENT.md status: session-ended"
+      "task": "Fix JIT snapshot restoration bug"
+    },
+    {
+      "id": "T68",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Rebuild playground bundle with all fixes and publish"
+    },
+    {
+      "id": "T69",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Add comment tests to test suite"
+    },
+    {
+      "id": "T70",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "What else can I build before 2:15 PM?"
+    },
+    {
+      "id": "T71",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Real final wrap: commit, push, CURRENT.md session-ended"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 63,
+    "completed": 66,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 13845000
+    "total_duration_ms": 14210000
   },
-  "updated_at": "2026-03-25T15:58:28.746Z"
+  "updated_at": "2026-03-25T16:01:16.252Z"
 }

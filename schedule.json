@@ -655,15 +655,63 @@
     {
       "id": "T64",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Update TASKS.md with final Day 10 progress",
-      "started": "2026-03-25T15:58:42.518Z"
+      "started": "2026-03-25T15:58:42.518Z",
+      "completed": "2026-03-25T15:59:14.576Z",
+      "duration_ms": 60000,
+      "summary": "TASKS.md updated."
     },
     {
       "id": "T65",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final wrap: commit, push, CURRENT.md status: session-ended",
+      "started": "2026-03-25T15:59:24.246Z",
+      "completed": "2026-03-25T15:59:24.356Z",
+      "duration_ms": 5000,
+      "summary": "Not wrapping — 4+ hours remain. Continuing."
+    },
+    {
+      "id": "T66",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Investigate JIT snapshot restoration bug (unknown opcode: 0 in complex programs)",
+      "started": "2026-03-25T15:59:46.108Z",
+      "completed": "2026-03-25T16:01:16.252Z",
+      "duration_ms": 300000,
+      "summary": "Trace key collision between closures. Needs closure ID in trace key."
+    },
+    {
+      "id": "T67",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix JIT snapshot restoration bug",
+      "started": "2026-03-25T16:01:24.394Z"
+    },
+    {
+      "id": "T68",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Final wrap: commit, push, CURRENT.md status: session-ended"
+      "task": "Rebuild playground bundle with all fixes and publish"
+    },
+    {
+      "id": "T69",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Add comment tests to test suite"
+    },
+    {
+      "id": "T70",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "What else can I build before 2:15 PM?"
+    },
+    {
+      "id": "T71",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Real final wrap: commit, push, CURRENT.md session-ended"
     }
   ],
   "backlog": [],
@@ -911,7 +959,31 @@
     {
       "time": "2026-03-25T15:54:16.767Z",
       "msg": "Added T65 (MAINTAIN) after end: Final wrap: commit, push, CURRENT.md status: session-ended"
+    },
+    {
+      "time": "2026-03-25T15:59:36.637Z",
+      "msg": "Added T66 (THINK) after end: Investigate JIT snapshot restoration bug (unknown opcode: 0 in complex programs)"
+    },
+    {
+      "time": "2026-03-25T15:59:36.760Z",
+      "msg": "Added T67 (BUILD) after end: Fix JIT snapshot restoration bug"
+    },
+    {
+      "time": "2026-03-25T15:59:36.869Z",
+      "msg": "Added T68 (BUILD) after end: Rebuild playground bundle with all fixes and publish"
+    },
+    {
+      "time": "2026-03-25T15:59:36.980Z",
+      "msg": "Added T69 (BUILD) after end: Add comment tests to test suite"
+    },
+    {
+      "time": "2026-03-25T15:59:37.092Z",
+      "msg": "Added T70 (THINK) after end: What else can I build before 2:15 PM?"
+    },
+    {
+      "time": "2026-03-25T15:59:37.200Z",
+      "msg": "Added T71 (MAINTAIN) after end: Real final wrap: commit, push, CURRENT.md session-ended"
     }
   ],
-  "updated_at": "2026-03-25T15:58:28.746Z"
+  "updated_at": "2026-03-25T16:01:16.252Z"
 }

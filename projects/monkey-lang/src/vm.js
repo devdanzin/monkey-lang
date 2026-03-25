@@ -729,6 +729,18 @@ export class VM {
               const calleeBp = this.sp - numArgs;
               const baseOffset = calleeBp - rootBp;
 
+              // Guard that the callee is the same function we're about to inline
+              // This prevents the trace from being used with a different closure
+              const closureRef = this.recorder.peekRef(numArgs);
+              if (closureRef !== undefined) {
+                this.recorder.trace.addInst(IR.GUARD_CLOSURE, {
+                  ref: closureRef,
+                  fnId: callee.fn.id,
+                  exitIp: -1, // Special: invalidate trace on mismatch
+                });
+                this.recorder.trace.guardCount++;
+              }
+
               // Pop the arg refs and closure ref from IR stack — they're on the VM stack now
               // The callee will access them as locals via LOAD_LOCAL with the inlined baseOffset
               const argRefs = [];
@@ -1270,7 +1282,7 @@ export class VM {
 
   // Get a stable identity for the current closure (for trace keying)
   _closureId() {
-    return this.currentFrame().closure.fn;
+    return this.currentFrame().closure.fn.id;
   }
 
   // Execute a compiled trace, returns true if trace ran (even if it exited)
@@ -1329,6 +1341,14 @@ export class VM {
           }
           return true;
         case 'loop_back':
+          return true;
+        case 'invalidate':
+          // Guard closure mismatch — delete this trace so a new one will be recorded
+          // Compute the trace key to delete it from the trace map
+          for (const [key, t] of this.jit.traces) {
+            if (t === trace) { this.jit.traces.delete(key); break; }
+          }
+          frame.ip = trace.startIp - 1;
           return true;
         case 'max_iter':
           frame.ip = trace.startIp - 1;
