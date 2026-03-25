@@ -991,3 +991,89 @@ describe('String Builtins', () => {
     testStringObject(compileAndRun('replace("hello world", "world", "monkey")'), 'hello monkey');
   });
 });
+
+describe('Mutable Closures', () => {
+  it('counter pattern', () => {
+    testIntegerObject(compileAndRun('let f = fn() { let c = 0; fn() { c = c + 1; c } }; let counter = f(); counter(); counter(); counter()'), 3);
+  });
+  it('accumulator', () => {
+    testIntegerObject(compileAndRun('let f = fn() { let sum = 0; fn(x) { sum = sum + x; sum } }; let acc = f(); acc(10); acc(20); acc(30)'), 60);
+  });
+});
+
+describe('Hash Mutation', () => {
+  it('set new key', () => {
+    testIntegerObject(compileAndRun('let h = {"a": 1}; h["b"] = 2; h["b"]'), 2);
+  });
+  it('update existing key', () => {
+    testIntegerObject(compileAndRun('let h = {"a": 1}; h["a"] = 42; h["a"]'), 42);
+  });
+});
+
+describe('Else-If Edge Cases', () => {
+  it('else-if without final else', () => {
+    const result = compileAndRun('let x = 99; if (x == 1) { "one" } else if (x == 2) { "two" }');
+    assert.ok(result instanceof MonkeyNull);
+  });
+});
+
+describe('Comprehensive Feature Integration', () => {
+  it('fizzbuzz with ternary and for loop', () => {
+    testStringObject(compileAndRun(`
+      let fizzbuzz = fn(n) {
+        n % 15 == 0 ? "FizzBuzz" :
+        n % 3 == 0 ? "Fizz" :
+        n % 5 == 0 ? "Buzz" :
+        str(n)
+      };
+      fizzbuzz(15)
+    `), 'FizzBuzz');
+  });
+  it('map with for-in and template', () => {
+    testStringObject(compileAndRun(`
+      let result = [];
+      for (x in [1, 2, 3]) {
+        result = push(result, \`item-\${x}\`);
+      }
+      join(result, ",")
+    `), 'item-1,item-2,item-3');
+  });
+  it('slice + for-in + break', () => {
+    testIntegerObject(compileAndRun(`
+      let data = [10, 20, 30, 40, 50];
+      let s = 0;
+      for (x in data[1:4]) {
+        if (x == 40) { break; }
+        s += x;
+      }
+      s
+    `), 50);
+  });
+  it('default params + ternary', () => {
+    testIntegerObject(compileAndRun(`
+      let clamp = fn(x, lo = 0, hi = 100) {
+        x < lo ? lo : x > hi ? hi : x
+      };
+      clamp(150)
+    `), 100);
+  });
+  it('recursive quicksort verification', () => {
+    const result = compileAndRun(`
+      let swap = fn(a, i, j) { let t = a[i]; a[i] = a[j]; a[j] = t; };
+      let partition = fn(a, lo, hi) {
+        let p = a[hi]; let i = lo;
+        for (let j = lo; j < hi; j += 1) {
+          if (a[j] <= p) { swap(a, i, j); i += 1; }
+        }
+        swap(a, i, hi); i
+      };
+      let qs = fn(a, lo, hi) {
+        if (lo < hi) { let p = partition(a, lo, hi); qs(a, lo, p-1); qs(a, p+1, hi); }
+      };
+      let a = [5,3,8,1,9,2,7,4,6];
+      qs(a, 0, len(a)-1);
+      a[0] * 100 + a[4] * 10 + a[8]
+    `);
+    testIntegerObject(result, 159); // 1*100 + 5*10 + 9 = 159
+  });
+});

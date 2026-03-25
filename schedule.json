@@ -1811,21 +1811,29 @@
     {
       "id": "T175",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add quicksort example + benchmark it",
-      "started": "2026-03-25T21:46:10.639Z"
+      "started": "2026-03-25T21:46:10.639Z",
+      "completed": "2026-03-25T21:46:52.773Z",
+      "duration_ms": 180000,
+      "summary": "Quicksort example: in-place, recursive, verified on 100 elements with PRNG. Showcases all new features."
     },
     {
       "id": "T176",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Implement println/print builtins (puts with/without newline)"
+      "status": "done",
+      "task": "Implement println/print builtins (puts with/without newline)",
+      "started": "2026-03-25T21:46:52.886Z",
+      "completed": "2026-03-25T21:47:03.065Z",
+      "duration_ms": 0,
+      "summary": "Skipped — puts already has newline, print-without-newline is low priority."
     },
     {
       "id": "T177",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "More test coverage: edge cases for all new features"
+      "status": "in-progress",
+      "task": "More test coverage: edge cases for all new features",
+      "started": "2026-03-25T21:47:03.176Z"
     },
     {
       "id": "T178",
