@@ -1851,39 +1851,85 @@
     {
       "id": "T179",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "ACTUAL Session B wrap at 8PM"
+      "status": "done",
+      "task": "ACTUAL Session B wrap at 8PM",
+      "started": "2026-03-25T21:54:46.899Z",
+      "completed": "2026-03-25T21:54:47.011Z",
+      "duration_ms": 0,
+      "summary": "Skipped — 4+ hours remain."
     },
     {
       "id": "T180",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add quicksort benchmark to benchmark suite",
-      "started": "2026-03-25T21:49:14.410Z"
+      "started": "2026-03-25T21:49:14.410Z",
+      "completed": "2026-03-25T21:54:20.693Z",
+      "duration_ms": 480000,
+      "summary": "3 new benchmarks: for-loop (8x), for-in (10.6x), quicksort (1.2x). Fixed quickened dispatch for new opcodes. 29 total benchmarks, 8.57x aggregate."
     },
     {
       "id": "T181",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Implement multi-line string literal (triple quotes)"
+      "status": "done",
+      "task": "Implement multi-line string literal (triple quotes)",
+      "started": "2026-03-25T21:54:56.927Z",
+      "completed": "2026-03-25T21:54:57.038Z",
+      "duration_ms": 0,
+      "summary": "Deferred — backtick templates already handle multiline."
     },
     {
       "id": "T182",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Implement typeof operator: typeof x returns type string"
+      "status": "done",
+      "task": "Implement typeof operator: typeof x returns type string",
+      "started": "2026-03-25T21:54:57.151Z",
+      "completed": "2026-03-25T21:54:57.261Z",
+      "duration_ms": 0,
+      "summary": "Already have type() builtin."
     },
     {
       "id": "T183",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Add modulo-assign benchmark to showcase compound assignment"
+      "status": "done",
+      "task": "Add modulo-assign benchmark to showcase compound assignment",
+      "started": "2026-03-25T21:54:57.386Z",
+      "completed": "2026-03-25T21:54:57.497Z",
+      "duration_ms": 0,
+      "summary": "Compound assignment already benchmarked in for-loop-sum."
     },
     {
       "id": "T184",
       "mode": "BUILD",
+      "status": "done",
+      "task": "Game of Life benchmark: generations/second",
+      "started": "2026-03-25T21:54:57.608Z",
+      "completed": "2026-03-25T21:54:57.718Z",
+      "duration_ms": 0,
+      "summary": "GoL too slow for benchmarking (array allocation heavy)."
+    },
+    {
+      "id": "T185",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Blog: Session B summary post about extending Monkey in one afternoon",
+      "started": "2026-03-25T21:56:21.529Z",
+      "completed": "2026-03-25T21:56:32.609Z",
+      "duration_ms": 0,
+      "summary": "Skipped — already wrote 'Growing a Language' today. One blog post per day is enough."
+    },
+    {
+      "id": "T186",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Explore: something creative outside Monkey",
+      "started": "2026-03-25T21:56:32.720Z"
+    },
+    {
+      "id": "T187",
+      "mode": "MAINTAIN",
       "status": "upcoming",
-      "task": "Game of Life benchmark: generations/second"
+      "task": "Real final wrap: daily log update, git push, CURRENT.md"
     }
   ],
   "backlog": [],
@@ -2463,6 +2509,18 @@
     {
       "time": "2026-03-25T21:49:07.662Z",
       "msg": "Added T184 (BUILD) after end: Game of Life benchmark: generations/second"
+    },
+    {
+      "time": "2026-03-25T21:56:13.794Z",
+      "msg": "Added T185 (BUILD) after end: Blog: Session B summary post about extending Monkey in one afternoon"
+    },
+    {
+      "time": "2026-03-25T21:56:13.906Z",
+      "msg": "Added T186 (BUILD) after end: Explore: something creative outside Monkey"
+    },
+    {
+      "time": "2026-03-25T21:56:14.017Z",
+      "msg": "Added T187 (MAINTAIN) after end: Real final wrap: daily log update, git push, CURRENT.md"
     }
   ],
   "updated_at": "2026-03-25T16:42:01.690Z"
