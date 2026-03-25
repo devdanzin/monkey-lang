@@ -1729,3 +1729,196 @@ describe('Real-World Patterns', () => {
     `), 4);
   });
 });
+
+describe('700 Club', () => {
+  it('ROT13', () => {
+    testStringObject(compileAndRun(`
+      let rot13 = fn(s) {
+        let r = "";
+        for (c in s) {
+          let o = ord(c);
+          if (o >= 65 && o <= 90) { r = r + char((o - 65 + 13) % 26 + 65); }
+          else if (o >= 97 && o <= 122) { r = r + char((o - 97 + 13) % 26 + 97); }
+          else { r = r + c; }
+        }
+        r
+      };
+      rot13("Hello World!")
+    `), 'Uryyb Jbeyq!');
+  });
+  it('ROT13 inverse', () => {
+    testStringObject(compileAndRun(`
+      let rot13 = fn(s) {
+        let r = "";
+        for (c in s) {
+          let o = ord(c);
+          if (o >= 65 && o <= 90) { r = r + char((o - 65 + 13) % 26 + 65); }
+          else if (o >= 97 && o <= 122) { r = r + char((o - 97 + 13) % 26 + 97); }
+          else { r = r + c; }
+        }
+        r
+      };
+      rot13(rot13("Secret"))
+    `), 'Secret');
+  });
+  it('number to words', () => {
+    testStringObject(compileAndRun(`
+      let to_word = fn(n) {
+        match (n) {
+          0 => "zero", 1 => "one", 2 => "two", 3 => "three",
+          4 => "four", 5 => "five", 6 => "six", 7 => "seven",
+          8 => "eight", 9 => "nine", _ => "?"
+        }
+      };
+      let result = [];
+      for (let i = 1; i <= 5; i++) { result = push(result, to_word(i)); }
+      join(result, ", ")
+    `), 'one, two, three, four, five');
+  });
+  it('running average', () => {
+    testIntegerObject(compileAndRun(`
+      let data = [10, 20, 30, 40, 50];
+      let sum = 0;
+      for (x in data) { sum += x; }
+      sum / len(data)
+    `), 30);
+  });
+  it('unique elements', () => {
+    testIntegerObject(compileAndRun(`
+      let unique = fn(arr) {
+        let seen = [];
+        let result = [];
+        for (x in arr) {
+          let found = false;
+          for (s in seen) { if (s == x) { found = true; break; } }
+          if (!found) { result = push(result, x); seen = push(seen, x); }
+        }
+        result
+      };
+      len(unique([1, 2, 3, 2, 1, 4, 3, 5]))
+    `), 5);
+  });
+  it('zip and unzip', () => {
+    testIntegerObject(compileAndRun(`
+      let a = [1, 2, 3];
+      let b = [10, 20, 30];
+      let sum = 0;
+      let n = len(a);
+      for (let i = 0; i < n; i++) {
+        sum += a[i] * b[i];
+      }
+      sum
+    `), 140);
+  });
+  it('string padding', () => {
+    testStringObject(compileAndRun(`
+      let pad_left = fn(s, n, ch = " ") {
+        while (len(s) < n) { s = ch + s; }
+        s
+      };
+      pad_left("42", 5, "0")
+    `), '00042');
+  });
+  it('accumulate', () => {
+    const result = compileAndRun(`
+      let a = [1, 2, 3, 4, 5];
+      let acc = [];
+      let sum = 0;
+      for (x in a) {
+        sum += x;
+        acc = push(acc, sum);
+      }
+      acc
+    `);
+    assert.equal(result.elements.length, 5);
+    testIntegerObject(result.elements[4], 15);
+  });
+  it('is_even closure', () => {
+    testBooleanObject(compileAndRun('let is_even = fn(n) { n % 2 == 0 }; is_even(42)'), true);
+  });
+  it('compose three functions', () => {
+    testIntegerObject(compileAndRun(`
+      let compose = fn(f, g) { fn(x) { f(g(x)) } };
+      let add1 = fn(x) { x + 1 };
+      let mul2 = fn(x) { x * 2 };
+      let sub3 = fn(x) { x - 3 };
+      let f = compose(sub3, compose(mul2, add1));
+      f(5)
+    `), 9);
+  });
+  it('array intersection', () => {
+    testIntegerObject(compileAndRun(`
+      let intersect = fn(a, b) {
+        let result = [];
+        for (x in a) {
+          for (y in b) {
+            if (x == y) { result = push(result, x); break; }
+          }
+        }
+        result
+      };
+      len(intersect([1,2,3,4,5], [3,4,5,6,7]))
+    `), 3);
+  });
+  it('sum of digits', () => {
+    testIntegerObject(compileAndRun(`
+      let sum_digits = fn(n) {
+        let s = str(n);
+        let sum = 0;
+        for (c in s) { sum += int(c); }
+        sum
+      };
+      sum_digits(12345)
+    `), 15);
+  });
+  it('chain of maps', () => {
+    testIntegerObject(compileAndRun(`
+      let a = [1, 2, 3, 4, 5];
+      let doubled = [];
+      for (x in a) { doubled = push(doubled, x * 2); }
+      let incremented = [];
+      for (x in doubled) { incremented = push(incremented, x + 1); }
+      let sum = 0;
+      for (x in incremented) { sum += x; }
+      sum
+    `), 35);
+  });
+  it('recursive list operations', () => {
+    testIntegerObject(compileAndRun(`
+      let list_length = fn(arr) {
+        len(arr) == 0 ? 0 : 1 + list_length(rest(arr))
+      };
+      list_length([1, 2, 3, 4, 5, 6, 7])
+    `), 7);
+  });
+  it('countdown', () => {
+    testStringObject(compileAndRun(`
+      let results = [];
+      for (let i = 5; i > 0; i--) {
+        results = push(results, str(i));
+      }
+      results = push(results, "Go!");
+      join(results, " ")
+    `), '5 4 3 2 1 Go!');
+  });
+  it('max subarray (Kadane)', () => {
+    testIntegerObject(compileAndRun(`
+      let kadane = fn(arr) {
+        let max_sum = arr[0];
+        let current = arr[0];
+        for (let i = 1; i < len(arr); i++) {
+          current = current + arr[i] > arr[i] ? current + arr[i] : arr[i];
+          if (current > max_sum) { max_sum = current; }
+        }
+        max_sum
+      };
+      kadane([-2, 1, -3, 4, -1, 2, 1, -5, 4])
+    `), 6);
+  });
+  it('deep nesting', () => {
+    testIntegerObject(compileAndRun(`
+      let a = [[[[42]]]];
+      a[0][0][0][0]
+    `), 42);
+  });
+});
