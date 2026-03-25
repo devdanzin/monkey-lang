@@ -329,16 +329,20 @@
       "id": "T33",
       "mode": "BUILD",
       "task": "Add tests for array builtins",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T30",
-      "started": "2026-03-25T15:12:52.842Z"
+      "started": "2026-03-25T15:12:52.842Z",
+      "completed": "2026-03-25T15:13:36.232Z",
+      "duration_ms": 300000,
+      "summary": "10 stdlib tests: map, filter, reduce(sum+product), range, contains(found+not), reverse, compose, reduce+range. 262 tests all passing."
     },
     {
       "id": "T34",
       "mode": "BUILD",
       "task": "Benchmark array builtins with JIT (closure inlining)",
-      "status": "upcoming",
-      "plan_ref": "T30"
+      "status": "in-progress",
+      "plan_ref": "T30",
+      "started": "2026-03-25T15:13:45.217Z"
     },
     {
       "id": "T35",

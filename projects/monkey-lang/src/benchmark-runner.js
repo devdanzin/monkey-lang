@@ -67,6 +67,13 @@ const BENCHMARKS = [
   { name: 'mixed:fn-branch-10k', category: 'mixed', expected: 0, input: `let inc = fn(x) { x + 1 }; let dec = fn(x) { x - 1 }; let val = 0; let i = 0; while (i < 10000) { if (i > 4999) { val = inc(val); } else { val = dec(val); } i = i + 1; } val` },
   { name: 'mixed:loop-fib', category: 'mixed', expected: 10945, input: `let fib = fn(n) { if (n < 2) { n } else { fib(n-1) + fib(n-2) } }; let sum = 0; let i = 0; while (i < 20) { sum = sum + fib(i); i = i + 1; } sum` },
   { name: 'mixed:dot-product-5k', category: 'mixed', expected: 41654167500, input: `let dot = fn(n) { let sum = 0; let i = 0; while (i < n) { sum = sum + i * i; i = i + 1; } sum }; dot(5000)` },
+  // Stdlib benchmarks (inline stdlib defs)
+  { name: 'stdlib:reduce-sum-1k', category: 'stdlib', expected: 499500,
+    input: `let reduce = fn(arr, initial, f) { let acc = initial; let i = 0; while (i < len(arr)) { acc = f(acc, arr[i]); i = i + 1; } acc }; let arr = []; let i = 0; while (i < 1000) { arr = push(arr, i); i = i + 1; } reduce(arr, 0, fn(acc, x) { acc + x })` },
+  { name: 'stdlib:map-double-1k', category: 'stdlib', expected: 1000,
+    input: `let map = fn(arr, f) { let r = []; let i = 0; while (i < len(arr)) { r = push(r, f(arr[i])); i = i + 1; } r }; let arr = []; let i = 0; while (i < 1000) { arr = push(arr, i); i = i + 1; } len(map(arr, fn(x) { x * 2 }))` },
+  { name: 'stdlib:filter-gt500-1k', category: 'stdlib', expected: 500,
+    input: `let filter = fn(arr, f) { let r = []; let i = 0; while (i < len(arr)) { if (f(arr[i])) { r = push(r, arr[i]); } i = i + 1; } r }; let arr = []; let i = 0; while (i < 1000) { arr = push(arr, i); i = i + 1; } len(filter(arr, fn(x) { x > 499 }))` },
 ];
 
 function parse(input) {
