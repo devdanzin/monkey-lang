@@ -412,28 +412,54 @@
     {
       "id": "T40",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add tests for modulo operator",
-      "started": "2026-03-25T15:33:35.803Z"
+      "started": "2026-03-25T15:33:35.803Z",
+      "completed": "2026-03-25T15:34:06.862Z",
+      "duration_ms": 120000,
+      "summary": "4 modulo tests. 279 total."
     },
     {
       "id": "T41",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "What JIT optimization would give biggest gain on weak benchmarks?"
+      "status": "done",
+      "task": "What JIT optimization would give biggest gain on weak benchmarks?",
+      "started": "2026-03-25T15:34:12.999Z",
+      "completed": "2026-03-25T15:34:23.216Z",
+      "duration_ms": 60000,
+      "summary": "Fix nested-if bug is highest priority."
     },
     {
       "id": "T42",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Plan JIT improvement for nested loops or closure calls",
-      "task": null
+      "task": null,
+      "started": "2026-03-25T15:34:35.040Z",
+      "completed": "2026-03-25T15:35:13.752Z",
+      "duration_ms": 180000,
+      "summary": "Root cause found: side trace drops inner guards. 2 tasks."
+    },
+    {
+      "id": "T48",
+      "mode": "BUILD",
+      "task": "Fix nested-if JIT bug: side trace inlining drops inner guards",
+      "status": "upcoming",
+      "plan_ref": "T42"
+    },
+    {
+      "id": "T49",
+      "mode": "BUILD",
+      "task": "Add test for nested-if correctness with JIT",
+      "status": "upcoming",
+      "plan_ref": "T42"
     },
     {
       "id": "T43",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Git commit, push, update daily log"
+      "status": "in-progress",
+      "task": "Git commit, push, update daily log",
+      "started": "2026-03-25T15:35:26.471Z"
     },
     {
       "id": "T44",
@@ -637,7 +663,11 @@
     {
       "time": "2026-03-25T15:18:58.663Z",
       "msg": "Added T47 (MAINTAIN) after end: Final wrap: commit, push, CURRENT.md status: session-ended"
+    },
+    {
+      "time": "2026-03-25T15:35:04.863Z",
+      "msg": "PLAN T42 filled 2 BUILD tasks"
     }
   ],
-  "updated_at": "2026-03-25T15:33:22.314Z"
+  "updated_at": "2026-03-25T15:35:13.752Z"
 }
