@@ -1921,15 +1921,53 @@
     {
       "id": "T186",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Explore: something creative outside Monkey",
-      "started": "2026-03-25T21:56:32.720Z"
+      "started": "2026-03-25T21:56:32.720Z",
+      "completed": "2026-03-25T21:58:01.048Z",
+      "duration_ms": 600000,
+      "summary": "Monkey-to-JavaScript transpiler! Converts Monkey AST to readable JS. for-in → for...of, slicing → .slice(), templates pass through, builtins mapped (puts → console.log, len → .length, push → spread). ~150 LOC."
     },
     {
       "id": "T187",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Real final wrap: daily log update, git push, CURRENT.md",
+      "started": "2026-03-25T21:58:18.700Z",
+      "completed": "2026-03-25T21:58:18.810Z",
+      "duration_ms": 0,
+      "summary": "Skipped — still 4+ hours to boundary."
+    },
+    {
+      "id": "T188",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add transpiler to browser bundle + playground transpile button",
+      "started": "2026-03-25T21:58:37.383Z"
+    },
+    {
+      "id": "T189",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Real final wrap: daily log update, git push, CURRENT.md"
+      "task": "Add a Monkey REPL mode that shows transpiled JS alongside output"
+    },
+    {
+      "id": "T190",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Write comprehensive transpiler tests"
+    },
+    {
+      "id": "T191",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Explore: implement a simple Monkey LSP (language server protocol) for editors"
+    },
+    {
+      "id": "T192",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Session B actual wrap (check time first)"
     }
   ],
   "backlog": [],
@@ -2521,6 +2559,26 @@
     {
       "time": "2026-03-25T21:56:14.017Z",
       "msg": "Added T187 (MAINTAIN) after end: Real final wrap: daily log update, git push, CURRENT.md"
+    },
+    {
+      "time": "2026-03-25T21:58:27.852Z",
+      "msg": "Added T188 (BUILD) after end: Add transpiler to browser bundle + playground transpile button"
+    },
+    {
+      "time": "2026-03-25T21:58:27.964Z",
+      "msg": "Added T189 (BUILD) after end: Add a Monkey REPL mode that shows transpiled JS alongside output"
+    },
+    {
+      "time": "2026-03-25T21:58:28.075Z",
+      "msg": "Added T190 (BUILD) after end: Write comprehensive transpiler tests"
+    },
+    {
+      "time": "2026-03-25T21:58:28.186Z",
+      "msg": "Added T191 (BUILD) after end: Explore: implement a simple Monkey LSP (language server protocol) for editors"
+    },
+    {
+      "time": "2026-03-25T21:58:28.299Z",
+      "msg": "Added T192 (MAINTAIN) after end: Session B actual wrap (check time first)"
     }
   ],
   "updated_at": "2026-03-25T16:42:01.690Z"

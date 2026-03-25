@@ -7,3 +7,4 @@ export { IR } from './jit.js';
 export { monkeyEval } from './evaluator.js';
 export { Environment, NULL } from './object.js';
 export { STDLIB_SOURCE, withStdlib } from './stdlib.js';
+export { Transpiler } from './transpiler.js';
