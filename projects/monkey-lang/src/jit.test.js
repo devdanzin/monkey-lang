@@ -1288,3 +1288,30 @@ describe('Match + JIT', () => {
     assert.ok(vm.lastPoppedStackElem().value > 0);
   });
 });
+
+describe('JIT Edge Cases', () => {
+  it('for-in with destructuring', () => {
+    const vm = runJIT('let pairs = []; for (let i = 0; i < 100; i++) { pairs = push(pairs, [i, i * 2]); } let sum = 0; for (p in pairs) { sum += p[0] + p[1]; } sum');
+    assert.equal(vm.lastPoppedStackElem().value, 14850);
+  });
+
+  it('string concatenation in loop', () => {
+    const vm = runJIT('let s = ""; for (let i = 0; i < 10; i++) { s = s + str(i); } len(s)');
+    assert.equal(vm.lastPoppedStackElem().value, 10);
+  });
+
+  it('nested function calls in loop', () => {
+    const vm = runJIT('let add = fn(a, b) { a + b }; let s = 0; for (let i = 0; i < 100; i++) { s = add(s, i); } s');
+    assert.equal(vm.lastPoppedStackElem().value, 4950);
+  });
+
+  it('i++ with compound assignment', () => {
+    const vm = runJIT('let s = 0; let i = 0; while (i < 100) { s += i; i++; } s');
+    assert.equal(vm.lastPoppedStackElem().value, 4950);
+  });
+
+  it('prime count with JIT (fixed bug)', () => {
+    const vm = runJIT('let is_prime = fn(n) { if (n < 2) { return false; } if (n < 4) { return true; } if (n % 2 == 0) { return false; } let i = 3; while (i * i <= n) { if (n % i == 0) { return false; } i += 2; } true }; let count = 0; let n = 2; while (n < 100) { if (is_prime(n)) { count++; } n++; } count');
+    assert.equal(vm.lastPoppedStackElem().value, 25);
+  });
+});
