@@ -1254,3 +1254,128 @@ describe('Do-While Loop', () => {
     testIntegerObject(compileAndRun('let i = 0; do { if (i == 3) { break; } i++; } while (true); i'), 3);
   });
 });
+
+describe('Comprehensive Feature Tests', () => {
+  it('fibonacci table with for-loop', () => {
+    testIntegerObject(compileAndRun(`
+      let a = 0; let b = 1;
+      for (let i = 0; i < 20; i++) {
+        let temp = b;
+        b = a + b;
+        a = temp;
+      }
+      a
+    `), 6765);
+  });
+
+  it('string building with for-in', () => {
+    testStringObject(compileAndRun(`
+      let words = ["hello", "beautiful", "world"];
+      let result = join(words, " ");
+      upper(result)
+    `), 'HELLO BEAUTIFUL WORLD');
+  });
+
+  it('nested match', () => {
+    testStringObject(compileAndRun(`
+      let describe = fn(x, y) {
+        match (x > 0) {
+          true => match (y > 0) {
+            true => "Q1",
+            _ => "Q4"
+          },
+          _ => match (y > 0) {
+            true => "Q2",
+            _ => "Q3"
+          }
+        }
+      };
+      describe(1, -1)
+    `), 'Q4');
+  });
+
+  it('array comprehension via for-in + push', () => {
+    const result = compileAndRun(`
+      let squares = [];
+      for (let i = 1; i <= 10; i++) {
+        squares = push(squares, i * i);
+      }
+      squares
+    `);
+    assert.ok(result instanceof MonkeyArray);
+    assert.equal(result.elements.length, 10);
+    testIntegerObject(result.elements[9], 100);
+  });
+
+  it('deep recursion with ternary', () => {
+    testIntegerObject(compileAndRun(`
+      let sum_to = fn(n) { n <= 0 ? 0 : n + sum_to(n - 1) };
+      sum_to(100)
+    `), 5050);
+  });
+
+  it('hash operations', () => {
+    testIntegerObject(compileAndRun(`
+      let h = {"a": 1, "b": 2, "c": 3};
+      h["d"] = 4;
+      let k = keys(h);
+      let v = values(h);
+      let sum = 0;
+      for (val in v) { sum += val; }
+      sum
+    `), 10);
+  });
+
+  it('string slicing and manipulation', () => {
+    testStringObject(compileAndRun(`
+      let s = "Hello, World!";
+      let greeting = s[:5];
+      let name = s[7:12];
+      lower(greeting) + " " + upper(name)
+    `), 'hello WORLD');
+  });
+
+  it('complex destructuring pattern', () => {
+    testIntegerObject(compileAndRun(`
+      let points = [[0,0], [3,4], [6,8]];
+      let total_dist = 0;
+      for ([x, y] in points) {
+        // Manhattan distance from origin
+        total_dist += abs(x) + abs(y);
+      }
+      total_dist
+    `), 21);
+  });
+
+  it('Y combinator factorial', () => {
+    testIntegerObject(compileAndRun(`
+      let Y = fn(f) { fn(x) { f(fn(n) { x(x)(n) }) }(fn(x) { f(fn(n) { x(x)(n) }) }) };
+      let fact = Y(fn(self) { fn(n) { n == 0 ? 1 : n * self(n - 1) } });
+      fact(10)
+    `), 3628800);
+  });
+
+  it('do-while with break', () => {
+    testIntegerObject(compileAndRun(`
+      let sum = 0;
+      let i = 1;
+      do {
+        sum += i;
+        i++;
+        if (i > 10) { break; }
+      } while (true);
+      sum
+    `), 55);
+  });
+
+  it('match with computed pattern', () => {
+    testStringObject(compileAndRun(`
+      let x = 7;
+      match (x) {
+        2 + 3 => "five",
+        3 + 4 => "seven",
+        _ => "other"
+      }
+    `), 'seven');
+  });
+});
