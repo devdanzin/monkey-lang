@@ -1315,3 +1315,26 @@ describe('JIT Edge Cases', () => {
     assert.equal(vm.lastPoppedStackElem().value, 25);
   });
 });
+
+describe('Real World JIT', () => {
+  it('sum of squares', () => {
+    const vm = runJIT('let s = 0; for (let i = 1; i <= 100; i++) { s += i * i; } s');
+    assert.equal(vm.lastPoppedStackElem().value, 338350);
+  });
+  it('collatz sequence length', () => {
+    const vm = runJIT('let collatz = fn(n) { let steps = 0; while (n != 1) { if (n % 2 == 0) { n = n / 2; } else { n = n * 3 + 1; } steps++; } steps }; collatz(27)');
+    assert.equal(vm.lastPoppedStackElem().value, 111);
+  });
+  it('sieve-like counting', () => {
+    const vm = runJIT('let count = 0; for (let i = 2; i < 100; i++) { let is_p = true; for (let j = 2; j * j <= i; j++) { if (i % j == 0) { is_p = false; break; } } if (is_p) { count++; } } count');
+    assert.equal(vm.lastPoppedStackElem().value, 25);
+  });
+  it('array building hot loop', () => {
+    const vm = runJIT('let a = []; for (let i = 0; i < 100; i++) { a = push(a, i * i); } a[-1]');
+    assert.equal(vm.lastPoppedStackElem().value, 9801);
+  });
+  it('string length counting', () => {
+    const vm = runJIT('let total = 0; let words = ["hello", "beautiful", "world", "of", "monkey"]; for (let i = 0; i < 20; i++) { for (w in words) { total += len(w); } } total');
+    assert.equal(vm.lastPoppedStackElem().value, 560);
+  });
+});

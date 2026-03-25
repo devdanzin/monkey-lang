@@ -893,3 +893,36 @@ describe('New Features - JIT Integration', () => {
     testIntegerObject(compileAndRunJIT('let [a, b] = [10, 20]; a * b'), 200);
   });
 });
+
+describe('More JIT Integration', () => {
+  it('fibonacci iterative', () => {
+    testIntegerObject(compileAndRunJIT('let a = 0; let b = 1; for (let i = 0; i < 20; i++) { let t = b; b = a + b; a = t; } a'), 6765);
+  });
+  it('power of 2', () => {
+    testIntegerObject(compileAndRunJIT('let p = 1; for (let i = 0; i < 16; i++) { p *= 2; } p'), 65536);
+  });
+  it('factorial', () => {
+    testIntegerObject(compileAndRunJIT('let f = fn(n) { n <= 1 ? 1 : n * f(n-1) }; f(12)'), 479001600);
+  });
+  it('string repeat', () => {
+    testStringObject(compileAndRunJIT('"abc" * 5'), 'abcabcabcabcabc');
+  });
+  it('hash creation', () => {
+    testIntegerObject(compileAndRunJIT('let h = {"a": 1, "b": 2, "c": 3}; h["a"] + h["b"] + h["c"]'), 6);
+  });
+  it('nested array access', () => {
+    testIntegerObject(compileAndRunJIT('let m = [[1,2,3],[4,5,6],[7,8,9]]; m[1][1]'), 5);
+  });
+  it('closure in loop', () => {
+    testIntegerObject(compileAndRunJIT('let adders = []; for (let i = 0; i < 5; i++) { adders = push(adders, fn(x) { x + i }); } adders[0](10)'), 15);
+  });
+  it('multiple returns', () => {
+    testIntegerObject(compileAndRunJIT('let f = fn(x) { if (x > 10) { return x * 2; } if (x > 5) { return x + 10; } x }; f(7)'), 17);
+  });
+  it('recursive sum', () => {
+    testIntegerObject(compileAndRunJIT('let sum = fn(n) { n == 0 ? 0 : n + sum(n-1) }; sum(50)'), 1275);
+  });
+  it('complex expression', () => {
+    testIntegerObject(compileAndRunJIT('(2 + 3) * (4 - 1) + 10 / 2'), 20);
+  });
+});

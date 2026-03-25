@@ -343,3 +343,36 @@ describe('Comprehensive Evaluator Tests', () => {
     assert.equal(testEval('let s = 0; for (x in [1,2,3,4,5]) { if (x == 4) { break; } s += x; }; s').value, 6);
   });
 });
+
+describe('Real World Evaluator', () => {
+  it('GCD', () => {
+    assert.equal(testEval('let gcd = fn(a, b) { while (b != 0) { let t = b; b = a % b; a = t; } a }; gcd(48, 18)').value, 6);
+  });
+  it('palindrome', () => {
+    assert.equal(testEval('let p = fn(s) { let i = 0; let j = len(s) - 1; while (i < j) { if (s[i] != s[j]) { return false; } i++; j--; } true }; p("racecar")').value, true);
+  });
+  it('flatten', () => {
+    assert.equal(testEval('let f = fn(arr) { let r = []; for (x in arr) { if (type(x) == "ARRAY") { for (y in f(x)) { r = push(r, y); } } else { r = push(r, x); } } r }; len(f([1, [2, 3], [4, [5]]]))').value, 5);
+  });
+  it('binary to decimal', () => {
+    assert.equal(testEval('let b = fn(bits) { let r = 0; for (b in bits) { r = r * 2 + b; } r }; b([1,1,0,1])').value, 13);
+  });
+  it('Caesar cipher', () => {
+    assert.equal(testEval('let e = fn(s, n) { let r = ""; for (c in s) { let o = ord(c); if (o >= 65 && o <= 90) { r = r + char((o - 65 + n) % 26 + 65); } else { r = r + c; } } r }; e("ABC", 3)').value, 'DEF');
+  });
+  it('matrix trace', () => {
+    assert.equal(testEval('let m = [[1,0,0],[0,2,0],[0,0,3]]; m[0][0] + m[1][1] + m[2][2]').value, 6);
+  });
+  it('string reverse', () => {
+    assert.equal(testEval('let rev = fn(s) { let r = ""; for (let i = len(s) - 1; i >= 0; i--) { r = r + s[i]; } r }; rev("hello")').value, 'olleh');
+  });
+  it('power function', () => {
+    assert.equal(testEval('let pow = fn(b, e) { let r = 1; for (let i = 0; i < e; i++) { r *= b; } r }; pow(2, 10)').value, 1024);
+  });
+  it('max of array', () => {
+    assert.equal(testEval('let a = [3, 1, 4, 1, 5, 9, 2, 6]; let m = a[0]; for (x in a) { if (x > m) { m = x; } } m').value, 9);
+  });
+  it('fibonacci nth', () => {
+    assert.equal(testEval('let fib = fn(n) { let a = 0; let b = 1; for (let i = 0; i < n; i++) { let t = b; b = a + b; a = t; } a }; fib(10)').value, 55);
+  });
+});
