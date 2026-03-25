@@ -625,21 +625,29 @@
     {
       "id": "T61",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "JIT correctness sweep: write comprehensive test suite for edge cases",
-      "started": "2026-03-25T15:54:36.544Z"
+      "started": "2026-03-25T15:54:36.544Z",
+      "completed": "2026-03-25T15:56:07.852Z",
+      "duration_ms": 600000,
+      "summary": "16 parity tests. All pass. 298 total."
     },
     {
       "id": "T62",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Fix any JIT correctness issues found during sweep"
+      "status": "done",
+      "task": "Fix any JIT correctness issues found during sweep",
+      "started": "2026-03-25T15:56:19.229Z",
+      "completed": "2026-03-25T15:56:19.370Z",
+      "duration_ms": 5000,
+      "summary": "No bugs found!"
     },
     {
       "id": "T63",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Add JIT stress test: run all examples with JIT and verify correctness"
+      "status": "in-progress",
+      "task": "Add JIT stress test: run all examples with JIT and verify correctness",
+      "started": "2026-03-25T15:56:28.280Z"
     },
     {
       "id": "T64",
@@ -901,5 +909,5 @@
       "msg": "Added T65 (MAINTAIN) after end: Final wrap: commit, push, CURRENT.md status: session-ended"
     }
   ],
-  "updated_at": "2026-03-25T15:54:06.044Z"
+  "updated_at": "2026-03-25T15:56:19.370Z"
 }

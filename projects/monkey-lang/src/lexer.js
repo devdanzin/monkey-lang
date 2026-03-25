@@ -91,6 +91,13 @@ export class Lexer {
     while (this.ch === ' ' || this.ch === '\t' || this.ch === '\n' || this.ch === '\r') {
       this.readChar();
     }
+    // Skip single-line comments
+    if (this.ch === '/' && this.peekChar() === '/') {
+      while (this.ch !== '\n' && this.ch !== '\0') {
+        this.readChar();
+      }
+      this.skipWhitespace(); // Continue skipping after comment
+    }
   }
 
   readIdentifier() {
