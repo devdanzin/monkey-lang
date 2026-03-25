@@ -382,6 +382,38 @@ export class Parser {
       return new ast.ForInExpression(token, varName, iterable, body);
     }
 
+    // Check for `for ([a, b] in expr)` destructuring for-in
+    if (this.curTokenIs(TokenType.LBRACKET)) {
+      const names = [];
+      if (!this.peekTokenIs(TokenType.RBRACKET)) {
+        this.nextToken();
+        names.push(this.curToken.literal);
+        while (this.peekTokenIs(TokenType.COMMA)) {
+          this.nextToken();
+          this.nextToken();
+          names.push(this.curToken.literal);
+        }
+      }
+      if (!this.expectPeek(TokenType.RBRACKET)) return null;
+      this.nextToken(); // should be 'in'
+      if (!(this.curTokenIs(TokenType.IDENT) && this.curToken.literal === 'in')) {
+        this.errors.push('expected "in" after destructuring pattern');
+        return null;
+      }
+      this.nextToken();
+      const iterable = this.parseExpression(Precedence.LOWEST);
+      if (!this.expectPeek(TokenType.RPAREN)) return null;
+      if (!this.expectPeek(TokenType.LBRACE)) return null;
+      const body = this.parseBlockStatement();
+      // Create a for-in with a temp variable, then destructure in body
+      const tempVar = '__forin_dest_' + token.literal;
+      const destBody = new ast.BlockStatement(token, [
+        new ast.DestructuringLet(token, names.map(n => n === '_' ? null : new ast.Identifier(token, n)), new ast.Identifier(token, tempVar)),
+        ...body.statements
+      ]);
+      return new ast.ForInExpression(token, tempVar, iterable, destBody);
+    }
+
     // Standard for (init; condition; update) { body }
     let init;
     if (this.curTokenIs(TokenType.LET)) {
