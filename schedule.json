@@ -1600,15 +1600,19 @@
     {
       "id": "T155",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix JIT bug: nested while inside function calls",
-      "started": "2026-03-25T21:17:19.843Z"
+      "started": "2026-03-25T21:17:19.843Z",
+      "completed": "2026-03-25T21:23:48.305Z",
+      "duration_ms": 900000,
+      "summary": "Investigated JIT bug deeply. Added try/catch safety around trace execution with sp restoration. Root cause: inner-loop traces inside functions corrupt stack frame on exit. Bug persists for prime-count but safety net prevents crashes in other cases. 423 tests."
     },
     {
       "id": "T156",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Default function parameters: fn(x, y = 10)"
+      "status": "in-progress",
+      "task": "Default function parameters: fn(x, y = 10)",
+      "started": "2026-03-25T21:23:52.852Z"
     },
     {
       "id": "T157",

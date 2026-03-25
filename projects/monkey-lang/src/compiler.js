@@ -659,13 +659,30 @@ export class Compiler {
   compileFunctionLiteral(node) {
     this.enterScope();
 
-    // Define function name for recursion if it has one
     if (node.name) {
       this.symbolTable.defineFunctionName(node.name);
     }
 
     for (const param of node.parameters) {
       this.symbolTable.define(param.value);
+    }
+
+    // Emit default parameter fill-in code
+    if (node.defaults) {
+      for (let i = 0; i < node.defaults.length; i++) {
+        if (node.defaults[i] !== null) {
+          const sym = this.symbolTable.resolve(node.parameters[i].value);
+          // if (param == null) { param = default }
+          this.loadSymbol(sym);
+          this.emit(Opcodes.OpNull);
+          this.emit(Opcodes.OpEqual);
+          const jumpPos = this.emit(Opcodes.OpJumpNotTruthy, 0xFFFF);
+          const err = this.compile(node.defaults[i]);
+          if (err) return err;
+          this.emit(sym.scope === 'LOCAL' ? Opcodes.OpSetLocal : Opcodes.OpSetGlobal, sym.index);
+          this.changeOperand(jumpPos, this.currentInstructions().length);
+        }
+      }
     }
 
     const err = this.compile(node.body);

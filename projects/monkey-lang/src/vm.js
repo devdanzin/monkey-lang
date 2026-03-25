@@ -438,6 +438,11 @@ export class VM {
               case Opcodes.OpGreaterThan: result = left2.value > right2.value; break;
             }
             this.push(result ? TRUE : FALSE);
+          } else if (left2 === NULL || right2 === NULL) {
+            // Null comparison: null == null is true, null == anything_else is false
+            if (recording()) { this._abortRecording(); }
+            const result = op === Opcodes.OpEqual ? (left2 === right2) : (left2 !== right2);
+            this.push(result ? TRUE : FALSE);
           } else {
             throw new Error(`unsupported comparison: ${left2.type()} and ${right2.type()}`);
           }
@@ -731,23 +736,29 @@ export class VM {
           const callee = this.stack[this.sp - 1 - numArgs];
 
           if (callee instanceof Closure) {
-            if (numArgs !== callee.fn.numParameters) {
+            if (numArgs > callee.fn.numParameters) {
               throw new Error(`wrong number of arguments: want=${callee.fn.numParameters}, got=${numArgs}`);
             }
+            // Fill in missing arguments with NULL (for default parameters)
+            const missingArgs = callee.fn.numParameters - numArgs;
+            for (let ma = 0; ma < missingArgs; ma++) {
+              this.push(NULL);
+            }
 
-            // Check for compiled function trace (when not recording)
+            const effectiveNumArgs = numArgs + missingArgs;
+
+            // Hot function detection (method JIT)
             if (this.jit && !recording()) {
               const funcTrace = this.jit.getFuncTrace(callee.fn);
               if (funcTrace && funcTrace.compiled) {
                 try {
-                  const result = this._executeFuncTrace(funcTrace, callee, numArgs);
+                  const result = this._executeFuncTrace(funcTrace, callee, effectiveNumArgs);
                   if (result && !result.exit) {
-                    this.sp = this.sp - numArgs - 1;
+                    this.sp = this.sp - effectiveNumArgs - 1;
                     this.push(result);
                     break;
                   }
                 } catch (e) {
-                  // Func trace failed — remove it
                   this.jit.funcTraces.delete(callee.fn);
                 }
               }
@@ -818,7 +829,7 @@ export class VM {
               // the frame normally, and we keep recording with the new baseOffset
             }
 
-            const callFrame = new Frame(callee, this.sp - numArgs);
+            const callFrame = new Frame(callee, this.sp - effectiveNumArgs);
             this.pushFrame(callFrame);
             this.sp = callFrame.basePointer + callee.fn.numLocals;
             frame = callFrame;

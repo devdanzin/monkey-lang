@@ -174,7 +174,9 @@ export function monkeyEval(node, env) {
   if (node instanceof AST.Identifier) return evalIdentifier(node, env);
 
   if (node instanceof AST.FunctionLiteral) {
-    return new MonkeyFunction(node.parameters, node.body, env);
+    const fn = new MonkeyFunction(node.parameters, node.body, env);
+    fn.defaults = node.defaults || [];
+    return fn;
   }
 
   if (node instanceof AST.CallExpression) {
@@ -394,7 +396,15 @@ function applyFunction(fn, args) {
   if (fn instanceof MonkeyFunction) {
     const extendedEnv = new Environment(fn.env);
     for (let i = 0; i < fn.parameters.length; i++) {
-      extendedEnv.set(fn.parameters[i].value, args[i]);
+      if (i < args.length) {
+        extendedEnv.set(fn.parameters[i].value, args[i]);
+      } else if (fn.defaults && fn.defaults[i]) {
+        // Evaluate default in the function's environment
+        const defaultVal = monkeyEval(fn.defaults[i], extendedEnv);
+        extendedEnv.set(fn.parameters[i].value, defaultVal);
+      } else {
+        extendedEnv.set(fn.parameters[i].value, NULL);
+      }
     }
     const result = monkeyEval(fn.body, extendedEnv);
     if (result instanceof MonkeyReturnValue) return result.value;

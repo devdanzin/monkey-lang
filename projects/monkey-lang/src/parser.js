@@ -373,27 +373,44 @@ export class Parser {
   parseFunctionLiteral() {
     const token = this.curToken;
     if (!this.expectPeek(TokenType.LPAREN)) return null;
-    const parameters = this.parseFunctionParameters();
+    const { params: parameters, defaults } = this.parseFunctionParameters();
     if (!this.expectPeek(TokenType.LBRACE)) return null;
     const body = this.parseBlockStatement();
-    return new ast.FunctionLiteral(token, parameters, body);
+    const fn = new ast.FunctionLiteral(token, parameters, body);
+    fn.defaults = defaults;
+    return fn;
   }
 
   parseFunctionParameters() {
     const params = [];
+    const defaults = [];
     if (this.peekTokenIs(TokenType.RPAREN)) {
       this.nextToken();
-      return params;
+      return { params, defaults };
     }
     this.nextToken();
     params.push(new ast.Identifier(this.curToken, this.curToken.literal));
+    if (this.peekTokenIs(TokenType.ASSIGN)) {
+      this.nextToken(); // consume =
+      this.nextToken(); // move to default value
+      defaults.push(this.parseExpression(Precedence.LOWEST));
+    } else {
+      defaults.push(null);
+    }
     while (this.peekTokenIs(TokenType.COMMA)) {
       this.nextToken();
       this.nextToken();
       params.push(new ast.Identifier(this.curToken, this.curToken.literal));
+      if (this.peekTokenIs(TokenType.ASSIGN)) {
+        this.nextToken();
+        this.nextToken();
+        defaults.push(this.parseExpression(Precedence.LOWEST));
+      } else {
+        defaults.push(null);
+      }
     }
     if (!this.expectPeek(TokenType.RPAREN)) return null;
-    return params;
+    return { params, defaults };
   }
 
   parseCallExpression(fn) {
