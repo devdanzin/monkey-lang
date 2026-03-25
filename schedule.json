@@ -318,16 +318,20 @@
       "id": "T32",
       "mode": "BUILD",
       "task": "Implement array builtins: map, filter, reduce",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T30",
-      "started": "2026-03-25T15:08:08.122Z"
+      "started": "2026-03-25T15:08:08.122Z",
+      "completed": "2026-03-25T15:12:37.794Z",
+      "duration_ms": 600000,
+      "summary": "Stdlib implemented: map, filter, reduce, forEach, range, contains, reverse. All in Monkey source for JIT compatibility. withStdlib() helper. All work with JIT traces."
     },
     {
       "id": "T33",
       "mode": "BUILD",
       "task": "Add tests for array builtins",
-      "status": "upcoming",
-      "plan_ref": "T30"
+      "status": "in-progress",
+      "plan_ref": "T30",
+      "started": "2026-03-25T15:12:52.842Z"
     },
     {
       "id": "T34",

@@ -817,3 +817,67 @@ describe('Induction variable analysis', () => {
     assert.equal(vm.lastPoppedStackElem().value, 1225);
   });
 });
+
+describe('Standard library with JIT', () => {
+  function runJITStdlib(input) {
+    const stdlib = `
+let map = fn(arr, f) { let r = []; let i = 0; while (i < len(arr)) { r = push(r, f(arr[i])); i = i + 1; } r };
+let filter = fn(arr, f) { let r = []; let i = 0; while (i < len(arr)) { if (f(arr[i])) { r = push(r, arr[i]); } i = i + 1; } r };
+let reduce = fn(arr, initial, f) { let acc = initial; let i = 0; while (i < len(arr)) { acc = f(acc, arr[i]); i = i + 1; } acc };
+let range = fn(n) { let r = []; let i = 0; while (i < n) { r = push(r, i); i = i + 1; } r };
+let contains = fn(arr, val) { let i = 0; while (i < len(arr)) { if (arr[i] == val) { return true; } i = i + 1; } false };
+let reverse = fn(arr) { let r = []; let i = len(arr) - 1; while (i > 0 - 1) { r = push(r, arr[i]); i = i - 1; } r };
+`;
+    return runJIT(stdlib + input);
+  }
+
+  it('map: doubles array elements', () => {
+    const vm = runJITStdlib('map([1,2,3,4,5], fn(x) { x * 2 })');
+    assert.equal(vm.lastPoppedStackElem().inspect(), '[2, 4, 6, 8, 10]');
+  });
+
+  it('filter: keeps elements > 3', () => {
+    const vm = runJITStdlib('filter([1,2,3,4,5], fn(x) { x > 3 })');
+    assert.equal(vm.lastPoppedStackElem().inspect(), '[4, 5]');
+  });
+
+  it('reduce: sum of array', () => {
+    const vm = runJITStdlib('reduce([1,2,3,4,5], 0, fn(acc, x) { acc + x })');
+    assert.equal(vm.lastPoppedStackElem().value, 15);
+  });
+
+  it('reduce: product of array', () => {
+    const vm = runJITStdlib('reduce([1,2,3,4,5], 1, fn(acc, x) { acc * x })');
+    assert.equal(vm.lastPoppedStackElem().value, 120);
+  });
+
+  it('range: generates 0..n-1', () => {
+    const vm = runJITStdlib('range(5)');
+    assert.equal(vm.lastPoppedStackElem().inspect(), '[0, 1, 2, 3, 4]');
+  });
+
+  it('contains: finds element', () => {
+    const vm = runJITStdlib('contains([10, 20, 30], 20)');
+    assert.equal(vm.lastPoppedStackElem().inspect(), 'true');
+  });
+
+  it('contains: element not found', () => {
+    const vm = runJITStdlib('contains([10, 20, 30], 40)');
+    assert.equal(vm.lastPoppedStackElem().inspect(), 'false');
+  });
+
+  it('reverse: reverses array', () => {
+    const vm = runJITStdlib('reverse([1, 2, 3])');
+    assert.equal(vm.lastPoppedStackElem().inspect(), '[3, 2, 1]');
+  });
+
+  it('compose: map + filter', () => {
+    const vm = runJITStdlib('filter(map([1,2,3,4,5], fn(x) { x * 2 }), fn(x) { x > 5 })');
+    assert.equal(vm.lastPoppedStackElem().inspect(), '[6, 8, 10]');
+  });
+
+  it('reduce with range: sum 0..99', () => {
+    const vm = runJITStdlib('reduce(range(100), 0, fn(acc, x) { acc + x })');
+    assert.equal(vm.lastPoppedStackElem().value, 4950);
+  });
+});
