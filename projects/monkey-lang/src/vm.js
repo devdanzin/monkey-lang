@@ -352,6 +352,24 @@ export class VM {
               this.recorder.pushRef(boxedRef);
             }
             this.push(new MonkeyString(left.value + right.value));
+          } else if (left instanceof MonkeyString && right instanceof MonkeyInteger && op === Opcodes.OpMul) {
+            // String repetition: "abc" * 3 => "abcabcabc"
+            if (recording()) {
+              this.recorder.popRef();
+              this.recorder.popRef();
+              this.recorder.abortTrace('string multiplication not JIT-compiled');
+            }
+            const n = right.value;
+            this.push(new MonkeyString(n > 0 ? left.value.repeat(n) : ''));
+          } else if (left instanceof MonkeyInteger && right instanceof MonkeyString && op === Opcodes.OpMul) {
+            // Also support n * "abc"
+            if (recording()) {
+              this.recorder.popRef();
+              this.recorder.popRef();
+              this.recorder.abortTrace('string multiplication not JIT-compiled');
+            }
+            const n = left.value;
+            this.push(new MonkeyString(n > 0 ? right.value.repeat(n) : ''));
           } else {
             throw new Error(`unsupported types for ${op}: ${left.type()} and ${right.type()}`);
           }
@@ -1077,6 +1095,20 @@ export class VM {
               this.recorder.pushRef(boxedRef);
             }
             this.push(new MonkeyString(left4.value + right4.value));
+          } else if (left4 instanceof MonkeyString && right4 instanceof MonkeyInteger && op === Opcodes.OpMulConst) {
+            if (recording()) {
+              this.recorder.popRef();
+              this.recorder.abortTrace('string multiplication not JIT-compiled');
+            }
+            const n = right4.value;
+            this.push(new MonkeyString(n > 0 ? left4.value.repeat(n) : ''));
+          } else if (left4 instanceof MonkeyInteger && right4 instanceof MonkeyString && op === Opcodes.OpMulConst) {
+            if (recording()) {
+              this.recorder.popRef();
+              this.recorder.abortTrace('string multiplication not JIT-compiled');
+            }
+            const n = left4.value;
+            this.push(new MonkeyString(n > 0 ? right4.value.repeat(n) : ''));
           } else {
             throw new Error(`unsupported types for constant op: ${left4.type()} and ${right4.type()}`);
           }
