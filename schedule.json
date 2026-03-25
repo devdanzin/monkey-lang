@@ -1580,15 +1580,19 @@
     {
       "id": "T153",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement else-if chains in parser",
-      "started": "2026-03-25T21:15:33.199Z"
+      "started": "2026-03-25T21:15:33.199Z",
+      "completed": "2026-03-25T21:16:36.231Z",
+      "duration_ms": 180000,
+      "summary": "else-if chains implemented in parser. Desugars to nested if in single-statement block."
     },
     {
       "id": "T154",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Tests for else-if"
+      "status": "in-progress",
+      "task": "Tests for else-if",
+      "started": "2026-03-25T21:16:36.342Z"
     },
     {
       "id": "T155",

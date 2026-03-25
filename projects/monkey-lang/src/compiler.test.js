@@ -821,3 +821,25 @@ describe('Compound Index Assignment', () => {
     testIntegerObject(result.elements[2], 20);
   });
 });
+
+describe('Else-If Chains', () => {
+  it('basic else-if', () => {
+    testStringObject(compileAndRun('let x = 15; if (x > 20) { "big" } else if (x > 10) { "medium" } else { "small" }'), 'medium');
+  });
+  it('first branch taken', () => {
+    testStringObject(compileAndRun('let x = 25; if (x > 20) { "big" } else if (x > 10) { "medium" } else { "small" }'), 'big');
+  });
+  it('else branch taken', () => {
+    testStringObject(compileAndRun('let x = 5; if (x > 20) { "big" } else if (x > 10) { "medium" } else { "small" }'), 'small');
+  });
+  it('three-way else-if chain', () => {
+    testStringObject(compileAndRun('let x = 3; if (x == 1) { "one" } else if (x == 2) { "two" } else if (x == 3) { "three" } else { "other" }'), 'three');
+  });
+  it('else-if without final else', () => {
+    const result = compileAndRun('let x = 5; if (x > 10) { "big" } else if (x > 3) { "medium" }');
+    testStringObject(result, 'medium');
+  });
+  it('else-if in function', () => {
+    testStringObject(compileAndRun('let grade = fn(score) { if (score >= 90) { "A" } else if (score >= 80) { "B" } else if (score >= 70) { "C" } else { "F" } }; grade(85)'), 'B');
+  });
+});
