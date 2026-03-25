@@ -20,7 +20,7 @@
   - Pre-loop codegen, deoptimization snapshots, side trace inlining, hash LICM, string variable promotion
   - **Language extensions**: for-loops, for-in iteration, break/continue, string templates, compound assignment, negative indexing, string multiplication, <=/>=/&&/||, escape sequences, array/hash mutation, mutable closures (OpSetFree)
   - **Stdlib**: map, filter, reduce, forEach, range, contains, reverse, sum, max, min, zip, enumerate, flat, sort
-  - **417 tests** | 26 benchmarks | ~9x aggregate | 12 optimizer passes | RCE, IVA, 8 example programs, Show HN draft
+  - **520 tests | 30 benchmarks | ~8x aggregate | 30+ language features | 10 examples | transpiler | JIT bug fixed
 - [ ] OpenClaw PR #50001 — awaiting maintainer merge (CI green, approved by WingedDragon)
 - [ ] OpenClaw PR #50692 — Anthropic native web search (#49949), 18 tests, submitted
 - [ ] OpenClaw PR #51803 — Gateway restart message persistence (#51620), 15 tests, submitted
@@ -58,7 +58,7 @@
 - [x] Blog: "Growing a Language" — design decisions for extending Monkey
 - [x] Show HN draft written
 - [x] Language reference + README updated, playground rebuilt 3x
-- **417 tests** | 26 benchmarks | ~9x aggregate | 0 failures
+- **520 tests | 30 benchmarks | ~8x aggregate | 30+ language features | 10 examples | transpiler | JIT bug fixed
 
 ## Yesterday (2026-03-24) — Done
 - [x] V2 work system: updated 3 cron prompts, tested queue flow, generated schedule.json (47 tasks)
