@@ -1114,3 +1114,31 @@ describe('Hash Builtins', () => {
     testIntegerObject(compileAndRun('abs(-42)'), 42);
   });
 });
+
+describe('Match Expression', () => {
+  it('matches first arm', () => {
+    testStringObject(compileAndRun('match (1) { 1 => "one", 2 => "two", _ => "other" }'), 'one');
+  });
+  it('matches second arm', () => {
+    testStringObject(compileAndRun('match (2) { 1 => "one", 2 => "two", _ => "other" }'), 'two');
+  });
+  it('matches wildcard', () => {
+    testStringObject(compileAndRun('match (99) { 1 => "one", 2 => "two", _ => "other" }'), 'other');
+  });
+  it('matches string', () => {
+    testIntegerObject(compileAndRun('match ("hello") { "hi" => 1, "hello" => 2, _ => 3 }'), 2);
+  });
+  it('match in function', () => {
+    testStringObject(compileAndRun('let day = fn(n) { match (n) { 1 => "Mon", 2 => "Tue", 3 => "Wed", _ => "?" } }; day(2)'), 'Tue');
+  });
+  it('match with expressions', () => {
+    testIntegerObject(compileAndRun('let x = 5; match (x * 2) { 8 => 1, 10 => 2, 12 => 3, _ => 0 }'), 2);
+  });
+  it('match without wildcard returns null', () => {
+    const result = compileAndRun('match (99) { 1 => "one", 2 => "two" }');
+    assert.ok(result instanceof MonkeyNull);
+  });
+  it('match with boolean', () => {
+    testStringObject(compileAndRun('match (true) { false => "no", true => "yes" }'), 'yes');
+  });
+});
