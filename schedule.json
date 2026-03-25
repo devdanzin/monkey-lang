@@ -1757,6 +1757,37 @@
       "completed": "2026-03-25T21:40:33.053Z",
       "duration_ms": 0,
       "summary": "Skipped — not at boundary yet. 4+ hours remain."
+    },
+    {
+      "id": "T170",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "String builtins: join, split, trim, replace, upper, lower",
+      "started": "2026-03-25T21:41:39.338Z"
+    },
+    {
+      "id": "T171",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Tests for string builtins"
+    },
+    {
+      "id": "T172",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Write an impressive Monkey program for Show HN demo"
+    },
+    {
+      "id": "T173",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Type coercion: int() for string-to-int conversion"
+    },
+    {
+      "id": "T174",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Write a real-world-ish program: mini HTTP server response generator"
     }
   ],
   "backlog": [],
@@ -2276,6 +2307,26 @@
     {
       "time": "2026-03-25T21:30:36.257Z",
       "msg": "PLAN T159 filled 10 BUILD tasks"
+    },
+    {
+      "time": "2026-03-25T21:41:31.558Z",
+      "msg": "Added T170 (BUILD) after end: String builtins: join, split, trim, replace, upper, lower"
+    },
+    {
+      "time": "2026-03-25T21:41:31.669Z",
+      "msg": "Added T171 (BUILD) after end: Tests for string builtins"
+    },
+    {
+      "time": "2026-03-25T21:41:31.781Z",
+      "msg": "Added T172 (BUILD) after end: Write an impressive Monkey program for Show HN demo"
+    },
+    {
+      "time": "2026-03-25T21:41:31.891Z",
+      "msg": "Added T173 (BUILD) after end: Type coercion: int() for string-to-int conversion"
+    },
+    {
+      "time": "2026-03-25T21:41:32.005Z",
+      "msg": "Added T174 (BUILD) after end: Write a real-world-ish program: mini HTTP server response generator"
     }
   ],
   "updated_at": "2026-03-25T16:42:01.690Z"

@@ -163,6 +163,56 @@ const BUILTINS = [
     if (args.length !== 1) return new MonkeyError(`wrong number of arguments. got=${args.length}, want=1`);
     return new MonkeyString(args[0].type());
   }),
+  // upper
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyString))
+      return new MonkeyError(`argument to \`upper\` must be STRING`);
+    return new MonkeyString(args[0].value.toUpperCase());
+  }),
+  // lower
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyString))
+      return new MonkeyError(`argument to \`lower\` must be STRING`);
+    return new MonkeyString(args[0].value.toLowerCase());
+  }),
+  // indexOf
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return new MonkeyError(`wrong number of arguments. got=${args.length}, want=2`);
+    if (args[0] instanceof MonkeyString && args[1] instanceof MonkeyString) {
+      return cachedInteger(args[0].value.indexOf(args[1].value));
+    }
+    if (args[0] instanceof MonkeyArray) {
+      for (let i = 0; i < args[0].elements.length; i++) {
+        if (args[0].elements[i].inspect() === args[1].inspect()) return cachedInteger(i);
+      }
+      return cachedInteger(-1);
+    }
+    return new MonkeyError(`first argument to \`indexOf\` must be STRING or ARRAY`);
+  }),
+  // startsWith
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 2 || !(args[0] instanceof MonkeyString) || !(args[1] instanceof MonkeyString))
+      return new MonkeyError(`arguments to \`startsWith\` must be (STRING, STRING)`);
+    return args[0].value.startsWith(args[1].value) ? TRUE : FALSE;
+  }),
+  // endsWith
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 2 || !(args[0] instanceof MonkeyString) || !(args[1] instanceof MonkeyString))
+      return new MonkeyError(`arguments to \`endsWith\` must be (STRING, STRING)`);
+    return args[0].value.endsWith(args[1].value) ? TRUE : FALSE;
+  }),
+  // char — convert integer to single character
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyInteger))
+      return new MonkeyError(`argument to \`char\` must be INTEGER`);
+    return new MonkeyString(String.fromCharCode(args[0].value));
+  }),
+  // ord — convert single character to integer
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyString))
+      return new MonkeyError(`argument to \`ord\` must be STRING`);
+    return cachedInteger(args[0].value.charCodeAt(0));
+  }),
 ];
 
 export class VM {
