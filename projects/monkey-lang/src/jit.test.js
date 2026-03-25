@@ -1064,3 +1064,55 @@ describe('Single-line comments', () => {
     assert.equal(vm.lastPoppedStackElem().value, 42);
   });
 });
+
+describe('GUARD_CLOSURE: HOFs with different closures (regression)', () => {
+  function assertJITParity(code, desc) {
+    const vm1 = runVM(code);
+    const expected = vm1.lastPoppedStackElem()?.inspect();
+    const vm2 = runJIT(code);
+    const actual = vm2.lastPoppedStackElem()?.inspect();
+    assert.equal(actual, expected, desc);
+  }
+
+  it('reduce with different closures: sum then product', () => {
+    assertJITParity(`
+      let reduce = fn(arr, init, f) { let acc = init; let i = 0; while (i < len(arr)) { acc = f(acc, arr[i]); i = i + 1; } acc };
+      let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+      let s = reduce(arr, 0, fn(a, x) { a + x });
+      let p = reduce(arr, 1, fn(a, x) { a * x });
+      s + p
+    `);
+  });
+
+  it('reduce with different closures: sum then sum-of-squares', () => {
+    assertJITParity(`
+      let reduce = fn(arr, init, f) { let acc = init; let i = 0; while (i < len(arr)) { acc = f(acc, arr[i]); i = i + 1; } acc };
+      let arr = []; let i = 0; while (i < 100) { arr = push(arr, i); i = i + 1; }
+      let s1 = reduce(arr, 0, fn(a, x) { a + x });
+      let s2 = reduce(arr, 0, fn(a, x) { a + x * x });
+      s1 + s2
+    `);
+  });
+
+  it('map then reduce: different closures in sequence', () => {
+    assertJITParity(`
+      let map = fn(arr, f) { let r = []; let i = 0; while (i < len(arr)) { r = push(r, f(arr[i])); i = i + 1; } r };
+      let reduce = fn(arr, init, f) { let acc = init; let i = 0; while (i < len(arr)) { acc = f(acc, arr[i]); i = i + 1; } acc };
+      let arr = []; let i = 0; while (i < 100) { arr = push(arr, i); i = i + 1; }
+      let doubled = map(arr, fn(x) { x * 2 });
+      let sum = reduce(doubled, 0, fn(a, x) { a + x });
+      sum
+    `);
+  });
+
+  it('three different reduce closures', () => {
+    assertJITParity(`
+      let reduce = fn(arr, init, f) { let acc = init; let i = 0; while (i < len(arr)) { acc = f(acc, arr[i]); i = i + 1; } acc };
+      let arr = []; let i = 0; while (i < 50) { arr = push(arr, i + 1); i = i + 1; }
+      let s1 = reduce(arr, 0, fn(a, x) { a + x });
+      let s2 = reduce(arr, 0, fn(a, x) { a + x * x });
+      let s3 = reduce(arr, 0, fn(a, x) { a + x * x * x });
+      s1 + s2 + s3
+    `);
+  });
+});

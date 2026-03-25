@@ -705,21 +705,51 @@
     {
       "id": "T69",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add comment tests to test suite",
-      "started": "2026-03-25T16:14:24.477Z"
+      "started": "2026-03-25T16:14:24.477Z",
+      "completed": "2026-03-25T16:15:07.770Z",
+      "duration_ms": 60000,
+      "summary": "3 comment tests. 301 total."
     },
     {
       "id": "T70",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "What else can I build before 2:15 PM?"
+      "status": "done",
+      "task": "What else can I build before 2:15 PM?",
+      "started": "2026-03-25T16:15:18.500Z",
+      "completed": "2026-03-25T16:15:36.440Z",
+      "duration_ms": 30000,
+      "summary": "4h remain. GUARD_CLOSURE tests + benchmark + creative feature."
     },
     {
       "id": "T71",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Real final wrap: commit, push, CURRENT.md session-ended",
+      "started": "2026-03-25T16:15:56.841Z",
+      "completed": "2026-03-25T16:15:56.955Z",
+      "duration_ms": 10000,
+      "summary": "Pushed."
+    },
+    {
+      "id": "T72",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "GUARD_CLOSURE correctness tests: HOFs with different closures",
+      "started": "2026-03-25T16:16:06.874Z"
+    },
+    {
+      "id": "T73",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Real final wrap: commit, push, CURRENT.md session-ended"
+      "task": "Final benchmark run + update README with final numbers"
+    },
+    {
+      "id": "T74",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final final wrap: commit, push, CURRENT.md session-ended"
     }
   ],
   "backlog": [],
@@ -991,7 +1021,19 @@
     {
       "time": "2026-03-25T15:59:37.200Z",
       "msg": "Added T71 (MAINTAIN) after end: Real final wrap: commit, push, CURRENT.md session-ended"
+    },
+    {
+      "time": "2026-03-25T16:15:44.572Z",
+      "msg": "Added T72 (BUILD) after end: GUARD_CLOSURE correctness tests: HOFs with different closures"
+    },
+    {
+      "time": "2026-03-25T16:15:44.683Z",
+      "msg": "Added T73 (BUILD) after end: Final benchmark run + update README with final numbers"
+    },
+    {
+      "time": "2026-03-25T16:15:44.797Z",
+      "msg": "Added T74 (MAINTAIN) after end: Final final wrap: commit, push, CURRENT.md session-ended"
     }
   ],
-  "updated_at": "2026-03-25T16:14:14.455Z"
+  "updated_at": "2026-03-25T16:15:36.440Z"
 }
