@@ -1771,15 +1771,19 @@
     {
       "id": "T171",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Tests for string builtins",
-      "started": "2026-03-25T21:43:22.777Z"
+      "started": "2026-03-25T21:43:22.777Z",
+      "completed": "2026-03-25T21:43:58.145Z",
+      "duration_ms": 120000,
+      "summary": "13 string builtin tests. 462 total."
     },
     {
       "id": "T172",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Write an impressive Monkey program for Show HN demo"
+      "status": "in-progress",
+      "task": "Write an impressive Monkey program for Show HN demo",
+      "started": "2026-03-25T21:43:58.258Z"
     },
     {
       "id": "T173",
