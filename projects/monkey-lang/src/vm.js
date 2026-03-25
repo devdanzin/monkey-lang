@@ -684,7 +684,8 @@ export class VM {
             }
           }
           if (left3 instanceof MonkeyArray && index instanceof MonkeyInteger) {
-            const i = index.value;
+            let i = index.value;
+            if (i < 0) i += left3.elements.length; // negative indexing
             if (i < 0 || i >= left3.elements.length) {
               this.push(NULL);
             } else {
@@ -695,7 +696,8 @@ export class VM {
             const pair = left3.pairs.get(index.fastHashKey());
             this.push(pair ? pair.value : NULL);
           } else if (left3 instanceof MonkeyString && index instanceof MonkeyInteger) {
-            const i = index.value;
+            let i = index.value;
+            if (i < 0) i += left3.value.length; // negative indexing
             if (i < 0 || i >= left3.value.length) {
               this.push(NULL);
             } else {

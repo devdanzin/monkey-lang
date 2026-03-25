@@ -185,7 +185,7 @@ addTwo(2);`;
       ['[1, 2, 3][1 + 1];', 3],
       ['let myArray = [1, 2, 3]; myArray[2];', 3],
       ['[1, 2, 3][3]', null],
-      ['[1, 2, 3][-1]', null],
+      ['[1, 2, 3][-1]', 3],  // negative indexing: last element
     ];
     for (const [input, expected] of tests) {
       const result = testEval(input);

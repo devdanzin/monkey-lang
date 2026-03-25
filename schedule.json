@@ -1161,16 +1161,20 @@
       "id": "T115",
       "mode": "BUILD",
       "task": "Tests for for-in",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T109",
-      "started": "2026-03-25T20:32:32.397Z"
+      "started": "2026-03-25T20:32:32.397Z",
+      "completed": "2026-03-25T20:33:06.553Z",
+      "duration_ms": 120000,
+      "summary": "9 for-in tests (7 compiler, 2 JIT). 377 total tests, all passing."
     },
     {
       "id": "T116",
       "mode": "BUILD",
       "task": "Implement negative indexing: arr[-1] for last element",
-      "status": "upcoming",
-      "plan_ref": "T109"
+      "status": "in-progress",
+      "plan_ref": "T109",
+      "started": "2026-03-25T20:33:10.543Z"
     },
     {
       "id": "T117",
