@@ -735,15 +735,19 @@
     {
       "id": "T72",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "GUARD_CLOSURE correctness tests: HOFs with different closures",
-      "started": "2026-03-25T16:16:06.874Z"
+      "started": "2026-03-25T16:16:06.874Z",
+      "completed": "2026-03-25T16:16:55.774Z",
+      "duration_ms": 120000,
+      "summary": "4 GUARD_CLOSURE tests. 305 total."
     },
     {
       "id": "T73",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Final benchmark run + update README with final numbers"
+      "status": "in-progress",
+      "task": "Final benchmark run + update README with final numbers",
+      "started": "2026-03-25T16:17:05.417Z"
     },
     {
       "id": "T74",
@@ -1035,5 +1039,5 @@
       "msg": "Added T74 (MAINTAIN) after end: Final final wrap: commit, push, CURRENT.md session-ended"
     }
   ],
-  "updated_at": "2026-03-25T16:15:36.440Z"
+  "updated_at": "2026-03-25T16:16:55.774Z"
 }

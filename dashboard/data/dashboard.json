@@ -725,16 +725,42 @@
     {
       "id": "T71",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Real final wrap: commit, push, CURRENT.md session-ended",
+      "started": "2026-03-25T16:15:56.841Z",
+      "completed": "2026-03-25T16:15:56.955Z",
+      "duration_ms": 10000,
+      "summary": "Pushed."
+    },
+    {
+      "id": "T72",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "GUARD_CLOSURE correctness tests: HOFs with different closures",
+      "started": "2026-03-25T16:16:06.874Z",
+      "completed": "2026-03-25T16:16:55.774Z",
+      "duration_ms": 120000,
+      "summary": "4 GUARD_CLOSURE tests. 305 total."
+    },
+    {
+      "id": "T73",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Real final wrap: commit, push, CURRENT.md session-ended"
+      "task": "Final benchmark run + update README with final numbers"
+    },
+    {
+      "id": "T74",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final final wrap: commit, push, CURRENT.md session-ended"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 70,
+    "completed": 72,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 15560000
+    "total_duration_ms": 15690000
   },
-  "updated_at": "2026-03-25T16:15:36.440Z"
+  "updated_at": "2026-03-25T16:16:55.774Z"
 }

@@ -61,20 +61,20 @@ Stdlib (map)      4x            Push-based array building
 Side traces       3-7x          Branching (with inlining)
 Hash lookups      2-3x          String interning
 
-Aggregate: 26 benchmarks, ~9.5x overall
+Aggregate: 26 benchmarks, ~9.2x overall (all correct)
 ```
 
 ## Tests
 
 ```bash
-node --test    # 275 tests
+node --test    # 305 tests
 ```
 
 ## Benchmarks
 
 ```bash
 node src/benchmark.js                # Quick: VM vs eval
-node src/benchmark-runner.js         # Full: 26 benchmarks, JIT vs VM
+node src/benchmark-runner.js         # Full: 26 benchmarks, ~9.2x aggregate, JIT vs VM
 ```
 
 ## REPL
