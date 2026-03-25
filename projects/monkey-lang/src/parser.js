@@ -19,6 +19,8 @@ const TOKEN_PRECEDENCE = {
   [TokenType.ASSIGN]: Precedence.ASSIGN,
   [TokenType.EQ]: Precedence.EQUALS,
   [TokenType.NOT_EQ]: Precedence.EQUALS,
+  [TokenType.AND]: Precedence.AND,
+  [TokenType.OR]: Precedence.OR,
   [TokenType.LT]: Precedence.LESSGREATER,
   [TokenType.GT]: Precedence.LESSGREATER,
   [TokenType.LT_EQ]: Precedence.LESSGREATER,

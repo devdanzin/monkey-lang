@@ -19,6 +19,8 @@ export const TokenType = {
   GT: '>',
   LT_EQ: '<=',
   GT_EQ: '>=',
+  AND: '&&',
+  OR: '||',
   EQ: '==',
   NOT_EQ: '!=',
 
@@ -155,6 +157,22 @@ export class Lexer {
       case '*': tok = new Token(TokenType.ASTERISK, '*'); break;
       case '/': tok = new Token(TokenType.SLASH, '/'); break;
       case '%': tok = new Token(TokenType.PERCENT, '%'); break;
+      case '&':
+        if (this.peekChar() === '&') {
+          this.readChar();
+          tok = new Token(TokenType.AND, '&&');
+        } else {
+          tok = new Token(TokenType.ILLEGAL, '&');
+        }
+        break;
+      case '|':
+        if (this.peekChar() === '|') {
+          this.readChar();
+          tok = new Token(TokenType.OR, '||');
+        } else {
+          tok = new Token(TokenType.ILLEGAL, '|');
+        }
+        break;
       case '<':
         if (this.peekChar() === '=') {
           this.readChar();

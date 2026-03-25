@@ -1003,15 +1003,59 @@
     {
       "id": "T100",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Update README, rebuild playground, push",
-      "started": "2026-03-25T16:34:51.360Z"
+      "started": "2026-03-25T16:34:51.360Z",
+      "completed": "2026-03-25T16:35:16.377Z",
+      "duration_ms": 60000,
+      "summary": "README + playground updated. Pushed."
     },
     {
       "id": "T101",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Session wrap at boundary",
+      "started": "2026-03-25T16:35:24.173Z",
+      "completed": "2026-03-25T16:35:24.285Z",
+      "duration_ms": 5000,
+      "summary": "NOT wrapping. 3:40 remain. Continuing."
+    },
+    {
+      "id": "T102",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Implement logical AND (&&) and OR (||) operators",
+      "started": "2026-03-25T16:35:41.189Z"
+    },
+    {
+      "id": "T103",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Session wrap at boundary"
+      "task": "Tests for && and ||"
+    },
+    {
+      "id": "T104",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Implement string comparison operators (==, !=, <, >)"
+    },
+    {
+      "id": "T105",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Tests for string comparisons"
+    },
+    {
+      "id": "T106",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Plan: what would make Monkey ready for a Show HN?"
+    },
+    {
+      "id": "T107",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final push and session wrap"
     }
   ],
   "backlog": [],
@@ -1403,7 +1447,31 @@
     {
       "time": "2026-03-25T16:30:30.331Z",
       "msg": "Added T101 (MAINTAIN) after end: Session wrap at boundary"
+    },
+    {
+      "time": "2026-03-25T16:35:33.562Z",
+      "msg": "Added T102 (BUILD) after end: Implement logical AND (&&) and OR (||) operators"
+    },
+    {
+      "time": "2026-03-25T16:35:33.672Z",
+      "msg": "Added T103 (BUILD) after end: Tests for && and ||"
+    },
+    {
+      "time": "2026-03-25T16:35:33.782Z",
+      "msg": "Added T104 (BUILD) after end: Implement string comparison operators (==, !=, <, >)"
+    },
+    {
+      "time": "2026-03-25T16:35:33.891Z",
+      "msg": "Added T105 (BUILD) after end: Tests for string comparisons"
+    },
+    {
+      "time": "2026-03-25T16:35:34.005Z",
+      "msg": "Added T106 (THINK) after end: Plan: what would make Monkey ready for a Show HN?"
+    },
+    {
+      "time": "2026-03-25T16:35:34.114Z",
+      "msg": "Added T107 (MAINTAIN) after end: Final push and session wrap"
     }
   ],
-  "updated_at": "2026-03-25T16:34:38.048Z"
+  "updated_at": "2026-03-25T16:35:16.378Z"
 }

@@ -86,6 +86,8 @@ export const Opcodes = {
   OpMod:            0x30,
   OpModConst:       0x31,
   OpModInt:         0x32,
+  OpAnd:            0x33,
+  OpOr:             0x34,
 };
 
 // Opcode definitions: [name, ...operandWidths]
@@ -140,6 +142,8 @@ const definitions = {
   [Opcodes.OpMod]:              ['OpMod'],
   [Opcodes.OpModConst]:         ['OpModConst', 2],
   [Opcodes.OpModInt]:           ['OpModInt'],
+  [Opcodes.OpAnd]:              ['OpAnd'],
+  [Opcodes.OpOr]:               ['OpOr'],
 };
 
 /**
