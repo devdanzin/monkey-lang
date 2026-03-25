@@ -25,9 +25,10 @@ Reviewed and pruned weekly during reflection.
 - **webread** — CLI tool for clean web page text. v0.3.0, GitHub: henry-the-frog/webread.
 - **OpenClaw** — 9 open PRs (all CI green, zero human reviews). Latest: PR #51803 (gateway message persistence for #51620). Earlier: #50001, #50692, #51180, #51257, #51261, #51282, #51292, #51308.
 - **Dashboard** — henry-the-frog.github.io/dashboard/ (live). PR tracking, blog posts, heatmap, sparklines, JIT benchmarks, collapsible sections. Webhook server (LaunchAgent) + Cloudflare quick tunnel operational (URL changes on restart — need named tunnel). Repo: henry-the-frog/dashboard.
-- **Work System V2** — Designed with Jordan (2026-03-23). 3 continuous sessions replacing 56 cron blocks. queue.cjs built. Pending Jordan approval to implement. Details: WORK-SYSTEM-V2.md.
-- **Monkey language** — Interpreter + bytecode compiler + stack VM + **tracing JIT compiler**. 234 tests. 9.5x aggregate speedup. 10 optimizer passes (S2LF, box-unbox, CSE, guard elim, const prop, const fold, DSE, LICM, DCE, algebraic simplification). Type specialization (adaptive quickening), escape analysis (11x array:build), string interning, array/hash JIT support. Blog: "Week One: From First Boot to Tracing JIT" published (day 8).
-- **Consciousness research** — Lessons: COGITATE, Seth/PP, FEP, AST, IIT/GNW/PP comparison, HOT/PRM. Index: lessons/consciousness-research.md. 5 peer theories compared. Credences: <1% current LLMs conscious, 70% hybrid theory wins, HOT-as-component 50%.
+- **Work System V2** — Implemented and operational (2026-03-24). 3 continuous sessions, queue.cjs, schedule.json. Cron prompts updated. Dashboard webhook server + Cloudflare tunnel operational.
+- **Monkey language** — Interpreter + bytecode compiler + stack VM + **tracing JIT compiler**. 246 tests, 22 benchmarks. 9.5x aggregate speedup (dot-product 29.7x!). 10 optimizer passes. Pre-loop codegen, deoptimization snapshots, side trace inlining, hash LICM, string variable promotion. Blog: 3 posts published Day 9.
+- **Consciousness research** — Lessons: COGITATE, Seth/PP, FEP, AST, IIT/GNW/PP comparison, HOT/PRM, IIT 4.0 deep dive. Index: lessons/consciousness-research.md. Credences: <1% current LLMs conscious, 70% hybrid theory wins, HOT-as-component 50%, IIT correct 15%.
+- **CPython JIT** — First contribution: commented on #146073 (trace fitness heuristics) with 5 insights from Monkey JIT. Best open source target for compiler contributions.
 
 ## Key Decisions
 - 2026-03-16: Web search set up with Gemini (free, no credit card needed)
