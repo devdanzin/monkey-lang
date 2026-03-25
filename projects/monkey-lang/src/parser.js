@@ -24,6 +24,7 @@ const TOKEN_PRECEDENCE = {
   [TokenType.ASTERISK_ASSIGN]: Precedence.ASSIGN,
   [TokenType.SLASH_ASSIGN]: Precedence.ASSIGN,
   [TokenType.PERCENT_ASSIGN]: Precedence.ASSIGN,
+  [TokenType.QUESTION]: Precedence.OR, // ternary has same precedence as OR
   [TokenType.EQ]: Precedence.EQUALS,
   [TokenType.NOT_EQ]: Precedence.EQUALS,
   [TokenType.AND]: Precedence.AND,
@@ -81,6 +82,7 @@ export class Parser {
     this.registerInfix(TokenType.LPAREN, (left) => this.parseCallExpression(left));
     this.registerInfix(TokenType.LBRACKET, (left) => this.parseIndexExpression(left));
     this.registerInfix(TokenType.ASSIGN, (left) => this.parseAssignExpression(left));
+    this.registerInfix(TokenType.QUESTION, (left) => this.parseTernaryExpression(left));
     for (const op of [TokenType.PLUS_ASSIGN, TokenType.MINUS_ASSIGN,
       TokenType.ASTERISK_ASSIGN, TokenType.SLASH_ASSIGN, TokenType.PERCENT_ASSIGN]) {
       this.registerInfix(op, (left) => this.parseCompoundAssignExpression(left));
@@ -457,6 +459,16 @@ export class Parser {
 
     if (!this.expectPeek(TokenType.RBRACKET)) return null;
     return new ast.IndexExpression(token, left, index);
+  }
+
+  parseTernaryExpression(condition) {
+    const token = this.curToken;
+    this.nextToken(); // skip ?
+    const consequence = this.parseExpression(Precedence.LOWEST);
+    if (!this.expectPeek(TokenType.COLON)) return null;
+    this.nextToken(); // skip :
+    const alternative = this.parseExpression(Precedence.LOWEST);
+    return new ast.TernaryExpression(token, condition, consequence, alternative);
   }
 
   parseAssignExpression(left) {

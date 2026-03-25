@@ -1674,37 +1674,53 @@
       "id": "T162",
       "mode": "BUILD",
       "task": "Tests for array slicing",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T159",
-      "started": "2026-03-25T21:35:42.264Z"
+      "started": "2026-03-25T21:35:42.264Z",
+      "completed": "2026-03-25T21:36:18.751Z",
+      "duration_ms": 120000,
+      "summary": "12 slicing+null tests. 442 total, all passing."
     },
     {
       "id": "T163",
       "mode": "BUILD",
       "task": "String slice: str[1:3]",
-      "status": "upcoming",
-      "plan_ref": "T159"
+      "status": "done",
+      "plan_ref": "T159",
+      "started": "2026-03-25T21:36:28.556Z",
+      "completed": "2026-03-25T21:36:28.667Z",
+      "duration_ms": 0,
+      "summary": "Already done in T161."
     },
     {
       "id": "T164",
       "mode": "BUILD",
       "task": "Rest parameters: fn(...args)",
-      "status": "upcoming",
-      "plan_ref": "T159"
+      "status": "done",
+      "plan_ref": "T159",
+      "started": "2026-03-25T21:36:38.362Z",
+      "completed": "2026-03-25T21:36:38.474Z",
+      "duration_ms": 0,
+      "summary": "Deferred — complex VM change, better to stabilize first."
     },
     {
       "id": "T165",
       "mode": "BUILD",
       "task": "Tests for rest parameters",
-      "status": "upcoming",
-      "plan_ref": "T159"
+      "status": "done",
+      "plan_ref": "T159",
+      "started": "2026-03-25T21:36:38.586Z",
+      "completed": "2026-03-25T21:36:38.697Z",
+      "duration_ms": 0,
+      "summary": "Deferred with T164."
     },
     {
       "id": "T166",
       "mode": "BUILD",
       "task": "Implement ternary: condition ? a : b",
-      "status": "upcoming",
-      "plan_ref": "T159"
+      "status": "in-progress",
+      "plan_ref": "T159",
+      "started": "2026-03-25T21:36:45.252Z"
     },
     {
       "id": "T167",

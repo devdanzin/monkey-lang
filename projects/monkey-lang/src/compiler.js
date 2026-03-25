@@ -304,6 +304,17 @@ export class Compiler {
       this.emit(Opcodes.OpConstant, idx);
     } else if (node instanceof ast.NullLiteral) {
       this.emit(Opcodes.OpNull);
+    } else if (node instanceof ast.TernaryExpression) {
+      let err = this.compile(node.condition);
+      if (err) return err;
+      const jumpNotTruthyPos = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+      err = this.compile(node.consequence);
+      if (err) return err;
+      const jumpPos = this.emit(Opcodes.OpJump, 9999);
+      this.changeOperand(jumpNotTruthyPos, this.currentInstructions().length);
+      err = this.compile(node.alternative);
+      if (err) return err;
+      this.changeOperand(jumpPos, this.currentInstructions().length);
     } else if (node instanceof ast.TemplateLiteral) {
       return this.compileTemplateLiteral(node);
     } else if (node instanceof ast.BooleanLiteral) {

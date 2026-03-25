@@ -268,3 +268,14 @@ export class SliceExpression {
   tokenLiteral() { return this.token.literal; }
   toString() { return `${this.left}[${this.start}:${this.end}]`; }
 }
+
+export class TernaryExpression {
+  constructor(token, condition, consequence, alternative) {
+    this.token = token;
+    this.condition = condition;
+    this.consequence = consequence;
+    this.alternative = alternative;
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return `${this.condition} ? ${this.consequence} : ${this.alternative}`; }
+}
