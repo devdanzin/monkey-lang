@@ -945,7 +945,12 @@ export class TraceCompiler {
           stVars.set(inst.id, String(inst.operands.value));
           break;
         case IR.CONST_BOOL:
-          stVars.set(inst.id, inst.operands.value ? 'true' : 'false');
+          if (inst.operands.ref !== undefined) {
+            // const_bool wrapping a comparison result — forward the ref
+            stVars.set(inst.id, stVars.get(inst.operands.ref));
+          } else {
+            stVars.set(inst.id, inst.operands.value ? 'true' : 'false');
+          }
           break;
         case IR.LOAD_GLOBAL:
           stVars.set(inst.id, this._promotedVarNames.get('g:' + inst.operands.index));
@@ -968,9 +973,30 @@ export class TraceCompiler {
         case IR.GUARD_INT:
         case IR.GUARD_BOOL:
         case IR.GUARD_STRING:
-        case IR.GUARD_TRUTHY:
-        case IR.GUARD_FALSY:
-          break; // skip — parent's type guards cover these
+          break; // skip type guards — parent's type guards cover these
+        case IR.GUARD_TRUTHY: {
+          // Conditional guard — must be preserved even in inlined side traces
+          const ref = stVars.get(inst.operands.ref);
+          if (ref) {
+            const exitIp = inst.operands.exitIp != null ? inst.operands.exitIp : sideTrace.startIp;
+            this.lines.push(`    if (!${ref}) {`);
+            if (this._wbWrap) this.lines.push(`      __wb(null);`);
+            this.lines.push(`      return __wb({ exit: "guard_falsy", guardIdx: -1, ip: ${exitIp}, snapshot: {} });`);
+            this.lines.push(`    }`);
+          }
+          break;
+        }
+        case IR.GUARD_FALSY: {
+          const ref = stVars.get(inst.operands.ref);
+          if (ref) {
+            const exitIp = inst.operands.exitIp != null ? inst.operands.exitIp : sideTrace.startIp;
+            this.lines.push(`    if (${ref}) {`);
+            if (this._wbWrap) this.lines.push(`      __wb(null);`);
+            this.lines.push(`      return __wb({ exit: "guard_truthy", guardIdx: -1, ip: ${exitIp}, snapshot: {} });`);
+            this.lines.push(`    }`);
+          }
+          break;
+        }
         case IR.UNBOX_INT:
         case IR.BOX_INT:
         case IR.UNBOX_STRING:
