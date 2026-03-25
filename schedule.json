@@ -1183,15 +1183,35 @@
       "id": "T117",
       "mode": "BUILD",
       "task": "Tests for negative indexing",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T109",
-      "started": "2026-03-25T20:34:55.230Z"
+      "started": "2026-03-25T20:34:55.230Z",
+      "completed": "2026-03-25T20:35:36.156Z",
+      "duration_ms": 120000,
+      "summary": "7 negative indexing tests. 384 total, all passing."
     },
     {
       "id": "T110",
       "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "started": "2026-03-25T20:35:41.102Z",
+      "completed": "2026-03-25T20:35:41.213Z",
+      "duration_ms": 0,
+      "summary": "Empty placeholder, skipped."
+    },
+    {
+      "id": "T118",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Housekeeping: git push, dashboard, benchmarks",
+      "started": "2026-03-25T20:35:53.147Z"
+    },
+    {
+      "id": "T119",
+      "mode": "THINK",
       "status": "upcoming",
-      "task": null
+      "task": "What next? More language features or blog or something new?"
     }
   ],
   "backlog": [],
@@ -1623,6 +1643,14 @@
     {
       "time": "2026-03-25T20:27:04.338Z",
       "msg": "PLAN T109 filled 7 BUILD tasks"
+    },
+    {
+      "time": "2026-03-25T20:35:47.196Z",
+      "msg": "Added T118 (MAINTAIN) after end: Housekeeping: git push, dashboard, benchmarks"
+    },
+    {
+      "time": "2026-03-25T20:35:47.307Z",
+      "msg": "Added T119 (THINK) after end: What next? More language features or blog or something new?"
     }
   ],
   "updated_at": "2026-03-25T16:42:01.690Z"
