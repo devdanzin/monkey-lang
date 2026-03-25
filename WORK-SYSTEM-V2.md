@@ -48,7 +48,7 @@ A continuous work session that processes an ordered task queue. No fixed timers 
 - Log any queue changes in Adjustments section
 - **May modify the queue**
 - **Always precedes a BUILD stretch — BUILD placeholders stay blank until PLAN fills them**
-- **Time budget: 1-3 minutes.** Read the goal, load 1-2 files, write 3-5 concrete subtasks. Don't over-plan — BUILD tasks will figure out details.
+- **Time budget: 1-3 minutes.** Read the goal, load 1-2 files, write concrete subtasks. Don't over-plan — BUILD tasks will figure out details.
 
 ### 🔨 BUILD — Do the work
 - Write code, write blog posts, submit PRs, create tools
@@ -148,7 +148,7 @@ node queue.cjs validate
 **Standup decides (high-level):**
 - What goals to pursue today
 - Priority and ordering of goals
-- Rough number of BUILD slots per goal (3-5 based on estimated complexity)
+- One BUILD placeholder per goal — PLAN expands at runtime
 - Where to put EXPLORE tasks
 - BUILD slots are **placeholders** (task: null) — blank until PLAN fills them in
 - Writes schedule.json via queue.cjs
@@ -163,7 +163,7 @@ node queue.cjs validate
 The standup builds the queue following this repeating cycle as the **default**:
 
 ```
-THINK → PLAN → BUILD (3-5 tasks) → MAINTAIN → repeat
+THINK → PLAN → BUILD (1 placeholder, PLAN adds more) → MAINTAIN → repeat
 ```
 
 Every BUILD stretch is preceded by PLAN. Every cycle includes THINK and MAINTAIN. The standup may deviate from this pattern if it logs the reason (e.g., a research-heavy day might use EXPLORE → THINK → EXPLORE → THINK). `queue.cjs validate` warns but does not block deviations.
@@ -172,7 +172,7 @@ Every BUILD stretch is preceded by PLAN. Every cycle includes THINK and MAINTAIN
 `queue.cjs validate` checks:
 - Does every BUILD stretch have a PLAN before it?
 - Are unfilled BUILD slots still null (not pre-filled by standup)?
-- Is there a MAINTAIN after every 3-5 BUILD tasks?
+- Is there a MAINTAIN after every BUILD stretch?
 - Is there a THINK in every cycle?
 - Are there at least 2 EXPLORE tasks in the day?
 - Are all task IDs unique and stable?
@@ -452,9 +452,9 @@ If the server is unreachable (curl fails), the agent logs a warning and continue
    - Order goals by priority
    - Use `node queue.cjs init --date YYYY-MM-DD` to create a fresh queue
    - Use `node queue.cjs add` to build the queue following the default pattern
-   - Assign rough BUILD slot count per goal (3-5 based on complexity)
+   - Create ONE BUILD placeholder per PLAN — PLAN adds more at runtime
    - BUILD slots are **placeholders** (task: null) — do NOT fill in implementation details
-   - Follow pattern: THINK → PLAN → BUILD (3-5 placeholders) → MAINTAIN → repeat
+   - Follow pattern: THINK → PLAN → BUILD (1 placeholder, PLAN adds more at runtime) → MAINTAIN → repeat
    - Include EXPLORE tasks (at least 2/day, bias toward evening)
    - Use `node queue.cjs backlog --add` for overflow ideas
 5. **Validate queue:** run `node queue.cjs validate`
@@ -503,7 +503,7 @@ The agent uses this for wind-down checks. No reliance on calculating from sessio
 
 ### Token Budget Guidance
 - **THINK:** 1-3 minutes (~1 tool call cycle). Read state, reflect, maybe modify queue. Don't over-think.
-- **PLAN:** 1-3 minutes. Read goal + 1-2 context files, write 3-5 BUILD subtasks. Don't over-plan.
+- **PLAN:** 1-3 minutes. Read goal + 1-2 context files, break goal into concrete BUILD subtasks. Don't over-plan.
 - **BUILD:** 5-20 minutes depending on complexity. Most tasks should complete in one BUILD slot.
 - **MAINTAIN:** 2-5 minutes. Checklist execution, not exploration.
 - **EXPLORE:** 10-20 minutes. Follow threads but timebox.
