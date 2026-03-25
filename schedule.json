@@ -1540,21 +1540,29 @@
     {
       "id": "T149",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Tests for compound index assignment",
-      "started": "2026-03-25T21:13:34.920Z"
+      "started": "2026-03-25T21:13:34.920Z",
+      "completed": "2026-03-25T21:13:59.473Z",
+      "duration_ms": 120000,
+      "summary": "4 compound index tests. 417 total."
     },
     {
       "id": "T150",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Rebuild browser playground with all new features"
+      "status": "done",
+      "task": "Rebuild browser playground with all new features",
+      "started": "2026-03-25T21:13:59.583Z",
+      "completed": "2026-03-25T21:14:17.951Z",
+      "duration_ms": 60000,
+      "summary": "Playground bundle rebuilt and deployed with all new features."
     },
     {
       "id": "T151",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Update TASKS.md with session progress"
+      "status": "in-progress",
+      "task": "Update TASKS.md with session progress",
+      "started": "2026-03-25T21:14:18.065Z"
     },
     {
       "id": "T152",

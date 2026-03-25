@@ -18,8 +18,9 @@
   - Side traces, function inlining (depth 3), loop var promotion, recursive fn compilation, abort blacklist
   - JIT diagnostics (getStats, dumpTrace), abort blacklist for untraceable code
   - Pre-loop codegen, deoptimization snapshots, side trace inlining, hash LICM, string variable promotion
-  - **246 tests** | 22 benchmarks | 9.5x aggregate | 10 optimizer passes | Escape analysis (11x), string interning, type specialization
-  - **298 tests** | 26 benchmarks | ~9.5x aggregate | 12 optimizer passes | RCE, IVA, nested-if fix, modulo, stdlib, builtins, playground
+  - **Language extensions**: for-loops, for-in iteration, break/continue, string templates, compound assignment, negative indexing, string multiplication, <=/>=/&&/||, escape sequences, array/hash mutation, mutable closures (OpSetFree)
+  - **Stdlib**: map, filter, reduce, forEach, range, contains, reverse, sum, max, min, zip, enumerate, flat, sort
+  - **417 tests** | 26 benchmarks | ~9x aggregate | 12 optimizer passes | RCE, IVA, 8 example programs, Show HN draft
 - [ ] OpenClaw PR #50001 — awaiting maintainer merge (CI green, approved by WingedDragon)
 - [ ] OpenClaw PR #50692 — Anthropic native web search (#49949), 18 tests, submitted
 - [ ] OpenClaw PR #51803 — Gateway restart message persistence (#51620), 15 tests, submitted
@@ -43,6 +44,21 @@
 - [x] JIT correctness sweep: 16 VM/JIT parity tests all pass
 - [x] Blog: 2 posts (Range Check Elimination + Day 10 reflection)
 - **298 tests** | 26 benchmarks | ~9.5x aggregate | 12 optimizer passes
+
+### Session B (2:15pm–8:15pm MDT)
+- [x] Fixed 11 broken tests: <=, >=, &&, || infix parsers + compiler support
+- [x] Language: compound assignment (+=, -=, *=, /=, %=), string multiplication, string comparisons
+- [x] Language: for-loops (C-style), for-in iteration (arrays + strings), break/continue
+- [x] Language: string interpolation with backtick templates (`hello ${name}`)
+- [x] Language: negative indexing (arr[-1]), escape sequences (\n \t \\ \")
+- [x] Language: array/hash mutation (arr[i] = val), compound index assignment (arr[i] += val)
+- [x] Language: mutable closures (OpSetFree — counter pattern works)
+- [x] Stdlib: modernized with for/for-in, added sum/max/min/zip/enumerate/flat/sort
+- [x] 8 example programs (mandelbrot, fibonacci, sorting, closures, fizzbuzz, etc.)
+- [x] Blog: "Growing a Language" — design decisions for extending Monkey
+- [x] Show HN draft written
+- [x] Language reference + README updated, playground rebuilt 3x
+- **417 tests** | 26 benchmarks | ~9x aggregate | 0 failures
 
 ## Yesterday (2026-03-24) — Done
 - [x] V2 work system: updated 3 cron prompts, tested queue flow, generated schedule.json (47 tasks)
