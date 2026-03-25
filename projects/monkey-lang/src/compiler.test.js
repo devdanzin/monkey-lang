@@ -571,3 +571,41 @@ describe('Compound Assignment Operators', () => {
     testIntegerObject(compileAndRun('let x = 100; x += 50; x -= 30; x *= 2; x /= 4; x'), 60);
   });
 });
+
+describe('For Loops', () => {
+  it('basic for loop sum', () => {
+    testIntegerObject(compileAndRun('let s = 0; for (let i = 0; i < 10; i += 1) { s += i; }; s'), 45);
+  });
+
+  it('for loop with multiplication', () => {
+    testIntegerObject(compileAndRun('let s = 1; for (let i = 0; i < 10; i += 1) { s *= 2; }; s'), 1024);
+  });
+
+  it('for loop counting down', () => {
+    testIntegerObject(compileAndRun('let s = 0; for (let i = 10; i > 0; i -= 1) { s += i; }; s'), 55);
+  });
+
+  it('for loop with step > 1', () => {
+    testIntegerObject(compileAndRun('let s = 0; for (let i = 0; i < 10; i += 2) { s += i; }; s'), 20);
+  });
+
+  it('for loop zero iterations', () => {
+    testIntegerObject(compileAndRun('let s = 99; for (let i = 0; i < 0; i += 1) { s = 0; }; s'), 99);
+  });
+
+  it('nested for loops', () => {
+    testIntegerObject(compileAndRun('let s = 0; for (let i = 0; i < 3; i += 1) { for (let j = 0; j < 3; j += 1) { s += 1; } }; s'), 9);
+  });
+
+  it('for loop building array', () => {
+    const result = compileAndRun('let a = []; for (let i = 0; i < 5; i += 1) { a = push(a, i); }; a');
+    assert.ok(result instanceof MonkeyArray);
+    assert.equal(result.elements.length, 5);
+    testIntegerObject(result.elements[4], 4);
+  });
+
+  it('for loop evaluates to null', () => {
+    const result = compileAndRun('for (let i = 0; i < 3; i += 1) { 1 }');
+    assert.ok(result instanceof MonkeyNull);
+  });
+});

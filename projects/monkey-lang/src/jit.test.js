@@ -1216,3 +1216,20 @@ describe('Compound Assignment Operators', () => {
     assert.equal(vm.lastPoppedStackElem().value, 60);
   });
 });
+
+describe('For Loops', () => {
+  it('basic for loop with JIT', () => {
+    const vm = runJIT('let s = 0; for (let i = 0; i < 100; i += 1) { s += i; } s');
+    assert.equal(vm.lastPoppedStackElem().value, 4950);
+  });
+
+  it('nested for loops with JIT', () => {
+    const vm = runJIT('let s = 0; for (let i = 0; i < 10; i += 1) { for (let j = 0; j < 10; j += 1) { s += 1; } } s');
+    assert.equal(vm.lastPoppedStackElem().value, 100);
+  });
+
+  it('for loop with compound operators', () => {
+    const vm = runJIT('let s = 1; for (let i = 0; i < 20; i += 1) { s *= 2; } s');
+    assert.equal(vm.lastPoppedStackElem().value, 1048576);
+  });
+});
