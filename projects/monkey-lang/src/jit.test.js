@@ -793,3 +793,27 @@ describe('Range check elimination', () => {
     assert.equal(vm.lastPoppedStackElem().value, 1225);
   });
 });
+describe('Induction variable analysis', () => {
+  it('should detect loop counter and fully eliminate bounds check', () => {
+    const vm = runJIT('let arr = []; let i = 0; while (i < 100) { arr = push(arr, i); i = i + 1; } let sum = 0; let j = 0; while (j < len(arr)) { sum = sum + arr[j]; j = j + 1; } sum');
+    assert.equal(vm.lastPoppedStackElem().value, 4950);
+    
+    // The array sum trace should have NO guard_bounds at all
+    let foundArrayTrace = false;
+    for (const [, trace] of vm.jit.traces) {
+      const src = trace.compiled?.toString() || '';
+      if (src.includes('elements[')) {
+        foundArrayTrace = true;
+        const hasAnyBoundsCheck = trace.ir.some(i => i && i.op === IR.GUARD_BOUNDS);
+        assert.ok(!hasAnyBoundsCheck, 'GUARD_BOUNDS should be fully eliminated by IVA + RCE');
+      }
+    }
+    assert.ok(foundArrayTrace, 'should have found the array access trace');
+  });
+
+  it('should not apply IVA to non-incrementing loops', () => {
+    // Decrementing loop — IVA should NOT mark as non-negative
+    const vm = runJIT('let arr = []; let i = 0; while (i < 50) { arr = push(arr, i); i = i + 1; } let sum = 0; let j = 49; while (j > 0 - 1) { sum = sum + arr[j]; j = j - 1; } sum');
+    assert.equal(vm.lastPoppedStackElem().value, 1225);
+  });
+});
