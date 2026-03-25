@@ -922,3 +922,27 @@ describe('Array and String Slicing', () => {
     testBooleanObject(compileAndRun('null == 5'), false);
   });
 });
+
+describe('Ternary Operator', () => {
+  it('true condition', () => {
+    testIntegerObject(compileAndRun('true ? 1 : 2'), 1);
+  });
+  it('false condition', () => {
+    testIntegerObject(compileAndRun('false ? 1 : 2'), 2);
+  });
+  it('comparison condition', () => {
+    testStringObject(compileAndRun('5 > 3 ? "yes" : "no"'), 'yes');
+  });
+  it('ternary with expressions', () => {
+    testIntegerObject(compileAndRun('let x = 10; x > 5 ? x * 2 : x'), 20);
+  });
+  it('nested ternary', () => {
+    testStringObject(compileAndRun('let x = 2; x == 1 ? "one" : x == 2 ? "two" : "other"'), 'two');
+  });
+  it('ternary in function', () => {
+    testIntegerObject(compileAndRun('let abs = fn(x) { x >= 0 ? x : 0 - x }; abs(-5)'), 5);
+  });
+  it('ternary with null', () => {
+    testIntegerObject(compileAndRun('let x = null; x == null ? 42 : 0'), 42);
+  });
+});
