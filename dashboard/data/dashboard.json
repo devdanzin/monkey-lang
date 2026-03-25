@@ -72,28 +72,40 @@
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: commit, push, dashboard sync"
+      "status": "done",
+      "task": "Housekeeping: commit, push, dashboard sync",
+      "completed": "2026-03-25T14:39:01.933Z",
+      "summary": "Git pushed, dashboard synced.",
+      "duration_ms": 60000
     },
     {
       "id": "T9",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Midday reflection - afternoon priorities"
+      "status": "done",
+      "task": "Midday reflection - afternoon priorities",
+      "completed": "2026-03-25T14:39:37.220Z",
+      "summary": "Midday reflection. 8 tasks done. CPython + UNBOX CSE + blog + explore ahead.",
+      "duration_ms": 60000
     },
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "CPython JIT contribution - follow up on issue 146073",
-      "task": null
+      "task": null,
+      "completed": "2026-03-25T14:41:13.939Z",
+      "summary": "CPython JIT survey. No response on #146073. 1 BUILD task.",
+      "duration_ms": 120000
     },
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": null,
-      "plan_ref": "T10"
+      "plan_ref": "T10",
+      "completed": "2026-03-25T14:42:37.728Z",
+      "summary": "CPython optimizer study. Const-only bounds elim. Range tracking is contribution opportunity.",
+      "duration_ms": 300000
     },
     {
       "id": "T12",
@@ -148,10 +160,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 9,
+    "completed": 13,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 2610000
+    "total_duration_ms": 3150000
   },
-  "updated_at": "2026-03-25T14:38:35.191Z"
+  "updated_at": "2026-03-25T14:42:37.728Z"
 }

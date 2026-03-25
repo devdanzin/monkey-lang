@@ -100,35 +100,51 @@
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: commit, push, dashboard sync",
-      "started": "2026-03-25T14:38:48.487Z"
+      "started": "2026-03-25T14:38:48.487Z",
+      "completed": "2026-03-25T14:39:01.901Z",
+      "duration_ms": 60000,
+      "summary": "Git committed and pushed. Dashboard synced."
     },
     {
       "id": "T9",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Midday reflection - afternoon priorities"
+      "status": "done",
+      "task": "Midday reflection - afternoon priorities",
+      "started": "2026-03-25T14:39:15.862Z",
+      "completed": "2026-03-25T14:39:30.336Z",
+      "duration_ms": 60000,
+      "summary": "Good pace — 8 tasks, JIT improvement + 2 PRs addressed. Afternoon: CPython follow-up, then UNBOX_INT CSE (quick JIT win), blog, exploration. 5.5 hours remain."
     },
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "CPython JIT contribution - follow up on issue 146073",
-      "task": null
+      "task": null,
+      "started": "2026-03-25T14:39:53.442Z",
+      "completed": "2026-03-25T14:41:04.442Z",
+      "duration_ms": 120000,
+      "summary": "No response on #146073 yet. Surveyed open JIT issues — #146368 links back to ours, #146393 has PR, #145742 has code size reduction opportunities. Filled 1 BUILD: study optimizer pipeline for contribution."
     },
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
-      "plan_ref": "T10"
+      "status": "done",
+      "task": "Study CPython JIT optimizer pipeline (optimizer_bytecodes.c, optimizer_symbols.c) and identify contribution opportunity",
+      "plan_ref": "T10",
+      "started": "2026-03-25T14:41:26.960Z",
+      "completed": "2026-03-25T14:42:30.869Z",
+      "duration_ms": 300000,
+      "summary": "Studied CPython optimizer pipeline. Key insight: they only eliminate bounds checks for const indices. Integer range tracking would be a high-value contribution. Wrote up findings in memory/scratch/cpython-jit-optimizer.md."
     },
     {
       "id": "T12",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: commit, push, knowledge capture"
+      "status": "in-progress",
+      "task": "Housekeeping: commit, push, knowledge capture",
+      "started": "2026-03-25T14:42:54.728Z"
     },
     {
       "id": "T13",
@@ -260,6 +276,10 @@
     {
       "time": "2026-03-25T14:30:17.381Z",
       "msg": "PLAN T6 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-03-25T14:40:57.780Z",
+      "msg": "PLAN T10 filled 1 BUILD tasks"
     }
   ]
 }
