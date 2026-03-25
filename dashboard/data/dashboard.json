@@ -745,8 +745,12 @@
     {
       "id": "T73",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Final benchmark run + update README with final numbers"
+      "status": "done",
+      "task": "Final benchmark run + update README with final numbers",
+      "started": "2026-03-25T16:17:05.417Z",
+      "completed": "2026-03-25T16:18:22.249Z",
+      "duration_ms": 180000,
+      "summary": "9.17x aggregate, 29.5x peak, 26/26 correct, 305 tests."
     },
     {
       "id": "T74",
@@ -757,10 +761,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 72,
+    "completed": 73,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 15690000
+    "total_duration_ms": 15870000
   },
-  "updated_at": "2026-03-25T16:16:55.774Z"
+  "updated_at": "2026-03-25T16:18:22.249Z"
 }
