@@ -1761,15 +1761,19 @@
     {
       "id": "T170",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "String builtins: join, split, trim, replace, upper, lower",
-      "started": "2026-03-25T21:41:39.338Z"
+      "started": "2026-03-25T21:41:39.338Z",
+      "completed": "2026-03-25T21:43:22.667Z",
+      "duration_ms": 300000,
+      "summary": "7 new builtins: upper, lower, indexOf, startsWith, endsWith, char, ord. 449 tests."
     },
     {
       "id": "T171",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Tests for string builtins"
+      "status": "in-progress",
+      "task": "Tests for string builtins",
+      "started": "2026-03-25T21:43:22.777Z"
     },
     {
       "id": "T172",

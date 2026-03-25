@@ -946,3 +946,48 @@ describe('Ternary Operator', () => {
     testIntegerObject(compileAndRun('let x = null; x == null ? 42 : 0'), 42);
   });
 });
+
+describe('String Builtins', () => {
+  it('upper', () => {
+    testStringObject(compileAndRun('upper("hello")'), 'HELLO');
+  });
+  it('lower', () => {
+    testStringObject(compileAndRun('lower("HELLO")'), 'hello');
+  });
+  it('indexOf string', () => {
+    testIntegerObject(compileAndRun('indexOf("hello world", "world")'), 6);
+  });
+  it('indexOf not found', () => {
+    testIntegerObject(compileAndRun('indexOf("hello", "xyz")'), -1);
+  });
+  it('indexOf array', () => {
+    testIntegerObject(compileAndRun('indexOf([10,20,30], 20)'), 1);
+  });
+  it('startsWith', () => {
+    testBooleanObject(compileAndRun('startsWith("hello", "hel")'), true);
+  });
+  it('endsWith', () => {
+    testBooleanObject(compileAndRun('endsWith("hello", "llo")'), true);
+  });
+  it('char', () => {
+    testStringObject(compileAndRun('char(65)'), 'A');
+  });
+  it('ord', () => {
+    testIntegerObject(compileAndRun('ord("A")'), 65);
+  });
+  it('split', () => {
+    const result = compileAndRun('split("a,b,c", ",")');
+    assert.ok(result instanceof MonkeyArray);
+    assert.equal(result.elements.length, 3);
+    testStringObject(result.elements[0], 'a');
+  });
+  it('join', () => {
+    testStringObject(compileAndRun('join(["a","b","c"], "-")'), 'a-b-c');
+  });
+  it('trim', () => {
+    testStringObject(compileAndRun('trim("  hello  ")'), 'hello');
+  });
+  it('replace', () => {
+    testStringObject(compileAndRun('replace("hello world", "world", "monkey")'), 'hello monkey');
+  });
+});
