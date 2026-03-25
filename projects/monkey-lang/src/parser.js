@@ -410,6 +410,12 @@ export class Parser {
   }
 
   parseAssignExpression(left) {
+    if (left instanceof ast.IndexExpression) {
+      const token = this.curToken;
+      this.nextToken();
+      const value = this.parseExpression(Precedence.LOWEST);
+      return new ast.IndexAssignExpression(token, left.left, left.index, value);
+    }
     if (!(left instanceof ast.Identifier)) {
       this.errors.push(`cannot assign to ${left.constructor.name}`);
       return null;

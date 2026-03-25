@@ -191,6 +191,22 @@ export function monkeyEval(node, env) {
     return new MonkeyArray(elements);
   }
 
+  if (node instanceof AST.IndexAssignExpression) {
+    const obj = monkeyEval(node.left, env);
+    if (isError(obj)) return obj;
+    const index = monkeyEval(node.index, env);
+    if (isError(index)) return index;
+    const val = monkeyEval(node.value, env);
+    if (isError(val)) return val;
+    if (obj instanceof MonkeyArray && index instanceof MonkeyInteger) {
+      let i = index.value;
+      if (i < 0) i += obj.elements.length;
+      if (i >= 0 && i < obj.elements.length) {
+        obj.elements[i] = val;
+      }
+    }
+    return val;
+  }
   if (node instanceof AST.IndexExpression) {
     const left = monkeyEval(node.left, env);
     if (isError(left)) return left;

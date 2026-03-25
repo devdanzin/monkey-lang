@@ -240,3 +240,14 @@ export class TemplateLiteral {
   tokenLiteral() { return this.token.literal; }
   toString() { return '`...`'; }
 }
+
+export class IndexAssignExpression {
+  constructor(token, left, index, value) {
+    this.token = token;
+    this.left = left;     // Expression (the array/hash)
+    this.index = index;   // Expression (the index/key)
+    this.value = value;   // Expression (the value to assign)
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return `${this.left}[${this.index}] = ${this.value}`; }
+}

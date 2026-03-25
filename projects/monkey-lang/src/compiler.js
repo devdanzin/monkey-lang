@@ -332,6 +332,15 @@ export class Compiler {
       } else {
         return `cannot assign to ${sym.scope} variable: ${node.name.value}`;
       }
+    } else if (node instanceof ast.IndexAssignExpression) {
+      // arr[i] = val → push arr, push i, push val, OpSetIndex
+      let err = this.compile(node.left);
+      if (err) return err;
+      err = this.compile(node.index);
+      if (err) return err;
+      err = this.compile(node.value);
+      if (err) return err;
+      this.emit(Opcodes.OpSetIndex);
     } else if (node instanceof ast.BreakStatement) {
       if (this.loopStack.length === 0) return 'break outside of loop';
       this.emit(Opcodes.OpNull); // break produces null

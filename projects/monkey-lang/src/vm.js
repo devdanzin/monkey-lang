@@ -1034,6 +1034,30 @@ export class VM {
           break;
         }
 
+        case Opcodes.OpSetIndex: {
+          const val = this.pop();
+          const index = this.pop();
+          const obj = this.pop();
+          if (obj instanceof MonkeyArray && index instanceof MonkeyInteger) {
+            let i = index.value;
+            if (i < 0) i += obj.elements.length;
+            if (i >= 0 && i < obj.elements.length) {
+              obj.elements[i] = val;
+            }
+          } else if (obj instanceof MonkeyHash) {
+            if (index.fastHashKey) {
+              obj.pairs.set(index.fastHashKey(), { key: index, value: val });
+            }
+          } else if (obj instanceof MonkeyString) {
+            // Strings are immutable — no-op (or could error)
+          }
+          this.push(val); // assignment returns the value
+          if (recording()) {
+            this.recorder.abortTrace('OpSetIndex not JIT-compiled');
+          }
+          break;
+        }
+
         case Opcodes.OpCurrentClosure:
           this.push(frame.closure);
           if (recording()) {
