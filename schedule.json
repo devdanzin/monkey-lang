@@ -362,15 +362,94 @@
       "id": "T36",
       "mode": "BUILD",
       "task": "Add tests for string builtins",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T30",
-      "started": "2026-03-25T15:17:35.062Z"
+      "started": "2026-03-25T15:17:35.062Z",
+      "completed": "2026-03-25T15:18:17.385Z",
+      "duration_ms": 180000,
+      "summary": "13 string/utility tests. 275 tests all passing."
     },
     {
       "id": "T31",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final session wrap: commit, push, CURRENT.md",
+      "started": "2026-03-25T15:18:37.928Z",
+      "completed": "2026-03-25T15:18:38.039Z",
+      "duration_ms": 10000,
+      "summary": "Not wrapping yet — 5 hours remain. Generating new work."
+    },
+    {
+      "id": "T37",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Review Day 10 progress and plan remaining hours",
+      "started": "2026-03-25T15:19:05.280Z",
+      "completed": "2026-03-25T15:19:19.606Z",
+      "duration_ms": 30000,
+      "summary": "30 tasks today. 3 JIT passes, stdlib, 9 builtins, 2 PRs, blog, CPython study, explorations. 275 tests, 26 benchmarks, ~9.5x. Strong day."
+    },
+    {
+      "id": "T38",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Update monkey-lang README with all new features (stdlib, builtins, 275 tests, 12 opt passes)",
+      "started": "2026-03-25T15:19:26.539Z"
+    },
+    {
+      "id": "T39",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Final session wrap: commit, push, CURRENT.md"
+      "task": "Implement modulo operator for Monkey (% or mod)"
+    },
+    {
+      "id": "T40",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Add tests for modulo operator"
+    },
+    {
+      "id": "T41",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "What JIT optimization would give biggest gain on weak benchmarks?"
+    },
+    {
+      "id": "T42",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Plan JIT improvement for nested loops or closure calls",
+      "task": null
+    },
+    {
+      "id": "T43",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Git commit, push, update daily log"
+    },
+    {
+      "id": "T44",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Implement guard strengthening — merge consecutive type guards"
+    },
+    {
+      "id": "T45",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Tests for guard strengthening"
+    },
+    {
+      "id": "T46",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "What would a Monkey REPL with JIT stats look like?"
+    },
+    {
+      "id": "T47",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final wrap: commit, push, CURRENT.md status: session-ended"
     }
   ],
   "backlog": [],
@@ -506,6 +585,50 @@
     {
       "time": "2026-03-25T15:07:49.946Z",
       "msg": "PLAN T30 filled 5 BUILD tasks"
+    },
+    {
+      "time": "2026-03-25T15:18:57.559Z",
+      "msg": "Added T37 (THINK) after end: Review Day 10 progress and plan remaining hours"
+    },
+    {
+      "time": "2026-03-25T15:18:57.669Z",
+      "msg": "Added T38 (BUILD) after end: Update monkey-lang README with all new features (stdlib, builtins, 275 tests, 12 opt passes)"
+    },
+    {
+      "time": "2026-03-25T15:18:57.779Z",
+      "msg": "Added T39 (BUILD) after end: Implement modulo operator for Monkey (% or mod)"
+    },
+    {
+      "time": "2026-03-25T15:18:57.889Z",
+      "msg": "Added T40 (BUILD) after end: Add tests for modulo operator"
+    },
+    {
+      "time": "2026-03-25T15:18:58.002Z",
+      "msg": "Added T41 (THINK) after end: What JIT optimization would give biggest gain on weak benchmarks?"
+    },
+    {
+      "time": "2026-03-25T15:18:58.112Z",
+      "msg": "Added T42 (PLAN) after end: Plan JIT improvement for nested loops or closure calls"
+    },
+    {
+      "time": "2026-03-25T15:18:58.222Z",
+      "msg": "Added T43 (MAINTAIN) after end: Git commit, push, update daily log"
+    },
+    {
+      "time": "2026-03-25T15:18:58.331Z",
+      "msg": "Added T44 (BUILD) after end: Implement guard strengthening — merge consecutive type guards"
+    },
+    {
+      "time": "2026-03-25T15:18:58.441Z",
+      "msg": "Added T45 (BUILD) after end: Tests for guard strengthening"
+    },
+    {
+      "time": "2026-03-25T15:18:58.552Z",
+      "msg": "Added T46 (EXPLORE) after end: What would a Monkey REPL with JIT stats look like?"
+    },
+    {
+      "time": "2026-03-25T15:18:58.663Z",
+      "msg": "Added T47 (MAINTAIN) after end: Final wrap: commit, push, CURRENT.md status: session-ended"
     }
   ]
 }
