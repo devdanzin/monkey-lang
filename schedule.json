@@ -1421,9 +1421,80 @@
       "id": "T138",
       "mode": "BUILD",
       "task": "Final benchmark run and README numbers update",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T132",
-      "started": "2026-03-25T21:01:38.168Z"
+      "started": "2026-03-25T21:01:38.168Z",
+      "completed": "2026-03-25T21:02:42.551Z",
+      "duration_ms": 180000,
+      "summary": "Final benchmarks: 9.0x aggregate, 27.5x peak, 26/26 correct, 407 tests. README updated. All pushed."
+    },
+    {
+      "id": "T139",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Deep work: fix closure+quickening bug, array mutation, more language polish",
+      "task": null,
+      "started": "2026-03-25T21:03:04.058Z",
+      "completed": "2026-03-25T21:03:12.452Z",
+      "duration_ms": 60000,
+      "summary": "8 tasks: fix closure bug, array/hash mutation, stdlib additions, while-else."
+    },
+    {
+      "id": "T140",
+      "mode": "BUILD",
+      "task": "Fix quickened instruction bug with free variables in closures",
+      "status": "in-progress",
+      "plan_ref": "T139",
+      "started": "2026-03-25T21:03:19.171Z"
+    },
+    {
+      "id": "T141",
+      "mode": "BUILD",
+      "task": "Implement array mutation: arr[i] = expr",
+      "status": "upcoming",
+      "plan_ref": "T139"
+    },
+    {
+      "id": "T142",
+      "mode": "BUILD",
+      "task": "Tests for array mutation",
+      "status": "upcoming",
+      "plan_ref": "T139"
+    },
+    {
+      "id": "T143",
+      "mode": "BUILD",
+      "task": "Implement hash mutation: hash[key] = expr",
+      "status": "upcoming",
+      "plan_ref": "T139"
+    },
+    {
+      "id": "T144",
+      "mode": "BUILD",
+      "task": "Rewrite sorting example with in-place mutation",
+      "status": "upcoming",
+      "plan_ref": "T139"
+    },
+    {
+      "id": "T145",
+      "mode": "BUILD",
+      "task": "Implement while-else: while (cond) { body } else { no-iterations }",
+      "status": "upcoming",
+      "plan_ref": "T139"
+    },
+    {
+      "id": "T146",
+      "mode": "BUILD",
+      "task": "More stdlib: flat, zip, enumerate, sum",
+      "status": "upcoming",
+      "plan_ref": "T139"
+    },
+    {
+      "id": "T147",
+      "mode": "BUILD",
+      "task": "Explore: multi-line REPL support",
+      "status": "upcoming",
+      "plan_ref": "T139"
     }
   ],
   "backlog": [],
@@ -1883,6 +1954,14 @@
     {
       "time": "2026-03-25T20:55:17.324Z",
       "msg": "PLAN T132 filled 6 BUILD tasks"
+    },
+    {
+      "time": "2026-03-25T21:02:54.711Z",
+      "msg": "Added T139 (PLAN) after end: Deep work: fix closure+quickening bug, array mutation, more language polish"
+    },
+    {
+      "time": "2026-03-25T21:03:04.170Z",
+      "msg": "PLAN T139 filled 8 BUILD tasks"
     }
   ],
   "updated_at": "2026-03-25T16:42:01.690Z"

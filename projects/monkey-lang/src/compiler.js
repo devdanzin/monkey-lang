@@ -326,6 +326,9 @@ export class Compiler {
       } else if (sym.scope === 'LOCAL') {
         this.emit(Opcodes.OpSetLocal, sym.index);
         this.emit(Opcodes.OpGetLocal, sym.index);
+      } else if (sym.scope === 'FREE') {
+        this.emit(Opcodes.OpSetFree, sym.index);
+        this.emit(Opcodes.OpGetFree, sym.index);
       } else {
         return `cannot assign to ${sym.scope} variable: ${node.name.value}`;
       }

@@ -88,6 +88,7 @@ export const Opcodes = {
   OpModInt:         0x32,
   OpAnd:            0x33,
   OpOr:             0x34,
+  OpSetFree:        0x35, // Set free variable in closure
 };
 
 // Opcode definitions: [name, ...operandWidths]
@@ -144,6 +145,7 @@ const definitions = {
   [Opcodes.OpModInt]:           ['OpModInt'],
   [Opcodes.OpAnd]:              ['OpAnd'],
   [Opcodes.OpOr]:               ['OpOr'],
+  [Opcodes.OpSetFree]:          ['OpSetFree', 1],
 };
 
 /**

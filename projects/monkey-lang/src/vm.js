@@ -1024,6 +1024,16 @@ export class VM {
           break;
         }
 
+        case Opcodes.OpSetFree: {
+          const freeIdx2 = ins[ip + 1];
+          frame.ip += 1;
+          frame.closure.free[freeIdx2] = this.pop();
+          if (recording()) {
+            this.recorder.abortTrace('OpSetFree not JIT-compiled');
+          }
+          break;
+        }
+
         case Opcodes.OpCurrentClosure:
           this.push(frame.closure);
           if (recording()) {

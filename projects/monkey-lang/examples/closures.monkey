@@ -1,4 +1,12 @@
-// Closure examples — demonstrates first-class functions and higher-order functions
+// Closure examples — first-class functions, mutable closures, higher-order functions
+
+// Counter with mutable closure
+let makeCounter = fn() {
+  let count = 0;
+  fn() { count = count + 1; count }
+};
+let counter = makeCounter();
+puts(`Counter: ${counter()}, ${counter()}, ${counter()}`);
 
 // Currying
 let add = fn(a) { fn(b) { a + b } };
@@ -12,13 +20,12 @@ let double = fn(x) { x * 2 };
 let inc = fn(x) { x + 1 };
 let doubleInc = compose(double, inc);
 puts(`double(inc(4)) = ${doubleInc(4)}`);
-puts(`double(inc(10)) = ${doubleInc(10)}`);
 
-// Higher-order: apply
+// Higher-order: apply twice
 let apply_twice = fn(f, x) { f(f(x)) };
 puts(`double(double(3)) = ${apply_twice(double, 3)}`);
 
-// Map and filter with closures
+// Map and filter with for-in
 let data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 let evens = [];
 for (x in data) {
@@ -29,19 +36,3 @@ for (x in evens) {
   doubled = push(doubled, double(x));
 }
 puts(`Evens doubled: ${str(doubled)}`);
-
-// Recursive fibonacci with memoization (manual)
-let fib_memo = fn(n) {
-  let a = 0;
-  let b = 1;
-  for (let i = 0; i < n; i += 1) {
-    let temp = b;
-    b = a + b;
-    a = temp;
-  }
-  a
-};
-puts(`\nFibonacci (iterative):`);
-for (let i = 0; i < 15; i += 1) {
-  puts(`  fib(${i}) = ${fib_memo(i)}`);
-}
