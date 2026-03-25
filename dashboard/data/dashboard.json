@@ -685,8 +685,12 @@
     {
       "id": "T67",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Fix JIT snapshot restoration bug"
+      "status": "done",
+      "task": "Fix JIT snapshot restoration bug",
+      "started": "2026-03-25T16:01:24.394Z",
+      "completed": "2026-03-25T16:13:17.148Z",
+      "duration_ms": 1200000,
+      "summary": "MAJOR: Trace key fix + GUARD_CLOSURE for HOF correctness."
     },
     {
       "id": "T68",
@@ -715,10 +719,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 66,
+    "completed": 67,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 14210000
+    "total_duration_ms": 15410000
   },
-  "updated_at": "2026-03-25T16:01:16.252Z"
+  "updated_at": "2026-03-25T16:13:17.148Z"
 }

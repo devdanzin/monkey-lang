@@ -685,15 +685,19 @@
     {
       "id": "T67",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix JIT snapshot restoration bug",
-      "started": "2026-03-25T16:01:24.394Z"
+      "started": "2026-03-25T16:01:24.394Z",
+      "completed": "2026-03-25T16:13:17.148Z",
+      "duration_ms": 1200000,
+      "summary": "MAJOR: Trace key fix + GUARD_CLOSURE for HOF correctness."
     },
     {
       "id": "T68",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Rebuild playground bundle with all fixes and publish"
+      "status": "in-progress",
+      "task": "Rebuild playground bundle with all fixes and publish",
+      "started": "2026-03-25T16:13:41.780Z"
     },
     {
       "id": "T69",
@@ -985,5 +989,5 @@
       "msg": "Added T71 (MAINTAIN) after end: Real final wrap: commit, push, CURRENT.md session-ended"
     }
   ],
-  "updated_at": "2026-03-25T16:01:16.252Z"
+  "updated_at": "2026-03-25T16:13:17.148Z"
 }
