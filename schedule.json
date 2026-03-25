@@ -195,27 +195,39 @@
     {
       "id": "T16",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: commit, push",
-      "started": "2026-03-25T14:54:45.577Z"
+      "started": "2026-03-25T14:54:45.577Z",
+      "completed": "2026-03-25T14:54:53.875Z",
+      "duration_ms": 30000,
+      "summary": "Committed and pushed."
     },
     {
       "id": "T17",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Trace-native language design - could this become a real project?"
+      "status": "done",
+      "task": "Trace-native language design - could this become a real project?",
+      "started": "2026-03-25T14:55:04.600Z",
+      "completed": "2026-03-25T14:55:56.410Z",
+      "duration_ms": 600000,
+      "summary": "Deep exploration of trace-native language design. Key insight: design the type system to guarantee monomorphic traces. No polymorphism, value semantics, explicit effects. Could be a real project. Wrote design doc in memory/scratch/trace-native-language.md."
     },
     {
       "id": "T18",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Consciousness: predictive processing and free energy principle"
+      "status": "done",
+      "task": "Consciousness: predictive processing and free energy principle",
+      "started": "2026-03-25T14:56:10.139Z",
+      "completed": "2026-03-25T14:56:51.991Z",
+      "duration_ms": 300000,
+      "summary": "Explored predictive processing + free energy principle. Key insight: PP gives functional account (what system does), IIT gives structural account (how organized). Connected to agentic AI: LLMs do perceptual inference, agents add active inference, but precision weighting is missing."
     },
     {
       "id": "T19",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final wrap: commit, push, daily log summary"
+      "status": "in-progress",
+      "task": "Final wrap: commit, push, daily log summary",
+      "started": "2026-03-25T14:57:07.580Z"
     }
   ],
   "backlog": [],

@@ -148,20 +148,29 @@
     {
       "id": "T16",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: commit, push"
+      "status": "done",
+      "task": "Housekeeping: commit, push",
+      "completed": "2026-03-25T14:54:53.907Z",
+      "summary": "Pushed.",
+      "duration_ms": 30000
     },
     {
       "id": "T17",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Trace-native language design - could this become a real project?"
+      "status": "done",
+      "task": "Trace-native language design - could this become a real project?",
+      "completed": "2026-03-25T14:55:56.442Z",
+      "summary": "Trace-native lang design. Design doc written.",
+      "duration_ms": 600000
     },
     {
       "id": "T18",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Consciousness: predictive processing and free energy principle"
+      "status": "done",
+      "task": "Consciousness: predictive processing and free energy principle",
+      "completed": "2026-03-25T14:56:52.023Z",
+      "summary": "PP/FEP exploration. Functional vs structural accounts of consciousness.",
+      "duration_ms": 300000
     },
     {
       "id": "T19",
@@ -172,10 +181,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 18,
+    "completed": 21,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 4530000
+    "total_duration_ms": 5460000
   },
-  "updated_at": "2026-03-25T14:54:25.847Z"
+  "updated_at": "2026-03-25T14:56:52.023Z"
 }
