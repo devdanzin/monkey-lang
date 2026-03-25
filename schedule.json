@@ -455,9 +455,12 @@
       "id": "T49",
       "mode": "BUILD",
       "task": "Add test for nested-if correctness with JIT",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T42",
-      "started": "2026-03-25T15:39:12.006Z"
+      "started": "2026-03-25T15:39:12.006Z",
+      "completed": "2026-03-25T15:39:53.527Z",
+      "duration_ms": 60000,
+      "summary": "3 regression tests. 282 total."
     },
     {
       "id": "T43",
@@ -472,8 +475,9 @@
     {
       "id": "T44",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Implement guard strengthening — merge consecutive type guards"
+      "status": "in-progress",
+      "task": "Implement guard strengthening — merge consecutive type guards",
+      "started": "2026-03-25T15:41:02.369Z"
     },
     {
       "id": "T45",
@@ -677,5 +681,5 @@
       "msg": "PLAN T42 filled 2 BUILD tasks"
     }
   ],
-  "updated_at": "2026-03-25T15:38:53.642Z"
+  "updated_at": "2026-03-25T15:39:53.527Z"
 }

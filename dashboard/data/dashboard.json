@@ -455,8 +455,12 @@
       "id": "T49",
       "mode": "BUILD",
       "task": "Add test for nested-if correctness with JIT",
-      "status": "upcoming",
-      "plan_ref": "T42"
+      "status": "done",
+      "plan_ref": "T42",
+      "started": "2026-03-25T15:39:12.006Z",
+      "completed": "2026-03-25T15:39:53.527Z",
+      "duration_ms": 60000,
+      "summary": "3 regression tests. 282 total."
     },
     {
       "id": "T43",
@@ -495,10 +499,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 44,
+    "completed": 45,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 10670000
+    "total_duration_ms": 10730000
   },
-  "updated_at": "2026-03-25T15:38:53.642Z"
+  "updated_at": "2026-03-25T15:39:53.527Z"
 }

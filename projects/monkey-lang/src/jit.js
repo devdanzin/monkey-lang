@@ -2742,8 +2742,16 @@ export class TraceOptimizer {
       }
       if (inst.op === IR.ADD_INT || inst.op === IR.SUB_INT ||
           inst.op === IR.MUL_INT || inst.op === IR.DIV_INT ||
-          inst.op === IR.NEG) {
+          inst.op === IR.MOD_INT || inst.op === IR.NEG ||
+          inst.op === IR.BUILTIN_LEN) {
         guardedTypes.set(i, new Set(['int']));
+      }
+      if (inst.op === IR.GT || inst.op === IR.LT ||
+          inst.op === IR.EQ || inst.op === IR.NEQ) {
+        guardedTypes.set(i, new Set(['bool']));
+      }
+      if (inst.op === IR.CONCAT || inst.op === IR.UNBOX_STRING || inst.op === IR.BOX_STRING) {
+        guardedTypes.set(i, new Set(['string']));
       }
     }
 
