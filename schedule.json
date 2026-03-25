@@ -444,16 +444,20 @@
       "id": "T48",
       "mode": "BUILD",
       "task": "Fix nested-if JIT bug: side trace inlining drops inner guards",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T42",
-      "started": "2026-03-25T15:35:49.234Z"
+      "started": "2026-03-25T15:35:49.234Z",
+      "completed": "2026-03-25T15:38:53.642Z",
+      "duration_ms": 600000,
+      "summary": "Nested-if JIT bug FIXED. const_bool ref forwarding + guard exits."
     },
     {
       "id": "T49",
       "mode": "BUILD",
       "task": "Add test for nested-if correctness with JIT",
-      "status": "upcoming",
-      "plan_ref": "T42"
+      "status": "in-progress",
+      "plan_ref": "T42",
+      "started": "2026-03-25T15:39:12.006Z"
     },
     {
       "id": "T43",
@@ -673,5 +677,5 @@
       "msg": "PLAN T42 filled 2 BUILD tasks"
     }
   ],
-  "updated_at": "2026-03-25T15:35:41.521Z"
+  "updated_at": "2026-03-25T15:38:53.642Z"
 }

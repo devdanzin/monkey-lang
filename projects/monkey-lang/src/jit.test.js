@@ -970,3 +970,20 @@ describe('Modulo operator', () => {
     assert.equal(vm.lastPoppedStackElem().value, 0);
   });
 });
+
+describe('Nested conditionals with JIT (regression)', () => {
+  it('nested if: count i > 75 when i > 50', () => {
+    const vm = runJIT('let count = 0; let i = 1; while (i < 101) { if (i > 50) { if (i > 75) { count = count + 1; } } i = i + 1; } count');
+    assert.equal(vm.lastPoppedStackElem().value, 25);
+  });
+
+  it('fizzbuzz: count divisible by both 3 and 5', () => {
+    const vm = runJIT('let count = 0; let i = 1; while (i < 101) { if (i % 3 == 0) { if (i % 5 == 0) { count = count + 1; } } i = i + 1; } count');
+    assert.equal(vm.lastPoppedStackElem().value, 6);
+  });
+
+  it('triple nested conditionals', () => {
+    const vm = runJIT('let count = 0; let i = 0; while (i < 100) { if (i > 20) { if (i > 40) { if (i > 60) { count = count + 1; } } } i = i + 1; } count');
+    assert.equal(vm.lastPoppedStackElem().value, 39);
+  });
+});
