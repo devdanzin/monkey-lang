@@ -50,6 +50,8 @@ export const TokenType = {
   RETURN: 'RETURN',
   WHILE: 'WHILE',
   FOR: 'FOR',
+  BREAK: 'BREAK',
+  CONTINUE: 'CONTINUE',
 
   // Special
   EOF: 'EOF',
@@ -66,6 +68,8 @@ const KEYWORDS = {
   return: TokenType.RETURN,
   while: TokenType.WHILE,
   for: TokenType.FOR,
+  break: TokenType.BREAK,
+  continue: TokenType.CONTINUE,
 };
 
 export class Token {

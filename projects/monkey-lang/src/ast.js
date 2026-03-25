@@ -219,3 +219,15 @@ export class ForInExpression {
   tokenLiteral() { return this.token.literal; }
   toString() { return `for (${this.variable} in ...) { ... }`; }
 }
+
+export class BreakStatement {
+  constructor(token) { this.token = token; }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return 'break'; }
+}
+
+export class ContinueStatement {
+  constructor(token) { this.token = token; }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return 'continue'; }
+}

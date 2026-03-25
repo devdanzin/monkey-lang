@@ -57,6 +57,7 @@ export class Compiler {
     this.symbolTable = symbolTable || new SymbolTable();
     this.scopes = [new CompilationScope()];
     this.scopeIndex = 0;
+    this.loopStack = []; // Stack of { breakPatches: [], continueTarget: number }
 
     // Register builtins (only if fresh symbol table)
     if (!symbolTable) {
@@ -326,6 +327,21 @@ export class Compiler {
       } else {
         return `cannot assign to ${sym.scope} variable: ${node.name.value}`;
       }
+    } else if (node instanceof ast.BreakStatement) {
+      if (this.loopStack.length === 0) return 'break outside of loop';
+      this.emit(Opcodes.OpNull); // break produces null
+      const breakPos = this.emit(Opcodes.OpJump, 0xFFFF);
+      this.loopStack[this.loopStack.length - 1].breakPatches.push(breakPos);
+    } else if (node instanceof ast.ContinueStatement) {
+      if (this.loopStack.length === 0) return 'continue outside of loop';
+      const loopCtx = this.loopStack[this.loopStack.length - 1];
+      if (loopCtx.continueTarget >= 0) {
+        this.emit(Opcodes.OpJump, loopCtx.continueTarget);
+      } else {
+        // Deferred — for-loops where update hasn't been compiled yet
+        const contPos = this.emit(Opcodes.OpJump, 0xFFFF);
+        loopCtx.continuePatches.push(contPos);
+      }
     } else if (node instanceof ast.Identifier) {
       const sym = this.symbolTable.resolve(node.value);
       if (!sym) return `undefined variable: ${node.value}`;
@@ -412,63 +428,13 @@ export class Compiler {
   }
 
   compileWhileExpression(node) {
-    // while (condition) { body }
-    // Compiles to:
-    //   loopStart:
-    //     <condition>
-    //     OpJumpNotTruthy afterLoop
-    //     <body>
-    //     OpPop (discard body result)
-    //     OpJump loopStart        ← backward jump (JIT traces this!)
-    //   afterLoop:
-    //     OpNull                  ← while expression evaluates to null
-
     const loopStart = this.currentInstructions().length;
+
+    // Push loop context
+    this.loopStack.push({ breakPatches: [], continuePatches: [], continueTarget: loopStart });
 
     // Compile condition
     let err = this.compile(node.condition);
-    if (err) return err;
-
-    // Jump past body if condition is false
-    const jumpNotTruthyPos = this.emit(Opcodes.OpJumpNotTruthy, 9999);
-
-    // Compile body
-    err = this.compile(node.body);
-    if (err) return err;
-
-    // Pop body result
-    if (this.lastInstructionIs(Opcodes.OpPop)) {
-      // Already has a pop — good
-    } else {
-      this.emit(Opcodes.OpPop);
-    }
-
-    // Jump back to loop start (backward jump)
-    this.emit(Opcodes.OpJump, loopStart);
-
-    // Patch conditional jump to here
-    const afterLoop = this.currentInstructions().length;
-    this.changeOperand(jumpNotTruthyPos, afterLoop);
-
-    // While evaluates to null
-    this.emit(Opcodes.OpNull);
-
-    this.resetIntStack();
-
-    return null;
-  }
-
-  compileForExpression(node) {
-    // for (init; condition; update) { body }
-
-    // Compile init (let statement or expression)
-    let err = this.compile(node.init);
-    if (err) return err;
-
-    const loopStart = this.currentInstructions().length;
-
-    // Compile condition
-    err = this.compile(node.condition);
     if (err) return err;
 
     // Jump past body if condition is false
@@ -485,21 +451,73 @@ export class Compiler {
       this.emit(Opcodes.OpPop);
     }
 
-    // Compile update expression
-    err = this.compile(node.update);
-    if (err) return err;
-    this.emit(Opcodes.OpPop); // discard update result
-
     // Jump back to loop start
     this.emit(Opcodes.OpJump, loopStart);
 
-    // Patch conditional jump
+    // Patch conditional jump to here
     const afterLoop = this.currentInstructions().length;
     this.changeOperand(jumpNotTruthyPos, afterLoop);
 
-    // For evaluates to null
+    // Patch break jumps
+    const loopCtx = this.loopStack.pop();
+    for (const breakPos of loopCtx.breakPatches) {
+      this.changeOperand(breakPos, afterLoop);
+    }
+
+    // While evaluates to null
     this.emit(Opcodes.OpNull);
 
+    this.resetIntStack();
+
+    return null;
+  }
+
+  compileForExpression(node) {
+    // for (init; condition; update) { body }
+
+    let err = this.compile(node.init);
+    if (err) return err;
+
+    const loopStart = this.currentInstructions().length;
+
+    err = this.compile(node.condition);
+    if (err) return err;
+
+    const jumpNotTruthyPos = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+
+    // Push loop context — continue target will be patched to update section
+    this.loopStack.push({ breakPatches: [], continuePatches: [], continueTarget: -1 });
+
+    err = this.compile(node.body);
+    if (err) return err;
+
+    if (this.lastInstructionIs(Opcodes.OpPop)) {
+    } else {
+      this.emit(Opcodes.OpPop);
+    }
+
+    // Update section — patch continue jumps to here
+    const updatePos = this.currentInstructions().length;
+    const loopCtx = this.loopStack[this.loopStack.length - 1];
+    for (const contPos of loopCtx.continuePatches) {
+      this.changeOperand(contPos, updatePos);
+    }
+
+    err = this.compile(node.update);
+    if (err) return err;
+    this.emit(Opcodes.OpPop);
+
+    this.emit(Opcodes.OpJump, loopStart);
+
+    const afterLoop = this.currentInstructions().length;
+    this.changeOperand(jumpNotTruthyPos, afterLoop);
+
+    this.loopStack.pop();
+    for (const breakPos of loopCtx.breakPatches) {
+      this.changeOperand(breakPos, afterLoop);
+    }
+
+    this.emit(Opcodes.OpNull);
     this.resetIntStack();
 
     return null;
@@ -545,6 +563,9 @@ export class Compiler {
 
     const jumpNotTruthyPos = this.emit(Opcodes.OpJumpNotTruthy, 9999);
 
+    // Push loop context — continue will jump to increment
+    this.loopStack.push({ breakPatches: [], continuePatches: [], continueTarget: -1 });
+
     // let x = __arr[__i]
     this.loadSymbol(arrSym);
     this.loadSymbol(iSym);
@@ -562,6 +583,13 @@ export class Compiler {
       this.emit(Opcodes.OpPop);
     }
 
+    // Patch continue to here (increment section)
+    const incrementPos = this.currentInstructions().length;
+    const loopCtxIn = this.loopStack[this.loopStack.length - 1];
+    for (const contPos of loopCtxIn.continuePatches) {
+      this.changeOperand(contPos, incrementPos);
+    }
+
     // __i = __i + 1
     this.loadSymbol(iSym);
     const oneIdx = this.addConstant(new MonkeyInteger(1));
@@ -572,8 +600,13 @@ export class Compiler {
     // Jump back
     this.emit(Opcodes.OpJump, loopStart);
 
-    // Patch
-    this.changeOperand(jumpNotTruthyPos, this.currentInstructions().length);
+    // Patch condition jump and breaks
+    const afterLoop = this.currentInstructions().length;
+    this.changeOperand(jumpNotTruthyPos, afterLoop);
+    this.loopStack.pop();
+    for (const breakPos of loopCtxIn.breakPatches) {
+      this.changeOperand(breakPos, afterLoop);
+    }
 
     this.emit(Opcodes.OpNull);
     this.resetIntStack();

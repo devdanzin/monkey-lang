@@ -149,3 +149,15 @@ export function cachedInteger(value) {
   }
   return new MonkeyInteger(value);
 }
+
+export class MonkeyBreak {
+  constructor() {}
+  type() { return 'BREAK'; }
+  inspect() { return 'break'; }
+}
+
+export class MonkeyContinue {
+  constructor() {}
+  type() { return 'CONTINUE'; }
+  inspect() { return 'continue'; }
+}

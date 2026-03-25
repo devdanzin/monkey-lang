@@ -3,6 +3,7 @@
 import {
   MonkeyInteger, MonkeyString, MonkeyReturnValue, MonkeyError,
   MonkeyFunction, MonkeyArray, MonkeyHash, MonkeyBuiltin,
+  MonkeyBreak, MonkeyContinue,
   Environment, TRUE, FALSE, NULL, OBJ, internString,
 } from './object.js';
 
@@ -159,6 +160,8 @@ export function monkeyEval(node, env) {
   if (node instanceof AST.WhileExpression) return evalWhileExpression(node, env);
   if (node instanceof AST.ForExpression) return evalForExpression(node, env);
   if (node instanceof AST.ForInExpression) return evalForInExpression(node, env);
+  if (node instanceof AST.BreakStatement) return new MonkeyBreak();
+  if (node instanceof AST.ContinueStatement) return new MonkeyContinue();
 
   if (node instanceof AST.AssignExpression) {
     const val = monkeyEval(node.value, env);
@@ -219,6 +222,7 @@ function evalBlockStatement(stmts, env) {
     if (result) {
       const rt = result.type();
       if (rt === OBJ.RETURN || rt === OBJ.ERROR) return result;
+      if (result instanceof MonkeyBreak || result instanceof MonkeyContinue) return result;
     }
   }
   return result;
@@ -285,20 +289,20 @@ function evalIfExpression(node, env) {
 }
 
 function evalWhileExpression(node, env) {
-  let result = NULL;
   while (true) {
     const condition = monkeyEval(node.condition, env);
     if (isError(condition)) return condition;
     if (!isTruthy(condition)) break;
-    result = monkeyEval(node.body, env);
+    const result = monkeyEval(node.body, env);
     if (isError(result)) return result;
     if (result instanceof MonkeyReturnValue) return result;
+    if (result instanceof MonkeyBreak) break;
+    if (result instanceof MonkeyContinue) continue;
   }
   return NULL;
 }
 
 function evalForExpression(node, env) {
-  // Evaluate init
   const initResult = monkeyEval(node.init, env);
   if (isError(initResult)) return initResult;
 
@@ -309,7 +313,8 @@ function evalForExpression(node, env) {
     const bodyResult = monkeyEval(node.body, env);
     if (isError(bodyResult)) return bodyResult;
     if (bodyResult instanceof MonkeyReturnValue) return bodyResult;
-    // Evaluate update
+    if (bodyResult instanceof MonkeyBreak) break;
+    if (bodyResult instanceof MonkeyContinue) { /* fall through to update */ }
     const updateResult = monkeyEval(node.update, env);
     if (isError(updateResult)) return updateResult;
   }
@@ -334,6 +339,8 @@ function evalForInExpression(node, env) {
     const bodyResult = monkeyEval(node.body, env);
     if (isError(bodyResult)) return bodyResult;
     if (bodyResult instanceof MonkeyReturnValue) return bodyResult;
+    if (bodyResult instanceof MonkeyBreak) break;
+    if (bodyResult instanceof MonkeyContinue) continue;
   }
   return NULL;
 }
