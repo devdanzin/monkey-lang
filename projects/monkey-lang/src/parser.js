@@ -302,8 +302,15 @@ export class Parser {
     let alternative = null;
     if (this.peekTokenIs(TokenType.ELSE)) {
       this.nextToken();
-      if (!this.expectPeek(TokenType.LBRACE)) return null;
-      alternative = this.parseBlockStatement();
+      if (this.peekTokenIs(TokenType.IF)) {
+        // else if — parse as a single-statement block containing an if
+        this.nextToken(); // consume 'if'
+        const elseIf = this.parseIfExpression();
+        alternative = new ast.BlockStatement(this.curToken, [new ast.ExpressionStatement(this.curToken, elseIf)]);
+      } else {
+        if (!this.expectPeek(TokenType.LBRACE)) return null;
+        alternative = this.parseBlockStatement();
+      }
     }
     return new ast.IfExpression(token, condition, consequence, alternative);
   }
