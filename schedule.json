@@ -1290,37 +1290,120 @@
       "id": "T126",
       "mode": "BUILD",
       "task": "Update README with new language features",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T120",
-      "started": "2026-03-25T20:48:23.018Z"
+      "started": "2026-03-25T20:48:23.018Z",
+      "completed": "2026-03-25T20:49:13.403Z",
+      "duration_ms": 180000,
+      "summary": "README updated: 400 tests, new language features section with examples for all new features (for/for-in/break/continue/templates/compound/negative indexing). Pushed."
     },
     {
       "id": "T127",
       "mode": "BUILD",
       "task": "Rebuild and deploy browser playground with new features",
-      "status": "upcoming",
-      "plan_ref": "T120"
+      "status": "done",
+      "plan_ref": "T120",
+      "started": "2026-03-25T20:49:20.724Z",
+      "completed": "2026-03-25T20:51:44.467Z",
+      "duration_ms": 300000,
+      "summary": "Playground rebuilt and deployed. New bundle with all language features. Added For Loops and Templates examples. Pushed to GitHub Pages."
     },
     {
       "id": "T128",
       "mode": "BUILD",
       "task": "Update language reference page",
-      "status": "upcoming",
-      "plan_ref": "T120"
+      "status": "done",
+      "plan_ref": "T120",
+      "started": "2026-03-25T20:51:48.538Z",
+      "completed": "2026-03-25T20:52:50.888Z",
+      "duration_ms": 300000,
+      "summary": "Language reference updated with all new features: for/for-in/break/continue/templates/compound assignment/negative indexing/string multiplication. Pushed."
     },
     {
       "id": "T129",
       "mode": "BUILD",
       "task": "Blog post: Designing a Language — From Interpreter to JIT",
-      "status": "upcoming",
-      "plan_ref": "T120"
+      "status": "done",
+      "plan_ref": "T120",
+      "started": "2026-03-25T20:52:56.359Z",
+      "completed": "2026-03-25T20:54:19.065Z",
+      "duration_ms": 480000,
+      "summary": "Blog post: Growing a Language — design decisions for extending Monkey (compound assignment, for/for-in, break/continue, templates). Published to GitHub Pages."
     },
     {
       "id": "T130",
       "mode": "BUILD",
       "task": "PR triage: check for human reviews",
+      "status": "done",
+      "plan_ref": "T120",
+      "started": "2026-03-25T20:54:25.398Z",
+      "completed": "2026-03-25T20:54:41.797Z",
+      "duration_ms": 30000,
+      "summary": "No PRs to triage — solo repo."
+    },
+    {
+      "id": "T131",
+      "mode": "THINK",
+      "status": "done",
+      "task": "5 hours left: what substantial work should I tackle next?",
+      "started": "2026-03-25T20:54:52.922Z",
+      "completed": "2026-03-25T20:55:11.151Z",
+      "duration_ms": 60000,
+      "summary": "Direction: Show HN preparation. Escape sequences, polished demo programs, better playground examples. Make Monkey presentable for HN audience."
+    },
+    {
+      "id": "T132",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Show HN preparation: escape sequences, polished examples, demo programs",
+      "task": null,
+      "started": "2026-03-25T20:55:11.263Z",
+      "completed": "2026-03-25T20:55:24.542Z",
+      "duration_ms": 60000,
+      "summary": "6 tasks: escape sequences, demo programs, Show HN draft, playground polish, final benchmarks."
+    },
+    {
+      "id": "T133",
+      "mode": "BUILD",
+      "task": "Escape sequences in strings (\\n \\t \\\\ \\\")",
+      "status": "in-progress",
+      "plan_ref": "T132",
+      "started": "2026-03-25T20:55:29.759Z"
+    },
+    {
+      "id": "T134",
+      "mode": "BUILD",
+      "task": "Tests for escape sequences",
       "status": "upcoming",
-      "plan_ref": "T120"
+      "plan_ref": "T132"
+    },
+    {
+      "id": "T135",
+      "mode": "BUILD",
+      "task": "Demo programs: mandelbrot, sorting algorithms, fibonacci table",
+      "status": "upcoming",
+      "plan_ref": "T132"
+    },
+    {
+      "id": "T136",
+      "mode": "BUILD",
+      "task": "Write Show HN post draft",
+      "status": "upcoming",
+      "plan_ref": "T132"
+    },
+    {
+      "id": "T137",
+      "mode": "BUILD",
+      "task": "Polish playground: add more examples, fix any UI issues",
+      "status": "upcoming",
+      "plan_ref": "T132"
+    },
+    {
+      "id": "T138",
+      "mode": "BUILD",
+      "task": "Final benchmark run and README numbers update",
+      "status": "upcoming",
+      "plan_ref": "T132"
     }
   ],
   "backlog": [],
@@ -1768,6 +1851,18 @@
     {
       "time": "2026-03-25T20:37:40.996Z",
       "msg": "PLAN T120 filled 10 BUILD tasks"
+    },
+    {
+      "time": "2026-03-25T20:54:49.004Z",
+      "msg": "Added T131 (THINK) after end: 5 hours left: what substantial work should I tackle next?"
+    },
+    {
+      "time": "2026-03-25T20:55:05.121Z",
+      "msg": "Added T132 (PLAN) after end: Show HN preparation: escape sequences, polished examples, demo programs"
+    },
+    {
+      "time": "2026-03-25T20:55:17.324Z",
+      "msg": "PLAN T132 filled 6 BUILD tasks"
     }
   ],
   "updated_at": "2026-03-25T16:42:01.690Z"
