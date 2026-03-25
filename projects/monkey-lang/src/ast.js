@@ -208,3 +208,14 @@ export class ForExpression {
   tokenLiteral() { return this.token.literal; }
   toString() { return `for (...) { ... }`; }
 }
+
+export class ForInExpression {
+  constructor(token, variable, iterable, body) {
+    this.token = token;
+    this.variable = variable;   // string (identifier name)
+    this.iterable = iterable;   // Expression
+    this.body = body;            // BlockStatement
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return `for (${this.variable} in ...) { ... }`; }
+}

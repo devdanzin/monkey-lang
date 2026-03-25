@@ -158,6 +158,7 @@ export function monkeyEval(node, env) {
 
   if (node instanceof AST.WhileExpression) return evalWhileExpression(node, env);
   if (node instanceof AST.ForExpression) return evalForExpression(node, env);
+  if (node instanceof AST.ForInExpression) return evalForInExpression(node, env);
 
   if (node instanceof AST.AssignExpression) {
     const val = monkeyEval(node.value, env);
@@ -311,6 +312,28 @@ function evalForExpression(node, env) {
     // Evaluate update
     const updateResult = monkeyEval(node.update, env);
     if (isError(updateResult)) return updateResult;
+  }
+  return NULL;
+}
+
+function evalForInExpression(node, env) {
+  const iterable = monkeyEval(node.iterable, env);
+  if (isError(iterable)) return iterable;
+
+  let elements;
+  if (iterable instanceof MonkeyArray) {
+    elements = iterable.elements;
+  } else if (iterable instanceof MonkeyString) {
+    elements = iterable.value.split('').map(c => new MonkeyString(c));
+  } else {
+    return new MonkeyError(`for-in: expected ARRAY or STRING, got ${iterable.type()}`);
+  }
+
+  for (const elem of elements) {
+    env.set(node.variable, elem);
+    const bodyResult = monkeyEval(node.body, env);
+    if (isError(bodyResult)) return bodyResult;
+    if (bodyResult instanceof MonkeyReturnValue) return bodyResult;
   }
   return NULL;
 }

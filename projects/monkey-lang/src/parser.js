@@ -269,8 +269,21 @@ export class Parser {
     const token = this.curToken;
     if (!this.expectPeek(TokenType.LPAREN)) return null;
 
-    // Init: let statement or expression statement
     this.nextToken();
+
+    // Check for `for (ident in expr)` pattern
+    if (this.curTokenIs(TokenType.IDENT) && this.peekToken.type === TokenType.IDENT && this.peekToken.literal === 'in') {
+      const varName = this.curToken.literal;
+      this.nextToken(); // skip 'in'
+      this.nextToken(); // move to iterable expression
+      const iterable = this.parseExpression(Precedence.LOWEST);
+      if (!this.expectPeek(TokenType.RPAREN)) return null;
+      if (!this.expectPeek(TokenType.LBRACE)) return null;
+      const body = this.parseBlockStatement();
+      return new ast.ForInExpression(token, varName, iterable, body);
+    }
+
+    // Standard for (init; condition; update) { body }
     let init;
     if (this.curTokenIs(TokenType.LET)) {
       init = this.parseLetStatement();

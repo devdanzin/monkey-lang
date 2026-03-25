@@ -309,6 +309,8 @@ export class Compiler {
       return this.compileWhileExpression(node);
     } else if (node instanceof ast.ForExpression) {
       return this.compileForExpression(node);
+    } else if (node instanceof ast.ForInExpression) {
+      return this.compileForInExpression(node);
     } else if (node instanceof ast.AssignExpression) {
       const sym = this.symbolTable.resolve(node.name.value);
       if (!sym) return `undefined variable: ${node.name.value}`;
@@ -458,15 +460,10 @@ export class Compiler {
 
   compileForExpression(node) {
     // for (init; condition; update) { body }
-    // Desugars to: init; while (condition) { body; update; }
 
     // Compile init (let statement or expression)
     let err = this.compile(node.init);
     if (err) return err;
-    // If init was an expression statement, pop its value
-    if (node.init instanceof ast.ExpressionStatement) {
-      // Already has OpPop from ExpressionStatement compilation
-    }
 
     const loopStart = this.currentInstructions().length;
 
@@ -503,6 +500,82 @@ export class Compiler {
     // For evaluates to null
     this.emit(Opcodes.OpNull);
 
+    this.resetIntStack();
+
+    return null;
+  }
+
+  compileForInExpression(node) {
+    // for (x in iterable) { body }
+    // Compiles to:
+    //   let __arr = iterable
+    //   let __len = len(__arr)
+    //   let __i = 0
+    //   while (__i < __len) {
+    //     let x = __arr[__i]
+    //     body
+    //     __i = __i + 1
+    //   }
+
+    // Compile and store the iterable
+    let err = this.compile(node.iterable);
+    if (err) return err;
+    const arrSym = this.symbolTable.define('__forin_arr_' + this.currentInstructions().length);
+    this.emit(arrSym.scope === 'GLOBAL' ? Opcodes.OpSetGlobal : Opcodes.OpSetLocal, arrSym.index);
+
+    // len(__arr)
+    this.emit(Opcodes.OpGetBuiltin, 0); // len
+    this.loadSymbol(arrSym);
+    this.emit(Opcodes.OpCall, 1);
+    const lenSym = this.symbolTable.define('__forin_len_' + this.currentInstructions().length);
+    this.emit(lenSym.scope === 'GLOBAL' ? Opcodes.OpSetGlobal : Opcodes.OpSetLocal, lenSym.index);
+
+    // let __i = 0
+    const zeroIdx = this.addConstant(new MonkeyInteger(0));
+    this.emit(Opcodes.OpConstant, zeroIdx);
+    const iSym = this.symbolTable.define('__forin_i_' + this.currentInstructions().length);
+    this.emit(iSym.scope === 'GLOBAL' ? Opcodes.OpSetGlobal : Opcodes.OpSetLocal, iSym.index);
+
+    const loopStart = this.currentInstructions().length;
+
+    // condition: __i < __len
+    this.loadSymbol(iSym);
+    this.loadSymbol(lenSym);
+    this.emit(Opcodes.OpLessThanInt);
+
+    const jumpNotTruthyPos = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+
+    // let x = __arr[__i]
+    this.loadSymbol(arrSym);
+    this.loadSymbol(iSym);
+    this.emit(Opcodes.OpIndex);
+    const varSym = this.symbolTable.define(node.variable);
+    this.emit(varSym.scope === 'GLOBAL' ? Opcodes.OpSetGlobal : Opcodes.OpSetLocal, varSym.index);
+
+    // Compile body
+    err = this.compile(node.body);
+    if (err) return err;
+
+    if (this.lastInstructionIs(Opcodes.OpPop)) {
+      // Already has a pop
+    } else {
+      this.emit(Opcodes.OpPop);
+    }
+
+    // __i = __i + 1
+    this.loadSymbol(iSym);
+    const oneIdx = this.addConstant(new MonkeyInteger(1));
+    this.emit(Opcodes.OpConstant, oneIdx);
+    this.emit(Opcodes.OpAdd);
+    this.emit(iSym.scope === 'GLOBAL' ? Opcodes.OpSetGlobal : Opcodes.OpSetLocal, iSym.index);
+
+    // Jump back
+    this.emit(Opcodes.OpJump, loopStart);
+
+    // Patch
+    this.changeOperand(jumpNotTruthyPos, this.currentInstructions().length);
+
+    this.emit(Opcodes.OpNull);
     this.resetIntStack();
 
     return null;
