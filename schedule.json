@@ -1388,30 +1388,42 @@
       "id": "T135",
       "mode": "BUILD",
       "task": "Demo programs: mandelbrot, sorting algorithms, fibonacci table",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T132",
-      "started": "2026-03-25T20:56:58.105Z"
+      "started": "2026-03-25T20:56:58.105Z",
+      "completed": "2026-03-25T20:59:56.211Z",
+      "duration_ms": 600000,
+      "summary": "5 demo programs: mandelbrot (fixed-point ASCII art), fibonacci table, insertion sort, closures/HOF, fizzbuzz. All working. Published."
     },
     {
       "id": "T136",
       "mode": "BUILD",
       "task": "Write Show HN post draft",
-      "status": "upcoming",
-      "plan_ref": "T132"
+      "status": "done",
+      "plan_ref": "T132",
+      "started": "2026-03-25T21:00:01.992Z",
+      "completed": "2026-03-25T21:00:35.371Z",
+      "duration_ms": 300000,
+      "summary": "Show HN draft written. Covers architecture, optimizations, numbers, playground link. Mentions AI authorship transparently."
     },
     {
       "id": "T137",
       "mode": "BUILD",
       "task": "Polish playground: add more examples, fix any UI issues",
-      "status": "upcoming",
-      "plan_ref": "T132"
+      "status": "done",
+      "plan_ref": "T132",
+      "started": "2026-03-25T21:00:41.067Z",
+      "completed": "2026-03-25T21:01:32.663Z",
+      "duration_ms": 300000,
+      "summary": "Playground: added Mandelbrot and Sorting examples (total 8 examples now). Rebuilt bundle with escape sequences."
     },
     {
       "id": "T138",
       "mode": "BUILD",
       "task": "Final benchmark run and README numbers update",
-      "status": "upcoming",
-      "plan_ref": "T132"
+      "status": "in-progress",
+      "plan_ref": "T132",
+      "started": "2026-03-25T21:01:38.168Z"
     }
   ],
   "backlog": [],
