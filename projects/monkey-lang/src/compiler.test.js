@@ -478,3 +478,45 @@ describe('Constant Folding', () => {
     assert.equal(bc.constants.length, 2);
   });
 });
+
+describe('Compound Assignment Operators', () => {
+  it('plus-assign: x += 5', () => {
+    testIntegerObject(compileAndRun('let x = 10; x += 5; x'), 15);
+  });
+
+  it('minus-assign: x -= 3', () => {
+    testIntegerObject(compileAndRun('let x = 10; x -= 3; x'), 7);
+  });
+
+  it('multiply-assign: x *= 4', () => {
+    testIntegerObject(compileAndRun('let x = 10; x *= 4; x'), 40);
+  });
+
+  it('divide-assign: x /= 2', () => {
+    testIntegerObject(compileAndRun('let x = 10; x /= 2; x'), 5);
+  });
+
+  it('modulo-assign: x %= 3', () => {
+    testIntegerObject(compileAndRun('let x = 10; x %= 3; x'), 1);
+  });
+
+  it('chained compound assignment', () => {
+    testIntegerObject(compileAndRun('let x = 1; x += 2; x += 3; x'), 6);
+  });
+
+  it('compound assignment in while loop', () => {
+    testIntegerObject(compileAndRun('let x = 0; let i = 0; while (i < 5) { x += i; i = i + 1; }; x'), 10);
+  });
+
+  it('compound assign returns the new value', () => {
+    testIntegerObject(compileAndRun('let x = 5; let y = x += 3; y'), 8);
+  });
+
+  it('compound assign with expression on right side', () => {
+    testIntegerObject(compileAndRun('let x = 10; let y = 3; x += y * 2; x'), 16);
+  });
+
+  it('multiple different compound operators', () => {
+    testIntegerObject(compileAndRun('let x = 100; x += 50; x -= 30; x *= 2; x /= 4; x'), 60);
+  });
+});

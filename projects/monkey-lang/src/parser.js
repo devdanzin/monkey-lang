@@ -1,6 +1,6 @@
 // Monkey Language Parser — Pratt (Top-Down Operator Precedence)
 
-import { TokenType } from './lexer.js';
+import { TokenType, Token } from './lexer.js';
 import * as ast from './ast.js';
 
 const Precedence = {
@@ -17,6 +17,11 @@ const Precedence = {
 
 const TOKEN_PRECEDENCE = {
   [TokenType.ASSIGN]: Precedence.ASSIGN,
+  [TokenType.PLUS_ASSIGN]: Precedence.ASSIGN,
+  [TokenType.MINUS_ASSIGN]: Precedence.ASSIGN,
+  [TokenType.ASTERISK_ASSIGN]: Precedence.ASSIGN,
+  [TokenType.SLASH_ASSIGN]: Precedence.ASSIGN,
+  [TokenType.PERCENT_ASSIGN]: Precedence.ASSIGN,
   [TokenType.EQ]: Precedence.EQUALS,
   [TokenType.NOT_EQ]: Precedence.EQUALS,
   [TokenType.AND]: Precedence.AND,
@@ -68,6 +73,10 @@ export class Parser {
     this.registerInfix(TokenType.LPAREN, (left) => this.parseCallExpression(left));
     this.registerInfix(TokenType.LBRACKET, (left) => this.parseIndexExpression(left));
     this.registerInfix(TokenType.ASSIGN, (left) => this.parseAssignExpression(left));
+    for (const op of [TokenType.PLUS_ASSIGN, TokenType.MINUS_ASSIGN,
+      TokenType.ASTERISK_ASSIGN, TokenType.SLASH_ASSIGN, TokenType.PERCENT_ASSIGN]) {
+      this.registerInfix(op, (left) => this.parseCompoundAssignExpression(left));
+    }
 
     // Prime the pump
     this.nextToken();
@@ -307,6 +316,29 @@ export class Parser {
     this.nextToken();
     const value = this.parseExpression(Precedence.LOWEST);
     return new ast.AssignExpression(token, left, value);
+  }
+
+  parseCompoundAssignExpression(left) {
+    if (!(left instanceof ast.Identifier)) {
+      this.errors.push(`cannot compound-assign to ${left.constructor.name}`);
+      return null;
+    }
+    const token = this.curToken;
+    // Map compound assign token to binary operator token
+    const opMap = {
+      [TokenType.PLUS_ASSIGN]: TokenType.PLUS,
+      [TokenType.MINUS_ASSIGN]: TokenType.MINUS,
+      [TokenType.ASTERISK_ASSIGN]: TokenType.ASTERISK,
+      [TokenType.SLASH_ASSIGN]: TokenType.SLASH,
+      [TokenType.PERCENT_ASSIGN]: TokenType.PERCENT,
+    };
+    const opToken = new Token(opMap[token.type], token.literal[0]);
+    this.nextToken();
+    const right = this.parseExpression(Precedence.LOWEST);
+    // Desugar: x += expr  →  x = x + expr
+    const ident = left;
+    const binExpr = new ast.InfixExpression(opToken, ident, opToken.literal, right);
+    return new ast.AssignExpression(token, ident, binExpr);
   }
 
   parseHashLiteral() {

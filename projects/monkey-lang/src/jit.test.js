@@ -1188,3 +1188,31 @@ describe('Logical AND and OR', () => {
     assert.equal(runJIT('true || false && false').lastPoppedStackElem().inspect(), 'true');
   });
 });
+
+describe('Compound Assignment Operators', () => {
+  it('plus-assign in loop', () => {
+    const vm = runJIT('let x = 0; let i = 0; while (i < 100) { x += i; i = i + 1; } x');
+    assert.equal(vm.lastPoppedStackElem().value, 4950);
+  });
+
+  it('minus-assign in loop', () => {
+    const vm = runJIT('let x = 1000; let i = 0; while (i < 100) { x -= 1; i = i + 1; } x');
+    assert.equal(vm.lastPoppedStackElem().value, 900);
+  });
+
+  it('multiply-assign', () => {
+    const vm = runJIT('let x = 1; let i = 0; while (i < 10) { x *= 2; i = i + 1; } x');
+    assert.equal(vm.lastPoppedStackElem().value, 1024);
+  });
+
+  it('compound assign with loop counter', () => {
+    // i += 1 as loop increment
+    const vm = runJIT('let s = 0; let i = 0; while (i < 50) { s += i; i += 1; } s');
+    assert.equal(vm.lastPoppedStackElem().value, 1225);
+  });
+
+  it('mixed compound operators', () => {
+    const vm = runJIT('let x = 100; x += 50; x -= 30; x *= 2; x /= 4; x');
+    assert.equal(vm.lastPoppedStackElem().value, 60);
+  });
+});
