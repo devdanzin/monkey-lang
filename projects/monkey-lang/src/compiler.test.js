@@ -2029,3 +2029,150 @@ describe('More Algorithms', () => {
     `), 33);
   });
 });
+
+describe('800 Club', () => {
+  it('fibonacci matrix power', () => {
+    testIntegerObject(compileAndRun(`
+      // fib(n) via matrix exponentiation concept (iterative)
+      let a = 0; let b = 1;
+      for (let i = 0; i < 25; i++) { let t = b; b = a + b; a = t; }
+      a
+    `), 75025);
+  });
+  it('is_sorted check', () => {
+    testBooleanObject(compileAndRun(`
+      let is_sorted = fn(arr) {
+        for (let i = 0; i < len(arr) - 1; i++) {
+          if (arr[i] > arr[i+1]) { return false; }
+        }
+        true
+      };
+      is_sorted([1, 2, 3, 4, 5])
+    `), true);
+  });
+  it('not sorted', () => {
+    testBooleanObject(compileAndRun(`
+      let is_sorted = fn(arr) {
+        for (let i = 0; i < len(arr) - 1; i++) {
+          if (arr[i] > arr[i+1]) { return false; }
+        }
+        true
+      };
+      is_sorted([1, 3, 2])
+    `), false);
+  });
+  it('zip pairs', () => {
+    testIntegerObject(compileAndRun(`
+      let a = [1,2,3]; let b = [4,5,6];
+      let pairs = [];
+      for (let i = 0; i < len(a); i++) { pairs = push(pairs, [a[i], b[i]]); }
+      let sum = 0;
+      for ([x, y] in pairs) { sum += x * y; }
+      sum
+    `), 32);
+  });
+  it('group by', () => {
+    testIntegerObject(compileAndRun(`
+      let data = [1,2,3,4,5,6,7,8,9,10];
+      let even = [];
+      let odd = [];
+      for (x in data) {
+        if (x % 2 == 0) { even = push(even, x); }
+        else { odd = push(odd, x); }
+      }
+      len(even) * 10 + len(odd)
+    `), 55);
+  });
+  it('running max', () => {
+    testIntegerObject(compileAndRun(`
+      let a = [3,1,4,1,5,9,2,6];
+      let max_so_far = a[0];
+      let count = 0;
+      for (x in a) {
+        if (x > max_so_far) { max_so_far = x; count++; }
+      }
+      count
+    `), 3);
+  });
+  it('nested match', () => {
+    testStringObject(compileAndRun(`
+      let classify = fn(x) {
+        match (x > 0) {
+          true => match (x % 2 == 0) {
+            true => "positive even",
+            _ => "positive odd"
+          },
+          _ => "non-positive"
+        }
+      };
+      classify(7)
+    `), 'positive odd');
+  });
+  it('recursive power', () => {
+    testIntegerObject(compileAndRun(`
+      let pow = fn(base, exp) {
+        exp == 0 ? 1 : base * pow(base, exp - 1)
+      };
+      pow(3, 7)
+    `), 2187);
+  });
+  it('string join with map', () => {
+    testStringObject(compileAndRun(`
+      let nums = [1, 2, 3, 4, 5];
+      let strs = [];
+      for (n in nums) { strs = push(strs, str(n * n)); }
+      join(strs, " + ")
+    `), '1 + 4 + 9 + 16 + 25');
+  });
+  it('all/any pattern', () => {
+    testBooleanObject(compileAndRun(`
+      let all_positive = fn(arr) {
+        for (x in arr) { if (x <= 0) { return false; } }
+        true
+      };
+      all_positive([1, 2, 3, 4, 5])
+    `), true);
+  });
+  it('all fails', () => {
+    testBooleanObject(compileAndRun(`
+      let all_positive = fn(arr) {
+        for (x in arr) { if (x <= 0) { return false; } }
+        true
+      };
+      all_positive([1, 2, -3, 4, 5])
+    `), false);
+  });
+  it('any pattern', () => {
+    testBooleanObject(compileAndRun(`
+      let any_negative = fn(arr) {
+        for (x in arr) { if (x < 0) { return true; } }
+        false
+      };
+      any_negative([1, 2, -3, 4, 5])
+    `), true);
+  });
+  it('take n', () => {
+    testIntegerObject(compileAndRun(`
+      let take = fn(arr, n) { arr[:n] };
+      let a = take([1,2,3,4,5], 3);
+      a[0] + a[1] + a[2]
+    `), 6);
+  });
+  it('drop n', () => {
+    testIntegerObject(compileAndRun(`
+      let drop = fn(arr, n) { arr[n:] };
+      let a = drop([1,2,3,4,5], 2);
+      a[0] + a[1] + a[2]
+    `), 12);
+  });
+  it('index of max', () => {
+    testIntegerObject(compileAndRun(`
+      let a = [3, 1, 4, 1, 5, 9, 2, 6];
+      let max_i = 0;
+      for (let i = 1; i < len(a); i++) {
+        if (a[i] > a[max_i]) { max_i = i; }
+      }
+      max_i
+    `), 5);
+  });
+});
