@@ -315,6 +315,8 @@ export class Compiler {
       err = this.compile(node.alternative);
       if (err) return err;
       this.changeOperand(jumpPos, this.currentInstructions().length);
+    } else if (node instanceof ast.MatchExpression) {
+      return this.compileMatchExpression(node);
     } else if (node instanceof ast.TemplateLiteral) {
       return this.compileTemplateLiteral(node);
     } else if (node instanceof ast.BooleanLiteral) {
@@ -683,6 +685,60 @@ export class Compiler {
     const err = this.compile(part);           // push argument
     if (err) return err;
     this.emit(Opcodes.OpCall, 1);             // call str(expr)
+    return null;
+  }
+
+  compileMatchExpression(node) {
+    // match (subject) { pattern1 => value1, pattern2 => value2, _ => default }
+    // Compiles to: let __subject = subject; if (__subject == p1) v1 else if (__subject == p2) v2 else default
+
+    // Compile subject and store in hidden variable
+    let err = this.compile(node.subject);
+    if (err) return err;
+    const subjectSym = this.symbolTable.define('__match_' + this.currentInstructions().length);
+    this.emit(subjectSym.scope === 'GLOBAL' ? Opcodes.OpSetGlobal : Opcodes.OpSetLocal, subjectSym.index);
+
+    const endJumps = [];
+
+    for (let i = 0; i < node.arms.length; i++) {
+      const arm = node.arms[i];
+
+      if (arm.pattern === null) {
+        // Wildcard — always matches
+        err = this.compile(arm.value);
+        if (err) return err;
+        break;
+      }
+
+      // Compare subject == pattern
+      this.loadSymbol(subjectSym);
+      err = this.compile(arm.pattern);
+      if (err) return err;
+      this.emit(Opcodes.OpEqual);
+
+      const jumpNotTruthyPos = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+
+      // Match — compile value
+      err = this.compile(arm.value);
+      if (err) return err;
+      endJumps.push(this.emit(Opcodes.OpJump, 9999));
+
+      // No match — continue to next arm
+      this.changeOperand(jumpNotTruthyPos, this.currentInstructions().length);
+    }
+
+    // If no arm matched and no wildcard, push null
+    const lastArm = node.arms[node.arms.length - 1];
+    if (lastArm.pattern !== null) {
+      this.emit(Opcodes.OpNull);
+    }
+
+    // Patch all end jumps to here
+    const end = this.currentInstructions().length;
+    for (const pos of endJumps) {
+      this.changeOperand(pos, end);
+    }
+
     return null;
   }
 

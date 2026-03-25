@@ -73,6 +73,7 @@ export class Parser {
     this.registerPrefix(TokenType.BREAK, () => new ast.BreakStatement(this.curToken));
     this.registerPrefix(TokenType.CONTINUE, () => new ast.ContinueStatement(this.curToken));
     this.registerPrefix(TokenType.NULL_LIT, () => new ast.NullLiteral(this.curToken));
+    this.registerPrefix(TokenType.MATCH, () => this.parseMatchExpression());
 
     // Register infix parsers
     for (const op of [TokenType.PLUS, TokenType.MINUS, TokenType.SLASH,
@@ -463,6 +464,33 @@ export class Parser {
 
     if (!this.expectPeek(TokenType.RBRACKET)) return null;
     return new ast.IndexExpression(token, left, index);
+  }
+
+  parseMatchExpression() {
+    const token = this.curToken;
+    if (!this.expectPeek(TokenType.LPAREN)) return null;
+    this.nextToken();
+    const subject = this.parseExpression(Precedence.LOWEST);
+    if (!this.expectPeek(TokenType.RPAREN)) return null;
+    if (!this.expectPeek(TokenType.LBRACE)) return null;
+
+    const arms = [];
+    while (!this.peekTokenIs(TokenType.RBRACE) && !this.peekTokenIs(TokenType.EOF)) {
+      this.nextToken();
+      let pattern = null;
+      if (this.curTokenIs(TokenType.IDENT) && this.curToken.literal === '_') {
+        pattern = null; // wildcard
+      } else {
+        pattern = this.parseExpression(Precedence.LOWEST);
+      }
+      if (!this.expectPeek(TokenType.ARROW)) return null;
+      this.nextToken();
+      const value = this.parseExpression(Precedence.LOWEST);
+      arms.push({ pattern, value });
+      if (this.peekTokenIs(TokenType.COMMA)) this.nextToken();
+    }
+    if (!this.expectPeek(TokenType.RBRACE)) return null;
+    return new ast.MatchExpression(token, subject, arms);
   }
 
   parsePostfixExpression(left, op) {

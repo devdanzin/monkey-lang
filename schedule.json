@@ -2117,6 +2117,31 @@
       "completed": "2026-03-25T22:14:51.349Z",
       "duration_ms": 0,
       "summary": "3.5 hours remain."
+    },
+    {
+      "id": "T206",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Implement switch/match syntax",
+      "started": "2026-03-25T22:15:28.817Z"
+    },
+    {
+      "id": "T207",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Tests for switch/match"
+    },
+    {
+      "id": "T208",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "More Monkey programs: tower of hanoi, binary search, linked list"
+    },
+    {
+      "id": "T209",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Actual session end wrap"
     }
   ],
   "backlog": [],
@@ -2780,6 +2805,22 @@
     {
       "time": "2026-03-25T22:11:05.046Z",
       "msg": "Added T205 (MAINTAIN) after end: 7:30 PM wrap check"
+    },
+    {
+      "time": "2026-03-25T22:15:18.594Z",
+      "msg": "Added T206 (BUILD) after end: Implement switch/match syntax"
+    },
+    {
+      "time": "2026-03-25T22:15:18.706Z",
+      "msg": "Added T207 (BUILD) after end: Tests for switch/match"
+    },
+    {
+      "time": "2026-03-25T22:15:18.817Z",
+      "msg": "Added T208 (BUILD) after end: More Monkey programs: tower of hanoi, binary search, linked list"
+    },
+    {
+      "time": "2026-03-25T22:15:18.930Z",
+      "msg": "Added T209 (MAINTAIN) after end: Actual session end wrap"
     }
   ],
   "updated_at": "2026-03-25T16:42:01.690Z"

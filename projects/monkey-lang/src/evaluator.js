@@ -168,6 +168,21 @@ export function monkeyEval(node, env) {
     if (isError(condition)) return condition;
     return isTruthy(condition) ? monkeyEval(node.consequence, env) : monkeyEval(node.alternative, env);
   }
+  if (node instanceof AST.MatchExpression) {
+    const subject = monkeyEval(node.subject, env);
+    if (isError(subject)) return subject;
+    for (const arm of node.arms) {
+      if (arm.pattern === null) {
+        return monkeyEval(arm.value, env); // wildcard
+      }
+      const pattern = monkeyEval(arm.pattern, env);
+      if (isError(pattern)) return pattern;
+      if (subject.inspect() === pattern.inspect()) {
+        return monkeyEval(arm.value, env);
+      }
+    }
+    return NULL;
+  }
   if (node instanceof AST.TemplateLiteral) return evalTemplateLiteral(node, env);
 
   if (node instanceof AST.AssignExpression) {

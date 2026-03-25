@@ -279,3 +279,13 @@ export class TernaryExpression {
   tokenLiteral() { return this.token.literal; }
   toString() { return `${this.condition} ? ${this.consequence} : ${this.alternative}`; }
 }
+
+export class MatchExpression {
+  constructor(token, subject, arms) {
+    this.token = token;
+    this.subject = subject;   // Expression to match against
+    this.arms = arms;         // Array of { pattern, value } where pattern is Expression or null (wildcard)
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return 'match { ... }'; }
+}
