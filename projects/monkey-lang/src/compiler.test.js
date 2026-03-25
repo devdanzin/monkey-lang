@@ -1515,3 +1515,74 @@ describe('Stress Tests', () => {
     testIntegerObject(result, 1);
   });
 });
+
+describe('Edge Cases', () => {
+  it('empty array operations', () => {
+    testIntegerObject(compileAndRun('len([])'), 0);
+  });
+  it('empty string operations', () => {
+    testIntegerObject(compileAndRun('len("")'), 0);
+  });
+  it('array of arrays', () => {
+    const result = compileAndRun('[[1,2],[3,4]][1][0]');
+    testIntegerObject(result, 3);
+  });
+  it('hash of arrays', () => {
+    const result = compileAndRun('let h = {"nums": [1,2,3]}; h["nums"][2]');
+    testIntegerObject(result, 3);
+  });
+  it('nested template', () => {
+    testStringObject(compileAndRun('let x = 1; let y = 2; `${`${x}+${y}`}=${x+y}`'), '1+2=3');
+  });
+  it('empty for-in', () => {
+    testIntegerObject(compileAndRun('let s = 42; for (x in []) { s = 0; }; s'), 42);
+  });
+  it('for with zero iterations', () => {
+    testIntegerObject(compileAndRun('let s = 42; for (let i = 0; i < 0; i++) { s = 0; }; s'), 42);
+  });
+  it('match with no wildcard', () => {
+    const result = compileAndRun('match (99) { 1 => "one" }');
+    assert.ok(result instanceof MonkeyNull);
+  });
+  it('ternary as function arg', () => {
+    testIntegerObject(compileAndRun('let f = fn(x) { x * 2 }; f(true ? 5 : 10)'), 10);
+  });
+  it('compound assign with function call', () => {
+    testIntegerObject(compileAndRun('let f = fn(x) { x * 2 }; let s = 0; s += f(5); s'), 10);
+  });
+  it('for-in over string', () => {
+    testIntegerObject(compileAndRun('let count = 0; for (c in "hello") { count++; }; count'), 5);
+  });
+  it('hash mutation', () => {
+    testIntegerObject(compileAndRun('let h = {}; h["x"] = 42; h["x"]'), 42);
+  });
+  it('negative index string', () => {
+    testStringObject(compileAndRun('"hello"[-1]'), 'o');
+  });
+  it('string * 0', () => {
+    testStringObject(compileAndRun('"hello" * 0'), '');
+  });
+  it('string * 1', () => {
+    testStringObject(compileAndRun('"hello" * 1'), 'hello');
+  });
+  it('escape in template', () => {
+    testStringObject(compileAndRun('`line1\\nline2`'), 'line1\nline2');
+  });
+  it('nested function with default', () => {
+    testIntegerObject(compileAndRun('let outer = fn(x = 5) { let inner = fn(y = 10) { x + y }; inner() }; outer()'), 15);
+  });
+  it('array push in loop', () => {
+    const result = compileAndRun('let a = []; for (let i = 0; i < 5; i++) { a = push(a, i * i); }; a');
+    assert.equal(result.elements.length, 5);
+    testIntegerObject(result.elements[4], 16);
+  });
+  it('boolean short-circuit &&', () => {
+    testBooleanObject(compileAndRun('false && true'), false);
+  });
+  it('boolean short-circuit ||', () => {
+    testBooleanObject(compileAndRun('false || true'), true);
+  });
+  it('compound operators all', () => {
+    testIntegerObject(compileAndRun('let x = 100; x += 10; x -= 5; x *= 2; x /= 7; x %= 10; x'), 0);
+  });
+});
