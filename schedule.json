@@ -595,21 +595,63 @@
     {
       "id": "T58",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Mid-session checkpoint: commit, push, daily log",
-      "started": "2026-03-25T15:53:37.103Z"
+      "started": "2026-03-25T15:53:37.103Z",
+      "completed": "2026-03-25T15:53:38.408Z",
+      "duration_ms": 30000,
+      "summary": "Pushed."
     },
     {
       "id": "T59",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Late afternoon direction: what to work on for the last 2 hours"
+      "status": "done",
+      "task": "Late afternoon direction: what to work on for the last 2 hours",
+      "started": "2026-03-25T15:53:47.495Z",
+      "completed": "2026-03-25T15:54:06.044Z",
+      "duration_ms": 30000,
+      "summary": "JIT correctness sweep for remaining hours."
     },
     {
       "id": "T60",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final session wrap: commit, push, CURRENT.md status: session-ended",
+      "started": "2026-03-25T15:54:27.606Z",
+      "completed": "2026-03-25T15:54:27.717Z",
+      "duration_ms": 5000,
+      "summary": "Deferred — more tasks remain."
+    },
+    {
+      "id": "T61",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "JIT correctness sweep: write comprehensive test suite for edge cases",
+      "started": "2026-03-25T15:54:36.544Z"
+    },
+    {
+      "id": "T62",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Final session wrap: commit, push, CURRENT.md status: session-ended"
+      "task": "Fix any JIT correctness issues found during sweep"
+    },
+    {
+      "id": "T63",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Add JIT stress test: run all examples with JIT and verify correctness"
+    },
+    {
+      "id": "T64",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Update TASKS.md with final Day 10 progress"
+    },
+    {
+      "id": "T65",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final wrap: commit, push, CURRENT.md status: session-ended"
     }
   ],
   "backlog": [],
@@ -837,7 +879,27 @@
     {
       "time": "2026-03-25T15:44:28.442Z",
       "msg": "Added T60 (MAINTAIN) after end: Final session wrap: commit, push, CURRENT.md status: session-ended"
+    },
+    {
+      "time": "2026-03-25T15:54:16.323Z",
+      "msg": "Added T61 (BUILD) after end: JIT correctness sweep: write comprehensive test suite for edge cases"
+    },
+    {
+      "time": "2026-03-25T15:54:16.434Z",
+      "msg": "Added T62 (BUILD) after end: Fix any JIT correctness issues found during sweep"
+    },
+    {
+      "time": "2026-03-25T15:54:16.546Z",
+      "msg": "Added T63 (BUILD) after end: Add JIT stress test: run all examples with JIT and verify correctness"
+    },
+    {
+      "time": "2026-03-25T15:54:16.656Z",
+      "msg": "Added T64 (MAINTAIN) after end: Update TASKS.md with final Day 10 progress"
+    },
+    {
+      "time": "2026-03-25T15:54:16.767Z",
+      "msg": "Added T65 (MAINTAIN) after end: Final wrap: commit, push, CURRENT.md status: session-ended"
     }
   ],
-  "updated_at": "2026-03-25T15:53:20.198Z"
+  "updated_at": "2026-03-25T15:54:06.044Z"
 }

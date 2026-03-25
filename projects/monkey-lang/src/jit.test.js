@@ -615,6 +615,17 @@ import { Compiler } from './compiler.js';
 import { Lexer } from './lexer.js';
 import { Parser } from './parser.js';
 
+function runVM(input) {
+  const l = new Lexer(input);
+  const p = new Parser(l);
+  const prog = p.parseProgram();
+  const c = new Compiler();
+  c.compile(prog);
+  const vm = new VM(c.bytecode());
+  vm.run();
+  return vm;
+}
+
 function runJIT(input) {
   const l = new Lexer(input);
   const p = new Parser(l);
@@ -986,4 +997,53 @@ describe('Nested conditionals with JIT (regression)', () => {
     const vm = runJIT('let count = 0; let i = 0; while (i < 100) { if (i > 20) { if (i > 40) { if (i > 60) { count = count + 1; } } } i = i + 1; } count');
     assert.equal(vm.lastPoppedStackElem().value, 39);
   });
+});
+
+describe('JIT correctness sweep: VM vs JIT parity', () => {
+  // Helper: run with VM only and JIT, compare results
+  function assertJITParity(code, description) {
+    // VM
+    const vm1 = runVM(code);
+    const expected = vm1.lastPoppedStackElem()?.inspect();
+
+    // JIT
+    const vm2 = runJIT(code);
+    const actual = vm2.lastPoppedStackElem()?.inspect();
+
+    assert.equal(actual, expected, description || code.slice(0, 50));
+  }
+
+  // Basic loops
+  it('simple sum loop', () => assertJITParity('let s = 0; let i = 0; while (i < 100) { s = s + i; i = i + 1; } s'));
+  it('multiplication loop', () => assertJITParity('let s = 1; let i = 1; while (i < 20) { s = s * i; i = i + 1; } s'));
+  it('countdown loop', () => assertJITParity('let s = 0; let i = 100; while (i > 0) { s = s + i; i = i - 1; } s'));
+
+  // Conditionals in loops
+  it('single if in loop', () => assertJITParity('let c = 0; let i = 0; while (i < 100) { if (i > 50) { c = c + 1; } i = i + 1; } c'));
+  it('if-else in loop', () => assertJITParity('let a = 0; let b = 0; let i = 0; while (i < 100) { if (i > 50) { a = a + 1; } if (i < 50) { b = b + 1; } i = i + 1; } a + b'));
+  it('nested if in loop (regression)', () => assertJITParity('let c = 0; let i = 0; while (i < 100) { if (i > 20) { if (i > 60) { c = c + 1; } } i = i + 1; } c'));
+
+  // Modulo
+  it('modulo in loop', () => assertJITParity('let c = 0; let i = 0; while (i < 100) { if (i % 2 == 0) { c = c + 1; } i = i + 1; } c'));
+  it('modulo nested', () => assertJITParity('let c = 0; let i = 1; while (i < 101) { if (i % 3 == 0) { if (i % 5 == 0) { c = c + 1; } } i = i + 1; } c'));
+
+  // Functions
+  it('recursive fibonacci', () => assertJITParity('let fib = fn(n) { if (n < 2) { return n; } fib(n-1) + fib(n-2) }; fib(20)'));
+  it('function in loop', () => assertJITParity('let double = fn(x) { x * 2 }; let s = 0; let i = 0; while (i < 50) { s = s + double(i); i = i + 1; } s'));
+
+  // Closures
+  it('closure captures', () => assertJITParity('let makeAdder = fn(x) { fn(y) { x + y } }; let a = makeAdder(10); let s = 0; let i = 0; while (i < 50) { s = s + a(i); i = i + 1; } s'));
+
+  // Arrays
+  it('array sum', () => assertJITParity('let arr = []; let i = 0; while (i < 50) { arr = push(arr, i); i = i + 1; } let s = 0; let j = 0; while (j < len(arr)) { s = s + arr[j]; j = j + 1; } s'));
+  it('array build and index', () => assertJITParity('let arr = []; let i = 0; while (i < 100) { arr = push(arr, i * 2); i = i + 1; } arr[50] + arr[99]'));
+
+  // Hash
+  it('hash access in loop', () => assertJITParity('let h = {"a": 1, "b": 2, "c": 3}; let s = 0; let i = 0; while (i < 50) { s = s + h["a"] + h["b"]; i = i + 1; } s'));
+
+  // String operations
+  it('string concat in loop', () => assertJITParity('let s = ""; let i = 0; while (i < 20) { s = s + "x"; i = i + 1; } len(s)'));
+
+  // Mixed operations
+  it('alternating operations', () => assertJITParity('let s = 0; let i = 0; while (i < 100) { if (i % 3 == 0) { s = s + i; } if (i % 3 == 1) { s = s - 1; } if (i % 3 == 2) { s = s + 2; } i = i + 1; } s'));
 });
