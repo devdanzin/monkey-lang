@@ -1150,16 +1150,20 @@
       "id": "T114",
       "mode": "BUILD",
       "task": "Implement for-in iteration: for (x in array) { ... }",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T109",
-      "started": "2026-03-25T20:30:29.914Z"
+      "started": "2026-03-25T20:30:29.914Z",
+      "completed": "2026-03-25T20:32:27.708Z",
+      "duration_ms": 480000,
+      "summary": "For-in iteration: for (x in array) and for (c in string). Compiler emits index-based loop with hidden variables. Evaluator also supports it. 368 tests."
     },
     {
       "id": "T115",
       "mode": "BUILD",
       "task": "Tests for for-in",
-      "status": "upcoming",
-      "plan_ref": "T109"
+      "status": "in-progress",
+      "plan_ref": "T109",
+      "started": "2026-03-25T20:32:32.397Z"
     },
     {
       "id": "T116",

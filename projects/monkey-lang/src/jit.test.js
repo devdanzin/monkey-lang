@@ -1233,3 +1233,16 @@ describe('For Loops', () => {
     assert.equal(vm.lastPoppedStackElem().value, 1048576);
   });
 });
+
+describe('For-In Iteration', () => {
+  it('for-in sum with JIT', () => {
+    // Build a large array via for loop, then sum with for-in
+    const vm = runJIT('let a = []; for (let i = 0; i < 100; i += 1) { a = push(a, i); }; let s = 0; for (x in a) { s += x; }; s');
+    assert.equal(vm.lastPoppedStackElem().value, 4950);
+  });
+
+  it('for-in over string', () => {
+    const vm = runJIT('let s = 0; let str = "abcdef"; for (c in str) { s += 1; }; s');
+    assert.equal(vm.lastPoppedStackElem().value, 6);
+  });
+});

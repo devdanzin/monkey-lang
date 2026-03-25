@@ -609,3 +609,34 @@ describe('For Loops', () => {
     assert.ok(result instanceof MonkeyNull);
   });
 });
+
+describe('For-In Iteration', () => {
+  it('sum array elements', () => {
+    testIntegerObject(compileAndRun('let s = 0; for (x in [1, 2, 3, 4, 5]) { s += x; }; s'), 15);
+  });
+
+  it('iterate over variable array', () => {
+    testIntegerObject(compileAndRun('let a = [10, 20, 30]; let s = 0; for (x in a) { s += x; }; s'), 60);
+  });
+
+  it('iterate over string characters', () => {
+    testStringObject(compileAndRun('let s = ""; for (c in "hi") { s = s + c + "-"; }; s'), 'h-i-');
+  });
+
+  it('empty array', () => {
+    testIntegerObject(compileAndRun('let s = 99; for (x in []) { s = 0; }; s'), 99);
+  });
+
+  it('nested for-in', () => {
+    testIntegerObject(compileAndRun('let s = 0; for (a in [[1,2],[3,4]]) { for (x in a) { s += x; } }; s'), 10);
+  });
+
+  it('for-in with function call', () => {
+    testIntegerObject(compileAndRun('let s = 0; let double = fn(x) { x * 2 }; for (x in [1, 2, 3]) { s += double(x); }; s'), 12);
+  });
+
+  it('for-in evaluates to null', () => {
+    const result = compileAndRun('for (x in [1, 2, 3]) { x }');
+    assert.ok(result instanceof MonkeyNull);
+  });
+});
