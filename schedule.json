@@ -2131,15 +2131,19 @@
     {
       "id": "T207",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Tests for switch/match",
-      "started": "2026-03-25T22:19:34.292Z"
+      "started": "2026-03-25T22:19:34.292Z",
+      "completed": "2026-03-25T22:20:17.510Z",
+      "duration_ms": 120000,
+      "summary": "8 match expression tests. 508 total."
     },
     {
       "id": "T208",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "More Monkey programs: tower of hanoi, binary search, linked list"
+      "status": "in-progress",
+      "task": "More Monkey programs: tower of hanoi, binary search, linked list",
+      "started": "2026-03-25T22:20:27.880Z"
     },
     {
       "id": "T209",
