@@ -340,16 +340,20 @@
       "id": "T34",
       "mode": "BUILD",
       "task": "Benchmark array builtins with JIT (closure inlining)",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T30",
-      "started": "2026-03-25T15:13:45.217Z"
+      "started": "2026-03-25T15:13:45.217Z",
+      "completed": "2026-03-25T15:15:38.883Z",
+      "duration_ms": 300000,
+      "summary": "3 stdlib benchmarks: reduce 12.9x (great closure inlining), map 4.3x (push bottleneck), filter 2.6x (branch+push). 262 tests, 26 benchmarks, ~9.4x."
     },
     {
       "id": "T35",
       "mode": "BUILD",
       "task": "Implement string builtins: split, join, trim, contains",
-      "status": "upcoming",
-      "plan_ref": "T30"
+      "status": "in-progress",
+      "plan_ref": "T30",
+      "started": "2026-03-25T15:15:51.988Z"
     },
     {
       "id": "T36",

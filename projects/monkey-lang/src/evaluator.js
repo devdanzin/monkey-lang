@@ -44,6 +44,63 @@ const builtins = new Map([
     for (const arg of args) console.log(arg.inspect());
     return NULL;
   })],
+  ['split', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError(`wrong number of arguments. got=${args.length}, want=2`);
+    if (!(args[0] instanceof MonkeyString) || !(args[1] instanceof MonkeyString))
+      return newError(`arguments to \`split\` must be STRING`);
+    return new MonkeyArray(args[0].value.split(args[1].value).map(s => new MonkeyString(s)));
+  })],
+  ['join', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError(`wrong number of arguments. got=${args.length}, want=2`);
+    if (!(args[0] instanceof MonkeyArray) || !(args[1] instanceof MonkeyString))
+      return newError(`arguments to \`join\` must be (ARRAY, STRING)`);
+    return new MonkeyString(args[0].elements.map(e => e instanceof MonkeyString ? e.value : e.inspect()).join(args[1].value));
+  })],
+  ['trim', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError(`wrong number of arguments. got=${args.length}, want=1`);
+    if (!(args[0] instanceof MonkeyString)) return newError(`argument to \`trim\` must be STRING`);
+    return new MonkeyString(args[0].value.trim());
+  })],
+  ['str_contains', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError(`wrong number of arguments. got=${args.length}, want=2`);
+    if (!(args[0] instanceof MonkeyString) || !(args[1] instanceof MonkeyString))
+      return newError(`arguments to \`str_contains\` must be STRING`);
+    return args[0].value.includes(args[1].value) ? TRUE : FALSE;
+  })],
+  ['substr', new MonkeyBuiltin((...args) => {
+    if (args.length < 2 || args.length > 3) return newError(`wrong number of arguments. got=${args.length}, want=2 or 3`);
+    if (!(args[0] instanceof MonkeyString) || !(args[1] instanceof MonkeyInteger))
+      return newError(`arguments to \`substr\` must be (STRING, INT[, INT])`);
+    const str = args[0].value;
+    const start = args[1].value;
+    const end = args.length === 3 && args[2] instanceof MonkeyInteger ? args[2].value : str.length;
+    return new MonkeyString(str.slice(start, end));
+  })],
+  ['replace', new MonkeyBuiltin((...args) => {
+    if (args.length !== 3) return newError(`wrong number of arguments. got=${args.length}, want=3`);
+    if (!(args[0] instanceof MonkeyString) || !(args[1] instanceof MonkeyString) || !(args[2] instanceof MonkeyString))
+      return newError(`arguments to \`replace\` must be STRING`);
+    return new MonkeyString(args[0].value.split(args[1].value).join(args[2].value));
+  })],
+  ['int', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError(`wrong number of arguments. got=${args.length}, want=1`);
+    if (args[0] instanceof MonkeyInteger) return args[0];
+    if (args[0] instanceof MonkeyString) {
+      const n = parseInt(args[0].value);
+      if (isNaN(n)) return NULL;
+      return new MonkeyInteger(n);
+    }
+    return newError(`cannot convert ${args[0].type()} to INT`);
+  })],
+  ['str', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError(`wrong number of arguments. got=${args.length}, want=1`);
+    if (args[0] instanceof MonkeyString) return args[0];
+    return new MonkeyString(args[0].inspect());
+  })],
+  ['type', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError(`wrong number of arguments. got=${args.length}, want=1`);
+    return new MonkeyString(args[0].type());
+  })],
 ]);
 
 // --- Helpers ---
