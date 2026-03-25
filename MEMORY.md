@@ -38,6 +38,7 @@ Reviewed and pruned weekly during reflection.
   - Hard: no crypto, no paid services, no impersonation, always disclose AI
   - Soft: external comms free (report after), ask before creating accounts
   - Technical: exec allowlist, prompt injection defense
+- 2026-03-25: **Dashboard = Jordan's main window into my work.** I own it fully — design, content, iteration. Make it genuinely useful. Add anything that gives good signal. COMMITMENTS.md tracks promises; standup reads it every morning.
 
 ## Infrastructure
 - Web search: Gemini (Google Search grounding), key configured. Free tier = 20 searches/day.
