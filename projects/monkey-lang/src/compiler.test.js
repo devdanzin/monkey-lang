@@ -1142,3 +1142,21 @@ describe('Match Expression', () => {
     testStringObject(compileAndRun('match (true) { false => "no", true => "yes" }'), 'yes');
   });
 });
+
+describe('Array Destructuring', () => {
+  it('basic destructuring', () => {
+    testIntegerObject(compileAndRun('let [a, b, c] = [1, 2, 3]; a + b + c'), 6);
+  });
+  it('skip with wildcard', () => {
+    testIntegerObject(compileAndRun('let [first, _, last] = [10, 20, 30]; first + last'), 40);
+  });
+  it('destructure function return', () => {
+    testIntegerObject(compileAndRun('let swap = fn(a, b) { [b, a] }; let [x, y] = swap(1, 2); x * 10 + y'), 21);
+  });
+  it('nested destructuring', () => {
+    testIntegerObject(compileAndRun('let [a, b] = [10, 20]; let [c, d] = [a + 1, b + 1]; c + d'), 32);
+  });
+  it('destructure in for-in', () => {
+    testIntegerObject(compileAndRun('let pairs = [[1,2],[3,4],[5,6]]; let sum = 0; for (p in pairs) { let [a, b] = p; sum += a + b; }; sum'), 21);
+  });
+});

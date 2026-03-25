@@ -2161,15 +2161,19 @@
     {
       "id": "T210",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement destructuring: let [a, b] = [1, 2]",
-      "started": "2026-03-25T22:21:54.168Z"
+      "started": "2026-03-25T22:21:54.168Z",
+      "completed": "2026-03-25T22:25:19.473Z",
+      "duration_ms": 480000,
+      "summary": "Array destructuring! let [a, b, c] = [1, 2, 3]. Supports _ wildcard for skipping positions. Works with function returns: let [x, y] = swap(1, 2)."
     },
     {
       "id": "T211",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Tests for destructuring"
+      "status": "in-progress",
+      "task": "Tests for destructuring",
+      "started": "2026-03-25T22:25:19.584Z"
     },
     {
       "id": "T212",
