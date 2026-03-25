@@ -427,12 +427,7 @@ export class Parser {
   }
 
   parseCompoundAssignExpression(left) {
-    if (!(left instanceof ast.Identifier)) {
-      this.errors.push(`cannot compound-assign to ${left.constructor.name}`);
-      return null;
-    }
     const token = this.curToken;
-    // Map compound assign token to binary operator token
     const opMap = {
       [TokenType.PLUS_ASSIGN]: TokenType.PLUS,
       [TokenType.MINUS_ASSIGN]: TokenType.MINUS,
@@ -443,10 +438,19 @@ export class Parser {
     const opToken = new Token(opMap[token.type], token.literal[0]);
     this.nextToken();
     const right = this.parseExpression(Precedence.LOWEST);
-    // Desugar: x += expr  →  x = x + expr
-    const ident = left;
-    const binExpr = new ast.InfixExpression(opToken, ident, opToken.literal, right);
-    return new ast.AssignExpression(token, ident, binExpr);
+
+    if (left instanceof ast.Identifier) {
+      const binExpr = new ast.InfixExpression(opToken, left, opToken.literal, right);
+      return new ast.AssignExpression(token, left, binExpr);
+    }
+    if (left instanceof ast.IndexExpression) {
+      // arr[i] += val → arr[i] = arr[i] + val
+      const readExpr = new ast.IndexExpression(left.token, left.left, left.index);
+      const binExpr = new ast.InfixExpression(opToken, readExpr, opToken.literal, right);
+      return new ast.IndexAssignExpression(token, left.left, left.index, binExpr);
+    }
+    this.errors.push(`cannot compound-assign to ${left.constructor.name}`);
+    return null;
   }
 
   parseHashLiteral() {

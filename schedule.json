@@ -1509,16 +1509,54 @@
       "id": "T146",
       "mode": "BUILD",
       "task": "More stdlib: flat, zip, enumerate, sum",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T139",
-      "started": "2026-03-25T21:11:29.338Z"
+      "started": "2026-03-25T21:11:29.338Z",
+      "completed": "2026-03-25T21:12:34.934Z",
+      "duration_ms": 300000,
+      "summary": "Stdlib: modernized existing functions with for/for-in. Added sum, max, min, zip, enumerate, flat, sort. 413 tests."
     },
     {
       "id": "T147",
       "mode": "BUILD",
       "task": "Explore: multi-line REPL support",
+      "status": "done",
+      "plan_ref": "T139",
+      "started": "2026-03-25T21:12:43.170Z",
+      "completed": "2026-03-25T21:12:43.281Z",
+      "duration_ms": 0,
+      "summary": "Skipped — REPL is lower priority than language features."
+    },
+    {
+      "id": "T148",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Compound index assignment: arr[i] += val",
+      "started": "2026-03-25T21:12:58.920Z"
+    },
+    {
+      "id": "T149",
+      "mode": "BUILD",
       "status": "upcoming",
-      "plan_ref": "T139"
+      "task": "Tests for compound index assignment"
+    },
+    {
+      "id": "T150",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Rebuild browser playground with all new features"
+    },
+    {
+      "id": "T151",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Update TASKS.md with session progress"
+    },
+    {
+      "id": "T152",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Creative work: something new and interesting"
     }
   ],
   "backlog": [],
@@ -1986,6 +2024,26 @@
     {
       "time": "2026-03-25T21:03:04.170Z",
       "msg": "PLAN T139 filled 8 BUILD tasks"
+    },
+    {
+      "time": "2026-03-25T21:12:52.340Z",
+      "msg": "Added T148 (BUILD) after end: Compound index assignment: arr[i] += val"
+    },
+    {
+      "time": "2026-03-25T21:12:52.450Z",
+      "msg": "Added T149 (BUILD) after end: Tests for compound index assignment"
+    },
+    {
+      "time": "2026-03-25T21:12:52.563Z",
+      "msg": "Added T150 (BUILD) after end: Rebuild browser playground with all new features"
+    },
+    {
+      "time": "2026-03-25T21:12:52.675Z",
+      "msg": "Added T151 (BUILD) after end: Update TASKS.md with session progress"
+    },
+    {
+      "time": "2026-03-25T21:12:52.788Z",
+      "msg": "Added T152 (THINK) after end: Creative work: something new and interesting"
     }
   ],
   "updated_at": "2026-03-25T16:42:01.690Z"
