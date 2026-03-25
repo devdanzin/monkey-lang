@@ -422,6 +422,15 @@ export class VM {
               default: throw new Error(`unknown operator for booleans`);
             }
             this.push(result ? TRUE : FALSE);
+          } else if (left2 instanceof MonkeyString && right2 instanceof MonkeyString) {
+            if (recording()) { this._abortRecording(); }
+            let result;
+            switch (op) {
+              case Opcodes.OpEqual: result = left2.value === right2.value; break;
+              case Opcodes.OpNotEqual: result = left2.value !== right2.value; break;
+              case Opcodes.OpGreaterThan: result = left2.value > right2.value; break;
+            }
+            this.push(result ? TRUE : FALSE);
           } else {
             throw new Error(`unsupported comparison: ${left2.type()} and ${right2.type()}`);
           }
