@@ -805,15 +805,19 @@
     {
       "id": "T79",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement string indexing: str[i] returns single character",
-      "started": "2026-03-25T16:22:16.838Z"
+      "started": "2026-03-25T16:22:16.838Z",
+      "completed": "2026-03-25T16:23:57.503Z",
+      "duration_ms": 120000,
+      "summary": "String indexing: str[i]. 305 tests."
     },
     {
       "id": "T80",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Tests for string indexing"
+      "status": "in-progress",
+      "task": "Tests for string indexing",
+      "started": "2026-03-25T16:24:08.345Z"
     },
     {
       "id": "T81",
@@ -1193,5 +1197,5 @@
       "msg": "Added T87 (MAINTAIN) after end: Actual session wrap: CURRENT.md session-ended"
     }
   ],
-  "updated_at": "2026-03-25T16:21:35.485Z"
+  "updated_at": "2026-03-25T16:23:57.503Z"
 }

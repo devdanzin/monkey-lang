@@ -1116,3 +1116,25 @@ describe('GUARD_CLOSURE: HOFs with different closures (regression)', () => {
     `);
   });
 });
+
+describe('String indexing', () => {
+  it('access first character', () => {
+    const vm = runJIT('"hello"[0]');
+    assert.equal(vm.lastPoppedStackElem().inspect(), 'h');
+  });
+
+  it('access last character', () => {
+    const vm = runJIT('"hello"[4]');
+    assert.equal(vm.lastPoppedStackElem().inspect(), 'o');
+  });
+
+  it('out of bounds returns null', () => {
+    const vm = runJIT('"hello"[10]');
+    assert.equal(vm.lastPoppedStackElem().inspect(), 'null');
+  });
+
+  it('iterate string characters', () => {
+    const vm = runJIT('let s = "abc"; let r = ""; let i = 0; while (i < len(s)) { r = r + s[i]; i = i + 1; } r');
+    assert.equal(vm.lastPoppedStackElem().inspect(), 'abc');
+  });
+});
