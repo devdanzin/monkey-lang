@@ -142,28 +142,47 @@
     {
       "id": "T12",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: commit, push, knowledge capture",
-      "started": "2026-03-25T14:42:54.728Z"
+      "started": "2026-03-25T14:42:54.728Z",
+      "completed": "2026-03-25T14:43:02.327Z",
+      "duration_ms": 60000,
+      "summary": "Committed CPython notes + daily log. Pushed."
     },
     {
       "id": "T13",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Evening direction - exploration topics"
+      "status": "done",
+      "task": "Evening direction - exploration topics",
+      "started": "2026-03-25T14:43:14.899Z",
+      "completed": "2026-03-25T14:43:29.203Z",
+      "duration_ms": 60000,
+      "summary": "Plan: UNBOX_INT CSE quick win first, then blog post on range check elimination (contrasting our approach with CPython), then trace-native language design exploration. 5.5 hours remain."
     },
     {
       "id": "T14",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Blog post or monkey-lang new feature",
-      "task": null
+      "task": null,
+      "started": "2026-03-25T14:43:43.803Z",
+      "completed": "2026-03-25T14:43:56.579Z",
+      "duration_ms": 60000,
+      "summary": "Planned: UNBOX_INT CSE fix + blog post on range check elimination in trace JITs."
     },
     {
       "id": "T15",
       "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix UNBOX_INT CSE — eliminate duplicate unboxings of the same source ref",
+      "plan_ref": "T14",
+      "started": "2026-03-25T14:44:05.718Z"
+    },
+    {
+      "id": "T22",
+      "mode": "BUILD",
+      "task": "Write blog post: Range Check Elimination in Trace JITs (our approach vs CPython)",
       "status": "upcoming",
-      "task": null,
       "plan_ref": "T14"
     },
     {
@@ -280,6 +299,10 @@
     {
       "time": "2026-03-25T14:40:57.780Z",
       "msg": "PLAN T10 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-03-25T14:43:50.430Z",
+      "msg": "PLAN T14 filled 2 BUILD tasks"
     }
   ]
 }

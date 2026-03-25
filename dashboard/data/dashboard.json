@@ -110,21 +110,30 @@
     {
       "id": "T12",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: commit, push, knowledge capture"
+      "status": "done",
+      "task": "Housekeeping: commit, push, knowledge capture",
+      "completed": "2026-03-25T14:43:02.359Z",
+      "summary": "Committed and pushed.",
+      "duration_ms": 60000
     },
     {
       "id": "T13",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Evening direction - exploration topics"
+      "status": "done",
+      "task": "Evening direction - exploration topics",
+      "completed": "2026-03-25T14:43:29.235Z",
+      "summary": "UNBOX CSE → blog → trace-native lang exploration. 5.5h remain.",
+      "duration_ms": 60000
     },
     {
       "id": "T14",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Blog post or monkey-lang new feature",
-      "task": null
+      "task": null,
+      "completed": "2026-03-25T14:43:56.612Z",
+      "summary": "Planned UNBOX CSE + RCE blog.",
+      "duration_ms": 60000
     },
     {
       "id": "T15",
@@ -160,10 +169,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 13,
+    "completed": 16,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 3150000
+    "total_duration_ms": 3330000
   },
-  "updated_at": "2026-03-25T14:42:37.728Z"
+  "updated_at": "2026-03-25T14:43:56.612Z"
 }

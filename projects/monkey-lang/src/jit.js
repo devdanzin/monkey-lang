@@ -2044,6 +2044,7 @@ export class TraceOptimizer {
     this.storeToLoadForwarding();
     this.boxUnboxElimination();
     this.commonSubexpressionElimination();
+    this.unboxDeduplication();
     this.redundantGuardElimination();
     this.rangeCheckElimination();
     this.constantPropagation();
@@ -2716,6 +2717,35 @@ export class TraceOptimizer {
     }
 
     // Compact: remove nulls and rebuild id mapping
+    if (eliminated > 0) this._compact();
+    return eliminated;
+  }
+
+  // --- Pass 1.2b: Unbox Deduplication ---
+  // Eliminate duplicate UNBOX_INT/UNBOX_STRING of the same source ref.
+  // CSE sometimes misses these due to compaction/reindexing.
+  unboxDeduplication() {
+    const ir = this.trace.ir;
+    const UNBOX_OPS = new Set([IR.UNBOX_INT, IR.UNBOX_STRING]);
+    // Map: "op:sourceRef" → first IR index
+    const seen = new Map();
+    let eliminated = 0;
+
+    for (let i = 0; i < ir.length; i++) {
+      const inst = ir[i];
+      if (!inst || !UNBOX_OPS.has(inst.op)) continue;
+
+      const key = `${inst.op}:${inst.operands.ref}`;
+      if (seen.has(key)) {
+        // Replace all uses of this duplicate with the first occurrence
+        this._replaceRef(ir, i, seen.get(key));
+        ir[i] = null;
+        eliminated++;
+      } else {
+        seen.set(key, i);
+      }
+    }
+
     if (eliminated > 0) this._compact();
     return eliminated;
   }
