@@ -948,3 +948,25 @@ describe('String and utility builtins', () => {
     assert.equal(vm.lastPoppedStackElem().inspect(), 'hello_world');
   });
 });
+
+describe('Modulo operator', () => {
+  it('basic modulo', () => {
+    const vm = runJIT('10 % 3');
+    assert.equal(vm.lastPoppedStackElem().value, 1);
+  });
+
+  it('modulo in loop — count even numbers', () => {
+    const vm = runJIT('let count = 0; let i = 0; while (i < 100) { if (i % 2 == 0) { count = count + 1; } i = i + 1; } count');
+    assert.equal(vm.lastPoppedStackElem().value, 50);
+  });
+
+  it('modulo with constant folding', () => {
+    const vm = runJIT('15 % 4');
+    assert.equal(vm.lastPoppedStackElem().value, 3);
+  });
+
+  it('modulo zero', () => {
+    const vm = runJIT('10 % 5');
+    assert.equal(vm.lastPoppedStackElem().value, 0);
+  });
+});

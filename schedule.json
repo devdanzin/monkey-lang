@@ -402,15 +402,19 @@
     {
       "id": "T39",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement modulo operator for Monkey (% or mod)",
-      "started": "2026-03-25T15:21:38.677Z"
+      "started": "2026-03-25T15:21:38.677Z",
+      "completed": "2026-03-25T15:33:22.314Z",
+      "duration_ms": 900000,
+      "summary": "Modulo operator. Full pipeline. Discovered nested-if JIT bug."
     },
     {
       "id": "T40",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Add tests for modulo operator"
+      "status": "in-progress",
+      "task": "Add tests for modulo operator",
+      "started": "2026-03-25T15:33:35.803Z"
     },
     {
       "id": "T41",
@@ -634,5 +638,6 @@
       "time": "2026-03-25T15:18:58.663Z",
       "msg": "Added T47 (MAINTAIN) after end: Final wrap: commit, push, CURRENT.md status: session-ended"
     }
-  ]
+  ],
+  "updated_at": "2026-03-25T15:33:22.314Z"
 }

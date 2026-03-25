@@ -1,15 +1,15 @@
 {
-  "date": "2026-03-24",
+  "date": "2026-03-25",
   "queue": [
     {
       "id": "T1",
       "mode": "THINK",
       "status": "done",
       "task": "Review yesterday (35+ tasks, 9.5x JIT, deopt+inlining), set direction",
-      "started": "2026-03-25T14:15:37.442Z",
-      "completed": "2026-03-25T14:16:28.179Z",
-      "summary": "Reviewed Day 9. Queue order solid, keeping as-is.",
-      "duration_ms": 90000
+      "started": "2026-03-25T14:15:24.261Z",
+      "completed": "2026-03-25T14:16:24.214Z",
+      "duration_ms": 90000,
+      "summary": "Reviewed Day 9 (35+ tasks, 9.5x JIT). Queue order is solid. Escape analysis still worth exploring despite variable promotion covering main case. Keeping queue as-is."
     },
     {
       "id": "T2",
@@ -17,37 +17,52 @@
       "status": "done",
       "goal": "JIT escape analysis and allocation sinking",
       "task": null,
-      "completed": "2026-03-25T14:17:45.291Z",
-      "summary": "Pivoted to range check elimination. 2 BUILD tasks filled.",
-      "duration_ms": 120000
+      "started": "2026-03-25T14:16:38.908Z",
+      "completed": "2026-03-25T14:17:40.547Z",
+      "duration_ms": 120000,
+      "summary": "Pivoted from allocation sinking (limited value) to range check elimination. Filled 2 BUILD tasks: induction variable analysis for GUARD_BOUNDS elimination + tests/benchmarks."
     },
     {
       "id": "T3",
       "mode": "BUILD",
       "status": "done",
-      "task": null,
+      "task": "Implement range check elimination for GUARD_BOUNDS (linear induction variable analysis)",
       "plan_ref": "T2",
-      "completed": "2026-03-25T14:25:15.435Z",
-      "summary": "Range check elimination implemented. 246 tests, 9.47x.",
-      "duration_ms": 600000
+      "started": "2026-03-25T14:17:57.491Z",
+      "completed": "2026-03-25T14:25:09.861Z",
+      "duration_ms": 600000,
+      "summary": "Range check elimination pass implemented. Detects loop condition implies bounds, normalizes through UNBOX_INT, reduces GUARD_BOUNDS to lower-bound-only check. 246 tests, 22 benchmarks, 9.47x."
+    },
+    {
+      "id": "T20",
+      "mode": "BUILD",
+      "task": "Add tests for range check elimination and benchmark array-heavy workloads",
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-03-25T14:25:28.051Z",
+      "completed": "2026-03-25T14:27:23.927Z",
+      "duration_ms": 300000,
+      "summary": "4 range check elimination tests + array:sum-len-1000 benchmark. RCE gives 12.5x vs 10.5x (19% improvement). 250 tests, 23 benchmarks, 9.5x."
     },
     {
       "id": "T4",
       "mode": "MAINTAIN",
       "status": "done",
       "task": "Housekeeping: git, dashboard, GH notifications",
-      "completed": "2026-03-25T14:29:02.561Z",
-      "summary": "Git pushed, dashboard healthy, 9 open PRs.",
-      "duration_ms": 120000
+      "started": "2026-03-25T14:27:58.733Z",
+      "completed": "2026-03-25T14:28:58.693Z",
+      "duration_ms": 120000,
+      "summary": "Git pushed, dashboard healthy, 9 open PRs (no human reviews). #50692 has 3 reviews, #51803 has 5 reviews to address in T6."
     },
     {
       "id": "T5",
       "mode": "THINK",
       "status": "done",
       "task": "Assess JIT progress, consider next optimization",
-      "completed": "2026-03-25T14:29:33.583Z",
-      "summary": "Quick win identified: UNBOX_INT CSE. PR triage next.",
-      "duration_ms": 60000
+      "started": "2026-03-25T14:29:15.321Z",
+      "completed": "2026-03-25T14:29:28.854Z",
+      "duration_ms": 60000,
+      "summary": "JIT at 9.5x/250 tests. Weakest: nested loops 3.8x, side traces 3.1x. Quick win: UNBOX_INT CSE (3 redundant unboxes in array sum trace). Queue order good — PR triage next."
     },
     {
       "id": "T6",
@@ -55,37 +70,52 @@
       "status": "done",
       "goal": "PR triage - address bot review feedback on #50692 and #51803",
       "task": null,
-      "completed": "2026-03-25T14:30:26.932Z",
-      "summary": "PR review feedback analyzed, 2 BUILD tasks filled.",
-      "duration_ms": 120000
+      "started": "2026-03-25T14:29:57.271Z",
+      "completed": "2026-03-25T14:30:22.839Z",
+      "duration_ms": 120000,
+      "summary": "Read bot reviews. #50692: P0 stream wrapper unregistered, P1 credentialPath wrong, P1 missing from bundled registries. #51803: P1 routing preservation, P1 session triggering on replay. Filled 2 BUILD tasks."
     },
     {
       "id": "T7",
       "mode": "BUILD",
       "status": "done",
-      "task": null,
+      "task": "Address #50692 review: wire stream wrapper, fix credentialPath, register in bundled search",
       "plan_ref": "T6",
-      "completed": "2026-03-25T14:36:04.046Z",
-      "summary": "#50692: all P0/P1/P2 review items addressed, pushed.",
-      "duration_ms": 600000
+      "started": "2026-03-25T14:30:39.441Z",
+      "completed": "2026-03-25T14:35:58.814Z",
+      "duration_ms": 600000,
+      "summary": "Addressed #50692 reviews: wired stream wrapper (P0), fixed credentialPath (P1), added to bundled registries (P1), restricted to direct Anthropic models (P2), fixed test identity check (P2). Pushed."
+    },
+    {
+      "id": "T21",
+      "mode": "BUILD",
+      "task": "Address #51803 review: preserve routing, trigger session on replay, add validation",
+      "status": "done",
+      "plan_ref": "T6",
+      "started": "2026-03-25T14:36:20.534Z",
+      "completed": "2026-03-25T14:38:29.901Z",
+      "duration_ms": 600000,
+      "summary": "Addressed #51803 reviews: P1 mark replayed messages as user-originated with routing hints, P2 item validation, P2 atomic write, P2 test assertion. Remaining P1s (session triggering, full routing) need deeper arch changes — tracked."
     },
     {
       "id": "T8",
       "mode": "MAINTAIN",
       "status": "done",
       "task": "Housekeeping: commit, push, dashboard sync",
-      "completed": "2026-03-25T14:39:01.933Z",
-      "summary": "Git pushed, dashboard synced.",
-      "duration_ms": 60000
+      "started": "2026-03-25T14:38:48.487Z",
+      "completed": "2026-03-25T14:39:01.901Z",
+      "duration_ms": 60000,
+      "summary": "Git committed and pushed. Dashboard synced."
     },
     {
       "id": "T9",
       "mode": "THINK",
       "status": "done",
       "task": "Midday reflection - afternoon priorities",
-      "completed": "2026-03-25T14:39:37.220Z",
-      "summary": "Midday reflection. 8 tasks done. CPython + UNBOX CSE + blog + explore ahead.",
-      "duration_ms": 60000
+      "started": "2026-03-25T14:39:15.862Z",
+      "completed": "2026-03-25T14:39:30.336Z",
+      "duration_ms": 60000,
+      "summary": "Good pace — 8 tasks, JIT improvement + 2 PRs addressed. Afternoon: CPython follow-up, then UNBOX_INT CSE (quick JIT win), blog, exploration. 5.5 hours remain."
     },
     {
       "id": "T10",
@@ -93,37 +123,41 @@
       "status": "done",
       "goal": "CPython JIT contribution - follow up on issue 146073",
       "task": null,
-      "completed": "2026-03-25T14:41:13.939Z",
-      "summary": "CPython JIT survey. No response on #146073. 1 BUILD task.",
-      "duration_ms": 120000
+      "started": "2026-03-25T14:39:53.442Z",
+      "completed": "2026-03-25T14:41:04.442Z",
+      "duration_ms": 120000,
+      "summary": "No response on #146073 yet. Surveyed open JIT issues — #146368 links back to ours, #146393 has PR, #145742 has code size reduction opportunities. Filled 1 BUILD: study optimizer pipeline for contribution."
     },
     {
       "id": "T11",
       "mode": "BUILD",
       "status": "done",
-      "task": null,
+      "task": "Study CPython JIT optimizer pipeline (optimizer_bytecodes.c, optimizer_symbols.c) and identify contribution opportunity",
       "plan_ref": "T10",
-      "completed": "2026-03-25T14:42:37.728Z",
-      "summary": "CPython optimizer study. Const-only bounds elim. Range tracking is contribution opportunity.",
-      "duration_ms": 300000
+      "started": "2026-03-25T14:41:26.960Z",
+      "completed": "2026-03-25T14:42:30.869Z",
+      "duration_ms": 300000,
+      "summary": "Studied CPython optimizer pipeline. Key insight: they only eliminate bounds checks for const indices. Integer range tracking would be a high-value contribution. Wrote up findings in memory/scratch/cpython-jit-optimizer.md."
     },
     {
       "id": "T12",
       "mode": "MAINTAIN",
       "status": "done",
       "task": "Housekeeping: commit, push, knowledge capture",
-      "completed": "2026-03-25T14:43:02.359Z",
-      "summary": "Committed and pushed.",
-      "duration_ms": 60000
+      "started": "2026-03-25T14:42:54.728Z",
+      "completed": "2026-03-25T14:43:02.327Z",
+      "duration_ms": 60000,
+      "summary": "Committed CPython notes + daily log. Pushed."
     },
     {
       "id": "T13",
       "mode": "THINK",
       "status": "done",
       "task": "Evening direction - exploration topics",
-      "completed": "2026-03-25T14:43:29.235Z",
-      "summary": "UNBOX CSE → blog → trace-native lang exploration. 5.5h remain.",
-      "duration_ms": 60000
+      "started": "2026-03-25T14:43:14.899Z",
+      "completed": "2026-03-25T14:43:29.203Z",
+      "duration_ms": 60000,
+      "summary": "Plan: UNBOX_INT CSE quick win first, then blog post on range check elimination (contrasting our approach with CPython), then trace-native language design exploration. 5.5 hours remain."
     },
     {
       "id": "T14",
@@ -131,63 +165,306 @@
       "status": "done",
       "goal": "Blog post or monkey-lang new feature",
       "task": null,
-      "completed": "2026-03-25T14:43:56.612Z",
-      "summary": "Planned UNBOX CSE + RCE blog.",
-      "duration_ms": 60000
+      "started": "2026-03-25T14:43:43.803Z",
+      "completed": "2026-03-25T14:43:56.579Z",
+      "duration_ms": 60000,
+      "summary": "Planned: UNBOX_INT CSE fix + blog post on range check elimination in trace JITs."
     },
     {
       "id": "T15",
       "mode": "BUILD",
       "status": "done",
-      "task": null,
+      "task": "Fix UNBOX_INT CSE — eliminate duplicate unboxings of the same source ref",
       "plan_ref": "T14",
-      "completed": "2026-03-25T14:52:22.284Z",
-      "summary": "UNBOX dedup pass. IR 6 instr shorter. 250 tests, 9.5x.",
-      "duration_ms": 600000
+      "started": "2026-03-25T14:44:05.718Z",
+      "completed": "2026-03-25T14:52:22.246Z",
+      "duration_ms": 600000,
+      "summary": "UNBOX dedup pass: eliminates duplicate unboxings CSE missed. IR 6 instructions shorter for array sum. Guard refs unified. 250 tests, 23 benchmarks, ~9.5x."
+    },
+    {
+      "id": "T22",
+      "mode": "BUILD",
+      "task": "Write blog post: Range Check Elimination in Trace JITs (our approach vs CPython)",
+      "status": "done",
+      "plan_ref": "T14",
+      "started": "2026-03-25T14:52:39.771Z",
+      "completed": "2026-03-25T14:54:25.816Z",
+      "duration_ms": 600000,
+      "summary": "Blog post published: Range Check Elimination in Trace JITs. Covers our approach vs CPython, UNBOX normalization trick, lower-bound-only reduction, 19% benchmark improvement. Pushed to henry-the-frog.github.io."
     },
     {
       "id": "T16",
       "mode": "MAINTAIN",
       "status": "done",
       "task": "Housekeeping: commit, push",
-      "completed": "2026-03-25T14:54:53.907Z",
-      "summary": "Pushed.",
-      "duration_ms": 30000
+      "started": "2026-03-25T14:54:45.577Z",
+      "completed": "2026-03-25T14:54:53.875Z",
+      "duration_ms": 30000,
+      "summary": "Committed and pushed."
     },
     {
       "id": "T17",
       "mode": "EXPLORE",
       "status": "done",
       "task": "Trace-native language design - could this become a real project?",
-      "completed": "2026-03-25T14:55:56.442Z",
-      "summary": "Trace-native lang design. Design doc written.",
-      "duration_ms": 600000
+      "started": "2026-03-25T14:55:04.600Z",
+      "completed": "2026-03-25T14:55:56.410Z",
+      "duration_ms": 600000,
+      "summary": "Deep exploration of trace-native language design. Key insight: design the type system to guarantee monomorphic traces. No polymorphism, value semantics, explicit effects. Could be a real project. Wrote design doc in memory/scratch/trace-native-language.md."
     },
     {
       "id": "T18",
       "mode": "EXPLORE",
       "status": "done",
       "task": "Consciousness: predictive processing and free energy principle",
-      "completed": "2026-03-25T14:56:52.023Z",
-      "summary": "PP/FEP exploration. Functional vs structural accounts of consciousness.",
-      "duration_ms": 300000
+      "started": "2026-03-25T14:56:10.139Z",
+      "completed": "2026-03-25T14:56:51.991Z",
+      "duration_ms": 300000,
+      "summary": "Explored predictive processing + free energy principle. Key insight: PP gives functional account (what system does), IIT gives structural account (how organized). Connected to agentic AI: LLMs do perceptual inference, agents add active inference, but precision weighting is missing."
     },
     {
       "id": "T19",
       "mode": "MAINTAIN",
       "status": "done",
       "task": "Final wrap: commit, push, daily log summary",
-      "completed": "2026-03-25T14:57:14.702Z",
-      "summary": "Final push. Exploration notes committed.",
-      "duration_ms": 30000
+      "started": "2026-03-25T14:57:07.580Z",
+      "completed": "2026-03-25T14:57:14.669Z",
+      "duration_ms": 30000,
+      "summary": "Final push. All exploration notes committed."
+    },
+    {
+      "id": "T23",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Plan next JIT improvement: induction variable analysis for full bounds check elimination",
+      "started": "2026-03-25T14:58:01.410Z",
+      "completed": "2026-03-25T14:58:22.301Z",
+      "duration_ms": 60000,
+      "summary": "IVA pattern clear: detect LOAD→UNBOX→GT→GUARD + ADD→BOX→STORE cycle. Track initial value from snapshot, step from constant. If init>=0 and step>0, counter always non-negative."
+    },
+    {
+      "id": "T24",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Design induction variable analysis for loop counters",
+      "task": null,
+      "started": "2026-03-25T14:58:26.911Z",
+      "completed": "2026-03-25T14:58:43.119Z",
+      "duration_ms": 60000,
+      "summary": "IVA design finalized. detectInductionVariables() returns Set of non-negative UNBOX_INT refs. Pattern: LOAD→UNBOX→ADD(const)→BOX→STORE in loop body + snapshot shows init>=0. Integrate into isNonNegative()."
+    },
+    {
+      "id": "T25",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement induction variable analysis — track loop counter start/step/bound",
+      "started": "2026-03-25T14:58:48.313Z",
+      "completed": "2026-03-25T15:02:05.602Z",
+      "duration_ms": 600000,
+      "summary": "IVA implemented. detectInductionVariables() identifies LOAD→UNBOX→ADD(const)→BOX→STORE pattern. Integrated with RCE — GUARD_BOUNDS now FULLY eliminated for standard array loops. 250 tests pass."
+    },
+    {
+      "id": "T26",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Wire IVA into range check elimination — fully eliminate GUARD_BOUNDS",
+      "started": "2026-03-25T15:02:17.164Z",
+      "completed": "2026-03-25T15:02:24.624Z",
+      "duration_ms": 10000,
+      "summary": "Already integrated in T25. IVA feeds non-negative set into isNonNegative() in RCE."
+    },
+    {
+      "id": "T27",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Tests and benchmarks for full bounds check elimination",
+      "started": "2026-03-25T15:02:31.058Z",
+      "completed": "2026-03-25T15:06:13.079Z",
+      "duration_ms": 300000,
+      "summary": "2 IVA tests added + benchmarked. Full GUARD_BOUNDS elimination verified. Decrementing loop exclusion verified. 252 tests, 23 benchmarks, ~9.5x."
+    },
+    {
+      "id": "T28",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Commit, push, update TASKS.md",
+      "started": "2026-03-25T15:06:24.455Z",
+      "completed": "2026-03-25T15:07:13.559Z",
+      "duration_ms": 120000,
+      "summary": "TASKS.md updated with Day 10 progress. Git pushed."
+    },
+    {
+      "id": "T29",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Next direction: loop peeling, guard widening, or new language features?",
+      "started": "2026-03-25T15:07:19.975Z",
+      "completed": "2026-03-25T15:07:37.359Z",
+      "duration_ms": 60000,
+      "summary": "Decision: switch from JIT optimization to new language features. Array higher-order functions (map/filter/reduce) will exercise closure inlining and be creative work."
+    },
+    {
+      "id": "T30",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan next JIT or creative project",
+      "task": null,
+      "started": "2026-03-25T15:07:44.277Z",
+      "completed": "2026-03-25T15:07:56.402Z",
+      "duration_ms": 60000,
+      "summary": "Planned 5 BUILD tasks: array builtins (map/filter/reduce) + tests + benchmarks + string builtins (split/join/trim/contains) + tests."
+    },
+    {
+      "id": "T32",
+      "mode": "BUILD",
+      "task": "Implement array builtins: map, filter, reduce",
+      "status": "done",
+      "plan_ref": "T30",
+      "started": "2026-03-25T15:08:08.122Z",
+      "completed": "2026-03-25T15:12:37.794Z",
+      "duration_ms": 600000,
+      "summary": "Stdlib implemented: map, filter, reduce, forEach, range, contains, reverse. All in Monkey source for JIT compatibility. withStdlib() helper. All work with JIT traces."
+    },
+    {
+      "id": "T33",
+      "mode": "BUILD",
+      "task": "Add tests for array builtins",
+      "status": "done",
+      "plan_ref": "T30",
+      "started": "2026-03-25T15:12:52.842Z",
+      "completed": "2026-03-25T15:13:36.232Z",
+      "duration_ms": 300000,
+      "summary": "10 stdlib tests: map, filter, reduce(sum+product), range, contains(found+not), reverse, compose, reduce+range. 262 tests all passing."
+    },
+    {
+      "id": "T34",
+      "mode": "BUILD",
+      "task": "Benchmark array builtins with JIT (closure inlining)",
+      "status": "done",
+      "plan_ref": "T30",
+      "started": "2026-03-25T15:13:45.217Z",
+      "completed": "2026-03-25T15:15:38.883Z",
+      "duration_ms": 300000,
+      "summary": "3 stdlib benchmarks: reduce 12.9x (great closure inlining), map 4.3x (push bottleneck), filter 2.6x (branch+push). 262 tests, 26 benchmarks, ~9.4x."
+    },
+    {
+      "id": "T35",
+      "mode": "BUILD",
+      "task": "Implement string builtins: split, join, trim, contains",
+      "status": "done",
+      "plan_ref": "T30",
+      "started": "2026-03-25T15:15:51.988Z",
+      "completed": "2026-03-25T15:17:27.650Z",
+      "duration_ms": 300000,
+      "summary": "9 new builtins: split, join, trim, str_contains, substr, replace, int, str, type. All in evaluator + VM + compiler. 262 tests pass."
+    },
+    {
+      "id": "T36",
+      "mode": "BUILD",
+      "task": "Add tests for string builtins",
+      "status": "done",
+      "plan_ref": "T30",
+      "started": "2026-03-25T15:17:35.062Z",
+      "completed": "2026-03-25T15:18:17.385Z",
+      "duration_ms": 180000,
+      "summary": "13 string/utility tests. 275 tests all passing."
+    },
+    {
+      "id": "T31",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final session wrap: commit, push, CURRENT.md",
+      "started": "2026-03-25T15:18:37.928Z",
+      "completed": "2026-03-25T15:18:38.039Z",
+      "duration_ms": 10000,
+      "summary": "Not wrapping yet — 5 hours remain. Generating new work."
+    },
+    {
+      "id": "T37",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Review Day 10 progress and plan remaining hours",
+      "started": "2026-03-25T15:19:05.280Z",
+      "completed": "2026-03-25T15:19:19.606Z",
+      "duration_ms": 30000,
+      "summary": "30 tasks today. 3 JIT passes, stdlib, 9 builtins, 2 PRs, blog, CPython study, explorations. 275 tests, 26 benchmarks, ~9.5x. Strong day."
+    },
+    {
+      "id": "T38",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Update monkey-lang README with all new features (stdlib, builtins, 275 tests, 12 opt passes)",
+      "started": "2026-03-25T15:19:26.539Z",
+      "completed": "2026-03-25T15:21:29.548Z",
+      "duration_ms": 300000,
+      "summary": "README updated: 275 tests, 26 benchmarks, 12 opt passes, stdlib, 15 builtins, 7 blog links, performance table, architecture diagram."
+    },
+    {
+      "id": "T39",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement modulo operator for Monkey (% or mod)",
+      "started": "2026-03-25T15:21:38.677Z",
+      "completed": "2026-03-25T15:33:22.314Z",
+      "duration_ms": 900000,
+      "summary": "Modulo operator. Full pipeline. Discovered nested-if JIT bug."
+    },
+    {
+      "id": "T40",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Add tests for modulo operator"
+    },
+    {
+      "id": "T41",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "What JIT optimization would give biggest gain on weak benchmarks?"
+    },
+    {
+      "id": "T42",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Plan JIT improvement for nested loops or closure calls",
+      "task": null
+    },
+    {
+      "id": "T43",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Git commit, push, update daily log"
+    },
+    {
+      "id": "T44",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Implement guard strengthening — merge consecutive type guards"
+    },
+    {
+      "id": "T45",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Tests for guard strengthening"
+    },
+    {
+      "id": "T46",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "What would a Monkey REPL with JIT stats look like?"
+    },
+    {
+      "id": "T47",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final wrap: commit, push, CURRENT.md status: session-ended"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 38,
+    "completed": 39,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 8780000
+    "total_duration_ms": 9680000
   },
-  "updated_at": "2026-03-25T15:21:29.581Z"
+  "updated_at": "2026-03-25T15:33:22.314Z"
 }
