@@ -755,3 +755,38 @@ describe('Deopt correctness', () => {
     assert.equal(vm.lastPoppedStackElem().value, 6765);
   });
 });
+
+describe('Range check elimination', () => {
+  it('should eliminate upper bound from GUARD_BOUNDS when loop condition checks len', () => {
+    const vm = runJIT('let arr = []; let i = 0; while (i < 100) { arr = push(arr, i); i = i + 1; } let sum = 0; let j = 0; while (j < len(arr)) { sum = sum + arr[j]; j = j + 1; } sum');
+    assert.equal(vm.lastPoppedStackElem().value, 4950);
+    for (const [, trace] of vm.jit.traces) {
+      if (!trace.compiled) continue;
+      const src = trace.compiled.toString();
+      if (src.includes('elements[')) {
+        const hasFullBoundsCheck = /\(v\d+ < 0 \|\| v\d+ >= v\d+\.elements\.length\)/.test(src);
+        const hasLowerOnlyCheck = /\(v\d+ < 0\)/.test(src);
+        assert.ok(!hasFullBoundsCheck, 'should not have full bounds check');
+        assert.ok(hasLowerOnlyCheck, 'should have lower-bound-only check');
+      }
+    }
+  });
+
+  it('should produce correct results across array sizes', () => {
+    for (const size of [20, 50, 100, 200]) {
+      const vm = runJIT(`let arr = []; let i = 0; while (i < ${size}) { arr = push(arr, i); i = i + 1; } let sum = 0; let j = 0; while (j < len(arr)) { sum = sum + arr[j]; j = j + 1; } sum`);
+      const expected = (size * (size - 1)) / 2;
+      assert.equal(vm.lastPoppedStackElem().value, expected, `array sum 0..${size - 1}`);
+    }
+  });
+
+  it('should keep bounds check when loop uses constant bound', () => {
+    const vm = runJIT('let arr = []; let i = 0; while (i < 100) { arr = push(arr, i); i = i + 1; } let sum = 0; let j = 0; while (j < 50) { sum = sum + arr[j]; j = j + 1; } sum');
+    assert.equal(vm.lastPoppedStackElem().value, 1225);
+  });
+
+  it('should handle reverse iteration correctly', () => {
+    const vm = runJIT('let arr = []; let i = 0; while (i < 50) { arr = push(arr, i); i = i + 1; } let sum = 0; let j = 49; while (j > 0 - 1) { sum = sum + arr[j]; j = j - 1; } sum');
+    assert.equal(vm.lastPoppedStackElem().value, 1225);
+  });
+});

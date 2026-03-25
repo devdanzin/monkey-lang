@@ -54,6 +54,7 @@ const BENCHMARKS = [
   // Arrays
   { name: 'array:build-1000', category: 'arrays', expected: 1000, input: `let arr = []; let i = 0; while (i < 1000) { arr = push(arr, i); i = i + 1; } len(arr)` },
   { name: 'array:sum-index-1000', category: 'arrays', expected: 499500, input: `let arr = []; let i = 0; while (i < 1000) { arr = push(arr, i); i = i + 1; } let sum = 0; let j = 0; while (j < 1000) { sum = sum + arr[j]; j = j + 1; } sum` },
+  { name: 'array:sum-len-1000', category: 'arrays', expected: 499500, input: `let arr = []; let i = 0; while (i < 1000) { arr = push(arr, i); i = i + 1; } let sum = 0; let j = 0; while (j < len(arr)) { sum = sum + arr[j]; j = j + 1; } sum` },
 
   // Hashes
   { name: 'hash:lookups-5k', category: 'hashes', expected: 45000, input: `let h = {"a": 1, "b": 2, "c": 3, "d": 4, "e": 5}; let sum = 0; let i = 0; while (i < 5000) { sum = sum + h["a"] + h["c"] + h["e"]; i = i + 1; } sum` },

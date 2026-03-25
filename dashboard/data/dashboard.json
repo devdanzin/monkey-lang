@@ -24,9 +24,12 @@
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": null,
-      "plan_ref": "T2"
+      "plan_ref": "T2",
+      "completed": "2026-03-25T14:25:15.435Z",
+      "summary": "Range check elimination implemented. 246 tests, 9.47x.",
+      "duration_ms": 600000
     },
     {
       "id": "T4",
@@ -133,10 +136,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 2,
+    "completed": 3,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 210000
+    "total_duration_ms": 810000
   },
-  "updated_at": "2026-03-25T14:17:45.291Z"
+  "updated_at": "2026-03-25T14:25:15.435Z"
 }

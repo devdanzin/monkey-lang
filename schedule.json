@@ -25,17 +25,21 @@
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement range check elimination for GUARD_BOUNDS (linear induction variable analysis)",
       "plan_ref": "T2",
-      "started": "2026-03-25T14:17:57.491Z"
+      "started": "2026-03-25T14:17:57.491Z",
+      "completed": "2026-03-25T14:25:09.861Z",
+      "duration_ms": 600000,
+      "summary": "Range check elimination pass implemented. Detects loop condition implies bounds, normalizes through UNBOX_INT, reduces GUARD_BOUNDS to lower-bound-only check. 246 tests, 22 benchmarks, 9.47x."
     },
     {
       "id": "T20",
       "mode": "BUILD",
       "task": "Add tests for range check elimination and benchmark array-heavy workloads",
-      "status": "upcoming",
-      "plan_ref": "T2"
+      "status": "in-progress",
+      "plan_ref": "T2",
+      "started": "2026-03-25T14:25:28.051Z"
     },
     {
       "id": "T4",
