@@ -1230,3 +1230,15 @@ describe('Comprehensive Integration', () => {
     testIntegerObject(result, 159);
   });
 });
+
+describe('Destructuring For-In', () => {
+  it('destructure pairs', () => {
+    testStringObject(compileAndRun('let pairs = [[1,"a"],[2,"b"]]; let s = ""; for ([n, c] in pairs) { s = s + str(n) + c; }; s'), '1a2b');
+  });
+  it('enumerate-style', () => {
+    testIntegerObject(compileAndRun('let items = [[0,"x"],[1,"y"],[2,"z"]]; let sum = 0; for ([i, _] in items) { sum += i; }; sum'), 3);
+  });
+  it('nested arrays', () => {
+    testIntegerObject(compileAndRun('let matrix = [[1,2],[3,4],[5,6]]; let sum = 0; for ([a, b] in matrix) { sum += a + b; }; sum'), 21);
+  });
+});
