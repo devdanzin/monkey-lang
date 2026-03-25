@@ -761,6 +761,101 @@
       "completed": "2026-03-25T16:18:50.874Z",
       "duration_ms": 5000,
       "summary": "NOT wrapping. 4 hours remain. Generating more work."
+    },
+    {
+      "id": "T75",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Analyze GUARD_CLOSURE performance impact and optimization strategies",
+      "started": "2026-03-25T16:19:25.390Z",
+      "completed": "2026-03-25T16:21:35.485Z",
+      "duration_ms": 120000,
+      "summary": "GUARD_CLOSURE hoisted by LICM. No optimization needed."
+    },
+    {
+      "id": "T76",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Optimize: LICM should hoist GUARD_CLOSURE out of loop (closure is invariant)",
+      "started": "2026-03-25T16:21:46.122Z",
+      "completed": "2026-03-25T16:21:46.233Z",
+      "duration_ms": 5000,
+      "summary": "Already hoisted by LICM. No change needed."
+    },
+    {
+      "id": "T77",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement while/else construct for Monkey",
+      "started": "2026-03-25T16:21:52.664Z",
+      "completed": "2026-03-25T16:21:59.630Z",
+      "duration_ms": 5000,
+      "summary": "Skipping while/else — doing string indexing instead (more useful)."
+    },
+    {
+      "id": "T78",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Tests for while/else",
+      "started": "2026-03-25T16:22:08.026Z",
+      "completed": "2026-03-25T16:22:08.136Z",
+      "duration_ms": 5000,
+      "summary": "Skipped."
+    },
+    {
+      "id": "T79",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Implement string indexing: str[i] returns single character",
+      "started": "2026-03-25T16:22:16.838Z"
+    },
+    {
+      "id": "T80",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Tests for string indexing"
+    },
+    {
+      "id": "T81",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Add fizzbuzz benchmark to suite"
+    },
+    {
+      "id": "T82",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Mid-afternoon check: what's the most impactful remaining work?"
+    },
+    {
+      "id": "T83",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Implement loop peeling for first iteration specialization"
+    },
+    {
+      "id": "T84",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Tests + benchmarks for loop peeling"
+    },
+    {
+      "id": "T85",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Git push, update TASKS.md"
+    },
+    {
+      "id": "T86",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Write blog post: Two Major JIT Bugs in One Day"
+    },
+    {
+      "id": "T87",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Actual session wrap: CURRENT.md session-ended"
     }
   ],
   "backlog": [],
@@ -1044,7 +1139,59 @@
     {
       "time": "2026-03-25T16:15:44.797Z",
       "msg": "Added T74 (MAINTAIN) after end: Final final wrap: commit, push, CURRENT.md session-ended"
+    },
+    {
+      "time": "2026-03-25T16:19:09.552Z",
+      "msg": "Added T75 (THINK) after end: Analyze GUARD_CLOSURE performance impact and optimization strategies"
+    },
+    {
+      "time": "2026-03-25T16:19:09.662Z",
+      "msg": "Added T76 (BUILD) after end: Optimize: LICM should hoist GUARD_CLOSURE out of loop (closure is invariant)"
+    },
+    {
+      "time": "2026-03-25T16:19:09.771Z",
+      "msg": "Added T77 (BUILD) after end: Implement while/else construct for Monkey"
+    },
+    {
+      "time": "2026-03-25T16:19:09.884Z",
+      "msg": "Added T78 (BUILD) after end: Tests for while/else"
+    },
+    {
+      "time": "2026-03-25T16:19:09.998Z",
+      "msg": "Added T79 (BUILD) after end: Implement string indexing: str[i] returns single character"
+    },
+    {
+      "time": "2026-03-25T16:19:10.108Z",
+      "msg": "Added T80 (BUILD) after end: Tests for string indexing"
+    },
+    {
+      "time": "2026-03-25T16:19:10.218Z",
+      "msg": "Added T81 (BUILD) after end: Add fizzbuzz benchmark to suite"
+    },
+    {
+      "time": "2026-03-25T16:19:10.328Z",
+      "msg": "Added T82 (THINK) after end: Mid-afternoon check: what's the most impactful remaining work?"
+    },
+    {
+      "time": "2026-03-25T16:19:10.438Z",
+      "msg": "Added T83 (BUILD) after end: Implement loop peeling for first iteration specialization"
+    },
+    {
+      "time": "2026-03-25T16:19:10.548Z",
+      "msg": "Added T84 (BUILD) after end: Tests + benchmarks for loop peeling"
+    },
+    {
+      "time": "2026-03-25T16:19:10.658Z",
+      "msg": "Added T85 (MAINTAIN) after end: Git push, update TASKS.md"
+    },
+    {
+      "time": "2026-03-25T16:19:10.768Z",
+      "msg": "Added T86 (BUILD) after end: Write blog post: Two Major JIT Bugs in One Day"
+    },
+    {
+      "time": "2026-03-25T16:19:10.878Z",
+      "msg": "Added T87 (MAINTAIN) after end: Actual session wrap: CURRENT.md session-ended"
     }
   ],
-  "updated_at": "2026-03-25T16:18:22.249Z"
+  "updated_at": "2026-03-25T16:21:35.485Z"
 }

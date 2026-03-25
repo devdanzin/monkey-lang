@@ -667,6 +667,13 @@ export class VM {
             if (!index.fastHashKey) throw new Error(`unusable as hash key: ${index.type()}`);
             const pair = left3.pairs.get(index.fastHashKey());
             this.push(pair ? pair.value : NULL);
+          } else if (left3 instanceof MonkeyString && index instanceof MonkeyInteger) {
+            const i = index.value;
+            if (i < 0 || i >= left3.value.length) {
+              this.push(NULL);
+            } else {
+              this.push(new MonkeyString(left3.value[i]));
+            }
           } else {
             throw new Error(`index operator not supported: ${left3.type()}`);
           }

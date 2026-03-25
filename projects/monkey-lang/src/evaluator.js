@@ -342,6 +342,11 @@ function evalIndexExpression(left, index) {
     if (!pair) return NULL;
     return pair.value;
   }
+  if (left.type() === OBJ.STRING && index instanceof MonkeyInteger) {
+    const idx = index.value;
+    if (idx < 0 || idx >= left.value.length) return NULL;
+    return new MonkeyString(left.value[idx]);
+  }
   return newError(`index operator not supported: ${left.type()}`);
 }
 

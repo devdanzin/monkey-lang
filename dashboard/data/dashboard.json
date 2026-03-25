@@ -755,16 +755,102 @@
     {
       "id": "T74",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final final wrap: commit, push, CURRENT.md session-ended",
+      "started": "2026-03-25T16:18:41.394Z",
+      "completed": "2026-03-25T16:18:50.874Z",
+      "duration_ms": 5000,
+      "summary": "NOT wrapping. 4 hours remain. Generating more work."
+    },
+    {
+      "id": "T75",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Analyze GUARD_CLOSURE performance impact and optimization strategies",
+      "started": "2026-03-25T16:19:25.390Z",
+      "completed": "2026-03-25T16:21:35.485Z",
+      "duration_ms": 120000,
+      "summary": "GUARD_CLOSURE hoisted by LICM. No optimization needed."
+    },
+    {
+      "id": "T76",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Final final wrap: commit, push, CURRENT.md session-ended"
+      "task": "Optimize: LICM should hoist GUARD_CLOSURE out of loop (closure is invariant)"
+    },
+    {
+      "id": "T77",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Implement while/else construct for Monkey"
+    },
+    {
+      "id": "T78",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Tests for while/else"
+    },
+    {
+      "id": "T79",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Implement string indexing: str[i] returns single character"
+    },
+    {
+      "id": "T80",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Tests for string indexing"
+    },
+    {
+      "id": "T81",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Add fizzbuzz benchmark to suite"
+    },
+    {
+      "id": "T82",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Mid-afternoon check: what's the most impactful remaining work?"
+    },
+    {
+      "id": "T83",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Implement loop peeling for first iteration specialization"
+    },
+    {
+      "id": "T84",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Tests + benchmarks for loop peeling"
+    },
+    {
+      "id": "T85",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Git push, update TASKS.md"
+    },
+    {
+      "id": "T86",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Write blog post: Two Major JIT Bugs in One Day"
+    },
+    {
+      "id": "T87",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Actual session wrap: CURRENT.md session-ended"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 73,
+    "completed": 75,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 15870000
+    "total_duration_ms": 15995000
   },
-  "updated_at": "2026-03-25T16:18:22.249Z"
+  "updated_at": "2026-03-25T16:21:35.485Z"
 }
