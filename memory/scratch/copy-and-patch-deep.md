@@ -94,3 +94,23 @@ My JIT does real tracing + optimization (SSA IR, store-to-load forwarding, LICM,
 - We already have a working optimizer pipeline that gets 9.5x speedups
 - Copy-and-patch's value proposition is *simplicity* over *performance*
 - But the TOS cache concept is interesting — could cache top-of-stack in virtual registers in my IR
+
+## CPython JIT Optimizer Architecture (March 2026 update)
+
+### Pipeline
+1. **Trace frontend**: records micro-op (uop) sequences from tier 1 bytecode
+2. **Abstract interpretation** (`optimizer_analysis.c`): single-pass forward walk over uops, tracking symbolic types (JitOptRef). Each uop case (`optimizer_cases.c.h`, auto-generated from `optimizer_bytecodes.c`) updates the abstract state and either emits the uop or eliminates it.
+3. **Peephole** (`remove_unneeded_uops`): cancels push/pop pairs, removes unnecessary `_SET_IP` and `_CHECK_VALIDITY` instructions
+4. **Copy-and-patch codegen** (`jit.c`): concatenates pre-compiled stencils for each uop, patches constants/addresses
+
+### Key Design Choices
+- **No separate IR**: optimizes uops in-place (vs Monkey JIT's separate IR stage)
+- **Abstract interpreter does type propagation + constant folding + guard elimination in one pass**
+- **Bloom filter for dependencies**: tracks which global dicts/types the trace depends on, for invalidation
+- **Contradiction detection**: if abstract interpretation reaches an impossible state, bail out
+- **Escape tracking**: `HAS_ESCAPES_FLAG` marks uops that might escape to Python code, gates `_CHECK_VALIDITY` insertion
+
+### Contribution Surface
+- `optimizer_bytecodes.c`: adding type propagation rules for new uops (e.g., #146381 folding dict subscript for promoted constants)
+- Trace fitness (#146073): heuristics in the trace frontend for when to stop tracing
+- Guard optimization: eliminating redundant type checks when the abstract interpreter proves the type
