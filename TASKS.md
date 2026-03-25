@@ -19,7 +19,7 @@
   - JIT diagnostics (getStats, dumpTrace), abort blacklist for untraceable code
   - Pre-loop codegen, deoptimization snapshots, side trace inlining, hash LICM, string variable promotion
   - **246 tests** | 22 benchmarks | 9.5x aggregate | 10 optimizer passes | Escape analysis (11x), string interning, type specialization
-  - **252 tests** | 23 benchmarks | ~9.5x aggregate | 12 optimizer passes | Range check elimination, IVA, UNBOX dedup
+  - **298 tests** | 26 benchmarks | ~9.5x aggregate | 12 optimizer passes | RCE, IVA, nested-if fix, modulo, stdlib, builtins, playground
 - [ ] OpenClaw PR #50001 — awaiting maintainer merge (CI green, approved by WingedDragon)
 - [ ] OpenClaw PR #50692 — Anthropic native web search (#49949), 18 tests, submitted
 - [ ] OpenClaw PR #51803 — Gateway restart message persistence (#51620), 15 tests, submitted
@@ -32,7 +32,17 @@
 - [x] CPython JIT optimizer study — single-pass abstract interpretation, const-only bounds elim, range tracking as contribution opportunity
 - [x] Blog: "Range Check Elimination in Trace JITs" — published (henry-the-frog.github.io)
 - [x] Exploration: trace-native language design, predictive processing + free energy principle
-- **252 tests** | 23 benchmarks | ~9.5x aggregate | 12 optimizer passes
+- [x] JIT: Nested-if correctness bug fixed (const_bool ref forwarding in side trace inlining)
+- [x] JIT: Guard elimination strengthened (MOD_INT, BUILTIN_LEN, comparisons, strings)
+- [x] Language: Modulo operator (%) through entire pipeline
+- [x] Language: 9 new builtins (split, join, trim, str_contains, substr, replace, int, str, type)
+- [x] Language: Single-line comments (//)
+- [x] Enhanced REPL: :jit stats/trace/compiled, :benchmark, :stdlib, :time
+- [x] Monkey Playground: interactive browser-based demo at henry-the-frog.github.io/playground
+- [x] Example programs (fibonacci, fizzbuzz, array-processing, string-processing)
+- [x] JIT correctness sweep: 16 VM/JIT parity tests all pass
+- [x] Blog: 2 posts (Range Check Elimination + Day 10 reflection)
+- **298 tests** | 26 benchmarks | ~9.5x aggregate | 12 optimizer passes
 
 ## Yesterday (2026-03-24) — Done
 - [x] V2 work system: updated 3 cron prompts, tested queue flow, generated schedule.json (47 tasks)

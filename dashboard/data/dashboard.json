@@ -645,8 +645,12 @@
     {
       "id": "T63",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Add JIT stress test: run all examples with JIT and verify correctness"
+      "status": "done",
+      "task": "Add JIT stress test: run all examples with JIT and verify correctness",
+      "started": "2026-03-25T15:56:28.280Z",
+      "completed": "2026-03-25T15:58:28.746Z",
+      "duration_ms": 300000,
+      "summary": "Comments added. 3/4 examples OK. Snapshot bug filed."
     },
     {
       "id": "T64",
@@ -663,10 +667,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 62,
+    "completed": 63,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 13545000
+    "total_duration_ms": 13845000
   },
-  "updated_at": "2026-03-25T15:56:19.370Z"
+  "updated_at": "2026-03-25T15:58:28.746Z"
 }

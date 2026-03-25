@@ -645,15 +645,19 @@
     {
       "id": "T63",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add JIT stress test: run all examples with JIT and verify correctness",
-      "started": "2026-03-25T15:56:28.280Z"
+      "started": "2026-03-25T15:56:28.280Z",
+      "completed": "2026-03-25T15:58:28.746Z",
+      "duration_ms": 300000,
+      "summary": "Comments added. 3/4 examples OK. Snapshot bug filed."
     },
     {
       "id": "T64",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Update TASKS.md with final Day 10 progress"
+      "status": "in-progress",
+      "task": "Update TASKS.md with final Day 10 progress",
+      "started": "2026-03-25T15:58:42.518Z"
     },
     {
       "id": "T65",
@@ -909,5 +913,5 @@
       "msg": "Added T65 (MAINTAIN) after end: Final wrap: commit, push, CURRENT.md status: session-ended"
     }
   ],
-  "updated_at": "2026-03-25T15:56:19.370Z"
+  "updated_at": "2026-03-25T15:58:28.746Z"
 }
