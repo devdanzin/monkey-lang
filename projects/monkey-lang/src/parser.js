@@ -69,6 +69,7 @@ export class Parser {
     this.registerPrefix(TokenType.FOR, () => this.parseForExpression());
     this.registerPrefix(TokenType.BREAK, () => new ast.BreakStatement(this.curToken));
     this.registerPrefix(TokenType.CONTINUE, () => new ast.ContinueStatement(this.curToken));
+    this.registerPrefix(TokenType.NULL_LIT, () => new ast.NullLiteral(this.curToken));
 
     // Register infix parsers
     for (const op of [TokenType.PLUS, TokenType.MINUS, TokenType.SLASH,

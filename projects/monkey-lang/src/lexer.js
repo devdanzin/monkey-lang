@@ -53,6 +53,7 @@ export const TokenType = {
   FOR: 'FOR',
   BREAK: 'BREAK',
   CONTINUE: 'CONTINUE',
+  NULL_LIT: 'NULL_LIT',
 
   // Special
   EOF: 'EOF',
@@ -71,6 +72,7 @@ const KEYWORDS = {
   for: TokenType.FOR,
   break: TokenType.BREAK,
   continue: TokenType.CONTINUE,
+  null: TokenType.NULL_LIT,
 };
 
 export class Token {

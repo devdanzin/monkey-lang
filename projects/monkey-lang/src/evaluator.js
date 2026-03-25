@@ -162,6 +162,7 @@ export function monkeyEval(node, env) {
   if (node instanceof AST.ForInExpression) return evalForInExpression(node, env);
   if (node instanceof AST.BreakStatement) return new MonkeyBreak();
   if (node instanceof AST.ContinueStatement) return new MonkeyContinue();
+  if (node instanceof AST.NullLiteral) return NULL;
   if (node instanceof AST.TemplateLiteral) return evalTemplateLiteral(node, env);
 
   if (node instanceof AST.AssignExpression) {

@@ -302,6 +302,8 @@ export class Compiler {
     } else if (node instanceof ast.StringLiteral) {
       const idx = this.addConstant(internString(node.value));
       this.emit(Opcodes.OpConstant, idx);
+    } else if (node instanceof ast.NullLiteral) {
+      this.emit(Opcodes.OpNull);
     } else if (node instanceof ast.TemplateLiteral) {
       return this.compileTemplateLiteral(node);
     } else if (node instanceof ast.BooleanLiteral) {

@@ -251,3 +251,9 @@ export class IndexAssignExpression {
   tokenLiteral() { return this.token.literal; }
   toString() { return `${this.left}[${this.index}] = ${this.value}`; }
 }
+
+export class NullLiteral {
+  constructor(token) { this.token = token; }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return 'null'; }
+}
