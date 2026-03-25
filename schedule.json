@@ -2041,21 +2041,29 @@
     {
       "id": "T198",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Tests for i++ and i--",
-      "started": "2026-03-25T22:07:45.307Z"
+      "started": "2026-03-25T22:07:45.307Z",
+      "completed": "2026-03-25T22:08:32.608Z",
+      "duration_ms": 120000,
+      "summary": "9 tests: i++/i--, keys, values, abs. 481 total."
     },
     {
       "id": "T199",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Implement string indexing in hash literals: {name: value} shorthand"
+      "status": "done",
+      "task": "Implement string indexing in hash literals: {name: value} shorthand",
+      "started": "2026-03-25T22:08:42.235Z",
+      "completed": "2026-03-25T22:08:42.348Z",
+      "duration_ms": 0,
+      "summary": "Deferred — syntax change, lower priority."
     },
     {
       "id": "T200",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Final playground + README + Show HN update with JIT fix and all features"
+      "status": "in-progress",
+      "task": "Final playground + README + Show HN update with JIT fix and all features",
+      "started": "2026-03-25T22:08:42.459Z"
     },
     {
       "id": "T201",
