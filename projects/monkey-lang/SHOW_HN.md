@@ -25,7 +25,7 @@ I built a complete implementation of the Monkey programming language in JavaScri
 - LICM, CSE, dead code elimination, algebraic simplification
 
 **Numbers:**
-- 523 tests, all passing
+- 526 tests, all passing
 - 26 benchmarks: 9.2x aggregate, 30.1x peak (dot product)
 - Recursive functions: 9-10x (fib(25), fib(30))
 - Array operations: 10-12x
