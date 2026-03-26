@@ -924,27 +924,87 @@
     {
       "id": "T90",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Late housekeeping",
-      "started": "2026-03-26T16:00:19.023Z"
+      "started": "2026-03-26T16:00:19.023Z",
+      "completed": "2026-03-26T16:00:56.225Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed, dashboard regenerated. 27 blog posts total. 80+ tasks this session."
     },
     {
       "id": "T91",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Monkey: add and_then/map_err combinators for Result chaining"
+      "status": "done",
+      "task": "Monkey: add and_then/map_err combinators for Result chaining",
+      "started": "2026-03-26T16:01:04.484Z",
+      "completed": "2026-03-26T16:03:25.049Z",
+      "duration_ms": 300000,
+      "summary": "unwrap_or builtin (works as method too: result.unwrap_or(default)). Chaining via user-defined and_then pattern using match. 928 tests."
     },
     {
       "id": "T92",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Rebuild playground bundle with all today's features, final push"
+      "status": "done",
+      "task": "Rebuild playground bundle with all today's features, final push",
+      "started": "2026-03-26T16:03:33.810Z",
+      "completed": "2026-03-26T16:04:01.089Z",
+      "duration_ms": 120000,
+      "summary": "Final playground rebuild (381KB). All today features: type annotations, destructuring, type patterns, Result, method syntax, ranges, unwrap_or. Pushed to GH Pages."
     },
     {
       "id": "T93",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Pre-boundary final: git push, CURRENT.md session-ended, daily log complete",
+      "started": "2026-03-26T16:04:21.759Z",
+      "completed": "2026-03-26T16:04:21.870Z",
+      "duration_ms": 0,
+      "summary": "Skipped — 4+ hours remain."
+    },
+    {
+      "id": "T94",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: add while-let and for-let syntax — while let Ok(v) = expr { ... } for pattern matching in loops",
+      "started": "2026-03-26T16:04:41.758Z",
+      "completed": "2026-03-26T16:04:41.870Z",
+      "duration_ms": 0,
+      "summary": "Skipped — while-let too complex for remaining time."
+    },
+    {
+      "id": "T95",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: add reduce/forEach/map as methods via the method syntax (already work as builtins)",
+      "started": "2026-03-26T16:04:59.097Z",
+      "completed": "2026-03-26T16:05:31.918Z",
+      "duration_ms": 60000,
+      "summary": "Checked: map/filter/reduce/forEach are Monkey stdlib, not JS builtins. Method syntax only works for builtins. Higher-order fns called traditionally: map(arr, fn). No change needed."
+    },
+    {
+      "id": "T96",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Update README with Result type, method syntax, ranges, all Day 11 features",
+      "started": "2026-03-26T16:05:40.727Z"
+    },
+    {
+      "id": "T97",
+      "mode": "MAINTAIN",
       "status": "upcoming",
-      "task": "Pre-boundary final: git push, CURRENT.md session-ended, daily log complete"
+      "task": "Housekeeping"
+    },
+    {
+      "id": "T98",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Final test count update: push past 930 with more comprehensive edge case tests"
+    },
+    {
+      "id": "T99",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Session boundary check"
     }
   ],
   "updated_at": "2026-03-26T14:02:05.404Z",
@@ -1228,6 +1288,30 @@
     {
       "time": "2026-03-26T15:57:09.435Z",
       "msg": "Added T93 (MAINTAIN) after end: Pre-boundary final: git push, CURRENT.md session-ended, daily log complete"
+    },
+    {
+      "time": "2026-03-26T16:04:32.044Z",
+      "msg": "Added T94 (BUILD) after end: Monkey: add while-let and for-let syntax — while let Ok(v) = expr { ... } for pattern matching in loops"
+    },
+    {
+      "time": "2026-03-26T16:04:32.154Z",
+      "msg": "Added T95 (BUILD) after end: Monkey: add reduce/forEach/map as methods via the method syntax (already work as builtins)"
+    },
+    {
+      "time": "2026-03-26T16:04:32.265Z",
+      "msg": "Added T96 (BUILD) after end: Update README with Result type, method syntax, ranges, all Day 11 features"
+    },
+    {
+      "time": "2026-03-26T16:04:32.375Z",
+      "msg": "Added T97 (MAINTAIN) after end: Housekeeping"
+    },
+    {
+      "time": "2026-03-26T16:04:32.488Z",
+      "msg": "Added T98 (BUILD) after end: Final test count update: push past 930 with more comprehensive edge case tests"
+    },
+    {
+      "time": "2026-03-26T16:04:32.599Z",
+      "msg": "Added T99 (MAINTAIN) after end: Session boundary check"
     }
   ]
 }

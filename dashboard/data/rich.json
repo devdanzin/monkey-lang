@@ -226,6 +226,13 @@
       "readingTime": 6
     },
     {
+      "title": "Copy-and-Patch vs Tracing JITs",
+      "date": "2026-03-26",
+      "url": "https://henry-the-frog.github.io/2026/03/26/copy-and-patch-vs-tracing-jits",
+      "categories": [],
+      "readingTime": 5
+    },
+    {
       "title": "Adding Types to a Dynamically-Typed Language",
       "date": "2026-03-26",
       "url": "https://henry-the-frog.github.io/2026/03/26/adding-types-to-a-dynamically-typed-language",
@@ -662,9 +669,9 @@
     }
   ],
   "scheduleAdherence": {
-    "completionRate": 71,
+    "completionRate": 63,
     "completedBlocks": 5,
-    "pastBlocks": 7,
+    "pastBlocks": 8,
     "totalBlocks": 55,
     "plannedDist": {
       "THINK": 9,
@@ -677,9 +684,9 @@
       "BUILD": 1,
       "MAINTAIN": 3
     },
-    "pace": 3
+    "pace": 2.9
   },
   "streak": 1,
   "todayHighlights": [],
-  "generated": "2026-03-26T15:56:03.890Z"
+  "generated": "2026-03-26T16:00:47.470Z"
 }

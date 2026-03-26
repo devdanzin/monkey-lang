@@ -17,6 +17,8 @@ Inspired by Thorsten Ball's *Writing An Interpreter In Go* and *Writing A Compil
 - **Stack VM** — executes bytecode with call frames, closures, and free variable capture
 - **Tracing JIT compiler** — records hot execution traces, optimizes IR, compiles to JavaScript via `new Function()`
 - **Optional type annotations** — `fn(x: int, y: int) -> int` with runtime validation and JIT guard elimination
+- **Result type** — `Ok(value)` / `Err(error)` with pattern matching and `unwrap_or`
+- **Method syntax** — `"hello".upper()`, `[1,2].push(3)`, `.length` on strings/arrays
 - **Standard library** — `map`, `filter`, `reduce`, `forEach`, `range`, `contains`, `reverse` (implemented in Monkey for JIT compatibility)
 - **25+ builtins** — `len`, `puts`, `first`, `last`, `rest`, `push`, `split`, `join`, `trim`, `str_contains`, `substr`, `replace`, `int`, `str`, `type`, `ord`, `char`, `abs`, `upper`, `lower`, `indexOf`, `startsWith`, `endsWith`, `keys`, `values`
 - **Modern syntax** — arrow functions `(x) => x * 2`, pipe operator `|>`, null coalescing `??`, optional chaining `?.`, dot access `h.name`, const declarations, spread `...`, rest parameters
@@ -119,6 +121,32 @@ let add = fn(x: int, y: int) -> int { x + y };
 let greet = fn(name: string) -> string { `hello ${name}` };
 // Types: int, bool, string, array, hash, fn, null
 // Wrong types throw: "Type error: expected int, got string"
+
+// Result type
+let safe_div = fn(a: int, b: int) {
+  if (b == 0) { Err("division by zero") } else { Ok(a / b) }
+};
+match (safe_div(10, 0)) { Ok(v) => v, Err(e) => e }  // "division by zero"
+safe_div(10, 2).unwrap_or(-1);  // 5
+
+// Method syntax (any builtin callable as method)
+"hello".upper();           // "HELLO"
+" trim me ".trim();        // "trim me"
+"a,b,c".split(",");       // ["a", "b", "c"]
+[1, 2].push(3);           // [1, 2, 3]
+[1, 2, 3].first();        // 1
+"hello".length;            // 5
+[1, 2, 3].length;         // 3
+
+// Range literals
+0..10;                     // [0, 1, 2, ..., 9]
+for (i in 0..5) { puts(i) }
+
+// Hash destructuring
+let {name, age} = {"name": "Henry", "age": 11};
+
+// Type patterns in match
+match (x) { int(n) => n + 1, string(s) => len(s), _ => null }
 ```
 
 ### Null Safety
@@ -251,7 +279,7 @@ Aggregate: 26 benchmarks, ~9.2x overall (all correct)
 ## Tests
 
 ```bash
-node --test    # 923 tests (920 passing, 3 skipped JIT edge cases)
+node --test    # 928 tests (925 passing, 3 skipped JIT edge cases)
 ```
 
 ## Benchmarks
