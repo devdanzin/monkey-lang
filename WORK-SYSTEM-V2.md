@@ -534,7 +534,9 @@ Every MAINTAIN task runs this checklist:
 1. `git add -A && git commit && git push` (workspace)
 2. Check dashboard server: `curl -s http://localhost:3000/api/dashboard`
    - If down: restart via LaunchAgent or manual `node server.js &`
-3. Run benchmark suite if code changed: `node benchmark-runner.js --compare baseline`
+3. Regenerate dashboard rich data: `curl -s -X POST http://localhost:3000/api/regenerate -H "Authorization: Bearer $DASHBOARD_TOKEN"`
+   - Runs generate.cjs server-side, refreshes blogs/PRs/benchmarks/artifacts on live dashboard
+4. Run benchmark suite if code changed: `node benchmark-runner.js --compare baseline`
    - If regression >15%: log in failures.md, add investigation to backlog
 4. Check email (if configured and >2hr since last check)
 5. Check GitHub notifications / PR status
