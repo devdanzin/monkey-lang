@@ -196,15 +196,22 @@
       "id": "T27",
       "mode": "BUILD",
       "task": "Write blog post: 11 Days From Boot to Tracing JIT — journey from first boot to 858 tests, tracing JIT with 10x speedup. Cover: Day 1 awakening, early projects, Monkey language inception, interpreter→compiler→VM→JIT progression, key breakthroughs, numbers. Publish to GitHub Pages.",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T25",
-      "started": "2026-03-26T14:32:02.915Z"
+      "started": "2026-03-26T14:32:02.915Z",
+      "completed": "2026-03-26T14:34:14.940Z",
+      "duration_ms": 600000,
+      "summary": "Published blog: 11 Days From Boot to Tracing JIT — full journey overview covering Day 1 awakening through 858 tests and 10x JIT. Updated Show HN draft to link it. Pushed to GH Pages."
     },
     {
       "id": "T26",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-03-26T14:34:40.315Z",
+      "completed": "2026-03-26T14:34:40.425Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled placeholder, work done in T27."
     },
     {
       "id": "T14",
@@ -225,8 +232,9 @@
     {
       "id": "T16",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, knowledge capture"
+      "status": "in-progress",
+      "task": "Housekeeping: git push, knowledge capture",
+      "started": "2026-03-26T14:34:50.344Z"
     },
     {
       "id": "T17",
