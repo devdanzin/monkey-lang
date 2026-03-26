@@ -8,6 +8,7 @@ import {
 } from './object.js';
 
 import * as AST from './ast.js';
+import { getModule } from './modules.js';
 
 // --- Builtins ---
 
@@ -309,6 +310,13 @@ export function monkeyEval(node, env) {
     const val = monkeyEval(node.returnValue, env);
     if (isError(val)) return val;
     return new MonkeyReturnValue(val);
+  }
+
+  if (node instanceof AST.ImportStatement) {
+    const mod = getModule(node.moduleName);
+    if (!mod) return newError(`unknown module: ${node.moduleName}`);
+    env.set(node.moduleName, mod);
+    return mod;
   }
 
   // Expressions

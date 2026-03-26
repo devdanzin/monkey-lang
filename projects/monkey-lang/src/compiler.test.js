@@ -2859,3 +2859,46 @@ describe('Push to 1000 - Additional Tests', () => {
     `), 5);
   });
 });
+
+describe('Module System (compiler+VM)', () => {
+  it('import math and use abs', () => {
+    testIntegerObject(compileAndRun('import "math"; math.abs(-42)'), 42);
+  });
+
+  it('import math and use pow', () => {
+    testIntegerObject(compileAndRun('import "math"; math.pow(3, 4)'), 81);
+  });
+
+  it('import math and use sqrt', () => {
+    testIntegerObject(compileAndRun('import "math"; math.sqrt(25)'), 5);
+  });
+
+  it('import string and use upper', () => {
+    const r = compileAndRun('import "string"; string.upper("hello")');
+    assert.equal(r.value, 'HELLO');
+  });
+
+  it('import string and use repeat', () => {
+    const r = compileAndRun('import "string"; string.repeat("ab", 3)');
+    assert.equal(r.value, 'ababab');
+  });
+
+  it('import used in let binding', () => {
+    testIntegerObject(compileAndRun('import "math"; let x = math.pow(2, 8); x'), 256);
+  });
+
+  it('import string contains', () => {
+    const r = compileAndRun('import "string"; string.contains("foobar", "bar")');
+    assert.equal(r.value, true);
+  });
+
+  it('import math in function', () => {
+    testIntegerObject(compileAndRun(`
+      import "math";
+      let hypotenuse = fn(a: int, b: int) -> int {
+        math.sqrt(math.pow(a, 2) + math.pow(b, 2))
+      };
+      hypotenuse(3, 4)
+    `), 5);
+  });
+});

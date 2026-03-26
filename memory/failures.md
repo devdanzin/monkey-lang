@@ -32,3 +32,9 @@ Track recurring issues so future sessions don't repeat them.
 **Root cause:** TBD — likely the trace compiler doesn't correctly handle OpGetFree or OpClosure bytecodes when inlining closure calls into traces. May be corrupting bytecode or generating invalid compiled trace code.
 **Fix:** Two bugs found: (1) LOAD_FREE in inlined closures referenced root __free array instead of callee's — fixed by emitting captured values as constants (Monkey captures by value). (2) Guard exit IP for inlined fns pointed to OpCall operand byte, not instruction start — caused VM to misinterpret operand as opcode.
 **Status:** FIXED (2026-03-22, 15:15 block). Closure benchmarks: adder 8.7x, multiplier 7.2x.
+
+### Session A early wrap at milestone (2026-03-26)
+**Problem:** Session A hit 1000 tests at 10:13 AM and wrapped up, despite having 4 more hours until the 2:15 PM boundary. Lost ~4 hours of work time. Watchdog caught it at 10:48.
+**Root cause:** Milestone excitement overrode the "NEVER END EARLY" instruction. The session treated reaching a round number as a natural stopping point.
+**Fix:** Jordan manually re-triggered Session A at 11:24 AM. Recovered ~3 hours.
+**Prevention:** Milestones are not stopping points. Log them, celebrate briefly in the daily log, then immediately `node queue.cjs next` and keep going. Add explicit check: "Is it within 15 min of boundary? No? Then keep working."

@@ -235,3 +235,11 @@ describe('Lexer Edge Cases', () => {
     assert.equal(l.nextToken().type, 'INT');
   });
 });
+
+describe('Import keyword', () => {
+  it('tokenizes import keyword', () => {
+    const l = new Lexer('import "math"');
+    assert.equal(l.nextToken().type, 'IMPORT');
+    assert.equal(l.nextToken().type, 'STRING');
+  });
+});

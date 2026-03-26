@@ -68,6 +68,7 @@ export const TokenType = {
   MATCH: 'MATCH',
   DO: 'DO',
   UNDERSCORE: '_',
+  IMPORT: 'IMPORT',
 
   // Special
   EOF: 'EOF',
@@ -90,6 +91,7 @@ const KEYWORDS = {
   null: TokenType.NULL_LIT,
   match: TokenType.MATCH,
   do: TokenType.DO,
+  import: TokenType.IMPORT,
 };
 
 export class Token {

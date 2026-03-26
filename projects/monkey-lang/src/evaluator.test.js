@@ -599,3 +599,63 @@ describe('Push to 1000', () => {
     assert.equal(r.value, true);
   });
 });
+
+describe('Module System (evaluator)', () => {
+  it('import math module', () => {
+    const r = testEval('import "math"; math.abs(-5)');
+    assert.equal(r.value, 5);
+  });
+
+  it('math.pow', () => {
+    const r = testEval('import "math"; math.pow(2, 10)');
+    assert.equal(r.value, 1024);
+  });
+
+  it('math.sqrt', () => {
+    const r = testEval('import "math"; math.sqrt(16)');
+    assert.equal(r.value, 4);
+  });
+
+  it('math.min and math.max', () => {
+    const r = testEval('import "math"; math.min(3, 7)');
+    assert.equal(r.value, 3);
+    const r2 = testEval('import "math"; math.max(3, 7)');
+    assert.equal(r2.value, 7);
+  });
+
+  it('import string module', () => {
+    const r = testEval('import "string"; string.upper("hello")');
+    assert.equal(r.value, 'HELLO');
+  });
+
+  it('string.split', () => {
+    const r = testEval('import "string"; string.split("a,b,c", ",")');
+    assert.equal(r.elements.length, 3);
+    assert.equal(r.elements[0].value, 'a');
+  });
+
+  it('string.repeat', () => {
+    const r = testEval('import "string"; string.repeat("ha", 3)');
+    assert.equal(r.value, 'hahaha');
+  });
+
+  it('string.contains', () => {
+    const r = testEval('import "string"; string.contains("hello world", "world")');
+    assert.equal(r.value, true);
+  });
+
+  it('string.replace', () => {
+    const r = testEval('import "string"; string.replace("hello world", "world", "monkey")');
+    assert.equal(r.value, 'hello monkey');
+  });
+
+  it('unknown module returns error', () => {
+    const r = testEval('import "unknown"');
+    assert.equal(r.type(), 'ERROR');
+  });
+
+  it('module used in expressions', () => {
+    const r = testEval('import "math"; let x = math.pow(2, 3); x + 1');
+    assert.equal(r.value, 9);
+  });
+});

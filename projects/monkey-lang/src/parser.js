@@ -156,6 +156,7 @@ export class Parser {
       case TokenType.LET: return this.parseLetStatement();
       case TokenType.CONST: return this.parseLetStatement();
       case TokenType.RETURN: return this.parseReturnStatement();
+      case TokenType.IMPORT: return this.parseImportStatement();
       default: return this.parseExpressionStatement();
     }
   }
@@ -230,6 +231,18 @@ export class Parser {
     const returnValue = this.parseExpression(Precedence.LOWEST);
     if (this.peekTokenIs(TokenType.SEMICOLON)) this.nextToken();
     return new ast.ReturnStatement(token, returnValue);
+  }
+
+  parseImportStatement() {
+    const token = this.curToken; // 'import'
+    this.nextToken();
+    if (this.curToken.type !== TokenType.STRING) {
+      this.errors.push(`expected module name as string, got ${this.curToken.type}`);
+      return null;
+    }
+    const moduleName = this.curToken.literal;
+    if (this.peekTokenIs(TokenType.SEMICOLON)) this.nextToken();
+    return new ast.ImportStatement(token, moduleName);
   }
 
   parseExpressionStatement() {

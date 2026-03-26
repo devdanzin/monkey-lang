@@ -5,6 +5,7 @@ import { Opcodes, make, concatInstructions } from './code.js';
 import { SymbolTable, SCOPE } from './symbol-table.js';
 import { MonkeyInteger, MonkeyString, internString } from './object.js';
 import * as ast from './ast.js';
+import { getModule } from './modules.js';
 
 // Compiled function object (different from interpreted MonkeyFunction)
 let _cfId = 0;
@@ -60,6 +61,7 @@ export class Compiler {
     this.scopes = [new CompilationScope()];
     this.scopeIndex = 0;
     this.loopStack = []; // Stack of { breakPatches: [], continueTarget: number }
+    this.importedModules = new Set(); // Track imported module names for method desugaring
 
     // Register builtins (only if fresh symbol table)
     if (!symbolTable) {
@@ -178,6 +180,19 @@ export class Compiler {
       const err = this.compile(node.returnValue);
       if (err) return err;
       this.emit(Opcodes.OpReturnValue);
+    } else if (node instanceof ast.ImportStatement) {
+      // import "math" → load module hash as constant, define local variable
+      const mod = getModule(node.moduleName);
+      if (!mod) return `unknown module: ${node.moduleName}`;
+      const constIdx = this.addConstant(mod);
+      this.emit(Opcodes.OpConstant, constIdx);
+      const sym = this.symbolTable.define(node.moduleName);
+      this.importedModules.add(node.moduleName);
+      if (sym.scope === SCOPE.GLOBAL) {
+        this.emit(Opcodes.OpSetGlobal, sym.index);
+      } else {
+        this.emit(Opcodes.OpSetLocal, sym.index);
+      }
     } else if (node instanceof ast.InfixExpression) {
       // Constant folding: try to evaluate at compile time
       if (['+', '-', '*', '/'].includes(node.operator)) {
@@ -553,11 +568,15 @@ export class Compiler {
       return this.compileFunctionLiteral(node);
     } else if (node instanceof ast.CallExpression) {
       // Check for method call desugaring: expr.method(args) → method(expr, args)
+      // But NOT when the left side is a known variable (could be a module hash)
       if (node.function instanceof ast.IndexExpression && 
           node.function.index instanceof ast.StringLiteral) {
         const methodName = node.function.index.value;
         const builtinIdx = BUILTINS.indexOf(methodName);
-        if (builtinIdx !== -1) {
+        // Skip desugaring if left is an imported module variable (module hash has its own callables)
+        const leftIsModule = node.function.left instanceof ast.Identifier &&
+          this.importedModules.has(node.function.left.value);
+        if (builtinIdx !== -1 && !leftIsModule) {
           // Desugar: receiver.method(args) → builtin_method(receiver, args)
           this.emit(Opcodes.OpGetBuiltin, builtinIdx);
           const err = this.compile(node.function.left);

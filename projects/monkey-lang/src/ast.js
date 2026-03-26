@@ -34,6 +34,15 @@ export class ReturnStatement {
   toString() { return `return ${this.returnValue};`; }
 }
 
+export class ImportStatement {
+  constructor(token, moduleName) {
+    this.token = token;
+    this.moduleName = moduleName;
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return `import "${this.moduleName}";`; }
+}
+
 export class ExpressionStatement {
   constructor(token, expression) {
     this.token = token;
