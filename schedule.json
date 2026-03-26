@@ -2400,6 +2400,13 @@
       "completed": "2026-03-26T03:41:19.526Z",
       "duration_ms": 60000,
       "summary": "Skipped — VM builtins cannot invoke closures (no VM context). map/filter/reduce must stay in stdlib. Would need VM callback mechanism."
+    },
+    {
+      "id": "T234",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Edge case testing and polish: test interactions between new features",
+      "started": "2026-03-26T03:43:07.575Z"
     }
   ],
   "backlog": [],
@@ -3171,6 +3178,10 @@
     {
       "time": "2026-03-26T03:40:34.664Z",
       "msg": "Added T233 (BUILD) after end: Add map, filter, reduce as VM builtins for speed and pipe compatibility"
+    },
+    {
+      "time": "2026-03-26T03:43:07.338Z",
+      "msg": "Added T234 (BUILD) after end: Edge case testing and polish: test interactions between new features"
     }
   ],
   "updated_at": "2026-03-25T16:42:01.690Z"

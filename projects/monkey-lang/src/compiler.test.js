@@ -2358,3 +2358,49 @@ describe('Rest Parameters', () => {
   });
   // TODO: spread in function call arguments
 });
+
+describe('Feature Interactions', () => {
+  it('pipe + arrow + spread', () => {
+    const result = compileAndRun('let double = (x) => x * 2; let nums = [1, 2, 3]; [0, ...nums] |> len');
+    testIntegerObject(result, 4);
+  });
+  it('optional chain + null coalesce + dot access', () => {
+    testStringObject(compileAndRun('let u = {"name": "Alice"}; u?.addr?.city ?? "unknown"'), 'unknown');
+  });
+  it('const + arrow', () => {
+    testIntegerObject(compileAndRun('const double = (x) => x * 2; double(5)'), 10);
+  });
+  it('rest + spread roundtrip', () => {
+    const result = compileAndRun('let wrap = fn(...args) { args }; let unwrap = fn(arr) { [...arr, 99] }; unwrap(wrap(1, 2, 3))');
+    assert.equal(result.elements.length, 4);
+  });
+  it('pipe chain with dot access', () => {
+    testStringObject(compileAndRun('let h = {"x": "hello world"}; h.x |> split(" ") |> first'), 'hello');
+  });
+  it('null coalesce in pipe', () => {
+    testIntegerObject(compileAndRun('null ?? 5 |> str |> len'), 1);
+  });
+  it('arrow with rest', () => {
+    // Arrow functions don't support rest yet (they use parseGroupedExpression)
+    // This tests regular fn with rest inside arrow-like patterns
+    testIntegerObject(compileAndRun('let f = fn(...args) { len(args) }; (f)(1, 2, 3)'), 3);
+  });
+  it('deep optional chaining with dot', () => {
+    testNullObject(compileAndRun('let a = {"b": {"c": null}}; a.b.c?.d?.e'));
+  });
+  it('spread in nested array', () => {
+    const result = compileAndRun('let inner = [2, 3]; [[1, ...inner], [4, 5]]');
+    assert.equal(result.elements.length, 2);
+    assert.equal(result.elements[0].elements.length, 3);
+  });
+  it('const reassignment error', () => {
+    // Should be a compiler error
+    assert.throws(() => compileAndRun('const x = 42; x = 10'), /cannot assign to const/);
+  });
+  it('comment in expression', () => {
+    testIntegerObject(compileAndRun('1 /* plus */ + /* two */ 2'), 3);
+  });
+  it('multiline comment in function', () => {
+    testIntegerObject(compileAndRun('let f = fn(x) { /* double */ x * 2 }; f(5)'), 10);
+  });
+});
