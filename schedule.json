@@ -1724,15 +1724,19 @@
     {
       "id": "T168",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add a json module: parse and stringify for hashes and arrays",
-      "started": "2026-03-26T18:29:04.729Z"
+      "started": "2026-03-26T18:29:04.729Z",
+      "completed": "2026-03-26T18:32:01.262Z",
+      "duration_ms": 300000,
+      "summary": "JSON module: parse/stringify with JS interop. 6 stdlib modules. 1115 tests."
     },
     {
       "id": "T169",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Update README test count + git push"
+      "status": "in-progress",
+      "task": "Update README test count + git push",
+      "started": "2026-03-26T18:32:15.525Z"
     },
     {
       "id": "T170",

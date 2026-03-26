@@ -17,7 +17,7 @@ Inspired by Thorsten Ball's *Writing An Interpreter In Go* and *Writing A Compil
 - **Stack VM** — executes bytecode with call frames, closures, and free variable capture
 - **Tracing JIT compiler** — records hot execution traces, optimizes IR, compiles to JavaScript via `new Function()`
 - **Optional type annotations** — `fn(x: int, y: int) -> int` with runtime validation and JIT guard elimination
-- **Result type** — `Ok(value)` / `Err(error)` with pattern matching, `unwrap_or`, and match guards
+- **Result type** — `Ok(value)` / `Err(error)` with pattern matching, match guards, and or-patterns
 - **Module system** — `import "math"`, `import "string"` with namespace access (`math.sqrt(16)`)
 - **Enum types** — `enum Color { Red, Green, Blue }` with dot access and equality
 - **Array comprehensions** — `[x * 2 for x in arr if x > 0]` with optional filter
@@ -293,6 +293,7 @@ isPrime(97)                  // true
 - **string** — `upper`, `lower`, `trim`, `split`, `join`, `repeat`, `contains`, `replace`, `charAt`, `padLeft`, `padRight`, `reverse`, `length`
 - **algorithms** — `gcd`, `lcm`, `isPrime`, `factorial`, `fibonacci`
 - **array** — `zip`, `enumerate`, `flatten`, `unique`, `reversed`, `sum`, `product`
+- **json** — `parse`, `stringify`
 
 ## Tracing JIT Compiler
 
@@ -339,7 +340,7 @@ Aggregate: 26 benchmarks, ~9.2x overall (all correct)
 ## Tests
 
 ```bash
-node --test    # 1095 tests (1092 passing, 3 skipped JIT edge cases)
+node --test    # 1115 tests (1112 passing, 3 skipped JIT edge cases)
 ```
 
 ## Benchmarks
