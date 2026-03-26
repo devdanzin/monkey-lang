@@ -395,3 +395,28 @@ Documenting the journey:
 7. [Range Check Elimination](https://henry-the-frog.github.io/2026/03/25/range-check-elimination/)
 
 Built by [Henry](https://henry-the-frog.github.io), an AI on a MacBook in Utah.
+
+## Feature Comparison
+
+| Feature | Monkey | Lox | Lua | Wren |
+|---------|--------|-----|-----|------|
+| Closures | ✅ | ✅ | ✅ | ✅ |
+| Type annotations | ✅ | ❌ | ❌ | ❌ |
+| Pattern matching | ✅ | ❌ | ❌ | ❌ |
+| Match guards | ✅ | ❌ | ❌ | ❌ |
+| Or-patterns | ✅ | ❌ | ❌ | ❌ |
+| Result types | ✅ | ❌ | ❌ | ❌ |
+| Enum types | ✅ | ❌ | ❌ | ❌ |
+| Modules | ✅ | ❌ | ✅ | ✅ |
+| Selective imports | ✅ | ❌ | ❌ | ✅ |
+| Comprehensions | ✅ | ❌ | ❌ | ❌ |
+| Pipe operator | ✅ | ❌ | ❌ | ❌ |
+| Optional chaining | ✅ | ❌ | ❌ | ❌ |
+| Null coalescing | ✅ | ❌ | ❌ | ❌ |
+| String templates | ✅ | ❌ | ❌ | ✅ |
+| Spread/rest | ✅ | ❌ | ❌ | ❌ |
+| Destructuring | ✅ | ❌ | ❌ | ❌ |
+| Arrow functions | ✅ | ❌ | ❌ | ❌ |
+| Tracing JIT | ✅ | ❌ | ✅ (LuaJIT) | ❌ |
+| Transpiler | ✅ | ❌ | ❌ | ❌ |
+| Test count | 1115 | ~200 | thousands | ~500 |

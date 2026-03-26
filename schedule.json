@@ -1754,15 +1754,19 @@
     {
       "id": "T171",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Rebuild playground with latest bundle + push everything",
-      "started": "2026-03-26T18:35:00.683Z"
+      "started": "2026-03-26T18:35:00.683Z",
+      "completed": "2026-03-26T18:35:23.186Z",
+      "duration_ms": 60000,
+      "summary": "Playground v0.2.0 deployed (390KB). All repos pushed."
     },
     {
       "id": "T172",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Add a comprehensive Monkey feature comparison table to README"
+      "status": "in-progress",
+      "task": "Add a comprehensive Monkey feature comparison table to README",
+      "started": "2026-03-26T18:35:28.006Z"
     },
     {
       "id": "T173",
