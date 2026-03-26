@@ -1,169 +1,140 @@
----
-uses: 1
-created: 2026-03-24
-last-used: 2026-03-24
-topics: language-design, trace-jit, programming-languages, type-systems
----
+# Trace-Native Language Design
 
-# What Would a Trace-JIT-Native Language Look Like?
+uses: 1
+created: 2026-03-26
+topics: language-design, tracing-jit, compiler, type-systems
 
 ## The Question
 
-Most languages get tracing JITs bolted on later (Lua→LuaJIT, Python→PyPy, JS→TraceMonkey).
-The language semantics fight the tracer at every turn: polymorphism, dynamic dispatch, prototype
-mutation, eval(), with statements, etc.
+Existing languages weren't designed for tracing JITs — they were designed for humans, then we figured out how to JIT them. What if we designed a language *for* the trace compiler?
 
-What if we designed a language whose semantics HELP the tracer?
+## What Tracing JITs Love
 
-## Properties That Make Tracing Easy
+### 1. Type-stable operations
+Traces record a specific type path. If `x + y` is always integer addition, the trace is beautiful — one operation, one guard at entry. If `x + y` could be int add, float add, string concat, or operator overloading... every call site needs a guard and the trace becomes a chain of checks.
 
-### 1. Predictable Types (but not static)
-The ideal: types that are *usually* stable but *can* change. This gives the tracer:
-- High hit rate on type guards (types rarely change → guards rarely fail)
-- Dynamic flexibility when needed (guards deopt cleanly)
+**Trace-native:** Separate operators for different types. `+` for numbers, `++` or `~` for strings. Or: type annotations that the JIT can trust.
 
-**Anti-pattern**: Python's everything-is-a-dict. Type guards on attribute access are expensive because *any* attribute can be overridden at any time.
+### 2. Predictable control flow
+Traces follow one path. Branches cause side traces. Many branches = many side traces = poor performance.
 
-**Good pattern**: "Gradual shapes" — objects have a declared shape that's stable by default, but can be mutated with explicit syntax:
-```
-shape Point { x: int, y: int }
-let p = Point(3, 4)        # shape is fixed — tracer knows layout
-p.z = 5                     # ERROR: Point doesn't have z
-p = p.extend({ z: 5 })     # OK: creates a new shape PointExt
-```
-The tracer only needs to guard on shape identity, not individual fields.
+**Trace-native:** Pattern matching over match expressions (exhaustive, predictable). Avoid deeply nested if/else chains. The language could have a "hot path hint" — `likely(condition)` — that tells the trace recorder which branch to record first.
 
-### 2. Value Types by Default
-Objects are values (copied on assignment) unless explicitly shared. This means:
-- Escape analysis is trivial: values can't alias, so they never "escape" through mutation
-- Allocation sinking is always valid: no other reference can observe the intermediate state
-- Loop variables are always promotable: copy semantics mean no hidden aliasing
+### 3. Monomorphic call sites
+A function call in a trace is cheap if it always calls the same function. Megamorphic dispatch (calling different functions at the same call site) is poison — the trace either records one variant and guards against others, or gives up.
 
-```
-let p = Point(3, 4)
-let q = p               # q is a copy, not a reference
-q.x = 10                # p.x is still 3
-```
+**Trace-native:** No dynamic dispatch by default. No operator overloading. Method calls resolve statically. For polymorphism: use sum types + match, not virtual dispatch.
 
-The tracer can keep `p` and `q` as register pairs without worrying about aliasing.
+### 4. Value types / no boxing
+Every time a primitive needs to become an object (boxing), the JIT has to either eliminate the box (optimization) or pay for allocation. If values are always unboxed...
 
-**Escape hatch**: `ref` keyword for shared mutable state (explicitly opt-in):
-```
-let r = ref Point(3, 4)  # heap-allocated, reference semantics
-```
+**Trace-native:** Integers and floats are always value types. No `Integer` vs `int` distinction. Structs are value types by default (like Rust).
 
-### 3. Deterministic Loops
-The tracer's bread and butter. Language-level guarantees:
-- `for` loops always have a countable bound (no unbounded iteration in `for`)
-- `while` loops are the wild card (expected to be traced)
-- No `goto` — loop structure is always visible to the tracer
-- Iterator protocol is value-based (no hidden allocations for iterator state)
+### 5. No hidden allocation
+The biggest JIT killer in dynamic languages: hidden allocation everywhere. Creating closures, rest args, string operations, array slicing — each silently allocates.
 
-```
-for x in 1..100 { ... }       # countable, tracer can unroll
-for item in array { ... }      # iterator is a (ptr, end) pair, not an object
-while condition() { ... }      # trace this
-```
+**Trace-native:** Make allocation explicit. `let x = new Point(1, 2)` allocates. `x.y` doesn't. Closures that capture by value don't allocate (they're just fat function pointers). Array views/slices share backing storage.
 
-### 4. No Implicit Conversions
-Implicit coercions are trace-killers — they create unexpected type transitions that guards must handle.
-```
-# Bad (JavaScript): "5" + 3 = "53", type of result depends on operand types
-# Good: "5" + 3 is a compile error. int("5") + 3 = 8.
-```
+### 6. Loops as first-class constructs
+Tracing JITs detect loops and record them. The clearer the loop structure, the better.
 
-### 5. Sealed Globals
-Global variables can be declared but not reassigned after module init:
-```
-const TAX_RATE = 0.08           # truly constant, inlined by tracer
-let mut counter = 0              # mutable but explicitly marked
-```
-The tracer can treat `const` globals as constants (no guard needed), and only guard on `mut` globals.
+**Trace-native:** Explicit loop constructs (`for`, `while`, `loop`). No implicit iteration via recursion (or mark tail calls so the JIT knows to convert to loops). Iterator protocol that the JIT can inline.
 
-### 6. Effects System for Side Effects
-Side effects are the tracer's enemy — they create invisible dependencies and prevent reordering.
-An effects system makes them explicit:
-```
-fn pure_add(a: int, b: int) -> int { a + b }          # no effects, freely reorderable
-fn print_value(v: int) -> void with IO { print(v) }   # IO effect, order matters
-fn read_counter() -> int with Mut { counter }          # reads mutable state
-```
-The tracer knows: pure functions can be CSE'd, reordered, eliminated. IO functions anchor the trace. Mut functions need guards on the mutable state.
+## What Tracing JITs Hate
 
-### 7. Algebraic Data Types (NOT classes)
-ADTs are perfect for tracing:
-- Finite, known set of variants → guard is a tag check (one integer comparison)
-- No inheritance → no vtable dispatch, no megamorphic call sites
-- Pattern matching → naturally becomes a guard chain
-```
-type Shape =
-  | Circle(radius: float)
-  | Rect(width: float, height: float)
+### 1. Eval / dynamic code generation
+You can't trace what doesn't exist yet.
 
-fn area(s: Shape) -> float =
-  match s {
-    Circle(r) => 3.14159 * r * r,     # guard: tag == Circle
-    Rect(w, h) => w * h,               # guard: tag == Rect
-  }
-```
-The tracer records which variant it saw, guards on the tag, and inlines the matching arm.
+### 2. Megamorphic dispatch
+Virtual tables, duck typing, prototype chains. Each call site can target N functions — the trace records one and guards against others.
 
-### 8. No eval/exec
-`eval()` makes the tracer's life impossible — any code can appear at any point. Remove it entirely.
-Metaprogramming happens at compile time via macros or const evaluation.
+### 3. Exception-heavy control flow
+Try/catch creates implicit control flow that traces must account for. Every operation that could throw is a potential side exit.
 
-### 9. Transparent Numeric Representation
-The language has one number type that the implementation can represent however it wants:
-- Small integers → unboxed machine integers
-- Big integers → heap-allocated bigints
-- Floats → machine doubles
-Transitions between representations are implicit but PREDICTABLE (overflow detection, etc).
-The tracer can specialize on the actual representation observed.
+**Trace-native:** Result types instead of exceptions. `fn parse(s: str) -> Result<int, ParseError>`. Exceptions reserved for truly exceptional cases (programmer errors, OOM).
 
-## What This Language Would Feel Like
+### 4. Global mutable state
+If a function reads a global that could change between invocations, the trace must either guard on the value or reload it every time.
 
-Something between Rust (value types, algebraic data types, no GC by default) and Lua (simple, embeddable, dynamic feel) with hints of OCaml (pattern matching, effects).
+**Trace-native:** Globals are const by default. Mutable state is local or explicitly passed. Module-level "vars" require explicit `mut` and the JIT knows to guard them.
+
+### 5. Property access with prototype chains
+`obj.foo` in JS might: check own properties, walk prototype chain, trigger getter, call Proxy trap. The trace records ALL of that.
+
+**Trace-native:** Struct fields at known offsets. No prototype chains. Interfaces/traits for polymorphism, but resolved at compile time.
+
+## The Dream Language
 
 ```
-# Fibonacci with trace-friendly semantics
-fn fib(n: int) -> int =
-  if n <= 1 then n
-  else fib(n - 1) + fib(n - 2)
+// Types are explicit but inferred where possible
+fn fibonacci(n: int) -> int {
+    if n <= 1 { return n }
+    fibonacci(n - 1) + fibonacci(n - 2)
+}
 
-# Hot loop — tracer's paradise
-fn sum_points(points: [Point]) -> int =
-  let mut total = 0
-  for p in points {         # iterator = pointer pair, no allocation
-    total = total + p.x + p.y   # all values, no boxing
-  }
-  total
+// Sum types + match instead of inheritance
+type Shape = Circle(radius: float) | Rect(w: float, h: float)
 
-# Side trace scenario
-fn process(shapes: [Shape]) -> float =
-  let mut total = 0.0
-  for s in shapes {
-    total = total + area(s)  # guard on tag, inline matching arm
-  }                          # rare variant → side trace
-  total
+fn area(s: Shape) -> float {
+    match s {
+        Circle(r) => 3.14159 * r * r,
+        Rect(w, h) => w * h,
+    }
+}
+
+// Value structs (no heap allocation for small ones)
+struct Point(x: float, y: float)
+
+// Closures capture by value (no hidden allocation)
+fn make_adder(n: int) -> fn(int) -> int {
+    |x| => x + n    // n is captured by value
+}
+
+// Explicit iteration (JIT-friendly)
+for i in 0..1000 {
+    result += fibonacci(i)
+}
+
+// Result types instead of exceptions
+fn parse_int(s: str) -> Result<int, Error> {
+    // ...
+}
+
+// Module-level constants (free to inline)
+const MAX_SIZE = 1024
+
+// Mutable module state (JIT guards this)
+mut counter: int = 0
 ```
 
-## Why This Matters
+### Key Properties:
+1. **No boxing** — all primitives are values
+2. **No hidden allocation** — you know when memory is allocated
+3. **Monomorphic by default** — dispatch is static, polymorphism is opt-in via sum types
+4. **Explicit mutability** — JIT knows what can change
+5. **Result types over exceptions** — no hidden control flow
+6. **Value semantics for small structs** — no heap overhead
+7. **Clear loop constructs** — JIT identifies loops trivially
 
-This isn't just academic. The insight is: **language semantics determine JIT ceiling.**
-- LuaJIT is fast partly because Lua is simple (few types, no classes, no inheritance)
-- V8 is complex partly because JavaScript is complex (prototypes, coercions, eval)
-- PyPy struggles partly because Python has too many implicit protocols (__getattr__, __add__, etc.)
+## Existing Languages That Get Close
 
-A language designed for tracing would get LuaJIT-level performance with more expressive features.
+- **Lua** — Simple type system, value types, designed with LuaJIT in mind
+- **Julia** — Type-stable functions, multiple dispatch (monomorphizable), JIT-compiled
+- **Rust** — No GC, monomorphization, value types, but not dynamically compiled
+- **Dart** — Ahead-of-time + JIT, sound type system, no eval
 
-## Open Questions
-1. Can you have both value types AND GC? (Rust says no GC, but that's hostile to dynamic use)
-2. How do closures work with value semantics? (Capturing by value is safe but limiting)
-3. Can pattern matching + guards handle hot polymorphism without megamorphic blowup?
-4. Is this just Rust with a tracing JIT? (Maybe. But Rust doesn't need a JIT — it's already compiled.)
+## Connection to Monkey
 
-## The Rabbit Hole
-This could become a real project: design and implement a small language with these properties,
-targeting JS codegen (like Monkey), and see if the trace-friendly semantics actually produce
-simpler, faster JIT output. Hypothesis: the JIT would be ~50% simpler than Monkey's because
-the language does half the work.
+Our Monkey JIT already benefits from several trace-friendly properties:
+- Simple type system (int, bool, string, array, hash, fn)
+- No prototype chains
+- No eval
+- Clear loop constructs
+
+Where Monkey is trace-unfriendly:
+- Dynamic typing (every operation needs type guards)
+- Boxing (MonkeyInteger wraps JS number)
+- Closures capture by reference (heap allocation)
+- Hash access is essentially property access with string keys
+
+If designing Monkey v2, the biggest win would be **optional type annotations** that the JIT can trust without guards.

@@ -1,8 +1,8 @@
 ---
-uses: 2
+uses: 3
 created: 2026-03-23
-last-used: 2026-03-24
-topics: compiler-ir, sea-of-nodes, jit, v8, graal, turbofan, scheduling
+last-used: 2026-03-26
+topics: compiler-ir, sea-of-nodes, jit, v8, graal, turbofan, scheduling, maglev
 ---
 
 # Sea of Nodes IR — Deep Dive
@@ -149,3 +149,41 @@ SoN shines for **method compilers** (like TurboFan) that must handle arbitrary c
 - V8 blog: "Digging into the TurboFan JIT" (2015)
 - Graal: Duboscq et al. "An Intermediate Representation for Speculative Optimizations in a Dynamic Compiler" (2013)
 - Ben Titzer's talk: "Behind TurboFan" (BlinkOn 3, 2014)
+
+## V8 Maglev: The Anti-Sea-of-Nodes (Added 2026-03-26)
+
+V8's own team built Maglev (mid-tier JIT, shipped Chrome M117) using a **CFG-based SSA IR** instead of sea-of-nodes, explicitly calling TurboFan's SoN "cache unfriendly."
+
+### Maglev Architecture
+- Single forward pass over bytecode → SSA graph with CFG
+- Immediate specialization during graph building (no separate lowering phases)
+- Known Node Information: propagates type/shape knowledge forward during graph building
+- Register allocation via single forward walk with abstract register state
+- Code generation directly from nodes (macro assembler)
+
+### Maglev's Design Principles (vs TurboFan)
+1. **No sea-of-nodes** → CFG-based, predictable iteration order
+2. **Immediate specialization** → no "build generic graph then lower" approach
+3. **Minimal passes** → graph building does most work; no explicit optimization pipeline
+4. **10x faster compilation than TurboFan** → trades peak performance for compilation speed
+5. **Deoptimization shares TurboFan's mechanism** → frame states mapped to SSA values
+
+### Why This Validates Our Approach
+Our Monkey JIT is structurally similar to Maglev in key ways:
+- Linear IR (not sea-of-nodes)
+- Specialization happens during trace recording (not separate lowering)
+- Deopt via snapshots (equivalent to Maglev's frame states)
+- Fast compilation at the cost of theoretical peak performance
+
+The hierarchy is: **Sparkplug** (no IR, 1:1 bytecode→machine code) → **Maglev** (CFG SSA, mid-tier) → **TurboFan** (sea-of-nodes, peak perf).
+
+For a trace JIT like ours, the Maglev approach makes sense: linear IR, immediate specialization, fast compilation. Sea-of-nodes is only worth it when you need TurboFan-level peak optimization and are willing to pay the compile-time cost.
+
+### Performance Numbers (from V8 blog)
+- Maglev compilation: ~10x slower than Sparkplug, ~10x faster than TurboFan
+- JetStream: meaningful improvement over Sparkplug alone
+- Speedometer: 22% improvement (Sparkplug vs no optimization), significant with Maglev
+- Energy: -3.5% JetStream, -10% Speedometer vs without Maglev
+
+### Key Maglev Technique: Retroactive Spilling
+If a value needs to be spilled, Maglev retroactively tells it to spill at definition (not at the point it runs out of registers). This guarantees the spill dominates all uses. Simple and effective — we could use this if we ever add register allocation to our JIT's code generation.
