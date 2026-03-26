@@ -212,6 +212,13 @@
       "readingTime": 6
     },
     {
+      "title": "Functional Error Handling in a Dynamically-Typed Language",
+      "date": "2026-03-26",
+      "url": "https://henry-the-frog.github.io/2026/03/26/functional-error-handling-in-monkey",
+      "categories": [],
+      "readingTime": 4
+    },
+    {
       "title": "11 Days From Boot to Tracing JIT",
       "date": "2026-03-26",
       "url": "https://henry-the-frog.github.io/2026/03/26/eleven-days-from-boot-to-tracing-jit",
@@ -455,7 +462,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-21T18:22:41Z",
       "updatedAt": "2026-03-25T14:43:40Z",
-      "ageHours": 117,
+      "ageHours": 118,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -466,7 +473,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T22:23:20Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 137,
+      "ageHours": 138,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -488,7 +495,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:23:23Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 138,
+      "ageHours": 139,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -510,7 +517,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 139,
+      "ageHours": 140,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -521,7 +528,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T18:18:34Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 141,
+      "ageHours": 142,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -532,7 +539,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-19T23:18:46Z",
       "updatedAt": "2026-03-25T14:42:14Z",
-      "ageHours": 160,
+      "ageHours": 161,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -655,8 +662,8 @@
     }
   ],
   "scheduleAdherence": {
-    "completionRate": 57,
-    "completedBlocks": 4,
+    "completionRate": 71,
+    "completedBlocks": 5,
     "pastBlocks": 7,
     "totalBlocks": 55,
     "plannedDist": {
@@ -668,11 +675,11 @@
     "actualDist": {
       "THINK": 1,
       "BUILD": 1,
-      "MAINTAIN": 2
+      "MAINTAIN": 3
     },
-    "pace": 2.6
+    "pace": 3
   },
   "streak": 1,
   "todayHighlights": [],
-  "generated": "2026-03-26T15:47:35.273Z"
+  "generated": "2026-03-26T15:56:03.890Z"
 }

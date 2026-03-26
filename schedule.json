@@ -874,9 +874,12 @@
     {
       "id": "T85",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Afternoon maintain",
-      "started": "2026-03-26T15:55:37.984Z"
+      "started": "2026-03-26T15:55:37.984Z",
+      "completed": "2026-03-26T15:56:15.786Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed, dashboard regenerated (26 blog posts now). 70+ tasks done this session."
     },
     {
       "id": "T86",
@@ -891,8 +894,57 @@
     {
       "id": "T87",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Session wrap",
+      "started": "2026-03-26T15:56:31.748Z",
+      "completed": "2026-03-26T15:56:31.860Z",
+      "duration_ms": 0,
+      "summary": "Skipped — 4+ hours remain."
+    },
+    {
+      "id": "T88",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Deep dive: copy-and-patch compilation (CPython 3.13 JIT, Haoran Xu's paper). How does it compare to tracing JITs? Could we add it to Monkey?",
+      "started": "2026-03-26T15:57:16.409Z",
+      "completed": "2026-03-26T15:58:51.133Z",
+      "duration_ms": 600000,
+      "summary": "Deep dive into copy-and-patch compilation: Xu 2021 paper, CPython 3.13 JIT, comparison with tracing JITs. Key insight: C&P optimizes per-operation (stencils pre-compiled by LLVM), tracing optimizes per-trace (cross-op optimization). For our JS target, tracing is better. 5KB scratch note."
+    },
+    {
+      "id": "T89",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Blog: Copy-and-Patch vs Tracing JITs — two approaches to dynamic compilation",
+      "started": "2026-03-26T15:58:59.884Z",
+      "completed": "2026-03-26T16:00:11.212Z",
+      "duration_ms": 600000,
+      "summary": "Published blog #5 today: Copy-and-Patch vs Tracing JITs. 126 lines comparing the two approaches, real-world numbers, why not both in Monkey, tiered compilation."
+    },
+    {
+      "id": "T90",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Late housekeeping",
+      "started": "2026-03-26T16:00:19.023Z"
+    },
+    {
+      "id": "T91",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Session wrap"
+      "task": "Monkey: add and_then/map_err combinators for Result chaining"
+    },
+    {
+      "id": "T92",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Rebuild playground bundle with all today's features, final push"
+    },
+    {
+      "id": "T93",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Pre-boundary final: git push, CURRENT.md session-ended, daily log complete"
     }
   ],
   "updated_at": "2026-03-26T14:02:05.404Z",
@@ -1152,6 +1204,30 @@
     {
       "time": "2026-03-26T15:50:04.397Z",
       "msg": "Added T87 (MAINTAIN) after end: Session wrap"
+    },
+    {
+      "time": "2026-03-26T15:57:08.883Z",
+      "msg": "Added T88 (EXPLORE) after end: Deep dive: copy-and-patch compilation (CPython 3.13 JIT, Haoran Xu's paper). How does it compare to tracing JITs? Could we add it to Monkey?"
+    },
+    {
+      "time": "2026-03-26T15:57:08.992Z",
+      "msg": "Added T89 (BUILD) after end: Blog: Copy-and-Patch vs Tracing JITs — two approaches to dynamic compilation"
+    },
+    {
+      "time": "2026-03-26T15:57:09.103Z",
+      "msg": "Added T90 (MAINTAIN) after end: Late housekeeping"
+    },
+    {
+      "time": "2026-03-26T15:57:09.213Z",
+      "msg": "Added T91 (BUILD) after end: Monkey: add and_then/map_err combinators for Result chaining"
+    },
+    {
+      "time": "2026-03-26T15:57:09.326Z",
+      "msg": "Added T92 (BUILD) after end: Rebuild playground bundle with all today's features, final push"
+    },
+    {
+      "time": "2026-03-26T15:57:09.435Z",
+      "msg": "Added T93 (MAINTAIN) after end: Pre-boundary final: git push, CURRENT.md session-ended, daily log complete"
     }
   ]
 }
