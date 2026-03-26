@@ -1044,15 +1044,15 @@
         data = transformApiData(data);
       }
       currentData = data;
-      console.log('Dashboard data:', { 
-        blogPosts: data.blogPosts?.length, 
-        prs: data.prs?.length, 
-        artifacts: data.artifacts?.length,
-        benchmarks: !!data.benchmarks,
-        recentDays: data.recentDays?.length,
-        blocks: data.schedule?.blocks?.length,
-        keys: Object.keys(data)
-      });
+      // Temporary debug banner (visible on mobile)
+      let dbg = document.getElementById('debugBanner');
+      if (!dbg) {
+        dbg = document.createElement('div');
+        dbg.id = 'debugBanner';
+        dbg.style.cssText = 'background:#1a1a2e;color:#0f0;font-family:monospace;font-size:11px;padding:8px;margin:8px;border-radius:6px;border:1px solid #333;white-space:pre-wrap;';
+        document.body.prepend(dbg);
+      }
+      dbg.textContent = `🔍 Debug: blogs=${data.blogPosts?.length||0} prs=${data.prs?.length||0} artifacts=${data.artifacts?.length||0} benchmarks=${data.benchmarks?.results?.length||0} recentDays=${data.recentDays?.length||0} blocks=${data.schedule?.blocks?.length||0} keys=[${Object.keys(data).join(',')}]`;
       renderAll(data);
       errorCount = 0;
       $('#pollStatus').className = 'poll-status' + (apiAvailable ? ' live' : '');
