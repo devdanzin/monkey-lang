@@ -19,6 +19,7 @@ Inspired by Thorsten Ball's *Writing An Interpreter In Go* and *Writing A Compil
 - **Optional type annotations** — `fn(x: int, y: int) -> int` with runtime validation and JIT guard elimination
 - **Result type** — `Ok(value)` / `Err(error)` with pattern matching and `unwrap_or`
 - **Module system** — `import "math"`, `import "string"` with namespace access (`math.sqrt(16)`)
+- **Enum types** — `enum Color { Red, Green, Blue }` with dot access and equality
 - **Method syntax** — `"hello".upper()`, `[1,2].push(3)`, `.length` on strings/arrays
 - **Standard library** — `map`, `filter`, `reduce`, `forEach`, `range`, `contains`, `reverse` (implemented in Monkey for JIT compatibility)
 - **25+ builtins** — `len`, `puts`, `first`, `last`, `rest`, `push`, `split`, `join`, `trim`, `str_contains`, `substr`, `replace`, `int`, `str`, `type`, `ord`, `char`, `abs`, `upper`, `lower`, `indexOf`, `startsWith`, `endsWith`, `keys`, `values`
@@ -235,6 +236,20 @@ x == null          // true
 `split`, `join`, `trim`, `replace`, `upper`, `lower`, `indexOf`,
 `startsWith`, `endsWith`, `char`, `ord`
 
+### Enums
+```javascript
+enum Color { Red, Green, Blue }
+let c = Color.Green;
+
+if (c == Color.Green) {
+  puts("green light!")
+}
+
+enum Priority { Low, Medium, High }
+let p = Priority.High;
+puts(p)  // Priority.High
+```
+
 ### Modules
 ```javascript
 import "math";
@@ -307,7 +322,7 @@ Aggregate: 26 benchmarks, ~9.2x overall (all correct)
 ## Tests
 
 ```bash
-node --test    # 1045 tests (1042 passing, 3 skipped JIT edge cases)
+node --test    # 1060 tests (1057 passing, 3 skipped JIT edge cases)
 ```
 
 ## Benchmarks

@@ -66,6 +66,7 @@ var TokenType = {
   DO: "DO",
   UNDERSCORE: "_",
   IMPORT: "IMPORT",
+  ENUM: "ENUM",
   // Special
   EOF: "EOF",
   ILLEGAL: "ILLEGAL"
@@ -86,7 +87,8 @@ var KEYWORDS = {
   null: TokenType.NULL_LIT,
   match: TokenType.MATCH,
   do: TokenType.DO,
-  import: TokenType.IMPORT
+  import: TokenType.IMPORT,
+  enum: TokenType.ENUM
 };
 var Token = class {
   constructor(type, literal) {
@@ -455,10 +457,11 @@ var ReturnStatement = class {
   }
 };
 var ImportStatement = class {
-  constructor(token, moduleName, bindings = null) {
+  constructor(token, moduleName, bindings = null, alias = null) {
     this.token = token;
     this.moduleName = moduleName;
     this.bindings = bindings;
+    this.alias = alias;
   }
   tokenLiteral() {
     return this.token.literal;
@@ -466,6 +469,9 @@ var ImportStatement = class {
   toString() {
     if (this.bindings) {
       return `import "${this.moduleName}" for ${this.bindings.join(", ")};`;
+    }
+    if (this.alias) {
+      return `import "${this.moduleName}" as ${this.alias};`;
     }
     return `import "${this.moduleName}";`;
   }
@@ -758,6 +764,19 @@ var ContinueStatement = class {
   }
   toString() {
     return "continue";
+  }
+};
+var EnumStatement = class {
+  constructor(token, name, variants) {
+    this.token = token;
+    this.name = name;
+    this.variants = variants;
+  }
+  tokenLiteral() {
+    return this.token.literal;
+  }
+  toString() {
+    return `enum ${this.name} { ${this.variants.join(", ")} }`;
   }
 };
 var TemplateLiteral = class {
@@ -1083,6 +1102,8 @@ var Parser = class _Parser {
         return this.parseReturnStatement();
       case TokenType.IMPORT:
         return this.parseImportStatement();
+      case TokenType.ENUM:
+        return this.parseEnumStatement();
       default:
         return this.parseExpressionStatement();
     }
@@ -1161,6 +1182,7 @@ var Parser = class _Parser {
     }
     const moduleName = this.curToken.literal;
     let bindings = null;
+    let alias = null;
     if (this.peekToken.type === TokenType.FOR) {
       this.nextToken();
       bindings = [];
@@ -1174,15 +1196,46 @@ var Parser = class _Parser {
         if (!this.peekTokenIs(TokenType.COMMA)) break;
         this.nextToken();
       } while (true);
+    } else if (this.peekToken.type === TokenType.IDENT && this.peekToken.literal === "as") {
+      this.nextToken();
+      this.nextToken();
+      if (this.curToken.type !== TokenType.IDENT) {
+        this.errors.push(`expected identifier after 'as', got ${this.curToken.type}`);
+        return null;
+      }
+      alias = this.curToken.literal;
     }
     if (this.peekTokenIs(TokenType.SEMICOLON)) this.nextToken();
-    return new ImportStatement(token, moduleName, bindings);
+    return new ImportStatement(token, moduleName, bindings, alias);
   }
   parseExpressionStatement() {
     const token = this.curToken;
     const expression = this.parseExpression(Precedence.LOWEST);
     if (this.peekTokenIs(TokenType.SEMICOLON)) this.nextToken();
     return new ExpressionStatement(token, expression);
+  }
+  parseEnumStatement() {
+    const token = this.curToken;
+    this.nextToken();
+    if (this.curToken.type !== TokenType.IDENT) {
+      this.errors.push(`expected enum name, got ${this.curToken.type}`);
+      return null;
+    }
+    const name = this.curToken.literal;
+    if (!this.expectPeek(TokenType.LBRACE)) return null;
+    const variants = [];
+    while (!this.peekTokenIs(TokenType.RBRACE)) {
+      this.nextToken();
+      if (this.curToken.type !== TokenType.IDENT) {
+        this.errors.push(`expected variant name, got ${this.curToken.type}`);
+        return null;
+      }
+      variants.push(this.curToken.literal);
+      if (this.peekTokenIs(TokenType.COMMA)) this.nextToken();
+    }
+    if (!this.expectPeek(TokenType.RBRACE)) return null;
+    if (this.peekTokenIs(TokenType.SEMICOLON)) this.nextToken();
+    return new EnumStatement(token, name, variants);
   }
   parseBlockStatement() {
     const token = this.curToken;
@@ -2242,6 +2295,25 @@ var MonkeyResult = class {
     return `result:${this.isOk}:${this.value.inspect()}`;
   }
 };
+var MonkeyEnum = class {
+  constructor(enumName, variant, ordinal) {
+    this.enumName = enumName;
+    this.variant = variant;
+    this.ordinal = ordinal;
+  }
+  type() {
+    return "ENUM";
+  }
+  inspect() {
+    return `${this.enumName}.${this.variant}`;
+  }
+  hashKey() {
+    return `enum:${this.enumName}:${this.variant}`;
+  }
+  fastHashKey() {
+    return `enum:${this.enumName}:${this.variant}`;
+  }
+};
 
 // src/modules.js
 function mkInt(v) {
@@ -2626,13 +2698,31 @@ var Compiler = class _Compiler {
         }
       } else {
         this.emit(Opcodes.OpConstant, constIdx);
-        const sym = this.symbolTable.define(node.moduleName);
-        this.importedModules.add(node.moduleName);
+        const bindName = node.alias || node.moduleName;
+        const sym = this.symbolTable.define(bindName);
+        this.importedModules.add(bindName);
         if (sym.scope === SCOPE.GLOBAL) {
           this.emit(Opcodes.OpSetGlobal, sym.index);
         } else {
           this.emit(Opcodes.OpSetLocal, sym.index);
         }
+      }
+    } else if (node instanceof EnumStatement) {
+      const pairs = /* @__PURE__ */ new Map();
+      for (let i = 0; i < node.variants.length; i++) {
+        const key = new MonkeyString(node.variants[i]);
+        const value = new MonkeyEnum(node.name, node.variants[i], i);
+        pairs.set(key.fastHashKey ? key.fastHashKey() : key.hashKey(), { key, value });
+      }
+      const enumHash = new MonkeyHash(pairs);
+      const constIdx = this.addConstant(enumHash);
+      this.emit(Opcodes.OpConstant, constIdx);
+      const sym = this.symbolTable.define(node.name);
+      this.importedModules.add(node.name);
+      if (sym.scope === SCOPE.GLOBAL) {
+        this.emit(Opcodes.OpSetGlobal, sym.index);
+      } else {
+        this.emit(Opcodes.OpSetLocal, sym.index);
       }
     } else if (node instanceof InfixExpression) {
       if (["+", "-", "*", "/"].includes(node.operator)) {
@@ -7976,6 +8066,13 @@ var VM = class _VM {
             }
             const result = op === Opcodes.OpEqual ? left2 === right2 : left2 !== right2;
             this.push(result ? TRUE : FALSE);
+          } else if (left2 instanceof MonkeyEnum && right2 instanceof MonkeyEnum) {
+            if (recording()) {
+              this._abortRecording();
+            }
+            const eq = left2.enumName === right2.enumName && left2.variant === right2.variant;
+            const result = op === Opcodes.OpEqual ? eq : !eq;
+            this.push(result ? TRUE : FALSE);
           } else {
             throw new Error(`unsupported comparison: ${left2.type()} and ${right2.type()}`);
           }
@@ -9782,8 +9879,19 @@ function monkeyEval(node, env) {
       }
       return mod;
     }
-    env.set(node.moduleName, mod);
+    env.set(node.alias || node.moduleName, mod);
     return mod;
+  }
+  if (node instanceof EnumStatement) {
+    const pairs = /* @__PURE__ */ new Map();
+    for (let i = 0; i < node.variants.length; i++) {
+      const key = new MonkeyString(node.variants[i]);
+      const value = new MonkeyEnum(node.name, node.variants[i], i);
+      pairs.set(key.fastHashKey ? key.fastHashKey() : key.hashKey(), { key, value });
+    }
+    const enumHash = new MonkeyHash(pairs);
+    env.set(node.name, enumHash);
+    return enumHash;
   }
   if (node instanceof IntegerLiteral) return new MonkeyInteger(node.value);
   if (node instanceof StringLiteral) return internString(node.value);
@@ -10084,6 +10192,11 @@ function evalInfixExpression(op, left, right) {
   }
   if (left.type() === OBJ.ARRAY && right.type() === OBJ.ARRAY && op === "+") {
     return new MonkeyArray([...left.elements, ...right.elements]);
+  }
+  if (left.type() === "ENUM" && right.type() === "ENUM") {
+    const eq = left.enumName === right.enumName && left.variant === right.variant;
+    if (op === "==") return nativeBoolToBooleanObject(eq);
+    if (op === "!=") return nativeBoolToBooleanObject(!eq);
   }
   if (op === "==") return nativeBoolToBooleanObject(left === right);
   if (op === "!=") return nativeBoolToBooleanObject(left !== right);

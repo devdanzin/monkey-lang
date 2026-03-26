@@ -1357,21 +1357,29 @@
       "id": "T138",
       "mode": "BUILD",
       "task": "Enum types: lexer keyword, parser EnumStatement, MonkeyEnum object, compiler (enum hash + dot access), evaluator, match support. Tests.",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T131",
-      "started": "2026-03-26T17:49:41.088Z"
+      "started": "2026-03-26T17:49:41.088Z",
+      "completed": "2026-03-26T17:55:12.175Z",
+      "duration_ms": 600000,
+      "summary": "Enum types: enum keyword, EnumStatement, MonkeyEnum object, compiler/evaluator/VM support, equality. 1060 tests."
     },
     {
       "id": "T132",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-03-26T17:55:20.394Z",
+      "completed": "2026-03-26T17:55:20.508Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled."
     },
     {
       "id": "T133",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Update README + playground with enums"
+      "status": "in-progress",
+      "task": "Update README + playground with enums",
+      "started": "2026-03-26T17:55:27.408Z"
     },
     {
       "id": "T134",
