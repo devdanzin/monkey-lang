@@ -316,6 +316,23 @@ const jsonModule = () => buildModule({
   }),
 });
 
+// --- sys module ---
+const sysModule = () => buildModule({
+  time: new MonkeyBuiltin((...args) => {
+    return mkInt(Date.now());
+  }),
+  random: new MonkeyBuiltin((...args) => {
+    if (args.length === 0) return mkInt(Math.floor(Math.random() * 2147483647));
+    if (args.length === 1) return mkInt(Math.floor(Math.random() * args[0].value));
+    if (args.length === 2) {
+      const [lo, hi] = [args[0].value, args[1].value];
+      return mkInt(lo + Math.floor(Math.random() * (hi - lo)));
+    }
+    return new MonkeyNull();
+  }),
+  version: mkStr('0.2.0'),
+});
+
 const MODULE_REGISTRY = {
   math: mathModuleEnhanced,
   string: stringModuleEnhanced,
@@ -323,6 +340,7 @@ const MODULE_REGISTRY = {
   algorithms: algorithmsModule,
   array: arrayModule,
   json: jsonModule,
+  sys: sysModule,
 };
 
 export function getModule(name) {

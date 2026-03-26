@@ -3251,3 +3251,14 @@ describe('JSON Module (compiler+VM)', () => {
     assert.equal(r.elements.length, 3);
   });
 });
+
+describe('Sys Module (compiler+VM)', () => {
+  it('time returns number', () => {
+    const r = compileAndRun('import "sys" for time; time() > 0');
+    assert.equal(r.value, true);
+  });
+
+  it('random with bounds', () => {
+    testIntegerObject(compileAndRun('import "sys" for random; let r = random(1, 1); r'), 1);
+  });
+});

@@ -1764,15 +1764,41 @@
     {
       "id": "T172",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add a comprehensive Monkey feature comparison table to README",
-      "started": "2026-03-26T18:35:28.006Z"
+      "started": "2026-03-26T18:35:28.006Z",
+      "completed": "2026-03-26T18:35:57.037Z",
+      "duration_ms": 60000,
+      "summary": "README: feature comparison table vs Lox, Lua, Wren. Monkey wins in most categories."
     },
     {
       "id": "T173",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final daily log + memory + CURRENT.md + git push (BOUNDARY CHECK)",
+      "started": "2026-03-26T18:36:05.539Z",
+      "completed": "2026-03-26T18:36:05.652Z",
+      "duration_ms": 0,
+      "summary": "Skipped — 1h39m remain."
+    },
+    {
+      "id": "T174",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add sys module: time (epoch ms), random (int range), sleep (ms), version",
+      "started": "2026-03-26T18:36:26.193Z"
+    },
+    {
+      "id": "T175",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Final daily log + memory + CURRENT.md + git push (BOUNDARY CHECK)"
+      "task": "Push monkey-lang to GitHub with updated tag v0.2.0"
+    },
+    {
+      "id": "T176",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Daily log update + final push (BOUNDARY CHECK)"
     }
   ],
   "updated_at": "2026-03-26T14:02:05.404Z",
@@ -2372,6 +2398,18 @@
     {
       "time": "2026-03-26T18:34:55.229Z",
       "msg": "Added T173 (MAINTAIN) after end: Final daily log + memory + CURRENT.md + git push (BOUNDARY CHECK)"
+    },
+    {
+      "time": "2026-03-26T18:36:18.660Z",
+      "msg": "Added T174 (BUILD) after end: Add sys module: time (epoch ms), random (int range), sleep (ms), version"
+    },
+    {
+      "time": "2026-03-26T18:36:18.772Z",
+      "msg": "Added T175 (BUILD) after end: Push monkey-lang to GitHub with updated tag v0.2.0"
+    },
+    {
+      "time": "2026-03-26T18:36:18.883Z",
+      "msg": "Added T176 (MAINTAIN) after end: Daily log update + final push (BOUNDARY CHECK)"
     }
   ]
 }

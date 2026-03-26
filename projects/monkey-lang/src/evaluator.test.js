@@ -1004,3 +1004,20 @@ describe('JSON Module (evaluator)', () => {
     assert.equal(r.value, 20);
   });
 });
+
+describe('Sys Module (evaluator)', () => {
+  it('time returns epoch ms', () => {
+    const r = testEval('import "sys" for time; time()');
+    assert.ok(r.value > 1000000000000); // after 2001
+  });
+
+  it('random in range', () => {
+    const r = testEval('import "sys" for random; random(10)');
+    assert.ok(r.value >= 0 && r.value < 10);
+  });
+
+  it('version', () => {
+    const r = testEval('import "sys"; sys.version');
+    assert.equal(r.value, '0.2.0');
+  });
+});
