@@ -1367,6 +1367,29 @@ export class VM {
           break;
         }
 
+        case Opcodes.OpTypeIs: {
+          const typeIdx8 = (ins[ip + 1] << 8) | ins[ip + 2];
+          frame.ip += 2;
+          const val8 = this.pop();
+          const typeName8 = this.constants[typeIdx8];
+          let ok8 = false;
+          switch (typeName8) {
+            case 'int': ok8 = val8 instanceof MonkeyInteger; break;
+            case 'bool': ok8 = val8 instanceof MonkeyBoolean; break;
+            case 'string': ok8 = val8 instanceof MonkeyString; break;
+            case 'array': ok8 = val8 instanceof MonkeyArray; break;
+            case 'hash': ok8 = val8 instanceof MonkeyHash; break;
+            case 'fn': ok8 = val8 instanceof Closure || val8 instanceof MonkeyFunction || val8 instanceof MonkeyBuiltin; break;
+            case 'null': ok8 = val8 === NULL; break;
+            default: ok8 = false;
+          }
+          this.push(ok8 ? TRUE : FALSE);
+          if (recording()) {
+            this.recorder.abort('OpTypeIs not JIT-compiled');
+          }
+          break;
+        }
+
         case Opcodes.OpCurrentClosure:
           this.push(frame.closure);
           if (recording()) {
@@ -1714,6 +1737,26 @@ export class VM {
             const actualType7 = val7 === NULL ? 'null' : val7.constructor.name.replace('Monkey', '').toLowerCase();
             throw new Error(`Type error: expected ${typeName7}, got ${actualType7}`);
           }
+          break;
+        }
+
+        case Opcodes.OpTypeIs: {
+          const typeIdx9 = (ins[ip + 1] << 8) | ins[ip + 2];
+          frame.ip += 2;
+          const val9 = this.stack[--this.sp];
+          const typeName9 = this.constants[typeIdx9];
+          let ok9 = false;
+          switch (typeName9) {
+            case 'int': ok9 = val9 instanceof MonkeyInteger; break;
+            case 'bool': ok9 = val9 instanceof MonkeyBoolean; break;
+            case 'string': ok9 = val9 instanceof MonkeyString; break;
+            case 'array': ok9 = val9 instanceof MonkeyArray; break;
+            case 'hash': ok9 = val9 instanceof MonkeyHash; break;
+            case 'fn': ok9 = val9 instanceof Closure || val9 instanceof MonkeyFunction || val9 instanceof MonkeyBuiltin; break;
+            case 'null': ok9 = val9 === NULL; break;
+            default: ok9 = false;
+          }
+          this.stack[this.sp++] = ok9 ? TRUE : FALSE;
           break;
         }
 

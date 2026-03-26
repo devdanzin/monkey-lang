@@ -353,6 +353,26 @@ export function monkeyEval(node, env) {
       if (arm.pattern === null) {
         return monkeyEval(arm.value, env); // wildcard
       }
+      if (arm.pattern instanceof AST.TypePattern) {
+        // Type pattern: check type and bind value
+        const typeName = arm.pattern.typeName;
+        let matches = false;
+        switch (typeName) {
+          case 'int': matches = subject instanceof MonkeyInteger; break;
+          case 'string': matches = subject instanceof MonkeyString; break;
+          case 'bool': matches = subject instanceof MonkeyBoolean; break;
+          case 'array': matches = subject instanceof MonkeyArray; break;
+          case 'hash': matches = subject instanceof MonkeyHash; break;
+          case 'fn': matches = subject instanceof MonkeyFunction; break;
+          case 'null': matches = subject === NULL; break;
+        }
+        if (matches) {
+          const innerEnv = new Environment(env);
+          innerEnv.set(arm.pattern.binding.value, subject);
+          return monkeyEval(arm.value, innerEnv);
+        }
+        continue;
+      }
       const pattern = monkeyEval(arm.pattern, env);
       if (isError(pattern)) return pattern;
       if (subject.inspect() === pattern.inspect()) {

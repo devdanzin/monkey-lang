@@ -735,11 +735,21 @@ export class Parser {
     if (!this.expectPeek(TokenType.LBRACE)) return null;
 
     const arms = [];
+    const TYPE_NAMES = new Set(['int', 'string', 'bool', 'array', 'hash', 'fn', 'null']);
     while (!this.peekTokenIs(TokenType.RBRACE) && !this.peekTokenIs(TokenType.EOF)) {
       this.nextToken();
       let pattern = null;
       if (this.curTokenIs(TokenType.IDENT) && this.curToken.literal === '_') {
         pattern = null; // wildcard
+      } else if ((this.curTokenIs(TokenType.IDENT) || this.curTokenIs(TokenType.FUNCTION)) && 
+                  TYPE_NAMES.has(this.curToken.literal) && this.peekTokenIs(TokenType.LPAREN)) {
+        // Type pattern: int(n), string(s), etc.
+        const typeName = this.curToken.literal;
+        this.nextToken(); // consume (
+        this.nextToken(); // move to binding ident
+        const binding = new ast.Identifier(this.curToken, this.curToken.literal);
+        if (!this.expectPeek(TokenType.RPAREN)) return null;
+        pattern = new ast.TypePattern(typeName, binding);
       } else {
         pattern = this.parseExpression(Precedence.LOWEST);
       }

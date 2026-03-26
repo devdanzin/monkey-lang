@@ -2464,3 +2464,40 @@ describe('Hash Destructuring (Compiler)', () => {
     testIntegerObject(compileAndRun('let [a, b] = [1, 2]; let {x} = {"x": 3}; a + b + x'), 6);
   });
 });
+
+describe('Type Patterns in Match', () => {
+  it('matches int type', () => {
+    testIntegerObject(compileAndRun('match (42) { int(n) => n + 1, _ => 0 }'), 43);
+  });
+
+  it('matches string type', () => {
+    const r = compileAndRun('match ("hello") { int(n) => n, string(s) => s + " world" }');
+    assert.equal(r.value, 'hello world');
+  });
+
+  it('falls through to wildcard', () => {
+    const r = compileAndRun('match (true) { int(n) => n, string(s) => s, _ => "other" }');
+    assert.equal(r.value, 'other');
+  });
+
+  it('matches array type', () => {
+    testIntegerObject(compileAndRun('match ([1,2,3]) { array(a) => len(a), _ => 0 }'), 3);
+  });
+
+  it('matches bool type', () => {
+    const r = compileAndRun('match (true) { bool(b) => !b, _ => null }');
+    assert.equal(r.value, false);
+  });
+
+  it('matches hash type', () => {
+    testIntegerObject(compileAndRun('match ({"x": 42}) { hash(h) => h["x"], _ => 0 }'), 42);
+  });
+
+  it('matches fn type', () => {
+    testIntegerObject(compileAndRun('match (fn(x) { x * 2 }) { fn(f) => f(21), _ => 0 }'), 42);
+  });
+
+  it('mixed value and type patterns', () => {
+    testIntegerObject(compileAndRun('match (42) { 0 => 100, int(n) => n + 1, _ => -1 }'), 43);
+  });
+});

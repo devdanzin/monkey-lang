@@ -92,6 +92,7 @@ export const Opcodes = {
   OpSetIndex:       0x36, // Set element at index: arr[i] = val
   OpSlice:          0x37, // Slice: arr[start:end]
   OpTypeCheck:      0x38, // Type check: local(1) typeConstIdx(2) — validates param type
+  OpTypeIs:         0x39, // Type check: pops value, pushes bool (typeConstIdx(2))
 };
 
 // Opcode definitions: [name, ...operandWidths]
@@ -152,6 +153,7 @@ const definitions = {
   [Opcodes.OpSetIndex]:         ['OpSetIndex'],
   [Opcodes.OpSlice]:            ['OpSlice'],
   [Opcodes.OpTypeCheck]:        ['OpTypeCheck', 1, 2], // localSlot (1), typeNameConstIdx (2)
+  [Opcodes.OpTypeIs]:           ['OpTypeIs', 2],       // typeNameConstIdx (2) — pops value, pushes bool
 };
 
 /**

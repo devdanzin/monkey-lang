@@ -862,6 +862,26 @@ export class Compiler {
         break;
       }
 
+      if (arm.pattern instanceof ast.TypePattern) {
+        // Type pattern: check type, bind value if matches
+        this.loadSymbol(subjectSym);
+        const typeConst = this.addConstant(arm.pattern.typeName);
+        this.emit(Opcodes.OpTypeIs, typeConst);
+        const jumpNotTruthyPos = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+
+        // Match — bind subject to pattern variable and compile value
+        this.loadSymbol(subjectSym);
+        const bindSym = this.symbolTable.define(arm.pattern.binding.value);
+        this.emit(bindSym.scope === 'GLOBAL' ? Opcodes.OpSetGlobal : Opcodes.OpSetLocal, bindSym.index);
+        err = this.compile(arm.value);
+        if (err) return err;
+        endJumps.push(this.emit(Opcodes.OpJump, 9999));
+
+        this.changeOperand(jumpNotTruthyPos, this.currentInstructions().length);
+        this.resetPeepholeState();
+        continue;
+      }
+
       // Compare subject == pattern
       this.loadSymbol(subjectSym);
       err = this.compile(arm.pattern);

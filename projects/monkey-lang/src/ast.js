@@ -314,10 +314,18 @@ export class MatchExpression {
   constructor(token, subject, arms) {
     this.token = token;
     this.subject = subject;   // Expression to match against
-    this.arms = arms;         // Array of { pattern, value } where pattern is Expression or null (wildcard)
+    this.arms = arms;         // Array of { pattern, value } where pattern is Expression, TypePattern, or null (wildcard)
   }
   tokenLiteral() { return this.token.literal; }
   toString() { return 'match { ... }'; }
+}
+
+export class TypePattern {
+  constructor(typeName, binding) {
+    this.typeName = typeName;  // string: 'int', 'string', 'bool', 'array', 'hash', 'fn'
+    this.binding = binding;    // Identifier (variable to bind the matched value to)
+  }
+  toString() { return `${this.typeName}(${this.binding.value})`; }
 }
 
 export class DestructuringLet {
