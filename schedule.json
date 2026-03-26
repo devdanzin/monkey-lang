@@ -2344,9 +2344,12 @@
     {
       "id": "T228",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement arrow functions (x => x * 2) for Monkey",
-      "started": "2026-03-26T03:17:44.027Z"
+      "started": "2026-03-26T03:17:44.027Z",
+      "completed": "2026-03-26T03:21:38.100Z",
+      "duration_ms": 600000,
+      "summary": "Arrow functions implemented via parser lookahead. (x) => expr desugars to fn(x) { expr }. No match arm conflict. 829 tests passing."
     }
   ],
   "backlog": [],

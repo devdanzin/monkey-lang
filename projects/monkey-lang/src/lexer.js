@@ -65,7 +65,6 @@ export const TokenType = {
   NULL_LIT: 'NULL_LIT',
   MATCH: 'MATCH',
   DO: 'DO',
-  ARROW: '=>',
   UNDERSCORE: '_',
 
   // Special
