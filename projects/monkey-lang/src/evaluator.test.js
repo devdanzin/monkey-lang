@@ -790,3 +790,35 @@ describe('Enum Types (evaluator)', () => {
     assert.equal(r.inspect(), 'Color.Blue');
   });
 });
+
+describe('Array Comprehensions (evaluator)', () => {
+  it('basic comprehension', () => {
+    const r = testEval('[x * 2 for x in [1, 2, 3]]');
+    assert.deepEqual(r.elements.map(e => e.value), [2, 4, 6]);
+  });
+
+  it('comprehension with filter', () => {
+    const r = testEval('[x for x in [1, 2, 3, 4, 5, 6] if x % 2 == 0]');
+    assert.deepEqual(r.elements.map(e => e.value), [2, 4, 6]);
+  });
+
+  it('comprehension with range', () => {
+    const r = testEval('[x * x for x in range(1, 6)]');
+    assert.deepEqual(r.elements.map(e => e.value), [1, 4, 9, 16, 25]);
+  });
+
+  it('comprehension with filter and transform', () => {
+    const r = testEval('[x * x for x in range(1, 11) if x % 2 == 0]');
+    assert.deepEqual(r.elements.map(e => e.value), [4, 16, 36, 64, 100]);
+  });
+
+  it('comprehension with string', () => {
+    const r = testEval('import "string" for upper; [upper(s) for s in ["hello", "world"]]');
+    assert.deepEqual(r.elements.map(e => e.value), ['HELLO', 'WORLD']);
+  });
+
+  it('empty result', () => {
+    const r = testEval('[x for x in [1, 2, 3] if x > 10]');
+    assert.deepEqual(r.elements, []);
+  });
+});

@@ -184,6 +184,21 @@ export class ArrayLiteral {
   toString() { return `[${this.elements.join(', ')}]`; }
 }
 
+export class ArrayComprehension {
+  constructor(token, body, variable, iterable, condition) {
+    this.token = token;
+    this.body = body;         // expression to evaluate per element
+    this.variable = variable; // identifier string
+    this.iterable = iterable; // expression producing array
+    this.condition = condition; // optional filter expression (or null)
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() {
+    const cond = this.condition ? ` if ${this.condition}` : '';
+    return `[${this.body} for ${this.variable} in ${this.iterable}${cond}]`;
+  }
+}
+
 export class IndexExpression {
   constructor(token, left, index) {
     this.token = token; // LBRACKET

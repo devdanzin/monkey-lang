@@ -1377,34 +1377,113 @@
     {
       "id": "T133",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Update README + playground with enums",
-      "started": "2026-03-26T17:55:27.408Z"
+      "started": "2026-03-26T17:55:27.408Z",
+      "completed": "2026-03-26T17:56:21.357Z",
+      "duration_ms": 120000,
+      "summary": "README: enum section + features list. Playground rebuilt (376KB). 1060 tests."
     },
     {
       "id": "T134",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Blog: Building a Module System for a Toy Language",
-      "task": null
+      "task": null,
+      "started": "2026-03-26T17:56:26.873Z",
+      "completed": "2026-03-26T17:56:48.158Z",
+      "duration_ms": 30000,
+      "summary": "Blog plan: module system design decisions. 1 BUILD."
+    },
+    {
+      "id": "T139",
+      "mode": "BUILD",
+      "task": "Write and publish blog: Building a Module System for a Toy Language",
+      "status": "done",
+      "plan_ref": "T134",
+      "started": "2026-03-26T17:56:55.059Z",
+      "completed": "2026-03-26T17:57:46.384Z",
+      "duration_ms": 300000,
+      "summary": "Published blog: Building a Module System for a Toy Language — 99 lines covering design decisions, the method desugaring bug, selective/aliased imports, 4 stdlib modules. Pushed to GH Pages."
     },
     {
       "id": "T135",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "started": "2026-03-26T17:58:06.322Z",
+      "completed": "2026-03-26T17:58:06.432Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled."
+    },
+    {
+      "id": "T136",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Pre-boundary housekeeping",
+      "started": "2026-03-26T17:58:12.130Z",
+      "completed": "2026-03-26T17:58:32.133Z",
+      "duration_ms": 30000,
+      "summary": "Git pushed, dashboard regenerated. 8 blogs today (28 total), 1060 tests."
+    },
+    {
+      "id": "T137",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final session push (boundary check)",
+      "started": "2026-03-26T17:58:39.492Z",
+      "completed": "2026-03-26T17:58:39.603Z",
+      "duration_ms": 0,
+      "summary": "Skipped — 2+ hours remain."
+    },
+    {
+      "id": "T140",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Array comprehensions: [x * 2 for x in arr if x > 0]",
+      "task": null,
+      "started": "2026-03-26T17:59:03.124Z",
+      "completed": "2026-03-26T17:59:20.685Z",
+      "duration_ms": 30000,
+      "summary": "Plan: array comprehensions [x*2 for x in arr if cond]. 1 BUILD."
+    },
+    {
+      "id": "T146",
+      "mode": "BUILD",
+      "task": "Array comprehensions: parser (detect for after first expr), AST ArrayComprehension, compiler (desugar to loop building array), evaluator (direct). Tests.",
+      "status": "in-progress",
+      "plan_ref": "T140",
+      "started": "2026-03-26T17:59:26.981Z"
+    },
+    {
+      "id": "T141",
       "mode": "BUILD",
       "status": "upcoming",
       "task": null
     },
     {
-      "id": "T136",
-      "mode": "MAINTAIN",
+      "id": "T142",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Pre-boundary housekeeping"
+      "task": "Transpiler: update for enums, selective/aliased imports, array comprehensions"
     },
     {
-      "id": "T137",
+      "id": "T143",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Update playground + README with comprehensions"
+    },
+    {
+      "id": "T144",
       "mode": "MAINTAIN",
       "status": "upcoming",
-      "task": "Final session push (boundary check)"
+      "task": "Housekeeping + push"
+    },
+    {
+      "id": "T145",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "FINAL session push (check time)"
     }
   ],
   "updated_at": "2026-03-26T14:02:05.404Z",
@@ -1864,6 +1943,38 @@
     {
       "time": "2026-03-26T17:49:27.086Z",
       "msg": "PLAN T131 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-03-26T17:56:40.949Z",
+      "msg": "PLAN T134 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-03-26T17:58:51.714Z",
+      "msg": "Added T140 (PLAN) after end: Array comprehensions: [x * 2 for x in arr if x > 0]"
+    },
+    {
+      "time": "2026-03-26T17:58:51.825Z",
+      "msg": "Added T141 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-03-26T17:58:51.936Z",
+      "msg": "Added T142 (BUILD) after end: Transpiler: update for enums, selective/aliased imports, array comprehensions"
+    },
+    {
+      "time": "2026-03-26T17:58:52.048Z",
+      "msg": "Added T143 (BUILD) after end: Update playground + README with comprehensions"
+    },
+    {
+      "time": "2026-03-26T17:58:52.161Z",
+      "msg": "Added T144 (MAINTAIN) after end: Housekeeping + push"
+    },
+    {
+      "time": "2026-03-26T17:58:52.271Z",
+      "msg": "Added T145 (MAINTAIN) after end: FINAL session push (check time)"
+    },
+    {
+      "time": "2026-03-26T17:59:12.784Z",
+      "msg": "PLAN T140 filled 1 BUILD tasks"
     }
   ]
 }

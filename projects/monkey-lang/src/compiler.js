@@ -516,6 +516,43 @@ export class Compiler {
       const sym = this.symbolTable.resolve(node.value);
       if (!sym) return `undefined variable: ${node.value}`;
       this.loadSymbol(sym);
+    } else if (node instanceof ast.ArrayComprehension) {
+      // Desugar: [body for var in iter if cond] →
+      // (fn() { let _r = []; for (var in iter) { if (cond) { _r = push(_r, body) } }; _r })()
+      const tok = node.token;
+      const resultName = '__comp_r';
+      
+      // Build synthetic AST
+      const resultIdent = new ast.Identifier(tok, resultName);
+      const letResult = new ast.LetStatement(tok, new ast.Identifier(tok, resultName), new ast.ArrayLiteral(tok, []), false);
+      
+      // _r = push(_r, body)
+      const pushCall = new ast.CallExpression(tok, new ast.Identifier(tok, 'push'), [resultIdent, node.body]);
+      const assignResult = new ast.AssignExpression(tok, new ast.Identifier(tok, resultName), pushCall);
+      
+      // Build loop body
+      let loopBody;
+      if (node.condition) {
+        const ifExpr = new ast.IfExpression(tok, node.condition, 
+          new ast.BlockStatement(tok, [new ast.ExpressionStatement(tok, assignResult)]),
+          null);
+        loopBody = new ast.BlockStatement(tok, [new ast.ExpressionStatement(tok, ifExpr)]);
+      } else {
+        loopBody = new ast.BlockStatement(tok, [new ast.ExpressionStatement(tok, assignResult)]);
+      }
+      
+      const forIn = new ast.ForInExpression(tok, node.variable, node.iterable, loopBody);
+      
+      // fn() { let _r = []; for...; _r }
+      const fnBody = new ast.BlockStatement(tok, [
+        letResult,
+        new ast.ExpressionStatement(tok, forIn),
+        new ast.ExpressionStatement(tok, resultIdent),
+      ]);
+      const fn = new ast.FunctionLiteral(tok, [], fnBody);
+      const call = new ast.CallExpression(tok, fn, []);
+      
+      return this.compile(call);
     } else if (node instanceof ast.ArrayLiteral) {
       const hasSpread = node.elements.some(el => el instanceof ast.SpreadElement);
       if (!hasSpread) {

@@ -760,7 +760,57 @@ export class Parser {
 
   parseArrayLiteral() {
     const token = this.curToken;
-    const elements = this.parseExpressionList(TokenType.RBRACKET);
+    
+    // Empty array
+    if (this.peekTokenIs(TokenType.RBRACKET)) {
+      this.nextToken();
+      return new ast.ArrayLiteral(token, []);
+    }
+    
+    // Parse first element (could be spread)
+    this.nextToken();
+    const first = this._parseExprOrSpread();
+    
+    // Check for comprehension: [expr for ident in iterable]
+    // (comprehension can't start with spread)
+    if (!(first instanceof ast.SpreadElement) && this.peekToken.type === TokenType.FOR) {
+      this.nextToken(); // consume 'for'
+      this.nextToken(); // expect ident
+      if (this.curToken.type !== TokenType.IDENT) {
+        this.errors.push(`expected identifier after 'for' in comprehension, got ${this.curToken.type}`);
+        return null;
+      }
+      const variable = this.curToken.literal;
+      
+      // expect 'in'
+      if (!this.peekToken || this.peekToken.literal !== 'in') {
+        this.errors.push(`expected 'in' in comprehension`);
+        return null;
+      }
+      this.nextToken(); // consume 'in'
+      this.nextToken(); // start of iterable
+      const iterable = this.parseExpression(Precedence.LOWEST);
+      
+      // Optional 'if' condition
+      let condition = null;
+      if (this.peekToken.type === TokenType.IF) {
+        this.nextToken(); // consume 'if'
+        this.nextToken();
+        condition = this.parseExpression(Precedence.LOWEST);
+      }
+      
+      if (!this.expectPeek(TokenType.RBRACKET)) return null;
+      return new ast.ArrayComprehension(token, first, variable, iterable, condition);
+    }
+    
+    // Normal array — continue parsing elements
+    const elements = [first];
+    while (this.peekTokenIs(TokenType.COMMA)) {
+      this.nextToken(); // comma
+      this.nextToken(); // next expr
+      elements.push(this._parseExprOrSpread());
+    }
+    if (!this.expectPeek(TokenType.RBRACKET)) return null;
     return new ast.ArrayLiteral(token, elements);
   }
 

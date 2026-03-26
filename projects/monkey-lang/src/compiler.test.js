@@ -2994,3 +2994,25 @@ describe('Enum Types (compiler+VM)', () => {
     assert.equal(r.ordinal, 2);
   });
 });
+
+describe('Array Comprehensions (compiler+VM)', () => {
+  it('basic comprehension', () => {
+    const r = compileAndRun('[x * 2 for x in [1, 2, 3]]');
+    assert.deepEqual(r.elements.map(e => e.value), [2, 4, 6]);
+  });
+
+  it('comprehension with filter', () => {
+    const r = compileAndRun('[x for x in [1, 2, 3, 4, 5] if x > 3]');
+    assert.deepEqual(r.elements.map(e => e.value), [4, 5]);
+  });
+
+  it('comprehension with range', () => {
+    const r = compileAndRun('[x * x for x in range(1, 5)]');
+    assert.deepEqual(r.elements.map(e => e.value), [1, 4, 9, 16]);
+  });
+
+  it('comprehension with transform and filter', () => {
+    const r = compileAndRun('[x + 10 for x in range(1, 11) if x % 3 == 0]');
+    assert.deepEqual(r.elements.map(e => e.value), [13, 16, 19]);
+  });
+});
