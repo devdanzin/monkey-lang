@@ -659,3 +659,25 @@ describe('Module System (evaluator)', () => {
     assert.equal(r.value, 9);
   });
 });
+
+describe('Selective Imports (evaluator)', () => {
+  it('import specific function', () => {
+    const r = testEval('import "math" for abs; abs(-10)');
+    assert.equal(r.value, 10);
+  });
+
+  it('import multiple bindings', () => {
+    const r = testEval('import "math" for pow, sqrt; pow(sqrt(16), 2)');
+    assert.equal(r.value, 16);
+  });
+
+  it('selective import does not bind module name', () => {
+    const r = testEval('import "math" for abs; math');
+    assert.equal(r.type(), 'ERROR');
+  });
+
+  it('import string functions selectively', () => {
+    const r = testEval('import "string" for upper; upper("hello")');
+    assert.equal(r.value, 'HELLO');
+  });
+});

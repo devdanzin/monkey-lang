@@ -315,6 +315,20 @@ export function monkeyEval(node, env) {
   if (node instanceof AST.ImportStatement) {
     const mod = getModule(node.moduleName);
     if (!mod) return newError(`unknown module: ${node.moduleName}`);
+    if (node.bindings) {
+      // Selective import: bind specific names
+      for (const name of node.bindings) {
+        const key = new MonkeyString(name);
+        const hk = key.fastHashKey ? key.fastHashKey() : key.hashKey();
+        const pair = mod.pairs.get(hk);
+        if (pair) {
+          env.set(name, pair.value);
+        } else {
+          env.set(name, NULL);
+        }
+      }
+      return mod;
+    }
     env.set(node.moduleName, mod);
     return mod;
   }

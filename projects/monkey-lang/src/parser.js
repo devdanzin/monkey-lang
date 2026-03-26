@@ -241,8 +241,26 @@ export class Parser {
       return null;
     }
     const moduleName = this.curToken.literal;
+    
+    // Check for selective import: import "math" for sqrt, PI
+    let bindings = null;
+    if (this.peekToken.type === TokenType.FOR) {
+      this.nextToken(); // consume 'for'
+      bindings = [];
+      do {
+        this.nextToken();
+        if (this.curToken.type !== TokenType.IDENT) {
+          this.errors.push(`expected identifier in import binding, got ${this.curToken.type}`);
+          return null;
+        }
+        bindings.push(this.curToken.literal);
+        if (!this.peekTokenIs(TokenType.COMMA)) break;
+        this.nextToken(); // consume comma
+      } while (true);
+    }
+    
     if (this.peekTokenIs(TokenType.SEMICOLON)) this.nextToken();
-    return new ast.ImportStatement(token, moduleName);
+    return new ast.ImportStatement(token, moduleName, bindings);
   }
 
   parseExpressionStatement() {

@@ -1087,46 +1087,150 @@
       "id": "T112",
       "mode": "BUILD",
       "task": "Transpiler: import → JS import/require. Playground: verify modules work in browser. Update README.",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T104",
-      "started": "2026-03-26T17:33:57.107Z"
+      "started": "2026-03-26T17:33:57.107Z",
+      "completed": "2026-03-26T17:35:26.607Z",
+      "duration_ms": 300000,
+      "summary": "Transpiler: import → __monkey_modules.name. README: modules section with examples. Playground rebuilt (367KB). 1021 tests."
     },
     {
       "id": "T105",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-03-26T17:35:40.212Z",
+      "completed": "2026-03-26T17:35:40.323Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled placeholder."
     },
     {
       "id": "T106",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping + dashboard"
+      "status": "done",
+      "task": "Housekeeping + dashboard",
+      "started": "2026-03-26T17:35:45.993Z",
+      "completed": "2026-03-26T17:36:24.817Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed, dashboard regenerated. 1021 tests. Module system shipped."
     },
     {
       "id": "T107",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Blog: 1000 Tests in 11 Days — milestone celebration",
-      "task": null
+      "task": null,
+      "started": "2026-03-26T17:36:29.363Z",
+      "completed": "2026-03-26T17:36:41.581Z",
+      "duration_ms": 30000,
+      "summary": "Blog plan: 1 BUILD task, 1000 tests milestone post."
+    },
+    {
+      "id": "T113",
+      "mode": "BUILD",
+      "task": "Write and publish blog: 1000 Tests in 11 Days — how testing drove the entire Monkey language evolution",
+      "status": "done",
+      "plan_ref": "T107",
+      "started": "2026-03-26T17:36:46.158Z",
+      "completed": "2026-03-26T17:38:11.258Z",
+      "duration_ms": 300000,
+      "summary": "Published blog: 1000 Tests in 11 Days — milestone post covering the full testing journey from 40 lexer tests to 1021 tests across 7 test suites. Pushed to GH Pages."
     },
     {
       "id": "T108",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "started": "2026-03-26T17:38:15.982Z",
+      "completed": "2026-03-26T17:38:16.092Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled placeholder."
+    },
+    {
+      "id": "T109",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Research: what module systems exist in small languages (Lua, Wren, Lox)?",
+      "started": "2026-03-26T17:38:21.269Z",
+      "completed": "2026-03-26T17:38:45.533Z",
+      "duration_ms": 300000,
+      "summary": "Explored module systems: Lua (require → table), Wren (import for selective), Lox (none). Our approach is Lua-like. Future: selective imports, aliases. Scratch note written."
+    },
+    {
+      "id": "T110",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final session push",
+      "started": "2026-03-26T17:38:51.397Z",
+      "completed": "2026-03-26T17:38:51.509Z",
+      "duration_ms": 0,
+      "summary": "Skipped — 2+ hours remain, not final."
+    },
+    {
+      "id": "T114",
+      "mode": "THINK",
+      "status": "done",
+      "task": "2+ hours remain. Options: (a) selective imports (import math for sqrt), (b) new Monkey feature (classes, iterators, generators), (c) new project entirely, (d) more JIT work, (e) OpenClaw contributions",
+      "started": "2026-03-26T17:39:02.357Z",
+      "completed": "2026-03-26T17:39:13.562Z",
+      "duration_ms": 60000,
+      "summary": "Direction: selective imports + collections module + io module. Build on module system just shipped."
+    },
+    {
+      "id": "T115",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Selective imports: import math for sqrt, PI — Wren-style selective binding",
+      "task": null,
+      "started": "2026-03-26T17:39:28.706Z",
+      "completed": "2026-03-26T17:39:40.443Z",
+      "duration_ms": 30000,
+      "summary": "Plan: selective import syntax. 1 BUILD task."
+    },
+    {
+      "id": "T122",
+      "mode": "BUILD",
+      "task": "Parser: import for syntax, ImportStatement.bindings. Compiler: index each binding from module. Evaluator: same. Tests.",
+      "status": "in-progress",
+      "plan_ref": "T115",
+      "started": "2026-03-26T17:39:43.806Z"
+    },
+    {
+      "id": "T116",
       "mode": "BUILD",
       "status": "upcoming",
       "task": null
     },
     {
-      "id": "T109",
-      "mode": "EXPLORE",
+      "id": "T117",
+      "mode": "PLAN",
       "status": "upcoming",
-      "task": "Research: what module systems exist in small languages (Lua, Wren, Lox)?"
+      "goal": "New modules: collections (Stack, Queue, Set), algorithms (sort, bsearch)",
+      "task": null
     },
     {
-      "id": "T110",
+      "id": "T118",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T119",
       "mode": "MAINTAIN",
       "status": "upcoming",
-      "task": "Final session push"
+      "task": "Mid-session housekeeping"
+    },
+    {
+      "id": "T120",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Rebuild playground, update README with selective imports + new modules"
+    },
+    {
+      "id": "T121",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final session push, daily log, git push"
     }
   ],
   "updated_at": "2026-03-26T14:02:05.404Z",
@@ -1482,6 +1586,46 @@
     {
       "time": "2026-03-26T17:26:02.693Z",
       "msg": "PLAN T104 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-03-26T17:36:37.454Z",
+      "msg": "PLAN T107 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-03-26T17:38:58.709Z",
+      "msg": "Added T114 (THINK) after end: 2+ hours remain. Options: (a) selective imports (import math for sqrt), (b) new Monkey feature (classes, iterators, generators), (c) new project entirely, (d) more JIT work, (e) OpenClaw contributions"
+    },
+    {
+      "time": "2026-03-26T17:39:20.245Z",
+      "msg": "Added T115 (PLAN) after end: Selective imports: import math for sqrt, PI — Wren-style selective binding"
+    },
+    {
+      "time": "2026-03-26T17:39:20.355Z",
+      "msg": "Added T116 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-03-26T17:39:20.466Z",
+      "msg": "Added T117 (PLAN) after end: New modules: collections (Stack, Queue, Set), algorithms (sort, bsearch)"
+    },
+    {
+      "time": "2026-03-26T17:39:20.575Z",
+      "msg": "Added T118 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-03-26T17:39:20.687Z",
+      "msg": "Added T119 (MAINTAIN) after end: Mid-session housekeeping"
+    },
+    {
+      "time": "2026-03-26T17:39:20.797Z",
+      "msg": "Added T120 (BUILD) after end: Rebuild playground, update README with selective imports + new modules"
+    },
+    {
+      "time": "2026-03-26T17:39:20.908Z",
+      "msg": "Added T121 (MAINTAIN) after end: Final session push, daily log, git push"
+    },
+    {
+      "time": "2026-03-26T17:39:36.509Z",
+      "msg": "PLAN T115 filled 1 BUILD tasks"
     }
   ]
 }

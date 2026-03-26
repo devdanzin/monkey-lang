@@ -185,13 +185,32 @@ export class Compiler {
       const mod = getModule(node.moduleName);
       if (!mod) return `unknown module: ${node.moduleName}`;
       const constIdx = this.addConstant(mod);
-      this.emit(Opcodes.OpConstant, constIdx);
-      const sym = this.symbolTable.define(node.moduleName);
-      this.importedModules.add(node.moduleName);
-      if (sym.scope === SCOPE.GLOBAL) {
-        this.emit(Opcodes.OpSetGlobal, sym.index);
+      
+      if (node.bindings) {
+        // Selective import: import "math" for sqrt, PI
+        // Load module, then index each binding and define as local
+        for (const name of node.bindings) {
+          this.emit(Opcodes.OpConstant, constIdx);
+          const keyIdx = this.addConstant(new MonkeyString(name));
+          this.emit(Opcodes.OpConstant, keyIdx);
+          this.emit(Opcodes.OpIndex);
+          const sym = this.symbolTable.define(name);
+          if (sym.scope === SCOPE.GLOBAL) {
+            this.emit(Opcodes.OpSetGlobal, sym.index);
+          } else {
+            this.emit(Opcodes.OpSetLocal, sym.index);
+          }
+        }
       } else {
-        this.emit(Opcodes.OpSetLocal, sym.index);
+        // Namespace import: import "math" → math.sqrt(...)
+        this.emit(Opcodes.OpConstant, constIdx);
+        const sym = this.symbolTable.define(node.moduleName);
+        this.importedModules.add(node.moduleName);
+        if (sym.scope === SCOPE.GLOBAL) {
+          this.emit(Opcodes.OpSetGlobal, sym.index);
+        } else {
+          this.emit(Opcodes.OpSetLocal, sym.index);
+        }
       }
     } else if (node instanceof ast.InfixExpression) {
       // Constant folding: try to evaluate at compile time

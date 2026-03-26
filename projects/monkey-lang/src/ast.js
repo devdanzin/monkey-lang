@@ -35,12 +35,18 @@ export class ReturnStatement {
 }
 
 export class ImportStatement {
-  constructor(token, moduleName) {
+  constructor(token, moduleName, bindings = null) {
     this.token = token;
     this.moduleName = moduleName;
+    this.bindings = bindings; // null = import whole module, array of strings = selective
   }
   tokenLiteral() { return this.token.literal; }
-  toString() { return `import "${this.moduleName}";`; }
+  toString() {
+    if (this.bindings) {
+      return `import "${this.moduleName}" for ${this.bindings.join(', ')};`;
+    }
+    return `import "${this.moduleName}";`;
+  }
 }
 
 export class ExpressionStatement {

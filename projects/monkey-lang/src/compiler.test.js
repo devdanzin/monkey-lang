@@ -2902,3 +2902,22 @@ describe('Module System (compiler+VM)', () => {
     `), 5);
   });
 });
+
+describe('Selective Imports (compiler+VM)', () => {
+  it('import specific function', () => {
+    testIntegerObject(compileAndRun('import "math" for abs; abs(-7)'), 7);
+  });
+
+  it('import multiple bindings', () => {
+    testIntegerObject(compileAndRun('import "math" for pow, sqrt; pow(sqrt(9), 3)'), 27);
+  });
+
+  it('selective import with local usage', () => {
+    testIntegerObject(compileAndRun('import "math" for pow; let x = pow(2, 5); x + 1'), 33);
+  });
+
+  it('selective string import', () => {
+    const r = compileAndRun('import "string" for upper, repeat; upper(repeat("ab", 2))');
+    assert.equal(r.value, 'ABAB');
+  });
+});
