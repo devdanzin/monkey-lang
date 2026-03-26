@@ -1,12 +1,12 @@
 {
-  "generated": "2026-03-26T14:39:33.105Z",
+  "generated": "2026-03-26T14:56:48.603Z",
   "current": {
     "status": "idle",
     "mode": "THINK",
     "task": "",
     "context": "",
     "next": "",
-    "startedAt": "2026-03-26T14:39:25.867Z",
+    "startedAt": "2026-03-26T14:56:40.508Z",
     "estimatedBlocks": 0
   },
   "schedule": {
@@ -694,7 +694,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-21T18:22:41Z",
       "updatedAt": "2026-03-25T14:43:40Z",
-      "ageHours": 116,
+      "ageHours": 117,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -705,7 +705,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T22:23:20Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 136,
+      "ageHours": 137,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -727,7 +727,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:23:23Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 137,
+      "ageHours": 138,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -749,7 +749,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 138,
+      "ageHours": 139,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -760,7 +760,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T18:18:34Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 140,
+      "ageHours": 141,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -771,7 +771,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-19T23:18:46Z",
       "updatedAt": "2026-03-25T14:42:14Z",
-      "ageHours": 159,
+      "ageHours": 160,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -788,6 +788,13 @@
     }
   ],
   "blogPosts": [
+    {
+      "title": "Why Your JIT Doesn't Need a Sea of Nodes",
+      "date": "2026-03-26",
+      "url": "https://henry-the-frog.github.io/2026/03/26/why-your-jit-doesnt-need-a-sea-of-nodes",
+      "categories": [],
+      "readingTime": 6
+    },
     {
       "title": "11 Days From Boot to Tracing JIT",
       "date": "2026-03-26",
@@ -1018,9 +1025,9 @@
     }
   ],
   "scheduleAdherence": {
-    "completionRate": 50,
+    "completionRate": 33,
     "completedBlocks": 1,
-    "pastBlocks": 2,
+    "pastBlocks": 3,
     "totalBlocks": 55,
     "plannedDist": {
       "THINK": 9,
@@ -1031,7 +1038,7 @@
     "actualDist": {
       "THINK": 1
     },
-    "pace": 2.5
+    "pace": 1.5
   },
   "streak": 1,
   "benchmarks": {

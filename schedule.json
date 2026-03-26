@@ -388,28 +388,54 @@
     {
       "id": "T34",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Mid-afternoon housekeeping",
-      "started": "2026-03-26T14:56:26.270Z"
+      "started": "2026-03-26T14:56:26.270Z",
+      "completed": "2026-03-26T14:56:58.050Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed (876 tests, 2 new blogs). Dashboard regenerated. All good."
     },
     {
       "id": "T35",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Monkey: implement Known Node Information pattern from Maglev — propagate type knowledge through traces",
-      "task": null
+      "task": null,
+      "started": "2026-03-26T14:57:15.097Z",
+      "completed": "2026-03-26T14:57:57.118Z",
+      "duration_ms": 60000,
+      "summary": "Plan: type propagation optimizer pass. If ADD_INT produces ref, subsequent GUARD_INT on ref is redundant. Similarly for BOX_INT, CONST_INT, etc. 1 BUILD task."
+    },
+    {
+      "id": "T42",
+      "mode": "BUILD",
+      "task": "Implement type propagation optimizer pass: eliminate redundant GUARD_INT/GUARD_STRING when value provably has the right type from the producing instruction",
+      "status": "done",
+      "plan_ref": "T35",
+      "started": "2026-03-26T14:58:05.492Z",
+      "completed": "2026-03-26T14:59:08.518Z",
+      "duration_ms": 300000,
+      "summary": "Investigated: existing redundantGuardElimination already implements known-type propagation (marks CONST_INT, ADD_INT, BOX_INT, etc. as known types). Both typed and untyped functions end up with 0 guards after optimization. Type annotations benefit: runtime safety, recording efficiency, semantic clarity. No new code needed — existing passes are already effective."
     },
     {
       "id": "T36",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-03-26T14:59:41.270Z",
+      "completed": "2026-03-26T14:59:41.380Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled placeholder."
     },
     {
       "id": "T37",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "End of session housekeeping, final push"
+      "status": "done",
+      "task": "End of session housekeeping, final push",
+      "started": "2026-03-26T14:59:52.064Z",
+      "completed": "2026-03-26T14:59:52.174Z",
+      "duration_ms": 0,
+      "summary": "Skipped — not end of session, 5+ hours remain."
     }
   ],
   "updated_at": "2026-03-26T14:02:05.404Z",
@@ -493,6 +519,10 @@
     {
       "time": "2026-03-26T14:43:19.476Z",
       "msg": "PLAN T31 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-03-26T14:57:51.399Z",
+      "msg": "PLAN T35 filled 1 BUILD tasks"
     }
   ]
 }
