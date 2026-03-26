@@ -3205,3 +3205,33 @@ describe('Integration: Modules + Enums + Comprehensions + Guards', () => {
     assert.equal(r.value, true);
   });
 });
+
+describe('Or-Patterns (compiler+VM)', () => {
+  it('basic or-pattern', () => {
+    const r = compileAndRun('match (3) { 1 | 2 | 3 => "match", _ => "no" }');
+    assert.equal(r.value, 'match');
+  });
+
+  it('or-pattern miss', () => {
+    const r = compileAndRun('match (4) { 1 | 2 | 3 => "match", _ => "no" }');
+    assert.equal(r.value, 'no');
+  });
+
+  it('or-pattern first element', () => {
+    const r = compileAndRun('match (1) { 1 | 2 | 3 => "yes", _ => "no" }');
+    assert.equal(r.value, 'yes');
+  });
+
+  it('or-pattern in function', () => {
+    testIntegerObject(compileAndRun(`
+      let classify = fn(day) {
+        match (day) {
+          "Mon" | "Tue" | "Wed" | "Thu" | "Fri" => 1,
+          "Sat" | "Sun" => 0,
+          _ => -1
+        }
+      };
+      classify("Sat")
+    `), 0);
+  });
+});

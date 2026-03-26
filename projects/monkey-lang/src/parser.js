@@ -874,6 +874,16 @@ export class Parser {
       } else {
         pattern = this.parseExpression(Precedence.LOWEST);
       }
+      // Check for or-pattern: pattern1 | pattern2 | pattern3
+      if (pattern && this.peekTokenIs(TokenType.BAR)) {
+        const patterns = [pattern];
+        while (this.peekTokenIs(TokenType.BAR)) {
+          this.nextToken(); // consume |
+          this.nextToken(); // start of next pattern
+          patterns.push(this.parseExpression(Precedence.LOWEST));
+        }
+        pattern = new ast.OrPattern(patterns);
+      }
       // Check for guard: pattern when condition => value
       let guard = null;
       if (this.peekToken.type === TokenType.IDENT && this.peekToken.literal === 'when') {

@@ -366,10 +366,17 @@ export class MatchExpression {
 
 export class TypePattern {
   constructor(typeName, binding) {
-    this.typeName = typeName;  // string: 'int', 'string', 'bool', 'array', 'hash', 'fn'
-    this.binding = binding;    // Identifier (variable to bind the matched value to)
+    this.typeName = typeName;
+    this.binding = binding;
   }
   toString() { return `${this.typeName}(${this.binding.value})`; }
+}
+
+export class OrPattern {
+  constructor(patterns) {
+    this.patterns = patterns; // array of pattern expressions
+  }
+  toString() { return this.patterns.map(p => p.toString()).join(' | '); }
 }
 
 export class DestructuringLet {

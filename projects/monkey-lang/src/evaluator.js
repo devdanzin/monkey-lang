@@ -462,6 +462,23 @@ export function monkeyEval(node, env) {
         }
         continue;
       }
+      // Or-pattern: pattern1 | pattern2 | ...
+      if (arm.pattern instanceof AST.OrPattern) {
+        let matched = false;
+        for (const p of arm.pattern.patterns) {
+          const pVal = monkeyEval(p, env);
+          if (isError(pVal)) return pVal;
+          if (subject.inspect() === pVal.inspect()) { matched = true; break; }
+        }
+        if (matched) {
+          if (arm.guard) {
+            const guardVal = monkeyEval(arm.guard, env);
+            if (!isTruthy(guardVal)) continue;
+          }
+          return monkeyEval(arm.value, env);
+        }
+        continue;
+      }
       // Binding pattern: identifier with guard → bind subject to name
       if (arm.guard && arm.pattern instanceof AST.Identifier) {
         const innerEnv = new Environment(env);

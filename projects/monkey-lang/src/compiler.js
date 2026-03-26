@@ -1043,6 +1043,52 @@ export class Compiler {
         continue;
       }
 
+      // Or-pattern: pattern1 | pattern2 | ...
+      if (arm.pattern instanceof ast.OrPattern) {
+        // Compile: if (subject == p1 || subject == p2 || ...) => value
+        // Strategy: check each pattern, if ANY match jump to value
+        const matchJumps = [];
+        for (let j = 0; j < arm.pattern.patterns.length; j++) {
+          this.loadSymbol(subjectSym);
+          err = this.compile(arm.pattern.patterns[j]);
+          if (err) return err;
+          this.emit(Opcodes.OpEqual);
+          // If truthy, jump to the value section
+          if (j < arm.pattern.patterns.length - 1) {
+            // Save position - if true, skip remaining checks
+            const trueJump = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+            matchJumps.push({ skip: false, pos: this.emit(Opcodes.OpJump, 9999) });
+            this.changeOperand(trueJump, this.currentInstructions().length);
+            this.resetPeepholeState();
+          }
+        }
+        // Last pattern result is on stack
+        const noMatchJump = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+        
+        // Patch all "matched" jumps to here (the value section)
+        for (const mj of matchJumps) {
+          this.changeOperand(mj.pos, this.currentInstructions().length);
+        }
+        
+        if (arm.guard) {
+          err = this.compile(arm.guard);
+          if (err) return err;
+          const guardJump = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+          err = this.compile(arm.value);
+          if (err) return err;
+          endJumps.push(this.emit(Opcodes.OpJump, 9999));
+          this.changeOperand(guardJump, this.currentInstructions().length);
+          this.resetPeepholeState();
+        } else {
+          err = this.compile(arm.value);
+          if (err) return err;
+          endJumps.push(this.emit(Opcodes.OpJump, 9999));
+        }
+        
+        this.changeOperand(noMatchJump, this.currentInstructions().length);
+        this.resetPeepholeState();
+        continue;
+      }
       // Binding pattern: identifier with guard → bind subject to name
       if (arm.guard && arm.pattern instanceof ast.Identifier) {
         this.loadSymbol(subjectSym);

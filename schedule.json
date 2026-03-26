@@ -1684,21 +1684,57 @@
     {
       "id": "T164",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Integration tests: complex programs combining modules + enums + comprehensions + match guards. Target: 1100 tests.",
-      "started": "2026-03-26T18:23:06.713Z"
+      "started": "2026-03-26T18:23:06.713Z",
+      "completed": "2026-03-26T18:24:22.268Z",
+      "duration_ms": 180000,
+      "summary": "1100 tests milestone! 5 rich integration tests combining all session features. All passing."
     },
     {
       "id": "T165",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Add match example to playground showing guards + enum + type patterns"
+      "status": "done",
+      "task": "Add match example to playground showing guards + enum + type patterns",
+      "started": "2026-03-26T18:24:28.472Z",
+      "completed": "2026-03-26T18:25:04.660Z",
+      "duration_ms": 60000,
+      "summary": "Playground: Match Guards example added with type patterns, guards, grade calculator. Deployed."
     },
     {
       "id": "T166",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final push + daily log update (CHECK TIME)",
+      "started": "2026-03-26T18:25:21.046Z",
+      "completed": "2026-03-26T18:25:21.159Z",
+      "duration_ms": 0,
+      "summary": "Skipped — 1h50m remain."
+    },
+    {
+      "id": "T167",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Or-patterns in match: 1 | 2 | 3 => small. Parser: detect PIPE in match arm patterns. Compiler/evaluator: check any pattern matches.",
+      "started": "2026-03-26T18:25:42.840Z"
+    },
+    {
+      "id": "T168",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Final push + daily log update (CHECK TIME)"
+      "task": "Add a json module: parse and stringify for hashes and arrays"
+    },
+    {
+      "id": "T169",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Update README test count + git push"
+    },
+    {
+      "id": "T170",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "BOUNDARY CHECK final push"
     }
   ],
   "updated_at": "2026-03-26T14:02:05.404Z",
@@ -2270,6 +2306,22 @@
     {
       "time": "2026-03-26T18:22:59.754Z",
       "msg": "Added T166 (MAINTAIN) after end: Final push + daily log update (CHECK TIME)"
+    },
+    {
+      "time": "2026-03-26T18:25:35.739Z",
+      "msg": "Added T167 (BUILD) after end: Or-patterns in match: 1 | 2 | 3 => small. Parser: detect PIPE in match arm patterns. Compiler/evaluator: check any pattern matches."
+    },
+    {
+      "time": "2026-03-26T18:25:35.850Z",
+      "msg": "Added T168 (BUILD) after end: Add a json module: parse and stringify for hashes and arrays"
+    },
+    {
+      "time": "2026-03-26T18:25:35.962Z",
+      "msg": "Added T169 (MAINTAIN) after end: Update README test count + git push"
+    },
+    {
+      "time": "2026-03-26T18:25:36.073Z",
+      "msg": "Added T170 (MAINTAIN) after end: BOUNDARY CHECK final push"
     }
   ]
 }

@@ -953,3 +953,32 @@ describe('Match Guards (evaluator)', () => {
     assert.equal(r.inspect(), 'Size.Medium');
   });
 });
+
+describe('Or-Patterns (evaluator)', () => {
+  it('basic or-pattern', () => {
+    const r = testEval('match (2) { 1 | 2 | 3 => "small", _ => "big" }');
+    assert.equal(r.value, 'small');
+  });
+
+  it('or-pattern no match', () => {
+    const r = testEval('match (5) { 1 | 2 | 3 => "small", _ => "big" }');
+    assert.equal(r.value, 'big');
+  });
+
+  it('or-pattern with strings', () => {
+    const r = testEval('match ("b") { "a" | "b" | "c" => "letter", _ => "other" }');
+    assert.equal(r.value, 'letter');
+  });
+
+  it('or-pattern with enum', () => {
+    const r = testEval(`
+      enum Color { Red, Green, Blue, Yellow };
+      let c = Color.Blue;
+      match (c) {
+        Color.Red | Color.Blue => "primary",
+        _ => "other"
+      }
+    `);
+    assert.equal(r.value, 'primary');
+  });
+});

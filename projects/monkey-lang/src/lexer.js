@@ -29,6 +29,7 @@ export const TokenType = {
   THIN_ARROW: '->',
   SPREAD: '...',
   PIPE: '|>',
+  BAR: '|',
   EQ: '==',
   NOT_EQ: '!=',
   PLUS_ASSIGN: '+=',
@@ -305,7 +306,7 @@ export class Lexer {
           this.readChar();
           tok = new Token(TokenType.PIPE, '|>');
         } else {
-          tok = new Token(TokenType.ILLEGAL, '|');
+          tok = new Token(TokenType.BAR, '|');
         }
         break;
       case '<':
