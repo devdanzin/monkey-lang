@@ -1273,15 +1273,19 @@
     {
       "id": "T124",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Aliased imports: import \"math\" as m. Parser: handle 'as' keyword + alias. Compiler/evaluator: bind alias name. Tests.",
-      "started": "2026-03-26T17:45:06.642Z"
+      "started": "2026-03-26T17:45:06.642Z",
+      "completed": "2026-03-26T17:46:11.199Z",
+      "duration_ms": 180000,
+      "summary": "Aliased imports: import math as m. Parser handles contextual as keyword. 1049 tests."
     },
     {
       "id": "T125",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Add example programs showcasing modules: project-euler-1.monkey (sum of multiples), prime-sieve.monkey, string-analyzer.monkey"
+      "status": "in-progress",
+      "task": "Add example programs showcasing modules: project-euler-1.monkey (sum of multiples), prime-sieve.monkey, string-analyzer.monkey",
+      "started": "2026-03-26T17:46:17.117Z"
     },
     {
       "id": "T126",
