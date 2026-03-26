@@ -23,6 +23,7 @@ export const TokenType = {
   AND: '&&',
   OR: '||',
   NULLISH: '??',
+  OPTIONAL_CHAIN: '?.',
   PIPE: '|>',
   EQ: '==',
   NOT_EQ: '!=',
@@ -319,6 +320,9 @@ export class Lexer {
         if (this.peekChar() === '?') {
           this.readChar();
           tok = new Token(TokenType.NULLISH, '??');
+        } else if (this.peekChar() === '.') {
+          this.readChar();
+          tok = new Token(TokenType.OPTIONAL_CHAIN, '?.');
         } else {
           tok = new Token(TokenType.QUESTION, '?');
         }

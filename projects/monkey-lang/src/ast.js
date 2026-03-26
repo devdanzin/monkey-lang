@@ -165,6 +165,16 @@ export class IndexExpression {
   toString() { return `(${this.left}[${this.index}])`; }
 }
 
+export class OptionalChainExpression {
+  constructor(token, left, index) {
+    this.token = token; // ?.
+    this.left = left;   // the object
+    this.index = index;  // the key expression
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return `(${this.left}?.[${this.index}])`; }
+}
+
 export class HashLiteral {
   constructor(token, pairs) {
     this.token = token;

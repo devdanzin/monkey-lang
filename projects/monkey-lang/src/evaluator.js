@@ -359,6 +359,15 @@ export function monkeyEval(node, env) {
     return evalIndexExpression(left, index);
   }
 
+  if (node instanceof AST.OptionalChainExpression) {
+    const left = monkeyEval(node.left, env);
+    if (isError(left)) return left;
+    if (left === NULL || left === undefined) return NULL;
+    const index = monkeyEval(node.index, env);
+    if (isError(index)) return index;
+    return evalIndexExpression(left, index);
+  }
+
   if (node instanceof AST.HashLiteral) {
     return evalHashLiteral(node, env);
   }

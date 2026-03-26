@@ -29,6 +29,7 @@ const TOKEN_PRECEDENCE = {
   [TokenType.QUESTION]: Precedence.OR,
   [TokenType.NULLISH]: Precedence.NULLISH,
   [TokenType.PIPE]: Precedence.PIPE,
+  [TokenType.OPTIONAL_CHAIN]: Precedence.INDEX,
   [TokenType.PLUS_PLUS]: Precedence.CALL,   // postfix, high precedence
   [TokenType.MINUS_MINUS]: Precedence.CALL, // ternary has same precedence as OR
   [TokenType.EQ]: Precedence.EQUALS,
@@ -88,6 +89,7 @@ export class Parser {
       this.registerInfix(op, (left) => this.parseInfixExpression(left));
     }
     this.registerInfix(TokenType.PIPE, (left) => this.parsePipeExpression(left));
+    this.registerInfix(TokenType.OPTIONAL_CHAIN, (left) => this.parseOptionalChainExpression(left));
     this.registerInfix(TokenType.LPAREN, (left) => this.parseCallExpression(left));
     this.registerInfix(TokenType.LBRACKET, (left) => this.parseIndexExpression(left));
     this.registerInfix(TokenType.ASSIGN, (left) => this.parseAssignExpression(left));
@@ -342,6 +344,27 @@ export class Parser {
     } else {
       // f → f(x) — simple function call
       return new ast.CallExpression(token, right, [left]);
+    }
+  }
+
+  parseOptionalChainExpression(left) {
+    const token = this.curToken;
+    // ?. can be followed by [ (index) or identifier (property)
+    if (this.peekToken.type === TokenType.LBRACKET) {
+      // x?.[key]
+      this.nextToken(); // consume [
+      this.nextToken(); // move past [
+      const index = this.parseExpression(Precedence.LOWEST);
+      if (!this.expectPeek(TokenType.RBRACKET)) return null;
+      return new ast.OptionalChainExpression(token, left, index);
+    } else if (this.peekToken.type === TokenType.IDENT) {
+      // x?.name → x?.["name"]
+      this.nextToken(); // move to ident
+      const key = new ast.StringLiteral(this.curToken, this.curToken.literal);
+      return new ast.OptionalChainExpression(token, left, key);
+    } else {
+      this.errors.push(`expected [ or identifier after ?., got ${this.peekToken.type}`);
+      return left;
     }
   }
 

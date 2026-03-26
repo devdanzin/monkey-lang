@@ -2226,3 +2226,27 @@ describe('Pipe Operator', () => {
     testIntegerObject(compileAndRun('let mul = fn(a, b) { a * b }; 3 |> mul(7)'), 21);
   });
 });
+
+describe('Optional Chaining', () => {
+  it('hash?.key on non-null', () => {
+    testStringObject(compileAndRun('let h = {"name": "Alice"}; h?.name'), 'Alice');
+  });
+  it('null?.key returns null', () => {
+    testNullObject(compileAndRun('null?.name'));
+  });
+  it('hash?.[key] bracket syntax', () => {
+    testStringObject(compileAndRun('let h = {"name": "Bob"}; h?.["name"]'), 'Bob');
+  });
+  it('null?.[key] bracket syntax', () => {
+    testNullObject(compileAndRun('null?.["name"]'));
+  });
+  it('chained optional access', () => {
+    testStringObject(compileAndRun('let u = {"addr": {"city": "NYC"}}; u?.addr?.city'), 'NYC');
+  });
+  it('chained optional on missing key', () => {
+    testNullObject(compileAndRun('let u = {"name": "Bob"}; u?.addr?.city'));
+  });
+  it('optional chaining with ?? fallback', () => {
+    testStringObject(compileAndRun('let u = {"name": "Bob"}; u?.addr?.city ?? "unknown"'), 'unknown');
+  });
+});

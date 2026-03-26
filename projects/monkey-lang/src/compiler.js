@@ -461,6 +461,30 @@ export class Compiler {
       err = this.compile(node.index);
       if (err) return err;
       this.emit(Opcodes.OpIndex);
+    } else if (node instanceof ast.OptionalChainExpression) {
+      // x?.[key] → compile x, check null, if null push null, else index
+      let err = this.compile(node.left);
+      if (err) return err;
+      // Store in hidden var to avoid double evaluation
+      const sym = this.symbolTable.define('__optchain_' + this.currentInstructions().length);
+      this.emit(sym.scope === 'GLOBAL' ? Opcodes.OpSetGlobal : Opcodes.OpSetLocal, sym.index);
+      // Check if null
+      this.loadSymbol(sym);
+      this.emit(Opcodes.OpNull);
+      this.emit(Opcodes.OpEqual);
+      const jumpNotNullPos = this.emit(Opcodes.OpJumpNotTruthy, 0xFFFF);
+      // IS null: push null
+      this.emit(Opcodes.OpNull);
+      const jumpEndPos = this.emit(Opcodes.OpJump, 0xFFFF);
+      // NOT null: do index access
+      this.changeOperand(jumpNotNullPos, this.currentInstructions().length);
+      this.resetPeepholeState();
+      this.loadSymbol(sym);
+      err = this.compile(node.index);
+      if (err) return err;
+      this.emit(Opcodes.OpIndex);
+      this.changeOperand(jumpEndPos, this.currentInstructions().length);
+      this.resetPeepholeState();
     } else if (node instanceof ast.FunctionLiteral) {
       return this.compileFunctionLiteral(node);
     } else if (node instanceof ast.CallExpression) {

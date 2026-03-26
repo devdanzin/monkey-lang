@@ -2314,9 +2314,19 @@
     {
       "id": "T225",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement pipe operator (|>) for Monkey language",
-      "started": "2026-03-26T03:09:36.662Z"
+      "started": "2026-03-26T03:09:36.662Z",
+      "completed": "2026-03-26T03:12:04.411Z",
+      "duration_ms": 600000,
+      "summary": "Pipe operator (|>) implemented — desugared at parse time to CallExpression with first-argument insertion. 809 tests passing."
+    },
+    {
+      "id": "T226",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "Implement optional chaining (?.) for Monkey — pairs with ?? for null-safe access",
+      "started": "2026-03-26T03:12:15.257Z"
     }
   ],
   "backlog": [],
@@ -3056,6 +3066,10 @@
     {
       "time": "2026-03-26T03:09:36.444Z",
       "msg": "Added T225 (EXPLORE) after end: Implement pipe operator (|>) for Monkey language"
+    },
+    {
+      "time": "2026-03-26T03:12:15.039Z",
+      "msg": "Added T226 (EXPLORE) after end: Implement optional chaining (?.) for Monkey — pairs with ?? for null-safe access"
     }
   ],
   "updated_at": "2026-03-25T16:42:01.690Z"
