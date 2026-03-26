@@ -637,6 +637,22 @@ var ArrayLiteral = class {
     return `[${this.elements.join(", ")}]`;
   }
 };
+var ArrayComprehension = class {
+  constructor(token, body, variable, iterable, condition) {
+    this.token = token;
+    this.body = body;
+    this.variable = variable;
+    this.iterable = iterable;
+    this.condition = condition;
+  }
+  tokenLiteral() {
+    return this.token.literal;
+  }
+  toString() {
+    const cond = this.condition ? ` if ${this.condition}` : "";
+    return `[${this.body} for ${this.variable} in ${this.iterable}${cond}]`;
+  }
+};
 var IndexExpression = class {
   constructor(token, left, index) {
     this.token = token;
@@ -1624,7 +1640,43 @@ var Parser = class _Parser {
   }
   parseArrayLiteral() {
     const token = this.curToken;
-    const elements = this.parseExpressionList(TokenType.RBRACKET);
+    if (this.peekTokenIs(TokenType.RBRACKET)) {
+      this.nextToken();
+      return new ArrayLiteral(token, []);
+    }
+    this.nextToken();
+    const first = this._parseExprOrSpread();
+    if (!(first instanceof SpreadElement) && this.peekToken.type === TokenType.FOR) {
+      this.nextToken();
+      this.nextToken();
+      if (this.curToken.type !== TokenType.IDENT) {
+        this.errors.push(`expected identifier after 'for' in comprehension, got ${this.curToken.type}`);
+        return null;
+      }
+      const variable = this.curToken.literal;
+      if (!this.peekToken || this.peekToken.literal !== "in") {
+        this.errors.push(`expected 'in' in comprehension`);
+        return null;
+      }
+      this.nextToken();
+      this.nextToken();
+      const iterable = this.parseExpression(Precedence.LOWEST);
+      let condition = null;
+      if (this.peekToken.type === TokenType.IF) {
+        this.nextToken();
+        this.nextToken();
+        condition = this.parseExpression(Precedence.LOWEST);
+      }
+      if (!this.expectPeek(TokenType.RBRACKET)) return null;
+      return new ArrayComprehension(token, first, variable, iterable, condition);
+    }
+    const elements = [first];
+    while (this.peekTokenIs(TokenType.COMMA)) {
+      this.nextToken();
+      this.nextToken();
+      elements.push(this._parseExprOrSpread());
+    }
+    if (!this.expectPeek(TokenType.RBRACKET)) return null;
     return new ArrayLiteral(token, elements);
   }
   parseIndexExpression(left) {
@@ -3011,6 +3063,34 @@ var Compiler = class _Compiler {
       const sym = this.symbolTable.resolve(node.value);
       if (!sym) return `undefined variable: ${node.value}`;
       this.loadSymbol(sym);
+    } else if (node instanceof ArrayComprehension) {
+      const tok = node.token;
+      const resultName = "__comp_r";
+      const resultIdent = new Identifier(tok, resultName);
+      const letResult = new LetStatement(tok, new Identifier(tok, resultName), new ArrayLiteral(tok, []), false);
+      const pushCall = new CallExpression(tok, new Identifier(tok, "push"), [resultIdent, node.body]);
+      const assignResult = new AssignExpression(tok, new Identifier(tok, resultName), pushCall);
+      let loopBody;
+      if (node.condition) {
+        const ifExpr = new IfExpression(
+          tok,
+          node.condition,
+          new BlockStatement(tok, [new ExpressionStatement(tok, assignResult)]),
+          null
+        );
+        loopBody = new BlockStatement(tok, [new ExpressionStatement(tok, ifExpr)]);
+      } else {
+        loopBody = new BlockStatement(tok, [new ExpressionStatement(tok, assignResult)]);
+      }
+      const forIn = new ForInExpression(tok, node.variable, node.iterable, loopBody);
+      const fnBody = new BlockStatement(tok, [
+        letResult,
+        new ExpressionStatement(tok, forIn),
+        new ExpressionStatement(tok, resultIdent)
+      ]);
+      const fn = new FunctionLiteral(tok, [], fnBody);
+      const call = new CallExpression(tok, fn, []);
+      return this.compile(call);
     } else if (node instanceof ArrayLiteral) {
       const hasSpread = node.elements.some((el) => el instanceof SpreadElement);
       if (!hasSpread) {
@@ -10060,6 +10140,27 @@ function monkeyEval(node, env) {
     }
     return new MonkeyArray(result);
   }
+  if (node instanceof ArrayComprehension) {
+    const iterable = monkeyEval(node.iterable, env);
+    if (isError(iterable)) return iterable;
+    if (!(iterable instanceof MonkeyArray)) {
+      return newError(`comprehension requires array, got ${iterable.type()}`);
+    }
+    const result = [];
+    for (const elem of iterable.elements) {
+      const innerEnv = new Environment(env);
+      innerEnv.set(node.variable, elem);
+      if (node.condition) {
+        const cond = monkeyEval(node.condition, innerEnv);
+        if (isError(cond)) return cond;
+        if (!isTruthy(cond)) continue;
+      }
+      const val = monkeyEval(node.body, innerEnv);
+      if (isError(val)) return val;
+      result.push(val);
+    }
+    return new MonkeyArray(result);
+  }
   if (node instanceof IndexAssignExpression) {
     const obj = monkeyEval(node.left, env);
     if (isError(obj)) return obj;
@@ -10532,7 +10633,19 @@ var Transpiler = class {
       return `${this.i()}return ${this.transpileNode(node.returnValue)};`;
     }
     if (node instanceof ImportStatement) {
-      return `${this.i()}const ${node.moduleName} = __monkey_modules.${node.moduleName};`;
+      if (node.bindings) {
+        return `${this.i()}const { ${node.bindings.join(", ")} } = __monkey_modules.${node.moduleName};`;
+      }
+      const name = node.alias || node.moduleName;
+      return `${this.i()}const ${name} = __monkey_modules.${node.moduleName};`;
+    }
+    if (node instanceof EnumStatement) {
+      const entries = node.variants.map((v, i) => `${v}: "${node.name}.${v}"`).join(", ");
+      return `${this.i()}const ${node.name} = Object.freeze({ ${entries} });`;
+    }
+    if (node instanceof ArrayComprehension) {
+      const cond = node.condition ? `.filter(${node.variable} => ${this.transpileNode(node.condition)})` : "";
+      return `[...${this.transpileNode(node.iterable)}${cond}].map(${node.variable} => ${this.transpileNode(node.body)})`;
     }
     if (node instanceof ExpressionStatement) {
       return `${this.i()}${this.transpileNode(node.expression)};`;

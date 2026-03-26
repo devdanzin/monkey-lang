@@ -1471,15 +1471,19 @@
     {
       "id": "T142",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Transpiler: update for enums, selective/aliased imports, array comprehensions",
-      "started": "2026-03-26T18:05:06.227Z"
+      "started": "2026-03-26T18:05:06.227Z",
+      "completed": "2026-03-26T18:05:48.046Z",
+      "duration_ms": 120000,
+      "summary": "Transpiler: enums → Object.freeze, selective imports → destructuring, comprehensions → map/filter chain. 1070 tests."
     },
     {
       "id": "T143",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Update playground + README with comprehensions"
+      "status": "in-progress",
+      "task": "Update playground + README with comprehensions",
+      "started": "2026-03-26T18:05:52.798Z"
     },
     {
       "id": "T144",
