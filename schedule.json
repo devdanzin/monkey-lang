@@ -4,28 +4,63 @@
     {
       "id": "T1",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Review Day 10: 843 tests, 30+ features, 3 blogs. Check commitments. Set direction."
+      "status": "done",
+      "task": "Review Day 10: 843 tests, 30+ features, 3 blogs. Check commitments. Set direction.",
+      "started": "2026-03-26T14:15:27.964Z",
+      "completed": "2026-03-26T14:15:55.041Z",
+      "duration_ms": 90000,
+      "summary": "Reviewed Day 10 (843 tests, 30+ features, 3 blogs). Checked 4 commitments — all still open. Queue is well-structured, no changes needed. Priorities: dashboard fixes, Show HN launch, knowledge audit."
     },
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Dashboard commitments: generate.cjs in MAINTAIN, debug rich sections rendering, iterate",
-      "task": null
+      "task": null,
+      "started": "2026-03-26T14:16:14.713Z",
+      "completed": "2026-03-26T14:17:56.710Z",
+      "duration_ms": 60000,
+      "summary": "Root cause: dashboard frontend not pushed to GH Pages — rich rendering code is local only. Plan: push frontend, add generate.cjs to MAINTAIN, test e2e."
     },
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
-      "plan_ref": "T2"
+      "status": "done",
+      "task": "Push dashboard frontend to GitHub Pages (git push origin), verify rich sections render on live site",
+      "plan_ref": "T2",
+      "started": "2026-03-26T14:18:04.895Z",
+      "completed": "2026-03-26T14:18:26.149Z",
+      "duration_ms": 120000,
+      "summary": "Pushed dashboard frontend to GH Pages with rich section rendering (blogs, PRs, benchmarks, artifacts). Verified JS deployed and API serving rich data via tunnel."
+    },
+    {
+      "id": "T21",
+      "mode": "BUILD",
+      "task": "Add generate.cjs call to MAINTAIN checklist — curl POST /api/regenerate after git push in every MAINTAIN task",
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-03-26T14:18:34.009Z",
+      "completed": "2026-03-26T14:19:04.479Z",
+      "duration_ms": 60000,
+      "summary": "Added step 3 to MAINTAIN checklist: curl POST /api/regenerate to refresh dashboard rich data after every git push."
+    },
+    {
+      "id": "T22",
+      "mode": "BUILD",
+      "task": "Test end-to-end: run generate.cjs, verify API serves fresh rich data, check live site renders blogs/PRs/benchmarks",
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-03-26T14:19:11.428Z",
+      "completed": "2026-03-26T14:21:07.280Z",
+      "duration_ms": 180000,
+      "summary": "E2E verified: generate.cjs produces rich data (22 blogs, 9 PRs, benchmarks, 7 artifacts), server reads updated files, live site serves everything. Fixed server PATH issue for node. MAINTAIN checklist updated to run generate.cjs directly."
     },
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, dashboard health, email, GitHub PRs"
+      "status": "in-progress",
+      "task": "Housekeeping: git push, dashboard health, email, GitHub PRs",
+      "started": "2026-03-26T14:21:31.141Z"
     },
     {
       "id": "T5",
@@ -130,5 +165,11 @@
       "task": "Evening housekeeping: git push, daily log update"
     }
   ],
-  "updated_at": "2026-03-26T14:02:05.404Z"
+  "updated_at": "2026-03-26T14:02:05.404Z",
+  "adjustments": [
+    {
+      "time": "2026-03-26T14:17:49.972Z",
+      "msg": "PLAN T2 filled 3 BUILD tasks"
+    }
+  ]
 }
