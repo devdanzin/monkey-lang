@@ -24,6 +24,7 @@ export const TokenType = {
   OR: '||',
   NULLISH: '??',
   OPTIONAL_CHAIN: '?.',
+  DOT: '.',
   PIPE: '|>',
   EQ: '==',
   NOT_EQ: '!=',
@@ -338,6 +339,9 @@ export class Lexer {
         return new Token(TokenType.STRING, this.readString());
       case '`':
         return new Token(TokenType.TEMPLATE_STRING, this.readTemplateString());
+      case '.':
+        tok = new Token(TokenType.DOT, '.');
+        break;
       case null:
         return new Token(TokenType.EOF, '');
       default:

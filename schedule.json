@@ -2324,9 +2324,19 @@
     {
       "id": "T226",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement optional chaining (?.) for Monkey — pairs with ?? for null-safe access",
-      "started": "2026-03-26T03:12:15.257Z"
+      "started": "2026-03-26T03:12:15.257Z",
+      "completed": "2026-03-26T03:15:17.399Z",
+      "duration_ms": 600000,
+      "summary": "Optional chaining (?.) implemented. h?.name, h?.[key], chained access, pairs with ??. 816 tests passing."
+    },
+    {
+      "id": "T227",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "Implement dot access for hashes (h.name → h[\"name\"]) and update playground",
+      "started": "2026-03-26T03:15:29.541Z"
     }
   ],
   "backlog": [],
@@ -3070,6 +3080,10 @@
     {
       "time": "2026-03-26T03:12:15.039Z",
       "msg": "Added T226 (EXPLORE) after end: Implement optional chaining (?.) for Monkey — pairs with ?? for null-safe access"
+    },
+    {
+      "time": "2026-03-26T03:15:29.312Z",
+      "msg": "Added T227 (EXPLORE) after end: Implement dot access for hashes (h.name → h[\"name\"]) and update playground"
     }
   ],
   "updated_at": "2026-03-25T16:42:01.690Z"

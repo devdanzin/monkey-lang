@@ -2250,3 +2250,24 @@ describe('Optional Chaining', () => {
     testStringObject(compileAndRun('let u = {"name": "Bob"}; u?.addr?.city ?? "unknown"'), 'unknown');
   });
 });
+
+describe('Dot Access', () => {
+  it('basic dot access', () => {
+    testStringObject(compileAndRun('let h = {"name": "Alice"}; h.name'), 'Alice');
+  });
+  it('dot access on hash literal', () => {
+    testIntegerObject(compileAndRun('{"x": 42}.x'), 42);
+  });
+  it('nested dot access', () => {
+    testIntegerObject(compileAndRun('let h = {"a": {"b": 99}}; h.a.b'), 99);
+  });
+  it('dot assignment', () => {
+    testStringObject(compileAndRun('let h = {}; h.name = "Bob"; h.name'), 'Bob');
+  });
+  it('dot access with optional chaining', () => {
+    testStringObject(compileAndRun('let h = {"a": null}; h.a?.name ?? "none"'), 'none');
+  });
+  it('dot access interop with bracket', () => {
+    testIntegerObject(compileAndRun('let h = {"x": 42}; h.x + h["x"]'), 84);
+  });
+});

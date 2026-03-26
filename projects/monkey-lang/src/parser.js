@@ -30,6 +30,7 @@ const TOKEN_PRECEDENCE = {
   [TokenType.NULLISH]: Precedence.NULLISH,
   [TokenType.PIPE]: Precedence.PIPE,
   [TokenType.OPTIONAL_CHAIN]: Precedence.INDEX,
+  [TokenType.DOT]: Precedence.INDEX,
   [TokenType.PLUS_PLUS]: Precedence.CALL,   // postfix, high precedence
   [TokenType.MINUS_MINUS]: Precedence.CALL, // ternary has same precedence as OR
   [TokenType.EQ]: Precedence.EQUALS,
@@ -90,6 +91,7 @@ export class Parser {
     }
     this.registerInfix(TokenType.PIPE, (left) => this.parsePipeExpression(left));
     this.registerInfix(TokenType.OPTIONAL_CHAIN, (left) => this.parseOptionalChainExpression(left));
+    this.registerInfix(TokenType.DOT, (left) => this.parseDotExpression(left));
     this.registerInfix(TokenType.LPAREN, (left) => this.parseCallExpression(left));
     this.registerInfix(TokenType.LBRACKET, (left) => this.parseIndexExpression(left));
     this.registerInfix(TokenType.ASSIGN, (left) => this.parseAssignExpression(left));
@@ -366,6 +368,17 @@ export class Parser {
       this.errors.push(`expected [ or identifier after ?., got ${this.peekToken.type}`);
       return left;
     }
+  }
+
+  parseDotExpression(left) {
+    const token = this.curToken;
+    if (this.peekToken.type !== TokenType.IDENT) {
+      this.errors.push(`expected identifier after '.', got ${this.peekToken.type}`);
+      return left;
+    }
+    this.nextToken(); // move to ident
+    const key = new ast.StringLiteral(this.curToken, this.curToken.literal);
+    return new ast.IndexExpression(token, left, key);
   }
 
   parseGroupedExpression() {
