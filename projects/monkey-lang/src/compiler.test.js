@@ -2698,3 +2698,67 @@ describe('Result Combinators', () => {
     assert.equal(r.inspect(), 'Err(stop)');
   });
 });
+
+describe('Edge Cases - Day 11 Features', () => {
+  // Type annotations
+  it('typed fn with no args', () => {
+    testIntegerObject(compileAndRun('let f = fn() -> int { 42 }; f()'), 42);
+  });
+
+  // Range
+  it('range with negative start', () => {
+    const r = compileAndRun('(-2)..2');
+    assert.deepEqual(r.elements.map(e => e.value), [-2, -1, 0, 1]);
+  });
+
+  it('range in map', () => {
+    testIntegerObject(compileAndRun('let s = 0; for (x in 1..6) { s = s + x; } s'), 15);
+  });
+
+  // Result chaining
+  it('nested Ok', () => {
+    const r = compileAndRun('Ok(Ok(42))');
+    assert.equal(r.inspect(), 'Ok(Ok(42))');
+  });
+
+  it('unwrap nested Ok', () => {
+    const r = compileAndRun('unwrap(unwrap(Ok(Ok(42))))');
+    testIntegerObject(r, 42);
+  });
+
+  // Method chaining
+  it('triple method chain', () => {
+    const r = compileAndRun('" HELLO WORLD ".trim().lower()');
+    assert.equal(r.value, 'hello world');
+  });
+
+  // Hash destructuring edge cases
+  it('hash destructuring with missing keys', () => {
+    testNullObject(compileAndRun('let {missing} = {"x": 1}; missing'));
+  });
+
+  // Type patterns with Result
+  it('match Result then type', () => {
+    testIntegerObject(compileAndRun(`
+      let r = Ok(42);
+      match (r) {
+        Ok(v) => match (v) { int(n) => n * 2, _ => -1 },
+        Err(e) => -1
+      }
+    `), 84);
+  });
+
+  // .length on various types
+  it('empty array length', () => {
+    testIntegerObject(compileAndRun('[].length'), 0);
+  });
+
+  it('range length', () => {
+    testIntegerObject(compileAndRun('(0..100).length'), 100);
+  });
+
+  // for-in with range and destructuring
+  it('for-in range sum', () => {
+    testIntegerObject(compileAndRun('let total = 0; for (i in 0..10) { total = total + i; } total'), 45);
+  });
+});
