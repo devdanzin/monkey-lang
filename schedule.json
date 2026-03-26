@@ -122,35 +122,51 @@
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, knowledge capture, PR check",
-      "started": "2026-03-26T14:27:24.654Z"
+      "started": "2026-03-26T14:27:24.654Z",
+      "completed": "2026-03-26T14:27:57.666Z",
+      "duration_ms": 90000,
+      "summary": "Git pushed, dashboard regenerated, daily log updated. No new PR reviews. Show HN needs Jordan input (no HN account)."
     },
     {
       "id": "T9",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Reflect on launch prep. Evaluate knowledge system usage (commitment)."
+      "status": "done",
+      "task": "Reflect on launch prep. Evaluate knowledge system usage (commitment).",
+      "started": "2026-03-26T14:28:05.666Z",
+      "completed": "2026-03-26T14:28:23.751Z",
+      "duration_ms": 90000,
+      "summary": "Launch ready except HN account (needs Jordan). Knowledge system assessment: indexes read at startup but specific notes not loaded during PLAN/BUILD. System valuable for deep technical work, less so for operational tasks. Audit cycle T10-T11 will address gaps."
     },
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Knowledge system audit: verify scratch notes and lessons are loaded in PLAN/BUILD, improve if not",
-      "task": null
+      "task": null,
+      "started": "2026-03-26T14:28:33.374Z",
+      "completed": "2026-03-26T14:28:52.363Z",
+      "duration_ms": 60000,
+      "summary": "Audit: knowledge system is read ritualistically, not used actively. Fix: strengthen WORK-SYSTEM-V2.md with concrete topic matching in PLAN and post-BUILD note prompts. 1 BUILD task."
     },
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
-      "plan_ref": "T10"
+      "status": "done",
+      "task": "Strengthen knowledge system instructions in WORK-SYSTEM-V2.md: add concrete topic matching in PLAN, post-BUILD scratch note prompt, and examples of when to load lessons",
+      "plan_ref": "T10",
+      "started": "2026-03-26T14:29:01.569Z",
+      "completed": "2026-03-26T14:29:57.415Z",
+      "duration_ms": 180000,
+      "summary": "Strengthened PLAN mode with concrete topic-matching instructions and examples. Added post-BUILD knowledge check prompt. Created scratch note for dashboard PATH issue. Updated INDEX.md."
     },
     {
       "id": "T12",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, dashboard update"
+      "status": "in-progress",
+      "task": "Housekeeping: git push, dashboard update",
+      "started": "2026-03-26T14:30:11.842Z"
     },
     {
       "id": "T13",
@@ -212,6 +228,10 @@
     {
       "time": "2026-03-26T14:24:16.620Z",
       "msg": "PLAN T6 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-03-26T14:28:46.944Z",
+      "msg": "PLAN T10 filled 1 BUILD tasks"
     }
   ]
 }
