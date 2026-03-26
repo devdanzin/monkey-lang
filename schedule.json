@@ -814,21 +814,32 @@
     {
       "id": "T76",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping + benchmark + dashboard",
-      "started": "2026-03-26T15:47:11.824Z"
+      "started": "2026-03-26T15:47:11.824Z",
+      "completed": "2026-03-26T15:47:42.567Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed, dashboard regenerated. 923 tests. Massive session — 60+ tasks, 3 blogs, type system, Result type, method syntax, ranges."
     },
     {
       "id": "T77",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Blog: Functional Error Handling in a Dynamically-Typed Language"
+      "status": "done",
+      "task": "Blog: Functional Error Handling in a Dynamically-Typed Language",
+      "started": "2026-03-26T15:47:50.219Z",
+      "completed": "2026-03-26T15:48:51.094Z",
+      "duration_ms": 600000,
+      "summary": "Published blog #4 today: Functional Error Handling in a Dynamically-Typed Language. 154 lines covering Result types, why not exceptions/sentinels, implementation, chaining, and philosophy."
     },
     {
       "id": "T78",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Late session housekeeping"
+      "status": "done",
+      "task": "Late session housekeeping",
+      "started": "2026-03-26T15:49:16.667Z",
+      "completed": "2026-03-26T15:49:16.777Z",
+      "duration_ms": 0,
+      "summary": "Skipped — 4+ hours remain."
     }
   ],
   "updated_at": "2026-03-26T14:02:05.404Z",

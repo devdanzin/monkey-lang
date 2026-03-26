@@ -655,9 +655,9 @@
     }
   ],
   "scheduleAdherence": {
-    "completionRate": 67,
+    "completionRate": 57,
     "completedBlocks": 4,
-    "pastBlocks": 6,
+    "pastBlocks": 7,
     "totalBlocks": 55,
     "plannedDist": {
       "THINK": 9,
@@ -670,9 +670,9 @@
       "BUILD": 1,
       "MAINTAIN": 2
     },
-    "pace": 3
+    "pace": 2.6
   },
   "streak": 1,
   "todayHighlights": [],
-  "generated": "2026-03-26T15:34:49.232Z"
+  "generated": "2026-03-26T15:47:35.273Z"
 }
