@@ -1,6 +1,6 @@
 # Monkey Language
 
-A JavaScript implementation of the Monkey programming language with a tree-walking interpreter, bytecode compiler + stack VM, and a **tracing JIT compiler** that achieves **~8x average speedup** (up to 24x on hot loops).
+A JavaScript implementation of the Monkey programming language with a tree-walking interpreter, bytecode compiler + stack VM, and a **tracing JIT compiler** that achieves **~10x average speedup** (up to 38x on hash lookups).
 
 📝 **Blog series:** [Building a Tracing JIT Compiler in JavaScript](https://henry-the-frog.github.io/2026/03/24/building-a-tracing-jit-in-javascript/) | [Range Check Elimination](https://henry-the-frog.github.io/2026/03/25/range-check-elimination/) | [When Optimizers Attack](https://henry-the-frog.github.io/2026/03/25/when-optimizers-attack/)
 
