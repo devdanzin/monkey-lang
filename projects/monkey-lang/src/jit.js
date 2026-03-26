@@ -1157,6 +1157,42 @@ export class TraceCompiler {
       }
     }
 
+    // --- Pre-pass: detect promoted-load-after-store conflicts ---
+    // If a LOAD of a promoted slot is used after a STORE to the same slot,
+    // the load must snapshot the value (can't alias the mutable promoted var).
+    const needsSnapshot = new Set(); // IR indices of LOAD_GLOBAL/LOAD_LOCAL that need snapshot
+    {
+      for (let i = 0; i < ir.length; i++) {
+        const inst = ir[i];
+        if (!inst) continue;
+        if (inst.op !== IR.LOAD_GLOBAL && inst.op !== IR.LOAD_LOCAL) continue;
+        const isGlobal = inst.op === IR.LOAD_GLOBAL;
+        const slot = isGlobal ? inst.operands.index : inst.operands.slot;
+        const slotKey = isGlobal ? 'g:' + slot : 'l:' + slot;
+        const isPromoted = isGlobal ? promotable.globals.has(slot) : promotable.locals.has(slot);
+        if (!isPromoted) continue;
+        // Check if there's a STORE to the same slot later
+        for (let j = i + 1; j < ir.length; j++) {
+          const later = ir[j];
+          if (!later) continue;
+          const isStoreToSame = (isGlobal && later.op === IR.STORE_GLOBAL && later.operands.index === slot) ||
+                                (!isGlobal && later.op === IR.STORE_LOCAL && later.operands.slot === slot);
+          if (isStoreToSame) {
+            // Check if load i is referenced after store j
+            for (let k = j + 1; k < ir.length; k++) {
+              const user = ir[k];
+              if (!user) continue;
+              for (const val of Object.values(user.operands)) {
+                if (val === i) { needsSnapshot.add(i); break; }
+              }
+              if (needsSnapshot.has(i)) break;
+            }
+            break;
+          }
+        }
+      }
+    }
+
     this.lines.push('"use strict";');
     this.lines.push('let __iterations = 0;');
 
@@ -1300,9 +1336,15 @@ export class TraceCompiler {
         case IR.LOAD_LOCAL: {
           const pv = promotedVarNames.get('l:' + inst.operands.slot);
           if (pv) {
-            // Alias directly to promoted var — no new variable needed
-            varNames.set(i, pv);
-            inst._promotedRaw = true;
+            if (needsSnapshot.has(i)) {
+              // Value is used after the promoted var is overwritten — snapshot it
+              this.lines.push(`  const ${v} = ${pv};`);
+              inst._promotedRaw = true;
+            } else {
+              // Alias directly to promoted var — no new variable needed
+              varNames.set(i, pv);
+              inst._promotedRaw = true;
+            }
           } else {
             this.lines.push(`  const ${v} = __stack[__bp + ${inst.operands.slot}];`);
           }
@@ -1312,9 +1354,15 @@ export class TraceCompiler {
         case IR.LOAD_GLOBAL: {
           const pv = promotedVarNames.get('g:' + inst.operands.index);
           if (pv) {
-            // Alias directly to promoted var — no new variable needed
-            varNames.set(i, pv);
-            inst._promotedRaw = true;
+            if (needsSnapshot.has(i)) {
+              // Value is used after the promoted var is overwritten — snapshot it
+              this.lines.push(`  const ${v} = ${pv};`);
+              inst._promotedRaw = true;
+            } else {
+              // Alias directly to promoted var — no new variable needed
+              varNames.set(i, pv);
+              inst._promotedRaw = true;
+            }
           } else {
             this.lines.push(`  const ${v} = __globals[${inst.operands.index}];`);
           }

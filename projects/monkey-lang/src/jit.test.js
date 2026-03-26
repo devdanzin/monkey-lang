@@ -1344,7 +1344,7 @@ describe('Algorithm JIT', () => {
     const vm = runJIT('let a = []; let s = 42; for (let i = 0; i < 50; i++) { s = (s * 1103515245 + 12345) % 2147483648; a = push(a, s % 100); } let n = len(a); for (let i = 0; i < n-1; i++) { let m = i; for (let j = i+1; j < n; j++) { if (a[j] < a[m]) { m = j; } } let t = a[i]; a[i] = a[m]; a[m] = t; } let ok = true; for (let i = 0; i < n-1; i++) { if (a[i] > a[i+1]) { ok = false; break; } } ok');
     assert.equal(vm.lastPoppedStackElem().inspect(), 'true');
   });
-  it('fibonacci in JIT', { skip: 'JIT trace compilation bug with variable swap pattern' }, () => {
+  it('fibonacci in JIT', () => {
     const vm = runJIT('let a = 0; let b = 1; for (let i = 0; i < 30; i++) { let t = b; b = a + b; a = t; } a');
     assert.equal(vm.lastPoppedStackElem().value, 832040);
   });
@@ -1379,7 +1379,7 @@ describe('JIT Correctness', () => {
     const vm = runJIT('let i = 100; let s = 0; do { s += i; i--; } while (i > 0); s');
     assert.equal(vm.lastPoppedStackElem().value, 5050);
   });
-  it('match in loop', { skip: 'JIT trace compilation bug with match expressions in loops' }, () => {
+  it('match in loop', { skip: 'JIT deopt crash with match expression after trace exit' }, () => {
     const vm = runJIT('let s = 0; for (let i = 0; i < 100; i++) { s += match (i % 4) { 0 => 1, 1 => 2, 2 => 3, _ => 4 }; } s');
     assert.equal(vm.lastPoppedStackElem().value, 250);
   });

@@ -913,7 +913,7 @@ describe('New Features - JIT Integration', () => {
 });
 
 describe('More JIT Integration', () => {
-  it('fibonacci iterative', { skip: 'JIT produces incorrect result (16724 vs 6765) — trace compilation bug with variable swap pattern' }, () => {
+  it('fibonacci iterative', () => {
     testIntegerObject(compileAndRunJIT('let a = 0; let b = 1; for (let i = 0; i < 20; i++) { let t = b; b = a + b; a = t; } a'), 6765);
   });
   it('power of 2', () => {

@@ -774,6 +774,7 @@ export class Compiler {
 
       // No match — continue to next arm
       this.changeOperand(jumpNotTruthyPos, this.currentInstructions().length);
+      this.resetPeepholeState();
     }
 
     // If no arm matched and no wildcard, push null
@@ -787,6 +788,7 @@ export class Compiler {
     for (const pos of endJumps) {
       this.changeOperand(pos, end);
     }
+    this.resetPeepholeState();
 
     return null;
   }
