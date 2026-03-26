@@ -51,7 +51,7 @@ class CompilationScope {
 }
 
 // Builtin function names (order matters — matches VM builtins array)
-const BUILTINS = ['len', 'puts', 'first', 'last', 'rest', 'push', 'split', 'join', 'trim', 'str_contains', 'substr', 'replace', 'int', 'str', 'type', 'upper', 'lower', 'indexOf', 'startsWith', 'endsWith', 'char', 'ord', 'keys', 'values', 'abs', 'sort', 'reverse', 'contains', 'sum', 'max', 'min', 'range', 'flat', 'zip', 'enumerate', 'Ok', 'Err', 'is_ok', 'is_err', 'unwrap'];
+const BUILTINS = ['len', 'puts', 'first', 'last', 'rest', 'push', 'split', 'join', 'trim', 'str_contains', 'substr', 'replace', 'int', 'str', 'type', 'upper', 'lower', 'indexOf', 'startsWith', 'endsWith', 'char', 'ord', 'keys', 'values', 'abs', 'sort', 'reverse', 'contains', 'sum', 'max', 'min', 'range', 'flat', 'zip', 'enumerate', 'Ok', 'Err', 'is_ok', 'is_err', 'unwrap', 'unwrap_or'];
 
 export class Compiler {
   constructor(symbolTable = null, constants = null) {

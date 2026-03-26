@@ -2669,3 +2669,32 @@ describe('Result Type', () => {
     assert.equal(r.value, 'division by zero');
   });
 });
+
+describe('Result Combinators', () => {
+  it('unwrap_or returns Ok value', () => {
+    testIntegerObject(compileAndRun('unwrap_or(Ok(42), 0)'), 42);
+  });
+
+  it('unwrap_or returns default for Err', () => {
+    testIntegerObject(compileAndRun('unwrap_or(Err("bad"), -1)'), -1);
+  });
+
+  it('unwrap_or method syntax', () => {
+    testIntegerObject(compileAndRun('Ok(42).unwrap_or(0)'), 42);
+  });
+
+  it('and_then pattern (user-defined)', () => {
+    testIntegerObject(compileAndRun(`
+      let and_then = fn(r, f) { match (r) { Ok(v) => f(v), Err(e) => Err(e) } };
+      unwrap(and_then(Ok(21), fn(v) { Ok(v * 2) }))
+    `), 42);
+  });
+
+  it('and_then short-circuits on Err', () => {
+    const r = compileAndRun(`
+      let and_then = fn(r, f) { match (r) { Ok(v) => f(v), Err(e) => Err(e) } };
+      and_then(Err("stop"), fn(v) { Ok(v * 2) })
+    `);
+    assert.equal(r.inspect(), 'Err(stop)');
+  });
+});

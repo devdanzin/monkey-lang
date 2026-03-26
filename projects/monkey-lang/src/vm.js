@@ -377,6 +377,12 @@ const BUILTINS = [
     if (!args[0].isOk) return new MonkeyError('unwrap called on Err: ' + args[0].value.inspect());
     return args[0].value;
   }),
+  // unwrap_or: Result, default → value (Ok value or default)
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return new MonkeyError(`wrong number of arguments. got=${args.length}, want=2`);
+    if (!(args[0] instanceof MonkeyResult)) return args[0]; // not a Result, return as-is
+    return args[0].isOk ? args[0].value : args[1];
+  }),
 ];
 
 export class VM {
