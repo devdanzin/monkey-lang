@@ -740,7 +740,7 @@ export class Parser {
     if (!this.expectPeek(TokenType.LBRACE)) return null;
 
     const arms = [];
-    const TYPE_NAMES = new Set(['int', 'string', 'bool', 'array', 'hash', 'fn', 'null']);
+    const TYPE_NAMES = new Set(['int', 'string', 'bool', 'array', 'hash', 'fn', 'null', 'Ok', 'Err']);
     while (!this.peekTokenIs(TokenType.RBRACE) && !this.peekTokenIs(TokenType.EOF)) {
       this.nextToken();
       let pattern = null;

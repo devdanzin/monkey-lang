@@ -3,7 +3,7 @@
 import {
   MonkeyInteger, MonkeyString, MonkeyReturnValue, MonkeyError,
   MonkeyFunction, MonkeyArray, MonkeyHash, MonkeyBuiltin,
-  MonkeyBreak, MonkeyContinue,
+  MonkeyBreak, MonkeyContinue, MonkeyResult,
   Environment, TRUE, FALSE, NULL, OBJ, internString,
 } from './object.js';
 
@@ -379,10 +379,14 @@ export function monkeyEval(node, env) {
           case 'hash': matches = subject instanceof MonkeyHash; break;
           case 'fn': matches = subject instanceof MonkeyFunction; break;
           case 'null': matches = subject === NULL; break;
+          case 'Ok': matches = subject instanceof MonkeyResult && subject.isOk; break;
+          case 'Err': matches = subject instanceof MonkeyResult && !subject.isOk; break;
         }
         if (matches) {
           const innerEnv = new Environment(env);
-          innerEnv.set(arm.pattern.binding.value, subject);
+          // For Ok/Err, bind inner value; for other types, bind the subject directly
+          const bindValue = (typeName === 'Ok' || typeName === 'Err') ? subject.value : subject;
+          innerEnv.set(arm.pattern.binding.value, bindValue);
           return monkeyEval(arm.value, innerEnv);
         }
         continue;

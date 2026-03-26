@@ -93,6 +93,7 @@ export const Opcodes = {
   OpSlice:          0x37, // Slice: arr[start:end]
   OpTypeCheck:      0x38, // Type check: local(1) typeConstIdx(2) — validates param type
   OpTypeIs:         0x39, // Type check: pops value, pushes bool (typeConstIdx(2))
+  OpResultValue:    0x3A, // Pop Result, push its inner .value
 };
 
 // Opcode definitions: [name, ...operandWidths]
@@ -154,6 +155,7 @@ const definitions = {
   [Opcodes.OpSlice]:            ['OpSlice'],
   [Opcodes.OpTypeCheck]:        ['OpTypeCheck', 1, 2], // localSlot (1), typeNameConstIdx (2)
   [Opcodes.OpTypeIs]:           ['OpTypeIs', 2],       // typeNameConstIdx (2) — pops value, pushes bool
+  [Opcodes.OpResultValue]:      ['OpResultValue'],     // Pop Result, push its .value
 };
 
 /**

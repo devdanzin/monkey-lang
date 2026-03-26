@@ -2613,3 +2613,59 @@ describe('Method Syntax', () => {
     assert.equal(r.value, 'HELLO');
   });
 });
+
+describe('Result Type', () => {
+  it('Ok wraps value', () => {
+    const r = compileAndRun('Ok(42)');
+    assert.equal(r.inspect(), 'Ok(42)');
+  });
+
+  it('Err wraps error', () => {
+    const r = compileAndRun('Err("not found")');
+    assert.equal(r.inspect(), 'Err(not found)');
+  });
+
+  it('is_ok checks Ok', () => {
+    const r = compileAndRun('is_ok(Ok(42))');
+    assert.equal(r.value, true);
+  });
+
+  it('is_err checks Err', () => {
+    const r = compileAndRun('is_err(Err("bad"))');
+    assert.equal(r.value, true);
+  });
+
+  it('unwrap extracts Ok value', () => {
+    testIntegerObject(compileAndRun('unwrap(Ok(42))'), 42);
+  });
+
+  it('match Ok pattern extracts inner value', () => {
+    testIntegerObject(compileAndRun('match (Ok(42)) { Ok(v) => v + 1, Err(e) => -1 }'), 43);
+  });
+
+  it('match Err pattern extracts error', () => {
+    const r = compileAndRun('match (Err("oops")) { Ok(v) => "ok", Err(e) => "error: " + e }');
+    assert.equal(r.value, 'error: oops');
+  });
+
+  it('safe division example', () => {
+    const code = `
+      let safe_div = fn(a: int, b: int) {
+        if (b == 0) { Err("division by zero") } else { Ok(a / b) }
+      };
+      match (safe_div(10, 2)) { Ok(v) => v, Err(e) => -1 }
+    `;
+    testIntegerObject(compileAndRun(code), 5);
+  });
+
+  it('safe division error case', () => {
+    const code = `
+      let safe_div = fn(a: int, b: int) {
+        if (b == 0) { Err("division by zero") } else { Ok(a / b) }
+      };
+      match (safe_div(10, 0)) { Ok(v) => v, Err(e) => e }
+    `;
+    const r = compileAndRun(code);
+    assert.equal(r.value, 'division by zero');
+  });
+});

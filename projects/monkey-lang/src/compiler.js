@@ -907,8 +907,14 @@ export class Compiler {
         this.emit(Opcodes.OpTypeIs, typeConst);
         const jumpNotTruthyPos = this.emit(Opcodes.OpJumpNotTruthy, 9999);
 
-        // Match — bind subject to pattern variable and compile value
-        this.loadSymbol(subjectSym);
+        // Match — bind appropriate value to pattern variable
+        if (arm.pattern.typeName === 'Ok' || arm.pattern.typeName === 'Err') {
+          // For Ok/Err: bind the inner value (like Rust's Ok(v) pattern)
+          this.loadSymbol(subjectSym);
+          this.emit(Opcodes.OpResultValue);
+        } else {
+          this.loadSymbol(subjectSym);
+        }
         const bindSym = this.symbolTable.define(arm.pattern.binding.value);
         this.emit(bindSym.scope === 'GLOBAL' ? Opcodes.OpSetGlobal : Opcodes.OpSetLocal, bindSym.index);
         err = this.compile(arm.value);
