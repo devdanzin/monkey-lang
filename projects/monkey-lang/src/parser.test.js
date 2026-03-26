@@ -339,3 +339,25 @@ describe('Type Annotations', () => {
     assert.ok(s.includes('-> bool'));
   });
 });
+
+describe('Hash Destructuring', () => {
+  it('parses let {x, y} = expr', () => {
+    const prog = parse('let {x, y} = {"x": 1, "y": 2}');
+    assert.equal(prog.statements.length, 1);
+    assert.equal(prog.statements[0].constructor.name, 'HashDestructuringLet');
+    assert.equal(prog.statements[0].names.length, 2);
+    assert.equal(prog.statements[0].names[0].value, 'x');
+    assert.equal(prog.statements[0].names[1].value, 'y');
+  });
+
+  it('parses empty hash destructuring', () => {
+    const prog = parse('let {} = h');
+    assert.equal(prog.statements[0].names.length, 0);
+  });
+
+  it('parses single key', () => {
+    const prog = parse('let {name} = person');
+    assert.equal(prog.statements[0].names.length, 1);
+    assert.equal(prog.statements[0].names[0].value, 'name');
+  });
+});

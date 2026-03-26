@@ -2446,3 +2446,21 @@ describe('Type Annotations', () => {
     );
   });
 });
+
+describe('Hash Destructuring (Compiler)', () => {
+  it('destructures hash keys', () => {
+    testIntegerObject(compileAndRun('let {x, y} = {"x": 10, "y": 20}; x + y'), 30);
+  });
+
+  it('missing key is null', () => {
+    testNullObject(compileAndRun('let {z} = {"x": 10}; z'));
+  });
+
+  it('works with computed hash', () => {
+    testIntegerObject(compileAndRun('let f = fn() { {"a": 1, "b": 2} }; let {a, b} = f(); a + b'), 3);
+  });
+
+  it('combined with array destructuring', () => {
+    testIntegerObject(compileAndRun('let [a, b] = [1, 2]; let {x} = {"x": 3}; a + b + x'), 6);
+  });
+});

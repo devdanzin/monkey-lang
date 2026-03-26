@@ -330,6 +330,16 @@ export class DestructuringLet {
   toString() { return `let [${this.names.map(n => n ? n.value : '_').join(', ')}] = ...`; }
 }
 
+export class HashDestructuringLet {
+  constructor(token, names, value) {
+    this.token = token;
+    this.names = names;   // Array of Identifier (keys to extract from hash)
+    this.value = value;   // Expression
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return `let {${this.names.map(n => n.value).join(', ')}} = ...`; }
+}
+
 export class DoWhileExpression {
   constructor(token, body, condition) {
     this.token = token;

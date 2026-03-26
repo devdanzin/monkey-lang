@@ -263,6 +263,19 @@ export function monkeyEval(node, env) {
     }
     return undefined;
   }
+  if (node instanceof AST.HashDestructuringLet) {
+    const val = monkeyEval(node.value, env);
+    if (isError(val)) return val;
+    if (val instanceof MonkeyHash) {
+      for (const name of node.names) {
+        const key = internString(name.value);
+        const hashKey = key.hashKey();
+        const pair = val.pairs.get(hashKey);
+        env.set(name.value, pair ? pair.value : NULL);
+      }
+    }
+    return undefined;
+  }
   if (node instanceof AST.ReturnStatement) {
     const val = monkeyEval(node.returnValue, env);
     if (isError(val)) return val;

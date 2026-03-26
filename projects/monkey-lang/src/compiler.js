@@ -160,6 +160,20 @@ export class Compiler {
         const dsym = this.symbolTable.define(node.names[i].value);
         this.emit(dsym.scope === SCOPE.GLOBAL ? Opcodes.OpSetGlobal : Opcodes.OpSetLocal, dsym.index);
       }
+    } else if (node instanceof ast.HashDestructuringLet) {
+      // let {x, y, z} = expr — extract hash keys by name
+      const err2 = this.compile(node.value);
+      if (err2) return err2;
+      const tempSym = this.symbolTable.define('__hdestruct_' + this.currentInstructions().length);
+      this.emit(tempSym.scope === SCOPE.GLOBAL ? Opcodes.OpSetGlobal : Opcodes.OpSetLocal, tempSym.index);
+      for (const name of node.names) {
+        this.loadSymbol(tempSym);
+        const keyConst = this.addConstant(internString(name.value));
+        this.emit(Opcodes.OpConstant, keyConst);
+        this.emit(Opcodes.OpIndex);
+        const dsym = this.symbolTable.define(name.value);
+        this.emit(dsym.scope === SCOPE.GLOBAL ? Opcodes.OpSetGlobal : Opcodes.OpSetLocal, dsym.index);
+      }
     } else if (node instanceof ast.ReturnStatement) {
       const err = this.compile(node.returnValue);
       if (err) return err;
