@@ -279,7 +279,7 @@ Aggregate: 26 benchmarks, ~9.2x overall (all correct)
 ## Tests
 
 ```bash
-node --test    # 928 tests (925 passing, 3 skipped JIT edge cases)
+node --test    # 1000 tests (997 passing, 3 skipped JIT edge cases)
 ```
 
 ## Benchmarks
