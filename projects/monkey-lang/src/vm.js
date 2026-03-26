@@ -239,6 +239,63 @@ const BUILTINS = [
       return new MonkeyError(`argument to \`abs\` must be INTEGER`);
     return cachedInteger(Math.abs(args[0].value));
   }),
+  // sort — sort an array (integers/strings)
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyArray))
+      return new MonkeyError(`argument to \`sort\` must be ARRAY`);
+    const sorted = [...args[0].elements].sort((a, b) => {
+      if (a instanceof MonkeyInteger && b instanceof MonkeyInteger) return a.value - b.value;
+      return a.inspect().localeCompare(b.inspect());
+    });
+    return new MonkeyArray(sorted);
+  }),
+  // reverse — reverse an array
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyArray))
+      return new MonkeyError(`argument to \`reverse\` must be ARRAY`);
+    return new MonkeyArray([...args[0].elements].reverse());
+  }),
+  // contains — check if array/string contains a value
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return new MonkeyError(`wrong number of arguments. got=${args.length}, want=2`);
+    if (args[0] instanceof MonkeyArray) {
+      return args[0].elements.some(el => el.inspect() === args[1].inspect()) ? TRUE : FALSE;
+    }
+    if (args[0] instanceof MonkeyString && args[1] instanceof MonkeyString) {
+      return args[0].value.includes(args[1].value) ? TRUE : FALSE;
+    }
+    return new MonkeyError(`\`contains\` not supported for ${args[0].type()}`);
+  }),
+  // sum — sum an array of integers
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyArray))
+      return new MonkeyError(`argument to \`sum\` must be ARRAY`);
+    let total = 0;
+    for (const el of args[0].elements) {
+      if (el instanceof MonkeyInteger) total += el.value;
+    }
+    return cachedInteger(total);
+  }),
+  // max — maximum of array
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyArray))
+      return new MonkeyError(`argument to \`max\` must be ARRAY`);
+    let m = -Infinity;
+    for (const el of args[0].elements) {
+      if (el instanceof MonkeyInteger && el.value > m) m = el.value;
+    }
+    return m === -Infinity ? NULL : cachedInteger(m);
+  }),
+  // min — minimum of array
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyArray))
+      return new MonkeyError(`argument to \`min\` must be ARRAY`);
+    let m = Infinity;
+    for (const el of args[0].elements) {
+      if (el instanceof MonkeyInteger && el.value < m) m = el.value;
+    }
+    return m === Infinity ? NULL : cachedInteger(m);
+  }),
 ];
 
 export class VM {

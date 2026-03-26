@@ -149,6 +149,46 @@ const builtins = new Map([
     for (const [, {value}] of args[0].pairs) arr.push(value);
     return new MonkeyArray(arr);
   })],
+  ['sort', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyArray)) return newError('sort requires one array argument');
+    const sorted = [...args[0].elements].sort((a, b) => {
+      if (a instanceof MonkeyInteger && b instanceof MonkeyInteger) return a.value - b.value;
+      return a.inspect().localeCompare(b.inspect());
+    });
+    return new MonkeyArray(sorted);
+  })],
+  ['reverse', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyArray)) return newError('reverse requires one array argument');
+    return new MonkeyArray([...args[0].elements].reverse());
+  })],
+  ['contains', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError('contains requires two arguments');
+    if (args[0] instanceof MonkeyArray) {
+      return nativeBoolToBooleanObject(args[0].elements.some(el => el.inspect() === args[1].inspect()));
+    }
+    if (args[0] instanceof MonkeyString && args[1] instanceof MonkeyString) {
+      return nativeBoolToBooleanObject(args[0].value.includes(args[1].value));
+    }
+    return newError('contains not supported for ' + args[0].type());
+  })],
+  ['sum', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyArray)) return newError('sum requires one array argument');
+    let total = 0;
+    for (const el of args[0].elements) { if (el instanceof MonkeyInteger) total += el.value; }
+    return new MonkeyInteger(total);
+  })],
+  ['max', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyArray)) return newError('max requires one array argument');
+    let m = -Infinity;
+    for (const el of args[0].elements) { if (el instanceof MonkeyInteger && el.value > m) m = el.value; }
+    return m === -Infinity ? NULL : new MonkeyInteger(m);
+  })],
+  ['min', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyArray)) return newError('min requires one array argument');
+    let m = Infinity;
+    for (const el of args[0].elements) { if (el instanceof MonkeyInteger && el.value < m) m = el.value; }
+    return m === Infinity ? NULL : new MonkeyInteger(m);
+  })],
 ]);
 
 // --- Helpers ---
