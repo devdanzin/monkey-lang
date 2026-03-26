@@ -1076,16 +1076,20 @@
       "id": "T111",
       "mode": "BUILD",
       "task": "Lexer/parser: import keyword + ImportStatement AST. Compiler: OpImport opcode. VM: module registry with math and string modules. Evaluator: import support. Tests.",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T104",
-      "started": "2026-03-26T17:26:13.641Z"
+      "started": "2026-03-26T17:26:13.641Z",
+      "completed": "2026-03-26T17:33:49.430Z",
+      "duration_ms": 600000,
+      "summary": "Module system: import keyword, ImportStatement, module registry (math: abs/pow/sqrt/min/max/floor/ceil, string: upper/lower/trim/split/join/repeat/contains/replace/charAt). Fixed method desugaring conflict with modules. 1020 tests."
     },
     {
       "id": "T112",
       "mode": "BUILD",
       "task": "Transpiler: import → JS import/require. Playground: verify modules work in browser. Update README.",
-      "status": "upcoming",
-      "plan_ref": "T104"
+      "status": "in-progress",
+      "plan_ref": "T104",
+      "started": "2026-03-26T17:33:57.107Z"
     },
     {
       "id": "T105",

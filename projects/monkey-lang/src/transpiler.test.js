@@ -118,3 +118,10 @@ describe('Transpiler', () => {
     assert.ok(js.includes('slice'));
   });
 });
+
+describe('Module imports', () => {
+  it('transpiles import statement', () => {
+    const js = transpile('import "math"');
+    assert.ok(js.includes('__monkey_modules.math'));
+  });
+});

@@ -24,6 +24,10 @@ export class Transpiler {
     if (node instanceof ast.ReturnStatement) {
       return `${this.i()}return ${this.transpileNode(node.returnValue)};`;
     }
+    if (node instanceof ast.ImportStatement) {
+      // Transpile import "math" → const math = require("monkey-modules/math") or just a comment
+      return `${this.i()}const ${node.moduleName} = __monkey_modules.${node.moduleName};`;
+    }
     if (node instanceof ast.ExpressionStatement) {
       return `${this.i()}${this.transpileNode(node.expression)};`;
     }

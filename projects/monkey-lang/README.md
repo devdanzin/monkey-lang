@@ -18,6 +18,7 @@ Inspired by Thorsten Ball's *Writing An Interpreter In Go* and *Writing A Compil
 - **Tracing JIT compiler** — records hot execution traces, optimizes IR, compiles to JavaScript via `new Function()`
 - **Optional type annotations** — `fn(x: int, y: int) -> int` with runtime validation and JIT guard elimination
 - **Result type** — `Ok(value)` / `Err(error)` with pattern matching and `unwrap_or`
+- **Module system** — `import "math"`, `import "string"` with namespace access (`math.sqrt(16)`)
 - **Method syntax** — `"hello".upper()`, `[1,2].push(3)`, `.length` on strings/arrays
 - **Standard library** — `map`, `filter`, `reduce`, `forEach`, `range`, `contains`, `reverse` (implemented in Monkey for JIT compatibility)
 - **25+ builtins** — `len`, `puts`, `first`, `last`, `rest`, `push`, `split`, `join`, `trim`, `str_contains`, `substr`, `replace`, `int`, `str`, `type`, `ord`, `char`, `abs`, `upper`, `lower`, `indexOf`, `startsWith`, `endsWith`, `keys`, `values`
@@ -233,6 +234,24 @@ x == null          // true
 `len`, `puts`, `first`, `last`, `rest`, `push`, `str`, `int`, `type`,
 `split`, `join`, `trim`, `replace`, `upper`, `lower`, `indexOf`,
 `startsWith`, `endsWith`, `char`, `ord`
+
+### Modules
+```javascript
+import "math";
+math.pow(2, 10)    // 1024
+math.sqrt(16)      // 4
+math.abs(-42)      // 42
+
+import "string";
+string.upper("hello")        // "HELLO"
+string.repeat("ha", 3)       // "hahaha"
+string.contains("foo", "oo") // true
+string.replace("hello world", "world", "monkey") // "hello monkey"
+```
+
+**Available modules:**
+- **math** — `abs`, `pow`, `sqrt`, `min`, `max`, `floor`, `ceil`
+- **string** — `upper`, `lower`, `trim`, `split`, `join`, `repeat`, `contains`, `replace`, `charAt`
 
 ## Tracing JIT Compiler
 
