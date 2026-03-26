@@ -170,3 +170,13 @@ export class MonkeyContinue {
   type() { return 'CONTINUE'; }
   inspect() { return 'continue'; }
 }
+
+export class MonkeyResult {
+  constructor(isOk, value) {
+    this.isOk = isOk;      // boolean
+    this.value = value;     // MonkeyObject
+  }
+  type() { return 'RESULT'; }
+  inspect() { return this.isOk ? `Ok(${this.value.inspect()})` : `Err(${this.value.inspect()})`; }
+  fastHashKey() { return `result:${this.isOk}:${this.value.inspect()}`; }
+}

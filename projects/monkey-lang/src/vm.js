@@ -6,6 +6,7 @@ import { CompiledFunction } from './compiler.js';
 import {
   MonkeyInteger, MonkeyBoolean, MonkeyString, MonkeyNull,
   MonkeyArray, MonkeyHash, MonkeyBuiltin, MonkeyError,
+  MonkeyResult,
   TRUE, FALSE, NULL, cachedInteger, internString,
 } from './object.js';
 import { IR, JIT, TraceRecorder } from './jit.js';
@@ -346,6 +347,35 @@ const BUILTINS = [
       result.push(new MonkeyArray([cachedInteger(i), args[0].elements[i]]));
     }
     return new MonkeyArray(result);
+  }),
+  // Ok
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyError(`wrong number of arguments. got=${args.length}, want=1`);
+    return new MonkeyResult(true, args[0]);
+  }),
+  // Err
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyError(`wrong number of arguments. got=${args.length}, want=1`);
+    return new MonkeyResult(false, args[0]);
+  }),
+  // is_ok
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyError(`wrong number of arguments. got=${args.length}, want=1`);
+    if (!(args[0] instanceof MonkeyResult)) return FALSE;
+    return args[0].isOk ? TRUE : FALSE;
+  }),
+  // is_err
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyError(`wrong number of arguments. got=${args.length}, want=1`);
+    if (!(args[0] instanceof MonkeyResult)) return FALSE;
+    return args[0].isOk ? FALSE : TRUE;
+  }),
+  // unwrap
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyError(`wrong number of arguments. got=${args.length}, want=1`);
+    if (!(args[0] instanceof MonkeyResult)) return new MonkeyError('unwrap requires a Result');
+    if (!args[0].isOk) return new MonkeyError('unwrap called on Err: ' + args[0].value.inspect());
+    return args[0].value;
   }),
 ];
 
