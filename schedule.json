@@ -2384,9 +2384,22 @@
     {
       "id": "T232",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement rest parameters: fn(a, ...rest) { len(rest) }",
-      "started": "2026-03-26T03:31:34.688Z"
+      "started": "2026-03-26T03:31:34.688Z",
+      "completed": "2026-03-26T03:40:06.416Z",
+      "duration_ms": 900000,
+      "summary": "Rest parameters implemented. fn(...args), fn(a, ...rest). VM collects extra args into array. 843 tests passing."
+    },
+    {
+      "id": "T233",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add map, filter, reduce as VM builtins for speed and pipe compatibility",
+      "started": "2026-03-26T03:40:34.882Z",
+      "completed": "2026-03-26T03:41:19.526Z",
+      "duration_ms": 60000,
+      "summary": "Skipped — VM builtins cannot invoke closures (no VM context). map/filter/reduce must stay in stdlib. Would need VM callback mechanism."
     }
   ],
   "backlog": [],
@@ -3154,6 +3167,10 @@
     {
       "time": "2026-03-26T03:31:34.467Z",
       "msg": "Added T232 (EXPLORE) after end: Implement rest parameters: fn(a, ...rest) { len(rest) }"
+    },
+    {
+      "time": "2026-03-26T03:40:34.664Z",
+      "msg": "Added T233 (BUILD) after end: Add map, filter, reduce as VM builtins for speed and pipe compatibility"
     }
   ],
   "updated_at": "2026-03-25T16:42:01.690Z"

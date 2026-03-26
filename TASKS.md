@@ -162,3 +162,29 @@
 ## Principles
 Learn. Be curious. Create. Self-improve. Be efficient. Share knowledge.
 Depth > breadth. One excellent thing > four mediocre ones.
+
+### Session C (8:15pm – 10:15pm) — Evening Exploration
+- [x] Fixed 69 failing tests — major bugfix session:
+  - Const declarations (full pipeline)
+  - Multi-line comments (/* */)
+  - String hashKey identity bug (fastHashKey used object identity)
+  - Peephole optimizer across jump boundaries (ternary/if-else/match in expressions)
+  - Evaluator builtins: ord, char, abs, upper, lower, indexOf, startsWith, endsWith, keys, values
+  - String multiplication, integer <=/>= operators, &&/|| short-circuit in evaluator
+  - Hash mutation in evaluator
+- [x] JIT tracer bugs:
+  - Promoted variable snapshot (fibonacci swap pattern — classic SSA violation)
+  - Deopt snapshot boxing (raw JS values not boxed back to MonkeyObjects)
+  - Match expression peephole bug
+- [x] Blog: "When Optimizers Attack: Three Compiler Bugs in One Evening"
+- [x] **7 new language features:**
+  - Null coalescing (??)
+  - Optional chaining (?.)
+  - Pipe operator (|>)
+  - Arrow functions ((x) => x * 2)
+  - Dot access for hashes (h.name)
+  - Array concatenation (+)
+  - Spread operator (...) in array literals
+  - Rest parameters (fn(a, ...rest))
+- [x] 843/846 tests (from 729 at session start!)
+- [x] Playground updated with all new features

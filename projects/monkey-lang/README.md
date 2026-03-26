@@ -18,7 +18,7 @@ Inspired by Thorsten Ball's *Writing An Interpreter In Go* and *Writing A Compil
 - **Tracing JIT compiler** — records hot execution traces, optimizes IR, compiles to JavaScript via `new Function()`
 - **Standard library** — `map`, `filter`, `reduce`, `forEach`, `range`, `contains`, `reverse` (implemented in Monkey for JIT compatibility)
 - **25+ builtins** — `len`, `puts`, `first`, `last`, `rest`, `push`, `split`, `join`, `trim`, `str_contains`, `substr`, `replace`, `int`, `str`, `type`, `ord`, `char`, `abs`, `upper`, `lower`, `indexOf`, `startsWith`, `endsWith`, `keys`, `values`
-- **Modern syntax** — arrow functions `(x) => x * 2`, pipe operator `|>`, null coalescing `??`, optional chaining `?.`, dot access `h.name`, const declarations
+- **Modern syntax** — arrow functions `(x) => x * 2`, pipe operator `|>`, null coalescing `??`, optional chaining `?.`, dot access `h.name`, const declarations, spread `...`, rest parameters
 - **Dual-engine REPL** — switch between interpreter and VM at runtime (`:engine vm`/`:engine eval`)
 
 ## Data Types
@@ -155,6 +155,28 @@ let add = fn(a, b) { a + b };
 5 |> add(10);                   // 15
 ```
 
+### Spread & Rest
+```javascript
+// Array spread
+let a = [2, 3];
+[1, ...a, 4];           // [1, 2, 3, 4]
+[...x, ...y];           // concatenate
+
+// Array concatenation
+[1, 2] + [3, 4];        // [1, 2, 3, 4]
+
+// Rest parameters
+let sum = fn(...nums) {
+  let total = 0;
+  for (n in nums) { total += n; }
+  total
+};
+sum(1, 2, 3, 4);        // 10
+
+let first = fn(head, ...tail) { head };
+first(1, 2, 3);          // 1
+```
+
 ### Array/String Operations
 ```javascript
 // Mutation
@@ -222,7 +244,7 @@ Aggregate: 26 benchmarks, ~9.2x overall (all correct)
 ## Tests
 
 ```bash
-node --test    # 832 tests (829 passing, 3 skipped JIT edge cases)
+node --test    # 846 tests (843 passing, 3 skipped JIT edge cases)
 ```
 
 ## Benchmarks
