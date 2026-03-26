@@ -24,9 +24,10 @@ export class SymbolTable {
     this.freeSymbols = [];
   }
 
-  define(name) {
+  define(name, isConst = false) {
     const scope = this.outer === null ? SCOPE.GLOBAL : SCOPE.LOCAL;
     const sym = new Symbol(name, scope, this.numDefinitions);
+    sym.isConst = isConst;
     this.store.set(name, sym);
     this.numDefinitions++;
     return sym;

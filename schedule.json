@@ -2201,26 +2201,39 @@
     {
       "id": "T214",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Implement const declarations: const x = 42 (immutable bindings)"
+      "status": "done",
+      "task": "Implement const declarations: const x = 42 (immutable bindings)",
+      "started": "2026-03-26T02:17:23.357Z",
+      "completed": "2026-03-26T02:20:28.689Z",
+      "duration_ms": 120000,
+      "summary": "const declarations implemented. Compiler tracks isConst in symbol table, errors on reassignment. Evaluator tracks in Environment. Full pipeline."
     },
     {
       "id": "T215",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Implement multiline comments: /* ... */"
+      "status": "done",
+      "task": "Implement multiline comments: /* ... */",
+      "started": "2026-03-26T02:20:36.174Z",
+      "completed": "2026-03-26T02:21:08.536Z",
+      "duration_ms": 60000,
+      "summary": "Multi-line comments (/* ... */) implemented in lexer skipWhitespace. Handles inline and spanning-lines."
     },
     {
       "id": "T216",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Implement single-line comments: // ..."
+      "status": "done",
+      "task": "Implement single-line comments: // ...",
+      "started": "2026-03-26T02:21:08.649Z",
+      "completed": "2026-03-26T02:21:08.763Z",
+      "duration_ms": 5000,
+      "summary": "Single-line comments already implemented. No changes needed."
     },
     {
       "id": "T217",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Tests for const, comments"
+      "status": "in-progress",
+      "task": "Tests for const, comments",
+      "started": "2026-03-26T02:21:17.733Z"
     }
   ],
   "backlog": [],

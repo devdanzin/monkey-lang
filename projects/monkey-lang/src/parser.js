@@ -143,6 +143,7 @@ export class Parser {
   parseStatement() {
     switch (this.curToken.type) {
       case TokenType.LET: return this.parseLetStatement();
+      case TokenType.CONST: return this.parseLetStatement();
       case TokenType.RETURN: return this.parseReturnStatement();
       default: return this.parseExpressionStatement();
     }

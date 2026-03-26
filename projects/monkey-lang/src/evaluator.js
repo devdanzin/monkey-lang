@@ -102,6 +102,53 @@ const builtins = new Map([
     if (args.length !== 1) return newError(`wrong number of arguments. got=${args.length}, want=1`);
     return new MonkeyString(args[0].type());
   })],
+  ['ord', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || args[0].type() !== OBJ.STRING) return newError('ord requires one string argument');
+    return new MonkeyInteger(args[0].value.charCodeAt(0));
+  })],
+  ['char', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || args[0].type() !== OBJ.INTEGER) return newError('char requires one integer argument');
+    return new MonkeyString(String.fromCharCode(args[0].value));
+  })],
+  ['abs', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || args[0].type() !== OBJ.INTEGER) return newError('abs requires one integer argument');
+    return new MonkeyInteger(Math.abs(args[0].value));
+  })],
+  ['upper', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || args[0].type() !== OBJ.STRING) return newError('upper requires one string argument');
+    return new MonkeyString(args[0].value.toUpperCase());
+  })],
+  ['lower', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || args[0].type() !== OBJ.STRING) return newError('lower requires one string argument');
+    return new MonkeyString(args[0].value.toLowerCase());
+  })],
+  ['indexOf', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError(`wrong number of arguments. got=${args.length}, want=2`);
+    if (args[0].type() === OBJ.STRING && args[1].type() === OBJ.STRING) {
+      return new MonkeyInteger(args[0].value.indexOf(args[1].value));
+    }
+    return newError('indexOf requires two string arguments');
+  })],
+  ['startsWith', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError(`wrong number of arguments. got=${args.length}, want=2`);
+    return nativeBoolToBooleanObject(args[0].value.startsWith(args[1].value));
+  })],
+  ['endsWith', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError(`wrong number of arguments. got=${args.length}, want=2`);
+    return nativeBoolToBooleanObject(args[0].value.endsWith(args[1].value));
+  })],
+  ['keys', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || args[0].type() !== OBJ.HASH) return newError('keys requires one hash argument');
+    const arr = [];
+    for (const [, {key}] of args[0].pairs) arr.push(key);
+    return new MonkeyArray(arr);
+  })],
+  ['values', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || args[0].type() !== OBJ.HASH) return newError('values requires one hash argument');
+    const arr = [];
+    for (const [, {value}] of args[0].pairs) arr.push(value);
+    return new MonkeyArray(arr);
+  })],
 ]);
 
 // --- Helpers ---
@@ -127,7 +174,7 @@ export function monkeyEval(node, env) {
   if (node instanceof AST.LetStatement) {
     const val = monkeyEval(node.value, env);
     if (isError(val)) return val;
-    env.set(node.name.value, val);
+    env.set(node.name.value, val, node.isConst);
     return undefined;
   }
   if (node instanceof AST.DestructuringLet) {
@@ -160,6 +207,19 @@ export function monkeyEval(node, env) {
   }
 
   if (node instanceof AST.InfixExpression) {
+    // Short-circuit evaluation for && and ||
+    if (node.operator === '&&') {
+      const left = monkeyEval(node.left, env);
+      if (isError(left)) return left;
+      if (!isTruthy(left)) return left;
+      return monkeyEval(node.right, env);
+    }
+    if (node.operator === '||') {
+      const left = monkeyEval(node.left, env);
+      if (isError(left)) return left;
+      if (isTruthy(left)) return left;
+      return monkeyEval(node.right, env);
+    }
     const left = monkeyEval(node.left, env);
     if (isError(left)) return left;
     const right = monkeyEval(node.right, env);
@@ -211,6 +271,7 @@ export function monkeyEval(node, env) {
   if (node instanceof AST.TemplateLiteral) return evalTemplateLiteral(node, env);
 
   if (node instanceof AST.AssignExpression) {
+    if (env.isConst(node.name.value)) return new MonkeyError(`cannot assign to const variable: ${node.name.value}`);
     const val = monkeyEval(node.value, env);
     if (isError(val)) return val;
     env.set(node.name.value, val);
@@ -251,6 +312,10 @@ export function monkeyEval(node, env) {
       if (i < 0) i += obj.elements.length;
       if (i >= 0 && i < obj.elements.length) {
         obj.elements[i] = val;
+      }
+    } else if (obj instanceof MonkeyHash) {
+      if (index.fastHashKey) {
+        obj.pairs.set(index.fastHashKey(), { key: index, value: val });
       }
     }
     return val;
@@ -342,9 +407,19 @@ function evalInfixExpression(op, left, right) {
   if (left.type() === OBJ.INTEGER && right.type() === OBJ.INTEGER) {
     return evalIntegerInfix(op, left, right);
   }
+  // String * Integer or Integer * String
+  if (op === '*') {
+    if (left.type() === OBJ.STRING && right.type() === OBJ.INTEGER) {
+      const n = right.value;
+      return new MonkeyString(n > 0 ? left.value.repeat(n) : '');
+    }
+    if (left.type() === OBJ.INTEGER && right.type() === OBJ.STRING) {
+      const n = left.value;
+      return new MonkeyString(n > 0 ? right.value.repeat(n) : '');
+    }
+  }
   if (left.type() === OBJ.STRING && right.type() === OBJ.STRING) {
     if (op === '+') return new MonkeyString(left.value + right.value);
-    if (op === '*') return left; // handled elsewhere
     if (op === '==') return nativeBoolToBooleanObject(left.value === right.value);
     if (op === '!=') return nativeBoolToBooleanObject(left.value !== right.value);
     if (op === '<') return nativeBoolToBooleanObject(left.value < right.value);
@@ -371,6 +446,8 @@ function evalIntegerInfix(op, left, right) {
     case '%': return new MonkeyInteger(l % r);
     case '<': return nativeBoolToBooleanObject(l < r);
     case '>': return nativeBoolToBooleanObject(l > r);
+    case '<=': return nativeBoolToBooleanObject(l <= r);
+    case '>=': return nativeBoolToBooleanObject(l >= r);
     case '==': return nativeBoolToBooleanObject(l === r);
     case '!=': return nativeBoolToBooleanObject(l !== r);
     default: return newError(`unknown operator: ${left.type()} ${op} ${right.type()}`);

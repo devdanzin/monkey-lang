@@ -41,7 +41,7 @@ export class MonkeyString {
   type() { return OBJ.STRING; }
   inspect() { return this.value; }
   hashKey() { if (this._hk === undefined) this._hk = `str:${this.value}`; return this._hk; }
-  fastHashKey() { return this; } // identity — only works if interned
+  fastHashKey() { return `s:${this.value}`; } // value-based for correct hash lookup
 }
 
 // String intern table: guarantees same-value strings share same object
@@ -112,6 +112,7 @@ export class MonkeyBuiltin {
 export class Environment {
   constructor(outer = null) {
     this.store = new Map();
+    this.consts = new Set();
     this.outer = outer;
   }
   get(name) {
@@ -120,8 +121,16 @@ export class Environment {
     if (this.outer) return this.outer.get(name);
     return undefined;
   }
-  set(name, val) {
+  isConst(name) {
+    if (this.consts.has(name)) return true;
+    if (this.store.has(name)) return false;
+    if (this.outer) return this.outer.isConst(name);
+    return false;
+  }
+  set(name, val, isConst = false) {
+    if (this.isConst(name)) return new MonkeyError(`cannot assign to const variable: ${name}`);
     this.store.set(name, val);
+    if (isConst) this.consts.add(name);
     return val;
   }
 }

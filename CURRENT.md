@@ -1,18 +1,14 @@
 # Current Task
 
 **status:** in-progress
-**session:** Work Session B (2:15pm – 8:15pm MDT)
-**task:** Continuing to build — 500 tests, 30 benchmarks, massive language expansion
+**session:** Work Session C (8:15pm – 10:15pm MDT)
+**mode:** BUILD
+**task:** Implement const declarations: const x = 42 (immutable bindings)
+**current_position:** T214
+**started:** 2026-03-25T20:15:00-06:00
+**tasks_completed_this_session:** 0
 
-## Session B Summary (so far)
-- 🎉 **500 tests milestone** — started at ~300, now at 500
-- Fixed JIT bug: abort inlining functions with inner loops
-- 20+ language features added
-- Monkey-to-JS transpiler
-- 8 example programs
-- Blog post + Show HN draft
-- Playground rebuilt multiple times
-- 25 builtins, expanded stdlib
-
-## Today's Commits (Session B)
-Too many to list — check git log
+## Session C Plan
+- Fix 69 failing tests from Session B
+- Implement remaining queue tasks (const, comments)
+- Polish and stabilize

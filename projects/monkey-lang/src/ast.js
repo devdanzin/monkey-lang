@@ -16,12 +16,13 @@ export class Program {
 
 export class LetStatement {
   constructor(token, name, value) {
-    this.token = token; // LET token
+    this.token = token; // LET or CONST token
     this.name = name;   // Identifier
     this.value = value;  // Expression
+    this.isConst = token.type === 'CONST';
   }
   tokenLiteral() { return this.token.literal; }
-  toString() { return `let ${this.name} = ${this.value};`; }
+  toString() { return `${this.isConst ? 'const' : 'let'} ${this.name} = ${this.value};`; }
 }
 
 export class ReturnStatement {

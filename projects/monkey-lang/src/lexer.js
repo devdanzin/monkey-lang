@@ -47,6 +47,7 @@ export const TokenType = {
   // Keywords
   FUNCTION: 'FUNCTION',
   LET: 'LET',
+  CONST: 'CONST',
   TRUE: 'TRUE',
   FALSE: 'FALSE',
   IF: 'IF',
@@ -70,6 +71,7 @@ export const TokenType = {
 const KEYWORDS = {
   fn: TokenType.FUNCTION,
   let: TokenType.LET,
+  const: TokenType.CONST,
   true: TokenType.TRUE,
   false: TokenType.FALSE,
   if: TokenType.IF,
@@ -122,6 +124,19 @@ export class Lexer {
     if (this.ch === '/' && this.peekChar() === '/') {
       while (this.ch !== '\n' && this.ch !== '\0') {
         this.readChar();
+      }
+      this.skipWhitespace(); // Continue skipping after comment
+    }
+    // Skip multi-line comments
+    if (this.ch === '/' && this.peekChar() === '*') {
+      this.readChar(); // skip /
+      this.readChar(); // skip *
+      while (!(this.ch === '*' && this.peekChar() === '/') && this.ch !== '\0') {
+        this.readChar();
+      }
+      if (this.ch === '*') {
+        this.readChar(); // skip *
+        this.readChar(); // skip /
       }
       this.skipWhitespace(); // Continue skipping after comment
     }

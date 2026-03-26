@@ -9,7 +9,7 @@ import { Parser } from './parser.js';
 import { Compiler } from './compiler.js';
 import { VM } from './vm.js';
 import { Opcodes } from './code.js';
-import { MonkeyInteger, NULL, TRUE, FALSE } from './object.js';
+import { MonkeyInteger, MonkeyString, MonkeyBoolean, NULL, TRUE, FALSE } from './object.js';
 
 function parse(input) {
   const lexer = new Lexer(input);
@@ -36,6 +36,24 @@ function compileAndRunVM(input) {
   const vm = new VM(compiler.bytecode());
   vm.run();
   return { result: vm.lastPoppedStackElem(), vm };
+}
+
+function testIntegerObject(resultOrWrapped, expected) {
+  const obj = resultOrWrapped?.result ?? resultOrWrapped;
+  assert.ok(obj instanceof MonkeyInteger, `expected MonkeyInteger, got ${obj?.constructor?.name}: ${obj?.inspect?.()}`);
+  assert.equal(obj.value, expected);
+}
+
+function testStringObject(resultOrWrapped, expected) {
+  const obj = resultOrWrapped?.result ?? resultOrWrapped;
+  assert.ok(obj instanceof MonkeyString, `expected MonkeyString, got ${obj?.constructor?.name}: ${obj?.inspect?.()}`);
+  assert.equal(obj.value, expected);
+}
+
+function testBooleanObject(resultOrWrapped, expected) {
+  const obj = resultOrWrapped?.result ?? resultOrWrapped;
+  assert.ok(obj instanceof MonkeyBoolean, `expected MonkeyBoolean, got ${obj?.constructor?.name}: ${obj?.inspect?.()}`);
+  assert.equal(obj.value, expected);
 }
 
 describe('JIT VM integration', () => {
@@ -875,7 +893,7 @@ describe('New Features - JIT Integration', () => {
     testIntegerObject(compileAndRunJIT('5 > 3 ? 1 : 0'), 1);
   });
   it('null keyword', () => {
-    const result = compileAndRunJIT('null');
+    const { result } = compileAndRunJIT('null');
     assert.ok(result.type() === 'NULL');
   });
   it('default params', () => {

@@ -134,7 +134,7 @@ export class Compiler {
         if (err) return err;
       }
     } else if (node instanceof ast.LetStatement) {
-      const sym = this.symbolTable.define(node.name.value);
+      const sym = this.symbolTable.define(node.name.value, node.isConst);
       // Pass binding name to function literals for recursive self-reference
       if (node.value instanceof ast.FunctionLiteral) {
         node.value.name = node.name.value;
@@ -326,10 +326,14 @@ export class Compiler {
       err = this.compile(node.consequence);
       if (err) return err;
       const jumpPos = this.emit(Opcodes.OpJump, 9999);
+      // Reset peephole state at jump target — consequence's last instruction
+      // must not influence alternative branch's peephole optimization
       this.changeOperand(jumpNotTruthyPos, this.currentInstructions().length);
+      this.resetPeepholeState();
       err = this.compile(node.alternative);
       if (err) return err;
       this.changeOperand(jumpPos, this.currentInstructions().length);
+      this.resetPeepholeState();
     } else if (node instanceof ast.MatchExpression) {
       return this.compileMatchExpression(node);
     } else if (node instanceof ast.TemplateLiteral) {
@@ -349,6 +353,7 @@ export class Compiler {
     } else if (node instanceof ast.AssignExpression) {
       const sym = this.symbolTable.resolve(node.name.value);
       if (!sym) return `undefined variable: ${node.name.value}`;
+      if (sym.isConst) return `cannot assign to const variable: ${node.name.value}`;
       const err = this.compile(node.value);
       if (err) return err;
       // Assignment expression: set and push the value back (like other expressions)
@@ -468,6 +473,7 @@ export class Compiler {
     // Patch jump-not-truthy to here
     const afterConsequence = this.currentInstructions().length;
     this.changeOperand(jumpNotTruthyPos, afterConsequence);
+    this.resetPeepholeState();
 
     if (!node.alternative) {
       this.emit(Opcodes.OpNull);
@@ -483,6 +489,7 @@ export class Compiler {
     // Patch jump to here
     const afterAlternative = this.currentInstructions().length;
     this.changeOperand(jumpPos, afterAlternative);
+    this.resetPeepholeState();
 
     // After if/else, result type is unknown
     this.resetIntStack();
@@ -993,6 +1000,13 @@ export class Compiler {
 
   lastInstructionIs(op) {
     return this.currentScope().lastInstruction.opcode === op;
+  }
+
+  resetPeepholeState() {
+    const scope = this.currentScope();
+    scope.lastInstruction = new EmittedInstruction(undefined, 0);
+    scope.previousInstruction = new EmittedInstruction(undefined, 0);
+    scope.intStackDepth = 0;
   }
 
   removeLastPop() {
