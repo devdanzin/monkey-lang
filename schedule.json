@@ -450,34 +450,61 @@
     {
       "id": "T44",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Update README with type annotations, 876 tests, type system section. Rebuild playground bundle.",
-      "started": "2026-03-26T15:00:45.804Z"
+      "started": "2026-03-26T15:00:45.804Z",
+      "completed": "2026-03-26T15:03:56.834Z",
+      "duration_ms": 300000,
+      "summary": "Updated README: type annotations section, 876 tests, new blog links. Rebuilt playground bundle with esbuild (363KB). Both pushed to GitHub."
     },
     {
       "id": "T45",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Destructuring in let bindings: let [a, b] = arr, let {x, y} = hash — lexer/parser/compiler",
-      "task": null
+      "task": null,
+      "started": "2026-03-26T15:04:06.443Z",
+      "completed": "2026-03-26T15:07:18.958Z",
+      "duration_ms": 60000,
+      "summary": "Hash destructuring implemented: parser (HashDestructuringLet AST), compiler (OpIndex with string keys), evaluator (hash key lookup). 883 tests, all passing."
+    },
+    {
+      "id": "T53",
+      "mode": "BUILD",
+      "task": "DONE: hash destructuring (let {x, y} = hash) implemented in parser, compiler, evaluator",
+      "status": "done",
+      "plan_ref": "T45",
+      "started": "2026-03-26T15:07:36.409Z",
+      "completed": "2026-03-26T15:07:36.522Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled/done."
     },
     {
       "id": "T46",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-03-26T15:07:36.634Z",
+      "completed": "2026-03-26T15:07:36.747Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled/done."
     },
     {
       "id": "T47",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-03-26T15:07:36.859Z",
+      "completed": "2026-03-26T15:07:36.969Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled/done."
     },
     {
       "id": "T48",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Mid-session housekeeping + fresh benchmarks"
+      "status": "in-progress",
+      "task": "Mid-session housekeeping + fresh benchmarks",
+      "started": "2026-03-26T15:07:43.416Z"
     },
     {
       "id": "T49",
@@ -630,6 +657,10 @@
     {
       "time": "2026-03-26T15:00:35.770Z",
       "msg": "Added T52 (MAINTAIN) after end: Final session push — git push, dashboard regen, daily log complete"
+    },
+    {
+      "time": "2026-03-26T15:07:12.777Z",
+      "msg": "PLAN T45 filled 1 BUILD tasks"
     }
   ]
 }
