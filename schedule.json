@@ -606,34 +606,108 @@
     {
       "id": "T58",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping + dashboard refresh",
-      "started": "2026-03-26T15:21:48.510Z"
+      "started": "2026-03-26T15:21:48.510Z",
+      "completed": "2026-03-26T15:22:35.565Z",
+      "duration_ms": 90000,
+      "summary": "Git pushed, dashboard regenerated (25 blog posts now). Pre-compaction state flush done. 42 tasks this session."
     },
     {
       "id": "T59",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Monkey improvements: string methods (split, join, map on strings), range literals (0..10)",
-      "task": null
+      "task": null,
+      "started": "2026-03-26T15:22:41.351Z",
+      "completed": "2026-03-26T15:23:13.609Z",
+      "duration_ms": 60000,
+      "summary": "Plan: range literals (0..10) + string dot methods (s.length, s.upper()). 2 BUILD tasks."
+    },
+    {
+      "id": "T64",
+      "mode": "BUILD",
+      "task": "Add range literal syntax (0..10): lexer DOT_DOT token, parser as infix operator, compiler emits range builtin call, tests",
+      "status": "done",
+      "plan_ref": "T59",
+      "started": "2026-03-26T15:23:20.911Z",
+      "completed": "2026-03-26T15:27:58.637Z",
+      "duration_ms": 600000,
+      "summary": "Range literals: 0..10 desugars to range(0, 10). Lexer DOT_DOT token, parser infix operator, compiler emits builtin call, evaluator direct. 896 tests, all passing."
+    },
+    {
+      "id": "T65",
+      "mode": "BUILD",
+      "task": "Add string methods via dot syntax: s.length, s.upper(), s.lower(), s.trim() — dot access checks string type first",
+      "status": "done",
+      "plan_ref": "T59",
+      "started": "2026-03-26T15:28:05.912Z",
+      "completed": "2026-03-26T15:30:38.207Z",
+      "duration_ms": 300000,
+      "summary": "Added .length property on strings and arrays via dot access. Also works with ranges: (0..10).length. 901 tests, all passing."
     },
     {
       "id": "T60",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-03-26T15:30:56.399Z",
+      "completed": "2026-03-26T15:30:56.512Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled."
     },
     {
       "id": "T61",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-03-26T15:30:56.621Z",
+      "completed": "2026-03-26T15:30:56.732Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled."
     },
     {
       "id": "T62",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Pre-boundary final push",
+      "started": "2026-03-26T15:31:10.631Z",
+      "completed": "2026-03-26T15:31:10.741Z",
+      "duration_ms": 0,
+      "summary": "Skipped — 4.75 hours remain."
+    },
+    {
+      "id": "T66",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Expand method syntax: s.upper() s.lower() s.trim() s.split(sep) s.indexOf(sub) s.startsWith(pre) a.push(x) a.first() a.last() a.rest()",
+      "started": "2026-03-26T15:31:33.901Z",
+      "completed": "2026-03-26T15:33:25.183Z",
+      "duration_ms": 600000,
+      "summary": "Method syntax: compiler desugars expr.method(args) to builtin(expr, args) for any known builtin. Works for strings (.upper(), .split(), .trim()), arrays (.push(), .first(), .last()), and chains (.trim().upper()). 914 tests."
+    },
+    {
+      "id": "T67",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Rebuild playground bundle + update examples with ranges, .length, methods",
+      "started": "2026-03-26T15:33:29.955Z",
+      "completed": "2026-03-26T15:34:18.622Z",
+      "duration_ms": 120000,
+      "summary": "Rebuilt playground bundle (374KB, 914 tests). Updated Type System example with method syntax + range literals. Pushed to GH Pages."
+    },
+    {
+      "id": "T68",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Housekeeping, dashboard regen, daily log",
+      "started": "2026-03-26T15:34:25.548Z"
+    },
+    {
+      "id": "T69",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Pre-boundary final push"
+      "task": "Update Show HN: 900+ tests, type system, range literals, method syntax"
     }
   ],
   "updated_at": "2026-03-26T14:02:05.404Z",
@@ -805,6 +879,26 @@
     {
       "time": "2026-03-26T15:20:01.708Z",
       "msg": "PLAN T56 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-03-26T15:23:07.208Z",
+      "msg": "PLAN T59 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-03-26T15:31:24.585Z",
+      "msg": "Added T66 (BUILD) after end: Expand method syntax: s.upper() s.lower() s.trim() s.split(sep) s.indexOf(sub) s.startsWith(pre) a.push(x) a.first() a.last() a.rest()"
+    },
+    {
+      "time": "2026-03-26T15:31:24.697Z",
+      "msg": "Added T67 (BUILD) after end: Rebuild playground bundle + update examples with ranges, .length, methods"
+    },
+    {
+      "time": "2026-03-26T15:31:24.807Z",
+      "msg": "Added T68 (MAINTAIN) after end: Housekeeping, dashboard regen, daily log"
+    },
+    {
+      "time": "2026-03-26T15:31:24.917Z",
+      "msg": "Added T69 (BUILD) after end: Update Show HN: 900+ tests, type system, range literals, method syntax"
     }
   ]
 }

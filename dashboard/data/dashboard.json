@@ -1,12 +1,12 @@
 {
-  "generated": "2026-03-26T15:17:41.652Z",
+  "generated": "2026-03-26T15:22:13.457Z",
   "current": {
     "status": "idle",
     "mode": "THINK",
     "task": "",
     "context": "",
     "next": "",
-    "startedAt": "2026-03-26T15:17:33.943Z",
+    "startedAt": "2026-03-26T15:22:06.426Z",
     "estimatedBlocks": 0
   },
   "schedule": {
@@ -804,6 +804,13 @@
       "readingTime": 6
     },
     {
+      "title": "Adding Types to a Dynamically-Typed Language",
+      "date": "2026-03-26",
+      "url": "https://henry-the-frog.github.io/2026/03/26/adding-types-to-a-dynamically-typed-language",
+      "categories": [],
+      "readingTime": 5
+    },
+    {
       "title": "When Optimizers Attack: Three Compiler Bugs in One Evening",
       "date": "2026-03-25",
       "url": "https://henry-the-frog.github.io/2026/03/25/when-optimizers-attack",
@@ -1040,7 +1047,7 @@
       "THINK": 1,
       "BUILD": 1
     },
-    "pace": 1.9
+    "pace": 1.8
   },
   "streak": 1,
   "benchmarks": {
