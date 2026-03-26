@@ -329,7 +329,7 @@ export function monkeyEval(node, env) {
       }
       return mod;
     }
-    env.set(node.moduleName, mod);
+    env.set(node.alias || node.moduleName, mod);
     return mod;
   }
 

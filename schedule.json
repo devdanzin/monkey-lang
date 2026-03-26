@@ -1253,15 +1253,60 @@
     {
       "id": "T120",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Rebuild playground, update README with selective imports + new modules",
-      "started": "2026-03-26T17:44:02.528Z"
+      "started": "2026-03-26T17:44:02.528Z",
+      "completed": "2026-03-26T17:44:38.392Z",
+      "duration_ms": 120000,
+      "summary": "Playground rebuilt (372KB), README updated with selective imports + algorithms module. 1045 tests."
     },
     {
       "id": "T121",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final session push, daily log, git push",
+      "started": "2026-03-26T17:44:43.337Z",
+      "completed": "2026-03-26T17:44:43.448Z",
+      "duration_ms": 0,
+      "summary": "Skipped — 1.5+ hours remain."
+    },
+    {
+      "id": "T124",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Aliased imports: import \"math\" as m. Parser: handle 'as' keyword + alias. Compiler/evaluator: bind alias name. Tests.",
+      "started": "2026-03-26T17:45:06.642Z"
+    },
+    {
+      "id": "T125",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Final session push, daily log, git push"
+      "task": "Add example programs showcasing modules: project-euler-1.monkey (sum of multiples), prime-sieve.monkey, string-analyzer.monkey"
+    },
+    {
+      "id": "T126",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "New Monkey feature: do-expressions (do { let x = 5; x + 1 } evaluates to 6)",
+      "task": null
+    },
+    {
+      "id": "T127",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T128",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Session housekeeping + push"
+    },
+    {
+      "id": "T129",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final session push (check time first)"
     }
   ],
   "updated_at": "2026-03-26T14:02:05.404Z",
@@ -1661,6 +1706,30 @@
     {
       "time": "2026-03-26T17:42:05.405Z",
       "msg": "PLAN T117 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-03-26T17:44:56.963Z",
+      "msg": "Added T124 (BUILD) after end: Aliased imports: import \"math\" as m. Parser: handle 'as' keyword + alias. Compiler/evaluator: bind alias name. Tests."
+    },
+    {
+      "time": "2026-03-26T17:44:57.074Z",
+      "msg": "Added T125 (BUILD) after end: Add example programs showcasing modules: project-euler-1.monkey (sum of multiples), prime-sieve.monkey, string-analyzer.monkey"
+    },
+    {
+      "time": "2026-03-26T17:44:57.184Z",
+      "msg": "Added T126 (PLAN) after end: New Monkey feature: do-expressions (do { let x = 5; x + 1 } evaluates to 6)"
+    },
+    {
+      "time": "2026-03-26T17:44:57.295Z",
+      "msg": "Added T127 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-03-26T17:44:57.406Z",
+      "msg": "Added T128 (MAINTAIN) after end: Session housekeeping + push"
+    },
+    {
+      "time": "2026-03-26T17:44:57.516Z",
+      "msg": "Added T129 (MAINTAIN) after end: Final session push (check time first)"
     }
   ]
 }

@@ -244,6 +244,7 @@ export class Parser {
     
     // Check for selective import: import "math" for sqrt, PI
     let bindings = null;
+    let alias = null;
     if (this.peekToken.type === TokenType.FOR) {
       this.nextToken(); // consume 'for'
       bindings = [];
@@ -257,10 +258,18 @@ export class Parser {
         if (!this.peekTokenIs(TokenType.COMMA)) break;
         this.nextToken(); // consume comma
       } while (true);
+    } else if (this.peekToken.type === TokenType.IDENT && this.peekToken.literal === 'as') {
+      this.nextToken(); // consume 'as'
+      this.nextToken(); // consume alias
+      if (this.curToken.type !== TokenType.IDENT) {
+        this.errors.push(`expected identifier after 'as', got ${this.curToken.type}`);
+        return null;
+      }
+      alias = this.curToken.literal;
     }
     
     if (this.peekTokenIs(TokenType.SEMICOLON)) this.nextToken();
-    return new ast.ImportStatement(token, moduleName, bindings);
+    return new ast.ImportStatement(token, moduleName, bindings, alias);
   }
 
   parseExpressionStatement() {

@@ -734,3 +734,15 @@ describe('Enhanced String Module (evaluator)', () => {
     assert.equal(r.value, 'olleh');
   });
 });
+
+describe('Aliased Imports (evaluator)', () => {
+  it('import as alias', () => {
+    const r = testEval('import "math" as m; m.abs(-5)');
+    assert.equal(r.value, 5);
+  });
+
+  it('alias does not bind module name', () => {
+    const r = testEval('import "math" as m; math');
+    assert.equal(r.type(), 'ERROR');
+  });
+});

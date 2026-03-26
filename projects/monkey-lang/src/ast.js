@@ -35,15 +35,19 @@ export class ReturnStatement {
 }
 
 export class ImportStatement {
-  constructor(token, moduleName, bindings = null) {
+  constructor(token, moduleName, bindings = null, alias = null) {
     this.token = token;
     this.moduleName = moduleName;
     this.bindings = bindings; // null = import whole module, array of strings = selective
+    this.alias = alias; // null = use module name, string = use alias
   }
   tokenLiteral() { return this.token.literal; }
   toString() {
     if (this.bindings) {
       return `import "${this.moduleName}" for ${this.bindings.join(', ')};`;
+    }
+    if (this.alias) {
+      return `import "${this.moduleName}" as ${this.alias};`;
     }
     return `import "${this.moduleName}";`;
   }

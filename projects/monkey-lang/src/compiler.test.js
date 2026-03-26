@@ -2953,3 +2953,13 @@ describe('Algorithms Module (compiler+VM)', () => {
     assert.equal(r.value, 'fedcba');
   });
 });
+
+describe('Aliased Imports (compiler+VM)', () => {
+  it('import as alias', () => {
+    testIntegerObject(compileAndRun('import "math" as m; m.pow(2, 10)'), 1024);
+  });
+
+  it('alias with function call', () => {
+    testIntegerObject(compileAndRun('import "algorithms" as algo; algo.gcd(24, 16)'), 8);
+  });
+});

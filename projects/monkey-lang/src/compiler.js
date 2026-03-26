@@ -202,10 +202,11 @@ export class Compiler {
           }
         }
       } else {
-        // Namespace import: import "math" → math.sqrt(...)
+        // Namespace import: import "math" → math.sqrt(...) or import "math" as m → m.sqrt(...)
         this.emit(Opcodes.OpConstant, constIdx);
-        const sym = this.symbolTable.define(node.moduleName);
-        this.importedModules.add(node.moduleName);
+        const bindName = node.alias || node.moduleName;
+        const sym = this.symbolTable.define(bindName);
+        this.importedModules.add(bindName);
         if (sym.scope === SCOPE.GLOBAL) {
           this.emit(Opcodes.OpSetGlobal, sym.index);
         } else {
