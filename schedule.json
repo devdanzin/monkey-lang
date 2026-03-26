@@ -1714,15 +1714,19 @@
     {
       "id": "T167",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Or-patterns in match: 1 | 2 | 3 => small. Parser: detect PIPE in match arm patterns. Compiler/evaluator: check any pattern matches.",
-      "started": "2026-03-26T18:25:42.840Z"
+      "started": "2026-03-26T18:25:42.840Z",
+      "completed": "2026-03-26T18:28:57.732Z",
+      "duration_ms": 600000,
+      "summary": "Or-patterns: 1 | 2 | 3 => small. BAR token, OrPattern AST, compiler jump logic. 1108 tests."
     },
     {
       "id": "T168",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Add a json module: parse and stringify for hashes and arrays"
+      "status": "in-progress",
+      "task": "Add a json module: parse and stringify for hashes and arrays",
+      "started": "2026-03-26T18:29:04.729Z"
     },
     {
       "id": "T169",

@@ -261,12 +261,68 @@ const arrayModule = () => buildModule({
   }),
 });
 
+// --- json module ---
+function jsToMonkey(val) {
+  if (val === null || val === undefined) return new MonkeyNull();
+  if (typeof val === 'number') return mkInt(Math.floor(val));
+  if (typeof val === 'string') return mkStr(val);
+  if (typeof val === 'boolean') return new MonkeyBoolean(val);
+  if (Array.isArray(val)) return new MonkeyArray(val.map(jsToMonkey));
+  if (typeof val === 'object') {
+    const pairs = new Map();
+    for (const [k, v] of Object.entries(val)) {
+      const key = new MonkeyString(k);
+      pairs.set(key.fastHashKey ? key.fastHashKey() : key.hashKey(), { key, value: jsToMonkey(v) });
+    }
+    return new MonkeyHash(pairs);
+  }
+  return new MonkeyNull();
+}
+
+function monkeyToJs(obj) {
+  if (obj instanceof MonkeyInteger) return obj.value;
+  if (obj instanceof MonkeyString) return obj.value;
+  if (obj instanceof MonkeyBoolean) return obj.value;
+  if (obj instanceof MonkeyNull) return null;
+  if (obj instanceof MonkeyArray) return obj.elements.map(monkeyToJs);
+  if (obj instanceof MonkeyHash) {
+    const result = {};
+    for (const [, pair] of obj.pairs) {
+      result[pair.key.value] = monkeyToJs(pair.value);
+    }
+    return result;
+  }
+  return null;
+}
+
+const jsonModule = () => buildModule({
+  parse: new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyNull();
+    try {
+      const parsed = JSON.parse(args[0].value);
+      return jsToMonkey(parsed);
+    } catch (e) {
+      return new MonkeyNull();
+    }
+  }),
+  stringify: new MonkeyBuiltin((...args) => {
+    if (args.length < 1) return new MonkeyNull();
+    const indent = args.length > 1 ? args[1].value : 0;
+    try {
+      return mkStr(JSON.stringify(monkeyToJs(args[0]), null, indent || undefined));
+    } catch (e) {
+      return new MonkeyNull();
+    }
+  }),
+});
+
 const MODULE_REGISTRY = {
   math: mathModuleEnhanced,
   string: stringModuleEnhanced,
   functional: functionalModule,
   algorithms: algorithmsModule,
   array: arrayModule,
+  json: jsonModule,
 };
 
 export function getModule(name) {

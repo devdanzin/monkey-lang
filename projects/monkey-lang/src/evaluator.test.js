@@ -982,3 +982,25 @@ describe('Or-Patterns (evaluator)', () => {
     assert.equal(r.value, 'primary');
   });
 });
+
+describe('JSON Module (evaluator)', () => {
+  it('parse object', () => {
+    const r = testEval('import "json" for parse; let s = "{" + "\\"name\\"" + ":" + "\\"Monkey\\"" + "}"; let obj = parse(s); obj["name"]');
+    assert.equal(r.value, 'Monkey');
+  });
+
+  it('parse array', () => {
+    const r = testEval('import "json" for parse; let arr = parse("[1,2,3]"); len(arr)');
+    assert.equal(r.value, 3);
+  });
+
+  it('stringify array', () => {
+    const r = testEval('import "json" for stringify; stringify([1, 2, 3])');
+    assert.equal(r.value, '[1,2,3]');
+  });
+
+  it('roundtrip array', () => {
+    const r = testEval('import "json" for parse, stringify; let s = stringify([10, 20, 30]); let arr = parse(s); arr[1]');
+    assert.equal(r.value, 20);
+  });
+});

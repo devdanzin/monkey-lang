@@ -3235,3 +3235,19 @@ describe('Or-Patterns (compiler+VM)', () => {
     `), 0);
   });
 });
+
+describe('JSON Module (compiler+VM)', () => {
+  it('parse and access', () => {
+    testIntegerObject(compileAndRun('import "json" for parse; let s = "{" + "\\"x\\"" + ":42}"; let obj = parse(s); obj["x"]'), 42);
+  });
+
+  it('stringify', () => {
+    const r = compileAndRun('import "json" for stringify; stringify([1, 2, 3])');
+    assert.equal(r.value, '[1,2,3]');
+  });
+
+  it('parse array', () => {
+    const r = compileAndRun('import "json" for parse; parse("[1,2,3]")');
+    assert.equal(r.elements.length, 3);
+  });
+});
