@@ -141,6 +141,59 @@ export class Transpiler {
       const end = node.end ? this.transpileNode(node.end) : '';
       return `${this.transpileNode(node.left)}.slice(${start}${end ? ', ' + end : ''})`;
     }
+    // Array destructuring: let [a, b] = expr
+    if (node instanceof ast.DestructuringLet) {
+      const names = node.names.map(n => n ? n.value : '_').join(', ');
+      return `${this.i()}let [${names}] = ${this.transpileNode(node.value)};`;
+    }
+    // Hash destructuring: let {x, y} = expr
+    if (node instanceof ast.HashDestructuringLet) {
+      const names = node.names.map(n => n.value).join(', ');
+      return `${this.i()}let {${names}} = ${this.transpileNode(node.value)};`;
+    }
+    // Range expression: 0..10
+    if (node instanceof ast.RangeExpression) {
+      const start = this.transpileNode(node.start);
+      const end = this.transpileNode(node.end);
+      return `Array.from({length: ${end} - ${start}}, (_, i) => i + ${start})`;
+    }
+    // Match expression
+    if (node instanceof ast.MatchExpression) {
+      const subject = this.transpileNode(node.subject);
+      const arms = node.arms.map(arm => {
+        if (arm.pattern === null) {
+          // Check if other arms used type patterns (if-based) vs value patterns (switch case)
+          const hasTypePatterns = node.arms.some(a => a.pattern instanceof ast.TypePattern);
+          if (hasTypePatterns) {
+            return `${this.i()}  { return ${this.transpileNode(arm.value)}; }`;
+          }
+          return `${this.i()}  default: return ${this.transpileNode(arm.value)};`;
+        }
+        if (arm.pattern instanceof ast.TypePattern) {
+          const tn = arm.pattern.typeName;
+          const binding = arm.pattern.binding.value;
+          let check;
+          switch (tn) {
+            case 'int': check = `typeof __subj === 'number'`; break;
+            case 'string': check = `typeof __subj === 'string'`; break;
+            case 'bool': check = `typeof __subj === 'boolean'`; break;
+            case 'array': check = `Array.isArray(__subj)`; break;
+            case 'fn': check = `typeof __subj === 'function'`; break;
+            case 'Ok': check = `__subj && __subj.__isOk === true`; break;
+            case 'Err': check = `__subj && __subj.__isOk === false`; break;
+            default: check = `true`; break;
+          }
+          const bindExpr = (tn === 'Ok' || tn === 'Err') ? '__subj.value' : '__subj';
+          return `${this.i()}  if (${check}) { let ${binding} = ${bindExpr}; return ${this.transpileNode(arm.value)}; }`;
+        }
+        return `${this.i()}  case ${this.transpileNode(arm.pattern)}: return ${this.transpileNode(arm.value)};`;
+      }).join('\n');
+      return `((__subj) => {\n${arms}\n${this.i()}})(${subject})`;
+    }
+    // TypePattern (standalone, shouldn't occur outside match)
+    if (node instanceof ast.TypePattern) {
+      return `/* type pattern: ${node.typeName}(${node.binding.value}) */`;
+    }
 
     return `/* unsupported: ${node.constructor.name} */`;
   }
