@@ -180,3 +180,15 @@ export class MonkeyResult {
   inspect() { return this.isOk ? `Ok(${this.value.inspect()})` : `Err(${this.value.inspect()})`; }
   fastHashKey() { return `result:${this.isOk}:${this.value.inspect()}`; }
 }
+
+export class MonkeyEnum {
+  constructor(enumName, variant, ordinal) {
+    this.enumName = enumName;   // "Color"
+    this.variant = variant;     // "Red"
+    this.ordinal = ordinal;     // 0
+  }
+  type() { return 'ENUM'; }
+  inspect() { return `${this.enumName}.${this.variant}`; }
+  hashKey() { return `enum:${this.enumName}:${this.variant}`; }
+  fastHashKey() { return `enum:${this.enumName}:${this.variant}`; }
+}

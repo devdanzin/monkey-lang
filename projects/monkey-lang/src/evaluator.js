@@ -3,7 +3,7 @@
 import {
   MonkeyInteger, MonkeyString, MonkeyBoolean, MonkeyReturnValue, MonkeyError,
   MonkeyFunction, MonkeyArray, MonkeyHash, MonkeyBuiltin,
-  MonkeyBreak, MonkeyContinue, MonkeyResult,
+  MonkeyBreak, MonkeyContinue, MonkeyResult, MonkeyEnum,
   Environment, TRUE, FALSE, NULL, OBJ, internString,
 } from './object.js';
 
@@ -333,6 +333,19 @@ export function monkeyEval(node, env) {
     return mod;
   }
 
+  if (node instanceof AST.EnumStatement) {
+    // Define enum as hash of MonkeyEnum values
+    const pairs = new Map();
+    for (let i = 0; i < node.variants.length; i++) {
+      const key = new MonkeyString(node.variants[i]);
+      const value = new MonkeyEnum(node.name, node.variants[i], i);
+      pairs.set(key.fastHashKey ? key.fastHashKey() : key.hashKey(), { key, value });
+    }
+    const enumHash = new MonkeyHash(pairs);
+    env.set(node.name, enumHash);
+    return enumHash;
+  }
+
   // Expressions
   if (node instanceof AST.IntegerLiteral) return new MonkeyInteger(node.value);
   if (node instanceof AST.StringLiteral) return internString(node.value);
@@ -636,6 +649,11 @@ function evalInfixExpression(op, left, right) {
   // Array concatenation
   if (left.type() === OBJ.ARRAY && right.type() === OBJ.ARRAY && op === '+') {
     return new MonkeyArray([...left.elements, ...right.elements]);
+  }
+  if (left.type() === 'ENUM' && right.type() === 'ENUM') {
+    const eq = left.enumName === right.enumName && left.variant === right.variant;
+    if (op === '==') return nativeBoolToBooleanObject(eq);
+    if (op === '!=') return nativeBoolToBooleanObject(!eq);
   }
   if (op === '==') return nativeBoolToBooleanObject(left === right);
   if (op === '!=') return nativeBoolToBooleanObject(left !== right);

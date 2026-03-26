@@ -6,7 +6,7 @@ import { CompiledFunction } from './compiler.js';
 import {
   MonkeyInteger, MonkeyBoolean, MonkeyString, MonkeyNull,
   MonkeyArray, MonkeyHash, MonkeyBuiltin, MonkeyError,
-  MonkeyResult,
+  MonkeyResult, MonkeyEnum,
   TRUE, FALSE, NULL, cachedInteger, internString,
 } from './object.js';
 import { IR, JIT, TraceRecorder } from './jit.js';
@@ -665,6 +665,11 @@ export class VM {
             // Null comparison: null == null is true, null == anything_else is false
             if (recording()) { this._abortRecording(); }
             const result = op === Opcodes.OpEqual ? (left2 === right2) : (left2 !== right2);
+            this.push(result ? TRUE : FALSE);
+          } else if (left2 instanceof MonkeyEnum && right2 instanceof MonkeyEnum) {
+            if (recording()) { this._abortRecording(); }
+            const eq = left2.enumName === right2.enumName && left2.variant === right2.variant;
+            const result = op === Opcodes.OpEqual ? eq : !eq;
             this.push(result ? TRUE : FALSE);
           } else {
             throw new Error(`unsupported comparison: ${left2.type()} and ${right2.type()}`);

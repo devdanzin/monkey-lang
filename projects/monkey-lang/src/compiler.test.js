@@ -2963,3 +2963,34 @@ describe('Aliased Imports (compiler+VM)', () => {
     testIntegerObject(compileAndRun('import "algorithms" as algo; algo.gcd(24, 16)'), 8);
   });
 });
+
+describe('Enum Types (compiler+VM)', () => {
+  it('define and access enum variant', () => {
+    const r = compileAndRun('enum Color { Red, Green, Blue }; Color.Green');
+    assert.equal(r.type(), 'ENUM');
+    assert.equal(r.variant, 'Green');
+  });
+
+  it('enum equality', () => {
+    const r = compileAndRun('enum Color { Red, Green, Blue }; Color.Red == Color.Red');
+    assert.equal(r.value, true);
+  });
+
+  it('enum inequality', () => {
+    const r = compileAndRun('enum Color { Red, Green, Blue }; Color.Red != Color.Blue');
+    assert.equal(r.value, true);
+  });
+
+  it('enum in if-else', () => {
+    testIntegerObject(compileAndRun(`
+      enum Light { Red, Yellow, Green };
+      let l = Light.Green;
+      if (l == Light.Green) { 1 } else { 0 }
+    `), 1);
+  });
+
+  it('enum ordinal', () => {
+    const r = compileAndRun('enum Priority { Low, Medium, High }; Priority.High');
+    assert.equal(r.ordinal, 2);
+  });
+});

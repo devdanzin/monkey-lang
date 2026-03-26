@@ -1283,34 +1283,120 @@
     {
       "id": "T125",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add example programs showcasing modules: project-euler-1.monkey (sum of multiples), prime-sieve.monkey, string-analyzer.monkey",
-      "started": "2026-03-26T17:46:17.117Z"
+      "started": "2026-03-26T17:46:17.117Z",
+      "completed": "2026-03-26T17:46:45.402Z",
+      "duration_ms": 120000,
+      "summary": "5 example programs: euler-1, prime-sieve, string-tools, functional, result-types. Showcases modules, selective imports, method syntax, Result types."
     },
     {
       "id": "T126",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "New Monkey feature: do-expressions (do { let x = 5; x + 1 } evaluates to 6)",
-      "task": null
+      "task": null,
+      "started": "2026-03-26T17:46:49.992Z",
+      "completed": "2026-03-26T17:47:11.712Z",
+      "duration_ms": 30000,
+      "summary": "Pivoted from do-expressions (already have do-while) to ternary operator. 1 BUILD task."
+    },
+    {
+      "id": "T130",
+      "mode": "BUILD",
+      "task": "Ternary operator: condition ? then : else. Parser: handle as infix with QUESTION. Compiler: emit conditional jump same as if-else. Tests.",
+      "status": "done",
+      "plan_ref": "T126",
+      "started": "2026-03-26T17:47:16.675Z",
+      "completed": "2026-03-26T17:47:52.974Z",
+      "duration_ms": 30000,
+      "summary": "Already implemented — ternary exists with parser, compiler, evaluator support and tests."
     },
     {
       "id": "T127",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "started": "2026-03-26T17:48:03.974Z",
+      "completed": "2026-03-26T17:48:04.086Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled."
+    },
+    {
+      "id": "T128",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Session housekeeping + push",
+      "started": "2026-03-26T17:48:09.503Z",
+      "completed": "2026-03-26T17:48:22.414Z",
+      "duration_ms": 30000,
+      "summary": "Git pushed."
+    },
+    {
+      "id": "T129",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final session push (check time first)",
+      "started": "2026-03-26T17:48:34.377Z",
+      "completed": "2026-03-26T17:48:34.488Z",
+      "duration_ms": 0,
+      "summary": "Skipped — 2.5 hours remain."
+    },
+    {
+      "id": "T131",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Monkey enum types: enum Direction { Up, Down, Left, Right } with pattern matching",
+      "task": null,
+      "started": "2026-03-26T17:49:13.408Z",
+      "completed": "2026-03-26T17:49:36.302Z",
+      "duration_ms": 30000,
+      "summary": "Plan: enum types with pattern matching. 1 BUILD task."
+    },
+    {
+      "id": "T138",
+      "mode": "BUILD",
+      "task": "Enum types: lexer keyword, parser EnumStatement, MonkeyEnum object, compiler (enum hash + dot access), evaluator, match support. Tests.",
+      "status": "in-progress",
+      "plan_ref": "T131",
+      "started": "2026-03-26T17:49:41.088Z"
+    },
+    {
+      "id": "T132",
       "mode": "BUILD",
       "status": "upcoming",
       "task": null
     },
     {
-      "id": "T128",
-      "mode": "MAINTAIN",
+      "id": "T133",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Session housekeeping + push"
+      "task": "Update README + playground with enums"
     },
     {
-      "id": "T129",
+      "id": "T134",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Blog: Building a Module System for a Toy Language",
+      "task": null
+    },
+    {
+      "id": "T135",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T136",
       "mode": "MAINTAIN",
       "status": "upcoming",
-      "task": "Final session push (check time first)"
+      "task": "Pre-boundary housekeeping"
+    },
+    {
+      "id": "T137",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final session push (boundary check)"
     }
   ],
   "updated_at": "2026-03-26T14:02:05.404Z",
@@ -1734,6 +1820,42 @@
     {
       "time": "2026-03-26T17:44:57.516Z",
       "msg": "Added T129 (MAINTAIN) after end: Final session push (check time first)"
+    },
+    {
+      "time": "2026-03-26T17:47:05.831Z",
+      "msg": "PLAN T126 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-03-26T17:48:44.227Z",
+      "msg": "Added T131 (PLAN) after end: Monkey enum types: enum Direction { Up, Down, Left, Right } with pattern matching"
+    },
+    {
+      "time": "2026-03-26T17:48:44.339Z",
+      "msg": "Added T132 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-03-26T17:48:44.450Z",
+      "msg": "Added T133 (BUILD) after end: Update README + playground with enums"
+    },
+    {
+      "time": "2026-03-26T17:48:44.560Z",
+      "msg": "Added T134 (PLAN) after end: Blog: Building a Module System for a Toy Language"
+    },
+    {
+      "time": "2026-03-26T17:48:44.674Z",
+      "msg": "Added T135 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-03-26T17:48:44.785Z",
+      "msg": "Added T136 (MAINTAIN) after end: Pre-boundary housekeeping"
+    },
+    {
+      "time": "2026-03-26T17:48:44.895Z",
+      "msg": "Added T137 (MAINTAIN) after end: Final session push (boundary check)"
+    },
+    {
+      "time": "2026-03-26T17:49:27.086Z",
+      "msg": "PLAN T131 filled 1 BUILD tasks"
     }
   ]
 }

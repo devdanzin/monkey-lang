@@ -69,6 +69,7 @@ export const TokenType = {
   DO: 'DO',
   UNDERSCORE: '_',
   IMPORT: 'IMPORT',
+  ENUM: 'ENUM',
 
   // Special
   EOF: 'EOF',
@@ -92,6 +93,7 @@ const KEYWORDS = {
   match: TokenType.MATCH,
   do: TokenType.DO,
   import: TokenType.IMPORT,
+  enum: TokenType.ENUM,
 };
 
 export class Token {

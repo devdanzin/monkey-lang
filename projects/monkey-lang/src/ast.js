@@ -281,6 +281,16 @@ export class ContinueStatement {
   toString() { return 'continue'; }
 }
 
+export class EnumStatement {
+  constructor(token, name, variants) {
+    this.token = token;
+    this.name = name;       // string
+    this.variants = variants; // array of strings
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return `enum ${this.name} { ${this.variants.join(', ')} }`; }
+}
+
 export class TemplateLiteral {
   constructor(token, parts) {
     this.token = token;

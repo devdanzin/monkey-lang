@@ -3,7 +3,7 @@
 
 import { Opcodes, make, concatInstructions } from './code.js';
 import { SymbolTable, SCOPE } from './symbol-table.js';
-import { MonkeyInteger, MonkeyString, internString } from './object.js';
+import { MonkeyInteger, MonkeyString, MonkeyHash, internString, MonkeyEnum } from './object.js';
 import * as ast from './ast.js';
 import { getModule } from './modules.js';
 
@@ -212,6 +212,24 @@ export class Compiler {
         } else {
           this.emit(Opcodes.OpSetLocal, sym.index);
         }
+      }
+    } else if (node instanceof ast.EnumStatement) {
+      // enum Color { Red, Green, Blue } → define Color as hash of MonkeyEnum values
+      const pairs = new Map();
+      for (let i = 0; i < node.variants.length; i++) {
+        const key = new MonkeyString(node.variants[i]);
+        const value = new MonkeyEnum(node.name, node.variants[i], i);
+        pairs.set(key.fastHashKey ? key.fastHashKey() : key.hashKey(), { key, value });
+      }
+      const enumHash = new MonkeyHash(pairs);
+      const constIdx = this.addConstant(enumHash);
+      this.emit(Opcodes.OpConstant, constIdx);
+      const sym = this.symbolTable.define(node.name);
+      this.importedModules.add(node.name); // treat enum like module for dot-access
+      if (sym.scope === SCOPE.GLOBAL) {
+        this.emit(Opcodes.OpSetGlobal, sym.index);
+      } else {
+        this.emit(Opcodes.OpSetLocal, sym.index);
       }
     } else if (node instanceof ast.InfixExpression) {
       // Constant folding: try to evaluate at compile time

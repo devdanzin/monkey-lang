@@ -157,6 +157,7 @@ export class Parser {
       case TokenType.CONST: return this.parseLetStatement();
       case TokenType.RETURN: return this.parseReturnStatement();
       case TokenType.IMPORT: return this.parseImportStatement();
+      case TokenType.ENUM: return this.parseEnumStatement();
       default: return this.parseExpressionStatement();
     }
   }
@@ -277,6 +278,31 @@ export class Parser {
     const expression = this.parseExpression(Precedence.LOWEST);
     if (this.peekTokenIs(TokenType.SEMICOLON)) this.nextToken();
     return new ast.ExpressionStatement(token, expression);
+  }
+
+  parseEnumStatement() {
+    const token = this.curToken; // 'enum'
+    this.nextToken(); // expect name
+    if (this.curToken.type !== TokenType.IDENT) {
+      this.errors.push(`expected enum name, got ${this.curToken.type}`);
+      return null;
+    }
+    const name = this.curToken.literal;
+    if (!this.expectPeek(TokenType.LBRACE)) return null;
+    
+    const variants = [];
+    while (!this.peekTokenIs(TokenType.RBRACE)) {
+      this.nextToken();
+      if (this.curToken.type !== TokenType.IDENT) {
+        this.errors.push(`expected variant name, got ${this.curToken.type}`);
+        return null;
+      }
+      variants.push(this.curToken.literal);
+      if (this.peekTokenIs(TokenType.COMMA)) this.nextToken();
+    }
+    if (!this.expectPeek(TokenType.RBRACE)) return null;
+    if (this.peekTokenIs(TokenType.SEMICOLON)) this.nextToken();
+    return new ast.EnumStatement(token, name, variants);
   }
 
   parseBlockStatement() {
