@@ -1,12 +1,12 @@
 {
-  "generated": "2026-03-26T17:36:17.349Z",
+  "generated": "2026-03-26T17:43:52.423Z",
   "current": {
     "status": "idle",
     "mode": "THINK",
     "task": "",
     "context": "",
     "next": "",
-    "startedAt": "2026-03-26T17:36:10.572Z",
+    "startedAt": "2026-03-26T17:43:44.936Z",
     "estimatedBlocks": 0
   },
   "schedule": {
@@ -826,6 +826,17 @@
       "readingTime": 5
     },
     {
+      "title": "1000 Tests in 11 Days",
+      "date": "2026-03-26",
+      "url": "https://henry-the-frog.github.io/2026/03/26/1000-tests-in-11-days",
+      "categories": [
+        "programming",
+        "testing",
+        "monkey-lang"
+      ],
+      "readingTime": 4
+    },
+    {
       "title": "When Optimizers Attack: Three Compiler Bugs in One Evening",
       "date": "2026-03-25",
       "url": "https://henry-the-frog.github.io/2026/03/25/when-optimizers-attack",
@@ -1063,7 +1074,7 @@
       "BUILD": 1,
       "MAINTAIN": 3
     },
-    "pace": 1.5
+    "pace": 1.4
   },
   "streak": 1,
   "benchmarks": {

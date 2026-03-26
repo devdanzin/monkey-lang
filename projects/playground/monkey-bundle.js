@@ -455,14 +455,18 @@ var ReturnStatement = class {
   }
 };
 var ImportStatement = class {
-  constructor(token, moduleName) {
+  constructor(token, moduleName, bindings = null) {
     this.token = token;
     this.moduleName = moduleName;
+    this.bindings = bindings;
   }
   tokenLiteral() {
     return this.token.literal;
   }
   toString() {
+    if (this.bindings) {
+      return `import "${this.moduleName}" for ${this.bindings.join(", ")};`;
+    }
     return `import "${this.moduleName}";`;
   }
 };
@@ -1156,8 +1160,23 @@ var Parser = class _Parser {
       return null;
     }
     const moduleName = this.curToken.literal;
+    let bindings = null;
+    if (this.peekToken.type === TokenType.FOR) {
+      this.nextToken();
+      bindings = [];
+      do {
+        this.nextToken();
+        if (this.curToken.type !== TokenType.IDENT) {
+          this.errors.push(`expected identifier in import binding, got ${this.curToken.type}`);
+          return null;
+        }
+        bindings.push(this.curToken.literal);
+        if (!this.peekTokenIs(TokenType.COMMA)) break;
+        this.nextToken();
+      } while (true);
+    }
     if (this.peekTokenIs(TokenType.SEMICOLON)) this.nextToken();
-    return new ImportStatement(token, moduleName);
+    return new ImportStatement(token, moduleName, bindings);
   }
   parseExpressionStatement() {
     const token = this.curToken;
@@ -2325,10 +2344,103 @@ var functionalModule = () => buildModule({
     return new MonkeyBuiltin(() => val);
   })
 });
+var mathModuleEnhanced = () => {
+  const base = mathModule();
+  const extras = {
+    sign: new MonkeyBuiltin((...args) => {
+      if (args.length !== 1) return new MonkeyNull();
+      const v = args[0].value;
+      return mkInt(v > 0 ? 1 : v < 0 ? -1 : 0);
+    }),
+    clamp: new MonkeyBuiltin((...args) => {
+      if (args.length !== 3) return new MonkeyNull();
+      const [val, lo, hi] = args.map((a) => a.value);
+      return mkInt(Math.max(lo, Math.min(hi, val)));
+    })
+  };
+  for (const [name, value] of Object.entries(extras)) {
+    const key = new MonkeyString(name);
+    base.pairs.set(key.fastHashKey ? key.fastHashKey() : key.hashKey(), { key, value });
+  }
+  return base;
+};
+var stringModuleEnhanced = () => {
+  const base = stringModule();
+  const extras = {
+    padLeft: new MonkeyBuiltin((...args) => {
+      if (args.length !== 3) return new MonkeyNull();
+      return mkStr(args[0].value.padStart(args[1].value, args[2].value));
+    }),
+    padRight: new MonkeyBuiltin((...args) => {
+      if (args.length !== 3) return new MonkeyNull();
+      return mkStr(args[0].value.padEnd(args[1].value, args[2].value));
+    }),
+    reverse: new MonkeyBuiltin((...args) => {
+      if (args.length !== 1) return new MonkeyNull();
+      return mkStr([...args[0].value].reverse().join(""));
+    }),
+    length: new MonkeyBuiltin((...args) => {
+      if (args.length !== 1) return new MonkeyNull();
+      return mkInt(args[0].value.length);
+    })
+  };
+  for (const [name, value] of Object.entries(extras)) {
+    const key = new MonkeyString(name);
+    base.pairs.set(key.fastHashKey ? key.fastHashKey() : key.hashKey(), { key, value });
+  }
+  return base;
+};
+var algorithmsModule = () => buildModule({
+  gcd: new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return new MonkeyNull();
+    let [a, b] = args.map((x) => Math.abs(x.value));
+    while (b) {
+      [a, b] = [b, a % b];
+    }
+    return mkInt(a);
+  }),
+  lcm: new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return new MonkeyNull();
+    let [a, b] = args.map((x) => Math.abs(x.value));
+    let [a0, b0] = [a, b];
+    while (b) {
+      [a, b] = [b, a % b];
+    }
+    return mkInt(a0 / a * b0);
+  }),
+  isPrime: new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyNull();
+    const n = args[0].value;
+    if (n < 2) return new MonkeyBoolean(false);
+    if (n < 4) return new MonkeyBoolean(true);
+    if (n % 2 === 0 || n % 3 === 0) return new MonkeyBoolean(false);
+    for (let i = 5; i * i <= n; i += 6) {
+      if (n % i === 0 || n % (i + 2) === 0) return new MonkeyBoolean(false);
+    }
+    return new MonkeyBoolean(true);
+  }),
+  factorial: new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyNull();
+    let n = args[0].value;
+    let result = 1;
+    for (let i = 2; i <= n; i++) result *= i;
+    return mkInt(result);
+  }),
+  fibonacci: new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyNull();
+    const n = args[0].value;
+    if (n <= 0) return mkInt(0);
+    if (n === 1) return mkInt(1);
+    let [a, b] = [0, 1];
+    for (let i = 2; i <= n; i++) [a, b] = [b, a + b];
+    return mkInt(b);
+  })
+});
 var MODULE_REGISTRY = {
-  math: mathModule,
-  string: stringModule,
-  functional: functionalModule
+  math: mathModuleEnhanced,
+  string: stringModuleEnhanced,
+  functional: functionalModule,
+  algorithms: algorithmsModule
 };
 function getModule(name) {
   const factory = MODULE_REGISTRY[name];
@@ -2499,13 +2611,28 @@ var Compiler = class _Compiler {
       const mod = getModule(node.moduleName);
       if (!mod) return `unknown module: ${node.moduleName}`;
       const constIdx = this.addConstant(mod);
-      this.emit(Opcodes.OpConstant, constIdx);
-      const sym = this.symbolTable.define(node.moduleName);
-      this.importedModules.add(node.moduleName);
-      if (sym.scope === SCOPE.GLOBAL) {
-        this.emit(Opcodes.OpSetGlobal, sym.index);
+      if (node.bindings) {
+        for (const name of node.bindings) {
+          this.emit(Opcodes.OpConstant, constIdx);
+          const keyIdx = this.addConstant(new MonkeyString(name));
+          this.emit(Opcodes.OpConstant, keyIdx);
+          this.emit(Opcodes.OpIndex);
+          const sym = this.symbolTable.define(name);
+          if (sym.scope === SCOPE.GLOBAL) {
+            this.emit(Opcodes.OpSetGlobal, sym.index);
+          } else {
+            this.emit(Opcodes.OpSetLocal, sym.index);
+          }
+        }
       } else {
-        this.emit(Opcodes.OpSetLocal, sym.index);
+        this.emit(Opcodes.OpConstant, constIdx);
+        const sym = this.symbolTable.define(node.moduleName);
+        this.importedModules.add(node.moduleName);
+        if (sym.scope === SCOPE.GLOBAL) {
+          this.emit(Opcodes.OpSetGlobal, sym.index);
+        } else {
+          this.emit(Opcodes.OpSetLocal, sym.index);
+        }
       }
     } else if (node instanceof InfixExpression) {
       if (["+", "-", "*", "/"].includes(node.operator)) {
@@ -9642,6 +9769,19 @@ function monkeyEval(node, env) {
   if (node instanceof ImportStatement) {
     const mod = getModule(node.moduleName);
     if (!mod) return newError(`unknown module: ${node.moduleName}`);
+    if (node.bindings) {
+      for (const name of node.bindings) {
+        const key = new MonkeyString(name);
+        const hk = key.fastHashKey ? key.fastHashKey() : key.hashKey();
+        const pair = mod.pairs.get(hk);
+        if (pair) {
+          env.set(name, pair.value);
+        } else {
+          env.set(name, NULL);
+        }
+      }
+      return mod;
+    }
     env.set(node.moduleName, mod);
     return mod;
   }

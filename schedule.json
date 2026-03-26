@@ -1223,27 +1223,39 @@
       "id": "T123",
       "mode": "BUILD",
       "task": "Add algorithms module (gcd, lcm, isPrime, factorial, fibonacci) + enhance math module (sign, clamp) + enhance string module (padLeft, padRight, reverse). Tests.",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T117",
-      "started": "2026-03-26T17:42:14.596Z"
+      "started": "2026-03-26T17:42:14.596Z",
+      "completed": "2026-03-26T17:43:26.849Z",
+      "duration_ms": 300000,
+      "summary": "algorithms module (gcd, lcm, isPrime, factorial, fibonacci) + enhanced math (sign, clamp) + string (padLeft, padRight, reverse, length). 1045 tests."
     },
     {
       "id": "T118",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-03-26T17:43:31.494Z",
+      "completed": "2026-03-26T17:43:31.618Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled."
     },
     {
       "id": "T119",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Mid-session housekeeping"
+      "status": "done",
+      "task": "Mid-session housekeeping",
+      "started": "2026-03-26T17:43:36.134Z",
+      "completed": "2026-03-26T17:43:58.641Z",
+      "duration_ms": 30000,
+      "summary": "Git pushed, dashboard regenerated. 1045 tests."
     },
     {
       "id": "T120",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Rebuild playground, update README with selective imports + new modules"
+      "status": "in-progress",
+      "task": "Rebuild playground, update README with selective imports + new modules",
+      "started": "2026-03-26T17:44:02.528Z"
     },
     {
       "id": "T121",

@@ -247,11 +247,20 @@ string.upper("hello")        // "HELLO"
 string.repeat("ha", 3)       // "hahaha"
 string.contains("foo", "oo") // true
 string.replace("hello world", "world", "monkey") // "hello monkey"
+
+// Selective imports — bind specific functions directly
+import "math" for sqrt, pow;
+sqrt(pow(2, 8))              // 16
+
+import "algorithms" for gcd, isPrime;
+gcd(48, 18)                  // 6
+isPrime(97)                  // true
 ```
 
 **Available modules:**
-- **math** — `abs`, `pow`, `sqrt`, `min`, `max`, `floor`, `ceil`
-- **string** — `upper`, `lower`, `trim`, `split`, `join`, `repeat`, `contains`, `replace`, `charAt`
+- **math** — `abs`, `pow`, `sqrt`, `min`, `max`, `floor`, `ceil`, `sign`, `clamp`
+- **string** — `upper`, `lower`, `trim`, `split`, `join`, `repeat`, `contains`, `replace`, `charAt`, `padLeft`, `padRight`, `reverse`, `length`
+- **algorithms** — `gcd`, `lcm`, `isPrime`, `factorial`, `fibonacci`
 
 ## Tracing JIT Compiler
 
@@ -298,7 +307,7 @@ Aggregate: 26 benchmarks, ~9.2x overall (all correct)
 ## Tests
 
 ```bash
-node --test    # 1000 tests (997 passing, 3 skipped JIT edge cases)
+node --test    # 1045 tests (1042 passing, 3 skipped JIT edge cases)
 ```
 
 ## Benchmarks
