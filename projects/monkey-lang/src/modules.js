@@ -208,11 +208,65 @@ const algorithmsModule = () => buildModule({
   }),
 });
 
+// --- array module ---
+const arrayModule = () => buildModule({
+  zip: new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return new MonkeyNull();
+    const a = args[0].elements, b = args[1].elements;
+    const len = Math.min(a.length, b.length);
+    const result = [];
+    for (let i = 0; i < len; i++) {
+      result.push(new MonkeyArray([a[i], b[i]]));
+    }
+    return new MonkeyArray(result);
+  }),
+  enumerate: new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyNull();
+    return new MonkeyArray(args[0].elements.map((el, i) => new MonkeyArray([mkInt(i), el])));
+  }),
+  flatten: new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyNull();
+    const result = [];
+    for (const el of args[0].elements) {
+      if (el instanceof MonkeyArray) result.push(...el.elements);
+      else result.push(el);
+    }
+    return new MonkeyArray(result);
+  }),
+  unique: new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyNull();
+    const seen = new Set();
+    const result = [];
+    for (const el of args[0].elements) {
+      const key = el.inspect();
+      if (!seen.has(key)) { seen.add(key); result.push(el); }
+    }
+    return new MonkeyArray(result);
+  }),
+  reversed: new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyNull();
+    return new MonkeyArray([...args[0].elements].reverse());
+  }),
+  sum: new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyNull();
+    let total = 0;
+    for (const el of args[0].elements) total += el.value;
+    return mkInt(total);
+  }),
+  product: new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyNull();
+    let total = 1;
+    for (const el of args[0].elements) total *= el.value;
+    return mkInt(total);
+  }),
+});
+
 const MODULE_REGISTRY = {
   math: mathModuleEnhanced,
   string: stringModuleEnhanced,
   functional: functionalModule,
   algorithms: algorithmsModule,
+  array: arrayModule,
 };
 
 export function getModule(name) {

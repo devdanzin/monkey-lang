@@ -863,3 +863,44 @@ describe('Enum Match (evaluator)', () => {
     assert.equal(r.value, 'allowed');
   });
 });
+
+describe('Array Module (evaluator)', () => {
+  it('zip', () => {
+    const r = testEval('import "array" for zip; zip([1, 2, 3], ["a", "b", "c"])');
+    assert.equal(r.elements.length, 3);
+    assert.equal(r.elements[0].elements[0].value, 1);
+    assert.equal(r.elements[0].elements[1].value, 'a');
+  });
+
+  it('enumerate', () => {
+    const r = testEval('import "array" for enumerate; enumerate(["a", "b", "c"])');
+    assert.equal(r.elements.length, 3);
+    assert.equal(r.elements[0].elements[0].value, 0);
+    assert.equal(r.elements[0].elements[1].value, 'a');
+  });
+
+  it('flatten', () => {
+    const r = testEval('import "array" for flatten; flatten([[1, 2], [3, 4], [5]])');
+    assert.deepEqual(r.elements.map(e => e.value), [1, 2, 3, 4, 5]);
+  });
+
+  it('unique', () => {
+    const r = testEval('import "array" for unique; unique([1, 2, 3, 2, 1, 4])');
+    assert.deepEqual(r.elements.map(e => e.value), [1, 2, 3, 4]);
+  });
+
+  it('reversed', () => {
+    const r = testEval('import "array" for reversed; reversed([1, 2, 3])');
+    assert.deepEqual(r.elements.map(e => e.value), [3, 2, 1]);
+  });
+
+  it('sum', () => {
+    const r = testEval('import "array" for sum; sum([1, 2, 3, 4, 5])');
+    assert.equal(r.value, 15);
+  });
+
+  it('product', () => {
+    const r = testEval('import "array" for product; product([1, 2, 3, 4, 5])');
+    assert.equal(r.value, 120);
+  });
+});

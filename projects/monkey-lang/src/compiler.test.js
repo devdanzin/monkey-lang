@@ -3053,3 +3053,23 @@ describe('Enum Match (compiler+VM)', () => {
     `), 42);
   });
 });
+
+describe('Array Module (compiler+VM)', () => {
+  it('zip', () => {
+    const r = compileAndRun('import "array" for zip; let z = zip([1, 2], ["a", "b"]); len(z)');
+    assert.equal(r.value, 2);
+  });
+
+  it('flatten', () => {
+    const r = compileAndRun('import "array" for flatten; flatten([[1, 2], [3], [4, 5]])');
+    assert.deepEqual(r.elements.map(e => e.value), [1, 2, 3, 4, 5]);
+  });
+
+  it('sum', () => {
+    testIntegerObject(compileAndRun('import "array" for sum; sum(range(1, 101))'), 5050);
+  });
+
+  it('unique + sum combo', () => {
+    testIntegerObject(compileAndRun('import "array" for unique, sum; sum(unique([1, 2, 3, 2, 1]))'), 6);
+  });
+});

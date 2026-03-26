@@ -1572,15 +1572,19 @@
     {
       "id": "T153",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add enum match tests + more comprehensive enum tests. Then add a Result + enum combo test.",
-      "started": "2026-03-26T18:12:12.858Z"
+      "started": "2026-03-26T18:12:12.858Z",
+      "completed": "2026-03-26T18:13:34.693Z",
+      "duration_ms": 120000,
+      "summary": "6 new tests: enum match, enum+Result combo, enum in comprehension, enum with functions. 1076 tests."
     },
     {
       "id": "T154",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Add a new array module: from, zip, enumerate, flatten, unique"
+      "status": "in-progress",
+      "task": "Add a new array module: from, zip, enumerate, flatten, unique",
+      "started": "2026-03-26T18:13:40.580Z"
     },
     {
       "id": "T155",
