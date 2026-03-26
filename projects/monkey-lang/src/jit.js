@@ -954,14 +954,19 @@ export class TraceCompiler {
     // Check that all operations are simple
     const SIMPLE_OPS = new Set([
       IR.LOOP_START, IR.LOOP_END,
-      IR.CONST_INT, IR.CONST_BOOL,
+      IR.CONST_INT, IR.CONST_BOOL, IR.CONST_STRING, IR.CONST_NULL,
       IR.LOAD_GLOBAL, IR.STORE_GLOBAL,
       IR.LOAD_LOCAL, IR.STORE_LOCAL,
+      IR.LOAD_FREE, IR.STORE_FREE,
       IR.GUARD_INT, IR.GUARD_BOOL, IR.GUARD_TRUTHY, IR.GUARD_FALSY,
+      IR.GUARD_STRING, IR.GUARD_ARRAY,
       IR.UNBOX_INT, IR.BOX_INT,
+      IR.UNBOX_STRING, IR.BOX_STRING,
       IR.ADD_INT, IR.SUB_INT, IR.MUL_INT, IR.DIV_INT, IR.MOD_INT,
-      IR.GT, IR.LT, IR.EQ, IR.NEQ,
+      IR.GT, IR.LT, IR.EQ, IR.NEQ, IR.GTE, IR.LTE,
       IR.NEG, IR.NOT,
+      IR.CONCAT, IR.INDEX, IR.HASH_LOOKUP,
+      IR.CALL, IR.CALL_BUILTIN,
     ]);
     for (const inst of ir) {
       if (!inst) continue;
