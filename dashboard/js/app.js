@@ -839,26 +839,31 @@
   }
 
   function renderAll(data) {
-    renderBanner(data.current);
-    renderStats(data.stats);
-    renderHeatmap(data.schedule);
-    renderModeBar(data.stats);
-    renderHighlights(data.todayHighlights);
-    renderDurationChart(data.schedule);
-    renderNextUp(data.schedule);
-    renderTimeline(data.schedule);
-    renderArtifacts(data.artifacts);
-    renderAdjustments(data.adjustments);
-    renderRecentDays(data.recentDays);
-    renderWeeklySummary(data.recentDays, data.stats);
-    renderPRs(data.prs);
-    renderBlogPosts(data.blogPosts);
-    renderBacklog(data.schedule);
-    renderBenchmarks(data.benchmarks);
-    renderScheduleAdherence(data.scheduleAdherence);
-    renderStreak(data.streak);
-    renderTrendSparkline(data.recentDays, data.stats?.blocksCompleted || 0);
-    $('#lastUpdated').textContent = new Date(data.generated).toLocaleTimeString();
+    const renders = [
+      ['banner', () => renderBanner(data.current)],
+      ['stats', () => renderStats(data.stats)],
+      ['heatmap', () => renderHeatmap(data.schedule)],
+      ['modeBar', () => renderModeBar(data.stats)],
+      ['highlights', () => renderHighlights(data.todayHighlights)],
+      ['durationChart', () => renderDurationChart(data.schedule)],
+      ['nextUp', () => renderNextUp(data.schedule)],
+      ['timeline', () => renderTimeline(data.schedule)],
+      ['artifacts', () => renderArtifacts(data.artifacts)],
+      ['adjustments', () => renderAdjustments(data.adjustments)],
+      ['recentDays', () => renderRecentDays(data.recentDays)],
+      ['weeklySummary', () => renderWeeklySummary(data.recentDays, data.stats)],
+      ['prs', () => renderPRs(data.prs)],
+      ['blogPosts', () => renderBlogPosts(data.blogPosts)],
+      ['backlog', () => renderBacklog(data.schedule)],
+      ['benchmarks', () => renderBenchmarks(data.benchmarks)],
+      ['adherence', () => renderScheduleAdherence(data.scheduleAdherence)],
+      ['streak', () => renderStreak(data.streak)],
+      ['sparkline', () => renderTrendSparkline(data.recentDays, data.stats?.blocksCompleted || 0)],
+    ];
+    for (const [name, fn] of renders) {
+      try { fn(); } catch (e) { console.error(`renderAll: ${name} failed:`, e); }
+    }
+    try { $('#lastUpdated').textContent = new Date(data.generated).toLocaleTimeString(); } catch {}
 
     // Re-open detail if one was selected
     if (selectedBlockIndex >= 0) {
