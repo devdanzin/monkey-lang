@@ -1044,6 +1044,15 @@
         data = transformApiData(data);
       }
       currentData = data;
+      console.log('Dashboard data:', { 
+        blogPosts: data.blogPosts?.length, 
+        prs: data.prs?.length, 
+        artifacts: data.artifacts?.length,
+        benchmarks: !!data.benchmarks,
+        recentDays: data.recentDays?.length,
+        blocks: data.schedule?.blocks?.length,
+        keys: Object.keys(data)
+      });
       renderAll(data);
       errorCount = 0;
       $('#pollStatus').className = 'poll-status' + (apiAvailable ? ' live' : '');
