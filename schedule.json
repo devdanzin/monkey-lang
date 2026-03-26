@@ -544,15 +544,96 @@
     {
       "id": "T51",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final benchmark run, update README + SHOW_HN.md with final numbers",
-      "started": "2026-03-26T15:15:23.441Z"
+      "started": "2026-03-26T15:15:23.441Z",
+      "completed": "2026-03-26T15:17:01.345Z",
+      "duration_ms": 120000,
+      "summary": "Final benchmarks: 9.5x aggregate. Updated README and SHOW_HN.md with 891 tests, 35+ features. All pushed."
     },
     {
       "id": "T52",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final session push — git push, dashboard regen, daily log complete",
+      "started": "2026-03-26T15:17:23.352Z",
+      "completed": "2026-03-26T15:17:23.462Z",
+      "duration_ms": 0,
+      "summary": "Skipped — not end of session, 5 hours remain."
+    },
+    {
+      "id": "T55",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Update playground examples to showcase new features: type annotations, hash destructuring, type patterns in match",
+      "started": "2026-03-26T15:18:03.951Z",
+      "completed": "2026-03-26T15:19:43.637Z",
+      "duration_ms": 300000,
+      "summary": "Added Type System example to playground: type annotations, hash destructuring, type patterns in match, typed fibonacci. Rebuilt bundle (371KB). Pushed to GH Pages."
+    },
+    {
+      "id": "T56",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Blog: Adding Types to a Dynamically-Typed Language — our type annotation journey",
+      "task": null,
+      "started": "2026-03-26T15:19:50.961Z",
+      "completed": "2026-03-26T15:20:08.154Z",
+      "duration_ms": 30000,
+      "summary": "Blog plan: hook with JIT surprise, 5-layer implementation, guard elimination already handled it, type patterns. 1 BUILD."
+    },
+    {
+      "id": "T63",
+      "mode": "BUILD",
+      "task": "Write and publish blog: Adding Types to a Dynamically-Typed Language",
+      "status": "done",
+      "plan_ref": "T56",
+      "started": "2026-03-26T15:20:18.129Z",
+      "completed": "2026-03-26T15:21:21.649Z",
+      "duration_ms": 600000,
+      "summary": "Published blog: Adding Types to a Dynamically-Typed Language — 143 lines covering 5-layer implementation, JIT surprise (optimizer already handles it), type patterns, lessons. Third blog today."
+    },
+    {
+      "id": "T57",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "started": "2026-03-26T15:21:38.246Z",
+      "completed": "2026-03-26T15:21:38.357Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled."
+    },
+    {
+      "id": "T58",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Housekeeping + dashboard refresh",
+      "started": "2026-03-26T15:21:48.510Z"
+    },
+    {
+      "id": "T59",
+      "mode": "PLAN",
       "status": "upcoming",
-      "task": "Final session push — git push, dashboard regen, daily log complete"
+      "goal": "Monkey improvements: string methods (split, join, map on strings), range literals (0..10)",
+      "task": null
+    },
+    {
+      "id": "T60",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T61",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T62",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Pre-boundary final push"
     }
   ],
   "updated_at": "2026-03-26T14:02:05.404Z",
@@ -688,6 +769,42 @@
     {
       "time": "2026-03-26T15:09:40.150Z",
       "msg": "PLAN T49 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-03-26T15:17:55.704Z",
+      "msg": "Added T55 (BUILD) after end: Update playground examples to showcase new features: type annotations, hash destructuring, type patterns in match"
+    },
+    {
+      "time": "2026-03-26T15:17:55.814Z",
+      "msg": "Added T56 (PLAN) after end: Blog: Adding Types to a Dynamically-Typed Language — our type annotation journey"
+    },
+    {
+      "time": "2026-03-26T15:17:55.923Z",
+      "msg": "Added T57 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-03-26T15:17:56.032Z",
+      "msg": "Added T58 (MAINTAIN) after end: Housekeeping + dashboard refresh"
+    },
+    {
+      "time": "2026-03-26T15:17:56.144Z",
+      "msg": "Added T59 (PLAN) after end: Monkey improvements: string methods (split, join, map on strings), range literals (0..10)"
+    },
+    {
+      "time": "2026-03-26T15:17:56.256Z",
+      "msg": "Added T60 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-03-26T15:17:56.365Z",
+      "msg": "Added T61 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-03-26T15:17:56.474Z",
+      "msg": "Added T62 (MAINTAIN) after end: Pre-boundary final push"
+    },
+    {
+      "time": "2026-03-26T15:20:01.708Z",
+      "msg": "PLAN T56 filled 1 BUILD tasks"
     }
   ]
 }
