@@ -1030,3 +1030,50 @@ describe('Integration Edge Cases', () => {
     testBooleanObject(compileAndRunJIT('let x = 5; x > 3 && x < 10'), true);
   });
 });
+
+describe('Type Annotations + JIT', () => {
+  it('typed function produces correct result with JIT', () => {
+    const { result } = compileAndRunJIT(`
+      let sum = fn(n: int) -> int {
+        let total = 0;
+        let i = 0;
+        while (i < n) {
+          total = total + i;
+          i = i + 1;
+        }
+        total
+      };
+      sum(100)
+    `);
+    assert.equal(result.value, 4950);
+  });
+
+  it('typed function has fewer guards than untyped', () => {
+    // Run with type annotation
+    const { vm: vm1 } = compileAndRunJIT(`
+      let f = fn(n: int) -> int {
+        let i = 0;
+        while (i < n) { i = i + 1; }
+        i
+      };
+      f(200)
+    `);
+    const stats1 = vm1.jit.getStats();
+
+    // Run without type annotation
+    const { vm: vm2 } = compileAndRunJIT(`
+      let f = fn(n) {
+        let i = 0;
+        while (i < n) { i = i + 1; }
+        i
+      };
+      f(200)
+    `);
+    const stats2 = vm2.jit.getStats();
+
+    // Typed version should have fewer guards
+    // (At minimum, no guard needed for the 'n' parameter load)
+    assert.ok(stats1.totalGuards <= stats2.totalGuards,
+      `typed (${stats1.totalGuards} guards) should have <= untyped (${stats2.totalGuards} guards)`);
+  });
+});

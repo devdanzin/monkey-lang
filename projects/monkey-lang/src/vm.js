@@ -1360,8 +1360,9 @@ export class VM {
           }
           // JIT: type annotations mean we can skip guards for these params
           if (recording()) {
-            // No-op in trace — the annotation is trusted
-            // The JIT task will read fn.paramTypes to skip guards
+            // Register this slot as having a trusted type
+            const absSlot = this.recorder.currentBaseOffset() + localIdx;
+            this.recorder.trustedTypes.set(absSlot, typeName);
           }
           break;
         }

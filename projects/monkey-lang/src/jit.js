@@ -184,6 +184,11 @@ export class TraceRecorder {
     // Maps absolute stack slot → IR ref for inlined function arguments
     // When a callee does LOAD_LOCAL, we check this map first
     this.inlineSlotRefs = new Map();
+
+    // Trusted types from type annotations (OpTypeCheck)
+    // Maps absolute stack slot → type name (e.g., 'int', 'string')
+    // Guards are skipped for slots with trusted types
+    this.trustedTypes = new Map();
   }
 
   start(frameId, ip) {
@@ -197,6 +202,7 @@ export class TraceRecorder {
     this.typeMap.clear();
     this.localSlotRefs.clear();
     this.globalSlotRefs.clear();
+    this.trustedTypes.clear();
     this.isSideTrace = false;
     this.parentTrace = null;
     this.parentGuardIdx = -1;
@@ -221,6 +227,7 @@ export class TraceRecorder {
     this.localSlotRefs.clear();
     this.globalSlotRefs.clear();
     this.isSideTrace = true;
+    this.trustedTypes.clear();
     this.parentTrace = parentTrace;
     this.parentGuardIdx = guardIdx;
 
@@ -245,6 +252,7 @@ export class TraceRecorder {
     this.localSlotRefs.clear();
     this.globalSlotRefs.clear();
     this.isSideTrace = false;
+    this.trustedTypes.clear();
     this.isFuncTrace = true;
     this.tracedFn = fn;
 
@@ -397,6 +405,13 @@ export class TraceRecorder {
 
   // Record a guard for a value's type
   guardType(ref, value) {
+    // Check if this ref has a trusted type from type annotations
+    const trustedType = this.trustedTypeForRef(ref);
+    if (trustedType) {
+      this.typeMap.set(ref, trustedType);
+      // No guard emitted — type is guaranteed by annotation
+      return trustedType;
+    }
     const exitIp = this.getGuardExitIp();
     if (value instanceof MonkeyInteger) {
       const gid = this.addGuardInst(IR.GUARD_INT, { ref, exitIp });
@@ -421,6 +436,23 @@ export class TraceRecorder {
   // Check if we already know a ref's type (skip redundant guards)
   knownType(ref) {
     return this.typeMap.get(ref) || null;
+  }
+
+  // Check if an IR ref corresponds to a local with a trusted type annotation
+  trustedTypeForRef(ref) {
+    if (this.trustedTypes.size === 0) return null;
+    // Find if this ref came from a LOAD_LOCAL for a trusted slot
+    const inst = this.trace.ir[ref];
+    if (inst && inst.op === IR.LOAD_LOCAL && this.trustedTypes.has(inst.slot)) {
+      return this.trustedTypes.get(inst.slot);
+    }
+    // Also check inlined slot refs
+    for (const [slot, slotRef] of this.inlineSlotRefs) {
+      if (slotRef === ref && this.trustedTypes.has(slot)) {
+        return this.trustedTypes.get(slot);
+      }
+    }
+    return null;
   }
 
   // Record an integer arithmetic operation
