@@ -1024,9 +1024,12 @@
     {
       "id": "T100",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push toward 1000 tests: add comprehensive tests for lexer (thin arrow, dot-dot), evaluator (type annotations, Result, match type patterns, hash destructuring), transpiler (all new features)",
-      "started": "2026-03-26T16:08:38.706Z"
+      "started": "2026-03-26T16:08:38.706Z",
+      "completed": "2026-03-26T16:16:38.469Z",
+      "duration_ms": 600000,
+      "summary": "🎉 1000 TESTS MILESTONE! Fixed evaluator Result builtins (Ok/Err/unwrap/unwrap_or), MonkeyBoolean import, defaults-before-type-checks bug. Added 61 new tests across evaluator, transpiler, and compiler."
     }
   ],
   "updated_at": "2026-03-26T14:02:05.404Z",

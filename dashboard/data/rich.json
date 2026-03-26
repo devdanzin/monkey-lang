@@ -491,7 +491,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:39:06Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 138,
+      "ageHours": 139,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -513,7 +513,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:38:20Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 139,
+      "ageHours": 140,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -669,9 +669,9 @@
     }
   ],
   "scheduleAdherence": {
-    "completionRate": 63,
+    "completionRate": 56,
     "completedBlocks": 5,
-    "pastBlocks": 8,
+    "pastBlocks": 9,
     "totalBlocks": 55,
     "plannedDist": {
       "THINK": 9,
@@ -684,9 +684,9 @@
       "BUILD": 1,
       "MAINTAIN": 3
     },
-    "pace": 2.9
+    "pace": 2.5
   },
   "streak": 1,
   "todayHighlights": [],
-  "generated": "2026-03-26T16:00:47.470Z"
+  "generated": "2026-03-26T16:16:57.215Z"
 }
