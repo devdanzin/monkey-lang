@@ -2,7 +2,7 @@
 
 A JavaScript implementation of the Monkey programming language with a tree-walking interpreter, bytecode compiler + stack VM, and a **tracing JIT compiler** that achieves **~10x average speedup** (up to 38x on hash lookups).
 
-📝 **Blog series:** [Building a Tracing JIT Compiler in JavaScript](https://henry-the-frog.github.io/2026/03/24/building-a-tracing-jit-in-javascript/) | [Range Check Elimination](https://henry-the-frog.github.io/2026/03/25/range-check-elimination/) | [When Optimizers Attack](https://henry-the-frog.github.io/2026/03/25/when-optimizers-attack/)
+📝 **Blog series:** [11 Days From Boot to Tracing JIT](https://henry-the-frog.github.io/2026/03/26/eleven-days-from-boot-to-tracing-jit) | [Why Your JIT Doesn't Need a Sea of Nodes](https://henry-the-frog.github.io/2026/03/26/why-your-jit-doesnt-need-a-sea-of-nodes) | [Building a Tracing JIT](https://henry-the-frog.github.io/2026/03/24/building-a-tracing-jit-in-javascript/) | [When Optimizers Attack](https://henry-the-frog.github.io/2026/03/25/when-optimizers-attack/)
 
 🎮 **Try it:** [Interactive Playground](https://henry-the-frog.github.io/playground/)
 
@@ -16,6 +16,7 @@ Inspired by Thorsten Ball's *Writing An Interpreter In Go* and *Writing A Compil
 - **Bytecode compiler** — AST → bytecode with 31 opcodes, symbol tables, compilation scopes
 - **Stack VM** — executes bytecode with call frames, closures, and free variable capture
 - **Tracing JIT compiler** — records hot execution traces, optimizes IR, compiles to JavaScript via `new Function()`
+- **Optional type annotations** — `fn(x: int, y: int) -> int` with runtime validation and JIT guard elimination
 - **Standard library** — `map`, `filter`, `reduce`, `forEach`, `range`, `contains`, `reverse` (implemented in Monkey for JIT compatibility)
 - **25+ builtins** — `len`, `puts`, `first`, `last`, `rest`, `push`, `split`, `join`, `trim`, `str_contains`, `substr`, `replace`, `int`, `str`, `type`, `ord`, `char`, `abs`, `upper`, `lower`, `indexOf`, `startsWith`, `endsWith`, `keys`, `values`
 - **Modern syntax** — arrow functions `(x) => x * 2`, pipe operator `|>`, null coalescing `??`, optional chaining `?.`, dot access `h.name`, const declarations, spread `...`, rest parameters
@@ -112,6 +113,12 @@ let double = (x) => x * 2;
 let add = (a, b) => a + b;
 let greet = () => "hello";
 let f = (x) => { let y = x * 2; y + 1 };
+
+// Type annotations (optional)
+let add = fn(x: int, y: int) -> int { x + y };
+let greet = fn(name: string) -> string { `hello ${name}` };
+// Types: int, bool, string, array, hash, fn, null
+// Wrong types throw: "Type error: expected int, got string"
 ```
 
 ### Null Safety
@@ -244,7 +251,7 @@ Aggregate: 26 benchmarks, ~9.2x overall (all correct)
 ## Tests
 
 ```bash
-node --test    # 846 tests (843 passing, 3 skipped JIT edge cases)
+node --test    # 876 tests (873 passing, 3 skipped JIT edge cases)
 ```
 
 ## Benchmarks
