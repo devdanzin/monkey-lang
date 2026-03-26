@@ -357,3 +357,13 @@ export class DoWhileExpression {
   tokenLiteral() { return this.token.literal; }
   toString() { return 'do { ... } while (...)'; }
 }
+
+export class RangeExpression {
+  constructor(token, start, end) {
+    this.token = token;
+    this.start = start;  // Expression
+    this.end = end;      // Expression
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return `${this.start}..${this.end}`; }
+}

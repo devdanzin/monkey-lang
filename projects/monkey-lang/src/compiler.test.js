@@ -2501,3 +2501,29 @@ describe('Type Patterns in Match', () => {
     testIntegerObject(compileAndRun('match (42) { 0 => 100, int(n) => n + 1, _ => -1 }'), 43);
   });
 });
+
+describe('Range Literals', () => {
+  it('generates array from range', () => {
+    const r = compileAndRun('0..5');
+    assert.deepEqual(r.elements.map(e => e.value), [0, 1, 2, 3, 4]);
+  });
+
+  it('supports start..end', () => {
+    const r = compileAndRun('3..7');
+    assert.deepEqual(r.elements.map(e => e.value), [3, 4, 5, 6]);
+  });
+
+  it('works in for-in', () => {
+    testIntegerObject(compileAndRun('let s = 0; for (i in 0..10) { s = s + i; } s'), 45);
+  });
+
+  it('works with expressions', () => {
+    const r = compileAndRun('let n = 5; 0..n');
+    assert.deepEqual(r.elements.map(e => e.value), [0, 1, 2, 3, 4]);
+  });
+
+  it('empty range for start >= end', () => {
+    const r = compileAndRun('5..3');
+    assert.equal(r.elements.length, 0);
+  });
+});

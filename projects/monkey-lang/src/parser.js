@@ -29,6 +29,7 @@ const TOKEN_PRECEDENCE = {
   [TokenType.QUESTION]: Precedence.OR,
   [TokenType.NULLISH]: Precedence.NULLISH,
   [TokenType.PIPE]: Precedence.PIPE,
+  [TokenType.DOT_DOT]: Precedence.PIPE,
   [TokenType.OPTIONAL_CHAIN]: Precedence.INDEX,
   [TokenType.DOT]: Precedence.INDEX,
   [TokenType.PLUS_PLUS]: Precedence.CALL,   // postfix, high precedence
@@ -90,6 +91,7 @@ export class Parser {
       this.registerInfix(op, (left) => this.parseInfixExpression(left));
     }
     this.registerInfix(TokenType.PIPE, (left) => this.parsePipeExpression(left));
+    this.registerInfix(TokenType.DOT_DOT, (left) => this.parseRangeExpression(left));
     this.registerInfix(TokenType.OPTIONAL_CHAIN, (left) => this.parseOptionalChainExpression(left));
     this.registerInfix(TokenType.DOT, (left) => this.parseDotExpression(left));
     this.registerInfix(TokenType.LPAREN, (left) => this.parseCallExpression(left));
@@ -359,17 +361,20 @@ export class Parser {
   parsePipeExpression(left) {
     const token = this.curToken;
     this.nextToken();
-    // Parse the right side at PIPE precedence (left-to-right associative)
     const right = this.parseExpression(Precedence.PIPE);
-    // Desugar: x |> f → f(x), x |> f(a,b) → f(x, a, b)
     if (right instanceof ast.CallExpression) {
-      // f(a, b) → f(x, a, b) — insert left as first argument
       right.arguments.unshift(left);
       return right;
     } else {
-      // f → f(x) — simple function call
       return new ast.CallExpression(token, right, [left]);
     }
+  }
+
+  parseRangeExpression(left) {
+    const token = this.curToken;
+    this.nextToken();
+    const end = this.parseExpression(Precedence.PIPE + 1);
+    return new ast.RangeExpression(token, left, end);
   }
 
   parseOptionalChainExpression(left) {

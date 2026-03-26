@@ -293,6 +293,20 @@ export function monkeyEval(node, env) {
     return evalPrefixExpression(node.operator, right);
   }
 
+  if (node instanceof AST.RangeExpression) {
+    const start = monkeyEval(node.start, env);
+    if (isError(start)) return start;
+    const end = monkeyEval(node.end, env);
+    if (isError(end)) return end;
+    if (!(start instanceof MonkeyInteger) || !(end instanceof MonkeyInteger)) {
+      return new MonkeyError('range requires integer bounds');
+    }
+    const elements = [];
+    for (let i = start.value; i < end.value; i++) {
+      elements.push(new MonkeyInteger(i));
+    }
+    return new MonkeyArray(elements);
+  }
   if (node instanceof AST.InfixExpression) {
     // Short-circuit evaluation for && and ||
     if (node.operator === '&&') {

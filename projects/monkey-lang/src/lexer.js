@@ -24,7 +24,7 @@ export const TokenType = {
   OR: '||',
   NULLISH: '??',
   OPTIONAL_CHAIN: '?.',
-  DOT: '.',
+  DOT: '.', DOT_DOT: '..',
   ARROW: '=>',
   THIN_ARROW: '->',
   SPREAD: '...',
@@ -349,6 +349,9 @@ export class Lexer {
           this.readChar();
           this.readChar();
           tok = new Token(TokenType.SPREAD, '...');
+        } else if (this.peekChar() === '.') {
+          this.readChar();
+          tok = new Token(TokenType.DOT_DOT, '..');
         } else {
           tok = new Token(TokenType.DOT, '.');
         }

@@ -376,6 +376,15 @@ export class Compiler {
       this.resetPeepholeState();
     } else if (node instanceof ast.MatchExpression) {
       return this.compileMatchExpression(node);
+    } else if (node instanceof ast.RangeExpression) {
+      // Desugar: 0..10 → range(0, 10)
+      const rangeIdx = BUILTINS.indexOf('range');
+      this.emit(Opcodes.OpGetBuiltin, rangeIdx);
+      let err = this.compile(node.start);
+      if (err) return err;
+      err = this.compile(node.end);
+      if (err) return err;
+      this.emit(Opcodes.OpCall, 2);
     } else if (node instanceof ast.TemplateLiteral) {
       return this.compileTemplateLiteral(node);
     } else if (node instanceof ast.BooleanLiteral) {
