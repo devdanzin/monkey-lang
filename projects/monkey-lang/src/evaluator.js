@@ -209,6 +209,20 @@ const builtins = new Map([
     }
     return new MonkeyArray(result);
   })],
+  ['zip', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2 || !(args[0] instanceof MonkeyArray) || !(args[1] instanceof MonkeyArray))
+      return newError('zip requires two array arguments');
+    const len = Math.min(args[0].elements.length, args[1].elements.length);
+    const result = [];
+    for (let i = 0; i < len; i++) result.push(new MonkeyArray([args[0].elements[i], args[1].elements[i]]));
+    return new MonkeyArray(result);
+  })],
+  ['enumerate', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyArray)) return newError('enumerate requires one array argument');
+    const result = [];
+    for (let i = 0; i < args[0].elements.length; i++) result.push(new MonkeyArray([new MonkeyInteger(i), args[0].elements[i]]));
+    return new MonkeyArray(result);
+  })],
 ]);
 
 // --- Helpers ---

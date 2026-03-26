@@ -326,6 +326,27 @@ const BUILTINS = [
     }
     return new MonkeyArray(result);
   }),
+  // zip — zip two arrays into pairs
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 2 || !(args[0] instanceof MonkeyArray) || !(args[1] instanceof MonkeyArray))
+      return new MonkeyError(`zip requires two ARRAY arguments`);
+    const len = Math.min(args[0].elements.length, args[1].elements.length);
+    const result = [];
+    for (let i = 0; i < len; i++) {
+      result.push(new MonkeyArray([args[0].elements[i], args[1].elements[i]]));
+    }
+    return new MonkeyArray(result);
+  }),
+  // enumerate — returns [[0, el0], [1, el1], ...]
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyArray))
+      return new MonkeyError(`argument to \`enumerate\` must be ARRAY`);
+    const result = [];
+    for (let i = 0; i < args[0].elements.length; i++) {
+      result.push(new MonkeyArray([cachedInteger(i), args[0].elements[i]]));
+    }
+    return new MonkeyArray(result);
+  }),
 ];
 
 export class VM {
