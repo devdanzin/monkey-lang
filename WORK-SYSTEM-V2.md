@@ -40,7 +40,12 @@ A continuous work session that processes an ordered task queue. No fixed timers 
 
 ### 📋 PLAN — Plan and prepare
 - Read the goal assigned to this PLAN task
-- Load relevant context: scratch notes, lessons, code, failures log
+- **Topic-match knowledge:** Extract 2-3 keywords from the goal, grep `memory/scratch/INDEX.md` for matching topics, load the best-matching scratch note or lesson file. Examples:
+  - Goal mentions "JIT" or "compiler" → load `lessons/tracing-jit.md` or `lessons/compiler-vm-design.md`
+  - Goal mentions "dashboard" or "frontend" → no relevant notes (skip)
+  - Goal mentions "consciousness" → load `lessons/consciousness-research.md`
+  - If nothing matches, skip — don't force it
+- Read `memory/failures.md` to avoid repeating past mistakes
 - Break down the goal into concrete BUILD subtasks
 - **Fill in the placeholder BUILD slots** in the queue with specific tasks
 - Add or remove BUILD slots if the goal is bigger/simpler than estimated
@@ -53,6 +58,12 @@ A continuous work session that processes an ordered task queue. No fixed timers 
 ### 🔨 BUILD — Do the work
 - Write code, write blog posts, submit PRs, create tools
 - Focus on execution — the plan is already made
+- **Post-BUILD knowledge check:** After completing a BUILD task, ask: "Did I learn something non-obvious?" If yes, write a scratch note to `memory/scratch/<topic>.md` with `uses: 1` and `created: <date>`. Update `memory/scratch/INDEX.md`. Examples of "non-obvious":
+  - A workaround for a tool/API quirk (e.g., server PATH issues)
+  - A design pattern that worked well
+  - A debugging technique that saved time
+  - A performance insight from benchmarking
+  - Do NOT create notes for routine tasks (git push, file edits, etc.)
 - Write results to files as you go
 - **Cannot modify the queue** (except via yield — see below)
 - **Can yield** to an emergency THINK → PLAN if blocked
