@@ -1481,21 +1481,70 @@
     {
       "id": "T143",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Update playground + README with comprehensions",
-      "started": "2026-03-26T18:05:52.798Z"
+      "started": "2026-03-26T18:05:52.798Z",
+      "completed": "2026-03-26T18:06:32.773Z",
+      "duration_ms": 60000,
+      "summary": "README + playground updated with comprehensions. 1070 tests."
     },
     {
       "id": "T144",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping + push"
+      "status": "done",
+      "task": "Housekeeping + push",
+      "started": "2026-03-26T18:06:36.819Z",
+      "completed": "2026-03-26T18:06:52.167Z",
+      "duration_ms": 30000,
+      "summary": "Pushed. 12:07 PM, 2 hours to boundary."
     },
     {
       "id": "T145",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "FINAL session push (check time)",
+      "started": "2026-03-26T18:06:58.653Z",
+      "completed": "2026-03-26T18:06:58.764Z",
+      "duration_ms": 0,
+      "summary": "Skipped — 2 hours remain."
+    },
+    {
+      "id": "T147",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Update playground examples to showcase modules, enums, comprehensions, selective imports. Make it impressive.",
+      "started": "2026-03-26T18:07:18.937Z"
+    },
+    {
+      "id": "T148",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "FINAL session push (check time)"
+      "task": "Push playground to GH Pages and verify it works"
+    },
+    {
+      "id": "T149",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Hash comprehensions: {k: v*2 for k, v in hash}",
+      "task": null
+    },
+    {
+      "id": "T150",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T151",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Daily log + memory update"
+    },
+    {
+      "id": "T152",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "FINAL: boundary push (check time)"
     }
   ],
   "updated_at": "2026-03-26T14:02:05.404Z",
@@ -1987,6 +2036,30 @@
     {
       "time": "2026-03-26T17:59:12.784Z",
       "msg": "PLAN T140 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-03-26T18:07:10.400Z",
+      "msg": "Added T147 (BUILD) after end: Update playground examples to showcase modules, enums, comprehensions, selective imports. Make it impressive."
+    },
+    {
+      "time": "2026-03-26T18:07:10.511Z",
+      "msg": "Added T148 (BUILD) after end: Push playground to GH Pages and verify it works"
+    },
+    {
+      "time": "2026-03-26T18:07:10.623Z",
+      "msg": "Added T149 (PLAN) after end: Hash comprehensions: {k: v*2 for k, v in hash}"
+    },
+    {
+      "time": "2026-03-26T18:07:10.734Z",
+      "msg": "Added T150 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-03-26T18:07:10.848Z",
+      "msg": "Added T151 (MAINTAIN) after end: Daily log + memory update"
+    },
+    {
+      "time": "2026-03-26T18:07:10.958Z",
+      "msg": "Added T152 (MAINTAIN) after end: FINAL: boundary push (check time)"
     }
   ]
 }
