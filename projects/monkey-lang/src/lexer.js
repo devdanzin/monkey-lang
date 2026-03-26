@@ -26,6 +26,7 @@ export const TokenType = {
   OPTIONAL_CHAIN: '?.',
   DOT: '.',
   ARROW: '=>',
+  THIN_ARROW: '->',
   SPREAD: '...',
   PIPE: '|>',
   EQ: '==',
@@ -239,7 +240,10 @@ export class Lexer {
         }
         break;
       case '-':
-        if (this.peekChar() === '=') {
+        if (this.peekChar() === '>') {
+          this.readChar();
+          tok = new Token(TokenType.THIN_ARROW, '->');
+        } else if (this.peekChar() === '=') {
           this.readChar();
           tok = new Token(TokenType.MINUS_ASSIGN, '-=');
         } else if (this.peekChar() === '-') {

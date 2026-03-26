@@ -132,9 +132,18 @@ export class FunctionLiteral {
     this.parameters = parameters; // Identifier[]
     this.body = body;             // BlockStatement
     this.restParam = null;        // Identifier (for ...rest)
+    this.paramTypes = null;       // string[] | null (type annotations: 'int', 'bool', 'string', etc.)
+    this.returnType = null;       // string | null (return type annotation)
   }
   tokenLiteral() { return this.token.literal; }
-  toString() { return `fn(${this.parameters.join(', ')}) ${this.body}`; }
+  toString() {
+    const params = this.parameters.map((p, i) => {
+      const type = this.paramTypes && this.paramTypes[i] ? `: ${this.paramTypes[i]}` : '';
+      return `${p}${type}`;
+    });
+    const ret = this.returnType ? ` -> ${this.returnType}` : '';
+    return `fn(${params.join(', ')})${ret} ${this.body}`;
+  }
 }
 
 export class CallExpression {

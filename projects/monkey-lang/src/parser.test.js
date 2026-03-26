@@ -280,3 +280,62 @@ describe('Parser Edge Cases', () => {
     assert.ok(prog.statements.length > 0);
   });
 });
+
+describe('Type Annotations', () => {
+  it('parses single typed parameter', () => {
+    const prog = parse('fn(x: int) { x }');
+    const fn = prog.statements[0].expression;
+    assert.equal(fn.parameters.length, 1);
+    assert.deepEqual(fn.paramTypes, ['int']);
+    assert.equal(fn.returnType, null);
+  });
+
+  it('parses multiple typed parameters', () => {
+    const prog = parse('fn(x: int, y: string) { x }');
+    const fn = prog.statements[0].expression;
+    assert.equal(fn.parameters.length, 2);
+    assert.deepEqual(fn.paramTypes, ['int', 'string']);
+  });
+
+  it('parses return type annotation', () => {
+    const prog = parse('fn(x: int) -> int { x }');
+    const fn = prog.statements[0].expression;
+    assert.deepEqual(fn.paramTypes, ['int']);
+    assert.equal(fn.returnType, 'int');
+  });
+
+  it('parses mixed typed and untyped params', () => {
+    const prog = parse('fn(x: int, y) { x + y }');
+    const fn = prog.statements[0].expression;
+    assert.deepEqual(fn.paramTypes, ['int', null]);
+  });
+
+  it('works with default values', () => {
+    const prog = parse('fn(x: int = 5) { x }');
+    const fn = prog.statements[0].expression;
+    assert.deepEqual(fn.paramTypes, ['int']);
+    assert.ok(fn.defaults[0] !== null);
+  });
+
+  it('untyped function has null paramTypes', () => {
+    const prog = parse('fn(x, y) { x + y }');
+    const fn = prog.statements[0].expression;
+    assert.equal(fn.paramTypes, null);
+  });
+
+  it('parses all type names', () => {
+    const prog = parse('fn(a: int, b: bool, c: string, d: array, e: hash, f: fn) -> null { a }');
+    const fn = prog.statements[0].expression;
+    assert.deepEqual(fn.paramTypes, ['int', 'bool', 'string', 'array', 'hash', 'fn']);
+    assert.equal(fn.returnType, 'null');
+  });
+
+  it('toString includes type annotations', () => {
+    const prog = parse('fn(x: int, y: string) -> bool { x }');
+    const fn = prog.statements[0].expression;
+    const s = fn.toString();
+    assert.ok(s.includes('x: int'));
+    assert.ok(s.includes('y: string'));
+    assert.ok(s.includes('-> bool'));
+  });
+});
