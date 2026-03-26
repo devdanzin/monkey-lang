@@ -2527,3 +2527,25 @@ describe('Range Literals', () => {
     assert.equal(r.elements.length, 0);
   });
 });
+
+describe('Dot Access on Strings and Arrays', () => {
+  it('string.length', () => {
+    testIntegerObject(compileAndRun('"hello".length'), 5);
+  });
+
+  it('array.length', () => {
+    testIntegerObject(compileAndRun('[1, 2, 3, 4].length'), 4);
+  });
+
+  it('empty string length', () => {
+    testIntegerObject(compileAndRun('"".length'), 0);
+  });
+
+  it('variable string length', () => {
+    testIntegerObject(compileAndRun('let s = "world"; s.length'), 5);
+  });
+
+  it('range literal length', () => {
+    testIntegerObject(compileAndRun('(0..10).length'), 10);
+  });
+});

@@ -911,6 +911,18 @@ export class VM {
             } else {
               this.push(new MonkeyString(left3.value[i]));
             }
+          } else if (left3 instanceof MonkeyString && index instanceof MonkeyString) {
+            // String dot access: s.length
+            switch (index.value) {
+              case 'length': this.push(new MonkeyInteger(left3.value.length)); break;
+              default: this.push(NULL); break;
+            }
+          } else if (left3 instanceof MonkeyArray && index instanceof MonkeyString) {
+            // Array dot access: a.length
+            switch (index.value) {
+              case 'length': this.push(new MonkeyInteger(left3.elements.length)); break;
+              default: this.push(NULL); break;
+            }
           } else {
             throw new Error(`index operator not supported: ${left3.type()}`);
           }

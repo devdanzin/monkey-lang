@@ -745,6 +745,19 @@ function evalIndexExpression(left, index) {
     if (idx < 0 || idx >= left.value.length) return NULL;
     return new MonkeyString(left.value[idx]);
   }
+  if (left.type() === OBJ.STRING && index instanceof MonkeyString) {
+    // String dot access
+    switch (index.value) {
+      case 'length': return new MonkeyInteger(left.value.length);
+      default: return NULL;
+    }
+  }
+  if (left.type() === OBJ.ARRAY && index instanceof MonkeyString) {
+    switch (index.value) {
+      case 'length': return new MonkeyInteger(left.elements.length);
+      default: return NULL;
+    }
+  }
   return newError(`index operator not supported: ${left.type()}`);
 }
 
