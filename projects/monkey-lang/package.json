@@ -1,7 +1,7 @@
 {
-  "name": "monkey-lang",
-  "version": "0.1.0",
-  "description": "Monkey language interpreter in JavaScript",
+  "name": "monkey-lang-interpreter",
+  "version": "0.2.0",
+  "description": "Monkey programming language — bytecode VM, tracing JIT, type system, modules, pattern matching, 1115 tests",
   "main": "src/index.js",
   "bin": { "monkey": "./src/repl.js" },
   "scripts": {
@@ -12,5 +12,11 @@
   },
   "type": "module",
   "author": "Henry",
-  "license": "MIT"
+  "license": "MIT",
+  "keywords": ["monkey", "interpreter", "compiler", "jit", "language", "programming-language", "bytecode", "vm"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/henry-the-frog/monkey-lang"
+  },
+  "files": ["src/", "examples/", "README.md", "LICENSE"]
 }

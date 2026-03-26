@@ -2,9 +2,10 @@
 
 // Monkey Language REPL with JIT Diagnostics
 // Supports tree-walking interpreter, bytecode VM, and tracing JIT compiler.
-// Usage: monkey [--engine=vm|eval|jit] or toggle at runtime with :engine
+// Usage: monkey [--engine=vm|eval|jit] [--version] [file.monkey]
 
 import * as readline from 'node:readline';
+import * as fs from 'node:fs';
 import { Lexer } from './lexer.js';
 import { Parser } from './parser.js';
 import { monkeyEval } from './evaluator.js';
@@ -13,6 +14,57 @@ import { VM } from './vm.js';
 import { IR } from './jit.js';
 import { Environment, NULL } from './object.js';
 import { STDLIB_SOURCE } from './stdlib.js';
+
+const VERSION = '0.2.0';
+
+// Handle --version flag
+if (process.argv.includes('--version') || process.argv.includes('-v')) {
+  console.log(`Monkey Language v${VERSION}`);
+  console.log(`1115 tests | 6 modules | Bytecode VM + Tracing JIT`);
+  process.exit(0);
+}
+
+// Handle --help flag
+if (process.argv.includes('--help') || process.argv.includes('-h')) {
+  console.log(`Monkey Language v${VERSION}`);
+  console.log(`\nUsage: monkey [options] [file.monkey]`);
+  console.log(`\nOptions:`);
+  console.log(`  --engine=vm|eval|jit  Select execution engine (default: jit)`);
+  console.log(`  --version, -v         Show version`);
+  console.log(`  --help, -h            Show this help`);
+  console.log(`\nREPL Commands:`);
+  console.log(`  :engine <name>        Switch engine at runtime`);
+  console.log(`  :jit                  Show JIT statistics`);
+  console.log(`  :quit                 Exit`);
+  console.log(`\nModules: math, string, algorithms, array, json, functional`);
+  console.log(`Website: https://henry-the-frog.github.io/playground/`);
+  process.exit(0);
+}
+
+// Handle file execution: monkey file.monkey
+const fileArg = process.argv.find(a => a.endsWith('.monkey'));
+if (fileArg) {
+  try {
+    const source = fs.readFileSync(fileArg, 'utf8');
+    const l = new Lexer(STDLIB_SOURCE + '\n' + source);
+    const p = new Parser(l);
+    const prog = p.parseProgram();
+    if (p.errors.length > 0) {
+      console.error('Parse errors:');
+      p.errors.forEach(e => console.error('  ' + e));
+      process.exit(1);
+    }
+    const c = new Compiler();
+    const err = c.compile(prog);
+    if (err) { console.error('Compile error:', err); process.exit(1); }
+    const vm = new VM(c.bytecode());
+    vm.run();
+  } catch (e) {
+    console.error(e.message);
+    process.exit(1);
+  }
+  process.exit(0);
+}
 
 const PROMPT = '>> ';
 const MONKEY = `            __,__
