@@ -1654,15 +1654,19 @@
     {
       "id": "T160",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Update README with match guards + modules list",
-      "started": "2026-03-26T18:20:40.598Z"
+      "started": "2026-03-26T18:20:40.598Z",
+      "completed": "2026-03-26T18:21:55.353Z",
+      "duration_ms": 60000,
+      "summary": "README: match guards section, array module, updated test count."
     },
     {
       "id": "T161",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Rebuild playground with match guards"
+      "status": "in-progress",
+      "task": "Rebuild playground with match guards",
+      "started": "2026-03-26T18:22:01.718Z"
     },
     {
       "id": "T162",

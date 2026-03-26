@@ -1729,10 +1729,16 @@ var Parser = class _Parser {
       } else {
         pattern = this.parseExpression(Precedence.LOWEST);
       }
+      let guard = null;
+      if (this.peekToken.type === TokenType.IDENT && this.peekToken.literal === "when") {
+        this.nextToken();
+        this.nextToken();
+        guard = this.parseExpression(Precedence.LOWEST);
+      }
       if (!this.expectPeek(TokenType.ARROW)) return null;
       this.nextToken();
       const value = this.parseExpression(Precedence.LOWEST);
-      arms.push({ pattern, value });
+      arms.push({ pattern, value, guard });
       if (this.peekTokenIs(TokenType.COMMA)) this.nextToken();
     }
     if (!this.expectPeek(TokenType.RBRACE)) return null;
@@ -2560,11 +2566,66 @@ var algorithmsModule = () => buildModule({
     return mkInt(b);
   })
 });
+var arrayModule = () => buildModule({
+  zip: new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return new MonkeyNull();
+    const a = args[0].elements, b = args[1].elements;
+    const len = Math.min(a.length, b.length);
+    const result = [];
+    for (let i = 0; i < len; i++) {
+      result.push(new MonkeyArray([a[i], b[i]]));
+    }
+    return new MonkeyArray(result);
+  }),
+  enumerate: new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyNull();
+    return new MonkeyArray(args[0].elements.map((el, i) => new MonkeyArray([mkInt(i), el])));
+  }),
+  flatten: new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyNull();
+    const result = [];
+    for (const el of args[0].elements) {
+      if (el instanceof MonkeyArray) result.push(...el.elements);
+      else result.push(el);
+    }
+    return new MonkeyArray(result);
+  }),
+  unique: new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyNull();
+    const seen = /* @__PURE__ */ new Set();
+    const result = [];
+    for (const el of args[0].elements) {
+      const key = el.inspect();
+      if (!seen.has(key)) {
+        seen.add(key);
+        result.push(el);
+      }
+    }
+    return new MonkeyArray(result);
+  }),
+  reversed: new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyNull();
+    return new MonkeyArray([...args[0].elements].reverse());
+  }),
+  sum: new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyNull();
+    let total = 0;
+    for (const el of args[0].elements) total += el.value;
+    return mkInt(total);
+  }),
+  product: new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyNull();
+    let total = 1;
+    for (const el of args[0].elements) total *= el.value;
+    return mkInt(total);
+  })
+});
 var MODULE_REGISTRY = {
   math: mathModuleEnhanced,
   string: stringModuleEnhanced,
   functional: functionalModule,
-  algorithms: algorithmsModule
+  algorithms: algorithmsModule,
+  array: arrayModule
 };
 function getModule(name) {
   const factory = MODULE_REGISTRY[name];
@@ -3394,6 +3455,17 @@ var Compiler = class _Compiler {
     for (let i = 0; i < node.arms.length; i++) {
       const arm = node.arms[i];
       if (arm.pattern === null) {
+        if (arm.guard) {
+          err = this.compile(arm.guard);
+          if (err) return err;
+          const guardJump = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+          err = this.compile(arm.value);
+          if (err) return err;
+          endJumps.push(this.emit(Opcodes.OpJump, 9999));
+          this.changeOperand(guardJump, this.currentInstructions().length);
+          this.resetPeepholeState();
+          continue;
+        }
         err = this.compile(arm.value);
         if (err) return err;
         break;
@@ -3411,10 +3483,35 @@ var Compiler = class _Compiler {
         }
         const bindSym = this.symbolTable.define(arm.pattern.binding.value);
         this.emit(bindSym.scope === "GLOBAL" ? Opcodes.OpSetGlobal : Opcodes.OpSetLocal, bindSym.index);
+        if (arm.guard) {
+          err = this.compile(arm.guard);
+          if (err) return err;
+          const guardJump = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+          err = this.compile(arm.value);
+          if (err) return err;
+          endJumps.push(this.emit(Opcodes.OpJump, 9999));
+          this.changeOperand(guardJump, this.currentInstructions().length);
+          this.resetPeepholeState();
+          continue;
+        }
         err = this.compile(arm.value);
         if (err) return err;
         endJumps.push(this.emit(Opcodes.OpJump, 9999));
         this.changeOperand(jumpNotTruthyPos2, this.currentInstructions().length);
+        this.resetPeepholeState();
+        continue;
+      }
+      if (arm.guard && arm.pattern instanceof Identifier) {
+        this.loadSymbol(subjectSym);
+        const bindSym = this.symbolTable.define(arm.pattern.value);
+        this.emit(bindSym.scope === "GLOBAL" ? Opcodes.OpSetGlobal : Opcodes.OpSetLocal, bindSym.index);
+        err = this.compile(arm.guard);
+        if (err) return err;
+        const guardJump = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+        err = this.compile(arm.value);
+        if (err) return err;
+        endJumps.push(this.emit(Opcodes.OpJump, 9999));
+        this.changeOperand(guardJump, this.currentInstructions().length);
         this.resetPeepholeState();
         continue;
       }
@@ -3423,9 +3520,20 @@ var Compiler = class _Compiler {
       if (err) return err;
       this.emit(Opcodes.OpEqual);
       const jumpNotTruthyPos = this.emit(Opcodes.OpJumpNotTruthy, 9999);
-      err = this.compile(arm.value);
-      if (err) return err;
-      endJumps.push(this.emit(Opcodes.OpJump, 9999));
+      if (arm.guard) {
+        err = this.compile(arm.guard);
+        if (err) return err;
+        const guardJump = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+        err = this.compile(arm.value);
+        if (err) return err;
+        endJumps.push(this.emit(Opcodes.OpJump, 9999));
+        this.changeOperand(guardJump, this.currentInstructions().length);
+        this.resetPeepholeState();
+      } else {
+        err = this.compile(arm.value);
+        if (err) return err;
+        endJumps.push(this.emit(Opcodes.OpJump, 9999));
+      }
       this.changeOperand(jumpNotTruthyPos, this.currentInstructions().length);
       this.resetPeepholeState();
     }
@@ -10050,6 +10158,10 @@ function monkeyEval(node, env) {
     if (isError(subject)) return subject;
     for (const arm of node.arms) {
       if (arm.pattern === null) {
+        if (arm.guard) {
+          const guardVal = monkeyEval(arm.guard, env);
+          if (!isTruthy(guardVal)) continue;
+        }
         return monkeyEval(arm.value, env);
       }
       if (arm.pattern instanceof TypePattern) {
@@ -10088,6 +10200,19 @@ function monkeyEval(node, env) {
           const innerEnv = new Environment(env);
           const bindValue = typeName === "Ok" || typeName === "Err" ? subject.value : subject;
           innerEnv.set(arm.pattern.binding.value, bindValue);
+          if (arm.guard) {
+            const guardVal = monkeyEval(arm.guard, innerEnv);
+            if (!isTruthy(guardVal)) continue;
+          }
+          return monkeyEval(arm.value, innerEnv);
+        }
+        continue;
+      }
+      if (arm.guard && arm.pattern instanceof Identifier) {
+        const innerEnv = new Environment(env);
+        innerEnv.set(arm.pattern.value, subject);
+        const guardVal = monkeyEval(arm.guard, innerEnv);
+        if (isTruthy(guardVal)) {
           return monkeyEval(arm.value, innerEnv);
         }
         continue;
@@ -10095,6 +10220,10 @@ function monkeyEval(node, env) {
       const pattern = monkeyEval(arm.pattern, env);
       if (isError(pattern)) return pattern;
       if (subject.inspect() === pattern.inspect()) {
+        if (arm.guard) {
+          const guardVal = monkeyEval(arm.guard, env);
+          if (!isTruthy(guardVal)) continue;
+        }
         return monkeyEval(arm.value, env);
       }
     }
