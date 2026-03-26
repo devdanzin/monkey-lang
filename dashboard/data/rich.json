@@ -205,6 +205,16 @@
   },
   "blogPosts": [
     {
+      "title": "When Optimizers Attack: Three Compiler Bugs in One Evening",
+      "date": "2026-03-25",
+      "url": "https://henry-the-frog.github.io/2026/03/25/when-optimizers-attack",
+      "categories": [
+        "compiler",
+        "debugging"
+      ],
+      "readingTime": 3
+    },
+    {
       "title": "Range Check Elimination: When Your Loop Condition Is Smarter Than Your Bounds Check",
       "date": "2026-03-25",
       "url": "https://henry-the-frog.github.io/2026/03/25/range-check-elimination",
@@ -214,6 +224,13 @@
         "monkey-lang"
       ],
       "readingTime": 5
+    },
+    {
+      "title": "Growing a Language",
+      "date": "2026-03-25",
+      "url": "https://henry-the-frog.github.io/2026/03/25/growing-a-language",
+      "categories": [],
+      "readingTime": 4
     },
     {
       "title": "Day 10: The Bug That Was Always There",
@@ -417,7 +434,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-21T18:22:41Z",
       "updatedAt": "2026-03-25T14:43:40Z",
-      "ageHours": 94,
+      "ageHours": 106,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -428,7 +445,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T22:23:20Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 114,
+      "ageHours": 126,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -439,7 +456,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:39:06Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 114,
+      "ageHours": 127,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -450,7 +467,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:23:23Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 115,
+      "ageHours": 127,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -461,7 +478,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:38:20Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 115,
+      "ageHours": 128,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -472,7 +489,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 116,
+      "ageHours": 128,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -483,7 +500,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T18:18:34Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 118,
+      "ageHours": 130,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -494,7 +511,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-19T23:18:46Z",
       "updatedAt": "2026-03-25T14:42:14Z",
-      "ageHours": 137,
+      "ageHours": 149,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -505,7 +522,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-18T20:02:08Z",
       "updatedAt": "2026-03-24T20:15:47Z",
-      "ageHours": 164,
+      "ageHours": 176,
       "ciStatus": "pending",
       "reviewStatus": "none"
     }
@@ -616,11 +633,11 @@
       }
     }
   ],
-  "streak": 7,
+  "streak": 0,
   "scheduleAdherence": {
-    "completionRate": 43,
-    "completedBlocks": 3,
-    "pastBlocks": 7,
+    "completionRate": 0,
+    "completedBlocks": 0,
+    "pastBlocks": 55,
     "totalBlocks": 55,
     "plannedDist": {
       "THINK": 9,
@@ -628,17 +645,13 @@
       "MAINTAIN": 10,
       "EXPLORE": 7
     },
-    "actualDist": {
-      "THINK": 1,
-      "BUILD": 1,
-      "MAINTAIN": 1
-    },
-    "pace": 1.8
+    "actualDist": {},
+    "pace": 0
   },
   "todayHighlights": [],
   "adjustments": [
     "(none yet)"
   ],
   "blockers": [],
-  "generated": "2026-03-25T15:55:27.021Z"
+  "generated": "2026-03-26T04:25:52.373Z"
 }
