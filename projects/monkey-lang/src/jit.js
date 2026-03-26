@@ -810,7 +810,14 @@ export class TraceCompiler {
         } else {
           const varName = this._varNames ? this._varNames.get(irRef) : null;
           if (varName && this._emittedVarIds && this._emittedVarIds.has(irRef)) {
-            localEntries.push(`${slot}: ${varName}`);
+            const irInst = this._currentIr[irRef];
+            if (irInst && this._isRawInt(irInst)) {
+              localEntries.push(`${slot}: __cachedInteger(${varName})`);
+            } else if (irInst && irInst.op === IR.UNBOX_STRING) {
+              localEntries.push(`${slot}: new __MonkeyString(${varName})`);
+            } else {
+              localEntries.push(`${slot}: ${varName}`);
+            }
           }
         }
       }
@@ -835,7 +842,15 @@ export class TraceCompiler {
           }        } else {
           const varName = this._varNames ? this._varNames.get(irRef) : null;
           if (varName && this._emittedVarIds && this._emittedVarIds.has(irRef)) {
-            globalEntries.push(`${idx}: ${varName}`);
+            // Check if the value is a raw JS type that needs boxing
+            const irInst = this._currentIr[irRef];
+            if (irInst && this._isRawInt(irInst)) {
+              globalEntries.push(`${idx}: __cachedInteger(${varName})`);
+            } else if (irInst && irInst.op === IR.UNBOX_STRING) {
+              globalEntries.push(`${idx}: new __MonkeyString(${varName})`);
+            } else {
+              globalEntries.push(`${idx}: ${varName}`);
+            }
           }
         }
       }

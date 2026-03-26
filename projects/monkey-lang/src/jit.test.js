@@ -1333,9 +1333,9 @@ describe('Real World JIT', () => {
     const vm = runJIT('let a = []; for (let i = 0; i < 100; i++) { a = push(a, i * i); } a[-1]');
     assert.equal(vm.lastPoppedStackElem().value, 9801);
   });
-  it('string length counting', { skip: 'JIT deopt crash in nested for-in' }, () => {
+  it('string length counting', () => {
     const vm = runJIT('let total = 0; let words = ["hello", "beautiful", "world", "of", "monkey"]; for (let i = 0; i < 20; i++) { for (w in words) { total += len(w); } } total');
-    assert.equal(vm.lastPoppedStackElem().value, 560);
+    assert.equal(vm.lastPoppedStackElem().value, 540);
   });
 });
 
