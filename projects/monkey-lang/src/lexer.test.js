@@ -212,10 +212,10 @@ describe('Lexer Edge Cases', () => {
   });
   it('handles consecutive operators', () => {
     const l = new Lexer('+-*/');
-    assert.equal(l.nextToken().type, 'PLUS');
-    assert.equal(l.nextToken().type, 'MINUS');
-    assert.equal(l.nextToken().type, 'ASTERISK');
-    assert.equal(l.nextToken().type, 'SLASH');
+    assert.equal(l.nextToken().type, '+');
+    assert.equal(l.nextToken().type, '-');
+    assert.equal(l.nextToken().type, '*');
+    assert.equal(l.nextToken().type, '/');
   });
   it('handles string with escaped quote', () => {
     const l = new Lexer('"say \\"hello\\""');
@@ -231,7 +231,7 @@ describe('Lexer Edge Cases', () => {
   it('handles mixed comments', () => {
     const l = new Lexer('1 /* block */ + // line\n 2');
     assert.equal(l.nextToken().type, 'INT');
-    assert.equal(l.nextToken().type, 'PLUS');
+    assert.equal(l.nextToken().type, '+');
     assert.equal(l.nextToken().type, 'INT');
   });
 });
