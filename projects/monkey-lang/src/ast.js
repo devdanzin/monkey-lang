@@ -175,6 +175,15 @@ export class OptionalChainExpression {
   toString() { return `(${this.left}?.[${this.index}])`; }
 }
 
+export class SpreadElement {
+  constructor(token, expression) {
+    this.token = token;       // ...
+    this.expression = expression;
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return `...${this.expression}`; }
+}
+
 export class HashLiteral {
   constructor(token, pairs) {
     this.token = token;

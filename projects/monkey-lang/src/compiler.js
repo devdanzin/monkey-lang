@@ -439,11 +439,50 @@ export class Compiler {
       if (!sym) return `undefined variable: ${node.value}`;
       this.loadSymbol(sym);
     } else if (node instanceof ast.ArrayLiteral) {
-      for (const el of node.elements) {
-        const err = this.compile(el);
-        if (err) return err;
+      const hasSpread = node.elements.some(el => el instanceof ast.SpreadElement);
+      if (!hasSpread) {
+        for (const el of node.elements) {
+          const err = this.compile(el);
+          if (err) return err;
+        }
+        this.emit(Opcodes.OpArray, node.elements.length);
+      } else {
+        // Build array with spread: segment non-spreads into arrays, concat with spreads
+        // Strategy: build segments, concat them all
+        let segments = 0;
+        let currentSegmentSize = 0;
+        for (const el of node.elements) {
+          if (el instanceof ast.SpreadElement) {
+            // Flush current segment as array
+            if (currentSegmentSize > 0) {
+              this.emit(Opcodes.OpArray, currentSegmentSize);
+              segments++;
+              currentSegmentSize = 0;
+            }
+            // Compile spread expression (should produce an array)
+            const err = this.compile(el.expression);
+            if (err) return err;
+            segments++;
+          } else {
+            const err = this.compile(el);
+            if (err) return err;
+            currentSegmentSize++;
+          }
+        }
+        // Flush remaining segment
+        if (currentSegmentSize > 0) {
+          this.emit(Opcodes.OpArray, currentSegmentSize);
+          segments++;
+        }
+        if (segments === 0) {
+          this.emit(Opcodes.OpArray, 0);
+        } else {
+          // Concat all segments with OpAdd
+          for (let i = 1; i < segments; i++) {
+            this.emit(Opcodes.OpAdd);
+          }
+        }
       }
-      this.emit(Opcodes.OpArray, node.elements.length);
     } else if (node instanceof ast.HashLiteral) {
       // Sort keys for deterministic compilation
       const pairs = [...node.pairs.entries()];

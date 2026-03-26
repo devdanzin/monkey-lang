@@ -2295,3 +2295,45 @@ describe('Arrow Functions', () => {
     testStringObject(compileAndRun('match (2) { 0 => "zero", 1 => "one", _ => "other" }'), 'other');
   });
 });
+
+describe('Spread Operator', () => {
+  it('spread in array literal', () => {
+    const result = compileAndRun('let a = [2, 3]; [1, ...a, 4]');
+    assert.equal(result.elements.length, 4);
+  });
+  it('spread at start', () => {
+    const result = compileAndRun('let a = [1, 2]; [...a, 3]');
+    assert.equal(result.elements.length, 3);
+  });
+  it('spread at end', () => {
+    const result = compileAndRun('[0, ...[1, 2, 3]]');
+    assert.equal(result.elements.length, 4);
+  });
+  it('multiple spreads', () => {
+    const result = compileAndRun('let x = [1,2]; let y = [3,4]; [...x, ...y]');
+    assert.equal(result.elements.length, 4);
+  });
+  it('empty spread', () => {
+    const result = compileAndRun('[1, ...[], 2]');
+    assert.equal(result.elements.length, 2);
+  });
+  it('spread only', () => {
+    const result = compileAndRun('[...[1, 2, 3]]');
+    assert.equal(result.elements.length, 3);
+  });
+});
+
+describe('Array Concatenation', () => {
+  it('basic concat', () => {
+    const result = compileAndRun('[1,2] + [3,4]');
+    assert.equal(result.elements.length, 4);
+  });
+  it('chained concat', () => {
+    const result = compileAndRun('[1] + [2] + [3]');
+    assert.equal(result.elements.length, 3);
+  });
+  it('empty concat', () => {
+    const result = compileAndRun('[] + [1,2,3]');
+    assert.equal(result.elements.length, 3);
+  });
+});

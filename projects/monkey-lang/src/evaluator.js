@@ -301,9 +301,23 @@ export function monkeyEval(node, env) {
   }
 
   if (node instanceof AST.ArrayLiteral) {
-    const elements = evalExpressions(node.elements, env);
-    if (elements.length === 1 && isError(elements[0])) return elements[0];
-    return new MonkeyArray(elements);
+    const result = [];
+    for (const el of node.elements) {
+      if (el instanceof AST.SpreadElement) {
+        const arr = monkeyEval(el.expression, env);
+        if (isError(arr)) return arr;
+        if (arr instanceof MonkeyArray) {
+          result.push(...arr.elements);
+        } else {
+          return newError(`spread requires array, got ${arr.type()}`);
+        }
+      } else {
+        const val = monkeyEval(el, env);
+        if (isError(val)) return val;
+        result.push(val);
+      }
+    }
+    return new MonkeyArray(result);
   }
 
   if (node instanceof AST.IndexAssignExpression) {

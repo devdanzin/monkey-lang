@@ -26,6 +26,7 @@ export const TokenType = {
   OPTIONAL_CHAIN: '?.',
   DOT: '.',
   ARROW: '=>',
+  SPREAD: '...',
   PIPE: '|>',
   EQ: '==',
   NOT_EQ: '!=',
@@ -340,7 +341,13 @@ export class Lexer {
       case '`':
         return new Token(TokenType.TEMPLATE_STRING, this.readTemplateString());
       case '.':
-        tok = new Token(TokenType.DOT, '.');
+        if (this.peekChar() === '.' && this.input[this.readPosition + 1] === '.') {
+          this.readChar();
+          this.readChar();
+          tok = new Token(TokenType.SPREAD, '...');
+        } else {
+          tok = new Token(TokenType.DOT, '.');
+        }
         break;
       case null:
         return new Token(TokenType.EOF, '');

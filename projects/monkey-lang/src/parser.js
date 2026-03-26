@@ -793,13 +793,22 @@ export class Parser {
       return list;
     }
     this.nextToken();
-    list.push(this.parseExpression(Precedence.LOWEST));
+    list.push(this._parseExprOrSpread());
     while (this.peekTokenIs(TokenType.COMMA)) {
       this.nextToken();
       this.nextToken();
-      list.push(this.parseExpression(Precedence.LOWEST));
+      list.push(this._parseExprOrSpread());
     }
     if (!this.expectPeek(end)) return null;
     return list;
+  }
+
+  _parseExprOrSpread() {
+    if (this.curToken.type === TokenType.SPREAD) {
+      const token = this.curToken;
+      this.nextToken();
+      return new ast.SpreadElement(token, this.parseExpression(Precedence.PREFIX));
+    }
+    return this.parseExpression(Precedence.LOWEST);
   }
 }
