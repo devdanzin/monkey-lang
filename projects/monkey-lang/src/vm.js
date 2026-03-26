@@ -815,7 +815,37 @@ export class VM {
           const callee = this.stack[this.sp - 1 - numArgs];
 
           if (callee instanceof Closure) {
-            if (numArgs > callee.fn.numParameters) {
+            if (callee.fn.hasRestParam) {
+              // Rest parameter: collect extra args into array
+              const requiredParams = callee.fn.numParameters;
+              const closurePos = this.sp - 1 - numArgs; // where the closure sits
+              const bp = closurePos + 1; // locals start after closure
+              
+              if (numArgs < requiredParams) {
+                // Fill missing regular params with null
+                for (let i = numArgs; i < requiredParams; i++) {
+                  this.stack[bp + i] = NULL;
+                }
+                // Set rest param to empty array
+                this.stack[bp + requiredParams] = new MonkeyArray([]);
+                this.sp = bp + requiredParams + 1;
+              } else {
+                // Collect extra args into rest array (args after requiredParams)
+                const restElements = [];
+                for (let i = requiredParams; i < numArgs; i++) {
+                  restElements.push(this.stack[bp + i]);
+                }
+                // Place rest array after regular params
+                this.stack[bp + requiredParams] = new MonkeyArray(restElements);
+                this.sp = bp + requiredParams + 1;
+              }
+              
+              const callFrame = new Frame(callee, bp);
+              this.pushFrame(callFrame);
+              this.sp = callFrame.basePointer + callee.fn.numLocals;
+              frame = callFrame;
+              break; // rest param handled — skip normal call setup
+            } else if (numArgs > callee.fn.numParameters) {
               throw new Error(`wrong number of arguments: want=${callee.fn.numParameters}, got=${numArgs}`);
             }
             // Fill in missing arguments with NULL (for default parameters)

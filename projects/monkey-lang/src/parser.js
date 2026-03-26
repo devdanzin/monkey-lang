@@ -579,22 +579,30 @@ export class Parser {
   parseFunctionLiteral() {
     const token = this.curToken;
     if (!this.expectPeek(TokenType.LPAREN)) return null;
-    const { params: parameters, defaults } = this.parseFunctionParameters();
+    const { params: parameters, defaults, restParam } = this.parseFunctionParameters();
     if (!this.expectPeek(TokenType.LBRACE)) return null;
     const body = this.parseBlockStatement();
     const fn = new ast.FunctionLiteral(token, parameters, body);
     fn.defaults = defaults;
+    fn.restParam = restParam;
     return fn;
   }
 
   parseFunctionParameters() {
     const params = [];
     const defaults = [];
+    let restParam = null;
     if (this.peekTokenIs(TokenType.RPAREN)) {
       this.nextToken();
-      return { params, defaults };
+      return { params, defaults, restParam };
     }
     this.nextToken();
+    if (this.curToken.type === TokenType.SPREAD) {
+      this.nextToken(); // move to ident
+      restParam = new ast.Identifier(this.curToken, this.curToken.literal);
+      if (!this.expectPeek(TokenType.RPAREN)) return null;
+      return { params, defaults, restParam };
+    }
     params.push(new ast.Identifier(this.curToken, this.curToken.literal));
     if (this.peekTokenIs(TokenType.ASSIGN)) {
       this.nextToken(); // consume =
@@ -606,6 +614,11 @@ export class Parser {
     while (this.peekTokenIs(TokenType.COMMA)) {
       this.nextToken();
       this.nextToken();
+      if (this.curToken.type === TokenType.SPREAD) {
+        this.nextToken(); // move to ident
+        restParam = new ast.Identifier(this.curToken, this.curToken.literal);
+        break; // rest must be last
+      }
       params.push(new ast.Identifier(this.curToken, this.curToken.literal));
       if (this.peekTokenIs(TokenType.ASSIGN)) {
         this.nextToken();
@@ -616,7 +629,7 @@ export class Parser {
       }
     }
     if (!this.expectPeek(TokenType.RPAREN)) return null;
-    return { params, defaults };
+    return { params, defaults, restParam };
   }
 
   parseCallExpression(fn) {

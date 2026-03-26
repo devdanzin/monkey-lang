@@ -2337,3 +2337,24 @@ describe('Array Concatenation', () => {
     assert.equal(result.elements.length, 3);
   });
 });
+
+describe('Rest Parameters', () => {
+  it('rest only', () => {
+    const result = compileAndRun('let f = fn(...args) { args }; f(1, 2, 3)');
+    assert.equal(result.elements.length, 3);
+  });
+  it('rest with required params', () => {
+    testIntegerObject(compileAndRun('let f = fn(a, ...rest) { a }; f(10, 20, 30)'), 10);
+  });
+  it('rest array', () => {
+    const result = compileAndRun('let f = fn(a, ...rest) { rest }; f(10, 20, 30)');
+    assert.equal(result.elements.length, 2);
+  });
+  it('empty rest', () => {
+    testIntegerObject(compileAndRun('let f = fn(a, ...rest) { len(rest) }; f(1)'), 0);
+  });
+  it('no args rest', () => {
+    testIntegerObject(compileAndRun('let f = fn(...args) { len(args) }; f()'), 0);
+  });
+  // TODO: spread in function call arguments
+});

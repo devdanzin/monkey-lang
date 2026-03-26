@@ -131,6 +131,7 @@ export class FunctionLiteral {
     this.token = token;
     this.parameters = parameters; // Identifier[]
     this.body = body;             // BlockStatement
+    this.restParam = null;        // Identifier (for ...rest)
   }
   tokenLiteral() { return this.token.literal; }
   toString() { return `fn(${this.parameters.join(', ')}) ${this.body}`; }

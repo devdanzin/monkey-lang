@@ -2374,9 +2374,19 @@
     {
       "id": "T231",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement array concatenation with + operator",
-      "started": "2026-03-26T03:27:03.723Z"
+      "started": "2026-03-26T03:27:03.723Z",
+      "completed": "2026-03-26T03:31:13.348Z",
+      "duration_ms": 600000,
+      "summary": "Array concat (+) and spread operator (...) implemented. [1,...arr,5] works. 838 tests passing."
+    },
+    {
+      "id": "T232",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "Implement rest parameters: fn(a, ...rest) { len(rest) }",
+      "started": "2026-03-26T03:31:34.688Z"
     }
   ],
   "backlog": [],
@@ -3140,6 +3150,10 @@
     {
       "time": "2026-03-26T03:27:03.506Z",
       "msg": "Added T231 (BUILD) after end: Implement array concatenation with + operator"
+    },
+    {
+      "time": "2026-03-26T03:31:34.467Z",
+      "msg": "Added T232 (EXPLORE) after end: Implement rest parameters: fn(a, ...rest) { len(rest) }"
     }
   ],
   "updated_at": "2026-03-25T16:42:01.690Z"

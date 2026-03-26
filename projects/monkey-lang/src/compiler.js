@@ -9,10 +9,12 @@ import * as ast from './ast.js';
 // Compiled function object (different from interpreted MonkeyFunction)
 let _cfId = 0;
 export class CompiledFunction {
-  constructor(instructions, numLocals = 0, numParameters = 0) {
+  constructor(instructions, numLocals = 0, numParameters = 0, hasRestParam = false) {
     this.id = _cfId++;
     this.instructions = instructions;
     this.numLocals = numLocals;
+    this.numParameters = numParameters;
+    this.hasRestParam = hasRestParam;
     this.numParameters = numParameters;
   }
   type() { return 'COMPILED_FUNCTION'; }
@@ -891,6 +893,12 @@ export class Compiler {
       this.symbolTable.define(param.value);
     }
 
+    // Define rest param if present
+    const hasRestParam = !!node.restParam;
+    if (hasRestParam) {
+      this.symbolTable.define(node.restParam.value);
+    }
+
     // Emit default parameter fill-in code
     if (node.defaults) {
       for (let i = 0; i < node.defaults.length; i++) {
@@ -927,7 +935,7 @@ export class Compiler {
       this.loadSymbol(sym);
     }
 
-    const fn = new CompiledFunction(instructions, numLocals, node.parameters.length);
+    const fn = new CompiledFunction(instructions, numLocals, node.parameters.length, hasRestParam);
     const idx = this.addConstant(fn);
     this.emit(Opcodes.OpClosure, idx, freeSymbols.length);
 
