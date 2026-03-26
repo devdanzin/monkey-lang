@@ -17,7 +17,7 @@ Inspired by Thorsten Ball's *Writing An Interpreter In Go* and *Writing A Compil
 - **Stack VM** — executes bytecode with call frames, closures, and free variable capture
 - **Tracing JIT compiler** — records hot execution traces, optimizes IR, compiles to JavaScript via `new Function()`
 - **Optional type annotations** — `fn(x: int, y: int) -> int` with runtime validation and JIT guard elimination
-- **Result type** — `Ok(value)` / `Err(error)` with pattern matching and `unwrap_or`
+- **Result type** — `Ok(value)` / `Err(error)` with pattern matching, `unwrap_or`, and match guards
 - **Module system** — `import "math"`, `import "string"` with namespace access (`math.sqrt(16)`)
 - **Enum types** — `enum Color { Red, Green, Blue }` with dot access and equality
 - **Array comprehensions** — `[x * 2 for x in arr if x > 0]` with optional filter
@@ -150,6 +150,14 @@ let {name, age} = {"name": "Henry", "age": 11};
 
 // Type patterns in match
 match (x) { int(n) => n + 1, string(s) => len(s), _ => null }
+
+// Match guards with 'when'
+match (score) {
+  n when n >= 90 => "A",
+  n when n >= 80 => "B",
+  n when n >= 70 => "C",
+  _ => "F"
+}
 ```
 
 ### Null Safety
@@ -284,6 +292,7 @@ isPrime(97)                  // true
 - **math** — `abs`, `pow`, `sqrt`, `min`, `max`, `floor`, `ceil`, `sign`, `clamp`
 - **string** — `upper`, `lower`, `trim`, `split`, `join`, `repeat`, `contains`, `replace`, `charAt`, `padLeft`, `padRight`, `reverse`, `length`
 - **algorithms** — `gcd`, `lcm`, `isPrime`, `factorial`, `fibonacci`
+- **array** — `zip`, `enumerate`, `flatten`, `unique`, `reversed`, `sum`, `product`
 
 ## Tracing JIT Compiler
 
@@ -330,7 +339,7 @@ Aggregate: 26 benchmarks, ~9.2x overall (all correct)
 ## Tests
 
 ```bash
-node --test    # 1070 tests (1067 passing, 3 skipped JIT edge cases)
+node --test    # 1095 tests (1092 passing, 3 skipped JIT edge cases)
 ```
 
 ## Benchmarks
