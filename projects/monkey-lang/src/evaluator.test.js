@@ -681,3 +681,56 @@ describe('Selective Imports (evaluator)', () => {
     assert.equal(r.value, 'HELLO');
   });
 });
+
+describe('Algorithms Module (evaluator)', () => {
+  it('gcd', () => {
+    const r = testEval('import "algorithms" for gcd; gcd(12, 8)');
+    assert.equal(r.value, 4);
+  });
+
+  it('lcm', () => {
+    const r = testEval('import "algorithms" for lcm; lcm(4, 6)');
+    assert.equal(r.value, 12);
+  });
+
+  it('isPrime', () => {
+    const r = testEval('import "algorithms" for isPrime; isPrime(17)');
+    assert.equal(r.value, true);
+    const r2 = testEval('import "algorithms" for isPrime; isPrime(15)');
+    assert.equal(r2.value, false);
+  });
+
+  it('factorial', () => {
+    const r = testEval('import "algorithms" for factorial; factorial(10)');
+    assert.equal(r.value, 3628800);
+  });
+
+  it('fibonacci', () => {
+    const r = testEval('import "algorithms" for fibonacci; fibonacci(10)');
+    assert.equal(r.value, 55);
+  });
+});
+
+describe('Enhanced Math Module (evaluator)', () => {
+  it('sign', () => {
+    const r = testEval('import "math" for sign; sign(-5)');
+    assert.equal(r.value, -1);
+  });
+
+  it('clamp', () => {
+    const r = testEval('import "math" for clamp; clamp(15, 0, 10)');
+    assert.equal(r.value, 10);
+  });
+});
+
+describe('Enhanced String Module (evaluator)', () => {
+  it('padLeft', () => {
+    const r = testEval('import "string" for padLeft; padLeft("42", 5, "0")');
+    assert.equal(r.value, '00042');
+  });
+
+  it('reverse', () => {
+    const r = testEval('import "string" for reverse; reverse("hello")');
+    assert.equal(r.value, 'olleh');
+  });
+});

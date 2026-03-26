@@ -113,10 +113,106 @@ const functionalModule = () => buildModule({
 });
 
 // --- Module registry ---
+
+// Add to math module: sign, clamp
+const mathModuleEnhanced = () => {
+  const base = mathModule();
+  const extras = {
+    sign: new MonkeyBuiltin((...args) => {
+      if (args.length !== 1) return new MonkeyNull();
+      const v = args[0].value;
+      return mkInt(v > 0 ? 1 : v < 0 ? -1 : 0);
+    }),
+    clamp: new MonkeyBuiltin((...args) => {
+      if (args.length !== 3) return new MonkeyNull();
+      const [val, lo, hi] = args.map(a => a.value);
+      return mkInt(Math.max(lo, Math.min(hi, val)));
+    }),
+  };
+  for (const [name, value] of Object.entries(extras)) {
+    const key = new MonkeyString(name);
+    base.pairs.set(key.fastHashKey ? key.fastHashKey() : key.hashKey(), { key, value });
+  }
+  return base;
+};
+
+// Add to string module: padLeft, padRight, reverse
+const stringModuleEnhanced = () => {
+  const base = stringModule();
+  const extras = {
+    padLeft: new MonkeyBuiltin((...args) => {
+      if (args.length !== 3) return new MonkeyNull();
+      return mkStr(args[0].value.padStart(args[1].value, args[2].value));
+    }),
+    padRight: new MonkeyBuiltin((...args) => {
+      if (args.length !== 3) return new MonkeyNull();
+      return mkStr(args[0].value.padEnd(args[1].value, args[2].value));
+    }),
+    reverse: new MonkeyBuiltin((...args) => {
+      if (args.length !== 1) return new MonkeyNull();
+      return mkStr([...args[0].value].reverse().join(''));
+    }),
+    length: new MonkeyBuiltin((...args) => {
+      if (args.length !== 1) return new MonkeyNull();
+      return mkInt(args[0].value.length);
+    }),
+  };
+  for (const [name, value] of Object.entries(extras)) {
+    const key = new MonkeyString(name);
+    base.pairs.set(key.fastHashKey ? key.fastHashKey() : key.hashKey(), { key, value });
+  }
+  return base;
+};
+
+// --- algorithms module ---
+const algorithmsModule = () => buildModule({
+  gcd: new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return new MonkeyNull();
+    let [a, b] = args.map(x => Math.abs(x.value));
+    while (b) { [a, b] = [b, a % b]; }
+    return mkInt(a);
+  }),
+  lcm: new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return new MonkeyNull();
+    let [a, b] = args.map(x => Math.abs(x.value));
+    let [a0, b0] = [a, b];
+    while (b) { [a, b] = [b, a % b]; }
+    return mkInt((a0 / a) * b0);
+  }),
+  isPrime: new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyNull();
+    const n = args[0].value;
+    if (n < 2) return new MonkeyBoolean(false);
+    if (n < 4) return new MonkeyBoolean(true);
+    if (n % 2 === 0 || n % 3 === 0) return new MonkeyBoolean(false);
+    for (let i = 5; i * i <= n; i += 6) {
+      if (n % i === 0 || n % (i + 2) === 0) return new MonkeyBoolean(false);
+    }
+    return new MonkeyBoolean(true);
+  }),
+  factorial: new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyNull();
+    let n = args[0].value;
+    let result = 1;
+    for (let i = 2; i <= n; i++) result *= i;
+    return mkInt(result);
+  }),
+  fibonacci: new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyNull();
+    const n = args[0].value;
+    if (n <= 0) return mkInt(0);
+    if (n === 1) return mkInt(1);
+    let [a, b] = [0, 1];
+    for (let i = 2; i <= n; i++) [a, b] = [b, a + b];
+    return mkInt(b);
+  }),
+});
+
 const MODULE_REGISTRY = {
-  math: mathModule,
-  string: stringModule,
+  math: mathModuleEnhanced,
+  string: stringModuleEnhanced,
   functional: functionalModule,
+  algorithms: algorithmsModule,
 };
 
 export function getModule(name) {

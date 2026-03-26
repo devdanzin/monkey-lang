@@ -1191,22 +1191,41 @@
       "id": "T122",
       "mode": "BUILD",
       "task": "Parser: import for syntax, ImportStatement.bindings. Compiler: index each binding from module. Evaluator: same. Tests.",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T115",
-      "started": "2026-03-26T17:39:43.806Z"
+      "started": "2026-03-26T17:39:43.806Z",
+      "completed": "2026-03-26T17:41:43.436Z",
+      "duration_ms": 300000,
+      "summary": "Selective imports: import math for sqrt, PI. Parser comma-separated bindings, compiler indexes from module hash, evaluator too. 1029 tests."
     },
     {
       "id": "T116",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-03-26T17:41:49.572Z",
+      "completed": "2026-03-26T17:41:49.681Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled."
     },
     {
       "id": "T117",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "New modules: collections (Stack, Queue, Set), algorithms (sort, bsearch)",
-      "task": null
+      "task": null,
+      "started": "2026-03-26T17:41:54.530Z",
+      "completed": "2026-03-26T17:42:09.619Z",
+      "duration_ms": 30000,
+      "summary": "Plan: algorithms module + enhanced math/string. 1 BUILD."
+    },
+    {
+      "id": "T123",
+      "mode": "BUILD",
+      "task": "Add algorithms module (gcd, lcm, isPrime, factorial, fibonacci) + enhance math module (sign, clamp) + enhance string module (padLeft, padRight, reverse). Tests.",
+      "status": "in-progress",
+      "plan_ref": "T117",
+      "started": "2026-03-26T17:42:14.596Z"
     },
     {
       "id": "T118",
@@ -1626,6 +1645,10 @@
     {
       "time": "2026-03-26T17:39:36.509Z",
       "msg": "PLAN T115 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-03-26T17:42:05.405Z",
+      "msg": "PLAN T117 filled 1 BUILD tasks"
     }
   ]
 }

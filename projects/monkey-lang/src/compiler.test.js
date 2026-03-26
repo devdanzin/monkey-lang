@@ -2921,3 +2921,35 @@ describe('Selective Imports (compiler+VM)', () => {
     assert.equal(r.value, 'ABAB');
   });
 });
+
+describe('Algorithms Module (compiler+VM)', () => {
+  it('gcd', () => {
+    testIntegerObject(compileAndRun('import "algorithms" for gcd; gcd(48, 18)'), 6);
+  });
+
+  it('isPrime', () => {
+    const r = compileAndRun('import "algorithms" for isPrime; isPrime(97)');
+    assert.equal(r.value, true);
+  });
+
+  it('factorial', () => {
+    testIntegerObject(compileAndRun('import "algorithms" for factorial; factorial(5)'), 120);
+  });
+
+  it('fibonacci', () => {
+    testIntegerObject(compileAndRun('import "algorithms" for fibonacci; fibonacci(20)'), 6765);
+  });
+
+  it('math.sign', () => {
+    testIntegerObject(compileAndRun('import "math" for sign; sign(42)'), 1);
+  });
+
+  it('math.clamp', () => {
+    testIntegerObject(compileAndRun('import "math" for clamp; clamp(-5, 0, 100)'), 0);
+  });
+
+  it('string.reverse', () => {
+    const r = compileAndRun('import "string" for reverse; reverse("abcdef")');
+    assert.equal(r.value, 'fedcba');
+  });
+});
