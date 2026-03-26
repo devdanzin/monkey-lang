@@ -709,9 +709,126 @@
     {
       "id": "T69",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Update Show HN: 900+ tests, type system, range literals, method syntax",
-      "started": "2026-03-26T15:35:01.910Z"
+      "started": "2026-03-26T15:35:01.910Z",
+      "completed": "2026-03-26T15:35:53.862Z",
+      "duration_ms": 120000,
+      "summary": "Updated Show HN and README: 914 tests, 35 builtins with method syntax, range literals, hash destructuring, type patterns. New blog links."
+    },
+    {
+      "id": "T70",
+      "mode": "THINK",
+      "status": "done",
+      "task": "4.5 hours remain. 914 tests. Options: (a) error handling (try/catch or Result type), (b) update transpiler for new features, (c) modules/imports, (d) classes/structs, (e) new project",
+      "started": "2026-03-26T15:36:20.182Z",
+      "completed": "2026-03-26T15:37:00.195Z",
+      "duration_ms": 60000,
+      "summary": "Chose Result type (Ok/Err with pattern matching) + transpiler update + blog. Generated 8 tasks for remaining 4.5 hours."
+    },
+    {
+      "id": "T71",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Result type: Ok(value)/Err(error) as built-in constructors, pattern matching with match",
+      "task": null,
+      "started": "2026-03-26T15:37:06.863Z",
+      "completed": "2026-03-26T15:37:29.269Z",
+      "duration_ms": 60000,
+      "summary": "Plan: MonkeyResult object, Ok/Err builtins, type patterns in match, helper functions. 2 BUILD tasks."
+    },
+    {
+      "id": "T79",
+      "mode": "BUILD",
+      "task": "New MonkeyResult object + Ok/Err builtins + is_ok/is_err/unwrap helpers",
+      "status": "done",
+      "plan_ref": "T71",
+      "started": "2026-03-26T15:37:35.908Z",
+      "completed": "2026-03-26T15:39:28.571Z",
+      "duration_ms": 300000,
+      "summary": "MonkeyResult object + Ok/Err builtins + is_ok/is_err/unwrap helpers. All working, no regressions."
+    },
+    {
+      "id": "T80",
+      "mode": "BUILD",
+      "task": "Type patterns Ok(v)/Err(e) in match + OpTypeIs support + tests",
+      "status": "done",
+      "plan_ref": "T71",
+      "started": "2026-03-26T15:39:35.415Z",
+      "completed": "2026-03-26T15:44:03.193Z",
+      "duration_ms": 600000,
+      "summary": "Ok(v)/Err(e) patterns in match — extracts inner value via OpResultValue. Complete functional error handling: safe_div returns Ok/Err, match dispatches, pattern binds inner value. 923 tests."
+    },
+    {
+      "id": "T72",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "started": "2026-03-26T15:44:24.879Z",
+      "completed": "2026-03-26T15:44:24.990Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled."
+    },
+    {
+      "id": "T73",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "started": "2026-03-26T15:44:25.103Z",
+      "completed": "2026-03-26T15:44:25.213Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled."
+    },
+    {
+      "id": "T74",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Update Monkey-to-JS transpiler: handle type annotations, hash destructuring, ranges, method syntax, type patterns",
+      "task": null,
+      "started": "2026-03-26T15:44:37.782Z",
+      "completed": "2026-03-26T15:45:06.017Z",
+      "duration_ms": 30000,
+      "summary": "Plan: update transpiler for all new features. 1 BUILD task."
+    },
+    {
+      "id": "T81",
+      "mode": "BUILD",
+      "task": "Update transpiler: add DestructuringLet, HashDestructuringLet, RangeExpression, MatchExpression with TypePattern, Result support (Ok/Err as JS objects), type annotations (as JSDoc comments)",
+      "status": "done",
+      "plan_ref": "T74",
+      "started": "2026-03-26T15:45:13.727Z",
+      "completed": "2026-03-26T15:46:58.130Z",
+      "duration_ms": 300000,
+      "summary": "Transpiler updated: DestructuringLet → JS destructuring, HashDestructuringLet → JS object destructuring, RangeExpression → Array.from, MatchExpression with TypePattern → if-chain, Ok/Err → __isOk checks. Type annotations stripped (JS native)."
+    },
+    {
+      "id": "T75",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "started": "2026-03-26T15:47:03.890Z",
+      "completed": "2026-03-26T15:47:04.013Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled."
+    },
+    {
+      "id": "T76",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Housekeeping + benchmark + dashboard",
+      "started": "2026-03-26T15:47:11.824Z"
+    },
+    {
+      "id": "T77",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Blog: Functional Error Handling in a Dynamically-Typed Language"
+    },
+    {
+      "id": "T78",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Late session housekeeping"
     }
   ],
   "updated_at": "2026-03-26T14:02:05.404Z",
@@ -903,6 +1020,50 @@
     {
       "time": "2026-03-26T15:31:24.917Z",
       "msg": "Added T69 (BUILD) after end: Update Show HN: 900+ tests, type system, range literals, method syntax"
+    },
+    {
+      "time": "2026-03-26T15:36:06.289Z",
+      "msg": "Added T70 (THINK) after end: 4.5 hours remain. 914 tests. Options: (a) error handling (try/catch or Result type), (b) update transpiler for new features, (c) modules/imports, (d) classes/structs, (e) new project"
+    },
+    {
+      "time": "2026-03-26T15:36:40.052Z",
+      "msg": "Added T71 (PLAN) after end: Result type: Ok(value)/Err(error) as built-in constructors, pattern matching with match"
+    },
+    {
+      "time": "2026-03-26T15:36:40.164Z",
+      "msg": "Added T72 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-03-26T15:36:40.274Z",
+      "msg": "Added T73 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-03-26T15:36:40.383Z",
+      "msg": "Added T74 (PLAN) after end: Update Monkey-to-JS transpiler: handle type annotations, hash destructuring, ranges, method syntax, type patterns"
+    },
+    {
+      "time": "2026-03-26T15:36:40.495Z",
+      "msg": "Added T75 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-03-26T15:36:40.604Z",
+      "msg": "Added T76 (MAINTAIN) after end: Housekeeping + benchmark + dashboard"
+    },
+    {
+      "time": "2026-03-26T15:36:40.714Z",
+      "msg": "Added T77 (BUILD) after end: Blog: Functional Error Handling in a Dynamically-Typed Language"
+    },
+    {
+      "time": "2026-03-26T15:36:40.823Z",
+      "msg": "Added T78 (MAINTAIN) after end: Late session housekeeping"
+    },
+    {
+      "time": "2026-03-26T15:37:19.982Z",
+      "msg": "PLAN T71 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-03-26T15:44:59.344Z",
+      "msg": "PLAN T74 filled 1 BUILD tasks"
     }
   ]
 }
