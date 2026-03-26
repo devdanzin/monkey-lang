@@ -1337,6 +1337,35 @@ export class VM {
           break;
         }
 
+        case Opcodes.OpTypeCheck: {
+          const localIdx = ins[ip + 1];
+          const typeIdx = (ins[ip + 2] << 8) | ins[ip + 3];
+          frame.ip += 3;
+          const val = this.stack[frame.basePointer + localIdx];
+          const typeName = this.constants[typeIdx];
+          let ok = false;
+          switch (typeName) {
+            case 'int': ok = val instanceof MonkeyInteger; break;
+            case 'bool': ok = val instanceof MonkeyBoolean; break;
+            case 'string': ok = val instanceof MonkeyString; break;
+            case 'array': ok = val instanceof MonkeyArray; break;
+            case 'hash': ok = val instanceof MonkeyHash; break;
+            case 'fn': ok = val instanceof Closure || val instanceof MonkeyFunction || val instanceof MonkeyBuiltin; break;
+            case 'null': ok = val === NULL; break;
+            default: ok = true; // unknown type — skip check
+          }
+          if (!ok) {
+            const actualType = val === NULL ? 'null' : val.constructor.name.replace('Monkey', '').toLowerCase();
+            throw new Error(`Type error: expected ${typeName}, got ${actualType}`);
+          }
+          // JIT: type annotations mean we can skip guards for these params
+          if (recording()) {
+            // No-op in trace — the annotation is trusted
+            // The JIT task will read fn.paramTypes to skip guards
+          }
+          break;
+        }
+
         case Opcodes.OpCurrentClosure:
           this.push(frame.closure);
           if (recording()) {
@@ -1659,6 +1688,30 @@ export class VM {
             this.stack[this.sp++] = new MonkeyString(obj6.value.slice(s5, e5));
           } else {
             this.stack[this.sp++] = NULL;
+          }
+          break;
+        }
+
+        case Opcodes.OpTypeCheck: {
+          const localIdx7 = ins[ip + 1];
+          const typeIdx7 = (ins[ip + 2] << 8) | ins[ip + 3];
+          frame.ip += 3;
+          const val7 = this.stack[frame.basePointer + localIdx7];
+          const typeName7 = this.constants[typeIdx7];
+          let ok7 = false;
+          switch (typeName7) {
+            case 'int': ok7 = val7 instanceof MonkeyInteger; break;
+            case 'bool': ok7 = val7 instanceof MonkeyBoolean; break;
+            case 'string': ok7 = val7 instanceof MonkeyString; break;
+            case 'array': ok7 = val7 instanceof MonkeyArray; break;
+            case 'hash': ok7 = val7 instanceof MonkeyHash; break;
+            case 'fn': ok7 = val7 instanceof Closure || val7 instanceof MonkeyFunction || val7 instanceof MonkeyBuiltin; break;
+            case 'null': ok7 = val7 === NULL; break;
+            default: ok7 = true;
+          }
+          if (!ok7) {
+            const actualType7 = val7 === NULL ? 'null' : val7.constructor.name.replace('Monkey', '').toLowerCase();
+            throw new Error(`Type error: expected ${typeName7}, got ${actualType7}`);
           }
           break;
         }

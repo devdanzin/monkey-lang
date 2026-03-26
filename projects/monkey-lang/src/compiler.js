@@ -899,6 +899,17 @@ export class Compiler {
       this.symbolTable.define(node.restParam.value);
     }
 
+    // Emit type checks for annotated parameters
+    if (node.paramTypes) {
+      for (let i = 0; i < node.paramTypes.length; i++) {
+        if (node.paramTypes[i]) {
+          const sym = this.symbolTable.resolve(node.parameters[i].value);
+          const typeIdx = this.addConstant(node.paramTypes[i]); // store type name as string constant
+          this.emit(Opcodes.OpTypeCheck, sym.index, typeIdx);
+        }
+      }
+    }
+
     // Emit default parameter fill-in code
     if (node.defaults) {
       for (let i = 0; i < node.defaults.length; i++) {

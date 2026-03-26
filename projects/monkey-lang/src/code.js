@@ -91,6 +91,7 @@ export const Opcodes = {
   OpSetFree:        0x35, // Set free variable in closure
   OpSetIndex:       0x36, // Set element at index: arr[i] = val
   OpSlice:          0x37, // Slice: arr[start:end]
+  OpTypeCheck:      0x38, // Type check: local(1) typeConstIdx(2) — validates param type
 };
 
 // Opcode definitions: [name, ...operandWidths]
@@ -150,6 +151,7 @@ const definitions = {
   [Opcodes.OpSetFree]:          ['OpSetFree', 1],
   [Opcodes.OpSetIndex]:         ['OpSetIndex'],
   [Opcodes.OpSlice]:            ['OpSlice'],
+  [Opcodes.OpTypeCheck]:        ['OpTypeCheck', 1, 2], // localSlot (1), typeNameConstIdx (2)
 };
 
 /**

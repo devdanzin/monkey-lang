@@ -2404,3 +2404,45 @@ describe('Feature Interactions', () => {
     testIntegerObject(compileAndRun('let f = fn(x) { /* double */ x * 2 }; f(5)'), 10);
   });
 });
+
+describe('Type Annotations', () => {
+  it('typed function executes normally with correct types', () => {
+    testIntegerObject(compileAndRun('let add = fn(x: int, y: int) -> int { x + y }; add(3, 4)'), 7);
+  });
+
+  it('typed function rejects wrong type', () => {
+    assert.throws(
+      () => compileAndRun('let add = fn(x: int, y: int) { x + y }; add(3, "hello")'),
+      /Type error: expected int, got string/
+    );
+  });
+
+  it('mixed typed and untyped params work', () => {
+    testIntegerObject(compileAndRun('let f = fn(x: int, y) { x + y }; f(3, 4)'), 7);
+  });
+
+  it('string type annotation works', () => {
+    const result = compileAndRun('let greet = fn(name: string) -> string { "hello " + name }; greet("world")');
+    assert.equal(result.value, 'hello world');
+  });
+
+  it('bool type annotation works', () => {
+    const result = compileAndRun('let negate = fn(b: bool) -> bool { !b }; negate(true)');
+    assert.equal(result.value, false);
+  });
+
+  it('array type annotation works', () => {
+    testIntegerObject(compileAndRun('let first = fn(a: array) -> int { a[0] }; first([42, 2, 3])'), 42);
+  });
+
+  it('fn type annotation works', () => {
+    testIntegerObject(compileAndRun('let apply = fn(f: fn, x: int) -> int { f(x) }; apply(fn(x) { x * 2 }, 5)'), 10);
+  });
+
+  it('wrong bool type throws', () => {
+    assert.throws(
+      () => compileAndRun('let f = fn(b: bool) { b }; f(42)'),
+      /Type error: expected bool, got integer/
+    );
+  });
+});
