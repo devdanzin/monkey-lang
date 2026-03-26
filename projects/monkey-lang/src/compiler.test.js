@@ -2549,3 +2549,67 @@ describe('Dot Access on Strings and Arrays', () => {
     testIntegerObject(compileAndRun('(0..10).length'), 10);
   });
 });
+
+describe('Method Syntax', () => {
+  it('string.upper()', () => {
+    const r = compileAndRun('"hello".upper()');
+    assert.equal(r.value, 'HELLO');
+  });
+
+  it('string.lower()', () => {
+    const r = compileAndRun('"HELLO".lower()');
+    assert.equal(r.value, 'hello');
+  });
+
+  it('string.trim()', () => {
+    const r = compileAndRun('" hello ".trim()');
+    assert.equal(r.value, 'hello');
+  });
+
+  it('string.split(sep)', () => {
+    const r = compileAndRun('"a,b,c".split(",")');
+    assert.deepEqual(r.elements.map(e => e.value), ['a', 'b', 'c']);
+  });
+
+  it('string.indexOf(sub)', () => {
+    testIntegerObject(compileAndRun('"hello world".indexOf("world")'), 6);
+  });
+
+  it('string.startsWith(pre)', () => {
+    const r = compileAndRun('"hello".startsWith("hel")');
+    assert.equal(r.value, true);
+  });
+
+  it('string.endsWith(suf)', () => {
+    const r = compileAndRun('"hello".endsWith("llo")');
+    assert.equal(r.value, true);
+  });
+
+  it('array.push(x)', () => {
+    const r = compileAndRun('[1, 2].push(3)');
+    assert.deepEqual(r.elements.map(e => e.value), [1, 2, 3]);
+  });
+
+  it('array.first()', () => {
+    testIntegerObject(compileAndRun('[10, 20, 30].first()'), 10);
+  });
+
+  it('array.last()', () => {
+    testIntegerObject(compileAndRun('[10, 20, 30].last()'), 30);
+  });
+
+  it('array.rest()', () => {
+    const r = compileAndRun('[1, 2, 3].rest()');
+    assert.deepEqual(r.elements.map(e => e.value), [2, 3]);
+  });
+
+  it('chained methods', () => {
+    const r = compileAndRun('" Hello World ".trim().upper()');
+    assert.equal(r.value, 'HELLO WORLD');
+  });
+
+  it('method on variable', () => {
+    const r = compileAndRun('let s = "hello"; s.upper()');
+    assert.equal(r.value, 'HELLO');
+  });
+});

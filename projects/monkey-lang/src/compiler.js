@@ -552,14 +552,43 @@ export class Compiler {
     } else if (node instanceof ast.FunctionLiteral) {
       return this.compileFunctionLiteral(node);
     } else if (node instanceof ast.CallExpression) {
-      const err = this.compile(node.function);
-      if (err) return err;
-      for (const arg of node.arguments) {
-        const err2 = this.compile(arg);
-        if (err2) return err2;
+      // Check for method call desugaring: expr.method(args) → method(expr, args)
+      if (node.function instanceof ast.IndexExpression && 
+          node.function.index instanceof ast.StringLiteral) {
+        const methodName = node.function.index.value;
+        const builtinIdx = BUILTINS.indexOf(methodName);
+        if (builtinIdx !== -1) {
+          // Desugar: receiver.method(args) → builtin_method(receiver, args)
+          this.emit(Opcodes.OpGetBuiltin, builtinIdx);
+          const err = this.compile(node.function.left);
+          if (err) return err;
+          for (const arg of node.arguments) {
+            const err2 = this.compile(arg);
+            if (err2) return err2;
+          }
+          this.emit(Opcodes.OpCall, node.arguments.length + 1); // +1 for receiver
+          this.resetIntStack();
+        } else {
+          // Not a known builtin — compile normally
+          const err = this.compile(node.function);
+          if (err) return err;
+          for (const arg of node.arguments) {
+            const err2 = this.compile(arg);
+            if (err2) return err2;
+          }
+          this.emit(Opcodes.OpCall, node.arguments.length);
+          this.resetIntStack();
+        }
+      } else {
+        const err = this.compile(node.function);
+        if (err) return err;
+        for (const arg of node.arguments) {
+          const err2 = this.compile(arg);
+          if (err2) return err2;
+        }
+        this.emit(Opcodes.OpCall, node.arguments.length);
+        this.resetIntStack(); // Return value type is unknown
       }
-      this.emit(Opcodes.OpCall, node.arguments.length);
-      this.resetIntStack(); // Return value type is unknown
     }
 
     return null;
