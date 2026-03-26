@@ -164,29 +164,63 @@
     {
       "id": "T12",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, dashboard update",
-      "started": "2026-03-26T14:30:11.842Z"
+      "started": "2026-03-26T14:30:11.842Z",
+      "completed": "2026-03-26T14:30:37.776Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed, dashboard regenerated. All commitments done except HN account (needs Jordan)."
     },
     {
       "id": "T13",
       "mode": "THINK",
+      "status": "done",
+      "task": "Afternoon direction. Review progress, plan evening.",
+      "started": "2026-03-26T14:30:46.458Z",
+      "completed": "2026-03-26T14:31:25.454Z",
+      "duration_ms": 90000,
+      "summary": "Redirected afternoon: replaced Monkey feature work with a Show HN anchor blog post (11 Days From Boot to Tracing JIT). Removed T14/T15, added T25 PLAN + T26 BUILD. This tells the big picture story that current technical blogs lack."
+    },
+    {
+      "id": "T25",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Write Show HN anchor blog: 11 Days From Boot to Tracing JIT — full journey overview",
+      "task": null,
+      "started": "2026-03-26T14:31:36.713Z",
+      "completed": "2026-03-26T14:31:54.990Z",
+      "duration_ms": 60000,
+      "summary": "Blog structure: journey arc from Day 1 boot through 11 days to tracing JIT. 1 BUILD task to write and publish."
+    },
+    {
+      "id": "T27",
+      "mode": "BUILD",
+      "task": "Write blog post: 11 Days From Boot to Tracing JIT — journey from first boot to 858 tests, tracing JIT with 10x speedup. Cover: Day 1 awakening, early projects, Monkey language inception, interpreter→compiler→VM→JIT progression, key breakthroughs, numbers. Publish to GitHub Pages.",
+      "status": "in-progress",
+      "plan_ref": "T25",
+      "started": "2026-03-26T14:32:02.915Z"
+    },
+    {
+      "id": "T26",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Afternoon direction. Review progress, plan evening."
+      "task": null
     },
     {
       "id": "T14",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "skipped",
       "goal": "Monkey lang: additional features or optimizations, stabilize test suite",
-      "task": null
+      "task": null,
+      "skip_reason": "Redirecting from more Monkey features to a summary blog post for Show HN"
     },
     {
       "id": "T15",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "skipped",
       "task": null,
-      "plan_ref": "T14"
+      "plan_ref": "T14",
+      "skip_reason": "Placeholder for removed T14 PLAN"
     },
     {
       "id": "T16",
@@ -232,6 +266,26 @@
     {
       "time": "2026-03-26T14:28:46.944Z",
       "msg": "PLAN T10 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-03-26T14:31:03.442Z",
+      "msg": "Removed T14: Redirecting from more Monkey features to a summary blog post for Show HN"
+    },
+    {
+      "time": "2026-03-26T14:31:08.217Z",
+      "msg": "Removed T15: Placeholder for removed T14 PLAN"
+    },
+    {
+      "time": "2026-03-26T14:31:14.982Z",
+      "msg": "Added T25 (PLAN) after T13: Write Show HN anchor blog: 11 Days From Boot to Tracing JIT — full journey overview"
+    },
+    {
+      "time": "2026-03-26T14:31:19.622Z",
+      "msg": "Added T26 (BUILD) after T25: null"
+    },
+    {
+      "time": "2026-03-26T14:31:49.412Z",
+      "msg": "PLAN T25 filled 1 BUILD tasks"
     }
   ]
 }

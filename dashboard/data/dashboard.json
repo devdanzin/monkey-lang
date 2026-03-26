@@ -1,12 +1,12 @@
 {
-  "generated": "2026-03-26T14:27:52.847Z",
+  "generated": "2026-03-26T14:30:32.356Z",
   "current": {
     "status": "idle",
     "mode": "THINK",
     "task": "",
     "context": "",
     "next": "",
-    "startedAt": "2026-03-26T14:27:45.120Z",
+    "startedAt": "2026-03-26T14:30:25.140Z",
     "estimatedBlocks": 0
   },
   "schedule": {
@@ -1011,9 +1011,9 @@
     }
   ],
   "scheduleAdherence": {
-    "completionRate": 100,
+    "completionRate": 50,
     "completedBlocks": 1,
-    "pastBlocks": 1,
+    "pastBlocks": 2,
     "totalBlocks": 55,
     "plannedDist": {
       "THINK": 9,
@@ -1024,7 +1024,7 @@
     "actualDist": {
       "THINK": 1
     },
-    "pace": 5
+    "pace": 4
   },
   "streak": 1,
   "benchmarks": {
