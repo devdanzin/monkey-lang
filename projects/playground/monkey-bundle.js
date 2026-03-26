@@ -28,6 +28,7 @@ var TokenType = {
   THIN_ARROW: "->",
   SPREAD: "...",
   PIPE: "|>",
+  BAR: "|",
   EQ: "==",
   NOT_EQ: "!=",
   PLUS_ASSIGN: "+=",
@@ -311,7 +312,7 @@ var Lexer = class {
           this.readChar();
           tok = new Token(TokenType.PIPE, "|>");
         } else {
-          tok = new Token(TokenType.ILLEGAL, "|");
+          tok = new Token(TokenType.BAR, "|");
         }
         break;
       case "<":
@@ -880,6 +881,14 @@ var TypePattern = class {
   }
   toString() {
     return `${this.typeName}(${this.binding.value})`;
+  }
+};
+var OrPattern = class {
+  constructor(patterns) {
+    this.patterns = patterns;
+  }
+  toString() {
+    return this.patterns.map((p) => p.toString()).join(" | ");
   }
 };
 var DestructuringLet = class {
@@ -1728,6 +1737,15 @@ var Parser = class _Parser {
         pattern = new TypePattern(typeName, binding);
       } else {
         pattern = this.parseExpression(Precedence.LOWEST);
+      }
+      if (pattern && this.peekTokenIs(TokenType.BAR)) {
+        const patterns = [pattern];
+        while (this.peekTokenIs(TokenType.BAR)) {
+          this.nextToken();
+          this.nextToken();
+          patterns.push(this.parseExpression(Precedence.LOWEST));
+        }
+        pattern = new OrPattern(patterns);
       }
       let guard = null;
       if (this.peekToken.type === TokenType.IDENT && this.peekToken.literal === "when") {
@@ -2620,12 +2638,64 @@ var arrayModule = () => buildModule({
     return mkInt(total);
   })
 });
+function jsToMonkey(val) {
+  if (val === null || val === void 0) return new MonkeyNull();
+  if (typeof val === "number") return mkInt(Math.floor(val));
+  if (typeof val === "string") return mkStr(val);
+  if (typeof val === "boolean") return new MonkeyBoolean(val);
+  if (Array.isArray(val)) return new MonkeyArray(val.map(jsToMonkey));
+  if (typeof val === "object") {
+    const pairs = /* @__PURE__ */ new Map();
+    for (const [k, v] of Object.entries(val)) {
+      const key = new MonkeyString(k);
+      pairs.set(key.fastHashKey ? key.fastHashKey() : key.hashKey(), { key, value: jsToMonkey(v) });
+    }
+    return new MonkeyHash(pairs);
+  }
+  return new MonkeyNull();
+}
+function monkeyToJs(obj) {
+  if (obj instanceof MonkeyInteger) return obj.value;
+  if (obj instanceof MonkeyString) return obj.value;
+  if (obj instanceof MonkeyBoolean) return obj.value;
+  if (obj instanceof MonkeyNull) return null;
+  if (obj instanceof MonkeyArray) return obj.elements.map(monkeyToJs);
+  if (obj instanceof MonkeyHash) {
+    const result = {};
+    for (const [, pair] of obj.pairs) {
+      result[pair.key.value] = monkeyToJs(pair.value);
+    }
+    return result;
+  }
+  return null;
+}
+var jsonModule = () => buildModule({
+  parse: new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyNull();
+    try {
+      const parsed = JSON.parse(args[0].value);
+      return jsToMonkey(parsed);
+    } catch (e) {
+      return new MonkeyNull();
+    }
+  }),
+  stringify: new MonkeyBuiltin((...args) => {
+    if (args.length < 1) return new MonkeyNull();
+    const indent = args.length > 1 ? args[1].value : 0;
+    try {
+      return mkStr(JSON.stringify(monkeyToJs(args[0]), null, indent || void 0));
+    } catch (e) {
+      return new MonkeyNull();
+    }
+  })
+});
 var MODULE_REGISTRY = {
   math: mathModuleEnhanced,
   string: stringModuleEnhanced,
   functional: functionalModule,
   algorithms: algorithmsModule,
-  array: arrayModule
+  array: arrayModule,
+  json: jsonModule
 };
 function getModule(name) {
   const factory = MODULE_REGISTRY[name];
@@ -3498,6 +3568,42 @@ var Compiler = class _Compiler {
         if (err) return err;
         endJumps.push(this.emit(Opcodes.OpJump, 9999));
         this.changeOperand(jumpNotTruthyPos2, this.currentInstructions().length);
+        this.resetPeepholeState();
+        continue;
+      }
+      if (arm.pattern instanceof OrPattern) {
+        const matchJumps = [];
+        for (let j = 0; j < arm.pattern.patterns.length; j++) {
+          this.loadSymbol(subjectSym);
+          err = this.compile(arm.pattern.patterns[j]);
+          if (err) return err;
+          this.emit(Opcodes.OpEqual);
+          if (j < arm.pattern.patterns.length - 1) {
+            const trueJump = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+            matchJumps.push({ skip: false, pos: this.emit(Opcodes.OpJump, 9999) });
+            this.changeOperand(trueJump, this.currentInstructions().length);
+            this.resetPeepholeState();
+          }
+        }
+        const noMatchJump = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+        for (const mj of matchJumps) {
+          this.changeOperand(mj.pos, this.currentInstructions().length);
+        }
+        if (arm.guard) {
+          err = this.compile(arm.guard);
+          if (err) return err;
+          const guardJump = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+          err = this.compile(arm.value);
+          if (err) return err;
+          endJumps.push(this.emit(Opcodes.OpJump, 9999));
+          this.changeOperand(guardJump, this.currentInstructions().length);
+          this.resetPeepholeState();
+        } else {
+          err = this.compile(arm.value);
+          if (err) return err;
+          endJumps.push(this.emit(Opcodes.OpJump, 9999));
+        }
+        this.changeOperand(noMatchJump, this.currentInstructions().length);
         this.resetPeepholeState();
         continue;
       }
@@ -10205,6 +10311,25 @@ function monkeyEval(node, env) {
             if (!isTruthy(guardVal)) continue;
           }
           return monkeyEval(arm.value, innerEnv);
+        }
+        continue;
+      }
+      if (arm.pattern instanceof OrPattern) {
+        let matched = false;
+        for (const p of arm.pattern.patterns) {
+          const pVal = monkeyEval(p, env);
+          if (isError(pVal)) return pVal;
+          if (subject.inspect() === pVal.inspect()) {
+            matched = true;
+            break;
+          }
+        }
+        if (matched) {
+          if (arm.guard) {
+            const guardVal = monkeyEval(arm.guard, env);
+            if (!isTruthy(guardVal)) continue;
+          }
+          return monkeyEval(arm.value, env);
         }
         continue;
       }

@@ -1750,6 +1750,25 @@
       "completed": "2026-03-26T18:33:10.442Z",
       "duration_ms": 0,
       "summary": "Skipped — 1h42m remain."
+    },
+    {
+      "id": "T171",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Rebuild playground with latest bundle + push everything",
+      "started": "2026-03-26T18:35:00.683Z"
+    },
+    {
+      "id": "T172",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Add a comprehensive Monkey feature comparison table to README"
+    },
+    {
+      "id": "T173",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final daily log + memory + CURRENT.md + git push (BOUNDARY CHECK)"
     }
   ],
   "updated_at": "2026-03-26T14:02:05.404Z",
@@ -2337,6 +2356,18 @@
     {
       "time": "2026-03-26T18:25:36.073Z",
       "msg": "Added T170 (MAINTAIN) after end: BOUNDARY CHECK final push"
+    },
+    {
+      "time": "2026-03-26T18:34:55.006Z",
+      "msg": "Added T171 (BUILD) after end: Rebuild playground with latest bundle + push everything"
+    },
+    {
+      "time": "2026-03-26T18:34:55.117Z",
+      "msg": "Added T172 (BUILD) after end: Add a comprehensive Monkey feature comparison table to README"
+    },
+    {
+      "time": "2026-03-26T18:34:55.229Z",
+      "msg": "Added T173 (MAINTAIN) after end: Final daily log + memory + CURRENT.md + git push (BOUNDARY CHECK)"
     }
   ]
 }
