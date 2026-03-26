@@ -23,6 +23,7 @@ export const TokenType = {
   AND: '&&',
   OR: '||',
   NULLISH: '??',
+  PIPE: '|>',
   EQ: '==',
   NOT_EQ: '!=',
   PLUS_ASSIGN: '+=',
@@ -289,6 +290,9 @@ export class Lexer {
         if (this.peekChar() === '|') {
           this.readChar();
           tok = new Token(TokenType.OR, '||');
+        } else if (this.peekChar() === '>') {
+          this.readChar();
+          tok = new Token(TokenType.PIPE, '|>');
         } else {
           tok = new Token(TokenType.ILLEGAL, '|');
         }

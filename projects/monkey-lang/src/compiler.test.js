@@ -2205,3 +2205,24 @@ describe('Null Coalescing', () => {
     testIntegerObject(compileAndRun('(null ?? 5) + (null ?? 10)'), 15);
   });
 });
+
+describe('Pipe Operator', () => {
+  it('simple pipe to function', () => {
+    testStringObject(compileAndRun('5 |> str'), '5');
+  });
+  it('pipe to builtin', () => {
+    testIntegerObject(compileAndRun('[1,2,3] |> len'), 3);
+  });
+  it('pipe with arguments', () => {
+    testIntegerObject(compileAndRun('let add = fn(a, b) { a + b }; 5 |> add(10)'), 15);
+  });
+  it('chained pipes', () => {
+    testIntegerObject(compileAndRun('let inc = fn(x) { x + 1 }; 5 |> inc |> inc |> inc'), 8);
+  });
+  it('pipe with string operations', () => {
+    testIntegerObject(compileAndRun('"hello world" |> split(" ") |> len'), 2);
+  });
+  it('pipe with closure', () => {
+    testIntegerObject(compileAndRun('let mul = fn(a, b) { a * b }; 3 |> mul(7)'), 21);
+  });
+});

@@ -6,16 +6,17 @@ import * as ast from './ast.js';
 const Precedence = {
   LOWEST: 1,
   ASSIGN: 2,      // =
-  NULLISH: 3,     // ??
-  OR: 4,           // ||
-  AND: 5,          // &&
-  EQUALS: 6,       // ==
-  LESSGREATER: 7,  // > or <
-  SUM: 8,          // +
-  PRODUCT: 9,      // *
-  PREFIX: 10,      // -X or !X
-  CALL: 11,        // myFunction(X)
-  INDEX: 12,       // array[index]
+  PIPE: 3,         // |>
+  NULLISH: 4,     // ??
+  OR: 5,           // ||
+  AND: 6,          // &&
+  EQUALS: 7,       // ==
+  LESSGREATER: 8,  // > or <
+  SUM: 9,          // +
+  PRODUCT: 10,     // *
+  PREFIX: 11,      // -X or !X
+  CALL: 12,        // myFunction(X)
+  INDEX: 13,       // array[index]
 };
 
 const TOKEN_PRECEDENCE = {
@@ -27,6 +28,7 @@ const TOKEN_PRECEDENCE = {
   [TokenType.PERCENT_ASSIGN]: Precedence.ASSIGN,
   [TokenType.QUESTION]: Precedence.OR,
   [TokenType.NULLISH]: Precedence.NULLISH,
+  [TokenType.PIPE]: Precedence.PIPE,
   [TokenType.PLUS_PLUS]: Precedence.CALL,   // postfix, high precedence
   [TokenType.MINUS_MINUS]: Precedence.CALL, // ternary has same precedence as OR
   [TokenType.EQ]: Precedence.EQUALS,
@@ -85,6 +87,7 @@ export class Parser {
       TokenType.AND, TokenType.OR, TokenType.NULLISH]) {
       this.registerInfix(op, (left) => this.parseInfixExpression(left));
     }
+    this.registerInfix(TokenType.PIPE, (left) => this.parsePipeExpression(left));
     this.registerInfix(TokenType.LPAREN, (left) => this.parseCallExpression(left));
     this.registerInfix(TokenType.LBRACKET, (left) => this.parseIndexExpression(left));
     this.registerInfix(TokenType.ASSIGN, (left) => this.parseAssignExpression(left));
@@ -324,6 +327,22 @@ export class Parser {
     this.nextToken();
     const right = this.parseExpression(precedence);
     return new ast.InfixExpression(token, left, operator, right);
+  }
+
+  parsePipeExpression(left) {
+    const token = this.curToken;
+    this.nextToken();
+    // Parse the right side at PIPE precedence (left-to-right associative)
+    const right = this.parseExpression(Precedence.PIPE);
+    // Desugar: x |> f → f(x), x |> f(a,b) → f(x, a, b)
+    if (right instanceof ast.CallExpression) {
+      // f(a, b) → f(x, a, b) — insert left as first argument
+      right.arguments.unshift(left);
+      return right;
+    } else {
+      // f → f(x) — simple function call
+      return new ast.CallExpression(token, right, [left]);
+    }
   }
 
   parseGroupedExpression() {
