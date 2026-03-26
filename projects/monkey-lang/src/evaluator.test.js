@@ -822,3 +822,44 @@ describe('Array Comprehensions (evaluator)', () => {
     assert.deepEqual(r.elements, []);
   });
 });
+
+describe('Enum Match (evaluator)', () => {
+  it('match on enum variants', () => {
+    const r = testEval(`
+      enum Color { Red, Green, Blue };
+      let c = Color.Green;
+      match (c) {
+        Color.Red => "red",
+        Color.Green => "green",
+        Color.Blue => "blue"
+      }
+    `);
+    assert.equal(r.value, 'green');
+  });
+
+  it('enum match with default', () => {
+    const r = testEval(`
+      enum Dir { Up, Down, Left, Right };
+      let d = Dir.Left;
+      match (d) {
+        Dir.Up => 1,
+        Dir.Down => 2,
+        _ => 0
+      }
+    `);
+    assert.equal(r.value, 0);
+  });
+
+  it('enum + Result combo', () => {
+    const r = testEval(`
+      enum Status { Active, Inactive, Banned };
+      let check = fn(s) {
+        if (s == Status.Active) { Ok("allowed") }
+        else { Err("denied") }
+      };
+      let result = check(Status.Active);
+      unwrap(result)
+    `);
+    assert.equal(r.value, 'allowed');
+  });
+});

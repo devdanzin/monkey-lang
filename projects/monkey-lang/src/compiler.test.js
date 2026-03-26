@@ -3016,3 +3016,40 @@ describe('Array Comprehensions (compiler+VM)', () => {
     assert.deepEqual(r.elements.map(e => e.value), [13, 16, 19]);
   });
 });
+
+describe('Enum Match (compiler+VM)', () => {
+  it('match on enum', () => {
+    const r = compileAndRun(`
+      enum Light { Red, Yellow, Green };
+      let l = Light.Yellow;
+      match (l) {
+        Light.Red => "stop",
+        Light.Yellow => "slow",
+        Light.Green => "go"
+      }
+    `);
+    assert.equal(r.value, 'slow');
+  });
+
+  it('enum in comprehension', () => {
+    const r = compileAndRun(`
+      enum Priority { Low, Medium, High };
+      let tasks = [Priority.High, Priority.Low, Priority.High, Priority.Medium];
+      let high = [t for t in tasks if t == Priority.High];
+      len(high)
+    `);
+    assert.equal(r.value, 2);
+  });
+
+  it('enum with functions', () => {
+    testIntegerObject(compileAndRun(`
+      enum Op { Add, Sub, Mul };
+      let calc = fn(op, a: int, b: int) -> int {
+        if (op == Op.Add) { a + b }
+        else { if (op == Op.Sub) { a - b }
+        else { a * b } }
+      };
+      calc(Op.Mul, 7, 6)
+    `), 42);
+  });
+});
