@@ -2350,6 +2350,13 @@
       "completed": "2026-03-26T03:21:38.100Z",
       "duration_ms": 600000,
       "summary": "Arrow functions implemented via parser lookahead. (x) => expr desugars to fn(x) { expr }. No match arm conflict. 829 tests passing."
+    },
+    {
+      "id": "T229",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Update README with all new features: ??, ?., |>, arrows, dot access",
+      "started": "2026-03-26T03:24:59.626Z"
     }
   ],
   "backlog": [],
@@ -3101,6 +3108,10 @@
     {
       "time": "2026-03-26T03:17:43.810Z",
       "msg": "Added T228 (EXPLORE) after end: Implement arrow functions (x => x * 2) for Monkey"
+    },
+    {
+      "time": "2026-03-26T03:24:59.407Z",
+      "msg": "Added T229 (BUILD) after end: Update README with all new features: ??, ?., |>, arrows, dot access"
     }
   ],
   "updated_at": "2026-03-25T16:42:01.690Z"

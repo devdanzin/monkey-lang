@@ -18,6 +18,7 @@ Inspired by Thorsten Ball's *Writing An Interpreter In Go* and *Writing A Compil
 - **Tracing JIT compiler** — records hot execution traces, optimizes IR, compiles to JavaScript via `new Function()`
 - **Standard library** — `map`, `filter`, `reduce`, `forEach`, `range`, `contains`, `reverse` (implemented in Monkey for JIT compatibility)
 - **25+ builtins** — `len`, `puts`, `first`, `last`, `rest`, `push`, `split`, `join`, `trim`, `str_contains`, `substr`, `replace`, `int`, `str`, `type`, `ord`, `char`, `abs`, `upper`, `lower`, `indexOf`, `startsWith`, `endsWith`, `keys`, `values`
+- **Modern syntax** — arrow functions `(x) => x * 2`, pipe operator `|>`, null coalescing `??`, optional chaining `?.`, dot access `h.name`, const declarations
 - **Dual-engine REPL** — switch between interpreter and VM at runtime (`:engine vm`/`:engine eval`)
 
 ## Data Types
@@ -105,6 +106,53 @@ c(); c(); c();  // 1, 2, 3
 
 // Ternary
 let abs = fn(x) { x >= 0 ? x : 0 - x };
+
+// Arrow functions
+let double = (x) => x * 2;
+let add = (a, b) => a + b;
+let greet = () => "hello";
+let f = (x) => { let y = x * 2; y + 1 };
+```
+
+### Null Safety
+```javascript
+// Null coalescing (??)
+let name = null ?? "default";   // "default"
+let x = 0 ?? 42;               // 0 (only null triggers ??)
+let val = false ?? true;        // false (false is not null)
+
+// Optional chaining (?.)
+let user = {"name": "Alice", "addr": {"city": "NYC"}};
+user?.name;                     // "Alice"
+user?.addr?.city;               // "NYC"
+user?.phone?.number;            // null (no error)
+
+// Combined
+let config = {"theme": "dark"};
+config?.language ?? "en";       // "en"
+```
+
+### Dot Access
+```javascript
+let h = {"name": "Alice", "age": 30};
+h.name;                // "Alice" (sugar for h["name"])
+h.age = 31;            // assignment works too
+h.a.b.c;               // nested access
+h.x + h["x"];          // interop with bracket access
+```
+
+### Pipe Operator
+```javascript
+// x |> f → f(x)
+// x |> f(a) → f(x, a)
+5 |> str;                     // "5"
+"hello world" |> split(" ") |> len;  // 2
+
+let double = (x) => x * 2;
+5 |> double |> double |> str;  // "20"
+
+let add = fn(a, b) { a + b };
+5 |> add(10);                   // 15
 ```
 
 ### Array/String Operations
@@ -174,7 +222,7 @@ Aggregate: 26 benchmarks, ~9.2x overall (all correct)
 ## Tests
 
 ```bash
-node --test    # 798 tests (795 passing, 3 skipped JIT edge cases)
+node --test    # 832 tests (829 passing, 3 skipped JIT edge cases)
 ```
 
 ## Benchmarks
