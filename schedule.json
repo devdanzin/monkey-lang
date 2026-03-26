@@ -1582,27 +1582,85 @@
     {
       "id": "T154",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add a new array module: from, zip, enumerate, flatten, unique",
-      "started": "2026-03-26T18:13:40.580Z"
+      "started": "2026-03-26T18:13:40.580Z",
+      "completed": "2026-03-26T18:15:08.042Z",
+      "duration_ms": 180000,
+      "summary": "Array module: zip, enumerate, flatten, unique, reversed, sum, product. 5 stdlib modules total. 1087 tests."
     },
     {
       "id": "T155",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Blog: why Monkey has 40 features you'd expect from a real language"
+      "status": "done",
+      "task": "Blog: why Monkey has 40 features you'd expect from a real language",
+      "started": "2026-03-26T18:15:12.192Z",
+      "completed": "2026-03-26T18:15:54.827Z",
+      "duration_ms": 180000,
+      "summary": "Published blog: 40 Features You Didn't Expect from a Toy Language — comprehensive feature list. 3rd blog post today."
     },
     {
       "id": "T156",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Pre-boundary: daily log, git push"
+      "status": "done",
+      "task": "Pre-boundary: daily log, git push",
+      "started": "2026-03-26T18:16:04.151Z",
+      "completed": "2026-03-26T18:16:18.191Z",
+      "duration_ms": 30000,
+      "summary": "Git pushed. 1087 tests, 3 blogs today."
     },
     {
       "id": "T157",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "FINAL boundary push (CHECK TIME)",
+      "started": "2026-03-26T18:16:25.586Z",
+      "completed": "2026-03-26T18:16:25.697Z",
+      "duration_ms": 0,
+      "summary": "Skipped — ~2h remain."
+    },
+    {
+      "id": "T158",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Match guards: match (x) { n when n > 0 => positive }",
+      "task": null,
+      "started": "2026-03-26T18:16:54.979Z",
+      "completed": "2026-03-26T18:17:30.858Z",
+      "duration_ms": 30000,
+      "summary": "Plan: match guards with when keyword, binding patterns. 1 BUILD."
+    },
+    {
+      "id": "T163",
+      "mode": "BUILD",
+      "task": "Match guards: parser detects 'when' after pattern, adds guard to arm. AST MatchExpression arms gain guard field. Compiler/evaluator: evaluate guard, skip arm if false. Tests.",
+      "status": "in-progress",
+      "plan_ref": "T158",
+      "started": "2026-03-26T18:17:37.529Z"
+    },
+    {
+      "id": "T159",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "FINAL boundary push (CHECK TIME)"
+      "task": null
+    },
+    {
+      "id": "T160",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Update README with match guards + modules list"
+    },
+    {
+      "id": "T161",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Rebuild playground with match guards"
+    },
+    {
+      "id": "T162",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "SESSION FINAL (check time)"
     }
   ],
   "updated_at": "2026-03-26T14:02:05.404Z",
@@ -2138,6 +2196,30 @@
     {
       "time": "2026-03-26T18:11:57.155Z",
       "msg": "Added T157 (MAINTAIN) after end: FINAL boundary push (CHECK TIME)"
+    },
+    {
+      "time": "2026-03-26T18:16:47.519Z",
+      "msg": "Added T158 (PLAN) after end: Match guards: match (x) { n when n > 0 => positive }"
+    },
+    {
+      "time": "2026-03-26T18:16:47.631Z",
+      "msg": "Added T159 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-03-26T18:16:47.742Z",
+      "msg": "Added T160 (BUILD) after end: Update README with match guards + modules list"
+    },
+    {
+      "time": "2026-03-26T18:16:47.853Z",
+      "msg": "Added T161 (BUILD) after end: Rebuild playground with match guards"
+    },
+    {
+      "time": "2026-03-26T18:16:47.964Z",
+      "msg": "Added T162 (MAINTAIN) after end: SESSION FINAL (check time)"
+    },
+    {
+      "time": "2026-03-26T18:17:22.641Z",
+      "msg": "PLAN T158 filled 1 BUILD tasks"
     }
   ]
 }

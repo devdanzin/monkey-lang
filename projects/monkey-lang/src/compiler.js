@@ -988,7 +988,18 @@ export class Compiler {
       const arm = node.arms[i];
 
       if (arm.pattern === null) {
-        // Wildcard — always matches
+        // Wildcard — always matches, but check guard
+        if (arm.guard) {
+          err = this.compile(arm.guard);
+          if (err) return err;
+          const guardJump = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+          err = this.compile(arm.value);
+          if (err) return err;
+          endJumps.push(this.emit(Opcodes.OpJump, 9999));
+          this.changeOperand(guardJump, this.currentInstructions().length);
+          this.resetPeepholeState();
+          continue; // guard failed, try next arm
+        }
         err = this.compile(arm.value);
         if (err) return err;
         break;
@@ -1003,7 +1014,6 @@ export class Compiler {
 
         // Match — bind appropriate value to pattern variable
         if (arm.pattern.typeName === 'Ok' || arm.pattern.typeName === 'Err') {
-          // For Ok/Err: bind the inner value (like Rust's Ok(v) pattern)
           this.loadSymbol(subjectSym);
           this.emit(Opcodes.OpResultValue);
         } else {
@@ -1011,11 +1021,40 @@ export class Compiler {
         }
         const bindSym = this.symbolTable.define(arm.pattern.binding.value);
         this.emit(bindSym.scope === 'GLOBAL' ? Opcodes.OpSetGlobal : Opcodes.OpSetLocal, bindSym.index);
+        
+        if (arm.guard) {
+          err = this.compile(arm.guard);
+          if (err) return err;
+          const guardJump = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+          err = this.compile(arm.value);
+          if (err) return err;
+          endJumps.push(this.emit(Opcodes.OpJump, 9999));
+          this.changeOperand(guardJump, this.currentInstructions().length);
+          this.resetPeepholeState();
+          continue;
+        }
+        
         err = this.compile(arm.value);
         if (err) return err;
         endJumps.push(this.emit(Opcodes.OpJump, 9999));
 
         this.changeOperand(jumpNotTruthyPos, this.currentInstructions().length);
+        this.resetPeepholeState();
+        continue;
+      }
+
+      // Binding pattern: identifier with guard → bind subject to name
+      if (arm.guard && arm.pattern instanceof ast.Identifier) {
+        this.loadSymbol(subjectSym);
+        const bindSym = this.symbolTable.define(arm.pattern.value);
+        this.emit(bindSym.scope === 'GLOBAL' ? Opcodes.OpSetGlobal : Opcodes.OpSetLocal, bindSym.index);
+        err = this.compile(arm.guard);
+        if (err) return err;
+        const guardJump = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+        err = this.compile(arm.value);
+        if (err) return err;
+        endJumps.push(this.emit(Opcodes.OpJump, 9999));
+        this.changeOperand(guardJump, this.currentInstructions().length);
         this.resetPeepholeState();
         continue;
       }
@@ -1028,10 +1067,21 @@ export class Compiler {
 
       const jumpNotTruthyPos = this.emit(Opcodes.OpJumpNotTruthy, 9999);
 
-      // Match — compile value
-      err = this.compile(arm.value);
-      if (err) return err;
-      endJumps.push(this.emit(Opcodes.OpJump, 9999));
+      // Match — compile value (with optional guard)
+      if (arm.guard) {
+        err = this.compile(arm.guard);
+        if (err) return err;
+        const guardJump = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+        err = this.compile(arm.value);
+        if (err) return err;
+        endJumps.push(this.emit(Opcodes.OpJump, 9999));
+        this.changeOperand(guardJump, this.currentInstructions().length);
+        this.resetPeepholeState();
+      } else {
+        err = this.compile(arm.value);
+        if (err) return err;
+        endJumps.push(this.emit(Opcodes.OpJump, 9999));
+      }
 
       // No match — continue to next arm
       this.changeOperand(jumpNotTruthyPos, this.currentInstructions().length);

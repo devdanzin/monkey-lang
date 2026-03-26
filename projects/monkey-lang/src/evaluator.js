@@ -429,10 +429,14 @@ export function monkeyEval(node, env) {
     if (isError(subject)) return subject;
     for (const arm of node.arms) {
       if (arm.pattern === null) {
-        return monkeyEval(arm.value, env); // wildcard
+        // Wildcard — check guard if present
+        if (arm.guard) {
+          const guardVal = monkeyEval(arm.guard, env);
+          if (!isTruthy(guardVal)) continue;
+        }
+        return monkeyEval(arm.value, env);
       }
       if (arm.pattern instanceof AST.TypePattern) {
-        // Type pattern: check type and bind value
         const typeName = arm.pattern.typeName;
         let matches = false;
         switch (typeName) {
@@ -448,16 +452,34 @@ export function monkeyEval(node, env) {
         }
         if (matches) {
           const innerEnv = new Environment(env);
-          // For Ok/Err, bind inner value; for other types, bind the subject directly
           const bindValue = (typeName === 'Ok' || typeName === 'Err') ? subject.value : subject;
           innerEnv.set(arm.pattern.binding.value, bindValue);
+          if (arm.guard) {
+            const guardVal = monkeyEval(arm.guard, innerEnv);
+            if (!isTruthy(guardVal)) continue;
+          }
           return monkeyEval(arm.value, innerEnv);
         }
         continue;
       }
+      // Binding pattern: identifier with guard → bind subject to name
+      if (arm.guard && arm.pattern instanceof AST.Identifier) {
+        const innerEnv = new Environment(env);
+        innerEnv.set(arm.pattern.value, subject);
+        const guardVal = monkeyEval(arm.guard, innerEnv);
+        if (isTruthy(guardVal)) {
+          return monkeyEval(arm.value, innerEnv);
+        }
+        continue;
+      }
+      // Value pattern: compare
       const pattern = monkeyEval(arm.pattern, env);
       if (isError(pattern)) return pattern;
       if (subject.inspect() === pattern.inspect()) {
+        if (arm.guard) {
+          const guardVal = monkeyEval(arm.guard, env);
+          if (!isTruthy(guardVal)) continue;
+        }
         return monkeyEval(arm.value, env);
       }
     }

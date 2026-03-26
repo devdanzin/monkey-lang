@@ -904,3 +904,52 @@ describe('Array Module (evaluator)', () => {
     assert.equal(r.value, 120);
   });
 });
+
+describe('Match Guards (evaluator)', () => {
+  it('binding pattern with guard', () => {
+    const r = testEval(`
+      match (42) {
+        n when n > 100 => "big",
+        n when n > 0 => "positive",
+        _ => "other"
+      }
+    `);
+    assert.equal(r.value, 'positive');
+  });
+
+  it('type pattern with guard', () => {
+    const r = testEval(`
+      match (5) {
+        int(n) when n > 10 => "big int",
+        int(n) when n > 0 => "small int",
+        int(n) => "zero or negative",
+        _ => "not int"
+      }
+    `);
+    assert.equal(r.value, 'small int');
+  });
+
+  it('guard with fallthrough', () => {
+    const r = testEval(`
+      match (-3) {
+        n when n > 0 => "positive",
+        n when n == 0 => "zero",
+        n when n < 0 => "negative"
+      }
+    `);
+    assert.equal(r.value, 'negative');
+  });
+
+  it('guard with enum', () => {
+    const r = testEval(`
+      enum Size { Small, Medium, Large };
+      let x = 50;
+      match (x) {
+        n when n < 10 => Size.Small,
+        n when n < 100 => Size.Medium,
+        _ => Size.Large
+      }
+    `);
+    assert.equal(r.inspect(), 'Size.Medium');
+  });
+});

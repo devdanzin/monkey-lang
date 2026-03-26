@@ -3073,3 +3073,54 @@ describe('Array Module (compiler+VM)', () => {
     testIntegerObject(compileAndRun('import "array" for unique, sum; sum(unique([1, 2, 3, 2, 1]))'), 6);
   });
 });
+
+describe('Match Guards (compiler+VM)', () => {
+  it('binding pattern with guard', () => {
+    const r = compileAndRun(`
+      match (42) {
+        n when n > 100 => "big",
+        n when n > 0 => "positive",
+        _ => "other"
+      }
+    `);
+    assert.equal(r.value, 'positive');
+  });
+
+  it('type pattern with guard', () => {
+    const r = compileAndRun(`
+      match ("hello") {
+        string(s) when len(s) > 10 => "long",
+        string(s) when len(s) > 3 => "medium",
+        string(s) => "short",
+        _ => "not string"
+      }
+    `);
+    assert.equal(r.value, 'medium');
+  });
+
+  it('guard with negative', () => {
+    testIntegerObject(compileAndRun(`
+      match (-5) {
+        n when n > 0 => 1,
+        n when n == 0 => 0,
+        n when n < 0 => -1
+      }
+    `), -1);
+  });
+
+  it('classify number', () => {
+    const r = compileAndRun(`
+      let classify = fn(x) {
+        match (x) {
+          n when n > 100 => "huge",
+          n when n > 10 => "big",
+          n when n > 0 => "small",
+          0 => "zero",
+          _ => "negative"
+        }
+      };
+      classify(50)
+    `);
+    assert.equal(r.value, 'big');
+  });
+});

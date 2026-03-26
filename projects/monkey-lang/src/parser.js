@@ -874,10 +874,17 @@ export class Parser {
       } else {
         pattern = this.parseExpression(Precedence.LOWEST);
       }
+      // Check for guard: pattern when condition => value
+      let guard = null;
+      if (this.peekToken.type === TokenType.IDENT && this.peekToken.literal === 'when') {
+        this.nextToken(); // consume 'when'
+        this.nextToken(); // start of guard expression
+        guard = this.parseExpression(Precedence.LOWEST);
+      }
       if (!this.expectPeek(TokenType.ARROW)) return null;
       this.nextToken();
       const value = this.parseExpression(Precedence.LOWEST);
-      arms.push({ pattern, value });
+      arms.push({ pattern, value, guard });
       if (this.peekTokenIs(TokenType.COMMA)) this.nextToken();
     }
     if (!this.expectPeek(TokenType.RBRACE)) return null;
