@@ -25,8 +25,19 @@ export class Transpiler {
       return `${this.i()}return ${this.transpileNode(node.returnValue)};`;
     }
     if (node instanceof ast.ImportStatement) {
-      // Transpile import "math" → const math = require("monkey-modules/math") or just a comment
-      return `${this.i()}const ${node.moduleName} = __monkey_modules.${node.moduleName};`;
+      if (node.bindings) {
+        return `${this.i()}const { ${node.bindings.join(', ')} } = __monkey_modules.${node.moduleName};`;
+      }
+      const name = node.alias || node.moduleName;
+      return `${this.i()}const ${name} = __monkey_modules.${node.moduleName};`;
+    }
+    if (node instanceof ast.EnumStatement) {
+      const entries = node.variants.map((v, i) => `${v}: "${node.name}.${v}"`).join(', ');
+      return `${this.i()}const ${node.name} = Object.freeze({ ${entries} });`;
+    }
+    if (node instanceof ast.ArrayComprehension) {
+      const cond = node.condition ? `.filter(${node.variable} => ${this.transpileNode(node.condition)})` : '';
+      return `[...${this.transpileNode(node.iterable)}${cond}].map(${node.variable} => ${this.transpileNode(node.body)})`;
     }
     if (node instanceof ast.ExpressionStatement) {
       return `${this.i()}${this.transpileNode(node.expression)};`;

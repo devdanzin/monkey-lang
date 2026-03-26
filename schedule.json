@@ -1451,21 +1451,29 @@
       "id": "T146",
       "mode": "BUILD",
       "task": "Array comprehensions: parser (detect for after first expr), AST ArrayComprehension, compiler (desugar to loop building array), evaluator (direct). Tests.",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T140",
-      "started": "2026-03-26T17:59:26.981Z"
+      "started": "2026-03-26T17:59:26.981Z",
+      "completed": "2026-03-26T18:04:55.373Z",
+      "duration_ms": 600000,
+      "summary": "Array comprehensions: [expr for var in iter if cond]. Parser, evaluator (direct), compiler (IIFE desugar). 1070 tests."
     },
     {
       "id": "T141",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-03-26T18:05:01.107Z",
+      "completed": "2026-03-26T18:05:01.219Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled."
     },
     {
       "id": "T142",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Transpiler: update for enums, selective/aliased imports, array comprehensions"
+      "status": "in-progress",
+      "task": "Transpiler: update for enums, selective/aliased imports, array comprehensions",
+      "started": "2026-03-26T18:05:06.227Z"
     },
     {
       "id": "T143",
