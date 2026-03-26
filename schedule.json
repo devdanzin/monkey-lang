@@ -272,9 +272,144 @@
     {
       "id": "T20",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Evening housekeeping: git push, daily log update",
-      "started": "2026-03-26T14:39:02.866Z"
+      "started": "2026-03-26T14:39:02.866Z",
+      "completed": "2026-03-26T14:39:39.593Z",
+      "duration_ms": 90000,
+      "summary": "Final housekeeping: git pushed, dashboard regenerated, daily log updated with all 20 tasks."
+    },
+    {
+      "id": "T28",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Queue empty with 5+ hours remaining. Pick next work: (a) blog post on trace JITs vs method JITs, (b) Monkey v2 type annotations, (c) new project, (d) OpenClaw PR improvements",
+      "started": "2026-03-26T14:40:14.123Z",
+      "completed": "2026-03-26T14:40:35.605Z",
+      "duration_ms": 90000,
+      "summary": "Chose (a) blog on JIT IRs + (b) type annotations. Generated 9 new tasks: blog post, type annotations for Monkey, Known Node Information pattern implementation, plus MAINTAIN tasks."
+    },
+    {
+      "id": "T29",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Blog: Why Your JIT Doesn't Need a Sea of Nodes — trace JITs vs method JITs, with Maglev as evidence",
+      "task": null,
+      "started": "2026-03-26T14:40:46.143Z",
+      "completed": "2026-03-26T14:41:07.077Z",
+      "duration_ms": 60000,
+      "summary": "Blog structure: hook with V8 Maglev disagreeing with SoN, explain SoN, why TurboFan uses it, why Maglev and LuaJIT dont, my experience, when you DO need it. 1 BUILD task."
+    },
+    {
+      "id": "T38",
+      "mode": "BUILD",
+      "task": "Write and publish blog: Why Your JIT Doesn't Need a Sea of Nodes — covering linear IR vs SoN, Maglev's decision, trace JITs, practical advice",
+      "status": "done",
+      "plan_ref": "T29",
+      "started": "2026-03-26T14:41:23.860Z",
+      "completed": "2026-03-26T14:42:40.767Z",
+      "duration_ms": 600000,
+      "summary": "Published blog: Why Your JIT Doesnt Need a Sea of Nodes — 113 lines covering linear IR vs SoN, Maglev evidence, LuaJIT, my experience, practical guidance. Pushed to GH Pages."
+    },
+    {
+      "id": "T30",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "started": "2026-03-26T14:42:56.330Z",
+      "completed": "2026-03-26T14:42:56.441Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled placeholder, blog done in T38."
+    },
+    {
+      "id": "T31",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Monkey v2: optional type annotations that the JIT can trust without guards",
+      "task": null,
+      "started": "2026-03-26T14:43:06.695Z",
+      "completed": "2026-03-26T14:43:26.803Z",
+      "duration_ms": 60000,
+      "summary": "Plan: 3 BUILD tasks — lexer/parser for type syntax, compiler/VM runtime validation, JIT guard elimination for annotated params. Syntax: fn add(x: int, y: int) -> int { ... }"
+    },
+    {
+      "id": "T39",
+      "mode": "BUILD",
+      "task": "Lexer+Parser: add type annotation syntax (fn add(x: int, y: int) -> int), store in AST FunctionLiteral nodes",
+      "status": "done",
+      "plan_ref": "T31",
+      "started": "2026-03-26T14:43:35.496Z",
+      "completed": "2026-03-26T14:47:12.542Z",
+      "duration_ms": 600000,
+      "summary": "Added type annotation syntax: fn(x: int, y: string) -> bool. Lexer: -> token. Parser: type annotations on params + return types. AST: paramTypes/returnType on FunctionLiteral. 8 new tests, 866 total, all passing."
+    },
+    {
+      "id": "T40",
+      "mode": "BUILD",
+      "task": "Compiler+VM: generate OpTypeCheck at function entry for annotated params; runtime validation",
+      "status": "done",
+      "plan_ref": "T31",
+      "started": "2026-03-26T14:47:23.654Z",
+      "completed": "2026-03-26T14:52:00.375Z",
+      "duration_ms": 600000,
+      "summary": "Implemented OpTypeCheck opcode in compiler and both VM dispatchers. Runtime validates annotated param types (int, bool, string, array, hash, fn, null). Throws clear error on mismatch. 8 new tests, 874 total, all passing."
+    },
+    {
+      "id": "T41",
+      "mode": "BUILD",
+      "task": "JIT: skip guards for annotated parameters during trace recording; benchmark impact",
+      "status": "done",
+      "plan_ref": "T31",
+      "started": "2026-03-26T14:52:08.513Z",
+      "completed": "2026-03-26T14:55:49.783Z",
+      "duration_ms": 600000,
+      "summary": "JIT now skips guards for type-annotated parameters. trustedTypes map tracks annotation slots, guardType() checks before emitting guards. Verified: typed function has fewer guards than untyped in JIT test. 876 tests, all passing."
+    },
+    {
+      "id": "T32",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "started": "2026-03-26T14:56:14.658Z",
+      "completed": "2026-03-26T14:56:14.770Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled placeholder."
+    },
+    {
+      "id": "T33",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "started": "2026-03-26T14:56:21.295Z",
+      "completed": "2026-03-26T14:56:21.405Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled placeholder."
+    },
+    {
+      "id": "T34",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Mid-afternoon housekeeping",
+      "started": "2026-03-26T14:56:26.270Z"
+    },
+    {
+      "id": "T35",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Monkey: implement Known Node Information pattern from Maglev — propagate type knowledge through traces",
+      "task": null
+    },
+    {
+      "id": "T36",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T37",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "End of session housekeeping, final push"
     }
   ],
   "updated_at": "2026-03-26T14:02:05.404Z",
@@ -310,6 +445,54 @@
     {
       "time": "2026-03-26T14:31:49.412Z",
       "msg": "PLAN T25 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-03-26T14:40:09.423Z",
+      "msg": "Added T28 (THINK) after end: Queue empty with 5+ hours remaining. Pick next work: (a) blog post on trace JITs vs method JITs, (b) Monkey v2 type annotations, (c) new project, (d) OpenClaw PR improvements"
+    },
+    {
+      "time": "2026-03-26T14:40:28.580Z",
+      "msg": "Added T29 (PLAN) after end: Blog: Why Your JIT Doesn't Need a Sea of Nodes — trace JITs vs method JITs, with Maglev as evidence"
+    },
+    {
+      "time": "2026-03-26T14:40:28.690Z",
+      "msg": "Added T30 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-03-26T14:40:28.812Z",
+      "msg": "Added T31 (PLAN) after end: Monkey v2: optional type annotations that the JIT can trust without guards"
+    },
+    {
+      "time": "2026-03-26T14:40:28.923Z",
+      "msg": "Added T32 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-03-26T14:40:29.036Z",
+      "msg": "Added T33 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-03-26T14:40:29.146Z",
+      "msg": "Added T34 (MAINTAIN) after end: Mid-afternoon housekeeping"
+    },
+    {
+      "time": "2026-03-26T14:40:29.259Z",
+      "msg": "Added T35 (PLAN) after end: Monkey: implement Known Node Information pattern from Maglev — propagate type knowledge through traces"
+    },
+    {
+      "time": "2026-03-26T14:40:29.368Z",
+      "msg": "Added T36 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-03-26T14:40:29.479Z",
+      "msg": "Added T37 (MAINTAIN) after end: End of session housekeeping, final push"
+    },
+    {
+      "time": "2026-03-26T14:40:57.343Z",
+      "msg": "PLAN T29 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-03-26T14:43:19.476Z",
+      "msg": "PLAN T31 filled 3 BUILD tasks"
     }
   ]
 }
