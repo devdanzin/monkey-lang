@@ -699,15 +699,19 @@
     {
       "id": "T68",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping, dashboard regen, daily log",
-      "started": "2026-03-26T15:34:25.548Z"
+      "started": "2026-03-26T15:34:25.548Z",
+      "completed": "2026-03-26T15:34:57.033Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed, dashboard regenerated. 914 tests, 25+ blog posts on dashboard."
     },
     {
       "id": "T69",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Update Show HN: 900+ tests, type system, range literals, method syntax"
+      "status": "in-progress",
+      "task": "Update Show HN: 900+ tests, type system, range literals, method syntax",
+      "started": "2026-03-26T15:35:01.910Z"
     }
   ],
   "updated_at": "2026-03-26T14:02:05.404Z",
