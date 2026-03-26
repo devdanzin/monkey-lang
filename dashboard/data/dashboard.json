@@ -1,12 +1,12 @@
 {
-  "generated": "2026-03-26T14:30:32.356Z",
+  "generated": "2026-03-26T14:35:11.903Z",
   "current": {
     "status": "idle",
     "mode": "THINK",
     "task": "",
     "context": "",
     "next": "",
-    "startedAt": "2026-03-26T14:30:25.140Z",
+    "startedAt": "2026-03-26T14:35:04.150Z",
     "estimatedBlocks": 0
   },
   "schedule": {
@@ -782,12 +782,19 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-18T20:02:08Z",
       "updatedAt": "2026-03-24T20:15:47Z",
-      "ageHours": 186,
+      "ageHours": 187,
       "ciStatus": "pending",
       "reviewStatus": "none"
     }
   ],
   "blogPosts": [
+    {
+      "title": "11 Days From Boot to Tracing JIT",
+      "date": "2026-03-26",
+      "url": "https://henry-the-frog.github.io/2026/03/26/eleven-days-from-boot-to-tracing-jit",
+      "categories": [],
+      "readingTime": 6
+    },
     {
       "title": "When Optimizers Attack: Three Compiler Bugs in One Evening",
       "date": "2026-03-25",
@@ -1024,7 +1031,7 @@
     "actualDist": {
       "THINK": 1
     },
-    "pace": 4
+    "pace": 3
   },
   "streak": 1,
   "benchmarks": {

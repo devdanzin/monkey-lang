@@ -232,33 +232,49 @@
     {
       "id": "T16",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, knowledge capture",
-      "started": "2026-03-26T14:34:50.344Z"
+      "started": "2026-03-26T14:34:50.344Z",
+      "completed": "2026-03-26T14:35:16.948Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed, dashboard regenerated with new blog post in rich data. 15 tasks completed this session."
     },
     {
       "id": "T17",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Deep dive: sea-of-nodes IR — V8 Turbofan and Graal vs linear trace IR"
+      "status": "done",
+      "task": "Deep dive: sea-of-nodes IR — V8 Turbofan and Graal vs linear trace IR",
+      "started": "2026-03-26T14:35:27.098Z",
+      "completed": "2026-03-26T14:37:05.415Z",
+      "duration_ms": 600000,
+      "summary": "Deep dive into SoN vs linear IR. Key finding: V8 Maglev (mid-tier JIT, Chrome M117) intentionally uses CFG-based SSA instead of sea-of-nodes, calling SoN cache-unfriendly. Validates our linear IR approach. Updated scratch note with Maglev architecture, design principles, and performance numbers."
     },
     {
       "id": "T18",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Reflect on sea-of-nodes. Any insights for Monkey JIT?"
+      "status": "done",
+      "task": "Reflect on sea-of-nodes. Any insights for Monkey JIT?",
+      "started": "2026-03-26T14:37:15.323Z",
+      "completed": "2026-03-26T14:37:32.052Z",
+      "duration_ms": 90000,
+      "summary": "Key insight: our linear IR is validated by V8 Maglev decision. Actionable ideas: Known Node Information pattern, retroactive spilling. Blog post idea: Why Your JIT Doesnt Need a Sea of Nodes."
     },
     {
       "id": "T19",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Trace-native language design: what would a language designed for tracing JITs look like?"
+      "status": "done",
+      "task": "Trace-native language design: what would a language designed for tracing JITs look like?",
+      "started": "2026-03-26T14:37:43.889Z",
+      "completed": "2026-03-26T14:38:54.181Z",
+      "duration_ms": 600000,
+      "summary": "Explored trace-native language design. Created 6KB scratch note covering: what traces love (type stability, monomorphic calls, value types, explicit allocation), what they hate (eval, megamorphic dispatch, exceptions), and a concrete dream language syntax. Connection to Monkey: biggest win would be optional type annotations."
     },
     {
       "id": "T20",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Evening housekeeping: git push, daily log update"
+      "status": "in-progress",
+      "task": "Evening housekeeping: git push, daily log update",
+      "started": "2026-03-26T14:39:02.866Z"
     }
   ],
   "updated_at": "2026-03-26T14:02:05.404Z",
