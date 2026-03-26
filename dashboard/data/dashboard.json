@@ -1,12 +1,12 @@
 {
-  "generated": "2026-03-26T14:56:48.603Z",
+  "generated": "2026-03-26T15:09:02.089Z",
   "current": {
     "status": "idle",
     "mode": "THINK",
     "task": "",
     "context": "",
     "next": "",
-    "startedAt": "2026-03-26T14:56:40.508Z",
+    "startedAt": "2026-03-26T15:08:54.686Z",
     "estimatedBlocks": 0
   },
   "schedule": {
@@ -738,7 +738,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:38:20Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 138,
+      "ageHours": 139,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -1025,9 +1025,9 @@
     }
   ],
   "scheduleAdherence": {
-    "completionRate": 33,
+    "completionRate": 25,
     "completedBlocks": 1,
-    "pastBlocks": 3,
+    "pastBlocks": 4,
     "totalBlocks": 55,
     "plannedDist": {
       "THINK": 9,
@@ -1038,7 +1038,7 @@
     "actualDist": {
       "THINK": 1
     },
-    "pace": 1.5
+    "pace": 1.1
   },
   "streak": 1,
   "benchmarks": {

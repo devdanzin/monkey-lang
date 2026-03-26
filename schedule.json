@@ -502,28 +502,51 @@
     {
       "id": "T48",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Mid-session housekeeping + fresh benchmarks",
-      "started": "2026-03-26T15:07:43.416Z"
+      "started": "2026-03-26T15:07:43.416Z",
+      "completed": "2026-03-26T15:09:07.761Z",
+      "duration_ms": 120000,
+      "summary": "Git pushed. Benchmarks: 9.7x aggregate (23 benchmarks). Dashboard regenerated. 883 tests."
     },
     {
       "id": "T49",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Type patterns in match expressions: match(x) { int(n) => n+1, string(s) => len(s) }",
-      "task": null
+      "task": null,
+      "started": "2026-03-26T15:09:14.139Z",
+      "completed": "2026-03-26T15:09:44.795Z",
+      "duration_ms": 60000,
+      "summary": "Plan: type patterns in match — parser + compiler + evaluator. Syntax: match(x) { int(n) => n+1, string(s) => len(s) }. 1 BUILD task."
+    },
+    {
+      "id": "T54",
+      "mode": "BUILD",
+      "task": "Add type patterns to match: parser recognizes int(n)/string(s)/bool(b)/array(a)/hash(h)/fn(f) patterns, compiler emits type check + bind, evaluator handles it. Tests.",
+      "status": "done",
+      "plan_ref": "T49",
+      "started": "2026-03-26T15:09:51.523Z",
+      "completed": "2026-03-26T15:14:49.100Z",
+      "duration_ms": 600000,
+      "summary": "Type patterns in match: parser handles int(n)/string(s)/bool(b)/array(a)/hash(h)/fn(f), compiler uses new OpTypeIs opcode, evaluator does runtime type check + binding. Fixed fn keyword conflict. 891 tests, all passing."
     },
     {
       "id": "T50",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-03-26T15:15:12.210Z",
+      "completed": "2026-03-26T15:15:12.322Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled."
     },
     {
       "id": "T51",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Final benchmark run, update README + SHOW_HN.md with final numbers"
+      "status": "in-progress",
+      "task": "Final benchmark run, update README + SHOW_HN.md with final numbers",
+      "started": "2026-03-26T15:15:23.441Z"
     },
     {
       "id": "T52",
@@ -661,6 +684,10 @@
     {
       "time": "2026-03-26T15:07:12.777Z",
       "msg": "PLAN T45 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-03-26T15:09:40.150Z",
+      "msg": "PLAN T49 filled 1 BUILD tasks"
     }
   ]
 }
