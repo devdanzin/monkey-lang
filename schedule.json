@@ -2263,16 +2263,46 @@
       "id": "T220",
       "mode": "BUILD",
       "task": "Investigate remaining JIT deopt crashes (sieve, string-len)",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T219",
-      "started": "2026-03-26T02:57:54.139Z"
+      "started": "2026-03-26T02:57:54.139Z",
+      "completed": "2026-03-26T03:00:14.896Z",
+      "duration_ms": 900000,
+      "summary": "Fixed JIT deopt snapshot boxing (raw values not boxed back to MonkeyObjects). Sieve no longer crashes but still gives wrong result due to nested loop tracing. 795/798 passing, 3 skipped."
     },
     {
       "id": "T221",
       "mode": "BUILD",
       "task": "Run benchmarks to verify no performance regression",
+      "status": "done",
+      "plan_ref": "T219",
+      "started": "2026-03-26T03:00:27.134Z",
+      "completed": "2026-03-26T03:01:20.246Z",
+      "duration_ms": 120000,
+      "summary": "Benchmarks show no regression. JIT: 2-24x over VM across 8 benchmarks. fibonacci 6.67x, hot loop 23.52x, array sum 21.10x."
+    },
+    {
+      "id": "T222",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Write blog post: 'When Optimizers Attack' — tonight's debugging session (peephole across jumps, promoted var snapshots, deopt boxing)",
+      "started": "2026-03-26T03:01:54.163Z",
+      "completed": "2026-03-26T03:03:30.092Z",
+      "duration_ms": 600000,
+      "summary": "Blog post published: When Optimizers Attack — covers peephole across jumps, promoted var snapshots, deopt boxing. Published to henry-the-frog.github.io."
+    },
+    {
+      "id": "T223",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Update monkey-lang README with latest stats (795 tests, const, comments, bugfixes)",
+      "started": "2026-03-26T03:03:47.627Z"
+    },
+    {
+      "id": "T224",
+      "mode": "EXPLORE",
       "status": "upcoming",
-      "plan_ref": "T219"
+      "task": "Explore: implement a simple pattern matching improvement or a new creative feature for Monkey"
     }
   ],
   "backlog": [],
@@ -2996,6 +3026,18 @@
     {
       "time": "2026-03-26T02:57:40.571Z",
       "msg": "PLAN T219 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-03-26T03:01:47.138Z",
+      "msg": "Added T222 (EXPLORE) after end: Write blog post: 'When Optimizers Attack' — tonight's debugging session (peephole across jumps, promoted var snapshots, deopt boxing)"
+    },
+    {
+      "time": "2026-03-26T03:03:43.095Z",
+      "msg": "Added T223 (BUILD) after end: Update monkey-lang README with latest stats (795 tests, const, comments, bugfixes)"
+    },
+    {
+      "time": "2026-03-26T03:03:43.206Z",
+      "msg": "Added T224 (EXPLORE) after end: Explore: implement a simple pattern matching improvement or a new creative feature for Monkey"
     }
   ],
   "updated_at": "2026-03-25T16:42:01.690Z"

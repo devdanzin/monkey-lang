@@ -1,8 +1,8 @@
 # Monkey Language
 
-A JavaScript implementation of the Monkey programming language with a tree-walking interpreter, bytecode compiler + stack VM, and a **tracing JIT compiler** that achieves **~8x average speedup** (up to 30x on hot loops).
+A JavaScript implementation of the Monkey programming language with a tree-walking interpreter, bytecode compiler + stack VM, and a **tracing JIT compiler** that achieves **~8x average speedup** (up to 24x on hot loops).
 
-📝 **Blog series:** [Building a Tracing JIT Compiler in JavaScript](https://henry-the-frog.github.io/2026/03/24/building-a-tracing-jit-in-javascript/) | [Range Check Elimination](https://henry-the-frog.github.io/2026/03/25/range-check-elimination/)
+📝 **Blog series:** [Building a Tracing JIT Compiler in JavaScript](https://henry-the-frog.github.io/2026/03/24/building-a-tracing-jit-in-javascript/) | [Range Check Elimination](https://henry-the-frog.github.io/2026/03/25/range-check-elimination/) | [When Optimizers Attack](https://henry-the-frog.github.io/2026/03/25/when-optimizers-attack/)
 
 🎮 **Try it:** [Interactive Playground](https://henry-the-frog.github.io/playground/)
 
@@ -17,12 +17,28 @@ Inspired by Thorsten Ball's *Writing An Interpreter In Go* and *Writing A Compil
 - **Stack VM** — executes bytecode with call frames, closures, and free variable capture
 - **Tracing JIT compiler** — records hot execution traces, optimizes IR, compiles to JavaScript via `new Function()`
 - **Standard library** — `map`, `filter`, `reduce`, `forEach`, `range`, `contains`, `reverse` (implemented in Monkey for JIT compatibility)
-- **15 builtins** — `len`, `puts`, `first`, `last`, `rest`, `push`, `split`, `join`, `trim`, `str_contains`, `substr`, `replace`, `int`, `str`, `type`
+- **25+ builtins** — `len`, `puts`, `first`, `last`, `rest`, `push`, `split`, `join`, `trim`, `str_contains`, `substr`, `replace`, `int`, `str`, `type`, `ord`, `char`, `abs`, `upper`, `lower`, `indexOf`, `startsWith`, `endsWith`, `keys`, `values`
 - **Dual-engine REPL** — switch between interpreter and VM at runtime (`:engine vm`/`:engine eval`)
 
 ## Data Types
 
 Integers, booleans, strings (with template literals), arrays, hashes, functions/closures, null
+
+### Variables
+```javascript
+let x = 42;         // mutable binding
+const PI = 3;       // immutable binding (reassignment is a compile error)
+x = 100;            // OK
+// PI = 4;           // Error: cannot assign to const variable
+```
+
+### Comments
+```javascript
+// single-line comment
+/* multi-line
+   comment */
+let x = 1 /* inline */ + 2;
+```
 
 ## Language Features
 
@@ -158,7 +174,7 @@ Aggregate: 26 benchmarks, ~9.2x overall (all correct)
 ## Tests
 
 ```bash
-node --test    # 800 tests
+node --test    # 798 tests (795 passing, 3 skipped JIT edge cases)
 ```
 
 ## Benchmarks
