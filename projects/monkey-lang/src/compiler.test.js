@@ -2762,3 +2762,100 @@ describe('Edge Cases - Day 11 Features', () => {
     testIntegerObject(compileAndRun('let total = 0; for (i in 0..10) { total = total + i; } total'), 45);
   });
 });
+
+describe('Push to 1000 - Additional Tests', () => {
+  // Range edge cases
+  it('single element range', () => {
+    const r = compileAndRun('0..1');
+    assert.deepEqual(r.elements.map(e => e.value), [0]);
+  });
+
+  it('range with computation', () => {
+    const r = compileAndRun('let n = 3; (n*2)..(n*3)');
+    assert.deepEqual(r.elements.map(e => e.value), [6, 7, 8]);
+  });
+
+  // Result edge cases
+  it('Ok with string', () => {
+    const r = compileAndRun('Ok("hello")');
+    assert.equal(r.inspect(), 'Ok(hello)');
+  });
+
+  it('Ok with array', () => {
+    const r = compileAndRun('Ok([1,2,3])');
+    assert.equal(r.inspect(), 'Ok([1, 2, 3])');
+  });
+
+  it('Err with integer', () => {
+    const r = compileAndRun('Err(404)');
+    assert.equal(r.inspect(), 'Err(404)');
+  });
+
+  it('is_ok on non-Result', () => {
+    const r = compileAndRun('is_ok(42)');
+    assert.equal(r.value, false);
+  });
+
+  // Method chaining edge cases
+  it('split then join', () => {
+    const r = compileAndRun('"a-b-c".split("-").join(", ")');
+    assert.equal(r.value, 'a, b, c');
+  });
+
+  it('chained string methods', () => {
+    const r = compileAndRun('" HeLLo ".trim().lower()');
+    assert.equal(r.value, 'hello');
+  });
+
+  // Type annotation edge cases
+  it('fn type annotation preserves defaults', () => {
+    testIntegerObject(compileAndRun('let f = fn(x: int = 5) -> int { x }; f()'), 5);
+  });
+
+  it('fn type annotation with multiple defaults', () => {
+    testIntegerObject(compileAndRun('let f = fn(x: int = 1, y: int = 2) -> int { x + y }; f()'), 3);
+  });
+
+  // Hash destructuring edge cases
+  it('destructure from function return', () => {
+    testIntegerObject(compileAndRun('let f = fn() { {"a": 1, "b": 2} }; let {a, b} = f(); a + b'), 3);
+  });
+
+  it('destructure single key', () => {
+    testIntegerObject(compileAndRun('let {x} = {"x": 99}; x'), 99);
+  });
+
+  // Match type patterns with complex expressions
+  it('match with function call as subject', () => {
+    testIntegerObject(compileAndRun('let f = fn() { 42 }; match (f()) { int(n) => n, _ => -1 }'), 42);
+  });
+
+  it('match with arithmetic as subject', () => {
+    testIntegerObject(compileAndRun('match (2 + 3) { int(n) => n * 10, _ => -1 }'), 50);
+  });
+
+  // .length edge cases
+  it('string template length', () => {
+    testIntegerObject(compileAndRun('let name = "wo"; `hello ${name}rld`.length'), 11);
+  });
+
+  // Pipe + range
+  it('range piped to sum', () => {
+    testIntegerObject(compileAndRun('0..5 |> sum'), 10);
+  });
+
+  // Comprehensive example
+  it('full featured example', () => {
+    testIntegerObject(compileAndRun(`
+      let safe_sqrt = fn(x: int) {
+        if (x < 0) { Err("negative") } else { Ok(x) }
+      };
+      let results = [];
+      for (i in 0..5) {
+        let r = safe_sqrt(i - 2);
+        results = results.push(r.unwrap_or(-1));
+      };
+      results.length
+    `), 5);
+  });
+});

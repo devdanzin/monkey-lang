@@ -1,7 +1,7 @@
 // Monkey Language Tree-Walking Evaluator
 
 import {
-  MonkeyInteger, MonkeyString, MonkeyReturnValue, MonkeyError,
+  MonkeyInteger, MonkeyString, MonkeyBoolean, MonkeyReturnValue, MonkeyError,
   MonkeyFunction, MonkeyArray, MonkeyHash, MonkeyBuiltin,
   MonkeyBreak, MonkeyContinue, MonkeyResult,
   Environment, TRUE, FALSE, NULL, OBJ, internString,
@@ -223,6 +223,35 @@ const builtins = new Map([
     for (let i = 0; i < args[0].elements.length; i++) result.push(new MonkeyArray([new MonkeyInteger(i), args[0].elements[i]]));
     return new MonkeyArray(result);
   })],
+  ['Ok', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError(`wrong number of arguments. got=${args.length}, want=1`);
+    return new MonkeyResult(true, args[0]);
+  })],
+  ['Err', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError(`wrong number of arguments. got=${args.length}, want=1`);
+    return new MonkeyResult(false, args[0]);
+  })],
+  ['is_ok', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError(`wrong number of arguments. got=${args.length}, want=1`);
+    if (!(args[0] instanceof MonkeyResult)) return FALSE;
+    return args[0].isOk ? TRUE : FALSE;
+  })],
+  ['is_err', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError(`wrong number of arguments. got=${args.length}, want=1`);
+    if (!(args[0] instanceof MonkeyResult)) return FALSE;
+    return args[0].isOk ? FALSE : TRUE;
+  })],
+  ['unwrap', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError(`wrong number of arguments. got=${args.length}, want=1`);
+    if (!(args[0] instanceof MonkeyResult)) return newError('unwrap requires a Result');
+    if (!args[0].isOk) return newError('unwrap called on Err: ' + args[0].value.inspect());
+    return args[0].value;
+  })],
+  ['unwrap_or', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError(`wrong number of arguments. got=${args.length}, want=2`);
+    if (!(args[0] instanceof MonkeyResult)) return args[0];
+    return args[0].isOk ? args[0].value : args[1];
+  })],
 ]);
 
 // --- Helpers ---
@@ -269,7 +298,7 @@ export function monkeyEval(node, env) {
     if (val instanceof MonkeyHash) {
       for (const name of node.names) {
         const key = internString(name.value);
-        const hashKey = key.hashKey();
+        const hashKey = key.fastHashKey();
         const pair = val.pairs.get(hashKey);
         env.set(name.value, pair ? pair.value : NULL);
       }

@@ -469,3 +469,133 @@ describe('More Evaluator Coverage', () => {
     assert.equal(testEval('2 + 3 * 4 - 1').value, 13);
   });
 });
+
+describe('Day 11 Features - Evaluator', () => {
+  // Hash destructuring
+  it('hash destructuring basic', () => {
+    const r = testEval('let {x, y} = {"x": 10, "y": 20}; x + y');
+    assert.equal(r.value, 30);
+  });
+
+  it('hash destructuring missing key', () => {
+    const r = testEval('let {z} = {"x": 10}; z');
+    assert.equal(r, NULL);
+  });
+
+  // Range expressions
+  it('range creates array', () => {
+    const r = testEval('0..5');
+    assert.equal(r.elements.length, 5);
+    assert.deepEqual(r.elements.map(e => e.value), [0, 1, 2, 3, 4]);
+  });
+
+  it('range in for loop', () => {
+    const r = testEval('let s = 0; for (i in 0..5) { s = s + i; } s');
+    assert.equal(r.value, 10);
+  });
+
+  it('empty range', () => {
+    const r = testEval('5..3');
+    assert.equal(r.elements.length, 0);
+  });
+
+  // Type patterns in match (evaluator path)
+  it('match int pattern', () => {
+    const r = testEval('match (42) { int(n) => n * 2, _ => 0 }');
+    assert.equal(r.value, 84);
+  });
+
+  it('match string pattern', () => {
+    const r = testEval('match ("hello") { int(n) => n, string(s) => s + " world" }');
+    assert.equal(r.value, 'hello world');
+  });
+
+  it('match bool pattern', () => {
+    const r = testEval('match (true) { bool(b) => !b, _ => null }');
+    assert.equal(r.value, false);
+  });
+
+  it('match array pattern', () => {
+    const r = testEval('match ([1,2,3]) { array(a) => len(a), _ => 0 }');
+    assert.equal(r.value, 3);
+  });
+
+  it('match wildcard after type patterns', () => {
+    const r = testEval('match (42) { string(s) => "str", _ => "other" }');
+    assert.equal(r.value, 'other');
+  });
+
+  // Result type (evaluator path)
+  it('Ok creates result', () => {
+    const r = testEval('Ok(42)');
+    assert.equal(r.inspect(), 'Ok(42)');
+  });
+
+  it('Err creates result', () => {
+    const r = testEval('Err("bad")');
+    assert.equal(r.inspect(), 'Err(bad)');
+  });
+
+  it('match Ok pattern extracts value', () => {
+    const r = testEval('match (Ok(42)) { Ok(v) => v + 1, Err(e) => -1 }');
+    assert.equal(r.value, 43);
+  });
+
+  it('match Err pattern extracts error', () => {
+    const r = testEval('match (Err("oops")) { Ok(v) => v, Err(e) => e }');
+    assert.equal(r.value, 'oops');
+  });
+
+  // Mixed features
+  it('range + destructuring', () => {
+    const r = testEval('let [a, b, c] = 0..3; a + b + c');
+    assert.equal(r.value, 3);
+  });
+
+  it('type annotation in match context', () => {
+    const r = testEval('let f = fn(x: int) { match (x) { 0 => "zero", int(n) => "num", _ => "?" } }; f(42)');
+    assert.equal(r.value, 'num');
+  });
+});
+
+describe('Push to 1000', () => {
+  it('nested array destructuring sum', () => {
+    const r = testEval('let [a, b, c] = [10, 20, 30]; a + b + c');
+    assert.equal(r.value, 60);
+  });
+
+  it('range sum via for-in', () => {
+    const r = testEval('let total = 0; for (i in 0..10) { total = total + i; } total');
+    assert.equal(r.value, 45);
+  });
+
+  it('Ok/Err round-trip', () => {
+    const r = testEval('unwrap(Ok(42))');
+    assert.equal(r.value, 42);
+  });
+
+  it('unwrap_or with Ok', () => {
+    const r = testEval('unwrap_or(Ok(42), 0)');
+    assert.equal(r.value, 42);
+  });
+
+  it('unwrap_or with Err', () => {
+    const r = testEval('unwrap_or(Err("bad"), -1)');
+    assert.equal(r.value, -1);
+  });
+
+  it('match Ok extracts inner value', () => {
+    const r = testEval('match (Ok(42)) { Ok(v) => v + 1, Err(e) => -1 }');
+    assert.equal(r.value, 43);
+  });
+
+  it('match Err extracts error', () => {
+    const r = testEval('match (Err("oops")) { Ok(v) => v, Err(e) => e }');
+    assert.equal(r.value, 'oops');
+  });
+
+  it('is_ok on Ok', () => {
+    const r = testEval('is_ok(Ok(1))');
+    assert.equal(r.value, true);
+  });
+});
