@@ -2334,9 +2334,19 @@
     {
       "id": "T227",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement dot access for hashes (h.name → h[\"name\"]) and update playground",
-      "started": "2026-03-26T03:15:29.541Z"
+      "started": "2026-03-26T03:15:29.541Z",
+      "completed": "2026-03-26T03:17:33.742Z",
+      "duration_ms": 600000,
+      "summary": "Dot access for hashes implemented. h.name, h.a.b, h.name = val. Pure parser sugar. 822 tests passing."
+    },
+    {
+      "id": "T228",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "Implement arrow functions (x => x * 2) for Monkey",
+      "started": "2026-03-26T03:17:44.027Z"
     }
   ],
   "backlog": [],
@@ -3084,6 +3094,10 @@
     {
       "time": "2026-03-26T03:15:29.312Z",
       "msg": "Added T227 (EXPLORE) after end: Implement dot access for hashes (h.name → h[\"name\"]) and update playground"
+    },
+    {
+      "time": "2026-03-26T03:17:43.810Z",
+      "msg": "Added T228 (EXPLORE) after end: Implement arrow functions (x => x * 2) for Monkey"
     }
   ],
   "updated_at": "2026-03-25T16:42:01.690Z"

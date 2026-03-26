@@ -2271,3 +2271,27 @@ describe('Dot Access', () => {
     testIntegerObject(compileAndRun('let h = {"x": 42}; h.x + h["x"]'), 84);
   });
 });
+
+describe('Arrow Functions', () => {
+  it('single param arrow', () => {
+    testIntegerObject(compileAndRun('let double = (x) => x * 2; double(5)'), 10);
+  });
+  it('multi param arrow', () => {
+    testIntegerObject(compileAndRun('let add = (a, b) => a + b; add(3, 4)'), 7);
+  });
+  it('no param arrow', () => {
+    testStringObject(compileAndRun('let greet = () => "hello"; greet()'), 'hello');
+  });
+  it('arrow with block body', () => {
+    testIntegerObject(compileAndRun('let f = (x) => { let y = x * 2; y + 1 }; f(5)'), 11);
+  });
+  it('arrow in pipe', () => {
+    testIntegerObject(compileAndRun('let double = (x) => x * 2; 5 |> double'), 10);
+  });
+  it('arrow as callback', () => {
+    testIntegerObject(compileAndRun('let apply = fn(f, x) { f(x) }; apply((x) => x * 3, 7)'), 21);
+  });
+  it('arrow does not conflict with match', () => {
+    testStringObject(compileAndRun('match (2) { 0 => "zero", 1 => "one", _ => "other" }'), 'other');
+  });
+});

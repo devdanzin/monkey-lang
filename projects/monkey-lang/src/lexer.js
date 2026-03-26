@@ -25,6 +25,7 @@ export const TokenType = {
   NULLISH: '??',
   OPTIONAL_CHAIN: '?.',
   DOT: '.',
+  ARROW: '=>',
   PIPE: '|>',
   EQ: '==',
   NOT_EQ: '!=',

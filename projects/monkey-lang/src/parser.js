@@ -381,7 +381,84 @@ export class Parser {
     return new ast.IndexExpression(token, left, key);
   }
 
+  parseArrowExpression(left) {
+    // x => expr — left must be an identifier
+    if (!(left instanceof ast.Identifier)) {
+      this.errors.push(`expected identifier before '=>', got ${left.constructor.name}`);
+      return null;
+    }
+    const token = this.curToken;
+    const params = [left];
+    this.nextToken(); // move to body
+    let body;
+    if (this.curToken.type === TokenType.LBRACE) {
+      body = this.parseBlockStatement();
+    } else {
+      const expr = this.parseExpression(Precedence.LOWEST);
+      body = new ast.BlockStatement(this.curToken, [new ast.ExpressionStatement(this.curToken, expr)]);
+    }
+    return new ast.FunctionLiteral(token, params, body);
+  }
+
   parseGroupedExpression() {
+    // Check if this is an arrow function: () => expr or (x) => expr or (x, y) => expr
+    // Save state for potential backtrack
+    const savedPos = this.lexer.position;
+    const savedReadPos = this.lexer.readPosition;
+    const savedCh = this.lexer.ch;
+    const savedCurToken = this.curToken;
+    const savedPeekToken = this.peekToken;
+
+    // Try to parse as arrow function params
+    this.nextToken();
+    const params = [];
+    let isArrow = false;
+
+    if (this.curToken.type === TokenType.RPAREN) {
+      // () => expr
+      if (this.peekToken.type === TokenType.ARROW) {
+        isArrow = true;
+      }
+    } else if (this.curToken.type === TokenType.IDENT) {
+      params.push(new ast.Identifier(this.curToken, this.curToken.literal));
+      while (this.peekToken.type === TokenType.COMMA) {
+        this.nextToken(); // consume comma
+        this.nextToken(); // move to next ident
+        if (this.curToken.type !== TokenType.IDENT) {
+          // Not a param list — backtrack
+          break;
+        }
+        params.push(new ast.Identifier(this.curToken, this.curToken.literal));
+      }
+      if (this.peekToken.type === TokenType.RPAREN) {
+        this.nextToken(); // consume )
+        if (this.peekToken.type === TokenType.ARROW) {
+          isArrow = true;
+        }
+      }
+    }
+
+    if (isArrow) {
+      this.nextToken(); // consume =>
+      this.nextToken(); // move to body
+      let body;
+      if (this.curToken.type === TokenType.LBRACE) {
+        body = this.parseBlockStatement();
+      } else {
+        const expr = this.parseExpression(Precedence.LOWEST);
+        body = new ast.BlockStatement(this.curToken, [new ast.ExpressionStatement(this.curToken, expr)]);
+      }
+      return new ast.FunctionLiteral(savedCurToken, params, body);
+    }
+
+    // Not an arrow function — restore and parse as grouped expression
+    // We can't easily backtrack the lexer, so re-lex from the saved position
+    this.lexer.position = savedPos;
+    this.lexer.readPosition = savedReadPos;
+    this.lexer.ch = savedCh;
+    this.curToken = savedCurToken;
+    this.peekToken = savedPeekToken;
+
     this.nextToken();
     const exp = this.parseExpression(Precedence.LOWEST);
     if (!this.expectPeek(TokenType.RPAREN)) return null;
