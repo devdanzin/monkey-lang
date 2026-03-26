@@ -2294,15 +2294,19 @@
     {
       "id": "T223",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Update monkey-lang README with latest stats (795 tests, const, comments, bugfixes)",
-      "started": "2026-03-26T03:03:47.627Z"
+      "started": "2026-03-26T03:03:47.627Z",
+      "completed": "2026-03-26T03:05:02.955Z",
+      "duration_ms": 120000,
+      "summary": "README updated: const declarations, comments, 25+ builtins, 795 tests, blog link. Pushed."
     },
     {
       "id": "T224",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Explore: implement a simple pattern matching improvement or a new creative feature for Monkey"
+      "status": "in-progress",
+      "task": "Explore: implement a simple pattern matching improvement or a new creative feature for Monkey",
+      "started": "2026-03-26T03:05:07.387Z"
     }
   ],
   "backlog": [],

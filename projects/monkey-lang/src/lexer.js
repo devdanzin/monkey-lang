@@ -22,6 +22,7 @@ export const TokenType = {
   GT_EQ: '>=',
   AND: '&&',
   OR: '||',
+  NULLISH: '??',
   EQ: '==',
   NOT_EQ: '!=',
   PLUS_ASSIGN: '+=',
@@ -310,7 +311,14 @@ export class Lexer {
         break;
       case ',': tok = new Token(TokenType.COMMA, ','); break;
       case ':': tok = new Token(TokenType.COLON, ':'); break;
-      case '?': tok = new Token(TokenType.QUESTION, '?'); break;
+      case '?':
+        if (this.peekChar() === '?') {
+          this.readChar();
+          tok = new Token(TokenType.NULLISH, '??');
+        } else {
+          tok = new Token(TokenType.QUESTION, '?');
+        }
+        break;
       case ';': tok = new Token(TokenType.SEMICOLON, ';'); break;
       case '(': tok = new Token(TokenType.LPAREN, '('); break;
       case ')': tok = new Token(TokenType.RPAREN, ')'); break;

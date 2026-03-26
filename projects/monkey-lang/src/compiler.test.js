@@ -2178,3 +2178,30 @@ describe('800 Club', () => {
     `), 5);
   });
 });
+
+describe('Null Coalescing', () => {
+  it('null ?? value', () => {
+    testIntegerObject(compileAndRun('null ?? 42'), 42);
+  });
+  it('value ?? default', () => {
+    testIntegerObject(compileAndRun('5 ?? 42'), 5);
+  });
+  it('false ?? default (false is not null)', () => {
+    testBooleanObject(compileAndRun('false ?? true'), false);
+  });
+  it('0 ?? default (0 is not null)', () => {
+    testIntegerObject(compileAndRun('0 ?? 42'), 0);
+  });
+  it('hash missing key ?? default', () => {
+    testStringObject(compileAndRun('let h = {"a": 1}; h["b"] ?? "missing"'), 'missing');
+  });
+  it('chained ??', () => {
+    testIntegerObject(compileAndRun('null ?? null ?? 42'), 42);
+  });
+  it('?? with function call', () => {
+    testIntegerObject(compileAndRun('let f = fn() { null }; f() ?? 99'), 99);
+  });
+  it('?? in expression', () => {
+    testIntegerObject(compileAndRun('(null ?? 5) + (null ?? 10)'), 15);
+  });
+});

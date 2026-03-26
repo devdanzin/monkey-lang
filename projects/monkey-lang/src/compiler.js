@@ -249,8 +249,10 @@ export class Compiler {
         const jumpEndPos = this.emit(Opcodes.OpJump, 0xFFFF);
         // Left was falsy: push false
         this.changeOperand(jumpFalsyPos, this.currentInstructions().length);
+        this.resetPeepholeState();
         this.emit(Opcodes.OpFalse);
         this.changeOperand(jumpEndPos, this.currentInstructions().length);
+        this.resetPeepholeState();
         return null;
       }
 
@@ -268,6 +270,28 @@ export class Compiler {
         err = this.compile(node.right);
         if (err) return err;
         this.changeOperand(jumpEndPos, this.currentInstructions().length);
+        this.resetPeepholeState();
+        return null;
+      }
+
+      // Handle '??': null coalescing (left ?? right)
+      if (node.operator === '??') {
+        let err = this.compile(node.left);
+        if (err) return err;
+        const sym = this.symbolTable.define('__nullish_' + this.currentInstructions().length);
+        this.emit(sym.scope === 'GLOBAL' ? Opcodes.OpSetGlobal : Opcodes.OpSetLocal, sym.index);
+        this.loadSymbol(sym);
+        this.emit(Opcodes.OpNull);
+        this.emit(Opcodes.OpEqual);
+        const jumpNotNullPos = this.emit(Opcodes.OpJumpNotTruthy, 0xFFFF);
+        err = this.compile(node.right);
+        if (err) return err;
+        const jumpEndPos2 = this.emit(Opcodes.OpJump, 0xFFFF);
+        this.changeOperand(jumpNotNullPos, this.currentInstructions().length);
+        this.resetPeepholeState();
+        this.loadSymbol(sym);
+        this.changeOperand(jumpEndPos2, this.currentInstructions().length);
+        this.resetPeepholeState();
         return null;
       }
 

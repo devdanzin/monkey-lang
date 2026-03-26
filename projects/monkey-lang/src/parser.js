@@ -6,15 +6,16 @@ import * as ast from './ast.js';
 const Precedence = {
   LOWEST: 1,
   ASSIGN: 2,      // =
-  OR: 3,           // ||
-  AND: 4,          // &&
-  EQUALS: 5,       // ==
-  LESSGREATER: 6,  // > or <
-  SUM: 7,          // +
-  PRODUCT: 8,      // *
-  PREFIX: 9,       // -X or !X
-  CALL: 10,        // myFunction(X)
-  INDEX: 11,       // array[index]
+  NULLISH: 3,     // ??
+  OR: 4,           // ||
+  AND: 5,          // &&
+  EQUALS: 6,       // ==
+  LESSGREATER: 7,  // > or <
+  SUM: 8,          // +
+  PRODUCT: 9,      // *
+  PREFIX: 10,      // -X or !X
+  CALL: 11,        // myFunction(X)
+  INDEX: 12,       // array[index]
 };
 
 const TOKEN_PRECEDENCE = {
@@ -25,6 +26,7 @@ const TOKEN_PRECEDENCE = {
   [TokenType.SLASH_ASSIGN]: Precedence.ASSIGN,
   [TokenType.PERCENT_ASSIGN]: Precedence.ASSIGN,
   [TokenType.QUESTION]: Precedence.OR,
+  [TokenType.NULLISH]: Precedence.NULLISH,
   [TokenType.PLUS_PLUS]: Precedence.CALL,   // postfix, high precedence
   [TokenType.MINUS_MINUS]: Precedence.CALL, // ternary has same precedence as OR
   [TokenType.EQ]: Precedence.EQUALS,
@@ -80,7 +82,7 @@ export class Parser {
     for (const op of [TokenType.PLUS, TokenType.MINUS, TokenType.SLASH,
       TokenType.ASTERISK, TokenType.PERCENT, TokenType.EQ, TokenType.NOT_EQ,
       TokenType.LT, TokenType.GT, TokenType.LT_EQ, TokenType.GT_EQ,
-      TokenType.AND, TokenType.OR]) {
+      TokenType.AND, TokenType.OR, TokenType.NULLISH]) {
       this.registerInfix(op, (left) => this.parseInfixExpression(left));
     }
     this.registerInfix(TokenType.LPAREN, (left) => this.parseCallExpression(left));
