@@ -296,6 +296,36 @@ const BUILTINS = [
     }
     return m === Infinity ? NULL : cachedInteger(m);
   }),
+  // range — range(n) or range(start, end) or range(start, end, step)
+  new MonkeyBuiltin((...args) => {
+    if (args.length < 1 || args.length > 3) return new MonkeyError(`wrong number of arguments. got=${args.length}, want=1-3`);
+    let start = 0, end, step = 1;
+    if (args.length === 1) {
+      end = args[0].value;
+    } else {
+      start = args[0].value;
+      end = args[1].value;
+      if (args.length === 3) step = args[2].value;
+    }
+    const result = [];
+    if (step > 0) {
+      for (let i = start; i < end; i += step) result.push(cachedInteger(i));
+    } else if (step < 0) {
+      for (let i = start; i > end; i += step) result.push(cachedInteger(i));
+    }
+    return new MonkeyArray(result);
+  }),
+  // flat — flatten one level
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyArray))
+      return new MonkeyError(`argument to \`flat\` must be ARRAY`);
+    const result = [];
+    for (const el of args[0].elements) {
+      if (el instanceof MonkeyArray) result.push(...el.elements);
+      else result.push(el);
+    }
+    return new MonkeyArray(result);
+  }),
 ];
 
 export class VM {

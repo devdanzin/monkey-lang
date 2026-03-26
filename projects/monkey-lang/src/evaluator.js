@@ -189,6 +189,26 @@ const builtins = new Map([
     for (const el of args[0].elements) { if (el instanceof MonkeyInteger && el.value < m) m = el.value; }
     return m === Infinity ? NULL : new MonkeyInteger(m);
   })],
+  ['range', new MonkeyBuiltin((...args) => {
+    let start = 0, end, step = 1;
+    if (args.length === 1) { end = args[0].value; }
+    else if (args.length === 2) { start = args[0].value; end = args[1].value; }
+    else if (args.length === 3) { start = args[0].value; end = args[1].value; step = args[2].value; }
+    else return newError('range requires 1-3 arguments');
+    const result = [];
+    if (step > 0) for (let i = start; i < end; i += step) result.push(new MonkeyInteger(i));
+    else if (step < 0) for (let i = start; i > end; i += step) result.push(new MonkeyInteger(i));
+    return new MonkeyArray(result);
+  })],
+  ['flat', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyArray)) return newError('flat requires one array argument');
+    const result = [];
+    for (const el of args[0].elements) {
+      if (el instanceof MonkeyArray) result.push(...el.elements);
+      else result.push(el);
+    }
+    return new MonkeyArray(result);
+  })],
 ]);
 
 // --- Helpers ---
