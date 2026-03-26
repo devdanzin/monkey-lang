@@ -443,6 +443,10 @@ function evalInfixExpression(op, left, right) {
     if (op === '>=') return nativeBoolToBooleanObject(left.value >= right.value);
     return newError(`unknown operator: ${left.type()} ${op} ${right.type()}`);
   }
+  // Array concatenation
+  if (left.type() === OBJ.ARRAY && right.type() === OBJ.ARRAY && op === '+') {
+    return new MonkeyArray([...left.elements, ...right.elements]);
+  }
   if (op === '==') return nativeBoolToBooleanObject(left === right);
   if (op === '!=') return nativeBoolToBooleanObject(left !== right);
   if (left.type() !== right.type()) {

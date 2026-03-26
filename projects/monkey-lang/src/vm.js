@@ -453,6 +453,9 @@ export class VM {
             }
             const n = left.value;
             this.push(new MonkeyString(n > 0 ? right.value.repeat(n) : ''));
+          } else if (left instanceof MonkeyArray && right instanceof MonkeyArray && op === Opcodes.OpAdd) {
+            // Array concatenation: [1,2] + [3,4] → [1,2,3,4]
+            this.push(new MonkeyArray([...left.elements, ...right.elements]));
           } else {
             throw new Error(`unsupported types for ${op}: ${left.type()} and ${right.type()}`);
           }
