@@ -1664,15 +1664,41 @@
     {
       "id": "T161",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Rebuild playground with match guards",
-      "started": "2026-03-26T18:22:01.718Z"
+      "started": "2026-03-26T18:22:01.718Z",
+      "completed": "2026-03-26T18:22:36.274Z",
+      "duration_ms": 60000,
+      "summary": "Playground rebuilt (385KB) with match guards + array module. Deployed to GH Pages."
     },
     {
       "id": "T162",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "SESSION FINAL (check time)",
+      "started": "2026-03-26T18:22:43.144Z",
+      "completed": "2026-03-26T18:22:43.257Z",
+      "duration_ms": 0,
+      "summary": "Skipped — ~1h53m remain."
+    },
+    {
+      "id": "T164",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Integration tests: complex programs combining modules + enums + comprehensions + match guards. Target: 1100 tests.",
+      "started": "2026-03-26T18:23:06.713Z"
+    },
+    {
+      "id": "T165",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "SESSION FINAL (check time)"
+      "task": "Add match example to playground showing guards + enum + type patterns"
+    },
+    {
+      "id": "T166",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final push + daily log update (CHECK TIME)"
     }
   ],
   "updated_at": "2026-03-26T14:02:05.404Z",
@@ -2232,6 +2258,18 @@
     {
       "time": "2026-03-26T18:17:22.641Z",
       "msg": "PLAN T158 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-03-26T18:22:59.532Z",
+      "msg": "Added T164 (BUILD) after end: Integration tests: complex programs combining modules + enums + comprehensions + match guards. Target: 1100 tests."
+    },
+    {
+      "time": "2026-03-26T18:22:59.643Z",
+      "msg": "Added T165 (BUILD) after end: Add match example to playground showing guards + enum + type patterns"
+    },
+    {
+      "time": "2026-03-26T18:22:59.754Z",
+      "msg": "Added T166 (MAINTAIN) after end: Final push + daily log update (CHECK TIME)"
     }
   ]
 }

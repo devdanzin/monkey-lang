@@ -3124,3 +3124,84 @@ describe('Match Guards (compiler+VM)', () => {
     assert.equal(r.value, 'big');
   });
 });
+
+describe('Integration: Modules + Enums + Comprehensions + Guards', () => {
+  it('classify primes with enum and guard', () => {
+    const r = compileAndRun(`
+      import "algorithms" for isPrime;
+      enum Category { Prime, Composite };
+      let classify = fn(n) {
+        match (n) {
+          n when isPrime(n) => Category.Prime,
+          _ => Category.Composite
+        }
+      };
+      classify(17) == Category.Prime
+    `);
+    assert.equal(r.value, true);
+  });
+
+  it('comprehension with module functions and guards', () => {
+    const r = compileAndRun(`
+      import "algorithms" for isPrime;
+      import "array" for sum;
+      let primeSquares = [n * n for n in range(2, 20) if isPrime(n)];
+      sum(primeSquares)
+    `);
+    // primes: 2,3,5,7,11,13,17,19 → squares: 4,9,25,49,121,169,289,361 → sum: 1027
+    assert.equal(r.value, 1027);
+  });
+
+  it('enum + match guard + module in function', () => {
+    testIntegerObject(compileAndRun(`
+      import "math" for abs;
+      enum Sign { Positive, Negative, Zero };
+      let getSign = fn(x) {
+        match (x) {
+          n when n > 0 => Sign.Positive,
+          0 => Sign.Zero,
+          _ => Sign.Negative
+        }
+      };
+      let s = getSign(-42);
+      if (s == Sign.Negative) { abs(-42) } else { 0 }
+    `), 42);
+  });
+
+  it('array module + comprehension + destructuring', () => {
+    const r = compileAndRun(`
+      import "array" for zip, sum;
+      let names = ["a", "b", "c"];
+      let scores = [10, 20, 30];
+      let pairs = zip(names, scores);
+      sum([p[1] for p in pairs])
+    `);
+    // 10 + 20 + 30 = 60
+    assert.equal(r.value, 60);
+  });
+
+  it('full program: grade calculator', () => {
+    const r = compileAndRun(`
+      import "array" for sum;
+      
+      enum Grade { A, B, C, D, F };
+      
+      let toGrade = fn(score) {
+        match (score) {
+          n when n >= 90 => Grade.A,
+          n when n >= 80 => Grade.B,
+          n when n >= 70 => Grade.C,
+          n when n >= 60 => Grade.D,
+          _ => Grade.F
+        }
+      };
+      
+      let scores = [95, 82, 71, 55, 98, 68];
+      let avg = sum(scores) / len(scores);
+      let grade = toGrade(avg);
+      grade == Grade.C
+    `);
+    // avg = 469/6 = 78 → B
+    assert.equal(r.value, true);
+  });
+});
