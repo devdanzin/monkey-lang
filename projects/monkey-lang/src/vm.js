@@ -4,7 +4,7 @@
 import { Opcodes, readOperands, lookup } from './code.js';
 import { CompiledFunction } from './compiler.js';
 import {
-  MonkeyInteger, MonkeyBoolean, MonkeyString, MonkeyNull,
+  MonkeyInteger, MonkeyFloat, MonkeyBoolean, MonkeyString, MonkeyNull,
   MonkeyArray, MonkeyHash, MonkeyBuiltin, MonkeyError,
   MonkeyResult, MonkeyEnum,
   TRUE, FALSE, NULL, cachedInteger, internString,
@@ -553,6 +553,20 @@ export class VM {
               case Opcodes.OpMod: result = left.value % right.value; break;
             }
             this.push(cachedInteger(result));
+          } else if ((left instanceof MonkeyFloat || right instanceof MonkeyFloat) &&
+                     (left instanceof MonkeyInteger || left instanceof MonkeyFloat) &&
+                     (right instanceof MonkeyInteger || right instanceof MonkeyFloat)) {
+            // Float arithmetic
+            if (recording()) { this._abortRecording(); }
+            let result;
+            switch (op) {
+              case Opcodes.OpAdd: result = left.value + right.value; break;
+              case Opcodes.OpSub: result = left.value - right.value; break;
+              case Opcodes.OpMul: result = left.value * right.value; break;
+              case Opcodes.OpDiv: result = left.value / right.value; break;
+              case Opcodes.OpMod: result = left.value % right.value; break;
+            }
+            this.push(new MonkeyFloat(result));
           } else if (left instanceof MonkeyString && right instanceof MonkeyString && op === Opcodes.OpAdd) {
             if (recording()) {
               // Record string concatenation with unbox/box for promotion
@@ -652,6 +666,17 @@ export class VM {
               default: throw new Error(`unknown operator for booleans`);
             }
             this.push(result ? TRUE : FALSE);
+          } else if ((left2 instanceof MonkeyFloat || right2 instanceof MonkeyFloat) &&
+                     (left2 instanceof MonkeyInteger || left2 instanceof MonkeyFloat) &&
+                     (right2 instanceof MonkeyInteger || right2 instanceof MonkeyFloat)) {
+            if (recording()) { this._abortRecording(); }
+            let result;
+            switch (op) {
+              case Opcodes.OpEqual: result = left2.value === right2.value; break;
+              case Opcodes.OpNotEqual: result = left2.value !== right2.value; break;
+              case Opcodes.OpGreaterThan: result = left2.value > right2.value; break;
+            }
+            this.push(result ? TRUE : FALSE);
           } else if (left2 instanceof MonkeyString && right2 instanceof MonkeyString) {
             if (recording()) { this._abortRecording(); }
             let result;
@@ -679,6 +704,11 @@ export class VM {
 
         case Opcodes.OpMinus: {
           const operand = this.pop();
+          if (operand instanceof MonkeyFloat) {
+            if (recording()) { this._abortRecording(); }
+            this.push(new MonkeyFloat(-operand.value));
+            break;
+          }
           if (!(operand instanceof MonkeyInteger)) {
             throw new Error(`unsupported type for negation: ${operand.type()}`);
           }

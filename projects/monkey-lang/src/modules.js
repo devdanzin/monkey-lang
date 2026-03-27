@@ -2,9 +2,10 @@
 // Built-in modules that can be imported with: import "moduleName"
 // Each module is a hash of functions/constants.
 
-import { MonkeyInteger, MonkeyString, MonkeyBuiltin, MonkeyHash, MonkeyNull, MonkeyBoolean, MonkeyArray } from './object.js';
+import { MonkeyInteger, MonkeyFloat, MonkeyString, MonkeyBuiltin, MonkeyHash, MonkeyNull, MonkeyBoolean, MonkeyArray } from './object.js';
 
 function mkInt(v) { return new MonkeyInteger(v); }
+function mkFloat(v) { return new MonkeyFloat(v); }
 function mkStr(v) { return new MonkeyString(v); }
 function mkBool(v) { return v ? MonkeyBoolean.TRUE || new MonkeyBoolean(true) : MonkeyBoolean.FALSE || new MonkeyBoolean(false); }
 

@@ -85,7 +85,16 @@ export class Identifier {
 export class IntegerLiteral {
   constructor(token, value) {
     this.token = token;
-    this.value = value; // number
+    this.value = value;
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return this.token.literal; }
+}
+
+export class FloatLiteral {
+  constructor(token, value) {
+    this.token = token;
+    this.value = value;
   }
   tokenLiteral() { return this.token.literal; }
   toString() { return this.token.literal; }

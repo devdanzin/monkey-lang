@@ -1784,21 +1784,58 @@
     {
       "id": "T174",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add sys module: time (epoch ms), random (int range), sleep (ms), version",
-      "started": "2026-03-26T18:36:26.193Z"
+      "started": "2026-03-26T18:36:26.193Z",
+      "completed": "2026-03-26T18:37:15.339Z",
+      "duration_ms": 120000,
+      "summary": "Sys module: time, random, version. 7 modules. 1120 tests."
     },
     {
       "id": "T175",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Push monkey-lang to GitHub with updated tag v0.2.0"
+      "status": "done",
+      "task": "Push monkey-lang to GitHub with updated tag v0.2.0",
+      "started": "2026-03-26T18:37:25.876Z",
+      "completed": "2026-03-26T18:37:49.506Z",
+      "duration_ms": 30000,
+      "summary": "Pushed + tagged v0.2.0 to GitHub."
     },
     {
       "id": "T176",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Daily log update + final push (BOUNDARY CHECK)",
+      "started": "2026-03-26T18:38:14.107Z",
+      "completed": "2026-03-26T18:38:14.219Z",
+      "duration_ms": 0,
+      "summary": "Skipped — 1h37m remain."
+    },
+    {
+      "id": "T177",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Create GitHub release v0.2.0 with detailed release notes",
+      "started": "2026-03-26T18:38:25.161Z",
+      "completed": "2026-03-26T18:38:52.131Z",
+      "duration_ms": 60000,
+      "summary": "GitHub release v0.2.0 created with detailed release notes. https://github.com/henry-the-frog/monkey-lang/releases/tag/v0.2.0"
+    },
+    {
+      "id": "T178",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add float literal support: lexer (detect .), object (MonkeyFloat), operators, math module returns floats",
+      "started": "2026-03-26T18:39:01.330Z",
+      "completed": "2026-03-27T01:16:37.617Z",
+      "duration_ms": 60000,
+      "summary": "Float literals already implemented by previous session — lexer, parser, object, compiler, VM all have float support. 1117 tests passing, 0 failures."
+    },
+    {
+      "id": "T179",
+      "mode": "MAINTAIN",
       "status": "upcoming",
-      "task": "Daily log update + final push (BOUNDARY CHECK)"
+      "task": "Session wrap (BOUNDARY CHECK)"
     }
   ],
   "updated_at": "2026-03-26T14:02:05.404Z",
@@ -2410,6 +2447,18 @@
     {
       "time": "2026-03-26T18:36:18.883Z",
       "msg": "Added T176 (MAINTAIN) after end: Daily log update + final push (BOUNDARY CHECK)"
+    },
+    {
+      "time": "2026-03-26T18:38:24.703Z",
+      "msg": "Added T177 (BUILD) after end: Create GitHub release v0.2.0 with detailed release notes"
+    },
+    {
+      "time": "2026-03-26T18:38:24.814Z",
+      "msg": "Added T178 (BUILD) after end: Add float literal support: lexer (detect .), object (MonkeyFloat), operators, math module returns floats"
+    },
+    {
+      "time": "2026-03-26T18:38:24.926Z",
+      "msg": "Added T179 (MAINTAIN) after end: Session wrap (BOUNDARY CHECK)"
     }
   ]
 }

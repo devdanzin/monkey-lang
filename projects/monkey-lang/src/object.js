@@ -2,6 +2,7 @@
 
 export const OBJ = {
   INTEGER: 'INTEGER',
+  FLOAT: 'FLOAT',
   BOOLEAN: 'BOOLEAN',
   NULL: 'NULL',
   STRING: 'STRING',
@@ -21,6 +22,14 @@ export class MonkeyInteger {
   // Fast hash key: use raw value with type tag for Map identity
   // Integers: use number directly (no collision with strings since Map uses SameValueZero)
   fastHashKey() { return this.value; }
+}
+
+export class MonkeyFloat {
+  constructor(value) { this.value = value; }
+  type() { return OBJ.FLOAT; }
+  inspect() { return String(this.value); }
+  hashKey() { if (this._hk === undefined) this._hk = `float:${this.value}`; return this._hk; }
+  fastHashKey() { return this.value + 0.1; } // offset to avoid collision with integers
 }
 
 export class MonkeyBoolean {

@@ -3,7 +3,7 @@
 
 import { Opcodes, make, concatInstructions } from './code.js';
 import { SymbolTable, SCOPE } from './symbol-table.js';
-import { MonkeyInteger, MonkeyString, MonkeyHash, internString, MonkeyEnum } from './object.js';
+import { MonkeyInteger, MonkeyFloat, MonkeyString, MonkeyHash, internString, MonkeyEnum } from './object.js';
 import * as ast from './ast.js';
 import { getModule } from './modules.js';
 
@@ -91,6 +91,9 @@ export class Compiler {
   tryFoldConstant(node) {
     if (node instanceof ast.IntegerLiteral) {
       return new MonkeyInteger(node.value);
+    }
+    if (node instanceof ast.FloatLiteral) {
+      return new MonkeyFloat(node.value);
     }
     if (node instanceof ast.PrefixExpression && node.operator === '-') {
       const right = this.tryFoldConstant(node.right);
@@ -407,6 +410,9 @@ export class Compiler {
     } else if (node instanceof ast.IntegerLiteral) {
       const idx = this.addConstant(new MonkeyInteger(node.value));
       this.emitInt(Opcodes.OpConstant, idx);
+    } else if (node instanceof ast.FloatLiteral) {
+      const idx = this.addConstant(new MonkeyFloat(node.value));
+      this.emit(Opcodes.OpConstant, idx);
     } else if (node instanceof ast.StringLiteral) {
       const idx = this.addConstant(internString(node.value));
       this.emit(Opcodes.OpConstant, idx);

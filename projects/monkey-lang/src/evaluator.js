@@ -1,7 +1,7 @@
 // Monkey Language Tree-Walking Evaluator
 
 import {
-  MonkeyInteger, MonkeyString, MonkeyBoolean, MonkeyReturnValue, MonkeyError,
+  MonkeyInteger, MonkeyFloat, MonkeyString, MonkeyBoolean, MonkeyReturnValue, MonkeyError,
   MonkeyFunction, MonkeyArray, MonkeyHash, MonkeyBuiltin,
   MonkeyBreak, MonkeyContinue, MonkeyResult, MonkeyEnum,
   Environment, TRUE, FALSE, NULL, OBJ, internString,
@@ -348,6 +348,7 @@ export function monkeyEval(node, env) {
 
   // Expressions
   if (node instanceof AST.IntegerLiteral) return new MonkeyInteger(node.value);
+  if (node instanceof AST.FloatLiteral) return new MonkeyFloat(node.value);
   if (node instanceof AST.StringLiteral) return internString(node.value);
   if (node instanceof AST.BooleanLiteral) return nativeBoolToBooleanObject(node.value);
 
@@ -678,13 +679,15 @@ function evalBangOperator(right) {
 }
 
 function evalMinusPrefix(right) {
+  if (right.type() === OBJ.FLOAT) return new MonkeyFloat(-right.value);
   if (right.type() !== OBJ.INTEGER) return newError(`unknown operator: -${right.type()}`);
   return new MonkeyInteger(-right.value);
 }
 
 function evalInfixExpression(op, left, right) {
-  if (left.type() === OBJ.INTEGER && right.type() === OBJ.INTEGER) {
-    return evalIntegerInfix(op, left, right);
+  if ((left.type() === OBJ.INTEGER || left.type() === OBJ.FLOAT) && 
+      (right.type() === OBJ.INTEGER || right.type() === OBJ.FLOAT)) {
+    return evalNumericInfix(op, left, right);
   }
   // String * Integer or Integer * String
   if (op === '*') {
@@ -724,14 +727,16 @@ function evalInfixExpression(op, left, right) {
   return newError(`unknown operator: ${left.type()} ${op} ${right.type()}`);
 }
 
-function evalIntegerInfix(op, left, right) {
+function evalNumericInfix(op, left, right) {
   const l = left.value, r = right.value;
+  const isFloat = left.type() === OBJ.FLOAT || right.type() === OBJ.FLOAT;
+  const mkNum = (v) => isFloat ? new MonkeyFloat(v) : new MonkeyInteger(v);
   switch (op) {
-    case '+': return new MonkeyInteger(l + r);
-    case '-': return new MonkeyInteger(l - r);
-    case '*': return new MonkeyInteger(l * r);
-    case '/': return new MonkeyInteger(Math.trunc(l / r));
-    case '%': return new MonkeyInteger(l % r);
+    case '+': return mkNum(l + r);
+    case '-': return mkNum(l - r);
+    case '*': return mkNum(l * r);
+    case '/': return isFloat ? new MonkeyFloat(l / r) : new MonkeyInteger(Math.trunc(l / r));
+    case '%': return mkNum(l % r);
     case '<': return nativeBoolToBooleanObject(l < r);
     case '>': return nativeBoolToBooleanObject(l > r);
     case '<=': return nativeBoolToBooleanObject(l <= r);
@@ -741,6 +746,9 @@ function evalIntegerInfix(op, left, right) {
     default: return newError(`unknown operator: ${left.type()} ${op} ${right.type()}`);
   }
 }
+
+// Keep old name for backward compat in case anything references it
+const evalIntegerInfix = evalNumericInfix;
 
 function evalIfExpression(node, env) {
   const condition = monkeyEval(node.condition, env);
