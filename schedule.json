@@ -1887,14 +1887,43 @@
     {
       "id": "T182",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "placeholder"
+      "status": "done",
+      "task": "placeholder",
+      "started": "2026-03-27T01:20:40.559Z",
+      "completed": "2026-03-27T01:20:40.671Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled placeholder."
+    },
+    {
+      "id": "T186",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Fix functional module: compose, curry, memoize that actually work",
+      "task": null,
+      "started": "2026-03-27T01:20:49.849Z",
+      "completed": "2026-03-27T01:21:08.614Z",
+      "duration_ms": 30000,
+      "summary": "Plan: add compose/curry/partial/memoize as Monkey source in stdlib, export via functional module."
+    },
+    {
+      "id": "T188",
+      "mode": "BUILD",
+      "task": "Add compose, curry, partial, memoize to stdlib.js as Monkey source. Fix functional module to export these. Tests.",
+      "status": "in-progress",
+      "plan_ref": "T186",
+      "started": "2026-03-27T01:21:15.505Z"
     },
     {
       "id": "T183",
       "mode": "MAINTAIN",
       "status": "upcoming",
       "task": "Final session MAINTAIN: git push, daily log, CURRENT.md session-ended"
+    },
+    {
+      "id": "T187",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "placeholder"
     }
   ],
   "updated_at": "2026-03-26T14:02:05.404Z",
@@ -2538,6 +2567,18 @@
     {
       "time": "2026-03-27T01:19:13.524Z",
       "msg": "PLAN T181 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-03-27T01:20:46.491Z",
+      "msg": "Added T186 (PLAN) after T182: Fix functional module: compose, curry, memoize that actually work"
+    },
+    {
+      "time": "2026-03-27T01:20:46.605Z",
+      "msg": "Added T187 (BUILD) after end: placeholder"
+    },
+    {
+      "time": "2026-03-27T01:21:04.757Z",
+      "msg": "PLAN T186 filled 1 BUILD tasks"
     }
   ]
 }

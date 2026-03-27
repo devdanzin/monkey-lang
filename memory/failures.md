@@ -45,3 +45,12 @@ Track recurring issues so future sessions don't repeat them.
 **Fix:** Never kill the gateway process directly. Use `openclaw gateway stop` then `openclaw gateway start`. To clear stale `runningAtMs`, use cron update API to patch the job state, not file edits.
 **Prevention:** NEVER run `kill` on the gateway PID. The gateway is your lifeline. If a cron job is stuck in "already-running" state, the correct approach is to update it via the cron API or wait for the gateway to notice the session ended.
 **Impact:** ~6.5 hours of total downtime. Session B completely lost.
+
+### Cron "already-running" lock and gateway self-kill (2026-03-26) — CONSOLIDATED LESSONS
+**Key lessons:**
+1. **`cron run` gateway timeout ≠ failure.** The 60s RPC timeout fires before long sessions produce output. The session IS running. Do NOT retry — retrying sets a second `runningAtMs` that may never clear.
+2. **Never `kill` the gateway PID.** You are hosted by it. Use `openclaw gateway stop/start` only as absolute last resort, and understand you'll go offline.
+3. **Never edit jobs.json directly.** The gateway holds state in memory and overwrites the file. Use the cron API for all job mutations.
+4. **To check if a session is truly running:** Check CURRENT.md modification time, not the cron job state. If CURRENT.md is stale but cron says "already-running", the session died without clearing the lock.
+5. **If stuck in "already-running":** Wait. The gateway may eventually time out the session (via timeoutSeconds). If it doesn't, `openclaw gateway stop && openclaw gateway start` is the nuclear option — but schedule it for between session boundaries, not during active work.
+6. **The watchdog should detect AND recover**, not just alert. Having it as a main-session systemEvent means I can `cron run` to restart — but I must NOT retry if I get a timeout response.
