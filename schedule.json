@@ -1854,9 +1854,31 @@
     {
       "id": "T181",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Default parameters + TASKS.md cleanup",
-      "task": null
+      "task": null,
+      "started": "2026-03-27T01:19:03.693Z",
+      "completed": "2026-03-27T01:19:16.902Z",
+      "duration_ms": 30000,
+      "summary": "Plan: 2 BUILD tasks — default params + TASKS.md cleanup"
+    },
+    {
+      "id": "T184",
+      "mode": "BUILD",
+      "task": "Default function parameters: fn add(x, y = 0). Parser: detect = after param, store defaults in AST. Compiler: emit null check + default load for missing args. Evaluator: same. Tests.",
+      "status": "done",
+      "plan_ref": "T181",
+      "started": "2026-03-27T01:19:24.008Z",
+      "completed": "2026-03-27T01:19:43.219Z",
+      "duration_ms": 60000,
+      "summary": "Default parameters already fully implemented: parser, compiler, evaluator, 10+ tests. No work needed."
+    },
+    {
+      "id": "T185",
+      "mode": "BUILD",
+      "task": "Update TASKS.md with current stats: 1117 tests, 7 modules, v0.2.0, all Day 11 features",
+      "status": "upcoming",
+      "plan_ref": "T181"
     },
     {
       "id": "T182",
@@ -2508,6 +2530,10 @@
     {
       "time": "2026-03-27T01:18:53.572Z",
       "msg": "Added T183 (MAINTAIN) after end: Final session MAINTAIN: git push, daily log, CURRENT.md session-ended"
+    },
+    {
+      "time": "2026-03-27T01:19:13.524Z",
+      "msg": "PLAN T181 filled 2 BUILD tasks"
     }
   ]
 }
