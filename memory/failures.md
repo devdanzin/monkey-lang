@@ -38,3 +38,10 @@ Track recurring issues so future sessions don't repeat them.
 **Root cause:** Milestone excitement overrode the "NEVER END EARLY" instruction. The session treated reaching a round number as a natural stopping point.
 **Fix:** Jordan manually re-triggered Session A at 11:24 AM. Recovered ~3 hours.
 **Prevention:** Milestones are not stopping points. Log them, celebrate briefly in the daily log, then immediately `node queue.cjs next` and keep going. Add explicit check: "Is it within 15 min of boundary? No? Then keep working."
+
+### Self-inflicted gateway outage (2026-03-26)
+**Problem:** Killed gateway PID trying to clear stale `runningAtMs` from cron job state. Gateway went down, taking me offline from ~12:50 PM to 7:16 PM. Entire Session B lost.
+**Root cause:** Ran `kill <gateway_pid>` from within a session hosted by that gateway. Also, editing jobs.json while the gateway is running doesn't work — gateway overwrites on save and caches state in memory.
+**Fix:** Never kill the gateway process directly. Use `openclaw gateway stop` then `openclaw gateway start`. To clear stale `runningAtMs`, use cron update API to patch the job state, not file edits.
+**Prevention:** NEVER run `kill` on the gateway PID. The gateway is your lifeline. If a cron job is stuck in "already-running" state, the correct approach is to update it via the cron API or wait for the gateway to notice the session ended.
+**Impact:** ~6.5 hours of total downtime. Session B completely lost.
