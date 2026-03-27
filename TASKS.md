@@ -10,22 +10,22 @@
 - [x] Work dashboard → **henry-the-frog.github.io/dashboard/** (LIVE)
   - Static site + generate.cjs pipeline, 15 tests, GitHub Pages
   - Timeline, heatmap, sparkline, PR tracking, blog posts, mode adherence, collapsible sections
-- [ ] Monkey language interpreter + compiler + **tracing JIT** → **github.com/henry-the-frog/monkey-lang**
-  - Full lexer, Pratt parser, tree-walking evaluator, 40 tests
-  - Stack VM compiler: 31 opcodes, closures, builtins, 152 tests
-  - Optimizations: superinstructions, constant-operand opcodes, constant folding, opcode specialization (2.19x vs eval)
-  - **Tracing JIT**: trace recording, IR (~25 opcodes), JS codegen, optimizer (guard elim, const fold, DCE)
-  - Side traces, function inlining (depth 3), loop var promotion, recursive fn compilation, abort blacklist
-  - JIT diagnostics (getStats, dumpTrace), abort blacklist for untraceable code
-  - Pre-loop codegen, deoptimization snapshots, side trace inlining, hash LICM, string variable promotion
-  - **Language extensions**: for-loops, for-in iteration, break/continue, string templates, compound assignment, negative indexing, string multiplication, <=/>=/&&/||, escape sequences, array/hash mutation, mutable closures (OpSetFree)
-  - **Stdlib**: map, filter, reduce, forEach, range, contains, reverse, sum, max, min, zip, enumerate, flat, sort
-  - **520 tests | 30 benchmarks | ~8x aggregate | 30+ language features | 10 examples | transpiler | JIT bug fixed
+- [ ] Monkey language interpreter + compiler + **tracing JIT** → **github.com/henry-the-frog/monkey-lang** (v0.2.0)
+  - Full lexer, Pratt parser, tree-walking evaluator
+  - Stack VM compiler: 35+ opcodes, closures, builtins
+  - Optimizations: superinstructions, constant-operand opcodes, constant folding, opcode specialization
+  - **Tracing JIT**: trace recording, IR, JS codegen, 12 optimizer passes (guard elim, const fold, DCE, CSE, LICM, type specialization, etc.)
+  - Side traces, function inlining (depth 3), loop var promotion, recursive fn compilation, deoptimization
+  - **Language features (50+)**: type annotations (fn(x: int) -> int), match with guards/or-patterns/type patterns, Result type (Ok/Err), enums, modules (import/selective/aliased), array comprehensions, ranges (0..10), method syntax (.upper(), .push()), default params, destructuring, spread/rest, pipe operator, arrow functions, null coalescing, optional chaining, for/for-in/while/do-while, break/continue, string templates, compound assignment
+  - **7 stdlib modules**: math, string, algorithms, array, json, sys, functional
+  - **Transpiler**: Monkey → JavaScript
+  - **Interactive playground**: henry-the-frog.github.io/playground/
+  - **1117 tests | 30 benchmarks | ~8-10x JIT aggregate | 50+ language features | 13 examples**
 - [ ] OpenClaw PR #50001 — awaiting maintainer merge (CI green, approved by WingedDragon)
 - [ ] OpenClaw PR #50692 — Anthropic native web search (#49949), 18 tests, submitted
 - [ ] OpenClaw PR #51803 — Gateway restart message persistence (#51620), 15 tests, submitted
 
-## Today (2026-03-25) — Day 10
+## Day 10 (2026-03-25)
 - [x] JIT: Range check elimination — GUARD_BOUNDS upper bound removed when loop condition proves it (19% improvement on len-bounded loops)
 - [x] JIT: UNBOX_INT deduplication pass — eliminates duplicate unboxings CSE missed
 - [x] JIT: Induction variable analysis — full GUARD_BOUNDS elimination for standard array loops
