@@ -1004,9 +1004,19 @@
     {
       "id": "T97",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add WASM binary size breakdown: section sizes, function sizes, per-export analysis",
-      "started": "2026-03-30T18:18:44.941Z"
+      "started": "2026-03-30T18:18:44.941Z",
+      "completed": "2026-03-30T18:20:43.469Z",
+      "duration_ms": 180000,
+      "summary": "WASM binary analysis with section size bars and :analyze REPL command. Shows section breakdown, function counts, exports."
+    },
+    {
+      "id": "T98",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add WASM string ordering comparisons (<, >, <=, >=) for sorting strings",
+      "started": "2026-03-30T18:20:51.813Z"
     }
   ],
   "backlog": [],
@@ -1314,6 +1324,10 @@
     {
       "time": "2026-03-30T18:18:44.824Z",
       "msg": "Added T97 (BUILD) after end: Add WASM binary size breakdown: section sizes, function sizes, per-export analysis"
+    },
+    {
+      "time": "2026-03-30T18:20:51.696Z",
+      "msg": "Added T98 (BUILD) after end: Add WASM string ordering comparisons (<, >, <=, >=) for sorting strings"
     }
   ]
 }

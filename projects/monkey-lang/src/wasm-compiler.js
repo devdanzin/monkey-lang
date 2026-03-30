@@ -221,6 +221,10 @@ export class WasmCompiler {
     const strEqIdx = this.builder.addImport('env', '__str_eq', [ValType.i32, ValType.i32], [ValType.i32]);
     this._runtimeFuncs.strEq = strEqIdx;
 
+    // Import __str_cmp: compare two strings, returns -1/0/1
+    const strCmpIdx = this.builder.addImport('env', '__str_cmp', [ValType.i32, ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.strCmp = strCmpIdx;
+
     // Import __rest from JS host: env.__rest(arr_ptr: i32) → i32 (new array without first)
     const restIdx = this.builder.addImport('env', '__rest', [ValType.i32], [ValType.i32]);
     this._runtimeFuncs.rest = restIdx;
@@ -750,6 +754,23 @@ export class WasmCompiler {
       this.currentBody.call(this._runtimeFuncs.strEq);
       if (node.operator === '!=') {
         this.currentBody.emit(Op.i32_eqz);
+      }
+      return;
+    }
+
+    // String ordering comparisons (<, >, <=, >=)
+    if ((node.operator === '<' || node.operator === '>' ||
+         node.operator === '<=' || node.operator === '>=') &&
+        this._isStringExpression(node.left, node.right)) {
+      this.compileNode(node.left);
+      this.compileNode(node.right);
+      this.currentBody.call(this._runtimeFuncs.strCmp);
+      // strCmp returns -1/0/1
+      switch (node.operator) {
+        case '<':  this.currentBody.i32Const(0); this.currentBody.emit(Op.i32_lt_s); break;
+        case '>':  this.currentBody.i32Const(0); this.currentBody.emit(Op.i32_gt_s); break;
+        case '<=': this.currentBody.i32Const(1); this.currentBody.emit(Op.i32_lt_s); break;
+        case '>=': this.currentBody.i32Const(-1); this.currentBody.emit(Op.i32_gt_s); break;
       }
       return;
     }
@@ -1728,6 +1749,11 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
         const s1 = readString(ptr1);
         const s2 = readString(ptr2);
         return s1 === s2 ? 1 : 0;
+      },
+      __str_cmp(ptr1, ptr2) {
+        const s1 = readString(ptr1);
+        const s2 = readString(ptr2);
+        return s1 < s2 ? -1 : s1 > s2 ? 1 : 0;
       },
       __rest(arrPtr) {
         const mem = memoryRef.memory;

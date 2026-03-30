@@ -923,6 +923,27 @@ describe('WASM Compiler', () => {
     });
   });
 
+  describe('String ordering', () => {
+    it('string less than', async () => {
+      assert.strictEqual(await compileAndRun('"apple" < "banana"'), 1);
+      assert.strictEqual(await compileAndRun('"banana" < "apple"'), 0);
+    });
+
+    it('string greater than', async () => {
+      assert.strictEqual(await compileAndRun('"banana" > "apple"'), 1);
+    });
+
+    it('string less than or equal', async () => {
+      assert.strictEqual(await compileAndRun('"apple" <= "apple"'), 1);
+      assert.strictEqual(await compileAndRun('"apple" <= "banana"'), 1);
+    });
+
+    it('string greater than or equal', async () => {
+      assert.strictEqual(await compileAndRun('"banana" >= "apple"'), 1);
+      assert.strictEqual(await compileAndRun('"apple" >= "banana"'), 0);
+    });
+  });
+
   describe('Integration tests', () => {
     it('Collatz conjecture', async () => {
       assert.strictEqual(await compileAndRun(`
