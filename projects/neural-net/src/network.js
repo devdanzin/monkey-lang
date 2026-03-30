@@ -64,10 +64,28 @@ export class Network {
   }
 
   // Train for multiple epochs
-  train(data, { epochs = 100, learningRate = 0.01, batchSize = 32, verbose = false, onEpoch = null } = {}) {
+  train(data, { epochs = 100, learningRate = 0.01, batchSize = 32, verbose = false, onEpoch = null, lrSchedule = null } = {}) {
     const { inputs, targets } = data;
     const n = inputs.rows;
     const history = [];
+
+    // Set training mode
+    for (const l of this.layers) l.training = true;
+
+    for (let epoch = 0; epoch < epochs; epoch++) {
+      let epochLoss = 0;
+      let batches = 0;
+
+      // Learning rate scheduling
+      let lr = learningRate;
+      if (lrSchedule === 'cosine') {
+        lr = learningRate * 0.5 * (1 + Math.cos(Math.PI * epoch / epochs));
+      } else if (lrSchedule === 'step') {
+        if (epoch > epochs * 0.5) lr *= 0.1;
+        if (epoch > epochs * 0.75) lr *= 0.1;
+      } else if (lrSchedule === 'linear') {
+        lr = learningRate * (1 - epoch / epochs);
+      }
 
     for (let epoch = 0; epoch < epochs; epoch++) {
       let epochLoss = 0;
@@ -94,7 +112,7 @@ export class Network {
           for (let j = 0; j < targets.cols; j++) batchTarget.set(i, j, targets.get(idx, j));
         }
 
-        epochLoss += this.trainBatch(batchInput, batchTarget, learningRate);
+        epochLoss += this.trainBatch(batchInput, batchTarget, lr);
         batches++;
       }
 
@@ -107,6 +125,9 @@ export class Network {
 
       if (onEpoch) onEpoch(epoch, epochLoss);
     }
+
+    // Set eval mode (disable dropout)
+    for (const l of this.layers) l.training = false;
 
     return history;
   }
