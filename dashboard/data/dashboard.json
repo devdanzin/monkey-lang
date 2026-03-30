@@ -2695,35 +2695,43 @@
     {
       "id": "T261",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Deploy fractal explorer to GitHub",
-      "started": "2026-03-30T22:56:14.138Z"
+      "started": "2026-03-30T22:56:14.138Z",
+      "completed": "2026-03-30T22:56:43.711Z",
+      "duration_ms": 120000,
+      "summary": "Fractals deployed to GitHub + Pages. Blog homepage updated with 9th project."
     },
     {
       "id": "T262",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "New project: Regex engine from scratch (NFA-based)"
+      "status": "done",
+      "task": "New project: Regex engine from scratch (NFA-based)",
+      "started": "2026-03-30T22:56:48.950Z",
+      "completed": "2026-03-30T22:58:36.958Z",
+      "duration_ms": 600000,
+      "summary": "Regex engine: Thompson NFA, parser, 26 tests"
     },
     {
       "id": "T263",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final session push"
+      "status": "in-progress",
+      "task": "Final session push",
+      "started": "2026-03-30T22:58:41.563Z"
     }
   ],
   "current": {
-    "id": "T261",
-    "mode": "BUILD",
+    "id": "T263",
+    "mode": "MAINTAIN",
     "status": "in-progress",
-    "task": "Deploy fractal explorer to GitHub",
-    "started": "2026-03-30T22:56:14.138Z"
+    "task": "Final session push",
+    "started": "2026-03-30T22:58:41.563Z"
   },
   "stats": {
-    "completed": 260,
+    "completed": 262,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 33750000
+    "total_duration_ms": 34470000
   },
-  "updated_at": "2026-03-30T22:56:14.138Z"
+  "updated_at": "2026-03-30T22:58:41.563Z"
 }
