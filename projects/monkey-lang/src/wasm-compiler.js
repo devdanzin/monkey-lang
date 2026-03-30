@@ -226,6 +226,10 @@ export class WasmCompiler {
     const strCmpIdx = this.builder.addImport('env', '__str_cmp', [ValType.i32, ValType.i32], [ValType.i32]);
     this._runtimeFuncs.strCmp = strCmpIdx;
 
+    // Import __str_char_at: returns single character string at index
+    const strCharAtIdx = this.builder.addImport('env', '__str_char_at', [ValType.i32, ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.strCharAt = strCharAtIdx;
+
     // Import __rest from JS host: env.__rest(arr_ptr: i32) → i32 (new array without first)
     const restIdx = this.builder.addImport('env', '__rest', [ValType.i32], [ValType.i32]);
     this._runtimeFuncs.rest = restIdx;
@@ -1130,10 +1134,10 @@ export class WasmCompiler {
     this.currentBody.emit(Op.i32_ge_s);
     this.currentBody.brIf(this.blockDepth - breakDepth);
 
-    // x = arr[i]
+    // x = arr[i] (or str[i] for string iteration)
     this.currentBody.localGet(arrLocal);
     this.currentBody.localGet(iLocal);
-    this.currentBody.call(this._runtimeFuncs.arrayGet);
+    this.currentBody.call(this._runtimeFuncs.indexGet);
     this.currentBody.localSet(varLocal);
 
     // block $continue — continue exits this block, falls through to increment
@@ -1839,6 +1843,11 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
         const s2 = readString(ptr2);
         return s1 < s2 ? -1 : s1 > s2 ? 1 : 0;
       },
+      __str_char_at(ptr, index) {
+        const s = readString(ptr);
+        if (index < 0 || index >= s.length) return 0;
+        return writeString(s[index]);
+      },
       __rest(arrPtr) {
         const mem = memoryRef.memory;
         if (!mem || arrPtr <= 0) return 0;
@@ -1980,6 +1989,12 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
         if (!mem || obj <= 0) return 0;
         const view = new DataView(mem.buffer);
         const tag = view.getInt32(obj, true);
+        if (tag === TAG_STRING) {
+          // String: return single character at index
+          const str = readString(obj);
+          if (key < 0 || key >= str.length) return 0;
+          return writeString(str[key]);
+        }
         if (tag !== TAG_ARRAY) return 0;
         const len = view.getInt32(obj + 4, true);
         if (key < 0 || key >= len) return 0;

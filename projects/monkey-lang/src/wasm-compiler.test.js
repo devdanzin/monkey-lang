@@ -982,6 +982,18 @@ describe('WASM Compiler', () => {
       assert.strictEqual(await compileAndRun('"banana" >= "apple"'), 1);
       assert.strictEqual(await compileAndRun('"apple" >= "banana"'), 0);
     });
+
+    it('string iteration with for-in', async () => {
+      const lines = [];
+      await compileAndRun('for (ch in "abc") { puts(ch); }', { outputLines: lines });
+      assert.deepStrictEqual(lines, ['a', 'b', 'c']);
+    });
+
+    it('string index access', async () => {
+      const lines = [];
+      await compileAndRun('puts("hello"[1])', { outputLines: lines });
+      assert.strictEqual(lines[0], 'e');
+    });
   });
 
   describe('Integration tests', () => {
