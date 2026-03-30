@@ -924,9 +924,29 @@
       "id": "T89",
       "mode": "BUILD",
       "task": "Final playground bundle build and push",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T86",
-      "started": "2026-03-30T18:01:50.653Z"
+      "started": "2026-03-30T18:01:50.653Z",
+      "completed": "2026-03-30T18:02:13.076Z",
+      "duration_ms": 60000,
+      "summary": "All repos synced and verified. 1314 tests, 0 failures. Bundle rebuilt."
+    },
+    {
+      "id": "T90",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Think: next project direction — what would be most impressive/useful",
+      "started": "2026-03-30T18:02:20.141Z",
+      "completed": "2026-03-30T18:02:34.623Z",
+      "duration_ms": 30000,
+      "summary": "Direction: (1) Fix REPL await bug, (2) Add WASM match expression support, (3) Improve error messages. Pragmatic improvements."
+    },
+    {
+      "id": "T91",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix REPL await bug in handleCommand for :example",
+      "started": "2026-03-30T18:02:40.437Z"
     }
   ],
   "backlog": [],
@@ -1202,6 +1222,14 @@
     {
       "time": "2026-03-30T17:59:36.412Z",
       "msg": "PLAN T86 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-03-30T18:02:20.013Z",
+      "msg": "Added T90 (THINK) after end: Think: next project direction — what would be most impressive/useful"
+    },
+    {
+      "time": "2026-03-30T18:02:40.319Z",
+      "msg": "Added T91 (BUILD) after end: Fix REPL await bug in handleCommand for :example"
     }
   ]
 }

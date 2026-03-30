@@ -631,7 +631,7 @@ class MonkeyREPL {
     }
   }
 
-  handleCommand(line) {
+  async handleCommand(line) {
     const parts = line.trim().split(/\s+/);
     const cmd = parts[0];
 
@@ -871,7 +871,7 @@ class MonkeyREPL {
       if (!trimmed) { rl.prompt(); return; }
 
       if (trimmed.startsWith(':')) {
-        this.handleCommand(trimmed);
+        await this.handleCommand(trimmed);
         rl.prompt();
         return;
       }
