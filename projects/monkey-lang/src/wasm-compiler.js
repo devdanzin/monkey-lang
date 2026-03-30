@@ -75,7 +75,7 @@ export class WasmCompiler {
     };
 
     // Add 1 page of memory for strings/arrays
-    this.builder.addMemory(1);
+    this.builder.addMemory(4); // 4 pages = 256KB
     this.builder.addExport('memory', ExportKind.Memory, 0);
 
     // Heap pointer global — starts after data segment (set after compilation)
@@ -1902,7 +1902,7 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
     // Read heap pointer from global — we need to bump-allocate
     // The heap pointer is stored as a WASM global, but we can't read it from JS.
     // Instead, we'll track our own allocation offset.
-    if (!memoryRef.jsHeapPtr) memoryRef.jsHeapPtr = 60000; // start high to avoid collisions
+    if (!memoryRef.jsHeapPtr) memoryRef.jsHeapPtr = 100000; // start high to avoid collisions
     const ptr = memoryRef.jsHeapPtr;
     memoryRef.jsHeapPtr += 8 + bytes.length;
     // Align to 4 bytes
@@ -1996,7 +1996,7 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
         const lenB = (arrB > 0 && view.getInt32(arrB, true) === TAG_ARRAY) ? view.getInt32(arrB + 4, true) : 0;
         const newLen = lenA + lenB;
         
-        if (!memoryRef.jsHeapPtr) memoryRef.jsHeapPtr = 60000;
+        if (!memoryRef.jsHeapPtr) memoryRef.jsHeapPtr = 100000;
         const newPtr = memoryRef.jsHeapPtr;
         memoryRef.jsHeapPtr += 8 + newLen * 4;
         memoryRef.jsHeapPtr = (memoryRef.jsHeapPtr + 3) & ~3;
@@ -2022,7 +2022,7 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
 
         // Allocate new array with len-1 elements
         const newLen = len - 1;
-        if (!memoryRef.jsHeapPtr) memoryRef.jsHeapPtr = 60000;
+        if (!memoryRef.jsHeapPtr) memoryRef.jsHeapPtr = 100000;
         const newPtr = memoryRef.jsHeapPtr;
         const newSize = 8 + newLen * 4;
         memoryRef.jsHeapPtr += newSize;
@@ -2077,7 +2077,7 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
         if (end > len) end = len;
         const newLen = Math.max(0, end - start);
 
-        if (!memoryRef.jsHeapPtr) memoryRef.jsHeapPtr = 60000;
+        if (!memoryRef.jsHeapPtr) memoryRef.jsHeapPtr = 100000;
         const newPtr = memoryRef.jsHeapPtr;
         memoryRef.jsHeapPtr += 8 + newLen * 4;
         memoryRef.jsHeapPtr = (memoryRef.jsHeapPtr + 3) & ~3;
