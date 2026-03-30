@@ -133,6 +133,7 @@
       <option value="cornell">Cornell Box</option>
       <option value="glass">Glass Study</option>
       <option value="metal">Metal Showcase</option>
+      <option value="lit">Lit Room (area light)</option>
     </select>
   </div>
   <div class="control-group">
@@ -204,6 +205,11 @@ const scenes = {
   metal: {
     lookFrom: { x: 0, y: 2, z: 4 }, lookAt: { x: 0, y: 0.3, z: -1 },
     vfov: 40, aperture: 0.05, focusDist: 5, aspectRatio: 3/2
+  },
+  lit: {
+    lookFrom: { x: 0, y: 2, z: 4 }, lookAt: { x: 0, y: 0, z: -1 },
+    vfov: 40, aperture: 0, focusDist: 1, aspectRatio: 3/2,
+    background: { x: 0, y: 0, z: 0 }
   },
   cornell: {
     lookFrom: { x: 0, y: 1, z: 4 }, lookAt: { x: 0, y: 1, z: -1 },
@@ -283,7 +289,8 @@ function startRender() {
       samplesPerPixel: spp,
       maxDepth: 50,
       scene,
-      cameraConfig: workerCam
+      cameraConfig: workerCam,
+      background: camConfig.background || null
     }
   });
 }

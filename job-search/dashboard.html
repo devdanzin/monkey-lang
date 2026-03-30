@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Search Dashboard — Jordan Ricks</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0f1117;--surface:#1a1d27;--surface2:#232734;--border:#2d3148;
+  --text:#e4e6f0;--text2:#9095a8;--accent:#6366f1;--accent2:#818cf8;
+  --green:#22c55e;--green-bg:rgba(34,197,94,.12);
+  --red:#ef4444;--red-bg:rgba(239,68,68,.12);
+  --yellow:#eab308;--yellow-bg:rgba(234,179,8,.12);
+  --blue:#3b82f6;--blue-bg:rgba(59,130,246,.12);
+  --purple:#a855f7;--purple-bg:rgba(168,85,247,.12);
+  --orange:#f97316;--orange-bg:rgba(249,115,22,.12);
+  --cyan:#06b6d4;--cyan-bg:rgba(6,182,212,.12);
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;min-height:100vh}
+.container{max-width:1280px;margin:0 auto;padding:20px}
+header{text-align:center;padding:32px 0 24px}
+header h1{font-size:28px;font-weight:700;letter-spacing:-.5px}
+header p{color:var(--text2);margin-top:4px;font-size:14px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center}
+.stat-card .value{font-size:36px;font-weight:700;line-height:1.1}
+.stat-card .label{font-size:13px;color:var(--text2);margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+.stat-card.accent .value{color:var(--accent2)}
+.stat-card.green .value{color:var(--green)}
+.stat-card.red .value{color:var(--red)}
+.stat-card.yellow .value{color:var(--yellow)}
+.stat-card.blue .value{color:var(--blue)}
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+@media(max-width:768px){.charts-row{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px}
+.card h2{font-size:16px;font-weight:600;margin-bottom:16px;color:var(--text)}
+.card h3{font-size:13px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+
+/* Funnel */
+.funnel{display:flex;flex-direction:column;align-items:center;gap:0}
+.funnel-stage{text-align:center;padding:14px;color:#fff;font-weight:600;font-size:15px;position:relative;border-radius:6px;margin-bottom:4px}
+.funnel-stage .num{font-size:28px;font-weight:700;display:block}
+.funnel-stage .lbl{font-size:11px;text-transform:uppercase;letter-spacing:1px;opacity:.85}
+.funnel-arrow{color:var(--text2);font-size:18px;margin:2px 0}
+
+/* Donut */
+.donut-wrap{display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap}
+.donut-legend{display:flex;flex-direction:column;gap:8px}
+.donut-legend-item{display:flex;align-items:center;gap:8px;font-size:13px}
+.donut-legend-item .dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+
+/* Bar chart */
+.bar-chart{display:flex;align-items:flex-end;gap:6px;height:180px;padding-top:8px}
+.bar-col{display:flex;flex-direction:column;align-items:center;flex:1;height:100%}
+.bar-col .bar{background:var(--accent);border-radius:4px 4px 0 0;width:100%;max-width:40px;min-height:2px;transition:.3s}
+.bar-col .bar:hover{background:var(--accent2)}
+.bar-col .bar-label{font-size:10px;color:var(--text2);margin-top:6px;white-space:nowrap}
+.bar-col .bar-value{font-size:11px;font-weight:600;margin-bottom:4px;color:var(--accent2)}
+.bar-col{justify-content:flex-end}
+
+/* Response stats */
+.response-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;text-align:center}
+.response-stat .val{font-size:24px;font-weight:700;color:var(--cyan)}
+.response-stat .lbl{font-size:12px;color:var(--text2);margin-top:2px}
+
+/* Table */
+.table-wrap{overflow-x:auto;margin-top:16px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:10px 12px;color:var(--text2);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;white-space:nowrap}
+th:hover{color:var(--text)}
+th .sort-arrow{margin-left:4px;font-size:10px}
+td{padding:10px 12px;border-bottom:1px solid var(--border);white-space:nowrap}
+tr:hover td{background:var(--surface2)}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.badge.applied{background:var(--blue-bg);color:var(--blue)}
+.badge.interviewing,.badge.interview_scheduled{background:var(--green-bg);color:var(--green)}
+.badge.rejected{background:var(--red-bg);color:var(--red)}
+.badge.ghosted{background:var(--yellow-bg);color:var(--yellow)}
+.badge.offer{background:var(--purple-bg);color:var(--purple)}
+
+.search-bar{margin-bottom:16px;display:flex;gap:12px;flex-wrap:wrap}
+.search-bar input,.search-bar select{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;font-size:13px;outline:none}
+.search-bar input:focus,.search-bar select:focus{border-color:var(--accent)}
+.search-bar input{flex:1;min-width:200px}
+
+.footer{text-align:center;padding:32px 0;color:var(--text2);font-size:12px}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>📊 Job Search Dashboard</h1>
+    <p>Jordan Ricks — Cloud / Platform / Software Engineering — Since Jan 2026</p>
+  </header>
+
+  <div class="stats-grid" id="stats-grid"></div>
+
+  <div class="charts-row">
+    <div class="card">
+      <h2>Application Funnel</h2>
+      <div class="funnel" id="funnel"></div>
+    </div>
+    <div class="card">
+      <h2>Status Breakdown</h2>
+      <div class="donut-wrap">
+        <canvas id="donut" width="180" height="180"></canvas>
+        <div class="donut-legend" id="donut-legend"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="charts-row">
+    <div class="card">
+      <h2>Applications by Week</h2>
+      <div class="bar-chart" id="bar-chart"></div>
+    </div>
+    <div class="card">
+      <h2>Response Time Stats</h2>
+      <div id="response-stats"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:24px">
+    <h2>All Applications</h2>
+    <div class="search-bar">
+      <input type="text" id="search" placeholder="Search company or role…">
+      <select id="filter-status">
+        <option value="">All Statuses</option>
+        <option value="applied">Applied</option>
+        <option value="interviewing">Interviewing</option>
+        <option value="interview_scheduled">Interview Scheduled</option>
+        <option value="rejected">Rejected</option>
+        <option value="ghosted">Ghosted</option>
+        <option value="offer">Offer</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th data-sort="company">Company <span class="sort-arrow"></span></th>
+            <th data-sort="role">Role <span class="sort-arrow"></span></th>
+            <th data-sort="date_applied">Date Applied <span class="sort-arrow"></span></th>
+            <th data-sort="status">Status <span class="sort-arrow"></span></th>
+            <th data-sort="location">Location <span class="sort-arrow"></span></th>
+            <th data-sort="response_days">Response <span class="sort-arrow"></span></th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer">
+    Generated by Henry for Jordan · Last updated <span id="last-updated"></span>
+  </div>
+</div>
+
+<script>
+let DATA = [];
+let sortCol = 'date_applied';
+let sortDir = -1;
+
+async function init() {
+  try {
+    const resp = await fetch('./applications.json');
+    const json = await resp.json();
+    DATA = json.applications;
+  } catch(e) {
+    console.error('Failed to load applications.json', e);
+    return;
+  }
+  document.getElementById('last-updated').textContent = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+  renderStats();
+  renderFunnel();
+  renderDonut();
+  renderBarChart();
+  renderResponseStats();
+  renderTable();
+  document.getElementById('search').addEventListener('input', renderTable);
+  document.getElementById('filter-status').addEventListener('change', renderTable);
+  document.querySelectorAll('th[data-sort]').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = th.dataset.sort;
+      if (sortCol === col) sortDir *= -1;
+      else { sortCol = col; sortDir = col === 'date_applied' ? -1 : 1; }
+      renderTable();
+    });
+  });
+}
+
+function getStatusCounts() {
+  const c = {applied:0,interviewing:0,interview_scheduled:0,rejected:0,ghosted:0,offer:0};
+  DATA.forEach(a => { if(c[a.status]!==undefined) c[a.status]++; });
+  return c;
+}
+
+function renderStats() {
+  const s = getStatusCounts();
+  const total = DATA.length;
+  const active = s.interviewing + s.interview_scheduled;
+  const ghostRate = total > 0 ? Math.round(s.ghosted / total * 100) : 0;
+  const responded = DATA.filter(a => a.response_date).length;
+  const responseRate = total > 0 ? Math.round(responded / total * 100) : 0;
+
+  const stats = [
+    {value:total, label:'Total Applications', cls:'accent'},
+    {value:active, label:'Active / Interviewing', cls:'green'},
+    {value:s.rejected, label:'Rejected', cls:'red'},
+    {value:s.ghosted, label:'Ghosted', cls:'yellow'},
+    {value:ghostRate+'%', label:'Ghost Rate', cls:'yellow'},
+    {value:responseRate+'%', label:'Response Rate', cls:'blue'},
+  ];
+  const grid = document.getElementById('stats-grid');
+  grid.innerHTML = stats.map(s => `
+    <div class="stat-card ${s.cls}">
+      <div class="value">${s.value}</div>
+      <div class="label">${s.label}</div>
+    </div>
+  `).join('');
+}
+
+function renderFunnel() {
+  const s = getStatusCounts();
+  const total = DATA.length;
+  const responded = DATA.filter(a => a.response_date).length;
+  const interviewed = s.interviewing + s.interview_scheduled;
+  const offers = s.offer;
+
+  const stages = [
+    {num:total, lbl:'Applied', color:'#6366f1', width:100},
+    {num:responded, lbl:'Got Response', color:'#3b82f6', width:75},
+    {num:interviewed, lbl:'Interviewing', color:'#22c55e', width:50},
+    {num:offers, lbl:'Offers', color:'#a855f7', width:30},
+  ];
+  const el = document.getElementById('funnel');
+  el.innerHTML = stages.map((s,i) => `
+    ${i > 0 ? '<div class="funnel-arrow">▼</div>' : ''}
+    <div class="funnel-stage" style="background:${s.color};width:${s.width}%;min-width:140px">
+      <span class="num">${s.num}</span>
+      <span class="lbl">${s.lbl}</span>
+    </div>
+  `).join('');
+}
+
+function renderDonut() {
+  const s = getStatusCounts();
+  const items = [
+    {label:'Applied',count:s.applied,color:'#3b82f6'},
+    {label:'Interviewing',count:s.interviewing+s.interview_scheduled,color:'#22c55e'},
+    {label:'Rejected',count:s.rejected,color:'#ef4444'},
+    {label:'Ghosted',count:s.ghosted,color:'#eab308'},
+    {label:'Offer',count:s.offer,color:'#a855f7'},
+  ].filter(i => i.count > 0);
+
+  const canvas = document.getElementById('donut');
+  const ctx = canvas.getContext('2d');
+  const cx = 90, cy = 90, r = 75, r2 = 45;
+  const total = items.reduce((a,b)=>a+b.count,0);
+  let angle = -Math.PI/2;
+  
+  items.forEach(item => {
+    const slice = (item.count/total)*Math.PI*2;
+    ctx.beginPath();
+    ctx.arc(cx,cy,r,angle,angle+slice);
+    ctx.arc(cx,cy,r2,angle+slice,angle,true);
+    ctx.closePath();
+    ctx.fillStyle = item.color;
+    ctx.fill();
+    angle += slice;
+  });
+
+  // Center text
+  ctx.fillStyle = '#e4e6f0';
+  ctx.font = 'bold 24px -apple-system,sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(total, cx, cy-8);
+  ctx.font = '11px -apple-system,sans-serif';
+  ctx.fillStyle = '#9095a8';
+  ctx.fillText('TOTAL', cx, cy+10);
+
+  const legend = document.getElementById('donut-legend');
+  legend.innerHTML = items.map(i => `
+    <div class="donut-legend-item">
+      <div class="dot" style="background:${i.color}"></div>
+      <span>${i.label}: <strong>${i.count}</strong> (${Math.round(i.count/total*100)}%)</span>
+    </div>
+  `).join('');
+}
+
+function renderBarChart() {
+  // Group by week
+  const weeks = {};
+  DATA.forEach(a => {
+    const d = new Date(a.date_applied + 'T00:00:00');
+    const day = d.getDay();
+    const mon = new Date(d);
+    mon.setDate(d.getDate() - ((day + 6) % 7));
+    const key = mon.toISOString().slice(0,10);
+    weeks[key] = (weeks[key]||0) + 1;
+  });
+
+  const sorted = Object.entries(weeks).sort((a,b) => a[0].localeCompare(b[0]));
+  const maxVal = Math.max(...sorted.map(s=>s[1]), 1);
+  
+  const el = document.getElementById('bar-chart');
+  el.innerHTML = sorted.map(([week, count]) => {
+    const h = Math.max((count/maxVal)*150, 4);
+    const d = new Date(week + 'T00:00:00');
+    const label = (d.getMonth()+1)+'/'+d.getDate();
+    return `
+      <div class="bar-col">
+        <div class="bar-value">${count}</div>
+        <div class="bar" style="height:${h}px" title="Week of ${week}: ${count} apps"></div>
+        <div class="bar-label">${label}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderResponseStats() {
+  const withResponse = DATA.filter(a => a.response_days !== null && a.response_days !== undefined);
+  if (withResponse.length === 0) {
+    document.getElementById('response-stats').innerHTML = '<p style="color:var(--text2);text-align:center">No response data available</p>';
+    return;
+  }
+  const days = withResponse.map(a => a.response_days);
+  const avg = (days.reduce((a,b)=>a+b,0)/days.length).toFixed(1);
+  const fastest = Math.min(...days);
+  const slowest = Math.max(...days);
+  
+  const fastestCo = withResponse.find(a => a.response_days === fastest);
+  const slowestCo = withResponse.find(a => a.response_days === slowest);
+
+  document.getElementById('response-stats').innerHTML = `
+    <div class="response-stats" style="margin-bottom:20px">
+      <div class="response-stat">
+        <div class="val">${avg}</div>
+        <div class="lbl">Avg Days to Response</div>
+      </div>
+      <div class="response-stat">
+        <div class="val" style="color:var(--green)">${fastest}</div>
+        <div class="lbl">Fastest (days)</div>
+      </div>
+      <div class="response-stat">
+        <div class="val" style="color:var(--red)">${slowest}</div>
+        <div class="lbl">Slowest (days)</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--text2);text-align:center">
+      <p>⚡ Fastest: <strong style="color:var(--text)">${fastestCo.company}</strong> (${fastest} day${fastest!==1?'s':''})</p>
+      <p style="margin-top:4px">🐌 Slowest: <strong style="color:var(--text)">${slowestCo.company}</strong> (${slowest} days)</p>
+      <p style="margin-top:4px">📊 Based on ${withResponse.length} responses out of ${DATA.length} applications</p>
+    </div>
+  `;
+}
+
+function renderTable() {
+  const search = document.getElementById('search').value.toLowerCase();
+  const filterStatus = document.getElementById('filter-status').value;
+
+  let filtered = DATA.filter(a => {
+    if (filterStatus && a.status !== filterStatus) return false;
+    if (search && !a.company.toLowerCase().includes(search) && !a.role.toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  filtered.sort((a,b) => {
+    let va = a[sortCol] || '';
+    let vb = b[sortCol] || '';
+    if (sortCol === 'response_days') {
+      va = a.response_days ?? 999;
+      vb = b.response_days ?? 999;
+    }
+    if (va < vb) return -1 * sortDir;
+    if (va > vb) return 1 * sortDir;
+    return 0;
+  });
+
+  // Update sort arrows
+  document.querySelectorAll('th[data-sort]').forEach(th => {
+    const arrow = th.querySelector('.sort-arrow');
+    if (th.dataset.sort === sortCol) {
+      arrow.textContent = sortDir === 1 ? '▲' : '▼';
+    } else {
+      arrow.textContent = '';
+    }
+  });
+
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = filtered.map(a => {
+    const statusLabel = a.status === 'interview_scheduled' ? 'Interview' : 
+                        a.status === 'interviewing' ? 'Interviewing' : a.status;
+    const responseTxt = a.response_days !== null && a.response_days !== undefined ? a.response_days + 'd' : '—';
+    return `
+      <tr>
+        <td><strong>${esc(a.company)}</strong></td>
+        <td>${esc(a.role)}</td>
+        <td>${formatDate(a.date_applied)}</td>
+        <td><span class="badge ${a.status}">${statusLabel}</span></td>
+        <td>${esc(a.location)}</td>
+        <td>${responseTxt}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function formatDate(d) {
+  if (!d) return '—';
+  const dt = new Date(d + 'T00:00:00');
+  return dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+}
+
+function esc(s) {
+  const el = document.createElement('span');
+  el.textContent = s || '—';
+  return el.innerHTML;
+}
+
+init();
+</script>
+</body>
+</html>

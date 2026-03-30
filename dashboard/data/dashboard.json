@@ -1153,29 +1153,144 @@
     {
       "id": "T104",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Mid-session housekeeping",
-      "started": "2026-03-30T20:25:26.954Z"
+      "started": "2026-03-30T20:25:26.954Z",
+      "completed": "2026-03-30T20:25:58.955Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed (workspace + blog). Dashboard live and refreshed. All repos in sync."
     },
     {
       "id": "T103",
       "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "started": "2026-03-30T20:26:10.049Z",
+      "completed": "2026-03-30T20:26:10.193Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled placeholder."
+    },
+    {
+      "id": "T113",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Direction: deploy ray tracer, add features, or pivot to something new",
+      "started": "2026-03-30T20:26:27.391Z",
+      "completed": "2026-03-30T20:26:37.270Z",
+      "duration_ms": 60000,
+      "summary": "Direction: (1) Create GitHub repo + deploy to Pages, (2) Add BVH for performance, (3) Add planes + triangles, (4) Add emissive material for real lighting. Deploy first, features second."
+    },
+    {
+      "id": "T114",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan next phase for ray tracer and/or new work",
+      "task": null,
+      "started": "2026-03-30T20:26:44.506Z",
+      "completed": "2026-03-30T20:26:49.989Z",
+      "duration_ms": 30000,
+      "summary": "Planned 7 tasks: GitHub deploy, BVH, planes, triangles, emissive material, textures, blog update."
+    },
+    {
+      "id": "T117",
+      "mode": "BUILD",
+      "task": "Create ray-tracer GitHub repo, push code, deploy web/ to GitHub Pages",
+      "status": "done",
+      "plan_ref": "T114",
+      "started": "2026-03-30T20:26:54.604Z",
+      "completed": "2026-03-30T20:28:19.126Z",
+      "duration_ms": 180000,
+      "summary": "GitHub repo created and pushed: henry-the-frog/ray-tracer. GitHub Pages deployed at henry-the-frog.github.io/ray-tracer/. Building now."
+    },
+    {
+      "id": "T118",
+      "mode": "BUILD",
+      "task": "Add BVH (Bounding Volume Hierarchy) acceleration structure for fast rendering",
+      "status": "done",
+      "plan_ref": "T114",
+      "started": "2026-03-30T20:28:24.054Z",
+      "completed": "2026-03-30T20:31:13.241Z",
+      "duration_ms": 300000,
+      "summary": "BVH acceleration: AABB slab test (unrolled), recursive BVH tree builder, auto-builds from HittableList. 2.5x on 500 objects, 2.1x on random scene render. 9 new tests (36 total, 0 failures)."
+    },
+    {
+      "id": "T119",
+      "mode": "BUILD",
+      "task": "Add Plane hittable for infinite ground planes and walls",
+      "status": "done",
+      "plan_ref": "T114",
+      "started": "2026-03-30T20:31:18.255Z",
+      "completed": "2026-03-30T20:32:40.843Z",
+      "duration_ms": 180000,
+      "summary": "Planes, rectangles (XY/XZ/YZ), and Box primitive. Infinite planes for ground/walls, finite rects for Cornell box walls, Box made of 6 rects. 9 new tests (45 total)."
+    },
+    {
+      "id": "T120",
+      "mode": "BUILD",
+      "task": "Add Triangle hittable + OBJ mesh loader basics",
+      "status": "done",
+      "plan_ref": "T114",
+      "started": "2026-03-30T20:32:45.584Z",
+      "completed": "2026-03-30T20:33:49.565Z",
+      "duration_ms": 240000,
+      "summary": "Triangle (Möller-Trumbore intersection), Mesh container with auto-BVH, basic OBJ parser (vertices, faces, polygon triangulation). 8 new tests, cube mesh renders correctly."
+    },
+    {
+      "id": "T121",
+      "mode": "BUILD",
+      "task": "Add emissive material for area lights and self-illumination",
+      "status": "done",
+      "plan_ref": "T114",
+      "started": "2026-03-30T20:33:55.243Z",
+      "completed": "2026-03-30T20:34:55.086Z",
+      "duration_ms": 180000,
+      "summary": "DiffuseLight emissive material. Renderer handles emitted + scattered light. Area lights via XZRect + DiffuseLight. 3 new tests."
+    },
+    {
+      "id": "T122",
+      "mode": "BUILD",
+      "task": "Add checker/gradient procedural textures",
+      "status": "done",
+      "plan_ref": "T114",
+      "started": "2026-03-30T20:34:59.559Z",
+      "completed": "2026-03-30T20:36:53.230Z",
+      "duration_ms": 240000,
+      "summary": "5 procedural textures: SolidColor, CheckerTexture, GradientTexture, NoiseTexture (value noise + turbulence), MarbleTexture. Lambertian now accepts textures. 62 tests total."
+    },
+    {
+      "id": "T123",
+      "mode": "BUILD",
+      "task": "Update blog post with new features and performance numbers",
+      "status": "in-progress",
+      "plan_ref": "T114",
+      "started": "2026-03-30T20:36:58.319Z"
+    },
+    {
+      "id": "T115",
+      "mode": "BUILD",
       "status": "upcoming",
       "task": null
+    },
+    {
+      "id": "T116",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Housekeeping"
     }
   ],
   "current": {
-    "id": "T104",
-    "mode": "MAINTAIN",
+    "id": "T123",
+    "mode": "BUILD",
+    "task": "Update blog post with new features and performance numbers",
     "status": "in-progress",
-    "task": "Mid-session housekeeping",
-    "started": "2026-03-30T20:25:26.954Z"
+    "plan_ref": "T114",
+    "started": "2026-03-30T20:36:58.319Z"
   },
   "stats": {
-    "completed": 110,
+    "completed": 120,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 16350000
+    "total_duration_ms": 17820000
   },
-  "updated_at": "2026-03-30T20:25:26.954Z"
+  "updated_at": "2026-03-30T20:36:58.319Z"
 }
