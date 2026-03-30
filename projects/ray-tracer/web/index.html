@@ -376,6 +376,21 @@ let orbitTheta = 0, orbitPhi = 0;
 const cvs = document.getElementById('canvas');
 cvs.style.cursor = 'grab';
 
+// Scroll to zoom
+cvs.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const scene = document.getElementById('scene').value;
+  const cam = scenes[scene];
+  const lf = cam.lookFrom, la = cam.lookAt;
+  const dx = lf.x - la.x, dy = lf.y - la.y, dz = lf.z - la.z;
+  const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+  const factor = e.deltaY > 0 ? 1.1 : 0.9;
+  const newDist = Math.max(1, Math.min(200, dist * factor));
+  const scale = newDist / dist;
+  cam.lookFrom = { x: la.x + dx * scale, y: la.y + dy * scale, z: la.z + dz * scale };
+  startRender();
+}, { passive: false });
+
 cvs.addEventListener('mousedown', (e) => {
   isDragging = true; lastX = e.clientX; lastY = e.clientY;
   cvs.style.cursor = 'grabbing';
