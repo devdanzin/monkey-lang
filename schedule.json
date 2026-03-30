@@ -549,16 +549,20 @@
       "id": "T52",
       "mode": "BUILD",
       "task": "Test against monkey-lang .wasm output + manual test cases",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T47",
-      "started": "2026-03-30T16:24:27.106Z"
+      "started": "2026-03-30T16:24:27.106Z",
+      "completed": "2026-03-30T16:26:06.742Z",
+      "duration_ms": 240000,
+      "summary": "18 disassembler tests passing. Round-trip tests: build → binary → disassemble → WAT. Tests cover LEB128, all section types, monkey WASM output (fibonacci, closures, strings)."
     },
     {
       "id": "T53",
       "mode": "BUILD",
       "task": "CLI: wasm-dis file.wasm → file.wat, add to monkey-lang as --disassemble flag",
-      "status": "upcoming",
-      "plan_ref": "T47"
+      "status": "in-progress",
+      "plan_ref": "T47",
+      "started": "2026-03-30T16:26:15.598Z"
     }
   ],
   "backlog": [],

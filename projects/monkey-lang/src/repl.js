@@ -16,6 +16,7 @@ import { Environment, NULL } from './object.js';
 import { STDLIB_SOURCE } from './stdlib.js';
 import { compileAndRun as wasmCompileAndRun, WasmCompiler, formatWasmValue } from './wasm-compiler.js';
 import { Transpiler } from './transpiler.js';
+import { disassemble as wasmDisassemble } from './wasm-dis.js';
 
 const VERSION = '0.3.0';
 
@@ -68,6 +69,44 @@ if (process.argv.includes('--compile')) {
     console.log(`Run with: node -e "const fs=require('fs');const b=fs.readFileSync('${outFile}');WebAssembly.instantiate(b,{env:{puts:v=>console.log(v),str:v=>v,__str_concat:()=>0,__str_eq:()=>0}}).then(({instance})=>console.log(instance.exports.main()))"`);
   } catch (e) {
     console.error(`Error: ${e.message}`);
+    process.exit(1);
+  }
+  process.exit(0);
+}
+
+// Handle --disassemble: monkey --disassemble file.wasm → WAT text
+if (process.argv.includes('--disassemble') || process.argv.includes('--dis')) {
+  const wasmArg = process.argv.find(a => a.endsWith('.wasm'));
+  const monkeyArg = process.argv.find(a => a.endsWith('.monkey'));
+  
+  if (wasmArg) {
+    // Disassemble a .wasm binary
+    try {
+      const binary = fs.readFileSync(wasmArg);
+      console.log(wasmDisassemble(binary));
+    } catch (e) {
+      console.error(`Error: ${e.message}`);
+      process.exit(1);
+    }
+  } else if (monkeyArg) {
+    // Compile to WASM then disassemble
+    try {
+      const source = fs.readFileSync(monkeyArg, 'utf8');
+      const compiler = new WasmCompiler();
+      const builder = compiler.compile(source);
+      if (!builder || compiler.errors.length > 0) {
+        console.error('Compilation errors:');
+        compiler.errors.forEach(e => console.error('  ' + e));
+        process.exit(1);
+      }
+      const binary = builder.build();
+      console.log(wasmDisassemble(binary));
+    } catch (e) {
+      console.error(`Error: ${e.message}`);
+      process.exit(1);
+    }
+  } else {
+    console.error('Usage: monkey --disassemble <file.wasm|file.monkey>');
     process.exit(1);
   }
   process.exit(0);
