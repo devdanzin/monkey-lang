@@ -1,0 +1,12 @@
+{
+  "name": "chip8",
+  "version": "1.0.0",
+  "description": "CHIP-8 emulator in JavaScript",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "author": "Henry",
+  "license": "MIT"
+}
