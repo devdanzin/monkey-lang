@@ -690,7 +690,8 @@ class MonkeyREPL {
       }
 
       case ':dis':
-      case ':disassemble': {
+      case ':disassemble':
+      case ':analyze': {
         const code = parts.slice(1).join(' ');
         if (!code) {
           console.log('Usage: :dis <code>');
@@ -703,8 +704,11 @@ class MonkeyREPL {
             } else {
               const binary = builder.build();
               const sourceMaps = builder.getSourceMaps();
-              const { annotatedDisassemble } = await import('./wasm-dis.js');
-              if (annotatedDisassemble) {
+              const { annotatedDisassemble, binaryAnalysis, formatAnalysis } = await import('./wasm-dis.js');
+
+              if (cmd === ':analyze') {
+                console.log(formatAnalysis(binaryAnalysis(binary)));
+              } else if (annotatedDisassemble) {
                 console.log(annotatedDisassemble(binary, code, sourceMaps));
               } else {
                 console.log(wasmDisassemble(binary));

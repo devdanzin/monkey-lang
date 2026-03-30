@@ -161,11 +161,13 @@ export class WasmDisassembler {
   }
 
   readSections() {
+    this.sectionSizes = {};
     while (!this.reader.eof) {
       const id = this.reader.readByte();
       const size = this.reader.readULEB128();
       const startOffset = this.reader.offset;
       const name = SectionId[id] || `unknown(${id})`;
+      this.sectionSizes[name] = size;
 
       switch (id) {
         case 1: this.readTypeSection(); break;
@@ -597,13 +599,6 @@ export function disassemble(buffer) {
   return formatWAT(module);
 }
 
-/**
- * Disassemble WASM binary with source line annotations.
- * @param {Uint8Array} binary - WASM binary
- * @param {string} source - Original Monkey source code
- * @param {Object} sourceMaps - Map of funcIdx → [{offset, line}]
- * @returns {string} Annotated WAT
- */
 export function annotatedDisassemble(binary, source, sourceMaps) {
   const wat = disassemble(binary);
   if (!source || !sourceMaps) return wat;
@@ -629,4 +624,54 @@ export function annotatedDisassemble(binary, source, sourceMaps) {
   }
 
   return result.join('\n');
+}
+
+/**
+ * Analyze a WASM binary and return size breakdown.
+ * @param {Uint8Array} buffer - WASM binary
+ * @returns {Object} Analysis results
+ */
+export function binaryAnalysis(buffer) {
+  const dis = new WasmDisassembler(buffer);
+  const module = dis.disassemble();
+  
+  const analysis = {
+    totalBytes: buffer.length,
+    sections: dis.sectionSizes || {},
+    functions: {
+      total: module.codes.length,
+      imported: module.imports.length,
+      exported: module.exports.filter(e => e.kind === 0).length,
+    },
+    exports: module.exports.map(e => ({
+      name: e.name,
+      kind: ['func', 'table', 'memory', 'global'][e.kind] || 'unknown',
+      index: e.index,
+    })),
+  };
+  
+  return analysis;
+}
+
+/**
+ * Format binary analysis as a human-readable string.
+ */
+export function formatAnalysis(analysis) {
+  const lines = [];
+  lines.push(`Binary: ${analysis.totalBytes} bytes`);
+  lines.push('');
+  lines.push('Sections:');
+  for (const [name, size] of Object.entries(analysis.sections)) {
+    const pct = ((size / analysis.totalBytes) * 100).toFixed(1);
+    const bar = '█'.repeat(Math.ceil(pct / 5));
+    lines.push(`  ${name.padEnd(10)} ${String(size).padStart(5)} bytes  ${pct.padStart(5)}%  ${bar}`);
+  }
+  lines.push('');
+  lines.push(`Functions: ${analysis.functions.total} defined, ${analysis.functions.imported} imported, ${analysis.functions.exported} exported`);
+  lines.push('');
+  lines.push('Exports:');
+  for (const exp of analysis.exports) {
+    lines.push(`  ${exp.name} (${exp.kind} ${exp.index})`);
+  }
+  return lines.join('\n');
 }
