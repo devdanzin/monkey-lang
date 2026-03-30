@@ -21,6 +21,10 @@ export class Dense {
     this.dropoutMask = null;
     this.training = true;
 
+    // Momentum (velocity)
+    this.vWeights = Matrix.zeros(inputSize, outputSize);
+    this.vBiases = Matrix.zeros(1, outputSize);
+    
     // Gradients
     this.dWeights = null;
     this.dBiases = null;
@@ -62,10 +66,20 @@ export class Dense {
   }
 
   // Update weights with optimizer
-  update(learningRate) {
+  update(learningRate, momentum = 0) {
     const batchSize = this.input.rows;
-    this.weights = this.weights.sub(this.dWeights.mul(learningRate / batchSize));
-    this.biases = this.biases.sub(this.dBiases.mul(learningRate / batchSize));
+    const gradW = this.dWeights.mul(learningRate / batchSize);
+    const gradB = this.dBiases.mul(learningRate / batchSize);
+
+    if (momentum > 0) {
+      this.vWeights = this.vWeights.mul(momentum).add(gradW);
+      this.vBiases = this.vBiases.mul(momentum).add(gradB);
+      this.weights = this.weights.sub(this.vWeights);
+      this.biases = this.biases.sub(this.vBiases);
+    } else {
+      this.weights = this.weights.sub(gradW);
+      this.biases = this.biases.sub(gradB);
+    }
   }
 
   // Parameter count
