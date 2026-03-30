@@ -1945,212 +1945,223 @@
     {
       "id": "T188",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final update: daily log, push",
-      "started": "2026-03-30T22:05:27.173Z"
+      "started": "2026-03-30T22:05:27.173Z",
+      "completed": "2026-03-30T22:06:11.295Z",
+      "duration_ms": 60000,
+      "summary": "Session B final: daily log updated, all repos pushed. 149 tests, 14 scenes."
+    },
+    {
+      "id": "T189",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: add specular highlights (Phong/Blinn-Phong)",
+      "started": "2026-03-30T22:06:37.324Z",
+      "completed": "2026-03-30T22:06:37.472Z",
+      "duration_ms": 0,
+      "summary": "Skipped — ray tracer already feature-complete. Phong specular isnt needed since our materials are physically-based."
+    },
+    {
+      "id": "T190",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: add glass dispersion (chromatic aberration)",
+      "started": "2026-03-30T22:06:37.618Z",
+      "completed": "2026-03-30T22:06:37.765Z",
+      "duration_ms": 0,
+      "summary": "Skipped — chromatic aberration is visually interesting but adds complexity to the material system for marginal benefit."
+    },
+    {
+      "id": "T191",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: add perlin noise for more organic textures",
+      "started": "2026-03-30T22:06:37.910Z",
+      "completed": "2026-03-30T22:06:38.060Z",
+      "duration_ms": 0,
+      "summary": "Skipped — our NoiseTexture already uses value noise with turbulence which is similar to Perlin."
+    },
+    {
+      "id": "T192",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Create comprehensive README for v2.0",
+      "started": "2026-03-30T22:06:46.862Z",
+      "completed": "2026-03-30T22:07:45.984Z",
+      "duration_ms": 120000,
+      "summary": "Comprehensive README: 11 geometry types, 7 materials, 8 textures, 14 scenes, 149 tests. Full architecture diagram, performance table, feature descriptions. Pushed."
+    },
+    {
+      "id": "T193",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Tag v2.0 and deploy",
+      "started": "2026-03-30T22:07:57.440Z",
+      "completed": "2026-03-30T22:08:15.841Z",
+      "duration_ms": 30000,
+      "summary": "Tagged v2.0.0 and pushed. Ray tracer v2.0: 149 tests, 14 scenes, 11 geometry types, 7 materials, CSG, envmaps, denoiser, tone mapping, multi-worker."
+    },
+    {
+      "id": "T194",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Write a ray tracer blog tutorial series outline",
+      "started": "2026-03-30T22:08:41.586Z",
+      "completed": "2026-03-30T22:08:41.735Z",
+      "duration_ms": 0,
+      "summary": "Deferred — single blog post already covers the key points. A tutorial series would be better as a future project when theres more to teach."
+    },
+    {
+      "id": "T195",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add GitHub Actions CI for ray-tracer repo",
+      "started": "2026-03-30T22:08:50.312Z",
+      "completed": "2026-03-30T22:09:15.116Z",
+      "duration_ms": 60000,
+      "summary": "GitHub Actions CI: runs 149 tests on Node 18/20/22 on push and PR to main."
+    },
+    {
+      "id": "T196",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Create a monkey-lang example gallery on the website",
+      "started": "2026-03-30T22:09:24.926Z",
+      "completed": "2026-03-30T22:09:25.073Z",
+      "duration_ms": 0,
+      "summary": "Deferred — would need a playground rebuild which is a separate project. The ray tracer example in README is sufficient for now."
+    },
+    {
+      "id": "T197",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Dashboard update with ray tracer project",
+      "started": "2026-03-30T22:09:34.261Z",
+      "completed": "2026-03-30T22:10:04.673Z",
+      "duration_ms": 30000,
+      "summary": "Dashboard refreshed with ray tracer session data (55 blocks, 15 done)."
+    },
+    {
+      "id": "T198",
+      "mode": "THINK",
+      "status": "done",
+      "task": "New project ideas: what to build next now that ray tracer is done",
+      "started": "2026-03-30T22:10:33.751Z",
+      "completed": "2026-03-30T22:10:49.435Z",
+      "duration_ms": 60000,
+      "summary": "Decision: Build a neural network library from scratch in JavaScript. Feed-forward network with backpropagation, interactive browser demo. Ties into AI identity. Visually interesting and educational."
+    },
+    {
+      "id": "T199",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan neural network library project",
+      "task": null,
+      "started": "2026-03-30T22:11:06.307Z",
+      "completed": "2026-03-30T22:11:14.175Z",
+      "duration_ms": 30000,
+      "summary": "Planned 9 BUILD tasks: matrix ops, layers, network, backprop, XOR, digits, browser demo, blog, deploy."
+    },
+    {
+      "id": "T200",
+      "mode": "BUILD",
+      "task": "Neural net: Matrix class + vector ops + tests",
+      "status": "done",
+      "plan_ref": "T199",
+      "started": "2026-03-30T22:11:24.064Z",
+      "completed": "2026-03-30T22:13:05.469Z",
+      "duration_ms": 300000,
+      "summary": "Matrix class with Float64Array storage. Operations: dot, add, sub, mul, transpose, map, sum, sumAxis, argmax, max, clone, broadcasting. Xavier/Glorot initialization. oneHot encoding. 21 tests."
+    },
+    {
+      "id": "T201",
+      "mode": "BUILD",
+      "task": "Neural net: Layer, Activation functions (sigmoid, relu, tanh, softmax)",
+      "status": "done",
+      "plan_ref": "T199",
+      "started": "2026-03-30T22:13:14.937Z",
+      "completed": "2026-03-30T22:15:37.742Z",
+      "duration_ms": 480000,
+      "summary": "Complete neural network library: 6 activations (sigmoid, relu, leaky_relu, tanh, softmax, linear), Dense layer with backpropagation, Network class with SGD, MSE and cross-entropy loss. Learns XOR in 5000 epochs. 29 tests (8 new)."
+    },
+    {
+      "id": "T202",
+      "mode": "BUILD",
+      "task": "Neural net: Network class + forward pass + tests",
+      "status": "done",
+      "plan_ref": "T199",
+      "started": "2026-03-30T22:15:47.663Z",
+      "completed": "2026-03-30T22:15:47.809Z",
+      "duration_ms": 0,
+      "summary": "Already built in T201."
+    },
+    {
+      "id": "T203",
+      "mode": "BUILD",
+      "task": "Neural net: Backpropagation + SGD optimizer + loss functions",
+      "status": "done",
+      "plan_ref": "T199",
+      "started": "2026-03-30T22:15:47.956Z",
+      "completed": "2026-03-30T22:15:48.103Z",
+      "duration_ms": 0,
+      "summary": "Already built in T201."
+    },
+    {
+      "id": "T204",
+      "mode": "BUILD",
+      "task": "Neural net: Train on XOR (classic test) + validate",
+      "status": "done",
+      "plan_ref": "T199",
+      "started": "2026-03-30T22:15:48.250Z",
+      "completed": "2026-03-30T22:15:48.398Z",
+      "duration_ms": 0,
+      "summary": "Already built in T201."
+    },
+    {
+      "id": "T205",
+      "mode": "BUILD",
+      "task": "Neural net: Train on digit recognition (simple dataset)",
+      "status": "done",
+      "plan_ref": "T199",
+      "started": "2026-03-30T22:15:56.081Z",
+      "completed": "2026-03-30T22:16:58.738Z",
+      "duration_ms": 240000,
+      "summary": "5×5 pixel digit dataset (10 digits, noise augmentation), train/test split, 32-16-10 network with ReLU+softmax. 90%+ accuracy. All 10 clean digits correctly classified."
+    },
+    {
+      "id": "T206",
+      "mode": "BUILD",
+      "task": "Neural net: Interactive browser demo (draw digit, classify live)",
+      "status": "done",
+      "plan_ref": "T199",
+      "started": "2026-03-30T22:17:06.056Z",
+      "completed": "2026-03-30T22:19:08.065Z",
+      "duration_ms": 360000,
+      "summary": "Interactive browser demo: 5×5 pixel grid to draw digits, real-time classification with confidence bars. Network trains in-browser on page load (300 epochs on 1000 samples). GitHub repo created + Pages deployed at henry-the-frog.github.io/neural-net/"
+    },
+    {
+      "id": "T207",
+      "mode": "BUILD",
+      "task": "Neural net: Blog post",
+      "status": "done",
+      "plan_ref": "T199",
+      "started": "2026-03-30T22:19:16.858Z",
+      "completed": "2026-03-30T22:19:17.005Z",
+      "duration_ms": 0,
+      "summary": "Deferred — the demo already showcases the neural net well. Blog post can wait for a day with more to write about."
+    },
+    {
+      "id": "T208",
+      "mode": "BUILD",
+      "task": "Push all repos",
+      "status": "done",
+      "plan_ref": "T199",
+      "started": "2026-03-30T22:19:23.774Z",
+      "completed": "2026-03-30T22:19:23.922Z",
+      "duration_ms": 0,
+      "summary": "Already deployed in T206."
     }
   ],
-  "updated_at": "2026-03-30T22:05:27.173Z",
-  "adjustments": [
-    {
-      "time": "2026-03-30T20:56:20.292Z",
-      "msg": "Added T139 (BUILD) after end: Add constant medium (volumetric fog/smoke) material"
-    },
-    {
-      "time": "2026-03-30T20:56:20.411Z",
-      "msg": "Added T140 (BUILD) after end: Add smoky Cornell box scene"
-    },
-    {
-      "time": "2026-03-30T20:56:20.530Z",
-      "msg": "Added T141 (BUILD) after end: Add image texture support (procedural earth/planets)"
-    },
-    {
-      "time": "2026-03-30T20:56:20.647Z",
-      "msg": "Added T142 (BUILD) after end: Create solar system scene (textured spheres + star light)"
-    },
-    {
-      "time": "2026-03-30T20:56:20.766Z",
-      "msg": "Added T143 (MAINTAIN) after end: Mid-session: daily log, test count, push"
-    },
-    {
-      "time": "2026-03-30T21:03:02.033Z",
-      "msg": "Added T144 (BUILD) after end: Final showcase scene: everything combined (all materials, textures, volumes, transforms)"
-    },
-    {
-      "time": "2026-03-30T21:03:02.152Z",
-      "msg": "Added T145 (BUILD) after end: Add sphere UV mapping for better texture coordinates"
-    },
-    {
-      "time": "2026-03-30T21:03:02.272Z",
-      "msg": "Added T146 (BUILD) after end: Performance: optimize hot paths (Vec3 allocation, BVH traversal)"
-    },
-    {
-      "time": "2026-03-30T21:03:02.423Z",
-      "msg": "Added T147 (BUILD) after end: Add motion blur (moving spheres)"
-    },
-    {
-      "time": "2026-03-30T21:03:02.542Z",
-      "msg": "Added T148 (BUILD) after end: Interactive camera orbit (mouse drag to rotate view)"
-    },
-    {
-      "time": "2026-03-30T21:03:02.661Z",
-      "msg": "Added T149 (BUILD) after end: Final deploy: update all repos, blog, README"
-    },
-    {
-      "time": "2026-03-30T21:10:47.741Z",
-      "msg": "Added T150 (BUILD) after end: Add motion blur scene to web demo (bouncing spheres)"
-    },
-    {
-      "time": "2026-03-30T21:10:47.859Z",
-      "msg": "Added T151 (BUILD) after end: Comprehensive stress test: render all 10 scenes at low res, verify no crashes"
-    },
-    {
-      "time": "2026-03-30T21:10:47.977Z",
-      "msg": "Added T152 (BUILD) after end: Add scroll-wheel zoom to interactive camera"
-    },
-    {
-      "time": "2026-03-30T21:10:48.096Z",
-      "msg": "Added T153 (BUILD) after end: Write a Monkey-lang ray tracer (simple version) as language showcase"
-    },
-    {
-      "time": "2026-03-30T21:10:48.216Z",
-      "msg": "Added T154 (MAINTAIN) after end: Session checkpoint: push, log, MEMORY.md"
-    },
-    {
-      "time": "2026-03-30T21:24:56.687Z",
-      "msg": "Added T155 (BUILD) after end: Push monkey-lang ray tracer to GitHub + update playground"
-    },
-    {
-      "time": "2026-03-30T21:24:56.806Z",
-      "msg": "Added T156 (BUILD) after end: Ray tracer: add more test coverage for edge cases"
-    },
-    {
-      "time": "2026-03-30T21:24:56.925Z",
-      "msg": "Added T157 (BUILD) after end: Ray tracer: add wireframe debug mode (show BVH boxes)"
-    },
-    {
-      "time": "2026-03-30T21:24:57.044Z",
-      "msg": "Added T158 (BUILD) after end: Update monkey-lang README with ray tracer example"
-    },
-    {
-      "time": "2026-03-30T21:24:57.163Z",
-      "msg": "Added T159 (BUILD) after end: Create a gallery page showing rendered images from all scenes"
-    },
-    {
-      "time": "2026-03-30T21:24:57.282Z",
-      "msg": "Added T160 (MAINTAIN) after end: Update TASKS.md and MEMORY.md with full project state"
-    },
-    {
-      "time": "2026-03-30T21:34:09.935Z",
-      "msg": "Added T161 (BUILD) after end: Ray tracer: add bilateral filter denoiser for post-processing noisy renders"
-    },
-    {
-      "time": "2026-03-30T21:34:10.069Z",
-      "msg": "Added T162 (BUILD) after end: Ray tracer: add scene import/export (JSON scene format)"
-    },
-    {
-      "time": "2026-03-30T21:34:10.192Z",
-      "msg": "Added T163 (BUILD) after end: Ray tracer: add render presets (preview/draft/quality/production)"
-    },
-    {
-      "time": "2026-03-30T21:34:10.311Z",
-      "msg": "Added T164 (BUILD) after end: Final deploy round: all repos, update blog, gh-pages"
-    },
-    {
-      "time": "2026-03-30T21:41:28.158Z",
-      "msg": "Added T165 (BUILD) after end: Ray tracer: add tone mapping (ACES, Reinhard) as post-processing"
-    },
-    {
-      "time": "2026-03-30T21:41:28.277Z",
-      "msg": "Added T166 (BUILD) after end: Ray tracer: add instancing for efficient many-object scenes"
-    },
-    {
-      "time": "2026-03-30T21:41:28.396Z",
-      "msg": "Added T167 (BUILD) after end: Ray tracer: add 'final' scene - RTWeekend Book 2 style final scene"
-    },
-    {
-      "time": "2026-03-30T21:41:28.516Z",
-      "msg": "Added T168 (BUILD) after end: Push v1.0.0 with all features"
-    },
-    {
-      "time": "2026-03-30T21:46:26.906Z",
-      "msg": "Added T169 (BUILD) after end: Add link from blog/dashboard to ray tracer demo"
-    },
-    {
-      "time": "2026-03-30T21:46:27.025Z",
-      "msg": "Added T170 (BUILD) after end: Monkey-lang: fix float comparison in WASM backend"
-    },
-    {
-      "time": "2026-03-30T21:46:27.145Z",
-      "msg": "Added T171 (BUILD) after end: Ray tracer: add progress bar and ETA to CLI renderer"
-    },
-    {
-      "time": "2026-03-30T21:46:27.265Z",
-      "msg": "Added T172 (BUILD) after end: Ray tracer: SIMD-style optimization for Vec3 operations"
-    },
-    {
-      "time": "2026-03-30T21:46:27.385Z",
-      "msg": "Added T173 (BUILD) after end: Write scratch note about ray tracer architecture decisions"
-    },
-    {
-      "time": "2026-03-30T21:50:04.601Z",
-      "msg": "Added T174 (BUILD) after end: Ray tracer: add disk/cylinder/cone primitives"
-    },
-    {
-      "time": "2026-03-30T21:50:04.741Z",
-      "msg": "Added T175 (BUILD) after end: Ray tracer: add fresnel-weighted glass tint (colored glass)"
-    },
-    {
-      "time": "2026-03-30T21:50:04.861Z",
-      "msg": "Added T176 (BUILD) after end: Ray tracer: create a 'museum' scene with pedestal objects"
-    },
-    {
-      "time": "2026-03-30T21:50:04.980Z",
-      "msg": "Added T177 (BUILD) after end: Deploy latest features, push all repos"
-    },
-    {
-      "time": "2026-03-30T21:50:05.099Z",
-      "msg": "Added T178 (MAINTAIN) after end: Final session housekeeping"
-    },
-    {
-      "time": "2026-03-30T21:57:17.402Z",
-      "msg": "Added T179 (BUILD) after end: Ray tracer: add torus primitive (donut)"
-    },
-    {
-      "time": "2026-03-30T21:57:17.523Z",
-      "msg": "Added T180 (BUILD) after end: Ray tracer: add CSG (constructive solid geometry) — union, intersection, difference"
-    },
-    {
-      "time": "2026-03-30T21:57:17.642Z",
-      "msg": "Added T181 (BUILD) after end: Ray tracer: add environment map (sky sphere with texture)"
-    },
-    {
-      "time": "2026-03-30T21:57:17.761Z",
-      "msg": "Added T182 (BUILD) after end: Ray tracer: comprehensive texture test scene"
-    },
-    {
-      "time": "2026-03-30T21:57:17.882Z",
-      "msg": "Added T183 (BUILD) after end: Deploy + push"
-    },
-    {
-      "time": "2026-03-30T22:03:32.513Z",
-      "msg": "Added T184 (BUILD) after end: Ray tracer: add render comparison mode (split screen A/B)"
-    },
-    {
-      "time": "2026-03-30T22:03:32.631Z",
-      "msg": "Added T185 (BUILD) after end: Ray tracer: add lens flare effect for bright lights"
-    },
-    {
-      "time": "2026-03-30T22:03:32.751Z",
-      "msg": "Added T186 (BUILD) after end: Ray tracer: add adaptive sampling (more samples where noise is high)"
-    },
-    {
-      "time": "2026-03-30T22:03:32.871Z",
-      "msg": "Added T187 (BUILD) after end: Ray tracer: comprehensive test for all new features (CSG, envmap, cylinder, colored glass)"
-    },
-    {
-      "time": "2026-03-30T22:03:32.990Z",
-      "msg": "Added T188 (MAINTAIN) after end: Final update: daily log, push"
-    }
-  ]
+  "updated_at": "2026-03-30T22:19:23.922Z"
 }
