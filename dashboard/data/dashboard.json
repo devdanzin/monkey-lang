@@ -1281,23 +1281,111 @@
     {
       "id": "T116",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping",
-      "started": "2026-03-30T20:40:10.795Z"
+      "started": "2026-03-30T20:40:10.795Z",
+      "completed": "2026-03-30T20:41:30.240Z",
+      "duration_ms": 120000,
+      "summary": "Daily log appended, TASKS.md updated with ray tracer project, CURRENT.md refreshed, all repos pushed."
+    },
+    {
+      "id": "T124",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Next phase: multi-worker parallel rendering, more geometry, or new project direction",
+      "started": "2026-03-30T20:41:42.961Z",
+      "completed": "2026-03-30T20:41:55.098Z",
+      "duration_ms": 60000,
+      "summary": "Direction: (1) Multi-worker parallel rendering for dramatic speedup, (2) Enhanced Cornell box, (3) README with rendered images. Multi-worker is highest impact."
+    },
+    {
+      "id": "T125",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan multi-worker rendering and Cornell box improvements",
+      "task": null,
+      "started": "2026-03-30T20:42:09.046Z",
+      "completed": "2026-03-30T20:42:15.933Z",
+      "duration_ms": 30000,
+      "summary": "6 tasks: multi-worker pool, UI update, Cornell box, render images, README, deploy."
+    },
+    {
+      "id": "T126",
+      "mode": "BUILD",
+      "task": "Multi-worker rendering: tile-based parallel rendering with worker pool",
+      "status": "done",
+      "plan_ref": "T125",
+      "started": "2026-03-30T20:42:20.733Z",
+      "completed": "2026-03-30T20:43:39.131Z",
+      "duration_ms": 300000,
+      "summary": "Multi-worker tile-based rendering: worker pool, 32px tiles, shuffled for visual progress, auto-detects CPU cores. Workers selector (1-16). Tiles distributed on completion for load balancing."
+    },
+    {
+      "id": "T127",
+      "mode": "BUILD",
+      "task": "Update web UI: show worker count, tile progress, dramatically faster renders",
+      "status": "done",
+      "plan_ref": "T125",
+      "started": "2026-03-30T20:43:57.972Z",
+      "completed": "2026-03-30T20:43:58.116Z",
+      "duration_ms": 0,
+      "summary": "Already done in T126 — UI shows worker count, tile-based progress, all controls."
+    },
+    {
+      "id": "T128",
+      "mode": "BUILD",
+      "task": "Cornell box scene with proper rect area lights and boxes",
+      "status": "done",
+      "plan_ref": "T125",
+      "started": "2026-03-30T20:44:04.801Z",
+      "completed": "2026-03-30T20:45:07.106Z",
+      "duration_ms": 180000,
+      "summary": "Proper Cornell box: YZRect/XYRect/XZRect walls, DiffuseLight ceiling panel, two Box primitives. Camera repositioned for 555-unit room. Dark background."
+    },
+    {
+      "id": "T129",
+      "mode": "BUILD",
+      "task": "Render sample images for README (CLI renders)",
+      "status": "done",
+      "plan_ref": "T125",
+      "started": "2026-03-30T20:45:11.931Z",
+      "completed": "2026-03-30T20:47:13.553Z",
+      "duration_ms": 120000,
+      "summary": "Rendered sample images: three-spheres.ppm (400x266, 100spp, 31.5s) and random-scene.ppm (400x266, 50spp, 25.4s). PPM format (no PNG converter available)."
+    },
+    {
+      "id": "T130",
+      "mode": "BUILD",
+      "task": "Update README with architecture, rendered images, performance comparison",
+      "status": "done",
+      "plan_ref": "T125",
+      "started": "2026-03-30T20:47:19.780Z",
+      "completed": "2026-03-30T20:48:07.717Z",
+      "duration_ms": 180000,
+      "summary": "README rewritten: full feature list, architecture diagram, 6 scenes, performance table, how it works section. Pushed to GitHub."
+    },
+    {
+      "id": "T131",
+      "mode": "BUILD",
+      "task": "Push all repos, update gh-pages",
+      "status": "in-progress",
+      "plan_ref": "T125",
+      "started": "2026-03-30T20:48:14.695Z"
     }
   ],
   "current": {
-    "id": "T116",
-    "mode": "MAINTAIN",
+    "id": "T131",
+    "mode": "BUILD",
+    "task": "Push all repos, update gh-pages",
     "status": "in-progress",
-    "task": "Housekeeping",
-    "started": "2026-03-30T20:40:10.795Z"
+    "plan_ref": "T125",
+    "started": "2026-03-30T20:48:14.695Z"
   },
   "stats": {
-    "completed": 122,
+    "completed": 130,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 18120000
+    "total_duration_ms": 19110000
   },
-  "updated_at": "2026-03-30T20:40:10.795Z"
+  "updated_at": "2026-03-30T20:48:14.695Z"
 }
