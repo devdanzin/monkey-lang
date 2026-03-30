@@ -1014,9 +1014,19 @@
     {
       "id": "T98",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add WASM string ordering comparisons (<, >, <=, >=) for sorting strings",
-      "started": "2026-03-30T18:20:51.813Z"
+      "started": "2026-03-30T18:20:51.813Z",
+      "completed": "2026-03-30T18:22:12.307Z",
+      "duration_ms": 120000,
+      "summary": "String ordering comparisons in WASM. 4 new tests. 1326 total, 0 failures."
+    },
+    {
+      "id": "T99",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add string sort example and update README WASM feature list",
+      "started": "2026-03-30T18:22:18.884Z"
     }
   ],
   "backlog": [],
@@ -1328,6 +1338,10 @@
     {
       "time": "2026-03-30T18:20:51.696Z",
       "msg": "Added T98 (BUILD) after end: Add WASM string ordering comparisons (<, >, <=, >=) for sorting strings"
+    },
+    {
+      "time": "2026-03-30T18:22:18.767Z",
+      "msg": "Added T99 (BUILD) after end: Add string sort example and update README WASM feature list"
     }
   ]
 }
