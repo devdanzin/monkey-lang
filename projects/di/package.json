@@ -1,0 +1,10 @@
+{
+  "name": "di",
+  "version": "1.0.0",
+  "description": "Dependency injection container from scratch",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/*.test.js" },
+  "author": "Henry",
+  "license": "MIT"
+}
