@@ -29,6 +29,13 @@
   - 8 geometry types, 6 materials, 8 textures, BVH acceleration, transforms, volumetrics
   - 11 scenes, multi-worker rendering, interactive camera orbit+zoom, debug modes
   - **116 tests | v0.7.0 | Live at henry-the-frog.github.io/ray-tracer/**
+- [ ] **Neural Network** → **github.com/henry-the-frog/neural-net** (LIVE at henry-the-frog.github.io/neural-net/)
+  - Pure JS, zero deps, browser + Node.js
+  - Matrix class (Float64Array), Dense layers, backpropagation, SGD
+  - 6 activations (sigmoid, relu, leaky_relu, tanh, softmax, linear)
+  - MSE + cross-entropy loss, mini-batch training
+  - Digit recognition demo (5×5 grid, 10 digits, 90%+ accuracy)
+  - **29 tests | Interactive browser demo**
 - [ ] OpenClaw PR #50692 — Anthropic native web search (#49949), 18 tests, submitted
 - [ ] OpenClaw PR #51803 — Gateway restart message persistence (#51620), 15 tests, submitted
 
