@@ -1,9 +1,23 @@
 // WASM Compiler for Monkey Language
 // Walks the AST and emits WebAssembly bytecode via the binary encoder.
 // Supports: integers, floats, booleans, arithmetic, comparisons, let bindings,
-// if/else, while/for loops, functions, return, break/continue.
+// if/else, while/for loops, functions, return, break/continue, strings, arrays.
+//
+// Memory layout:
+//   0-1023: reserved (data segment for string constants)
+//   1024+: bump-allocated heap (strings, arrays)
+//
+// Value representation (all i32):
+//   Integers/booleans: raw i32 values
+//   Strings: pointer to heap object [TAG_STRING:i32][length:i32][bytes...]
+//   Arrays: pointer to heap object [TAG_ARRAY:i32][length:i32][elem0:i32][elem1:i32]...
+//   Null: 0
+//
+// Heap object tags:
+const TAG_STRING = 1;
+const TAG_ARRAY = 2;
 
-import { WasmModuleBuilder, FuncBodyBuilder, Op, ValType, ExportKind } from './wasm.js';
+import { WasmModuleBuilder, FuncBodyBuilder, Op, ValType, ExportKind, encodeULEB128 } from './wasm.js';
 import { Lexer } from './lexer.js';
 import { Parser } from './parser.js';
 import * as ast from './ast.js';
@@ -40,13 +54,18 @@ export class WasmCompiler {
     this.nextLocalIndex = 0;
     this.loopStack = []; // for break/continue: [{breakLabel, continueLabel}]
     this.errors = [];
+    this.stringConstants = []; // [{offset, length, value}] — data segment entries
+    this.nextDataOffset = 16; // start at 16, skip first bytes as reserved
 
-    // Add 1 page of memory for strings/arrays (future use)
+    // Add 1 page of memory for strings/arrays
     this.builder.addMemory(1);
     this.builder.addExport('memory', ExportKind.Memory, 0);
 
-    // Heap pointer global (for future string/array allocation)
-    this.heapPtr = this.builder.addGlobal(ValType.i32, true, 1024); // start heap at 1024
+    // Heap pointer global — starts after data segment (set after compilation)
+    this.heapPtr = this.builder.addGlobal(ValType.i32, true, 4096); // default, updated later
+
+    // Runtime function indices (added during compileProgram)
+    this._runtimeFuncs = {};
   }
 
   compile(input) {
@@ -63,6 +82,9 @@ export class WasmCompiler {
   }
 
   compileProgram(program) {
+    // Add runtime helper functions first
+    this._addRuntimeFunctions();
+
     // First pass: collect top-level function definitions
     for (const stmt of program.statements) {
       if (stmt instanceof ast.LetStatement &&
@@ -118,7 +140,136 @@ export class WasmCompiler {
     // Now compile all collected functions
     this._compileFunctions();
 
+    // Add string constant data segments
+    for (const sc of this.stringConstants) {
+      const encoder = new TextEncoder();
+      const strBytes = encoder.encode(sc.value);
+      // Layout: [TAG_STRING:i32][length:i32][bytes...]
+      const data = new Uint8Array(8 + strBytes.length);
+      const view = new DataView(data.buffer);
+      view.setInt32(0, TAG_STRING, true);
+      view.setInt32(4, strBytes.length, true);
+      data.set(strBytes, 8);
+      this.builder.addDataSegment(sc.offset, [...data]);
+    }
+
+    // Update heap pointer to start after all data segments
+    // (We can't change the global init value after creation, so we set it high enough initially)
+
     return this.builder;
+  }
+
+  _addRuntimeFunctions() {
+    // __alloc(size) → pointer — bump allocator
+    const { index: allocIdx, body: allocBody } = this.builder.addFunction(
+      [ValType.i32], [ValType.i32]
+    );
+    allocBody.addLocal(ValType.i32); // local[1] = ptr
+    allocBody
+      .globalGet(this.heapPtr) // ptr = heap_ptr
+      .localTee(1)
+      .localGet(0)             // size
+      .emit(Op.i32_add)        // heap_ptr + size
+      .globalSet(this.heapPtr); // heap_ptr = heap_ptr + size
+    allocBody.localGet(1);      // return old heap_ptr
+    this._runtimeFuncs.alloc = allocIdx;
+
+    // __len(ptr) → i32 — get length of string or array
+    const { index: lenIdx, body: lenBody } = this.builder.addFunction(
+      [ValType.i32], [ValType.i32]
+    );
+    lenBody
+      .localGet(0)
+      .i32Const(4)
+      .emit(Op.i32_add)       // ptr + 4 (skip tag)
+      .i32Load();             // load length
+    this._runtimeFuncs.len = lenIdx;
+
+    // __array_get(arr_ptr, index) → i32 — array element access
+    const { index: arrGetIdx, body: arrGetBody } = this.builder.addFunction(
+      [ValType.i32, ValType.i32], [ValType.i32]
+    );
+    arrGetBody
+      .localGet(0)           // arr_ptr
+      .i32Const(8)
+      .emit(Op.i32_add)      // skip tag + length
+      .localGet(1)           // index
+      .i32Const(4)
+      .emit(Op.i32_mul)      // index * 4
+      .emit(Op.i32_add)      // arr_ptr + 8 + index*4
+      .i32Load();            // load element
+    this._runtimeFuncs.arrayGet = arrGetIdx;
+
+    // __array_set(arr_ptr, index, value) → void
+    const { index: arrSetIdx, body: arrSetBody } = this.builder.addFunction(
+      [ValType.i32, ValType.i32, ValType.i32], []
+    );
+    arrSetBody
+      .localGet(0)           // arr_ptr
+      .i32Const(8)
+      .emit(Op.i32_add)
+      .localGet(1)           // index
+      .i32Const(4)
+      .emit(Op.i32_mul)
+      .emit(Op.i32_add)      // addr = arr_ptr + 8 + index*4
+      .localGet(2)           // value
+      .i32Store();           // store value
+    this._runtimeFuncs.arraySet = arrSetIdx;
+
+    // __make_array(length) → ptr — allocate an array with given length, zero-initialized
+    const { index: makeArrIdx, body: makeArrBody } = this.builder.addFunction(
+      [ValType.i32], [ValType.i32]
+    );
+    makeArrBody.addLocal(ValType.i32); // local[1] = ptr
+    makeArrBody
+      // Allocate: 8 + length*4 bytes
+      .localGet(0).i32Const(4).emit(Op.i32_mul).i32Const(8).emit(Op.i32_add)
+      .call(allocIdx)
+      .localTee(1)
+      // Store tag
+      .i32Const(TAG_ARRAY)
+      .i32Store()
+      // Store length
+      .localGet(1).i32Const(4).emit(Op.i32_add)
+      .localGet(0)
+      .i32Store();
+    makeArrBody.localGet(1); // return ptr
+    this._runtimeFuncs.makeArray = makeArrIdx;
+
+    // __push(arr_ptr, value) → new_arr_ptr — append element to array (creates new array)
+    const { index: pushIdx, body: pushBody } = this.builder.addFunction(
+      [ValType.i32, ValType.i32], [ValType.i32]
+    );
+    pushBody.addLocal(ValType.i32); // local[2] = old_len
+    pushBody.addLocal(ValType.i32); // local[3] = new_arr
+    pushBody.addLocal(ValType.i32); // local[4] = i
+    pushBody
+      // old_len = len(arr)
+      .localGet(0).call(lenIdx).localSet(2)
+      // new_arr = make_array(old_len + 1)
+      .localGet(2).i32Const(1).emit(Op.i32_add).call(makeArrIdx).localSet(3)
+      // Copy elements
+      .i32Const(0).localSet(4)
+      .block().loop()
+        .localGet(4).localGet(2).emit(Op.i32_ge_s).brIf(1)
+        .localGet(3).localGet(4)
+        .localGet(0).localGet(4).call(arrGetIdx)
+        .call(arrSetIdx)
+        .localGet(4).i32Const(1).emit(Op.i32_add).localSet(4)
+        .br(0)
+      .end().end()
+      // Set new element
+      .localGet(3).localGet(2).localGet(1).call(arrSetIdx);
+    pushBody.localGet(3); // return new array
+    this._runtimeFuncs.push = pushIdx;
+
+    // Register builtins in global scope
+    this.globalScope.define('__alloc', allocIdx, 'func');
+    this.globalScope.define('__len', lenIdx, 'func');
+    this.globalScope.define('__array_get', arrGetIdx, 'func');
+    this.globalScope.define('__array_set', arrSetIdx, 'func');
+    this.globalScope.define('__make_array', makeArrIdx, 'func');
+    this.globalScope.define('__push', pushIdx, 'func');
   }
 
   _declareFunction(name, funcLit) {
@@ -278,13 +429,37 @@ export class WasmCompiler {
       this.compileNode(node.alternative);
       this.currentBody.end();
     } else if (node instanceof ast.StringLiteral) {
-      // Strings not yet supported in WASM — push 0
-      this.currentBody.i32Const(0);
+      this.compileStringLiteral(node);
     } else if (node instanceof ast.ArrayLiteral) {
-      // Arrays not yet supported — push 0
-      this.currentBody.i32Const(0);
+      this.compileArrayLiteral(node);
+    } else if (node instanceof ast.IndexExpression) {
+      this.compileIndexExpression(node);
     } else if (node instanceof ast.HashLiteral) {
       this.currentBody.i32Const(0);
+    } else if (node instanceof ast.IndexAssignExpression) {
+      this.compileNode(node.left);
+      this.compileNode(node.index);
+      this.compileNode(node.value);
+      // array_set(arr, index, value) — returns void, so we need the value on stack
+      // Use a temp local to save the value
+      const tmpLocal = this.nextLocalIndex++;
+      this.currentBody.addLocal(ValType.i32);
+      this.currentBody.localSet(tmpLocal); // save value
+      // Now stack: [arr, index], value in local
+      // But wait — array_set needs arr, index, value as args
+      // We saved value, need to push it back
+      const tmpIdx = this.nextLocalIndex++;
+      this.currentBody.addLocal(ValType.i32);
+      this.currentBody.localSet(tmpIdx); // save index
+      const tmpArr = this.nextLocalIndex++;
+      this.currentBody.addLocal(ValType.i32);
+      this.currentBody.localSet(tmpArr); // save arr
+
+      this.currentBody.localGet(tmpArr);
+      this.currentBody.localGet(tmpIdx);
+      this.currentBody.localGet(tmpLocal);
+      this.currentBody.call(this._runtimeFuncs.arraySet);
+      this.currentBody.localGet(tmpLocal); // return the assigned value
     } else {
       // Unknown node type — push 0
       this.currentBody.i32Const(0);
@@ -395,6 +570,26 @@ export class WasmCompiler {
   }
 
   compileCallExpression(node) {
+    // Check for builtin functions first
+    if (node.function instanceof ast.Identifier) {
+      const name = node.function.value;
+
+      // Built-in: len(x)
+      if (name === 'len' && node.arguments.length === 1) {
+        this.compileNode(node.arguments[0]);
+        this.currentBody.call(this._runtimeFuncs.len);
+        return;
+      }
+
+      // Built-in: push(arr, val)
+      if (name === 'push' && node.arguments.length === 2) {
+        this.compileNode(node.arguments[0]);
+        this.compileNode(node.arguments[1]);
+        this.currentBody.call(this._runtimeFuncs.push);
+        return;
+      }
+    }
+
     // Compile arguments
     for (const arg of node.arguments) {
       this.compileNode(arg);
@@ -522,6 +717,55 @@ export class WasmCompiler {
         this.compileStatement(stmt);
       }
     }
+  }
+
+  // String literal → data segment constant
+  compileStringLiteral(node) {
+    const str = node.value;
+    const encoder = new TextEncoder();
+    const bytes = encoder.encode(str);
+
+    // Allocate in data segment
+    const offset = this.nextDataOffset;
+    this.nextDataOffset += 8 + bytes.length; // tag + length + bytes
+    // Align to 4 bytes
+    this.nextDataOffset = (this.nextDataOffset + 3) & ~3;
+
+    this.stringConstants.push({ offset, length: bytes.length, value: str });
+
+    // Push pointer to the string constant
+    this.currentBody.i32Const(offset);
+  }
+
+  // Array literal → heap-allocated array
+  compileArrayLiteral(node) {
+    const elements = node.elements.filter(e => !(e instanceof ast.SpreadElement));
+    const len = elements.length;
+
+    // Allocate array: make_array(len)
+    this.currentBody.i32Const(len);
+    this.currentBody.call(this._runtimeFuncs.makeArray);
+
+    // Store each element
+    const arrLocal = this.nextLocalIndex++;
+    this.currentBody.addLocal(ValType.i32);
+    this.currentBody.localSet(arrLocal);
+
+    for (let i = 0; i < len; i++) {
+      this.currentBody.localGet(arrLocal);
+      this.currentBody.i32Const(i);
+      this.compileNode(elements[i]);
+      this.currentBody.call(this._runtimeFuncs.arraySet);
+    }
+
+    this.currentBody.localGet(arrLocal); // leave pointer on stack
+  }
+
+  // Index expression: arr[idx]
+  compileIndexExpression(node) {
+    this.compileNode(node.left);
+    this.compileNode(node.index);
+    this.currentBody.call(this._runtimeFuncs.arrayGet);
   }
 
   // Temp local for || operator

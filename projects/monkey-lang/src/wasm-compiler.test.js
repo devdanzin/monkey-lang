@@ -324,6 +324,117 @@ describe('WASM Compiler', () => {
     });
   });
 
+  describe('Arrays', () => {
+    it('array literal and indexing', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let arr = [10, 20, 30];
+        arr[1]
+      `), 20);
+    });
+
+    it('array length', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let arr = [1, 2, 3, 4, 5];
+        len(arr)
+      `), 5);
+    });
+
+    it('array first and last', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let arr = [100, 200, 300];
+        arr[0] + arr[2]
+      `), 400);
+    });
+
+    it('array with computed elements', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let x = 5;
+        let arr = [x, x * 2, x * 3];
+        arr[0] + arr[1] + arr[2]
+      `), 30);
+    });
+
+    it('array sum via loop', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let arr = [1, 2, 3, 4, 5];
+        let sum = 0;
+        let i = 0;
+        while (i < len(arr)) {
+          sum = sum + arr[i];
+          i = i + 1;
+        }
+        sum
+      `), 15);
+    });
+
+    it('push creates new array', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let arr = [1, 2, 3];
+        let arr2 = push(arr, 4);
+        len(arr2)
+      `), 4);
+    });
+
+    it('push preserves elements', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let arr = [10, 20];
+        let arr2 = push(arr, 30);
+        arr2[0] + arr2[1] + arr2[2]
+      `), 60);
+    });
+
+    it('empty array', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let arr = [];
+        len(arr)
+      `), 0);
+    });
+
+    it('build array with push in loop', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let arr = [];
+        let i = 0;
+        while (i < 5) {
+          arr = push(arr, i * i);
+          i = i + 1;
+        }
+        arr[3]
+      `), 9);
+    });
+  });
+
+  describe('Strings', () => {
+    it('string literal returns pointer', async () => {
+      // String literal returns a non-zero pointer
+      const result = await compileAndRun('"hello"');
+      assert.ok(result > 0, `expected positive pointer, got ${result}`);
+    });
+
+    it('string length', async () => {
+      assert.strictEqual(await compileAndRun('len("hello")'), 5);
+    });
+
+    it('empty string length', async () => {
+      assert.strictEqual(await compileAndRun('len("")'), 0);
+    });
+
+    it('string stored in variable', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let s = "world";
+        len(s)
+      `), 5);
+    });
+
+    it('can read string bytes from memory', async () => {
+      const instance = await compileToInstance('"Hi"');
+      const result = instance.exports.main();
+      const mem = new Uint8Array(instance.exports.memory.buffer);
+      // At result+8 should be 'H', result+9 should be 'i'
+      assert.strictEqual(mem[result + 8], 72);  // 'H'
+      assert.strictEqual(mem[result + 9], 105); // 'i'
+    });
+  });
+
   describe('Complex programs', () => {
     it('GCD', async () => {
       assert.strictEqual(await compileAndRun(`

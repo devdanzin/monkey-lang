@@ -79,23 +79,31 @@
       "id": "T14",
       "mode": "BUILD",
       "task": "WASM compiler core: AST→WASM for integers, arithmetic, comparisons, let bindings, if/else, while loops, functions",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T6",
-      "started": "2026-03-30T15:16:50.146Z"
+      "started": "2026-03-30T15:16:50.146Z",
+      "completed": "2026-03-30T15:20:53.623Z",
+      "duration_ms": 600000,
+      "summary": "WASM compiler core complete. AST→WASM for integers, arithmetic, comparisons, let bindings, if/else, while/for loops, functions (including recursion), return, logical operators. 59 tests all passing."
     },
     {
       "id": "T15",
       "mode": "BUILD",
       "task": "WASM compiler tests: verify numeric programs produce correct results via WebAssembly.instantiate",
-      "status": "upcoming",
-      "plan_ref": "T6"
+      "status": "done",
+      "plan_ref": "T6",
+      "started": "2026-03-30T15:21:07.088Z",
+      "completed": "2026-03-30T15:21:07.205Z",
+      "duration_ms": 10000,
+      "summary": "Tests already written in T14 — 59 tests covering all numeric programs via WebAssembly.instantiate. Fibonacci, factorial, GCD, power, nested loops all verified."
     },
     {
       "id": "T16",
       "mode": "BUILD",
       "task": "WASM strings + arrays: linear memory layout, alloc/free, string builtins, array indexing",
-      "status": "upcoming",
-      "plan_ref": "T6"
+      "status": "in-progress",
+      "plan_ref": "T6",
+      "started": "2026-03-30T15:21:15.386Z"
     },
     {
       "id": "T17",
