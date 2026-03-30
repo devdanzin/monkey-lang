@@ -14,13 +14,15 @@ import { VM } from './vm.js';
 import { IR } from './jit.js';
 import { Environment, NULL } from './object.js';
 import { STDLIB_SOURCE } from './stdlib.js';
+import { compileAndRun as wasmCompileAndRun, WasmCompiler, formatWasmValue } from './wasm-compiler.js';
+import { Transpiler } from './transpiler.js';
 
-const VERSION = '0.2.0';
+const VERSION = '0.3.0';
 
 // Handle --version flag
 if (process.argv.includes('--version') || process.argv.includes('-v')) {
   console.log(`Monkey Language v${VERSION}`);
-  console.log(`1115 tests | 6 modules | Bytecode VM + Tracing JIT`);
+  console.log(`1245 tests | 7 modules | 5 backends: Eval, VM, JIT, Transpiler, WASM`);
   process.exit(0);
 }
 
@@ -147,6 +149,52 @@ class MonkeyREPL {
     }
   }
 
+  async execWasm(input) {
+    try {
+      const outputLines = [];
+      const start = performance.now();
+      const result = await wasmCompileAndRun(input, { outputLines });
+      const elapsed = performance.now() - start;
+
+      // Print any puts output
+      for (const line of outputLines) {
+        console.log(line);
+      }
+
+      if (result !== 0 || outputLines.length === 0) {
+        const timing = this.showTiming ? `  \x1b[90m(${elapsed.toFixed(2)}ms, WASM)\x1b[0m` : '';
+        console.log(result + timing);
+      } else if (this.showTiming) {
+        console.log(`\x1b[90m(${elapsed.toFixed(2)}ms, WASM)\x1b[0m`);
+      }
+    } catch (e) {
+      console.error(`WASM error: ${e.message}`);
+    }
+  }
+
+  execTranspiler(program, input) {
+    try {
+      const transpiler = new Transpiler();
+      const jsCode = transpiler.transpile(program);
+      const lines = jsCode.trim().split('\n');
+      const lastLine = lines[lines.length - 1].replace(/;$/, '');
+      lines[lines.length - 1] = 'return ' + lastLine + ';';
+      const wrappedCode = lines.join('\n');
+      const fn = new Function(wrappedCode);
+
+      const start = performance.now();
+      const result = fn();
+      const elapsed = performance.now() - start;
+
+      if (result !== undefined && result !== null) {
+        const timing = this.showTiming ? `  \x1b[90m(${elapsed.toFixed(2)}ms, Transpiler)\x1b[0m` : '';
+        console.log(String(result) + timing);
+      }
+    } catch (e) {
+      console.error(`Transpiler error: ${e.message}`);
+    }
+  }
+
   loadStdlib() {
     if (this.stdlibLoaded) return;
     const program = this.parse(STDLIB_SOURCE);
@@ -222,7 +270,7 @@ class MonkeyREPL {
   }
 
   runBenchmark(code) {
-    const ITERATIONS = 100;
+    const ITERATIONS = 50;
     
     // VM timing
     let vmTotal = 0;
@@ -253,12 +301,69 @@ class MonkeyREPL {
 
     const vmAvg = vmTotal / ITERATIONS;
     const jitAvg = jitTotal / ITERATIONS;
-    const speedup = vmAvg / jitAvg;
+    const jitSpeedup = vmAvg / jitAvg;
 
     console.log(`\x1b[1mBenchmark\x1b[0m (${ITERATIONS} iterations)`);
-    console.log(`  VM:      ${vmAvg.toFixed(3)}ms avg`);
-    console.log(`  JIT:     ${jitAvg.toFixed(3)}ms avg`);
-    console.log(`  Speedup: \x1b[${speedup > 2 ? '32' : speedup > 1 ? '33' : '31'}m${speedup.toFixed(2)}x\x1b[0m`);
+    console.log(`  VM:         ${vmAvg.toFixed(3)}ms avg`);
+    console.log(`  JIT:        ${jitAvg.toFixed(3)}ms avg (${jitSpeedup.toFixed(1)}x vs VM)`);
+
+    // Transpiler timing
+    try {
+      const program = this.parse(code);
+      if (program) {
+        const transpiler = new Transpiler();
+        const jsCode = transpiler.transpile(program);
+        const lines = jsCode.trim().split('\n');
+        const lastLine = lines[lines.length - 1].replace(/;$/, '');
+        lines[lines.length - 1] = 'return ' + lastLine + ';';
+        const fn = new Function(lines.join('\n'));
+        let transTotal = 0;
+        for (let i = 0; i < ITERATIONS; i++) {
+          const start = performance.now();
+          fn();
+          transTotal += performance.now() - start;
+        }
+        const transAvg = transTotal / ITERATIONS;
+        console.log(`  Transpiler: ${transAvg.toFixed(3)}ms avg (${(vmAvg / transAvg).toFixed(1)}x vs VM)`);
+      }
+    } catch (e) {
+      console.log(`  Transpiler: \x1b[90mN/A\x1b[0m`);
+    }
+
+    // WASM timing
+    this._benchWasm(code, ITERATIONS, vmAvg).then(() => {}).catch(() => {
+      console.log(`  WASM:       \x1b[90mN/A\x1b[0m`);
+    });
+  }
+
+  async _benchWasm(code, iterations, vmAvg) {
+    try {
+      const compiler = new WasmCompiler();
+      const builder = compiler.compile(code);
+      if (!builder || compiler.errors.length > 0) {
+        console.log(`  WASM:       \x1b[90mN/A (compile error)\x1b[0m`);
+        return;
+      }
+      const binary = builder.build();
+      const module = await WebAssembly.compile(binary);
+      const imports = {
+        env: {
+          puts() {}, str(v) { return v; },
+          __str_concat() { return 0; }, __str_eq() { return 0; },
+        }
+      };
+      let wasmTotal = 0;
+      for (let i = 0; i < iterations; i++) {
+        const instance = await WebAssembly.instantiate(module, imports);
+        const start = performance.now();
+        instance.exports.main();
+        wasmTotal += performance.now() - start;
+      }
+      const wasmAvg = wasmTotal / iterations;
+      console.log(`  WASM:       ${wasmAvg.toFixed(3)}ms avg (\x1b[32m${(vmAvg / wasmAvg).toFixed(1)}x vs VM\x1b[0m)`);
+    } catch (e) {
+      console.log(`  WASM:       \x1b[90mN/A (${e.message.slice(0, 30)})\x1b[0m`);
+    }
   }
 
   handleCommand(line) {
@@ -268,11 +373,11 @@ class MonkeyREPL {
     switch (cmd) {
       case ':engine':
         if (parts[1]) {
-          if (['vm', 'eval', 'jit'].includes(parts[1])) {
-            this.engine = parts[1];
+          if (['vm', 'eval', 'jit', 'wasm', 'transpiler', 'trans'].includes(parts[1])) {
+            this.engine = parts[1] === 'trans' ? 'transpiler' : parts[1];
             console.log(`Switched to ${this.engine} engine`);
           } else {
-            console.log('Usage: :engine [vm|eval|jit]');
+            console.log('Usage: :engine [vm|eval|jit|wasm|transpiler]');
           }
         } else {
           console.log(`Current engine: ${this.engine}`);
@@ -349,17 +454,21 @@ class MonkeyREPL {
 
       case ':help':
         console.log('\x1b[1mCommands:\x1b[0m');
-        console.log('  :engine [vm|eval|jit]    — show/switch execution engine');
+        console.log('  :engine [vm|eval|jit|wasm|transpiler]');
+        console.log('                           — show/switch execution engine');
         console.log('  :jit [stats|on|off]      — JIT control and statistics');
         console.log('  :jit trace [N]           — show trace IR (all or trace N)');
         console.log('  :jit compiled [N]        — show compiled JavaScript');
-        console.log('  :stdlib                  — load standard library (map, filter, reduce, ...)');
-        console.log('  :benchmark <code>        — benchmark VM vs JIT (100 iterations)');
+        console.log('  :stdlib                  — load standard library');
+        console.log('  :benchmark <code>        — benchmark all backends');
         console.log('  :time <code>             — time a single execution');
         console.log('  :timing                  — toggle timing display');
         console.log('  :reset                   — reset all state');
         console.log('  :help                    — show this help');
         console.log('  :quit                    — exit');
+        console.log('');
+        console.log('\x1b[1mEngines:\x1b[0m eval (tree-walk), vm (bytecode), jit (tracing),');
+        console.log('  transpiler (JS codegen), wasm (WebAssembly)');
         console.log('');
         console.log('\x1b[1mBuiltins:\x1b[0m len, puts, first, last, rest, push, split, join,');
         console.log('  trim, str_contains, substr, replace, int, str, type');
@@ -393,7 +502,9 @@ class MonkeyREPL {
 
     rl.prompt();
 
-    rl.on('line', (line) => {
+    let pendingAsync = null;
+
+    rl.on('line', async (line) => {
       const trimmed = line.trim();
       if (!trimmed) { rl.prompt(); return; }
 
@@ -408,6 +519,12 @@ class MonkeyREPL {
         try {
           if (this.engine === 'eval') {
             this.execEval(program);
+          } else if (this.engine === 'wasm') {
+            pendingAsync = this.execWasm(trimmed);
+            await pendingAsync;
+            pendingAsync = null;
+          } else if (this.engine === 'transpiler') {
+            this.execTranspiler(program, trimmed);
           } else {
             this.execVM(program, this.engine === 'jit');
           }
@@ -418,7 +535,8 @@ class MonkeyREPL {
       rl.prompt();
     });
 
-    rl.on('close', () => {
+    rl.on('close', async () => {
+      if (pendingAsync) await pendingAsync;
       console.log('\nBye!');
       process.exit(0);
     });
@@ -433,6 +551,8 @@ for (const arg of args) {
   else if (arg === '--eval') engine = 'eval';
   else if (arg === '--vm') engine = 'vm';
   else if (arg === '--jit') engine = 'jit';
+  else if (arg === '--wasm') engine = 'wasm';
+  else if (arg === '--transpiler' || arg === '--trans') engine = 'transpiler';
 }
 
 const repl = new MonkeyREPL(engine);
