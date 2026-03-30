@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fractal Explorer — Henry</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    background: #0d1117; color: #c9d1d9;
+    display: flex; flex-direction: column; align-items: center;
+    min-height: 100vh; padding: 0.8rem;
+  }
+  h1 { font-size: 1.5rem; color: #f0f6fc; margin-bottom: 0.15rem; }
+  h1 span { color: #58a6ff; }
+  .sub { color: #8b949e; font-size: 0.82rem; margin-bottom: 0.6rem; }
+  canvas { border: 1px solid #30363d; border-radius: 4px; cursor: crosshair; }
+  .controls {
+    display: flex; gap: 0.5rem; margin: 0.6rem 0; flex-wrap: wrap; justify-content: center; align-items: center;
+  }
+  select, button, input[type=range] {
+    background: #21262d; color: #c9d1d9; border: 1px solid #30363d;
+    padding: 0.3rem 0.7rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem;
+  }
+  select:hover, button:hover { border-color: #58a6ff; }
+  input[type=range] { width: 100px; padding: 0; }
+  .stats { color: #8b949e; font-size: 0.75rem; margin: 0.3rem 0; }
+  .stats span { color: #c9d1d9; }
+  .info { max-width: 600px; text-align: center; color: #8b949e; font-size: 0.7rem; margin-top: 0.5rem; line-height: 1.4; }
+  .info a { color: #58a6ff; text-decoration: none; }
+  label { font-size: 0.78rem; color: #8b949e; }
+</style>
+</head>
+<body>
+<h1>🌀 <span>Fractal</span> Explorer</h1>
+<p class="sub">Mandelbrot & Julia sets — click to zoom, scroll to adjust iterations</p>
+
+<canvas id="canvas"></canvas>
+
+<div class="controls">
+  <select id="fractal" onchange="render()">
+    <option value="mandelbrot">Mandelbrot</option>
+    <option value="julia">Julia Set</option>
+    <option value="burning-ship">Burning Ship</option>
+    <option value="tricorn">Tricorn</option>
+  </select>
+  <select id="palette" onchange="render()">
+    <option value="classic">Classic</option>
+    <option value="fire">Fire</option>
+    <option value="ocean">Ocean</option>
+    <option value="grayscale">Grayscale</option>
+    <option value="neon">Neon</option>
+    <option value="rainbow">Rainbow</option>
+  </select>
+  <label>Iters: <span id="iterLabel">200</span></label>
+  <input type="range" id="maxIter" min="50" max="2000" value="200" step="50" oninput="document.getElementById('iterLabel').textContent=this.value; render()">
+  <button onclick="resetView()">🏠 Reset</button>
+  <button onclick="zoomIn()">🔍+</button>
+  <button onclick="zoomOut()">🔍−</button>
+</div>
+
+<div class="stats">
+  Center: <span id="center">0 + 0i</span> |
+  Zoom: <span id="zoom">1×</span> |
+  Render: <span id="renderTime">0ms</span>
+</div>
+
+<div class="info">
+  Left-click: zoom in. Right-click: zoom out. Drag: pan. Scroll: adjust iterations.
+  <br>Julia set parameter: hover over Mandelbrot, press J to switch with that c value.
+  <br><a href="https://github.com/henry-the-frog/fractals">Source</a> · <a href="https://github.com/henry-the-frog">Built by Henry</a>
+</div>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+// Set canvas size
+const W = Math.min(window.innerWidth - 24, 800);
+const H = Math.min(window.innerHeight - 260, 500);
+canvas.width = W;
+canvas.height = H;
+
+// View state
+let centerX = -0.5, centerY = 0;
+let scale = 3 / H; // Units per pixel
+let juliaC = { r: -0.7, i: 0.27015 };
+
+// Palette functions
+const palettes = {
+  classic(t) {
+    const r = Math.floor(9 * (1 - t) * t * t * t * 255);
+    const g = Math.floor(15 * (1 - t) * (1 - t) * t * t * 255);
+    const b = Math.floor(8.5 * (1 - t) * (1 - t) * (1 - t) * t * 255);
+    return [r, g, b];
+  },
+  fire(t) {
+    return [Math.floor(t < 0.5 ? t * 2 * 255 : 255), Math.floor(t < 0.5 ? 0 : (t - 0.5) * 2 * 200), 0];
+  },
+  ocean(t) {
+    return [0, Math.floor(t * 100), Math.floor(t * 255)];
+  },
+  grayscale(t) {
+    const v = Math.floor(t * 255);
+    return [v, v, v];
+  },
+  neon(t) {
+    const r = Math.floor(Math.sin(t * Math.PI * 2) * 127 + 128);
+    const g = Math.floor(Math.sin(t * Math.PI * 2 + 2) * 127 + 128);
+    const b = Math.floor(Math.sin(t * Math.PI * 2 + 4) * 127 + 128);
+    return [r, g, b];
+  },
+  rainbow(t) {
+    const h = t * 360;
+    const s = 1, l = 0.5;
+    const c = (1 - Math.abs(2 * l - 1)) * s;
+    const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+    const m = l - c / 2;
+    let r, g, b;
+    if (h < 60) { r = c; g = x; b = 0; }
+    else if (h < 120) { r = x; g = c; b = 0; }
+    else if (h < 180) { r = 0; g = c; b = x; }
+    else if (h < 240) { r = 0; g = x; b = c; }
+    else if (h < 300) { r = x; g = 0; b = c; }
+    else { r = c; g = 0; b = x; }
+    return [Math.floor((r + m) * 255), Math.floor((g + m) * 255), Math.floor((b + m) * 255)];
+  }
+};
+
+function mandelbrot(cr, ci, maxIter) {
+  let zr = 0, zi = 0;
+  for (let i = 0; i < maxIter; i++) {
+    const zr2 = zr * zr, zi2 = zi * zi;
+    if (zr2 + zi2 > 4) return i + 1 - Math.log(Math.log(Math.sqrt(zr2 + zi2))) / Math.log(2);
+    zi = 2 * zr * zi + ci;
+    zr = zr2 - zi2 + cr;
+  }
+  return -1; // In set
+}
+
+function julia(zr, zi, maxIter) {
+  const cr = juliaC.r, ci = juliaC.i;
+  for (let i = 0; i < maxIter; i++) {
+    const zr2 = zr * zr, zi2 = zi * zi;
+    if (zr2 + zi2 > 4) return i + 1 - Math.log(Math.log(Math.sqrt(zr2 + zi2))) / Math.log(2);
+    const newZr = zr2 - zi2 + cr;
+    zi = 2 * zr * zi + ci;
+    zr = newZr;
+  }
+  return -1;
+}
+
+function burningShip(cr, ci, maxIter) {
+  let zr = 0, zi = 0;
+  for (let i = 0; i < maxIter; i++) {
+    const zr2 = zr * zr, zi2 = zi * zi;
+    if (zr2 + zi2 > 4) return i + 1 - Math.log(Math.log(Math.sqrt(zr2 + zi2))) / Math.log(2);
+    zi = Math.abs(2 * zr * zi) + ci;
+    zr = zr2 - zi2 + cr;
+  }
+  return -1;
+}
+
+function tricorn(cr, ci, maxIter) {
+  let zr = 0, zi = 0;
+  for (let i = 0; i < maxIter; i++) {
+    const zr2 = zr * zr, zi2 = zi * zi;
+    if (zr2 + zi2 > 4) return i + 1 - Math.log(Math.log(Math.sqrt(zr2 + zi2))) / Math.log(2);
+    const newZr = zr2 - zi2 + cr;
+    zi = -2 * zr * zi + ci;
+    zr = newZr;
+  }
+  return -1;
+}
+
+const FRACTALS = { mandelbrot, julia, 'burning-ship': burningShip, tricorn };
+
+function render() {
+  const t0 = performance.now();
+  const maxIter = parseInt(document.getElementById('maxIter').value);
+  const fractalType = document.getElementById('fractal').value;
+  const paletteName = document.getElementById('palette').value;
+  const colorFn = palettes[paletteName];
+  const fractalFn = FRACTALS[fractalType];
+
+  const imgData = ctx.createImageData(W, H);
+  const data = imgData.data;
+
+  for (let py = 0; py < H; py++) {
+    for (let px = 0; px < W; px++) {
+      const cr = centerX + (px - W / 2) * scale;
+      const ci = centerY + (py - H / 2) * scale;
+
+      const n = fractalFn(cr, ci, maxIter);
+      const idx = (py * W + px) * 4;
+
+      if (n < 0) {
+        data[idx] = data[idx + 1] = data[idx + 2] = 0;
+      } else {
+        const t = (n % maxIter) / maxIter;
+        const [r, g, b] = colorFn(t);
+        data[idx] = r;
+        data[idx + 1] = g;
+        data[idx + 2] = b;
+      }
+      data[idx + 3] = 255;
+    }
+  }
+
+  ctx.putImageData(imgData, 0, 0);
+  const t1 = performance.now();
+
+  document.getElementById('center').textContent = `${centerX.toFixed(6)} ${centerY >= 0 ? '+' : '−'} ${Math.abs(centerY).toFixed(6)}i`;
+  document.getElementById('zoom').textContent = `${(3 / (scale * H)).toFixed(1)}×`;
+  document.getElementById('renderTime').textContent = Math.round(t1 - t0) + 'ms';
+}
+
+function resetView() {
+  const fractal = document.getElementById('fractal').value;
+  if (fractal === 'mandelbrot') { centerX = -0.5; centerY = 0; }
+  else if (fractal === 'burning-ship') { centerX = -0.4; centerY = -0.6; }
+  else { centerX = 0; centerY = 0; }
+  scale = 3 / H;
+  render();
+}
+
+function zoomIn() { scale *= 0.5; render(); }
+function zoomOut() { scale *= 2; render(); }
+
+// Mouse interaction
+let dragging = false, lastX, lastY;
+
+canvas.addEventListener('mousedown', (e) => {
+  if (e.button === 0) { dragging = true; lastX = e.clientX; lastY = e.clientY; }
+});
+
+canvas.addEventListener('mousemove', (e) => {
+  if (dragging) {
+    const dx = e.clientX - lastX, dy = e.clientY - lastY;
+    centerX -= dx * scale;
+    centerY -= dy * scale;
+    lastX = e.clientX; lastY = e.clientY;
+    render();
+  }
+});
+
+window.addEventListener('mouseup', () => dragging = false);
+
+canvas.addEventListener('click', (e) => {
+  if (!dragging) {
+    const rect = canvas.getBoundingClientRect();
+    centerX += (e.clientX - rect.left - W / 2) * scale;
+    centerY += (e.clientY - rect.top - H / 2) * scale;
+    scale *= 0.5;
+    render();
+  }
+});
+
+canvas.addEventListener('contextmenu', (e) => {
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  centerX += (e.clientX - rect.left - W / 2) * scale;
+  centerY += (e.clientY - rect.top - H / 2) * scale;
+  scale *= 2;
+  render();
+});
+
+canvas.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const iter = document.getElementById('maxIter');
+  const newVal = Math.max(50, Math.min(2000, parseInt(iter.value) + (e.deltaY > 0 ? -50 : 50)));
+  iter.value = newVal;
+  document.getElementById('iterLabel').textContent = newVal;
+  render();
+});
+
+// J key: switch to Julia with current mouse position as c
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'j' || e.key === 'J') {
+    const fractalSel = document.getElementById('fractal');
+    if (fractalSel.value === 'mandelbrot') {
+      const rect = canvas.getBoundingClientRect();
+      // Use center as julia c value
+      juliaC.r = centerX;
+      juliaC.i = centerY;
+      fractalSel.value = 'julia';
+      resetView();
+    } else {
+      fractalSel.value = 'mandelbrot';
+      resetView();
+    }
+  }
+});
+
+render();
+</script>
+</body>
+</html>
