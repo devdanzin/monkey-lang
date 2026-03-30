@@ -1,7 +1,7 @@
 // Tests for Monkey → WASM Compiler
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { compileAndRun, compileToInstance } from './wasm-compiler.js';
+import { compileAndRun, compileToInstance, formatWasmValue } from './wasm-compiler.js';
 
 describe('WASM Compiler', () => {
 
@@ -432,6 +432,86 @@ describe('WASM Compiler', () => {
       // At result+8 should be 'H', result+9 should be 'i'
       assert.strictEqual(mem[result + 8], 72);  // 'H'
       assert.strictEqual(mem[result + 9], 105); // 'i'
+    });
+  });
+
+  describe('puts and output', () => {
+    it('puts integer', async () => {
+      const lines = [];
+      await compileAndRun('puts(42)', { outputLines: lines });
+      assert.strictEqual(lines.length, 1);
+      assert.strictEqual(lines[0], '42');
+    });
+
+    it('puts multiple values', async () => {
+      const lines = [];
+      await compileAndRun('puts(1); puts(2); puts(3)', { outputLines: lines });
+      assert.deepStrictEqual(lines, ['1', '2', '3']);
+    });
+
+    it('puts in loop', async () => {
+      const lines = [];
+      await compileAndRun(`
+        let i = 0;
+        while (i < 5) {
+          puts(i);
+          i = i + 1;
+        }
+      `, { outputLines: lines });
+      assert.deepStrictEqual(lines, ['0', '1', '2', '3', '4']);
+    });
+
+    it('puts string literal', async () => {
+      const lines = [];
+      await compileAndRun('puts("hello")', { outputLines: lines });
+      assert.strictEqual(lines.length, 1);
+      assert.strictEqual(lines[0], 'hello');
+    });
+
+    it('puts array', async () => {
+      const lines = [];
+      await compileAndRun('puts([1, 2, 3])', { outputLines: lines });
+      assert.strictEqual(lines.length, 1);
+      assert.strictEqual(lines[0], '[1, 2, 3]');
+    });
+
+    it('puts from function', async () => {
+      const lines = [];
+      await compileAndRun(`
+        let greet = fn(x) { puts(x); x };
+        greet(42)
+      `, { outputLines: lines });
+      assert.strictEqual(lines.length, 1);
+      assert.strictEqual(lines[0], '42');
+    });
+
+    it('puts returns null (0)', async () => {
+      const result = await compileAndRun('puts(42)');
+      assert.strictEqual(result, 0);
+    });
+
+    it('fizzbuzz with puts', async () => {
+      const lines = [];
+      await compileAndRun(`
+        let i = 1;
+        while (i <= 15) {
+          if (i % 15 == 0) { puts(0); }
+          if (i % 15 != 0) {
+            if (i % 3 == 0) { puts(3); }
+            if (i % 3 != 0) {
+              if (i % 5 == 0) { puts(5); }
+              if (i % 5 != 0) { puts(i); }
+            }
+          }
+          i = i + 1;
+        }
+      `, { outputLines: lines });
+      assert.strictEqual(lines.length, 15);
+      // 1,2,fizz,4,buzz,fizz,7,8,fizz,buzz,11,fizz,13,14,fizzbuzz
+      assert.strictEqual(lines[0], '1');
+      assert.strictEqual(lines[2], '3');  // fizz (represented as 3)
+      assert.strictEqual(lines[4], '5');  // buzz (represented as 5)
+      assert.strictEqual(lines[14], '0'); // fizzbuzz (represented as 0)
     });
   });
 

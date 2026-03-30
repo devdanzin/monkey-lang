@@ -112,34 +112,64 @@
       "id": "T17",
       "mode": "BUILD",
       "task": "Integrate WASM backend into playground with execution mode toggle",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T6",
-      "started": "2026-03-30T15:25:26.618Z"
+      "started": "2026-03-30T15:25:26.618Z",
+      "completed": "2026-03-30T15:28:39.038Z",
+      "duration_ms": 420000,
+      "summary": "WASM backend integrated into playground. Engine toggle (JIT/VM/WASM), smart result display for strings/arrays, benchmark includes WASM timing, WASM Fibonacci example. Pushed to GitHub Pages."
     },
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Mid-session housekeeping"
+      "status": "done",
+      "task": "Mid-session housekeeping",
+      "started": "2026-03-30T15:28:59.495Z",
+      "completed": "2026-03-30T15:29:20.172Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed workspace + github pages. Full test suite: 1215 passing, 0 failing, 3 skipped (up from 1124). All WASM tests green."
     },
     {
       "id": "T9",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Reflect on progress, assess quality"
+      "status": "done",
+      "task": "Reflect on progress, assess quality",
+      "started": "2026-03-30T15:29:29.651Z",
+      "completed": "2026-03-30T15:29:43.471Z",
+      "duration_ms": 60000,
+      "summary": "Reflected: WASM backend solid for numeric/array programs. Next priorities: (1) Add puts to WASM via JS imports for visible output, (2) Blog post about the WASM backend. 1215 tests, 5 backends."
     },
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Afternoon focus area",
-      "task": null
+      "task": null,
+      "started": "2026-03-30T15:29:53.066Z",
+      "completed": "2026-03-30T15:30:07.298Z",
+      "duration_ms": 30000,
+      "summary": "Planned: 3 tasks — WASM puts/str via imports, blog post about WASM backend, TASKS.md update."
     },
     {
       "id": "T11",
       "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add puts/str to WASM backend via JS import functions — output integers, strings, arrays",
+      "plan_ref": "T10",
+      "started": "2026-03-30T15:30:17.935Z"
+    },
+    {
+      "id": "T18",
+      "mode": "BUILD",
+      "task": "Write blog post: Compiling Monkey to WebAssembly",
       "status": "upcoming",
-      "task": null,
+      "plan_ref": "T10"
+    },
+    {
+      "id": "T19",
+      "mode": "BUILD",
+      "task": "Update TASKS.md with WASM backend progress and next steps",
+      "status": "upcoming",
       "plan_ref": "T10"
     },
     {
@@ -216,6 +246,10 @@
     {
       "time": "2026-03-30T15:12:22.068Z",
       "msg": "PLAN T6 filled 5 BUILD tasks"
+    },
+    {
+      "time": "2026-03-30T15:30:00.288Z",
+      "msg": "PLAN T10 filled 3 BUILD tasks"
     }
   ]
 }

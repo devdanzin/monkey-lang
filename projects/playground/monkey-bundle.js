@@ -11757,6 +11757,12 @@ var WasmCompiler = class {
     return this.builder;
   }
   _addRuntimeFunctions() {
+    const putsIdx = this.builder.addImport("env", "puts", [ValType.i32], []);
+    this._runtimeFuncs.puts = putsIdx;
+    this.globalScope.define("puts", putsIdx, "func");
+    const strIdx = this.builder.addImport("env", "str", [ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.str = strIdx;
+    this.globalScope.define("str", strIdx, "func");
     const { index: allocIdx, body: allocBody } = this.builder.addFunction(
       [ValType.i32],
       [ValType.i32]
@@ -12106,6 +12112,19 @@ var WasmCompiler = class {
         this.currentBody.call(this._runtimeFuncs.push);
         return;
       }
+      if (name === "puts" && node.arguments.length >= 1) {
+        for (const arg of node.arguments) {
+          this.compileNode(arg);
+          this.currentBody.call(this._runtimeFuncs.puts);
+        }
+        this.currentBody.i32Const(0);
+        return;
+      }
+      if (name === "str" && node.arguments.length === 1) {
+        this.compileNode(node.arguments[0]);
+        this.currentBody.call(this._runtimeFuncs.str);
+        return;
+      }
     }
     for (const arg of node.arguments) {
       this.compileNode(arg);
@@ -12254,18 +12273,53 @@ WasmCompiler.prototype.compilePrefixExpression = function(node) {
   }
   this.compileNode(node.right);
 };
-async function compileAndRun(input) {
-  const compiler = new WasmCompiler();
-  const builder = compiler.compile(input);
-  if (!builder || compiler.errors.length > 0) {
-    throw new Error(`Compilation errors: ${compiler.errors.join(", ")}`);
-  }
-  const binary = builder.build();
-  const module = await WebAssembly.compile(binary);
-  const instance = await WebAssembly.instantiate(module);
-  return instance.exports.main();
+function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
+  return {
+    env: {
+      puts(value) {
+        const mem = memoryRef.memory;
+        if (mem) {
+          const view = new DataView(mem.buffer);
+          const formatted = formatWasmValue(value, view);
+          outputLines.push(formatted);
+        } else {
+          outputLines.push(String(value));
+        }
+      },
+      str(value) {
+        return value;
+      }
+    }
+  };
 }
-async function compileToInstance(input) {
+function formatWasmValue(value, dataView) {
+  if (value > 0 && dataView && value + 8 <= dataView.byteLength) {
+    try {
+      const tag = dataView.getInt32(value, true);
+      if (tag === TAG_STRING) {
+        const len = dataView.getInt32(value + 4, true);
+        if (len >= 0 && len < 1e5 && value + 8 + len <= dataView.byteLength) {
+          const bytes = new Uint8Array(dataView.buffer, value + 8, len);
+          return new TextDecoder().decode(bytes);
+        }
+      }
+      if (tag === TAG_ARRAY) {
+        const len = dataView.getInt32(value + 4, true);
+        if (len >= 0 && len < 1e5) {
+          const elems = [];
+          for (let i = 0; i < len; i++) {
+            const elem = dataView.getInt32(value + 8 + i * 4, true);
+            elems.push(formatWasmValue(elem, dataView));
+          }
+          return "[" + elems.join(", ") + "]";
+        }
+      }
+    } catch (e) {
+    }
+  }
+  return String(value);
+}
+async function compileAndRun(input, options = {}) {
   const compiler = new WasmCompiler();
   const builder = compiler.compile(input);
   if (!builder || compiler.errors.length > 0) {
@@ -12273,7 +12327,28 @@ async function compileToInstance(input) {
   }
   const binary = builder.build();
   const module = await WebAssembly.compile(binary);
-  return WebAssembly.instantiate(module);
+  const outputLines = options.outputLines || [];
+  const memoryRef = { memory: null };
+  const imports = createWasmImports(outputLines, memoryRef);
+  const instance = await WebAssembly.instantiate(module, imports);
+  memoryRef.memory = instance.exports.memory;
+  const result = instance.exports.main();
+  return result;
+}
+async function compileToInstance(input, options = {}) {
+  const compiler = new WasmCompiler();
+  const builder = compiler.compile(input);
+  if (!builder || compiler.errors.length > 0) {
+    throw new Error(`Compilation errors: ${compiler.errors.join(", ")}`);
+  }
+  const binary = builder.build();
+  const module = await WebAssembly.compile(binary);
+  const outputLines = options.outputLines || [];
+  const memoryRef = { memory: null };
+  const imports = createWasmImports(outputLines, memoryRef);
+  const instance = await WebAssembly.instantiate(module, imports);
+  memoryRef.memory = instance.exports.memory;
+  return instance;
 }
 export {
   Compiler,
@@ -12291,6 +12366,7 @@ export {
   ValType,
   WasmCompiler,
   WasmModuleBuilder,
+  formatWasmValue,
   monkeyEval,
   compileAndRun as wasmCompileAndRun,
   compileToInstance as wasmCompileToInstance,

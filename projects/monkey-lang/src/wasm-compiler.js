@@ -160,6 +160,16 @@ export class WasmCompiler {
   }
 
   _addRuntimeFunctions() {
+    // Import puts from JS host: env.puts(value: i32) → void
+    const putsIdx = this.builder.addImport('env', 'puts', [ValType.i32], []);
+    this._runtimeFuncs.puts = putsIdx;
+    this.globalScope.define('puts', putsIdx, 'func');
+
+    // Import str from JS host: env.str(value: i32) → i32 (returns string pointer)
+    const strIdx = this.builder.addImport('env', 'str', [ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.str = strIdx;
+    this.globalScope.define('str', strIdx, 'func');
+
     // __alloc(size) → pointer — bump allocator
     const { index: allocIdx, body: allocBody } = this.builder.addFunction(
       [ValType.i32], [ValType.i32]
@@ -588,6 +598,23 @@ export class WasmCompiler {
         this.currentBody.call(this._runtimeFuncs.push);
         return;
       }
+
+      // Built-in: puts(val) — prints and returns null (0)
+      if (name === 'puts' && node.arguments.length >= 1) {
+        for (const arg of node.arguments) {
+          this.compileNode(arg);
+          this.currentBody.call(this._runtimeFuncs.puts);
+        }
+        this.currentBody.i32Const(0); // puts returns null
+        return;
+      }
+
+      // Built-in: str(val) — converts to string
+      if (name === 'str' && node.arguments.length === 1) {
+        this.compileNode(node.arguments[0]);
+        this.currentBody.call(this._runtimeFuncs.str);
+        return;
+      }
     }
 
     // Compile arguments
@@ -799,21 +826,62 @@ WasmCompiler.prototype.compilePrefixExpression = function(node) {
 
 // === High-level API ===
 
-export async function compileAndRun(input) {
-  const compiler = new WasmCompiler();
-  const builder = compiler.compile(input);
-
-  if (!builder || compiler.errors.length > 0) {
-    throw new Error(`Compilation errors: ${compiler.errors.join(', ')}`);
-  }
-
-  const binary = builder.build();
-  const module = await WebAssembly.compile(binary);
-  const instance = await WebAssembly.instantiate(module);
-  return instance.exports.main();
+// Create default JS host imports for WASM modules
+function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
+  return {
+    env: {
+      puts(value) {
+        const mem = memoryRef.memory;
+        if (mem) {
+          const view = new DataView(mem.buffer);
+          const formatted = formatWasmValue(value, view);
+          outputLines.push(formatted);
+        } else {
+          outputLines.push(String(value));
+        }
+      },
+      str(value) {
+        // str() converts a value to a string representation in WASM memory
+        // For now, just return the value unchanged (integer stays integer)
+        // A full implementation would allocate a string in WASM memory
+        return value;
+      },
+    },
+  };
 }
 
-export async function compileToInstance(input) {
+// Format a WASM i32 value as a human-readable string
+export function formatWasmValue(value, dataView) {
+  // Check if it's a pointer to a heap object
+  if (value > 0 && dataView && value + 8 <= dataView.byteLength) {
+    try {
+      const tag = dataView.getInt32(value, true);
+      if (tag === TAG_STRING) {
+        const len = dataView.getInt32(value + 4, true);
+        if (len >= 0 && len < 100000 && value + 8 + len <= dataView.byteLength) {
+          const bytes = new Uint8Array(dataView.buffer, value + 8, len);
+          return new TextDecoder().decode(bytes);
+        }
+      }
+      if (tag === TAG_ARRAY) {
+        const len = dataView.getInt32(value + 4, true);
+        if (len >= 0 && len < 100000) {
+          const elems = [];
+          for (let i = 0; i < len; i++) {
+            const elem = dataView.getInt32(value + 8 + i * 4, true);
+            elems.push(formatWasmValue(elem, dataView));
+          }
+          return '[' + elems.join(', ') + ']';
+        }
+      }
+    } catch (e) {
+      // Not a valid pointer, treat as integer
+    }
+  }
+  return String(value);
+}
+
+export async function compileAndRun(input, options = {}) {
   const compiler = new WasmCompiler();
   const builder = compiler.compile(input);
 
@@ -823,5 +891,35 @@ export async function compileToInstance(input) {
 
   const binary = builder.build();
   const module = await WebAssembly.compile(binary);
-  return WebAssembly.instantiate(module);
+
+  const outputLines = options.outputLines || [];
+  const memoryRef = { memory: null };
+  const imports = createWasmImports(outputLines, memoryRef);
+
+  const instance = await WebAssembly.instantiate(module, imports);
+  memoryRef.memory = instance.exports.memory;
+
+  const result = instance.exports.main();
+  return result;
+}
+
+export async function compileToInstance(input, options = {}) {
+  const compiler = new WasmCompiler();
+  const builder = compiler.compile(input);
+
+  if (!builder || compiler.errors.length > 0) {
+    throw new Error(`Compilation errors: ${compiler.errors.join(', ')}`);
+  }
+
+  const binary = builder.build();
+  const module = await WebAssembly.compile(binary);
+
+  const outputLines = options.outputLines || [];
+  const memoryRef = { memory: null };
+  const imports = createWasmImports(outputLines, memoryRef);
+
+  const instance = await WebAssembly.instantiate(module, imports);
+  memoryRef.memory = instance.exports.memory;
+
+  return instance;
 }
