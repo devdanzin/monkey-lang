@@ -238,6 +238,14 @@ export class WasmCompiler {
     const eqIdx = this.builder.addImport('env', '__eq', [ValType.i32, ValType.i32], [ValType.i32]);
     this._runtimeFuncs.eq = eqIdx;
 
+    // Import __lt: runtime-dispatched less-than (handles strings and ints)
+    const ltIdx = this.builder.addImport('env', '__lt', [ValType.i32, ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.lt = ltIdx;
+
+    // Import __gt: runtime-dispatched greater-than
+    const gtIdx = this.builder.addImport('env', '__gt', [ValType.i32, ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.gt = gtIdx;
+
     // Import __array_concat: concatenate two arrays
     const arrayConcatIdx = this.builder.addImport('env', '__array_concat', [ValType.i32, ValType.i32], [ValType.i32]);
     this._runtimeFuncs.arrayConcat = arrayConcatIdx;
@@ -888,8 +896,20 @@ export class WasmCompiler {
           this.currentBody.emit(Op.i32_eqz);
         }
         break;
-      case '<':  this.currentBody.emit(Op.i32_lt_s); break;
-      case '>':  this.currentBody.emit(Op.i32_gt_s); break;
+      case '<':
+        if (this._isDefinitelyInteger(node.left) && this._isDefinitelyInteger(node.right)) {
+          this.currentBody.emit(Op.i32_lt_s);
+        } else {
+          this.currentBody.call(this._runtimeFuncs.lt);
+        }
+        break;
+      case '>':
+        if (this._isDefinitelyInteger(node.left) && this._isDefinitelyInteger(node.right)) {
+          this.currentBody.emit(Op.i32_gt_s);
+        } else {
+          this.currentBody.call(this._runtimeFuncs.gt);
+        }
+        break;
       case '<=': this.currentBody.emit(Op.i32_le_s); break;
       case '>=': this.currentBody.emit(Op.i32_ge_s); break;
       case '&':  this.currentBody.emit(Op.i32_and); break;
@@ -1998,6 +2018,34 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
           } catch (e) {}
         }
         return a === b ? 1 : 0;
+      },
+      __lt(a, b) {
+        const mem = memoryRef.memory;
+        if (mem && a > 0 && b > 0) {
+          const view = new DataView(mem.buffer);
+          try {
+            const tagA = view.getInt32(a, true);
+            const tagB = view.getInt32(b, true);
+            if (tagA === TAG_STRING && tagB === TAG_STRING) {
+              return readString(a) < readString(b) ? 1 : 0;
+            }
+          } catch (e) {}
+        }
+        return a < b ? 1 : 0;
+      },
+      __gt(a, b) {
+        const mem = memoryRef.memory;
+        if (mem && a > 0 && b > 0) {
+          const view = new DataView(mem.buffer);
+          try {
+            const tagA = view.getInt32(a, true);
+            const tagB = view.getInt32(b, true);
+            if (tagA === TAG_STRING && tagB === TAG_STRING) {
+              return readString(a) > readString(b) ? 1 : 0;
+            }
+          } catch (e) {}
+        }
+        return a > b ? 1 : 0;
       },
       __array_concat(arrA, arrB) {
         const mem = memoryRef.memory;

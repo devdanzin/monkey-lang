@@ -1323,5 +1323,11 @@ describe('WASM Compiler', () => {
         pow(2, 10)
       `), 1024);
     });
+
+    it('string sorting with dynamic comparison', async () => {
+      const lines = [];
+      await compileAndRun('let a = ["banana", "apple", "cherry"]; for (i in 0..3) { for (j in 0..2) { if (a[j] > a[j+1]) { let temp = a[j]; a[j] = a[j+1]; a[j+1] = temp; } } } for (x in a) { puts(x); }', { outputLines: lines });
+      assert.deepStrictEqual(lines, ['apple', 'banana', 'cherry']);
+    });
   });
 });
