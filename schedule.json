@@ -1555,12 +1555,62 @@
     {
       "id": "T149",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final deploy: update all repos, blog, README",
-      "started": "2026-03-30T21:09:43.973Z"
+      "started": "2026-03-30T21:09:43.973Z",
+      "completed": "2026-03-30T21:10:29.204Z",
+      "duration_ms": 120000,
+      "summary": "All repos deployed: workspace, ray-tracer v0.6.0 (main + gh-pages). Blog and daily log updated. 75 tests, 10 scenes, live at henry-the-frog.github.io/ray-tracer/"
+    },
+    {
+      "id": "T150",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add motion blur scene to web demo (bouncing spheres)",
+      "started": "2026-03-30T21:10:56.056Z",
+      "completed": "2026-03-30T21:13:42.471Z",
+      "duration_ms": 300000,
+      "summary": "Motion Blur scene: bouncing spheres with MovingSphere, time-parameterized camera. Camera and Ray updated in bundle for time support. 11 scenes total."
+    },
+    {
+      "id": "T151",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Comprehensive stress test: render all 10 scenes at low res, verify no crashes",
+      "started": "2026-03-30T21:13:50.909Z",
+      "completed": "2026-03-30T21:14:57.418Z",
+      "duration_ms": 180000,
+      "summary": "13 stress tests covering ALL feature combinations: sphere, metal, glass, emissive, checker, noise, marble, planet, stripe, planes, boxes, triangles, mesh, transforms, volumetric, motion blur, BVH, Cornell box. 88 tests, 0 failures."
+    },
+    {
+      "id": "T152",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add scroll-wheel zoom to interactive camera",
+      "started": "2026-03-30T21:15:04.688Z",
+      "completed": "2026-03-30T21:15:54.442Z",
+      "duration_ms": 60000,
+      "summary": "Scroll-wheel zoom: mousewheel scales camera distance from look-at point. Clamped 1-200. Re-renders on scroll."
+    },
+    {
+      "id": "T153",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Write a Monkey-lang ray tracer (simple version) as language showcase",
+      "started": "2026-03-30T21:16:01.915Z",
+      "completed": "2026-03-30T21:23:33.102Z",
+      "duration_ms": 420000,
+      "summary": "Monkey-lang ray tracer (100 lines): 4 spheres, directional light, sky gradient, Newton sqrt, floor trick. Outputs valid 40x22 PPM. Also fixed float constant folding bug in VM."
+    },
+    {
+      "id": "T154",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Session checkpoint: push, log, MEMORY.md",
+      "started": "2026-03-30T21:23:42.405Z"
     }
   ],
-  "updated_at": "2026-03-30T21:09:43.973Z",
+  "updated_at": "2026-03-30T21:23:42.405Z",
   "adjustments": [
     {
       "time": "2026-03-30T20:56:20.292Z",
@@ -1605,6 +1655,26 @@
     {
       "time": "2026-03-30T21:03:02.661Z",
       "msg": "Added T149 (BUILD) after end: Final deploy: update all repos, blog, README"
+    },
+    {
+      "time": "2026-03-30T21:10:47.741Z",
+      "msg": "Added T150 (BUILD) after end: Add motion blur scene to web demo (bouncing spheres)"
+    },
+    {
+      "time": "2026-03-30T21:10:47.859Z",
+      "msg": "Added T151 (BUILD) after end: Comprehensive stress test: render all 10 scenes at low res, verify no crashes"
+    },
+    {
+      "time": "2026-03-30T21:10:47.977Z",
+      "msg": "Added T152 (BUILD) after end: Add scroll-wheel zoom to interactive camera"
+    },
+    {
+      "time": "2026-03-30T21:10:48.096Z",
+      "msg": "Added T153 (BUILD) after end: Write a Monkey-lang ray tracer (simple version) as language showcase"
+    },
+    {
+      "time": "2026-03-30T21:10:48.216Z",
+      "msg": "Added T154 (MAINTAIN) after end: Session checkpoint: push, log, MEMORY.md"
     }
   ]
 }
