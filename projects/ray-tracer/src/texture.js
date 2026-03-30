@@ -118,3 +118,50 @@ export class MarbleTexture {
     return this.color.mul(n);
   }
 }
+
+// Stripe/band texture — horizontal bands like a gas giant
+export class StripeTexture {
+  constructor(colors, scale = 10) {
+    this.colors = colors; // Array of Color
+    this.scale = scale;
+  }
+
+  value(u, v, p) {
+    const t = (Math.sin(this.scale * p.y) + 1) * 0.5;
+    const idx = Math.floor(t * this.colors.length) % this.colors.length;
+    return this.colors[idx];
+  }
+}
+
+// Procedural planet texture — continents and oceans
+export class PlanetTexture {
+  constructor(landColor, oceanColor, cloudColor = null, scale = 3) {
+    this.landColor = landColor;
+    this.oceanColor = oceanColor;
+    this.cloudColor = cloudColor;
+    this.scale = scale;
+    this.noise = new NoiseTexture(new Color(1, 1, 1), 1);
+  }
+
+  value(u, v, p) {
+    // Use noise to create continents
+    const elevation = this.noise._turbulence(p.mul(this.scale));
+
+    // Cloud layer (if present)
+    if (this.cloudColor) {
+      const cloudNoise = this.noise._noise(p.x * 5 + 100, p.y * 5, p.z * 5);
+      if (cloudNoise > 0.55) {
+        return this.cloudColor;
+      }
+    }
+
+    // Land vs ocean based on elevation
+    if (elevation > 0.5) {
+      return this.landColor.mul(0.6 + elevation * 0.4);
+    } else {
+      const depth = (0.5 - elevation) * 2;
+      return this.oceanColor.mul(0.7 + (1 - depth) * 0.3);
+    }
+  }
+}
+
