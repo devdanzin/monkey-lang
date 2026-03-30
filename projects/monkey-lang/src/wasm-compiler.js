@@ -464,6 +464,8 @@ export class WasmCompiler {
       this.compileForInExpression(node);
     } else if (node instanceof ast.RangeExpression) {
       this.compileRangeExpression(node);
+    } else if (node instanceof ast.DoWhileExpression) {
+      this.compileDoWhileExpression(node);
     } else if (node instanceof ast.AssignExpression) {
       this.compileAssignExpression(node);
     } else if (node instanceof ast.BlockStatement) {
@@ -995,6 +997,28 @@ export class WasmCompiler {
     this.currentBody.end().end();
 
     this.currentBody.localGet(arrLocal);
+  }
+
+  compileDoWhileExpression(node) {
+    // do { body } while (condition)
+    this.currentBody.block(); // $break
+    this.currentBody.loop();  // $continue
+
+    this.loopStack.push({ breakLabel: 1, continueLabel: 0 });
+
+    // body (always executes at least once)
+    this._compileBlockStatements(node.body);
+
+    // condition
+    this.compileNode(node.condition);
+    this.currentBody.brIf(0); // continue if true
+
+    this.loopStack.pop();
+
+    this.currentBody.end(); // end loop
+    this.currentBody.end(); // end block
+
+    this.currentBody.i32Const(0);
   }
 
   compileAssignExpression(node) {
