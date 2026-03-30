@@ -2211,6 +2211,7 @@ export async function compileAndRun(input, options = {}) {
   timings.total = performance.now() - t0;
 
   if (options.timings) Object.assign(options.timings, timings);
+  if (options.instance) options.instance.ref = instance;
 
   return result;
 }

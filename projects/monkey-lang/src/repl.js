@@ -420,7 +420,8 @@ class MonkeyREPL {
       const outputLines = [];
       const timings = {};
       const warnings = [];
-      const result = await wasmCompileAndRun(input, { outputLines, timings, warnings });
+      const instanceRef = {};
+      const result = await wasmCompileAndRun(input, { outputLines, timings, warnings, instance: instanceRef });
 
       for (const line of outputLines) {
         console.log(line);
@@ -432,10 +433,17 @@ class MonkeyREPL {
         }
       }
 
+      // Format result using WASM memory for pretty-printing arrays/strings
+      let formattedResult = String(result);
+      if (instanceRef.ref?.exports?.memory) {
+        const view = new DataView(instanceRef.ref.exports.memory.buffer);
+        formattedResult = formatWasmValue(result, view);
+      }
+
       if (result !== 0 || outputLines.length === 0) {
         const timing = this.showTiming ?
           `  \x1b[90m(${timings.total?.toFixed(2)}ms total: compile=${timings.compile?.toFixed(1)}ms exec=${timings.execute?.toFixed(1)}ms)\x1b[0m` : '';
-        console.log(result + timing);
+        console.log(formattedResult + timing);
       } else if (this.showTiming) {
         console.log(`\x1b[90m(${timings.total?.toFixed(2)}ms total: compile=${timings.compile?.toFixed(1)}ms exec=${timings.execute?.toFixed(1)}ms)\x1b[0m`);
       }
