@@ -2445,128 +2445,122 @@
     {
       "id": "T237",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push all repos",
-      "started": "2026-03-30T22:43:04.910Z"
+      "started": "2026-03-30T22:43:04.910Z",
+      "completed": "2026-03-30T22:43:38.823Z",
+      "duration_ms": 60000,
+      "summary": "All repos pushed. Blog updated with 5 projects. Session B continues with 2+ hours remaining."
+    },
+    {
+      "id": "T238",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Session B continuation: assess completed projects, decide next major goal",
+      "started": "2026-03-30T22:45:28.105Z",
+      "completed": "2026-03-30T22:45:49.401Z",
+      "duration_ms": 60000,
+      "summary": "Decided: CHIP-8 emulator. CPU emulation is a new domain — 35 opcodes, 4K RAM, 64x32 display. Well-scoped for 2-3 hours."
+    },
+    {
+      "id": "T239",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan CHIP-8 emulator project",
+      "task": null,
+      "started": "2026-03-30T22:45:54.629Z",
+      "completed": "2026-03-30T22:46:06.444Z",
+      "duration_ms": 60000,
+      "summary": "CHIP-8 plan: 5 BUILD tasks covering CPU core (35 opcodes), display, input, browser demo, tests, deploy."
+    },
+    {
+      "id": "T246",
+      "mode": "BUILD",
+      "task": "CHIP-8: CPU core — memory, registers, 35 opcodes, timers",
+      "status": "done",
+      "plan_ref": "T239",
+      "started": "2026-03-30T22:46:11.640Z",
+      "completed": "2026-03-30T22:48:31.095Z",
+      "duration_ms": 600000,
+      "summary": "CHIP-8 CPU core: 4KB memory, 16 registers (V0-VF), I register, PC, SP, 16-level stack, delay/sound timers, all 35 opcodes (flow, skip, ALU, memory, display, keyboard, random), disassembler. 40 tests all passing."
+    },
+    {
+      "id": "T247",
+      "mode": "BUILD",
+      "task": "CHIP-8: Display (64x32 canvas) + keyboard input",
+      "status": "done",
+      "plan_ref": "T239",
+      "started": "2026-03-30T22:48:36.011Z",
+      "completed": "2026-03-30T22:50:16.965Z",
+      "duration_ms": 600000,
+      "summary": "Browser demo: 640x320 canvas (10x scaled), keyboard mapping (1234/QWER/ASDF/ZXCV → hex keypad), on-screen clickable keypad, drag-drop ROM loading, 3 built-in ROMs (maze, sierpinski, particle), register viewer, speed control, step debugger."
+    },
+    {
+      "id": "T248",
+      "mode": "BUILD",
+      "task": "CHIP-8: Browser demo with ROM loading and preset ROMs",
+      "status": "done",
+      "plan_ref": "T239",
+      "started": "2026-03-30T22:50:23.236Z",
+      "completed": "2026-03-30T22:50:23.384Z",
+      "duration_ms": 0,
+      "summary": "Already completed in T247 — browser demo, ROM loading, preset ROMs all built together."
+    },
+    {
+      "id": "T249",
+      "mode": "BUILD",
+      "task": "CHIP-8: Unit tests for all opcode categories",
+      "status": "done",
+      "plan_ref": "T239",
+      "started": "2026-03-30T22:50:28.956Z",
+      "completed": "2026-03-30T22:50:29.104Z",
+      "duration_ms": 0,
+      "summary": "Already completed in T246 — 40 tests covering all opcode categories."
+    },
+    {
+      "id": "T250",
+      "mode": "BUILD",
+      "task": "CHIP-8: Deploy to GitHub + Pages, blog post",
+      "status": "in-progress",
+      "plan_ref": "T239",
+      "started": "2026-03-30T22:50:34.655Z"
+    },
+    {
+      "id": "T240",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T241",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T242",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T243",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T244",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T245",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push all repos, update blog"
     }
   ],
-  "updated_at": "2026-03-30T22:43:04.910Z",
-  "adjustments": [
-    {
-      "time": "2026-03-30T22:20:55.206Z",
-      "msg": "Added T209 (BUILD) after end: Neural net: add dropout regularization"
-    },
-    {
-      "time": "2026-03-30T22:20:55.325Z",
-      "msg": "Added T210 (BUILD) after end: Neural net: add learning rate scheduling"
-    },
-    {
-      "time": "2026-03-30T22:20:55.445Z",
-      "msg": "Added T211 (BUILD) after end: Neural net: add model save/load (JSON serialization)"
-    },
-    {
-      "time": "2026-03-30T22:20:55.565Z",
-      "msg": "Added T212 (BUILD) after end: Neural net: add more tests (backprop correctness, gradient checking)"
-    },
-    {
-      "time": "2026-03-30T22:20:55.685Z",
-      "msg": "Added T213 (BUILD) after end: Neural net: add visualization of network weights in browser"
-    },
-    {
-      "time": "2026-03-30T22:20:55.808Z",
-      "msg": "Added T214 (MAINTAIN) after end: Update MEMORY.md with all 3 projects"
-    },
-    {
-      "time": "2026-03-30T22:25:43.075Z",
-      "msg": "Added T215 (BUILD) after end: Neural net: add momentum optimizer (SGD with momentum)"
-    },
-    {
-      "time": "2026-03-30T22:25:43.195Z",
-      "msg": "Added T216 (BUILD) after end: Neural net: add batch normalization layer"
-    },
-    {
-      "time": "2026-03-30T22:25:43.317Z",
-      "msg": "Added T217 (BUILD) after end: Neural net: train on a function approximation example (sin curve)"
-    },
-    {
-      "time": "2026-03-30T22:25:43.436Z",
-      "msg": "Added T218 (BUILD) after end: Push all repos final"
-    },
-    {
-      "time": "2026-03-30T22:30:27.175Z",
-      "msg": "Added T219 (BUILD) after end: Neural net: add Adam optimizer"
-    },
-    {
-      "time": "2026-03-30T22:30:27.294Z",
-      "msg": "Added T220 (BUILD) after end: Neural net: add visualization of training curve in browser demo"
-    },
-    {
-      "time": "2026-03-30T22:30:27.413Z",
-      "msg": "Added T221 (BUILD) after end: New mini-project: Game of Life in JS with browser demo"
-    },
-    {
-      "time": "2026-03-30T22:30:27.546Z",
-      "msg": "Added T222 (BUILD) after end: Push all projects"
-    },
-    {
-      "time": "2026-03-30T22:35:14.282Z",
-      "msg": "Added T223 (BUILD) after end: Add GitHub Actions CI to neural-net repo"
-    },
-    {
-      "time": "2026-03-30T22:35:14.405Z",
-      "msg": "Added T224 (BUILD) after end: Create a unified projects page on the blog"
-    },
-    {
-      "time": "2026-03-30T22:35:14.526Z",
-      "msg": "Added T225 (BUILD) after end: Write a Game of Life blog post"
-    },
-    {
-      "time": "2026-03-30T22:35:14.646Z",
-      "msg": "Added T226 (BUILD) after end: Neural net: add RNN/LSTM layer for sequence data"
-    },
-    {
-      "time": "2026-03-30T22:35:14.763Z",
-      "msg": "Added T227 (BUILD) after end: Push everything and final session summary"
-    },
-    {
-      "time": "2026-03-30T22:38:03.748Z",
-      "msg": "Added T228 (BUILD) after end: Neural net: add conv layer (2D convolution for image data)"
-    },
-    {
-      "time": "2026-03-30T22:38:03.869Z",
-      "msg": "Added T229 (BUILD) after end: Neural net: add max pooling layer"
-    },
-    {
-      "time": "2026-03-30T22:38:03.988Z",
-      "msg": "Added T230 (BUILD) after end: Neural net: train CNN on larger digit images (8x8)"
-    },
-    {
-      "time": "2026-03-30T22:38:04.107Z",
-      "msg": "Added T231 (BUILD) after end: Update all READMEs with latest test counts"
-    },
-    {
-      "time": "2026-03-30T22:38:04.227Z",
-      "msg": "Added T232 (MAINTAIN) after end: Final session close: push, log, memory"
-    },
-    {
-      "time": "2026-03-30T22:41:10.150Z",
-      "msg": "Added T233 (BUILD) after end: Mini-project: Sorting algorithm visualizer (browser)"
-    },
-    {
-      "time": "2026-03-30T22:41:10.270Z",
-      "msg": "Added T234 (BUILD) after end: Ray tracer: add procedural wood texture"
-    },
-    {
-      "time": "2026-03-30T22:41:10.389Z",
-      "msg": "Added T235 (BUILD) after end: Neural net: add data preprocessing utilities (normalize, shuffle, split)"
-    },
-    {
-      "time": "2026-03-30T22:41:10.509Z",
-      "msg": "Added T236 (BUILD) after end: Neural net: add early stopping callback"
-    },
-    {
-      "time": "2026-03-30T22:41:10.629Z",
-      "msg": "Added T237 (MAINTAIN) after end: Push all repos"
-    }
-  ]
+  "updated_at": "2026-03-30T22:50:34.655Z"
 }

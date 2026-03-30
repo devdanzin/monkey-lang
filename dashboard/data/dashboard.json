@@ -2445,23 +2445,136 @@
     {
       "id": "T237",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push all repos",
-      "started": "2026-03-30T22:43:04.910Z"
+      "started": "2026-03-30T22:43:04.910Z",
+      "completed": "2026-03-30T22:43:38.823Z",
+      "duration_ms": 60000,
+      "summary": "All repos pushed. Blog updated with 5 projects. Session B continues with 2+ hours remaining."
+    },
+    {
+      "id": "T238",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Session B continuation: assess completed projects, decide next major goal",
+      "started": "2026-03-30T22:45:28.105Z",
+      "completed": "2026-03-30T22:45:49.401Z",
+      "duration_ms": 60000,
+      "summary": "Decided: CHIP-8 emulator. CPU emulation is a new domain — 35 opcodes, 4K RAM, 64x32 display. Well-scoped for 2-3 hours."
+    },
+    {
+      "id": "T239",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan CHIP-8 emulator project",
+      "task": null,
+      "started": "2026-03-30T22:45:54.629Z",
+      "completed": "2026-03-30T22:46:06.444Z",
+      "duration_ms": 60000,
+      "summary": "CHIP-8 plan: 5 BUILD tasks covering CPU core (35 opcodes), display, input, browser demo, tests, deploy."
+    },
+    {
+      "id": "T246",
+      "mode": "BUILD",
+      "task": "CHIP-8: CPU core — memory, registers, 35 opcodes, timers",
+      "status": "done",
+      "plan_ref": "T239",
+      "started": "2026-03-30T22:46:11.640Z",
+      "completed": "2026-03-30T22:48:31.095Z",
+      "duration_ms": 600000,
+      "summary": "CHIP-8 CPU core: 4KB memory, 16 registers (V0-VF), I register, PC, SP, 16-level stack, delay/sound timers, all 35 opcodes (flow, skip, ALU, memory, display, keyboard, random), disassembler. 40 tests all passing."
+    },
+    {
+      "id": "T247",
+      "mode": "BUILD",
+      "task": "CHIP-8: Display (64x32 canvas) + keyboard input",
+      "status": "done",
+      "plan_ref": "T239",
+      "started": "2026-03-30T22:48:36.011Z",
+      "completed": "2026-03-30T22:50:16.965Z",
+      "duration_ms": 600000,
+      "summary": "Browser demo: 640x320 canvas (10x scaled), keyboard mapping (1234/QWER/ASDF/ZXCV → hex keypad), on-screen clickable keypad, drag-drop ROM loading, 3 built-in ROMs (maze, sierpinski, particle), register viewer, speed control, step debugger."
+    },
+    {
+      "id": "T248",
+      "mode": "BUILD",
+      "task": "CHIP-8: Browser demo with ROM loading and preset ROMs",
+      "status": "done",
+      "plan_ref": "T239",
+      "started": "2026-03-30T22:50:23.236Z",
+      "completed": "2026-03-30T22:50:23.384Z",
+      "duration_ms": 0,
+      "summary": "Already completed in T247 — browser demo, ROM loading, preset ROMs all built together."
+    },
+    {
+      "id": "T249",
+      "mode": "BUILD",
+      "task": "CHIP-8: Unit tests for all opcode categories",
+      "status": "done",
+      "plan_ref": "T239",
+      "started": "2026-03-30T22:50:28.956Z",
+      "completed": "2026-03-30T22:50:29.104Z",
+      "duration_ms": 0,
+      "summary": "Already completed in T246 — 40 tests covering all opcode categories."
+    },
+    {
+      "id": "T250",
+      "mode": "BUILD",
+      "task": "CHIP-8: Deploy to GitHub + Pages, blog post",
+      "status": "in-progress",
+      "plan_ref": "T239",
+      "started": "2026-03-30T22:50:34.655Z"
+    },
+    {
+      "id": "T240",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T241",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T242",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T243",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T244",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T245",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push all repos, update blog"
     }
   ],
   "current": {
-    "id": "T237",
-    "mode": "MAINTAIN",
+    "id": "T250",
+    "mode": "BUILD",
+    "task": "CHIP-8: Deploy to GitHub + Pages, blog post",
     "status": "in-progress",
-    "task": "Push all repos",
-    "started": "2026-03-30T22:43:04.910Z"
+    "plan_ref": "T239",
+    "started": "2026-03-30T22:50:34.655Z"
   },
   "stats": {
-    "completed": 236,
+    "completed": 243,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 30810000
+    "total_duration_ms": 32190000
   },
-  "updated_at": "2026-03-30T22:43:04.910Z"
+  "updated_at": "2026-03-30T22:50:34.655Z"
 }
