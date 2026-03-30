@@ -3041,9 +3041,39 @@
       "completed": "2026-03-30T23:47:01.977Z",
       "duration_ms": 500000,
       "summary": "Graph: adjacency list for directed/undirected weighted graphs. BFS, DFS, Dijkstra shortest path (with pathTo reconstruction), topological sort (DAG only), cycle detection (both directed and undirected), connected components. addVertex/addEdge/removeEdge/hasVertex/hasEdge/neighbors. 15 tests."
+    },
+    {
+      "id": "T296",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Bloom filter (probabilistic data structure)",
+      "started": "2026-03-30T23:48:08.072Z",
+      "completed": "2026-03-30T23:49:44.864Z",
+      "duration_ms": 400000,
+      "summary": "Bloom filter: FNV-1a hash family, add/has, optimal sizing for target FP rate, merge (union), clear, false positive rate estimation, bit counting. 9 tests."
+    },
+    {
+      "id": "T297",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Binary heap / priority queue",
+      "started": "2026-03-30T23:49:50.558Z",
+      "completed": "2026-03-30T23:51:16.423Z",
+      "duration_ms": 400000,
+      "summary": "Binary heap: MinHeap, MaxHeap, BinaryHeap (custom comparator), PriorityQueue. push, pop, peek, pushPop, replace, from (heapify), toSortedArray, clear. 11 tests including 100k element performance test."
+    },
+    {
+      "id": "T298",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Hash map from scratch (open addressing)",
+      "started": "2026-03-30T23:51:24.606Z",
+      "completed": "2026-03-30T23:52:50.371Z",
+      "duration_ms": 400000,
+      "summary": "Hash map: open addressing with linear probing, DJB2 hash, auto-resize at load factor, tombstone deletion (DELETED sentinel), keys/values/entries/forEach/iterator. 16 tests including 10k entry performance test."
     }
   ],
-  "updated_at": "2026-03-30T23:47:01.977Z",
+  "updated_at": "2026-03-30T23:52:50.371Z",
   "adjustments": [
     {
       "time": "2026-03-30T22:55:00.316Z",
@@ -3188,6 +3218,18 @@
     {
       "time": "2026-03-30T23:42:03.638Z",
       "msg": "Added T295 (BUILD) after end: New project: Graph (adjacency list) with BFS/DFS/Dijkstra/topological sort"
+    },
+    {
+      "time": "2026-03-30T23:47:58.754Z",
+      "msg": "Added T296 (BUILD) after end: New project: Bloom filter (probabilistic data structure)"
+    },
+    {
+      "time": "2026-03-30T23:47:58.873Z",
+      "msg": "Added T297 (BUILD) after end: New project: Binary heap / priority queue"
+    },
+    {
+      "time": "2026-03-30T23:47:59.014Z",
+      "msg": "Added T298 (BUILD) after end: New project: Hash map from scratch (open addressing)"
     }
   ]
 }
