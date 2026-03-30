@@ -108,6 +108,11 @@ var Lexer = class {
     this.line = 1;
     this.readChar();
   }
+  makeToken(type, literal) {
+    const t = new Token(type, literal);
+    t.line = this.line;
+    return t;
+  }
   readChar() {
     this.ch = this.readPosition >= this.input.length ? null : this.input[this.readPosition];
     this.position = this.readPosition;
@@ -239,182 +244,185 @@ var Lexer = class {
   }
   nextToken() {
     this.skipWhitespace();
-    const line = this.line;
     let tok;
     switch (this.ch) {
       case "=":
         if (this.peekChar() === "=") {
           this.readChar();
-          tok = new Token(TokenType.EQ, "==");
+          tok = this.makeToken(TokenType.EQ, "==");
         } else if (this.peekChar() === ">") {
           this.readChar();
-          tok = new Token(TokenType.ARROW, "=>");
+          tok = this.makeToken(TokenType.ARROW, "=>");
         } else {
-          tok = new Token(TokenType.ASSIGN, "=");
+          tok = this.makeToken(TokenType.ASSIGN, "=");
         }
         break;
       case "+":
         if (this.peekChar() === "=") {
           this.readChar();
-          tok = new Token(TokenType.PLUS_ASSIGN, "+=");
+          tok = this.makeToken(TokenType.PLUS_ASSIGN, "+=");
         } else if (this.peekChar() === "+") {
           this.readChar();
-          tok = new Token(TokenType.PLUS_PLUS, "++");
+          tok = this.makeToken(TokenType.PLUS_PLUS, "++");
         } else {
-          tok = new Token(TokenType.PLUS, "+");
+          tok = this.makeToken(TokenType.PLUS, "+");
         }
         break;
       case "-":
         if (this.peekChar() === ">") {
           this.readChar();
-          tok = new Token(TokenType.THIN_ARROW, "->");
+          tok = this.makeToken(TokenType.THIN_ARROW, "->");
         } else if (this.peekChar() === "=") {
           this.readChar();
-          tok = new Token(TokenType.MINUS_ASSIGN, "-=");
+          tok = this.makeToken(TokenType.MINUS_ASSIGN, "-=");
         } else if (this.peekChar() === "-") {
           this.readChar();
-          tok = new Token(TokenType.MINUS_MINUS, "--");
+          tok = this.makeToken(TokenType.MINUS_MINUS, "--");
         } else {
-          tok = new Token(TokenType.MINUS, "-");
+          tok = this.makeToken(TokenType.MINUS, "-");
         }
         break;
       case "!":
         if (this.peekChar() === "=") {
           this.readChar();
-          tok = new Token(TokenType.NOT_EQ, "!=");
+          tok = this.makeToken(TokenType.NOT_EQ, "!=");
         } else {
-          tok = new Token(TokenType.BANG, "!");
+          tok = this.makeToken(TokenType.BANG, "!");
         }
         break;
       case "*":
         if (this.peekChar() === "=") {
           this.readChar();
-          tok = new Token(TokenType.ASTERISK_ASSIGN, "*=");
+          tok = this.makeToken(TokenType.ASTERISK_ASSIGN, "*=");
         } else {
-          tok = new Token(TokenType.ASTERISK, "*");
+          tok = this.makeToken(TokenType.ASTERISK, "*");
         }
         break;
       case "/":
         if (this.peekChar() === "=") {
           this.readChar();
-          tok = new Token(TokenType.SLASH_ASSIGN, "/=");
+          tok = this.makeToken(TokenType.SLASH_ASSIGN, "/=");
         } else {
-          tok = new Token(TokenType.SLASH, "/");
+          tok = this.makeToken(TokenType.SLASH, "/");
         }
         break;
       case "%":
         if (this.peekChar() === "=") {
           this.readChar();
-          tok = new Token(TokenType.PERCENT_ASSIGN, "%=");
+          tok = this.makeToken(TokenType.PERCENT_ASSIGN, "%=");
         } else {
-          tok = new Token(TokenType.PERCENT, "%");
+          tok = this.makeToken(TokenType.PERCENT, "%");
         }
         break;
       case "&":
         if (this.peekChar() === "&") {
           this.readChar();
-          tok = new Token(TokenType.AND, "&&");
+          tok = this.makeToken(TokenType.AND, "&&");
         } else {
-          tok = new Token(TokenType.ILLEGAL, "&");
+          tok = this.makeToken(TokenType.ILLEGAL, "&");
         }
         break;
       case "|":
         if (this.peekChar() === "|") {
           this.readChar();
-          tok = new Token(TokenType.OR, "||");
+          tok = this.makeToken(TokenType.OR, "||");
         } else if (this.peekChar() === ">") {
           this.readChar();
-          tok = new Token(TokenType.PIPE, "|>");
+          tok = this.makeToken(TokenType.PIPE, "|>");
         } else {
-          tok = new Token(TokenType.BAR, "|");
+          tok = this.makeToken(TokenType.BAR, "|");
         }
         break;
       case "<":
         if (this.peekChar() === "=") {
           this.readChar();
-          tok = new Token(TokenType.LT_EQ, "<=");
+          tok = this.makeToken(TokenType.LT_EQ, "<=");
         } else {
-          tok = new Token(TokenType.LT, "<");
+          tok = this.makeToken(TokenType.LT, "<");
         }
         break;
       case ">":
         if (this.peekChar() === "=") {
           this.readChar();
-          tok = new Token(TokenType.GT_EQ, ">=");
+          tok = this.makeToken(TokenType.GT_EQ, ">=");
         } else {
-          tok = new Token(TokenType.GT, ">");
+          tok = this.makeToken(TokenType.GT, ">");
         }
         break;
       case ",":
-        tok = new Token(TokenType.COMMA, ",");
+        tok = this.makeToken(TokenType.COMMA, ",");
         break;
       case ":":
-        tok = new Token(TokenType.COLON, ":");
+        tok = this.makeToken(TokenType.COLON, ":");
         break;
       case "?":
         if (this.peekChar() === "?") {
           this.readChar();
-          tok = new Token(TokenType.NULLISH, "??");
+          tok = this.makeToken(TokenType.NULLISH, "??");
         } else if (this.peekChar() === ".") {
           this.readChar();
-          tok = new Token(TokenType.OPTIONAL_CHAIN, "?.");
+          tok = this.makeToken(TokenType.OPTIONAL_CHAIN, "?.");
         } else {
-          tok = new Token(TokenType.QUESTION, "?");
+          tok = this.makeToken(TokenType.QUESTION, "?");
         }
         break;
       case ";":
-        tok = new Token(TokenType.SEMICOLON, ";");
+        tok = this.makeToken(TokenType.SEMICOLON, ";");
         break;
       case "(":
-        tok = new Token(TokenType.LPAREN, "(");
+        tok = this.makeToken(TokenType.LPAREN, "(");
         break;
       case ")":
-        tok = new Token(TokenType.RPAREN, ")");
+        tok = this.makeToken(TokenType.RPAREN, ")");
         break;
       case "{":
-        tok = new Token(TokenType.LBRACE, "{");
+        tok = this.makeToken(TokenType.LBRACE, "{");
         break;
       case "}":
-        tok = new Token(TokenType.RBRACE, "}");
+        tok = this.makeToken(TokenType.RBRACE, "}");
         break;
       case "[":
-        tok = new Token(TokenType.LBRACKET, "[");
+        tok = this.makeToken(TokenType.LBRACKET, "[");
         break;
       case "]":
-        tok = new Token(TokenType.RBRACKET, "]");
+        tok = this.makeToken(TokenType.RBRACKET, "]");
         break;
       case '"':
-        return new Token(TokenType.STRING, this.readString());
+        {
+          const t = this.makeToken(TokenType.STRING, this.readString());
+          t.line = this.line;
+          return t;
+        }
+        ;
       case "`":
-        return new Token(TokenType.TEMPLATE_STRING, this.readTemplateString());
+        return this.makeToken(TokenType.TEMPLATE_STRING, this.readTemplateString());
       case ".":
         if (this.peekChar() === "." && this.input[this.readPosition + 1] === ".") {
           this.readChar();
           this.readChar();
-          tok = new Token(TokenType.SPREAD, "...");
+          tok = this.makeToken(TokenType.SPREAD, "...");
         } else if (this.peekChar() === ".") {
           this.readChar();
-          tok = new Token(TokenType.DOT_DOT, "..");
+          tok = this.makeToken(TokenType.DOT_DOT, "..");
         } else {
-          tok = new Token(TokenType.DOT, ".");
+          tok = this.makeToken(TokenType.DOT, ".");
         }
         break;
       case null:
-        return new Token(TokenType.EOF, "");
+        return this.makeToken(TokenType.EOF, "");
       default:
         if (isLetter(this.ch)) {
           const ident = this.readIdentifier();
           const type = KEYWORDS[ident] || TokenType.IDENT;
-          return new Token(type, ident);
+          return this.makeToken(type, ident);
         } else if (isDigit(this.ch)) {
           const num = this.readNumber();
-          return new Token(num.isFloat ? TokenType.FLOAT : TokenType.INT, num.value);
+          return this.makeToken(num.isFloat ? TokenType.FLOAT : TokenType.INT, num.value);
         } else {
-          tok = new Token(TokenType.ILLEGAL, this.ch);
+          tok = this.makeToken(TokenType.ILLEGAL, this.ch);
         }
     }
     this.readChar();
-    if (tok) tok.line = line;
     return tok;
   }
   /** Tokenize all remaining input */
@@ -11775,7 +11783,7 @@ var WasmCompiler = class {
       stringsAllocated: 0,
       arraysAllocated: 0
     };
-    this.builder.addMemory(1);
+    this.builder.addMemory(4);
     this.builder.addExport("memory", ExportKind.Memory, 0);
     this.heapPtr = this.builder.addGlobal(ValType.i32, true, 4096);
     this._runtimeFuncs = {};
@@ -11884,6 +11892,8 @@ var WasmCompiler = class {
     this._runtimeFuncs.add = addIdx;
     const eqIdx = this.builder.addImport("env", "__eq", [ValType.i32, ValType.i32], [ValType.i32]);
     this._runtimeFuncs.eq = eqIdx;
+    const arrayConcatIdx = this.builder.addImport("env", "__array_concat", [ValType.i32, ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.arrayConcat = arrayConcatIdx;
     const restIdx = this.builder.addImport("env", "__rest", [ValType.i32], [ValType.i32]);
     this._runtimeFuncs.rest = restIdx;
     const typeIdx = this.builder.addImport("env", "__type", [ValType.i32], [ValType.i32]);
@@ -12217,7 +12227,8 @@ var WasmCompiler = class {
         this.currentBody.localGet(binding.index);
       }
     } else {
-      this.errors.push(`undefined variable: ${name}`);
+      const _l = node?.token?.line ? ` (line ${node.token.line})` : "";
+      this.errors.push(`undefined variable: ${name}${_l}`);
       this.currentBody.i32Const(0);
     }
   }
@@ -12417,7 +12428,8 @@ var WasmCompiler = class {
         this.currentBody.emit(Op.i32_shr_s);
         break;
       default:
-        this.errors.push(`unsupported operator: ${node.operator}`);
+        const _l2 = node?.token?.line ? ` (line ${node.token.line})` : "";
+        this.errors.push(`unsupported operator: ${node.operator}${_l2}`);
         break;
     }
   }
@@ -12507,7 +12519,8 @@ var WasmCompiler = class {
       } else if (binding) {
         this._emitClosureCall(node, () => this.currentBody.localGet(binding.index));
       } else {
-        this.errors.push(`unknown function: ${name}`);
+        const _l3 = node?.token?.line ? ` (line ${node.token.line})` : "";
+        this.errors.push(`unknown function: ${name}${_l3}`);
         this.currentBody.i32Const(0);
       }
     } else {
@@ -12718,7 +12731,8 @@ var WasmCompiler = class {
       this.compileNode(node.value);
       this.currentBody.localTee(binding.index);
     } else {
-      this.errors.push(`undefined variable for assignment: ${name}`);
+      const _l4 = node?.token?.line ? ` (line ${node.token.line})` : "";
+      this.errors.push(`undefined variable for assignment: ${name}${_l4}`);
       this.currentBody.i32Const(0);
     }
   }
@@ -12943,20 +12957,44 @@ var WasmCompiler = class {
   }
   // Array literal → heap-allocated array
   compileArrayLiteral(node) {
-    const elements = node.elements.filter((e) => !(e instanceof SpreadElement));
-    const len = elements.length;
-    this.currentBody.i32Const(len);
-    this.currentBody.call(this._runtimeFuncs.makeArray);
-    const arrLocal = this.nextLocalIndex++;
-    this.currentBody.addLocal(ValType.i32);
-    this.currentBody.localSet(arrLocal);
-    for (let i = 0; i < len; i++) {
+    const hasSpread = node.elements.some((e) => e instanceof SpreadElement);
+    if (!hasSpread) {
+      const len = node.elements.length;
+      this.currentBody.i32Const(len);
+      this.currentBody.call(this._runtimeFuncs.makeArray);
+      const arrLocal = this.nextLocalIndex++;
+      this.currentBody.addLocal(ValType.i32);
+      this.currentBody.localSet(arrLocal);
+      for (let i = 0; i < len; i++) {
+        this.currentBody.localGet(arrLocal);
+        this.currentBody.i32Const(i);
+        this.compileNode(node.elements[i]);
+        this.currentBody.call(this._runtimeFuncs.arraySet);
+      }
       this.currentBody.localGet(arrLocal);
-      this.currentBody.i32Const(i);
-      this.compileNode(elements[i]);
-      this.currentBody.call(this._runtimeFuncs.arraySet);
+    } else {
+      this.currentBody.i32Const(0);
+      this.currentBody.call(this._runtimeFuncs.makeArray);
+      let batchStart = -1;
+      const arrLocal = this.nextLocalIndex++;
+      this.currentBody.addLocal(ValType.i32);
+      this.currentBody.localSet(arrLocal);
+      for (let i = 0; i < node.elements.length; i++) {
+        const elem = node.elements[i];
+        if (elem instanceof SpreadElement) {
+          this.currentBody.localGet(arrLocal);
+          this.compileNode(elem.expression);
+          this.currentBody.call(this._runtimeFuncs.arrayConcat);
+          this.currentBody.localSet(arrLocal);
+        } else {
+          this.currentBody.localGet(arrLocal);
+          this.compileNode(elem);
+          this.currentBody.call(this._runtimeFuncs.push);
+          this.currentBody.localSet(arrLocal);
+        }
+      }
+      this.currentBody.localGet(arrLocal);
     }
-    this.currentBody.localGet(arrLocal);
   }
   // Index expression: arr[idx]
   compileIndexExpression(node) {
@@ -13164,7 +13202,7 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
     const encoder = new TextEncoder();
     const bytes = encoder.encode(str);
     const view = new DataView(mem.buffer);
-    if (!memoryRef.jsHeapPtr) memoryRef.jsHeapPtr = 6e4;
+    if (!memoryRef.jsHeapPtr) memoryRef.jsHeapPtr = 1e5;
     const ptr = memoryRef.jsHeapPtr;
     memoryRef.jsHeapPtr += 8 + bytes.length;
     memoryRef.jsHeapPtr = memoryRef.jsHeapPtr + 3 & ~3;
@@ -13245,6 +13283,27 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
         }
         return a === b ? 1 : 0;
       },
+      __array_concat(arrA, arrB) {
+        const mem = memoryRef.memory;
+        if (!mem) return 0;
+        const view = new DataView(mem.buffer);
+        const lenA = arrA > 0 && view.getInt32(arrA, true) === TAG_ARRAY ? view.getInt32(arrA + 4, true) : 0;
+        const lenB = arrB > 0 && view.getInt32(arrB, true) === TAG_ARRAY ? view.getInt32(arrB + 4, true) : 0;
+        const newLen = lenA + lenB;
+        if (!memoryRef.jsHeapPtr) memoryRef.jsHeapPtr = 1e5;
+        const newPtr = memoryRef.jsHeapPtr;
+        memoryRef.jsHeapPtr += 8 + newLen * 4;
+        memoryRef.jsHeapPtr = memoryRef.jsHeapPtr + 3 & ~3;
+        view.setInt32(newPtr, TAG_ARRAY, true);
+        view.setInt32(newPtr + 4, newLen, true);
+        for (let i = 0; i < lenA; i++) {
+          view.setInt32(newPtr + 8 + i * 4, view.getInt32(arrA + 8 + i * 4, true), true);
+        }
+        for (let i = 0; i < lenB; i++) {
+          view.setInt32(newPtr + 8 + (lenA + i) * 4, view.getInt32(arrB + 8 + i * 4, true), true);
+        }
+        return newPtr;
+      },
       __rest(arrPtr) {
         const mem = memoryRef.memory;
         if (!mem || arrPtr <= 0) return 0;
@@ -13254,7 +13313,7 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
         const len = view.getInt32(arrPtr + 4, true);
         if (len <= 0) return 0;
         const newLen = len - 1;
-        if (!memoryRef.jsHeapPtr) memoryRef.jsHeapPtr = 6e4;
+        if (!memoryRef.jsHeapPtr) memoryRef.jsHeapPtr = 1e5;
         const newPtr = memoryRef.jsHeapPtr;
         const newSize = 8 + newLen * 4;
         memoryRef.jsHeapPtr += newSize;
@@ -13309,7 +13368,7 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
         if (start < 0) start = 0;
         if (end > len) end = len;
         const newLen = Math.max(0, end - start);
-        if (!memoryRef.jsHeapPtr) memoryRef.jsHeapPtr = 6e4;
+        if (!memoryRef.jsHeapPtr) memoryRef.jsHeapPtr = 1e5;
         const newPtr = memoryRef.jsHeapPtr;
         memoryRef.jsHeapPtr += 8 + newLen * 4;
         memoryRef.jsHeapPtr = memoryRef.jsHeapPtr + 3 & ~3;

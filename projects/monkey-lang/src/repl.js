@@ -242,6 +242,41 @@ if (process.argv.includes('--benchmark') || process.argv.includes('--bench')) {
   })();
 } else {
 
+// --check: validate a monkey file without running it
+if (process.argv.includes('--check')) {
+  const fileArg = process.argv.find(a => a.endsWith('.monkey'));
+  if (!fileArg) {
+    console.error('Usage: monkey --check file.monkey');
+    process.exit(1);
+  }
+  try {
+    const source = fs.readFileSync(fileArg, 'utf8');
+    const lexer = new Lexer(source);
+    const parser = new Parser(lexer);
+    const program = parser.parseProgram();
+    if (parser.errors.length > 0) {
+      console.error(`\x1b[31m✗ Parse errors in ${fileArg}:\x1b[0m`);
+      for (const err of parser.errors) console.error(`  ${err}`);
+      process.exit(1);
+    }
+    // Try WASM compilation too
+    const compiler = new WasmCompiler();
+    compiler.compile(source);
+    if (compiler.errors.length > 0) {
+      console.error(`\x1b[33m⚠ WASM warnings in ${fileArg}:\x1b[0m`);
+      for (const err of compiler.errors) console.error(`  ${err}`);
+    }
+    if (compiler.warnings.length > 0) {
+      for (const w of compiler.warnings) console.error(`\x1b[33m⚠ ${w}\x1b[0m`);
+    }
+    console.log(`\x1b[32m✓ ${fileArg}: ${program.statements.length} statements, no errors\x1b[0m`);
+    process.exit(0);
+  } catch (e) {
+    console.error(`\x1b[31m✗ ${e.message}\x1b[0m`);
+    process.exit(1);
+  }
+}
+
 // Handle file execution: monkey file.monkey [--wasm]
 const fileArg = process.argv.find(a => a.endsWith('.monkey') && !process.argv.includes('--compile'));
 let fileRunning = false;
