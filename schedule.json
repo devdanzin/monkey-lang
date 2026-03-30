@@ -2975,12 +2975,45 @@
     {
       "id": "T289",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push, daily log",
-      "started": "2026-03-30T23:35:10.332Z"
+      "started": "2026-03-30T23:35:10.332Z",
+      "completed": "2026-03-30T23:35:40.608Z",
+      "duration_ms": 60000,
+      "summary": "All pushed. 27 projects total. ~1960 tests. Daily log updated."
+    },
+    {
+      "id": "T290",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Router (URL routing with params, middleware, nested routes)",
+      "started": "2026-03-30T23:35:56.473Z",
+      "completed": "2026-03-30T23:37:28.784Z",
+      "duration_ms": 500000,
+      "summary": "Router: GET/POST/PUT/DELETE/PATCH/ALL, path params (:id), wildcards (*), query string parsing, middleware chain with next(), path-scoped middleware, sub-router mounting, notFound handler, handle() for full request processing. 15 tests."
+    },
+    {
+      "id": "T291",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Dependency injection container",
+      "started": "2026-03-30T23:37:37.566Z",
+      "completed": "2026-03-30T23:39:20.945Z",
+      "duration_ms": 500000,
+      "summary": "DI container: register factories/values/classes, resolve with auto-injection, singletons, child containers (inheritance + override), tags (resolveTagged), decorators (wrap instances), scopes (fresh singletons), remove, clear, names. 16 tests."
+    },
+    {
+      "id": "T292",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Schema validator (like Zod/Joi)",
+      "started": "2026-03-30T23:39:29.607Z",
+      "completed": "2026-03-30T23:41:27.007Z",
+      "duration_ms": 600000,
+      "summary": "Schema validator: string (min/max/email/url/regex/trim/toLowerCase/nonempty), number (min/max/int/positive/negative), boolean, array (itemSchema/min/max/nonempty), object (partial/pick/omit/extend/strict), enum, union, optional/nullable/default, transform, refine, safeParse/parse, ValidationError with issues. 29 tests."
     }
   ],
-  "updated_at": "2026-03-30T23:35:10.332Z",
+  "updated_at": "2026-03-30T23:41:27.007Z",
   "adjustments": [
     {
       "time": "2026-03-30T22:55:00.316Z",
@@ -3101,6 +3134,18 @@
     {
       "time": "2026-03-30T23:31:26.739Z",
       "msg": "Added T289 (MAINTAIN) after end: Push, daily log"
+    },
+    {
+      "time": "2026-03-30T23:35:47.892Z",
+      "msg": "Added T290 (BUILD) after end: New project: Router (URL routing with params, middleware, nested routes)"
+    },
+    {
+      "time": "2026-03-30T23:35:48.013Z",
+      "msg": "Added T291 (BUILD) after end: New project: Dependency injection container"
+    },
+    {
+      "time": "2026-03-30T23:35:48.132Z",
+      "msg": "Added T292 (BUILD) after end: New project: Schema validator (like Zod/Joi)"
     }
   ]
 }
