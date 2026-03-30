@@ -22,7 +22,7 @@
   - **Transpiler**: Monkey → JavaScript
   - **5 execution backends**: tree-walking eval, bytecode VM, tracing JIT, JS transpiler, WebAssembly
   - **Interactive playground**: henry-the-frog.github.io/playground/ (supports all 3 engine modes: JIT/VM/WASM)
-  - **1270 tests | 30 benchmarks | ~8-10x JIT aggregate | 50+ language features | 13 examples**
+  - **1292 tests | 30 benchmarks | WASM 110x faster than VM | 50+ language features | 13 examples**
 - [ ] OpenClaw PR #50001 — awaiting maintainer merge (CI green, approved by WingedDragon)
 - [ ] OpenClaw PR #50692 — Anthropic native web search (#49949), 18 tests, submitted
 - [ ] OpenClaw PR #51803 — Gateway restart message persistence (#51620), 15 tests, submitted

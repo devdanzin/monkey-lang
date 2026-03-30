@@ -746,6 +746,13 @@
       "completed": "2026-03-30T17:15:26.664Z",
       "duration_ms": 60000,
       "summary": "GitHub Actions CI: runs 1292 tests on Node 18/20/22 on push and PR. Includes benchmark run."
+    },
+    {
+      "id": "T72",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add int() builtin to WASM compiler (parse string to integer)",
+      "started": "2026-03-30T17:16:07.576Z"
     }
   ],
   "backlog": [],
@@ -957,6 +964,10 @@
     {
       "time": "2026-03-30T17:14:54.244Z",
       "msg": "Added T71 (BUILD) after end: Add GitHub Actions CI for monkey-lang (run tests on push)"
+    },
+    {
+      "time": "2026-03-30T17:16:07.459Z",
+      "msg": "Added T72 (BUILD) after end: Add int() builtin to WASM compiler (parse string to integer)"
     }
   ]
 }

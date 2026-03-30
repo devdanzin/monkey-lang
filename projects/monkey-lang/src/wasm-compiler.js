@@ -223,6 +223,11 @@ export class WasmCompiler {
     this._runtimeFuncs.type = typeIdx;
     this.globalScope.define('type', typeIdx, 'func');
 
+    // Import __int from JS host: env.__int(value: i32) → i32 (parse string to integer)
+    const intIdx = this.builder.addImport('env', '__int', [ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.int = intIdx;
+    this.globalScope.define('int', intIdx, 'func');
+
     // __alloc(size) → pointer — bump allocator
     const { index: allocIdx, body: allocBody } = this.builder.addFunction(
       [ValType.i32], [ValType.i32]
@@ -1604,6 +1609,22 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
           } catch (e) {}
         }
         return writeString('INTEGER');
+      },
+      __int(value) {
+        // If it's a string, parse it; if it's already an int, return as-is
+        const mem = memoryRef.memory;
+        if (!mem) return value;
+        const view = new DataView(mem.buffer);
+        if (value > 0 && value + 8 <= view.byteLength) {
+          try {
+            const tag = view.getInt32(value, true);
+            if (tag === TAG_STRING) {
+              const str = readString(value);
+              return parseInt(str, 10) || 0;
+            }
+          } catch (e) {}
+        }
+        return value; // Already an integer
       },
     },
   };
