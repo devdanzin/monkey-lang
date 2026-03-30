@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CHIP-8 Emulator — Henry</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    background: #0d1117; color: #c9d1d9;
+    display: flex; flex-direction: column; align-items: center;
+    min-height: 100vh; padding: 1rem;
+  }
+  h1 { font-size: 1.6rem; color: #f0f6fc; margin-bottom: 0.2rem; }
+  h1 span { color: #58a6ff; }
+  .sub { color: #8b949e; font-size: 0.85rem; margin-bottom: 1rem; }
+  canvas { border: 2px solid #30363d; border-radius: 4px; image-rendering: pixelated; }
+  .controls {
+    display: flex; gap: 0.8rem; margin: 1rem 0; flex-wrap: wrap; justify-content: center;
+  }
+  select, button {
+    background: #21262d; color: #c9d1d9; border: 1px solid #30363d;
+    padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem;
+  }
+  select:hover, button:hover { border-color: #58a6ff; }
+  button.active { background: #238636; border-color: #238636; color: #fff; }
+  .stats { color: #8b949e; font-size: 0.8rem; margin: 0.5rem 0; }
+  .stats span { color: #c9d1d9; }
+
+  .keypad {
+    display: grid; grid-template-columns: repeat(4, 48px); gap: 4px; margin: 0.8rem 0;
+  }
+  .keypad button {
+    width: 48px; height: 48px; font-family: monospace; font-size: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0; border-radius: 4px;
+  }
+  .keypad button.pressed { background: #58a6ff; color: #0d1117; border-color: #58a6ff; }
+  .keypad .label { font-size: 0.55rem; color: #484f58; position: absolute; bottom: 2px; right: 3px; }
+
+  .registers {
+    font-family: monospace; font-size: 0.7rem; color: #8b949e;
+    display: grid; grid-template-columns: repeat(4, auto); gap: 2px 12px;
+    margin-top: 0.5rem;
+  }
+  .registers .reg { color: #c9d1d9; }
+  .info { max-width: 600px; text-align: center; color: #8b949e; font-size: 0.75rem; margin-top: 0.8rem; line-height: 1.5; }
+  .info a { color: #58a6ff; text-decoration: none; }
+  .drop-zone {
+    border: 2px dashed #30363d; border-radius: 8px; padding: 0.8rem 1.5rem;
+    margin: 0.5rem 0; color: #484f58; font-size: 0.8rem; cursor: pointer;
+  }
+  .drop-zone.over { border-color: #58a6ff; color: #58a6ff; }
+</style>
+</head>
+<body>
+<h1>🎮 <span>CHIP-8</span> Emulator</h1>
+<p class="sub">Classic 1977 virtual machine — 35 opcodes, 4KB RAM, 64×32 display</p>
+
+<canvas id="screen" width="640" height="320"></canvas>
+
+<div class="controls">
+  <select id="rom">
+    <option value="">— Select ROM —</option>
+    <option value="pong">Pong</option>
+    <option value="maze">Maze</option>
+    <option value="tetris">Tetris</option>
+    <option value="invaders">Space Invaders</option>
+    <option value="brix">Brix</option>
+    <option value="particle">Particle Demo</option>
+    <option value="sierpinski">Sierpinski</option>
+  </select>
+  <button id="runBtn" onclick="toggleRun()">▶ Run</button>
+  <button onclick="stepOne()">⏭ Step</button>
+  <button onclick="resetCPU()">🔄 Reset</button>
+  <select id="speed">
+    <option value="5">Slow (5/frame)</option>
+    <option value="10" selected>Normal (10/frame)</option>
+    <option value="20">Fast (20/frame)</option>
+    <option value="50">Turbo (50/frame)</option>
+  </select>
+</div>
+
+<div class="drop-zone" id="dropZone">📁 Drop a .ch8 ROM file here</div>
+
+<div class="stats">
+  Cycles: <span id="cycles">0</span> |
+  PC: <span id="pcVal">0x200</span> |
+  I: <span id="iVal">0x000</span> |
+  SP: <span id="spVal">0</span>
+</div>
+
+<div class="keypad" id="keypad"></div>
+
+<div class="registers" id="regs"></div>
+
+<div class="info">
+  Keyboard: 1234/QWER/ASDF/ZXCV → CHIP-8 hex keypad (123C/456D/789E/A0BF).
+  <br><a href="https://github.com/henry-the-frog/chip8">Source</a> · <a href="https://github.com/henry-the-frog">Built by Henry</a>
+</div>
+
+<script type="module">
+// ========== CHIP-8 CPU (inlined for browser) ==========
+const FONT = new Uint8Array([
+  0xF0,0x90,0x90,0x90,0xF0,0x20,0x60,0x20,0x20,0x70,
+  0xF0,0x10,0xF0,0x80,0xF0,0xF0,0x10,0xF0,0x10,0xF0,
+  0x90,0x90,0xF0,0x10,0x10,0xF0,0x80,0xF0,0x10,0xF0,
+  0xF0,0x80,0xF0,0x90,0xF0,0xF0,0x10,0x20,0x40,0x40,
+  0xF0,0x90,0xF0,0x90,0xF0,0xF0,0x90,0xF0,0x10,0xF0,
+  0xF0,0x90,0xF0,0x90,0x90,0xE0,0x90,0xE0,0x90,0xE0,
+  0xF0,0x80,0x80,0x80,0xF0,0xE0,0x90,0x90,0x90,0xE0,
+  0xF0,0x80,0xF0,0x80,0xF0,0xF0,0x80,0xF0,0x80,0x80
+]);
+
+class Chip8 {
+  constructor() { this.reset(); }
+  reset() {
+    this.memory = new Uint8Array(4096);
+    this.memory.set(FONT, 0x050);
+    this.V = new Uint8Array(16);
+    this.I = 0; this.pc = 0x200; this.sp = 0;
+    this.stack = new Uint16Array(16);
+    this.delayTimer = 0; this.soundTimer = 0;
+    this.display = new Uint8Array(64 * 32);
+    this.drawFlag = false;
+    this.keys = new Uint8Array(16);
+    this.waitingForKey = false; this.waitKeyReg = 0;
+    this.halted = false;
+  }
+  loadROM(rom) { this.memory.set(rom, 0x200); }
+  keyDown(k) { this.keys[k&0xF]=1; if(this.waitingForKey){this.V[this.waitKeyReg]=k&0xF;this.waitingForKey=false;} }
+  keyUp(k) { this.keys[k&0xF]=0; }
+  updateTimers() { if(this.delayTimer>0)this.delayTimer--; if(this.soundTimer>0)this.soundTimer--; }
+  cycle() {
+    if(this.halted||this.waitingForKey) return;
+    const op=(this.memory[this.pc]<<8)|this.memory[this.pc+1]; this.pc+=2;
+    const nnn=op&0xFFF,nn=op&0xFF,n=op&0xF,x=(op>>8)&0xF,y=(op>>4)&0xF;
+    switch(op&0xF000){
+      case 0x0000: if(op===0x00E0){this.display.fill(0);this.drawFlag=true;}else if(op===0x00EE){this.sp--;this.pc=this.stack[this.sp];} break;
+      case 0x1000: this.pc=nnn; break;
+      case 0x2000: this.stack[this.sp]=this.pc;this.sp++;this.pc=nnn; break;
+      case 0x3000: if(this.V[x]===nn)this.pc+=2; break;
+      case 0x4000: if(this.V[x]!==nn)this.pc+=2; break;
+      case 0x5000: if(this.V[x]===this.V[y])this.pc+=2; break;
+      case 0x6000: this.V[x]=nn; break;
+      case 0x7000: this.V[x]=(this.V[x]+nn)&0xFF; break;
+      case 0x8000:
+        switch(n){
+          case 0:this.V[x]=this.V[y];break;
+          case 1:this.V[x]|=this.V[y];this.V[0xF]=0;break;
+          case 2:this.V[x]&=this.V[y];this.V[0xF]=0;break;
+          case 3:this.V[x]^=this.V[y];this.V[0xF]=0;break;
+          case 4:{const s=this.V[x]+this.V[y];this.V[x]=s&0xFF;this.V[0xF]=s>0xFF?1:0;break;}
+          case 5:{const f=this.V[x]>=this.V[y]?1:0;this.V[x]=(this.V[x]-this.V[y])&0xFF;this.V[0xF]=f;break;}
+          case 6:{const f=this.V[y]&1;this.V[x]=this.V[y]>>1;this.V[0xF]=f;break;}
+          case 7:{const f=this.V[y]>=this.V[x]?1:0;this.V[x]=(this.V[y]-this.V[x])&0xFF;this.V[0xF]=f;break;}
+          case 0xE:{const f=(this.V[y]>>7)&1;this.V[x]=(this.V[y]<<1)&0xFF;this.V[0xF]=f;break;}
+        } break;
+      case 0x9000: if(this.V[x]!==this.V[y])this.pc+=2; break;
+      case 0xA000: this.I=nnn; break;
+      case 0xB000: this.pc=(nnn+this.V[0])&0xFFF; break;
+      case 0xC000: this.V[x]=Math.floor(Math.random()*256)&nn; break;
+      case 0xD000:{
+        const xp=this.V[x]%64,yp=this.V[y]%32;this.V[0xF]=0;
+        for(let r=0;r<n;r++){if(yp+r>=32)break;const sb=this.memory[this.I+r];
+          for(let c=0;c<8;c++){if(xp+c>=64)break;if(sb&(0x80>>c)){const idx=(yp+r)*64+(xp+c);if(this.display[idx])this.V[0xF]=1;this.display[idx]^=1;}}}
+        this.drawFlag=true;break;}
+      case 0xE000: if(nn===0x9E){if(this.keys[this.V[x]])this.pc+=2;}else if(nn===0xA1){if(!this.keys[this.V[x]])this.pc+=2;} break;
+      case 0xF000:
+        switch(nn){
+          case 0x07:this.V[x]=this.delayTimer;break;
+          case 0x0A:this.waitingForKey=true;this.waitKeyReg=x;break;
+          case 0x15:this.delayTimer=this.V[x];break;
+          case 0x18:this.soundTimer=this.V[x];break;
+          case 0x1E:this.I=(this.I+this.V[x])&0xFFF;break;
+          case 0x29:this.I=0x050+(this.V[x]&0xF)*5;break;
+          case 0x33:{const v=this.V[x];this.memory[this.I]=Math.floor(v/100);this.memory[this.I+1]=Math.floor((v%100)/10);this.memory[this.I+2]=v%10;break;}
+          case 0x55:for(let i=0;i<=x;i++)this.memory[this.I+i]=this.V[i];this.I=(this.I+x+1)&0xFFF;break;
+          case 0x65:for(let i=0;i<=x;i++)this.V[i]=this.memory[this.I+i];this.I=(this.I+x+1)&0xFFF;break;
+        } break;
+    }
+  }
+}
+
+// ========== Built-in ROMs (small programs) ==========
+const ROMS = {
+  maze: (() => {
+    // Random maze generator
+    const r = [0x60,0x00,0x61,0x00,0xA2,0x22,0xC2,0x01,0x32,0x01,0x12,0x12,0xD0,0x14,
+      0x70,0x04,0x30,0x40,0x12,0x04,0x60,0x00,0x71,0x04,0x31,0x20,0x12,0x04,0x12,0x1C,
+      0x80,0x40,0x20,0x10,0x20,0x40,0x80,0x10,0x20,0x40,0x80,0x40];
+    return new Uint8Array(r);
+  })(),
+  sierpinski: (() => {
+    // Sierpinski triangle (XOR pattern)
+    const r = [
+      0x60,0x01, // V0 = 1
+      0x61,0x00, // V1 = y = 0
+      0x62,0x00, // V2 = x = 0
+      0xA2,0x30, // I = sprite addr (0x230)
+      0x83,0x20, // V3 = V2 (x)
+      0x84,0x10, // V4 = V1 (y)
+      0x83,0x42, // V3 &= V4 (x AND y)
+      0x43,0x00, // SNE V3, 0
+      0xD2,0x11, // DRW V2, V1, 1 (draw pixel if x AND y == 0)
+      0x72,0x01, // V2 += 1
+      0x32,0x20, // SE V2, 32
+      0x12,0x08, // JP loop x
+      0x62,0x00, // V2 = 0
+      0x71,0x01, // V1 += 1
+      0x31,0x20, // SE V1, 32
+      0x12,0x08, // JP loop y
+      0x12,0x1E, // infinite loop
+      0x80,0x00, // sprite: single pixel
+    ];
+    return new Uint8Array(r);
+  })(),
+  particle: (() => {
+    // Bouncing pixel
+    const r = [
+      0x60,0x20, // V0=x=32
+      0x61,0x10, // V1=y=16
+      0x62,0x01, // V2=dx=1
+      0x63,0x01, // V3=dy=1
+      0xA2,0x2A, // I=sprite
+      0x00,0xE0, // CLS
+      0xD0,0x11, // DRW V0,V1,1
+      0x80,0x24, // V0+=V2
+      0x81,0x34, // V1+=V3
+      0x30,0x3F, // SE V0,63 (right wall)
+      0x12,0x16, // JP skip_dx
+      0x64,0x00, // V4=0
+      0x82,0x47, // V2=V4-V2 (negate dx)
+      // skip_dx:
+      0x30,0x00, // SE V0,0 (left wall)
+      0x12,0x1E, // JP skip_dx2
+      0x64,0x00,
+      0x82,0x47,
+      // skip_dx2:
+      0x31,0x1F, // SE V1,31 (bottom)
+      0x12,0x26, // JP skip_dy
+      0x64,0x00,
+      0x83,0x47,
+      // skip_dy:
+      0x31,0x00, // SE V1,0 (top)
+      0x12,0x0A, // JP loop
+      0x64,0x00,
+      0x83,0x47,
+      0x12,0x0A, // JP loop
+      0x80, // sprite
+    ];
+    return new Uint8Array(r);
+  })(),
+};
+
+// ========== Emulator ==========
+const cpu = new Chip8();
+const canvas = document.getElementById('screen');
+const ctx = canvas.getContext('2d');
+let running = false, animId = null, totalCycles = 0;
+let cyclesPerFrame = 10;
+
+// Keyboard mapping: physical key → CHIP-8 hex key
+const KEYMAP = {
+  '1':0x1,'2':0x2,'3':0x3,'4':0xC,
+  'q':0x4,'w':0x5,'e':0x6,'r':0xD,
+  'a':0x7,'s':0x8,'d':0x9,'f':0xE,
+  'z':0xA,'x':0x0,'c':0xB,'v':0xF
+};
+
+// CHIP-8 keypad layout (for on-screen buttons)
+const KEYPAD_LAYOUT = [
+  [0x1,'1'],[0x2,'2'],[0x3,'3'],[0xC,'4'],
+  [0x4,'Q'],[0x5,'W'],[0x6,'E'],[0xD,'R'],
+  [0x7,'A'],[0x8,'S'],[0x9,'D'],[0xE,'F'],
+  [0xA,'Z'],[0x0,'X'],[0xB,'C'],[0xF,'V']
+];
+
+// Build on-screen keypad
+const keypadEl = document.getElementById('keypad');
+KEYPAD_LAYOUT.forEach(([chip8Key, label]) => {
+  const btn = document.createElement('button');
+  btn.textContent = chip8Key.toString(16).toUpperCase();
+  btn.title = `Key: ${label}`;
+  btn.dataset.key = chip8Key;
+  btn.addEventListener('mousedown', () => { cpu.keyDown(chip8Key); btn.classList.add('pressed'); });
+  btn.addEventListener('mouseup', () => { cpu.keyUp(chip8Key); btn.classList.remove('pressed'); });
+  btn.addEventListener('mouseleave', () => { cpu.keyUp(chip8Key); btn.classList.remove('pressed'); });
+  keypadEl.appendChild(btn);
+});
+
+// Keyboard events
+document.addEventListener('keydown', (e) => {
+  const key = KEYMAP[e.key.toLowerCase()];
+  if (key !== undefined) {
+    cpu.keyDown(key);
+    const btn = keypadEl.querySelector(`[data-key="${key}"]`);
+    if (btn) btn.classList.add('pressed');
+  }
+});
+document.addEventListener('keyup', (e) => {
+  const key = KEYMAP[e.key.toLowerCase()];
+  if (key !== undefined) {
+    cpu.keyUp(key);
+    const btn = keypadEl.querySelector(`[data-key="${key}"]`);
+    if (btn) btn.classList.remove('pressed');
+  }
+});
+
+// Drag-and-drop ROM loading
+const dropZone = document.getElementById('dropZone');
+dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('over'));
+dropZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropZone.classList.remove('over');
+  const file = e.dataTransfer.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const rom = new Uint8Array(reader.result);
+      loadROM(rom);
+      dropZone.textContent = `📁 Loaded: ${file.name} (${rom.length} bytes)`;
+    };
+    reader.readAsArrayBuffer(file);
+  }
+});
+
+// ROM selector
+document.getElementById('rom').addEventListener('change', (e) => {
+  const name = e.target.value;
+  if (ROMS[name]) loadROM(ROMS[name]);
+});
+
+// Speed selector
+document.getElementById('speed').addEventListener('change', (e) => {
+  cyclesPerFrame = parseInt(e.target.value);
+});
+
+function loadROM(rom) {
+  cpu.reset();
+  cpu.loadROM(rom);
+  totalCycles = 0;
+  draw();
+  updateStats();
+}
+
+function draw() {
+  const imgData = ctx.createImageData(640, 320);
+  const scale = 10;
+  for (let y = 0; y < 32; y++) {
+    for (let x = 0; x < 64; x++) {
+      const on = cpu.display[y * 64 + x];
+      const r = on ? 88 : 13, g = on ? 166 : 17, b = on ? 255 : 23;
+      for (let sy = 0; sy < scale; sy++) {
+        for (let sx = 0; sx < scale; sx++) {
+          const idx = ((y * scale + sy) * 640 + x * scale + sx) * 4;
+          imgData.data[idx] = r;
+          imgData.data[idx + 1] = g;
+          imgData.data[idx + 2] = b;
+          imgData.data[idx + 3] = 255;
+        }
+      }
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+}
+
+function updateStats() {
+  document.getElementById('cycles').textContent = totalCycles;
+  document.getElementById('pcVal').textContent = '0x' + cpu.pc.toString(16).padStart(3, '0');
+  document.getElementById('iVal').textContent = '0x' + cpu.I.toString(16).padStart(3, '0');
+  document.getElementById('spVal').textContent = cpu.sp;
+
+  const regsEl = document.getElementById('regs');
+  regsEl.innerHTML = '';
+  for (let i = 0; i < 16; i++) {
+    const el = document.createElement('div');
+    el.innerHTML = `V${i.toString(16).toUpperCase()}: <span class="reg">${cpu.V[i].toString(16).padStart(2, '0').toUpperCase()}</span>`;
+    regsEl.appendChild(el);
+  }
+}
+
+let timerAccum = 0;
+function loop() {
+  for (let i = 0; i < cyclesPerFrame; i++) {
+    cpu.cycle();
+    totalCycles++;
+  }
+
+  // Timers at ~60Hz (assuming 60fps display)
+  cpu.updateTimers();
+
+  if (cpu.drawFlag) { draw(); cpu.drawFlag = false; }
+  updateStats();
+  animId = requestAnimationFrame(loop);
+}
+
+window.toggleRun = function() {
+  running = !running;
+  const btn = document.getElementById('runBtn');
+  if (running) {
+    btn.textContent = '⏸ Pause'; btn.classList.add('active');
+    loop();
+  } else {
+    btn.textContent = '▶ Run'; btn.classList.remove('active');
+    cancelAnimationFrame(animId);
+  }
+};
+
+window.stepOne = function() {
+  if (running) return;
+  cpu.cycle();
+  totalCycles++;
+  if (cpu.drawFlag) { draw(); cpu.drawFlag = false; }
+  updateStats();
+};
+
+window.resetCPU = function() {
+  if (running) { running = false; cancelAnimationFrame(animId); }
+  document.getElementById('runBtn').textContent = '▶ Run';
+  document.getElementById('runBtn').classList.remove('active');
+  cpu.reset();
+  totalCycles = 0;
+  draw();
+  updateStats();
+};
+
+// Initial draw
+draw();
+updateStats();
+</script>
+</body>
+</html>
