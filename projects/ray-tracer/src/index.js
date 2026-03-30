@@ -16,7 +16,7 @@ export { reinhardToneMap, acesToneMap, adjustExposure } from './tonemap.js';
 export { loadScene, exportScene } from './scene-format.js';
 export { AABB } from './aabb.js';
 export { BVHNode } from './bvh.js';
-export { Lambertian, Metal, Dielectric, DiffuseLight } from './material.js';
+export { Lambertian, Metal, Dielectric, DiffuseLight, ColoredGlass } from './material.js';
 export { SolidColor, CheckerTexture, GradientTexture, NoiseTexture, MarbleTexture, StripeTexture, PlanetTexture } from './texture.js';
 export { Camera } from './camera.js';
 export { Renderer } from './renderer.js';
