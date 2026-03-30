@@ -20,5 +20,5 @@
 - Latest available: v2026.3.28 — check changelog before upgrading
 
 ## Flags for Jordan
-- ~~GMAIL_APP_PASSWORD needs to be added to ~/.openclaw/.env~~ ✅ Fixed
+- ~~GMAIL_APP_PASSWORD needs to be added to ~/.openclaw/.env~~ ✅ Fixed (new app password created 2026-03-30, stored in Keychain + .env)
 - ~~iMessage: still waiting on Apple Support callback~~ ✅ Fixed, BB webhooks working on v2026.2.26

@@ -43,7 +43,8 @@ Reviewed and pruned weekly during reflection.
 ## Infrastructure
 - Web search: Gemini (Google Search grounding), key configured. Free tier = 20 searches/day.
 - Model: Claude Opus 4.6 on AWS Bedrock
-- Email: henry.the.froggy@gmail.com (IMAP/SMTP — GMAIL_APP_PASSWORD not set in ~/.openclaw/.env, need Jordan to add it)
+- Email: henry.the.froggy@gmail.com (IMAP/SMTP working, app password in Keychain + .env)
+- Google account password in Keychain as "google-account-password" (can self-service app passwords via browser)
 - GitHub: henry-the-frog (SSH key at ~/.ssh/id_ed25519)
 - Browser: Chromium installed, openclaw browser automation working
 - Exec: full trust (no approval prompts)

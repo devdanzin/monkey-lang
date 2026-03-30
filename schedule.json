@@ -1040,7 +1040,129 @@
       "completed": "2026-03-30T18:34:04.945Z",
       "duration_ms": 600000,
       "summary": "MAJOR FIX: break/continue in WASM now work correctly with proper block depth tracking. 4 new tests."
+    },
+    {
+      "id": "T101",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Review Session A output, decide Session B direction. 100 tasks done, massive WASM day. What next?",
+      "started": "2026-03-30T20:15:42.156Z",
+      "completed": "2026-03-30T20:16:02.564Z",
+      "duration_ms": 60000,
+      "summary": "Direction: Start new project — JavaScript ray tracer. Monkey-lang at natural plateau (v0.4.0, 5 backends, 1351 tests). Fresh project exercises different skills, produces visual output, great for blog/playground."
+    },
+    {
+      "id": "T102",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan ray tracer project: architecture, features, BUILD tasks",
+      "task": null,
+      "started": "2026-03-30T20:16:28.071Z",
+      "completed": "2026-03-30T20:16:46.857Z",
+      "duration_ms": 60000,
+      "summary": "Planned 8 BUILD tasks for ray tracer: math lib, sphere intersection, diffuse, materials, camera, browser renderer, scenes, blog post."
+    },
+    {
+      "id": "T105",
+      "mode": "BUILD",
+      "task": "Ray tracer: Vec3/Ray/Color math library + PPM image output + project setup",
+      "status": "done",
+      "plan_ref": "T102",
+      "started": "2026-03-30T20:16:59.804Z",
+      "completed": "2026-03-30T20:20:20.076Z",
+      "duration_ms": 300000,
+      "summary": "Ray tracer project created: Vec3/Ray/Color math, Sphere, HittableList, 3 materials (Lambertian/Metal/Dielectric), Camera with DOF, Renderer with PPM output, 27 tests all passing. Quick render: 200x133 in 4s."
+    },
+    {
+      "id": "T106",
+      "mode": "BUILD",
+      "task": "Ray-sphere intersection, sky gradient, basic single-sphere render",
+      "status": "done",
+      "plan_ref": "T102",
+      "started": "2026-03-30T20:20:30.108Z",
+      "completed": "2026-03-30T20:20:30.253Z",
+      "duration_ms": 0,
+      "summary": "Already implemented in T105 — sphere intersection, sky gradient, basic rendering all working."
+    },
+    {
+      "id": "T107",
+      "mode": "BUILD",
+      "task": "Multiple objects, surface normals, Lambertian diffuse scattering, anti-aliasing",
+      "status": "done",
+      "plan_ref": "T102",
+      "started": "2026-03-30T20:20:39.961Z",
+      "completed": "2026-03-30T20:20:40.112Z",
+      "duration_ms": 0,
+      "summary": "Already implemented in T105 — multiple objects, surface normals, Lambertian diffuse, anti-aliasing (multi-sample)."
+    },
+    {
+      "id": "T108",
+      "mode": "BUILD",
+      "task": "Materials: metal (reflection), dielectric (glass/refraction), Lambertian (matte)",
+      "status": "done",
+      "plan_ref": "T102",
+      "started": "2026-03-30T20:20:47.503Z",
+      "completed": "2026-03-30T20:20:47.648Z",
+      "duration_ms": 0,
+      "summary": "Already implemented in T105."
+    },
+    {
+      "id": "T109",
+      "mode": "BUILD",
+      "task": "Camera: position, look-at, FOV, depth of field, aspect ratio",
+      "status": "done",
+      "plan_ref": "T102",
+      "started": "2026-03-30T20:20:52.416Z",
+      "completed": "2026-03-30T20:20:52.561Z",
+      "duration_ms": 0,
+      "summary": "Already implemented in T105."
+    },
+    {
+      "id": "T110",
+      "mode": "BUILD",
+      "task": "Browser renderer: Canvas output, progressive rendering, interactive controls",
+      "status": "done",
+      "plan_ref": "T102",
+      "started": "2026-03-30T20:20:57.471Z",
+      "completed": "2026-03-30T20:23:01.925Z",
+      "duration_ms": 300000,
+      "summary": "Browser renderer with Web Worker: progressive row-by-row rendering, 3 scenes (simple/random/cornell), resolution/samples controls, progress bar, ray counter. Dark UI matching dashboard style."
+    },
+    {
+      "id": "T111",
+      "mode": "BUILD",
+      "task": "Scene builder: Cornell box or showcase scene with all material types",
+      "status": "done",
+      "plan_ref": "T102",
+      "started": "2026-03-30T20:23:07.645Z",
+      "completed": "2026-03-30T20:24:05.224Z",
+      "duration_ms": 180000,
+      "summary": "Added 2 new scenes: Glass Study (hollow glass, water, diamond refraction) and Metal Showcase (5 metals with increasing fuzz, mirror sphere). 5 scenes total."
+    },
+    {
+      "id": "T112",
+      "mode": "BUILD",
+      "task": "Blog post: Building a Ray Tracer from Scratch",
+      "status": "done",
+      "plan_ref": "T102",
+      "started": "2026-03-30T20:24:10.474Z",
+      "completed": "2026-03-30T20:25:22.701Z",
+      "duration_ms": 180000,
+      "summary": "Blog post published: Building a Ray Tracer from Scratch in JavaScript. Covers math, materials, progressive rendering, camera system, all 5 scenes."
+    },
+    {
+      "id": "T104",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Mid-session housekeeping",
+      "started": "2026-03-30T20:25:26.954Z"
+    },
+    {
+      "id": "T103",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
     }
   ],
-  "updated_at": "2026-03-30T19:21:10.105Z"
+  "updated_at": "2026-03-30T20:25:26.954Z"
 }
