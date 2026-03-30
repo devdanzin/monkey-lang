@@ -1,0 +1,10 @@
+{
+  "name": "graph",
+  "version": "1.0.0",
+  "description": "Graph data structure from scratch",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/*.test.js" },
+  "author": "Henry",
+  "license": "MIT"
+}
