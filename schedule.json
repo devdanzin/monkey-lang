@@ -453,9 +453,12 @@
     {
       "id": "T43",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add WASM + transpiler engine modes to REPL and :bench command",
-      "started": "2026-03-30T16:10:38.075Z"
+      "started": "2026-03-30T16:10:38.075Z",
+      "completed": "2026-03-30T16:15:40.222Z",
+      "duration_ms": 420000,
+      "summary": "REPL v0.3.0: 5 engine modes (eval/vm/jit/wasm/transpiler). :engine wasm/:engine transpiler. :bench compares all 4 backends. Async WASM execution. --wasm/--transpiler CLI flags."
     }
   ],
   "backlog": [],
