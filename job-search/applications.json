@@ -713,92 +713,119 @@
     {
       "company": "Archera",
       "role": "Unknown Role",
-      "date": "2026-03-30",
       "status": "applied",
       "location": "Unknown",
       "salary": null,
       "source": "Greenhouse",
-      "notes": "Applied today"
+      "notes": "Applied today",
+      "date_applied": "2026-03-30",
+      "id": 55,
+      "response_date": null,
+      "response_days": null
     },
     {
       "company": "Zoom Communications",
       "role": "DevOps Engineer",
-      "date": "2026-03-30",
       "status": "applied",
       "location": "Unknown",
       "salary": null,
       "source": "Workday",
-      "notes": "Applied today"
+      "notes": "Applied today",
+      "date_applied": "2026-03-30",
+      "id": 56,
+      "response_date": null,
+      "response_days": null
     },
     {
       "company": "University of Utah",
       "role": "Systems Administrator",
-      "date": "2026-03-30",
       "status": "applied",
       "location": "Utah",
       "salary": null,
       "source": "utah.edu",
-      "notes": "Position PRN44288B \u2014 separate from U of U Health"
+      "notes": "Position PRN44288B \u2014 separate from U of U Health",
+      "date_applied": "2026-03-30",
+      "id": 57,
+      "response_date": null,
+      "response_days": null
     },
     {
       "company": "Awardco",
       "role": "Unknown Role",
-      "date": "2026-03-30",
       "status": "applied",
       "location": "Unknown",
       "salary": null,
       "source": "Greenhouse",
-      "notes": "Applied today"
+      "notes": "Applied today",
+      "date_applied": "2026-03-30",
+      "id": 58,
+      "response_date": null,
+      "response_days": null
     },
     {
       "company": "CrowdStrike",
       "role": "Unknown Role",
-      "date": "2026-03-30",
       "status": "applied",
       "location": "Unknown",
       "salary": null,
       "source": "Workday",
-      "notes": "Applied today (confirmation email received)"
+      "notes": "Applied today (confirmation email received)",
+      "date_applied": "2026-03-30",
+      "id": 59,
+      "response_date": null,
+      "response_days": null
     },
     {
       "company": "Weave",
       "role": "Senior Platform Engineer, Data Infrastructure",
-      "date": "2026-03-30",
       "status": "applied",
       "location": "Unknown",
       "salary": null,
       "source": "Direct",
-      "notes": "Applied today"
+      "notes": "Applied today",
+      "date_applied": "2026-03-30",
+      "id": 60,
+      "response_date": null,
+      "response_days": null
     },
     {
       "company": "CARET",
       "role": "Intermediate DevOps Engineer",
-      "date": "2026-03-30",
       "status": "applied",
       "location": "Unknown",
       "salary": null,
       "source": "Talent Community",
-      "notes": "CARET talent community + application"
+      "notes": "CARET talent community + application",
+      "date_applied": "2026-03-30",
+      "id": 61,
+      "response_date": null,
+      "response_days": null
     },
     {
       "company": "CHG Healthcare",
       "role": "Sr Platform Engineer",
-      "date": "2026-03-30",
       "status": "applied",
       "location": "Unknown",
       "salary": null,
       "source": "Workday",
-      "notes": "Applied today"
+      "notes": "Applied today",
+      "date_applied": "2026-03-30",
+      "id": 62,
+      "response_date": null,
+      "response_days": null
     },
     {
       "company": "Packsize",
       "role": "Cloud Solutions Engineer",
-      "date": "2026-03-30",
       "status": "applied",
       "location": "Unknown",
       "salary": null,
       "source": "Workday",
-      "notes": "Applied today"
+      "notes": "Applied today",
+      "date_applied": "2026-03-30",
+      "id": 63,
+      "response_date": null,
+      "response_days": null
     }
   ]
 }

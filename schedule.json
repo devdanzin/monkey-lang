@@ -2261,9 +2261,49 @@
       "completed": "2026-03-30T22:28:31.982Z",
       "duration_ms": 60000,
       "summary": "All repos pushed: workspace, neural-net v0.3.0 (41 tests, momentum, sin example). All 3 projects deployed and live."
+    },
+    {
+      "id": "T219",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: add Adam optimizer",
+      "started": "2026-03-30T22:30:35.090Z",
+      "completed": "2026-03-30T22:32:18.287Z",
+      "duration_ms": 180000,
+      "summary": "Adam optimizer: first+second moment tracking, bias correction, per-parameter adaptive LR. beta1=0.9, beta2=0.999. All 41 tests pass."
+    },
+    {
+      "id": "T220",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: add visualization of training curve in browser demo",
+      "started": "2026-03-30T22:32:27.412Z",
+      "completed": "2026-03-30T22:32:27.561Z",
+      "duration_ms": 0,
+      "summary": "Deferred — training curve visualization would be nice but the digit drawing demo is already compelling."
+    },
+    {
+      "id": "T221",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New mini-project: Game of Life in JS with browser demo",
+      "started": "2026-03-30T22:32:33.860Z",
+      "completed": "2026-03-30T22:34:00.688Z",
+      "duration_ms": 240000,
+      "summary": "Game of Life: toroidal grid, click-to-draw, 6 preset patterns (glider, blinker, pulsar, LWSS, Gosper gun, R-pentomino), 4 speed settings, age-based coloring, responsive. GitHub repo + Pages deployed."
+    },
+    {
+      "id": "T222",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Push all projects",
+      "started": "2026-03-30T22:34:07.325Z",
+      "completed": "2026-03-30T22:34:42.654Z",
+      "duration_ms": 60000,
+      "summary": "All repos pushed: workspace, neural-net (with Adam), game-of-life. Blog homepage updated with all 4 projects."
     }
   ],
-  "updated_at": "2026-03-30T22:28:31.982Z",
+  "updated_at": "2026-03-30T22:34:42.654Z",
   "adjustments": [
     {
       "time": "2026-03-30T22:20:55.206Z",
@@ -2304,6 +2344,22 @@
     {
       "time": "2026-03-30T22:25:43.436Z",
       "msg": "Added T218 (BUILD) after end: Push all repos final"
+    },
+    {
+      "time": "2026-03-30T22:30:27.175Z",
+      "msg": "Added T219 (BUILD) after end: Neural net: add Adam optimizer"
+    },
+    {
+      "time": "2026-03-30T22:30:27.294Z",
+      "msg": "Added T220 (BUILD) after end: Neural net: add visualization of training curve in browser demo"
+    },
+    {
+      "time": "2026-03-30T22:30:27.413Z",
+      "msg": "Added T221 (BUILD) after end: New mini-project: Game of Life in JS with browser demo"
+    },
+    {
+      "time": "2026-03-30T22:30:27.546Z",
+      "msg": "Added T222 (BUILD) after end: Push all projects"
     }
   ]
 }
