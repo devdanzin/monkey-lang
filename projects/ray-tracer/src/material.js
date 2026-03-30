@@ -2,19 +2,23 @@
 
 import { Vec3, Color } from './vec3.js';
 import { Ray } from './ray.js';
+import { SolidColor } from './texture.js';
 
 // Lambertian (matte/diffuse)
 export class Lambertian {
   constructor(albedo) {
-    this.albedo = albedo; // Color
+    // Accept either a Color (Vec3) or a Texture
+    this.texture = albedo instanceof Vec3 ? new SolidColor(albedo) : albedo;
+    this.albedo = albedo instanceof Vec3 ? albedo : null; // backward compat
   }
 
   scatter(rayIn, rec) {
     let scatterDirection = rec.normal.add(Vec3.randomUnitVector());
     if (scatterDirection.nearZero()) scatterDirection = rec.normal;
+    const attenuation = this.texture.value(0, 0, rec.p);
     return {
       scattered: new Ray(rec.p, scatterDirection),
-      attenuation: this.albedo
+      attenuation
     };
   }
 }
