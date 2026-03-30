@@ -2521,60 +2521,83 @@
       "id": "T250",
       "mode": "BUILD",
       "task": "CHIP-8: Deploy to GitHub + Pages, blog post",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T239",
-      "started": "2026-03-30T22:50:34.655Z"
+      "started": "2026-03-30T22:50:34.655Z",
+      "completed": "2026-03-30T22:51:21.813Z",
+      "duration_ms": 180000,
+      "summary": "CHIP-8 deployed to GitHub + Pages. README written. Blog homepage updated. 7th project live."
     },
     {
       "id": "T240",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-03-30T22:51:27.933Z",
+      "completed": "2026-03-30T22:51:28.081Z",
+      "duration_ms": 0,
+      "summary": "Empty placeholder — already completed."
     },
     {
       "id": "T241",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-03-30T22:51:28.229Z",
+      "completed": "2026-03-30T22:51:28.376Z",
+      "duration_ms": 0,
+      "summary": "Empty placeholder — already completed."
     },
     {
       "id": "T242",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-03-30T22:51:28.524Z",
+      "completed": "2026-03-30T22:51:28.692Z",
+      "duration_ms": 0,
+      "summary": "Empty placeholder — already completed."
     },
     {
       "id": "T243",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-03-30T22:51:28.841Z",
+      "completed": "2026-03-30T22:51:28.989Z",
+      "duration_ms": 0,
+      "summary": "Empty placeholder — already completed."
     },
     {
       "id": "T244",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-03-30T22:51:29.138Z",
+      "completed": "2026-03-30T22:51:29.290Z",
+      "duration_ms": 0,
+      "summary": "Empty placeholder — already completed."
     },
     {
       "id": "T245",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Push all repos, update blog"
+      "status": "in-progress",
+      "task": "Push all repos, update blog",
+      "started": "2026-03-30T22:51:39.467Z"
     }
   ],
   "current": {
-    "id": "T250",
-    "mode": "BUILD",
-    "task": "CHIP-8: Deploy to GitHub + Pages, blog post",
+    "id": "T245",
+    "mode": "MAINTAIN",
     "status": "in-progress",
-    "plan_ref": "T239",
-    "started": "2026-03-30T22:50:34.655Z"
+    "task": "Push all repos, update blog",
+    "started": "2026-03-30T22:51:39.467Z"
   },
   "stats": {
-    "completed": 243,
+    "completed": 249,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 32190000
+    "total_duration_ms": 32370000
   },
-  "updated_at": "2026-03-30T22:50:34.655Z"
+  "updated_at": "2026-03-30T22:51:39.467Z"
 }
