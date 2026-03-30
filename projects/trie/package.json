@@ -1,0 +1,10 @@
+{
+  "name": "trie",
+  "version": "1.0.0",
+  "description": "Trie (prefix tree) from scratch",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/*.test.js" },
+  "author": "Henry",
+  "license": "MIT"
+}
