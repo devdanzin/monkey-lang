@@ -11735,6 +11735,13 @@ var WasmCompiler = class {
     this.nextDataOffset = 16;
     this.closureFuncs = [];
     this.nextTableSlot = 0;
+    this.stats = {
+      constantsFolded: 0,
+      functionsCompiled: 0,
+      closuresCreated: 0,
+      stringsAllocated: 0,
+      arraysAllocated: 0
+    };
     this.builder.addMemory(1);
     this.builder.addExport("memory", ExportKind.Memory, 0);
     this.heapPtr = this.builder.addGlobal(ValType.i32, true, 4096);
@@ -11833,6 +11840,11 @@ var WasmCompiler = class {
     this._runtimeFuncs.strConcat = strConcatIdx;
     const strEqIdx = this.builder.addImport("env", "__str_eq", [ValType.i32, ValType.i32], [ValType.i32]);
     this._runtimeFuncs.strEq = strEqIdx;
+    const restIdx = this.builder.addImport("env", "__rest", [ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.rest = restIdx;
+    const typeIdx = this.builder.addImport("env", "__type", [ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.type = typeIdx;
+    this.globalScope.define("type", typeIdx, "func");
     const { index: allocIdx, body: allocBody } = this.builder.addFunction(
       [ValType.i32],
       [ValType.i32]
@@ -12129,6 +12141,7 @@ var WasmCompiler = class {
     const folded = this._tryConstantFold(node);
     if (folded !== null) {
       this.currentBody.i32Const(folded);
+      this.stats.constantsFolded++;
       return;
     }
     if (node.operator === "&&") {
@@ -12262,6 +12275,33 @@ var WasmCompiler = class {
       if (name === "str" && node.arguments.length === 1) {
         this.compileNode(node.arguments[0]);
         this.currentBody.call(this._runtimeFuncs.str);
+        return;
+      }
+      if (name === "first" && node.arguments.length === 1) {
+        this.compileNode(node.arguments[0]);
+        this.currentBody.i32Const(0);
+        this.currentBody.call(this._runtimeFuncs.arrayGet);
+        return;
+      }
+      if (name === "last" && node.arguments.length === 1) {
+        this.compileNode(node.arguments[0]);
+        const arrTmp = this.nextLocalIndex++;
+        this.currentBody.addLocal(ValType.i32);
+        this.currentBody.localTee(arrTmp);
+        this.currentBody.call(this._runtimeFuncs.len);
+        this.currentBody.i32Const(1);
+        this.currentBody.emit(Op.i32_sub);
+        const idxTmp = this.nextLocalIndex++;
+        this.currentBody.addLocal(ValType.i32);
+        this.currentBody.localSet(idxTmp);
+        this.currentBody.localGet(arrTmp);
+        this.currentBody.localGet(idxTmp);
+        this.currentBody.call(this._runtimeFuncs.arrayGet);
+        return;
+      }
+      if (name === "rest" && node.arguments.length === 1) {
+        this.compileNode(node.arguments[0]);
+        this.currentBody.call(this._runtimeFuncs.rest);
         return;
       }
     }
@@ -12836,6 +12876,43 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
         const s1 = readString(ptr1);
         const s2 = readString(ptr2);
         return s1 === s2 ? 1 : 0;
+      },
+      __rest(arrPtr) {
+        const mem = memoryRef.memory;
+        if (!mem || arrPtr <= 0) return 0;
+        const view = new DataView(mem.buffer);
+        const tag = view.getInt32(arrPtr, true);
+        if (tag !== TAG_ARRAY) return 0;
+        const len = view.getInt32(arrPtr + 4, true);
+        if (len <= 0) return 0;
+        const newLen = len - 1;
+        if (!memoryRef.jsHeapPtr) memoryRef.jsHeapPtr = 6e4;
+        const newPtr = memoryRef.jsHeapPtr;
+        const newSize = 8 + newLen * 4;
+        memoryRef.jsHeapPtr += newSize;
+        memoryRef.jsHeapPtr = memoryRef.jsHeapPtr + 3 & ~3;
+        view.setInt32(newPtr, TAG_ARRAY, true);
+        view.setInt32(newPtr + 4, newLen, true);
+        for (let i = 0; i < newLen; i++) {
+          const elem = view.getInt32(arrPtr + 8 + (i + 1) * 4, true);
+          view.setInt32(newPtr + 8 + i * 4, elem, true);
+        }
+        return newPtr;
+      },
+      __type(value) {
+        const mem = memoryRef.memory;
+        if (!mem) return writeString("unknown");
+        const view = new DataView(mem.buffer);
+        if (value > 0 && value + 8 <= view.byteLength) {
+          try {
+            const tag = view.getInt32(value, true);
+            if (tag === TAG_STRING) return writeString("STRING");
+            if (tag === TAG_ARRAY) return writeString("ARRAY");
+            if (tag === TAG_CLOSURE) return writeString("FUNCTION");
+          } catch (e) {
+          }
+        }
+        return writeString("INTEGER");
       }
     }
   };

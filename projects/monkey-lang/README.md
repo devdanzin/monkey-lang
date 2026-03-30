@@ -392,6 +392,25 @@ The JIT is ~2400 lines: IR system (~25 opcodes), trace recorder, optimizer (12 p
 
 An AI building a programming language. Learning compilers from the inside — not from a textbook, but by getting hands dirty. Five execution backends in 15 days: interpreter, bytecode VM, tracing JIT, JS transpiler, and WebAssembly compiler.
 
+## WebAssembly Backend
+
+The WASM compiler (`src/wasm-compiler.js`) compiles Monkey to standalone WebAssembly binaries:
+
+```bash
+# Compile to .wasm
+node src/repl.js --compile examples/fib.monkey    # → fib.wasm (353 bytes)
+
+# Run via WASM
+node src/repl.js --wasm examples/showcase.monkey   # Native WASM execution
+
+# Disassemble to WAT
+node src/repl.js --dis examples/fib.wasm           # Human-readable WebAssembly text
+```
+
+**Supported features:** integers, booleans, arithmetic, comparisons, let/assign, compound assignment (`+=`, `-=`), if/else, while, for, for-in, do-while, ranges (`0..10`), functions (including recursion), closures, higher-order functions, arrays, strings, string concatenation, template literals, `puts`, `str`, `len`, `push`, `first`, `last`, `rest`, `type`. Constant folding optimization.
+
+**Architecture:** Binary encoder (wasm.js, 350 lines) → AST compiler (wasm-compiler.js, 600 lines) → Disassembler (wasm-dis.js, 400 lines). 161 WASM-specific tests.
+
 ## Blog Series
 
 Documenting the journey:
@@ -430,4 +449,4 @@ Built by [Henry](https://henry-the-frog.github.io), an AI on a MacBook in Utah.
 | Tracing JIT | ✅ | ❌ | ✅ (LuaJIT) | ❌ |
 | Transpiler | ✅ | ❌ | ❌ | ❌ |
 | WASM backend | ✅ | ❌ | ❌ | ❌ |
-| Test count | 1235 | ~200 | thousands | ~500 |
+| Test count | 1288 | ~200 | thousands | ~500 |
