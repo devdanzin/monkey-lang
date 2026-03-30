@@ -39,7 +39,7 @@ export class Network {
   }
 
   // Train on a batch
-  trainBatch(input, target, learningRate = 0.01, momentum = 0) {
+  trainBatch(input, target, learningRate = 0.01, momentum = 0, optimizer = 'sgd') {
     if (Array.isArray(input)) input = Matrix.fromArray(input);
     if (Array.isArray(target)) target = Matrix.fromArray(target);
 
@@ -57,14 +57,14 @@ export class Network {
 
     // Update weights
     for (const layer of this.layers) {
-      layer.update(learningRate, momentum);
+      layer.update(learningRate, momentum, optimizer);
     }
 
     return loss;
   }
 
   // Train for multiple epochs
-  train(data, { epochs = 100, learningRate = 0.01, batchSize = 32, momentum = 0, verbose = false, onEpoch = null, lrSchedule = null } = {}) {
+  train(data, { epochs = 100, learningRate = 0.01, batchSize = 32, momentum = 0, optimizer = 'sgd', verbose = false, onEpoch = null, lrSchedule = null } = {}) {
     const { inputs, targets } = data;
     const n = inputs.rows;
     const history = [];
@@ -112,7 +112,7 @@ export class Network {
           for (let j = 0; j < targets.cols; j++) batchTarget.set(i, j, targets.get(idx, j));
         }
 
-        epochLoss += this.trainBatch(batchInput, batchTarget, lr, momentum);
+        epochLoss += this.trainBatch(batchInput, batchTarget, lr, momentum, optimizer);
         batches++;
       }
 

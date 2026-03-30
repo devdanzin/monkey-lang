@@ -25,6 +25,11 @@ export class Dense {
     this.vWeights = Matrix.zeros(inputSize, outputSize);
     this.vBiases = Matrix.zeros(1, outputSize);
     
+    // Adam state (second moment)
+    this.sWeights = Matrix.zeros(inputSize, outputSize);
+    this.sBiases = Matrix.zeros(1, outputSize);
+    this.adamT = 0; // Time step
+
     // Gradients
     this.dWeights = null;
     this.dBiases = null;
@@ -66,19 +71,42 @@ export class Dense {
   }
 
   // Update weights with optimizer
-  update(learningRate, momentum = 0) {
+  update(learningRate, momentum = 0, optimizer = 'sgd') {
     const batchSize = this.input.rows;
-    const gradW = this.dWeights.mul(learningRate / batchSize);
-    const gradB = this.dBiases.mul(learningRate / batchSize);
+    const gradW = this.dWeights.mul(1.0 / batchSize);
+    const gradB = this.dBiases.mul(1.0 / batchSize);
 
-    if (momentum > 0) {
-      this.vWeights = this.vWeights.mul(momentum).add(gradW);
-      this.vBiases = this.vBiases.mul(momentum).add(gradB);
+    if (optimizer === 'adam') {
+      this.adamT++;
+      const beta1 = 0.9, beta2 = 0.999, eps = 1e-8;
+
+      // First moment (momentum)
+      this.vWeights = this.vWeights.mul(beta1).add(gradW.mul(1 - beta1));
+      this.vBiases = this.vBiases.mul(beta1).add(gradB.mul(1 - beta1));
+
+      // Second moment (RMSProp)
+      this.sWeights = this.sWeights.mul(beta2).add(gradW.mul(gradW).mul(1 - beta2));
+      this.sBiases = this.sBiases.mul(beta2).add(gradB.mul(gradB).mul(1 - beta2));
+
+      // Bias correction
+      const bc1 = 1 - Math.pow(beta1, this.adamT);
+      const bc2 = 1 - Math.pow(beta2, this.adamT);
+      const vwHat = this.vWeights.mul(1.0 / bc1);
+      const vbHat = this.vBiases.mul(1.0 / bc1);
+      const swHat = this.sWeights.mul(1.0 / bc2);
+      const sbHat = this.sBiases.mul(1.0 / bc2);
+
+      // Update
+      this.weights = this.weights.sub(vwHat.mul(learningRate).mul(swHat.map(v => 1 / (Math.sqrt(v) + eps))));
+      this.biases = this.biases.sub(vbHat.mul(learningRate).mul(sbHat.map(v => 1 / (Math.sqrt(v) + eps))));
+    } else if (momentum > 0) {
+      this.vWeights = this.vWeights.mul(momentum).add(gradW.mul(learningRate));
+      this.vBiases = this.vBiases.mul(momentum).add(gradB.mul(learningRate));
       this.weights = this.weights.sub(this.vWeights);
       this.biases = this.biases.sub(this.vBiases);
     } else {
-      this.weights = this.weights.sub(gradW);
-      this.biases = this.biases.sub(gradB);
+      this.weights = this.weights.sub(gradW.mul(learningRate));
+      this.biases = this.biases.sub(gradB.mul(learningRate));
     }
   }
 
