@@ -846,6 +846,13 @@
       "completed": "2026-03-30T17:30:17.925Z",
       "duration_ms": 120000,
       "summary": "Final verification: 1297 tests (0 failures), playground bundle updated, all repos pushed. README and TASKS.md counts updated."
+    },
+    {
+      "id": "T82",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add tests for new WASM features: arrow, pipe, null coalescing, slice",
+      "started": "2026-03-30T17:37:09.079Z"
     }
   ],
   "backlog": [],
@@ -1097,6 +1104,10 @@
     {
       "time": "2026-03-30T17:29:11.999Z",
       "msg": "Added T81 (MAINTAIN) after end: Polish: rebuild final playground bundle, update all counts, verify CI status"
+    },
+    {
+      "time": "2026-03-30T17:37:08.943Z",
+      "msg": "Added T82 (BUILD) after end: Add tests for new WASM features: arrow, pipe, null coalescing, slice"
     }
   ]
 }

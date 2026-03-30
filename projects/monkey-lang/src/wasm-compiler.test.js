@@ -796,6 +796,59 @@ describe('WASM Compiler', () => {
     });
   });
 
+  describe('Extended syntax', () => {
+    it('arrow function', async () => {
+      assert.strictEqual(await compileAndRun('let double = (x) => x * 2; double(21)'), 42);
+    });
+
+    it('arrow function as closure', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let x = 10;
+        let addX = (y) => x + y;
+        addX(32)
+      `), 42);
+    });
+
+    it('null coalescing with null', async () => {
+      assert.strictEqual(await compileAndRun('let x = 0; x ?? 42'), 42);
+    });
+
+    it('null coalescing with value', async () => {
+      assert.strictEqual(await compileAndRun('let x = 5; x ?? 42'), 5);
+    });
+
+    it('pipe operator', async () => {
+      assert.strictEqual(await compileAndRun('let double = fn(x) { x * 2 }; 21 |> double'), 42);
+    });
+
+    it('array mutation', async () => {
+      assert.strictEqual(await compileAndRun('let arr = [1, 2, 3]; arr[1] = 42; arr[1]'), 42);
+    });
+
+    it('compound assignment operators', async () => {
+      assert.strictEqual(await compileAndRun('let x = 10; x += 5; x -= 3; x *= 2; x'), 24);
+    });
+
+    it('ternary expression', async () => {
+      assert.strictEqual(await compileAndRun('true ? 42 : 0'), 42);
+      assert.strictEqual(await compileAndRun('false ? 0 : 42'), 42);
+    });
+
+    it('template literal', async () => {
+      const lines = [];
+      await compileAndRun('let x = 42; puts(`answer: ${x}`)', { outputLines: lines });
+      assert.strictEqual(lines[0], 'answer: 42');
+    });
+
+    it('range in variable', async () => {
+      assert.strictEqual(await compileAndRun('let r = 0..5; len(r)'), 5);
+    });
+
+    it('do-while', async () => {
+      assert.strictEqual(await compileAndRun('let x = 1; do { x = x * 2; } while (x < 100); x'), 128);
+    });
+  });
+
   describe('Integration tests', () => {
     it('Collatz conjecture', async () => {
       assert.strictEqual(await compileAndRun(`

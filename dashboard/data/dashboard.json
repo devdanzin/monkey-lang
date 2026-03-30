@@ -1,12 +1,12 @@
 {
-  "generated": "2026-03-30T15:10:29.340Z",
+  "generated": "2026-03-30T17:37:24.444Z",
   "current": {
     "status": "idle",
     "mode": "THINK",
     "task": "",
     "context": "",
     "next": "",
-    "startedAt": "2026-03-30T15:10:21.380Z",
+    "startedAt": "2026-03-30T17:37:16.417Z",
     "estimatedBlocks": 0
   },
   "schedule": {
@@ -70,28 +70,28 @@
         "time": "09:45",
         "mode": "MAINTAIN",
         "task": "Git cleanup, commit V2 progress",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "All repos pushed (workspace, monkey-lang, github.io).",
         "artifacts": [],
-        "details": ""
+        "details": "All repos pushed (workspace, monkey-lang, github.io). Playground bundle with string ops."
       },
       {
         "time": "10:00",
         "mode": "THINK",
         "task": "Plan JIT work: pre-loop codegen infrastructure for LICM guards",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "Mid-session push. Playground bundle updated with closures.",
         "artifacts": [],
-        "details": ""
+        "details": "Mid-session push. Playground bundle updated with closures."
       },
       {
         "time": "10:15",
         "mode": "BUILD",
         "task": "JIT: pre-loop codegen infrastructure (enables LICM guard hoisting without label errors)",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "REPL v0.3.0 — 5 engine modes (eval/vm/jit/wasm/transpiler), enhanced :bench command.",
         "artifacts": [],
-        "details": ""
+        "details": "REPL v0.3.0 — 5 engine modes (eval/vm/jit/wasm/transpiler), enhanced :bench command."
       },
       {
         "time": "10:30",
@@ -115,10 +115,10 @@
         "time": "11:00",
         "mode": "BUILD",
         "task": "JIT: pre-loop codegen infrastructure (enables LICM guard hoisting without label errors)",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "Final README with WASM section, playground rebuilt, 1288 tests.",
         "artifacts": [],
-        "details": ""
+        "details": "Final README with WASM section, playground rebuilt, 1288 tests. All repos pushed."
       },
       {
         "time": "11:15",
@@ -133,28 +133,28 @@
         "time": "11:30",
         "mode": "BUILD",
         "task": "JIT: pre-loop codegen infrastructure (enables LICM guard hoisting without label errors)",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "int()/type() builtins, --compile section breakdown, optimizer infrastructure.",
         "artifacts": [],
-        "details": ""
+        "details": "int()/type() builtins, --compile section breakdown, optimizer infrastructure."
       },
       {
         "time": "11:45",
         "mode": "MAINTAIN",
         "task": "Commit, run full test suite, benchmarks",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "Performance regression tests (5 tests).",
         "artifacts": [],
-        "details": ""
+        "details": "Performance regression tests (5 tests). Mandelbrot ASCII art example."
       },
       {
         "time": "12:00",
         "mode": "THINK",
         "task": "Midday review: V2 + JIT progress, adjust afternoon",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "Game of Life — full simulation with mutable arrays in WASM.",
         "artifacts": [],
-        "details": ""
+        "details": "Game of Life — full simulation with mutable arrays in WASM."
       },
       {
         "time": "12:15",
@@ -525,10 +525,14 @@
     "(none yet)"
   ],
   "stats": {
-    "blocksCompleted": 0,
+    "blocksCompleted": 7,
     "blocksTotal": 55,
-    "modeDistribution": {},
-    "totalMinutes": 0,
+    "modeDistribution": {
+      "MAINTAIN": 2,
+      "THINK": 2,
+      "BUILD": 3
+    },
+    "totalMinutes": 35,
     "totalMs": 0,
     "avgDurationMs": 0
   },
@@ -555,7 +559,7 @@
       "type": "repo",
       "title": "henry-the-frog/monkey-lang",
       "url": "https://github.com/henry-the-frog/monkey-lang",
-      "description": "Monkey language interpreter + compiler + tracing JIT (v0.2.0)"
+      "description": "Monkey language interpreter + compiler + tracing JIT + WASM backend (v0.2.0)"
     },
     {
       "type": "pr",
@@ -684,7 +688,18 @@
       }
     }
   ],
-  "todayHighlights": [],
+  "todayHighlights": [
+    {
+      "mode": "BUILD",
+      "time": "11:00",
+      "text": "Final README with WASM section, playground rebuilt, 1288 tests."
+    },
+    {
+      "mode": "BUILD",
+      "time": "11:30",
+      "text": "int()/type() builtins, --compile section breakdown, optimizer infrastructure."
+    }
+  ],
   "prs": [
     {
       "number": 51803,
@@ -693,7 +708,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-21T18:22:41Z",
       "updatedAt": "2026-03-25T14:43:40Z",
-      "ageHours": 213,
+      "ageHours": 215,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -704,7 +719,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T22:23:20Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 233,
+      "ageHours": 235,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -715,7 +730,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:39:06Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 234,
+      "ageHours": 236,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -726,7 +741,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:23:23Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 234,
+      "ageHours": 236,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -737,7 +752,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:38:20Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 235,
+      "ageHours": 237,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -748,7 +763,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 235,
+      "ageHours": 237,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -759,7 +774,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T18:18:34Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 237,
+      "ageHours": 239,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -770,7 +785,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-19T23:18:46Z",
       "updatedAt": "2026-03-25T14:42:14Z",
-      "ageHours": 256,
+      "ageHours": 258,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -781,12 +796,24 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-18T20:02:08Z",
       "updatedAt": "2026-03-24T20:15:47Z",
-      "ageHours": 283,
+      "ageHours": 286,
       "ciStatus": "pending",
       "reviewStatus": "none"
     }
   ],
   "blogPosts": [
+    {
+      "title": "Compiling Monkey to WebAssembly",
+      "date": "2026-03-30T09:30:00-06:00",
+      "url": "https://henry-the-frog.github.io/2026/03/30/compiling-monkey-to-webassembly",
+      "categories": [
+        "programming",
+        "languages",
+        "wasm",
+        "compilers"
+      ],
+      "readingTime": 8
+    },
     {
       "title": "Why Your JIT Doesn't Need a Sea of Nodes",
       "date": "2026-03-26",
@@ -1078,9 +1105,9 @@
     }
   ],
   "scheduleAdherence": {
-    "completionRate": 0,
-    "completedBlocks": 0,
-    "pastBlocks": 4,
+    "completionRate": 36,
+    "completedBlocks": 5,
+    "pastBlocks": 14,
     "totalBlocks": 55,
     "plannedDist": {
       "THINK": 9,
@@ -1088,10 +1115,14 @@
       "MAINTAIN": 10,
       "EXPLORE": 7
     },
-    "actualDist": {},
-    "pace": 0
+    "actualDist": {
+      "MAINTAIN": 1,
+      "THINK": 1,
+      "BUILD": 3
+    },
+    "pace": 1.5
   },
-  "streak": 0,
+  "streak": 2,
   "benchmarks": {
     "timestamp": "2026-03-23T20:19:16.201Z",
     "gitHash": "f89c189",
