@@ -923,6 +923,22 @@ describe('WASM Compiler', () => {
     });
   });
 
+  describe('Enums', () => {
+    it('enum values are sequential integers', async () => {
+      assert.strictEqual(await compileAndRun('enum Color { Red, Green, Blue } Color.Red'), 0);
+      assert.strictEqual(await compileAndRun('enum Color { Red, Green, Blue } Color.Green'), 1);
+      assert.strictEqual(await compileAndRun('enum Color { Red, Green, Blue } Color.Blue'), 2);
+    });
+
+    it('enum short names', async () => {
+      assert.strictEqual(await compileAndRun('enum Dir { Up, Down } Down'), 1);
+    });
+
+    it('enum with match', async () => {
+      assert.strictEqual(await compileAndRun('enum Dir { Up, Down, Left, Right } match (Right) { 0 => 10, 1 => 20, 2 => 30, 3 => 40, _ => 0 }'), 40);
+    });
+  });
+
   describe('Break and Continue', () => {
     it('break exits loop early', async () => {
       const lines = [];

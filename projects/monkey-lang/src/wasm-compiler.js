@@ -461,6 +461,20 @@ export class WasmCompiler {
   compileStatement(stmt) {
     if (stmt instanceof ast.LetStatement) {
       this.compileLetStatement(stmt);
+    } else if (stmt instanceof ast.EnumStatement) {
+      // Store enum mappings for later resolution
+      if (!this._enumValues) this._enumValues = {};
+      for (let i = 0; i < stmt.variants.length; i++) {
+        this._enumValues[`${stmt.name}.${stmt.variants[i]}`] = i;
+        // Also define short name
+        this._enumValues[stmt.variants[i]] = i;
+        // Define as local for direct access
+        const localIdx = this.nextLocalIndex++;
+        this.currentBody.addLocal(ValType.i32);
+        this.currentBody.i32Const(i);
+        this.currentBody.localSet(localIdx);
+        this.currentScope.define(stmt.variants[i], localIdx, 'local');
+      }
     } else if (stmt instanceof ast.ReturnStatement) {
       this.compileNode(stmt.returnValue);
       this.currentBody.return_();
@@ -549,6 +563,16 @@ export class WasmCompiler {
     } else if (node instanceof ast.ArrayLiteral) {
       this.compileArrayLiteral(node);
     } else if (node instanceof ast.IndexExpression) {
+      // Check if this is an enum access: EnumName.Variant
+      if (node.left instanceof ast.Identifier && 
+          node.index instanceof ast.StringLiteral &&
+          this._enumValues) {
+        const key = `${node.left.value}.${node.index.value}`;
+        if (key in this._enumValues) {
+          this.currentBody.i32Const(this._enumValues[key]);
+          return;
+        }
+      }
       this.compileIndexExpression(node);
     } else if (node instanceof ast.SliceExpression) {
       // arr[start:end]
