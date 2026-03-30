@@ -418,20 +418,19 @@ class MonkeyREPL {
   async execWasm(input) {
     try {
       const outputLines = [];
-      const start = performance.now();
-      const result = await wasmCompileAndRun(input, { outputLines });
-      const elapsed = performance.now() - start;
+      const timings = {};
+      const result = await wasmCompileAndRun(input, { outputLines, timings });
 
-      // Print any puts output
       for (const line of outputLines) {
         console.log(line);
       }
 
       if (result !== 0 || outputLines.length === 0) {
-        const timing = this.showTiming ? `  \x1b[90m(${elapsed.toFixed(2)}ms, WASM)\x1b[0m` : '';
+        const timing = this.showTiming ?
+          `  \x1b[90m(${timings.total?.toFixed(2)}ms total: compile=${timings.compile?.toFixed(1)}ms exec=${timings.execute?.toFixed(1)}ms)\x1b[0m` : '';
         console.log(result + timing);
       } else if (this.showTiming) {
-        console.log(`\x1b[90m(${elapsed.toFixed(2)}ms, WASM)\x1b[0m`);
+        console.log(`\x1b[90m(${timings.total?.toFixed(2)}ms total: compile=${timings.compile?.toFixed(1)}ms exec=${timings.execute?.toFixed(1)}ms)\x1b[0m`);
       }
     } catch (e) {
       console.error(`WASM error: ${e.message}`);

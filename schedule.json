@@ -850,9 +850,19 @@
     {
       "id": "T82",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add tests for new WASM features: arrow, pipe, null coalescing, slice",
-      "started": "2026-03-30T17:37:09.079Z"
+      "started": "2026-03-30T17:37:09.079Z",
+      "completed": "2026-03-30T17:38:35.261Z",
+      "duration_ms": 120000,
+      "summary": "12 new tests for extended syntax. 140 WASM compiler tests, 1309 total. All passing."
+    },
+    {
+      "id": "T83",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add WASM compilation time breakdown (parse, compile, optimize, instantiate)",
+      "started": "2026-03-30T17:38:44.857Z"
     }
   ],
   "backlog": [],
@@ -1108,6 +1118,10 @@
     {
       "time": "2026-03-30T17:37:08.943Z",
       "msg": "Added T82 (BUILD) after end: Add tests for new WASM features: arrow, pipe, null coalescing, slice"
+    },
+    {
+      "time": "2026-03-30T17:38:44.739Z",
+      "msg": "Added T83 (BUILD) after end: Add WASM compilation time breakdown (parse, compile, optimize, instantiate)"
     }
   ]
 }

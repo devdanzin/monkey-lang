@@ -1722,24 +1722,41 @@ export function formatWasmValue(value, dataView) {
 }
 
 export async function compileAndRun(input, options = {}) {
+  const timings = {};
+  const t0 = performance.now();
+
   const compiler = new WasmCompiler();
   const builder = compiler.compile(input);
+  timings.compile = performance.now() - t0;
 
   if (!builder || compiler.errors.length > 0) {
     throw new Error(`Compilation errors: ${compiler.errors.join(', ')}`);
   }
 
+  const t1 = performance.now();
   const binary = builder.build();
+  timings.encode = performance.now() - t1;
+
+  const t2 = performance.now();
   const module = await WebAssembly.compile(binary);
+  timings.wasmCompile = performance.now() - t2;
 
   const outputLines = options.outputLines || [];
   const memoryRef = { memory: null };
   const imports = createWasmImports(outputLines, memoryRef);
 
+  const t3 = performance.now();
   const instance = await WebAssembly.instantiate(module, imports);
   memoryRef.memory = instance.exports.memory;
+  timings.instantiate = performance.now() - t3;
 
+  const t4 = performance.now();
   const result = instance.exports.main();
+  timings.execute = performance.now() - t4;
+  timings.total = performance.now() - t0;
+
+  if (options.timings) Object.assign(options.timings, timings);
+
   return result;
 }
 
