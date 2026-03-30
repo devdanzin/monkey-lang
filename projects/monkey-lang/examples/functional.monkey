@@ -1,7 +1,7 @@
 // Functional Programming in WebAssembly
-// Demonstrates map, filter, reduce, compose, curry — all compiled to native WASM
+// Higher-order functions, closures, and composition
 
-// Higher-order functions
+// Core functional primitives
 let map = fn(arr, f) {
   let result = [];
   for (x in arr) { result = push(result, f(x)); }
@@ -10,9 +10,7 @@ let map = fn(arr, f) {
 
 let filter = fn(arr, pred) {
   let result = [];
-  for (x in arr) {
-    if (pred(x) == 1) { result = push(result, x); }
-  }
+  for (x in arr) { if (pred(x)) { result = push(result, x); } }
   result
 };
 
@@ -24,53 +22,50 @@ let reduce = fn(arr, init, f) {
 
 let forEach = fn(arr, f) {
   for (x in arr) { f(x); }
-  0
 };
 
-// Function composition
-let compose = fn(f, g) { fn(x) { f(g(x)) } };
+// Pipeline: find sum of squares of odd numbers 1-10
+let nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-// Currying
-let add = fn(a) { fn(b) { a + b } };
-let multiply = fn(a) { fn(b) { a * b } };
+let isOdd = fn(x) { x % 2 != 0 };
+let square = fn(x) { x * x };
+let add = fn(a, b) { a + b };
+
+// Step by step
+let odds = filter(nums, isOdd);
+let squares = map(odds, square);
+let sum = reduce(squares, 0, add);
+
+puts("Numbers: 1-10");
+puts("Odd: " + str(len(odds)));
+puts("Sum of squares of odds: " + str(sum));
 
 // Pipeline
-let nums = 1..21;
+let tripled = map([1, 2, 3, 4, 5], fn(x) { x * 3 });
+let big = filter(tripled, fn(x) { x > 6 });
+let pipeResult = reduce(big, 0, fn(a, b) { a + b });
+puts("Pipeline (sum of 3x where 3x > 6): " + str(pipeResult));
 
-// 1. Sum of squares of odd numbers 1..20
-let sumOddSquares = reduce(
-  map(
-    filter(nums, fn(x) { x % 2 != 0 }),
-    fn(x) { x * x }
-  ),
-  0,
-  fn(acc, x) { acc + x }
-);
-puts(`Sum of squares of odd numbers 1..20: ${sumOddSquares}`);
-
-// 2. Using composed functions
-let doubleAndInc = compose(add(1), multiply(2));
-let results = map(1..6, doubleAndInc);
-puts("doubleAndInc on 1..5:");
-forEach(results, fn(x) { puts(`  ${x}`); });
-
-// 3. FizzBuzz using higher-order functions
-puts("FizzBuzz 1..15:");
-forEach(1..16, fn(n) {
-  if (n % 15 == 0) { puts("FizzBuzz"); }
-  if (n % 15 != 0) {
-    if (n % 3 == 0) { puts("Fizz"); }
-    if (n % 3 != 0) {
-      if (n % 5 == 0) { puts("Buzz"); }
-      if (n % 5 != 0) { puts(str(n)); }
-    }
-  }
-});
-
-// 4. Fibonacci sequence using reduce
-let fib = fn(n) {
-  if (n <= 1) { n } else { fib(n - 1) + fib(n - 2) }
+// Function composition
+let compose = fn(f, g) {
+  fn(x) { f(g(x)) }
 };
-let fibNums = map(0..10, fib);
-puts("First 10 Fibonacci numbers:");
-forEach(fibNums, fn(x) { puts(`  ${x}`); });
+
+let double = fn(x) { x * 2 };
+let addOne = fn(x) { x + 1 };
+let doubleAndAdd = compose(addOne, double);
+
+puts("compose(+1, *2)(5) = " + str(doubleAndAdd(5)));
+
+// Currying
+let multiply = fn(x) { fn(y) { x * y } };
+let times3 = multiply(3);
+let times7 = multiply(7);
+
+puts("3 * 14 = " + str(times3(14)));
+puts("7 * 6 = " + str(times7(6)));
+
+// Apply to array
+let tripled = map([1, 2, 3, 4], times3);
+puts("Tripled:");
+forEach(tripled, fn(x) { puts("  " + str(x)); });
