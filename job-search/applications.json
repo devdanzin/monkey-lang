@@ -3,7 +3,9 @@
     "generated": "2026-03-30T14:24:00-06:00",
     "total_emails_parsed": 108,
     "job_related_emails": 78,
-    "unique_applications": 52
+    "unique_applications": 52,
+    "lastUpdated": "2026-03-30T16:24:51.191804",
+    "totalApplications": 62
   },
   "applications": [
     {
@@ -707,6 +709,86 @@
       "notes": "Job listing link was broken. Jordan emailed them about it.",
       "response_date": null,
       "response_days": null
+    },
+    {
+      "company": "Paycom",
+      "role": "Intermediate DevOps Engineer",
+      "date": "2026-03-30",
+      "status": "applied",
+      "location": "Unknown",
+      "salary": null,
+      "source": "Paycom Online",
+      "notes": "Applied today via Paycom"
+    },
+    {
+      "company": "Archera",
+      "role": "Unknown Role",
+      "date": "2026-03-30",
+      "status": "applied",
+      "location": "Unknown",
+      "salary": null,
+      "source": "Greenhouse",
+      "notes": "Applied today"
+    },
+    {
+      "company": "Zoom Communications",
+      "role": "Unknown Role",
+      "date": "2026-03-30",
+      "status": "applied",
+      "location": "Unknown",
+      "salary": null,
+      "source": "Workday",
+      "notes": "Applied today"
+    },
+    {
+      "company": "University of Utah",
+      "role": "Unknown Role",
+      "date": "2026-03-30",
+      "status": "applied",
+      "location": "Utah",
+      "salary": null,
+      "source": "utah.edu",
+      "notes": "Applied today \u2014 separate from U of U Health application"
+    },
+    {
+      "company": "Awardco",
+      "role": "Unknown Role",
+      "date": "2026-03-30",
+      "status": "applied",
+      "location": "Unknown",
+      "salary": null,
+      "source": "Greenhouse",
+      "notes": "Applied today"
+    },
+    {
+      "company": "CrowdStrike",
+      "role": "Unknown Role",
+      "date": "2026-03-30",
+      "status": "applied",
+      "location": "Unknown",
+      "salary": null,
+      "source": "Workday",
+      "notes": "Applied today (confirmation email received)"
+    },
+    {
+      "company": "Weave",
+      "role": "Unknown Role",
+      "date": "2026-03-30",
+      "status": "applied",
+      "location": "Unknown",
+      "salary": null,
+      "source": "Direct",
+      "notes": ""
+    },
+    {
+      "company": "CARET",
+      "role": "Unknown Role",
+      "date": "2026-03-30",
+      "status": "applied",
+      "location": "Unknown",
+      "salary": null,
+      "source": "Talent Community",
+      "notes": "Talent community join"
     }
   ]
 }

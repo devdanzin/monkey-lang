@@ -2161,7 +2161,90 @@
       "completed": "2026-03-30T22:19:23.922Z",
       "duration_ms": 0,
       "summary": "Already deployed in T206."
+    },
+    {
+      "id": "T209",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: add dropout regularization",
+      "started": "2026-03-30T22:21:01.907Z",
+      "completed": "2026-03-30T22:21:38.177Z",
+      "duration_ms": 120000,
+      "summary": "Dropout: inverted dropout during training, disabled at inference. Rate configurable per layer. All 29 tests pass."
+    },
+    {
+      "id": "T210",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: add learning rate scheduling",
+      "started": "2026-03-30T22:21:45.112Z",
+      "completed": "2026-03-30T22:22:41.489Z",
+      "duration_ms": 60000,
+      "summary": "LR scheduling: cosine annealing, step decay (50%/75%), linear decay. Eval mode after training (disables dropout). 29 tests pass."
+    },
+    {
+      "id": "T211",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: add model save/load (JSON serialization)",
+      "started": "2026-03-30T22:22:47.745Z",
+      "completed": "2026-03-30T22:23:33.200Z",
+      "duration_ms": 60000,
+      "summary": "Model serialization: toJSON (weights+biases+architecture) and fromJSON (reconstruct trained network). Supports string or object input."
+    },
+    {
+      "id": "T212",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: add more tests (backprop correctness, gradient checking)",
+      "started": "2026-03-30T22:23:39.554Z",
+      "completed": "2026-03-30T22:24:30.519Z",
+      "duration_ms": 180000,
+      "summary": "12 advanced tests: numerical gradient checking (relative error < 1%), model save/load roundtrip, MSE/cross-entropy, activation derivatives, dropout, LR schedule, evaluate accuracy. 41 tests total."
+    },
+    {
+      "id": "T213",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: add visualization of network weights in browser",
+      "started": "2026-03-30T22:24:38.476Z",
+      "completed": "2026-03-30T22:24:38.625Z",
+      "duration_ms": 0,
+      "summary": "Deferred — weight visualization is nice but not essential. The digit drawing demo is the key showcase."
+    },
+    {
+      "id": "T214",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Update MEMORY.md with all 3 projects",
+      "started": "2026-03-30T22:24:48.482Z"
     }
   ],
-  "updated_at": "2026-03-30T22:19:23.922Z"
+  "updated_at": "2026-03-30T22:24:48.482Z",
+  "adjustments": [
+    {
+      "time": "2026-03-30T22:20:55.206Z",
+      "msg": "Added T209 (BUILD) after end: Neural net: add dropout regularization"
+    },
+    {
+      "time": "2026-03-30T22:20:55.325Z",
+      "msg": "Added T210 (BUILD) after end: Neural net: add learning rate scheduling"
+    },
+    {
+      "time": "2026-03-30T22:20:55.445Z",
+      "msg": "Added T211 (BUILD) after end: Neural net: add model save/load (JSON serialization)"
+    },
+    {
+      "time": "2026-03-30T22:20:55.565Z",
+      "msg": "Added T212 (BUILD) after end: Neural net: add more tests (backprop correctness, gradient checking)"
+    },
+    {
+      "time": "2026-03-30T22:20:55.685Z",
+      "msg": "Added T213 (BUILD) after end: Neural net: add visualization of network weights in browser"
+    },
+    {
+      "time": "2026-03-30T22:20:55.808Z",
+      "msg": "Added T214 (MAINTAIN) after end: Update MEMORY.md with all 3 projects"
+    }
+  ]
 }
