@@ -610,9 +610,12 @@
     {
       "id": "T58",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add WASM for-in loop support (iterate over arrays)",
-      "started": "2026-03-30T16:39:52.869Z"
+      "started": "2026-03-30T16:39:52.869Z",
+      "completed": "2026-03-30T16:41:46.235Z",
+      "duration_ms": 120000,
+      "summary": "For-in loop support in WASM: iterate over arrays with index-based compilation. 2 new tests (108 total)."
     }
   ],
   "backlog": [],

@@ -462,6 +462,8 @@ export class WasmCompiler {
       this.compileForExpression(node);
     } else if (node instanceof ast.ForInExpression) {
       this.compileForInExpression(node);
+    } else if (node instanceof ast.RangeExpression) {
+      this.compileRangeExpression(node);
     } else if (node instanceof ast.AssignExpression) {
       this.compileAssignExpression(node);
     } else if (node instanceof ast.BlockStatement) {
@@ -937,6 +939,62 @@ export class WasmCompiler {
     this.currentBody.end(); // end block
 
     this.currentBody.i32Const(0); // for-in produces 0
+  }
+
+  compileRangeExpression(node) {
+    // start..end → array [start, start+1, ..., end-1]
+    // Allocate array with (end - start) elements
+    this.compileNode(node.start);
+    const startLocal = this.nextLocalIndex++;
+    this.currentBody.addLocal(ValType.i32);
+    this.currentBody.localSet(startLocal);
+
+    this.compileNode(node.end);
+    const endLocal = this.nextLocalIndex++;
+    this.currentBody.addLocal(ValType.i32);
+    this.currentBody.localSet(endLocal);
+
+    // len = end - start
+    this.currentBody.localGet(endLocal);
+    this.currentBody.localGet(startLocal);
+    this.currentBody.emit(Op.i32_sub);
+    const lenLocal = this.nextLocalIndex++;
+    this.currentBody.addLocal(ValType.i32);
+    this.currentBody.localTee(lenLocal);
+
+    // arr = make_array(len)
+    this.currentBody.call(this._runtimeFuncs.makeArray);
+    const arrLocal = this.nextLocalIndex++;
+    this.currentBody.addLocal(ValType.i32);
+    this.currentBody.localSet(arrLocal);
+
+    // Fill: for i=0; i<len; i++ → arr[i] = start + i
+    const iLocal = this.nextLocalIndex++;
+    this.currentBody.addLocal(ValType.i32);
+    this.currentBody.i32Const(0);
+    this.currentBody.localSet(iLocal);
+
+    this.currentBody.block().loop();
+      this.currentBody.localGet(iLocal);
+      this.currentBody.localGet(lenLocal);
+      this.currentBody.emit(Op.i32_ge_s);
+      this.currentBody.brIf(1);
+
+      this.currentBody.localGet(arrLocal);
+      this.currentBody.localGet(iLocal);
+      this.currentBody.localGet(startLocal);
+      this.currentBody.localGet(iLocal);
+      this.currentBody.emit(Op.i32_add);
+      this.currentBody.call(this._runtimeFuncs.arraySet);
+
+      this.currentBody.localGet(iLocal);
+      this.currentBody.i32Const(1);
+      this.currentBody.emit(Op.i32_add);
+      this.currentBody.localSet(iLocal);
+      this.currentBody.br(0);
+    this.currentBody.end().end();
+
+    this.currentBody.localGet(arrLocal);
   }
 
   compileAssignExpression(node) {

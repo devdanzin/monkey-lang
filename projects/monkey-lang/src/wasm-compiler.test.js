@@ -244,6 +244,33 @@ describe('WASM Compiler', () => {
       `, { outputLines: lines });
       assert.deepStrictEqual(lines, ['1', '2', '3']);
     });
+
+    it('range expression', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let arr = 0..5;
+        len(arr)
+      `), 5);
+    });
+
+    it('for-in with range', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let sum = 0;
+        for (x in 0..10) {
+          sum = sum + x;
+        }
+        sum
+      `), 45);
+    });
+
+    it('range with variables', async () => {
+      const lines = [];
+      await compileAndRun(`
+        for (i in 1..4) {
+          puts(i);
+        }
+      `, { outputLines: lines });
+      assert.deepStrictEqual(lines, ['1', '2', '3']);
+    });
   });
 
   describe('Functions', () => {
