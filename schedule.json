@@ -463,9 +463,19 @@
     {
       "id": "T44",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add monkey compile command: monkey --compile file.monkey → file.wasm",
-      "started": "2026-03-30T16:16:24.667Z"
+      "started": "2026-03-30T16:16:24.667Z",
+      "completed": "2026-03-30T16:17:48.287Z",
+      "duration_ms": 180000,
+      "summary": "monkey --compile: compiles .monkey → .wasm binaries. Example: fib.monkey → fib.wasm (353 bytes, standalone). Prints Node.js run command."
+    },
+    {
+      "id": "T45",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add --run-wasm flag and more example programs for WASM showcase",
+      "started": "2026-03-30T16:18:09.755Z"
     }
   ],
   "backlog": [],
@@ -589,6 +599,10 @@
     {
       "time": "2026-03-30T16:16:15.335Z",
       "msg": "Added T44 (BUILD) after end: Add monkey compile command: monkey --compile file.monkey → file.wasm"
+    },
+    {
+      "time": "2026-03-30T16:18:01.646Z",
+      "msg": "Added T45 (BUILD) after end: Add --run-wasm flag and more example programs for WASM showcase"
     }
   ]
 }

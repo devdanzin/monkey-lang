@@ -73,29 +73,50 @@ if (process.argv.includes('--compile')) {
   process.exit(0);
 }
 
-// Handle file execution: monkey file.monkey
-const fileArg = process.argv.find(a => a.endsWith('.monkey'));
+// Handle file execution: monkey file.monkey [--wasm]
+const fileArg = process.argv.find(a => a.endsWith('.monkey') && !process.argv.includes('--compile'));
+let fileRunning = false;
 if (fileArg) {
+  fileRunning = true;
+  const useWasm = process.argv.includes('--wasm');
   try {
     const source = fs.readFileSync(fileArg, 'utf8');
-    const l = new Lexer(STDLIB_SOURCE + '\n' + source);
-    const p = new Parser(l);
-    const prog = p.parseProgram();
-    if (p.errors.length > 0) {
-      console.error('Parse errors:');
-      p.errors.forEach(e => console.error('  ' + e));
-      process.exit(1);
+
+    if (useWasm) {
+      // Run via WASM backend
+      const outputLines = [];
+      const start = performance.now();
+      wasmCompileAndRun(source, { outputLines }).then(result => {
+        const elapsed = performance.now() - start;
+        for (const line of outputLines) console.log(line);
+        if (result !== 0 && outputLines.length === 0) console.log(result);
+        console.error(`\x1b[90m(${elapsed.toFixed(2)}ms, WASM)\x1b[0m`);
+        process.exit(0);
+      }).catch(e => {
+        console.error(`WASM error: ${e.message}`);
+        process.exit(1);
+      });
+    } else {
+      // Run via VM
+      const l = new Lexer(STDLIB_SOURCE + '\n' + source);
+      const p = new Parser(l);
+      const prog = p.parseProgram();
+      if (p.errors.length > 0) {
+        console.error('Parse errors:');
+        p.errors.forEach(e => console.error('  ' + e));
+        process.exit(1);
+      }
+      const c = new Compiler();
+      const err = c.compile(prog);
+      if (err) { console.error('Compile error:', err); process.exit(1); }
+      const vm = new VM(c.bytecode());
+      vm.run();
+      process.exit(0);
     }
-    const c = new Compiler();
-    const err = c.compile(prog);
-    if (err) { console.error('Compile error:', err); process.exit(1); }
-    const vm = new VM(c.bytecode());
-    vm.run();
   } catch (e) {
     console.error(e.message);
     process.exit(1);
   }
-  process.exit(0);
 }
 
 const PROMPT = '>> ';
@@ -585,5 +606,7 @@ for (const arg of args) {
   else if (arg === '--transpiler' || arg === '--trans') engine = 'transpiler';
 }
 
-const repl = new MonkeyREPL(engine);
-repl.run();
+if (!fileRunning) {
+  const repl = new MonkeyREPL(engine);
+  repl.run();
+}
