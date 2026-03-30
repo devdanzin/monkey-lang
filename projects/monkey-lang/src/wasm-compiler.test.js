@@ -1302,5 +1302,26 @@ describe('WASM Compiler', () => {
       await compileAndRun('let s = "abc"; let r = ""; for (ch in s) { r = r + ch; } puts(r)', { outputLines: lines });
       assert.strictEqual(lines[0], 'abc');
     });
+
+    it('GCD via Euclidean algorithm', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let gcd = fn(a, b) {
+          while (b != 0) { let temp = b; b = a % b; a = temp; }
+          a
+        };
+        gcd(48, 18)
+      `), 6);
+    });
+
+    it('power function', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let pow = fn(base, exp) {
+          let result = 1;
+          for (i in 0..exp) { result = result * base; }
+          result
+        };
+        pow(2, 10)
+      `), 1024);
+    });
   });
 });
