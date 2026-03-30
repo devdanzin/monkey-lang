@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Physics Engine — Henry</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    background: #0d1117; color: #c9d1d9;
+    display: flex; flex-direction: column; align-items: center;
+    min-height: 100vh; padding: 0.8rem;
+  }
+  h1 { font-size: 1.5rem; color: #f0f6fc; margin-bottom: 0.15rem; }
+  h1 span { color: #58a6ff; }
+  .sub { color: #8b949e; font-size: 0.82rem; margin-bottom: 0.6rem; }
+  canvas { border: 1px solid #30363d; border-radius: 4px; }
+  .controls {
+    display: flex; gap: 0.5rem; margin: 0.6rem 0; flex-wrap: wrap; justify-content: center; align-items: center;
+  }
+  select, button { background: #21262d; color: #c9d1d9; border: 1px solid #30363d; padding: 0.35rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
+  select:hover, button:hover { border-color: #58a6ff; }
+  button.active { background: #238636; border-color: #238636; color: #fff; }
+  .stats { color: #8b949e; font-size: 0.75rem; margin: 0.3rem 0; }
+  .stats span { color: #c9d1d9; }
+  .info { max-width: 600px; text-align: center; color: #8b949e; font-size: 0.7rem; margin-top: 0.5rem; line-height: 1.4; }
+  .info a { color: #58a6ff; text-decoration: none; }
+  label { font-size: 0.78rem; color: #8b949e; }
+  input[type=range] { width: 80px; }
+</style>
+</head>
+<body>
+<h1>⚛️ <span>Physics</span> Engine</h1>
+<p class="sub">2D particle simulation — gravity, collisions, constraints</p>
+
+<canvas id="canvas"></canvas>
+
+<div class="controls">
+  <select id="scene" onchange="loadScene()">
+    <option value="rain">Rain</option>
+    <option value="fountain">Fountain</option>
+    <option value="explosion">Explosion</option>
+    <option value="cloth">Cloth</option>
+    <option value="pendulum">Pendulum</option>
+    <option value="pool">Pool Table</option>
+  </select>
+  <button id="runBtn" onclick="toggleRun()">⏸ Pause</button>
+  <button onclick="loadScene()">🔄 Reset</button>
+  <label>Gravity: <input type="range" id="gravity" min="0" max="2000" value="980" step="10" oninput="GRAVITY=+this.value"></label>
+  <label>Damping: <input type="range" id="damping" min="0.8" max="1" value="0.99" step="0.005" oninput="DAMPING=+this.value"></label>
+</div>
+
+<div class="stats">
+  Particles: <span id="count">0</span> |
+  FPS: <span id="fps">0</span>
+</div>
+
+<div class="info">
+  Click to spawn particles. Drag to throw.
+  <br><a href="https://github.com/henry-the-frog/physics">Source</a> · <a href="https://github.com/henry-the-frog">Built by Henry</a>
+</div>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const W = Math.min(window.innerWidth - 24, 800);
+const H = Math.min(window.innerHeight - 240, 500);
+canvas.width = W; canvas.height = H;
+
+let GRAVITY = 980;
+let DAMPING = 0.99;
+let running = true;
+let particles = [];
+let constraints = [];
+let lastTime = 0, frameCount = 0, fpsTime = 0;
+
+class Particle {
+  constructor(x, y, r = 5, mass = 1, fixed = false) {
+    this.x = x; this.y = y;
+    this.prevX = x; this.prevY = y;
+    this.r = r; this.mass = mass;
+    this.fixed = fixed;
+    this.color = `hsl(${Math.random() * 360}, 70%, 60%)`;
+    this.life = Infinity;
+  }
+}
+
+class DistanceConstraint {
+  constructor(a, b, length, stiffness = 1) {
+    this.a = a; this.b = b;
+    this.length = length;
+    this.stiffness = stiffness;
+  }
+}
+
+// Verlet integration
+function integrate(dt) {
+  for (const p of particles) {
+    if (p.fixed) continue;
+    const vx = (p.x - p.prevX) * DAMPING;
+    const vy = (p.y - p.prevY) * DAMPING;
+    p.prevX = p.x;
+    p.prevY = p.y;
+    p.x += vx;
+    p.y += vy + GRAVITY * dt * dt;
+  }
+}
+
+function solveConstraints() {
+  for (let iter = 0; iter < 3; iter++) {
+    for (const c of constraints) {
+      const dx = c.b.x - c.a.x, dy = c.b.y - c.a.y;
+      const dist = Math.sqrt(dx * dx + dy * dy) || 0.001;
+      const diff = (dist - c.length) / dist * c.stiffness;
+      const mx = dx * diff * 0.5, my = dy * diff * 0.5;
+      if (!c.a.fixed) { c.a.x += mx; c.a.y += my; }
+      if (!c.b.fixed) { c.b.x -= mx; c.b.y -= my; }
+    }
+  }
+}
+
+function collideWalls() {
+  for (const p of particles) {
+    if (p.fixed) continue;
+    if (p.x - p.r < 0) { p.x = p.r; p.prevX = p.x + (p.x - p.prevX) * 0.5; }
+    if (p.x + p.r > W) { p.x = W - p.r; p.prevX = p.x + (p.x - p.prevX) * 0.5; }
+    if (p.y - p.r < 0) { p.y = p.r; p.prevY = p.y + (p.y - p.prevY) * 0.5; }
+    if (p.y + p.r > H) { p.y = H - p.r; p.prevY = p.y + (p.y - p.prevY) * 0.5; }
+  }
+}
+
+function collideParticles() {
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const a = particles[i], b = particles[j];
+      const dx = b.x - a.x, dy = b.y - a.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const minDist = a.r + b.r;
+      if (dist < minDist && dist > 0) {
+        const overlap = (minDist - dist) / dist;
+        const totalMass = a.mass + b.mass;
+        if (!a.fixed) { a.x -= dx * overlap * b.mass / totalMass; a.y -= dy * overlap * b.mass / totalMass; }
+        if (!b.fixed) { b.x += dx * overlap * a.mass / totalMass; b.y += dy * overlap * a.mass / totalMass; }
+      }
+    }
+  }
+}
+
+function draw() {
+  ctx.fillStyle = '#0d1117';
+  ctx.fillRect(0, 0, W, H);
+
+  // Draw constraints
+  ctx.strokeStyle = '#30363d';
+  ctx.lineWidth = 1;
+  for (const c of constraints) {
+    ctx.beginPath();
+    ctx.moveTo(c.a.x, c.a.y);
+    ctx.lineTo(c.b.x, c.b.y);
+    ctx.stroke();
+  }
+
+  // Draw particles
+  for (const p of particles) {
+    ctx.fillStyle = p.fixed ? '#8b949e' : p.color;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  document.getElementById('count').textContent = particles.length;
+}
+
+function step(time) {
+  if (!running) { lastTime = time; requestAnimationFrame(step); return; }
+  const dt = Math.min((time - lastTime) / 1000, 0.02);
+  lastTime = time;
+
+  // FPS
+  frameCount++;
+  if (time - fpsTime > 500) {
+    document.getElementById('fps').textContent = Math.round(frameCount / (time - fpsTime) * 1000);
+    frameCount = 0; fpsTime = time;
+  }
+
+  integrate(dt);
+  solveConstraints();
+  collideParticles();
+  collideWalls();
+
+  // Remove dead particles
+  particles = particles.filter(p => { p.life -= dt; return p.life > 0; });
+  constraints = constraints.filter(c => particles.includes(c.a) && particles.includes(c.b));
+
+  draw();
+  requestAnimationFrame(step);
+}
+
+// ===== Scenes =====
+function clearScene() { particles = []; constraints = []; }
+
+function loadScene() {
+  clearScene();
+  const scene = document.getElementById('scene').value;
+
+  if (scene === 'rain') {
+    // Continuous rain
+    setInterval(() => {
+      if (particles.length < 200) {
+        const p = new Particle(Math.random() * W, -10, 3, 0.5);
+        p.life = 5;
+        p.color = `hsl(210, 70%, ${50 + Math.random() * 30}%)`;
+        particles.push(p);
+      }
+    }, 50);
+  }
+
+  else if (scene === 'fountain') {
+    setInterval(() => {
+      if (particles.length < 300) {
+        const p = new Particle(W / 2, H - 20, 4, 1);
+        p.prevX = p.x + (Math.random() - 0.5) * 3;
+        p.prevY = p.y + 8 + Math.random() * 4;
+        p.life = 4;
+        p.color = `hsl(${200 + Math.random() * 40}, 80%, 60%)`;
+        particles.push(p);
+      }
+    }, 20);
+  }
+
+  else if (scene === 'explosion') {
+    for (let i = 0; i < 100; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 5 + Math.random() * 15;
+      const p = new Particle(W / 2, H / 2, 3 + Math.random() * 4, 1);
+      p.prevX = p.x - Math.cos(angle) * speed;
+      p.prevY = p.y - Math.sin(angle) * speed;
+      p.life = 3 + Math.random() * 2;
+      p.color = `hsl(${Math.random() * 60}, 90%, 60%)`;
+      particles.push(p);
+    }
+  }
+
+  else if (scene === 'cloth') {
+    const cols = 20, rows = 15, spacing = 20;
+    const ox = (W - (cols - 1) * spacing) / 2, oy = 30;
+    const grid = [];
+
+    for (let r = 0; r < rows; r++) {
+      grid[r] = [];
+      for (let c = 0; c < cols; c++) {
+        const p = new Particle(ox + c * spacing, oy + r * spacing, 2, 1, r === 0 && c % 4 === 0);
+        p.color = '#58a6ff';
+        particles.push(p);
+        grid[r][c] = p;
+
+        if (c > 0) constraints.push(new DistanceConstraint(grid[r][c - 1], p, spacing));
+        if (r > 0) constraints.push(new DistanceConstraint(grid[r - 1][c], p, spacing));
+      }
+    }
+  }
+
+  else if (scene === 'pendulum') {
+    const anchor = new Particle(W / 2, 50, 8, 1, true);
+    particles.push(anchor);
+    let prev = anchor;
+    for (let i = 1; i <= 8; i++) {
+      const p = new Particle(W / 2 + i * 40, 50, 6 + i, i);
+      p.color = `hsl(${i * 40}, 70%, 60%)`;
+      particles.push(p);
+      constraints.push(new DistanceConstraint(prev, p, 40));
+      prev = p;
+    }
+  }
+
+  else if (scene === 'pool') {
+    // Pool balls in triangle
+    const cx = W * 0.65, cy = H / 2;
+    const r = 12, spacing = r * 2.1;
+    let id = 1;
+    for (let row = 0; row < 5; row++) {
+      for (let col = 0; col <= row; col++) {
+        const x = cx + row * spacing * 0.866;
+        const y = cy + (col - row / 2) * spacing;
+        const p = new Particle(x, y, r, 1);
+        p.color = `hsl(${id * 30}, 70%, 50%)`;
+        particles.push(p);
+        id++;
+      }
+    }
+    // Cue ball
+    const cue = new Particle(W * 0.25, cy, r, 1);
+    cue.color = '#f0f6fc';
+    cue.prevX = cue.x - 15; // Initial velocity
+    particles.push(cue);
+  }
+
+  draw();
+}
+
+window.toggleRun = function() {
+  running = !running;
+  const btn = document.getElementById('runBtn');
+  btn.textContent = running ? '⏸ Pause' : '▶ Play';
+  btn.classList.toggle('active', running);
+};
+
+// Mouse interaction — click to spawn, drag to throw
+let mouseDown = false, mouseX, mouseY, dragParticle = null;
+
+canvas.addEventListener('mousedown', (e) => {
+  mouseDown = true;
+  const rect = canvas.getBoundingClientRect();
+  mouseX = e.clientX - rect.left;
+  mouseY = e.clientY - rect.top;
+});
+
+canvas.addEventListener('mouseup', (e) => {
+  if (mouseDown) {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left, y = e.clientY - rect.top;
+    const p = new Particle(mouseX, mouseY, 5 + Math.random() * 8, 1);
+    p.prevX = x; p.prevY = y; // Velocity from drag
+    p.life = 10;
+    particles.push(p);
+  }
+  mouseDown = false;
+});
+
+loadScene();
+requestAnimationFrame(step);
+</script>
+</body>
+</html>
