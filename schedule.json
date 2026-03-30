@@ -36,28 +36,68 @@
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, dashboard, PR check",
-      "started": "2026-03-30T15:10:01.417Z"
+      "started": "2026-03-30T15:10:01.417Z",
+      "completed": "2026-03-30T15:10:41.890Z",
+      "duration_ms": 120000,
+      "summary": "Git pushed, dashboard live, 9 OpenClaw PRs still open (no new reviews), no monkey-lang PRs. Dashboard generate.cjs refreshed."
     },
     {
       "id": "T5",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "What to build next — new monkey features, new project, or open source?"
+      "status": "done",
+      "task": "What to build next — new monkey features, new project, or open source?",
+      "started": "2026-03-30T15:11:03.348Z",
+      "completed": "2026-03-30T15:11:39.189Z",
+      "duration_ms": 90000,
+      "summary": "Direction: WASM compilation backend for monkey-lang. Completes the backend story (eval→VM→JIT→transpiler→WASM). Technically interesting, great for the playground."
     },
     {
       "id": "T6",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Next monkey-lang milestone or new project direction",
-      "task": null
+      "task": null,
+      "started": "2026-03-30T15:11:49.625Z",
+      "completed": "2026-03-30T15:12:26.788Z",
+      "duration_ms": 60000,
+      "summary": "Planned WASM backend: 5 BUILD tasks covering binary encoder, core compiler, tests, strings/arrays, playground integration."
     },
     {
       "id": "T7",
       "mode": "BUILD",
+      "status": "in-progress",
+      "task": "WASM binary encoder: module builder with sections (type, function, export, code, memory, data)",
+      "plan_ref": "T6",
+      "started": "2026-03-30T15:12:36.487Z"
+    },
+    {
+      "id": "T14",
+      "mode": "BUILD",
+      "task": "WASM compiler core: AST→WASM for integers, arithmetic, comparisons, let bindings, if/else, while loops, functions",
       "status": "upcoming",
-      "task": null,
+      "plan_ref": "T6"
+    },
+    {
+      "id": "T15",
+      "mode": "BUILD",
+      "task": "WASM compiler tests: verify numeric programs produce correct results via WebAssembly.instantiate",
+      "status": "upcoming",
+      "plan_ref": "T6"
+    },
+    {
+      "id": "T16",
+      "mode": "BUILD",
+      "task": "WASM strings + arrays: linear memory layout, alloc/free, string builtins, array indexing",
+      "status": "upcoming",
+      "plan_ref": "T6"
+    },
+    {
+      "id": "T17",
+      "mode": "BUILD",
+      "task": "Integrate WASM backend into playground with execution mode toggle",
+      "status": "upcoming",
       "plan_ref": "T6"
     },
     {
@@ -156,6 +196,10 @@
     {
       "time": "2026-03-30T14:46:54.061Z",
       "msg": "PLAN T2 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-03-30T15:12:22.068Z",
+      "msg": "PLAN T6 filled 5 BUILD tasks"
     }
   ]
 }

@@ -1,0 +1,467 @@
+// WASM Binary Encoder for Monkey Language
+// Constructs valid WebAssembly binary modules from scratch.
+// Reference: https://webassembly.github.io/spec/core/binary/
+
+// === LEB128 Encoding ===
+
+function encodeULEB128(value) {
+  const bytes = [];
+  do {
+    let byte = value & 0x7f;
+    value >>>= 7;
+    if (value !== 0) byte |= 0x80;
+    bytes.push(byte);
+  } while (value !== 0);
+  return bytes;
+}
+
+function encodeSLEB128(value) {
+  const bytes = [];
+  let more = true;
+  while (more) {
+    let byte = value & 0x7f;
+    value >>= 7;
+    if ((value === 0 && (byte & 0x40) === 0) ||
+        (value === -1 && (byte & 0x40) !== 0)) {
+      more = false;
+    } else {
+      byte |= 0x80;
+    }
+    bytes.push(byte);
+  }
+  return bytes;
+}
+
+function encodeString(str) {
+  const encoder = new TextEncoder();
+  const bytes = encoder.encode(str);
+  return [...encodeULEB128(bytes.length), ...bytes];
+}
+
+// === WASM Value Types ===
+export const ValType = {
+  i32: 0x7f,
+  i64: 0x7e,
+  f32: 0x7d,
+  f64: 0x7c,
+  funcref: 0x70,
+  externref: 0x6f,
+};
+
+// === WASM Opcodes ===
+export const Op = {
+  // Control
+  unreachable: 0x00,
+  nop: 0x01,
+  block: 0x02,
+  loop: 0x03,
+  if: 0x04,
+  else: 0x05,
+  end: 0x0b,
+  br: 0x0c,
+  br_if: 0x0d,
+  br_table: 0x0e,
+  return: 0x0f,
+  call: 0x10,
+  call_indirect: 0x11,
+
+  // Parametric
+  drop: 0x1a,
+  select: 0x1b,
+
+  // Variable
+  local_get: 0x20,
+  local_set: 0x21,
+  local_tee: 0x22,
+  global_get: 0x23,
+  global_set: 0x24,
+
+  // Memory
+  i32_load: 0x28,
+  i64_load: 0x29,
+  f32_load: 0x2a,
+  f64_load: 0x2b,
+  i32_store: 0x36,
+  i64_store: 0x37,
+  f32_store: 0x38,
+  f64_store: 0x39,
+  i32_load8_s: 0x2c,
+  i32_load8_u: 0x2d,
+  i32_load16_s: 0x2e,
+  i32_load16_u: 0x2f,
+  i32_store8: 0x3a,
+  i32_store16: 0x3b,
+  memory_size: 0x3f,
+  memory_grow: 0x40,
+
+  // Constants
+  i32_const: 0x41,
+  i64_const: 0x42,
+  f32_const: 0x43,
+  f64_const: 0x44,
+
+  // i32 comparison
+  i32_eqz: 0x45,
+  i32_eq: 0x46,
+  i32_ne: 0x47,
+  i32_lt_s: 0x48,
+  i32_lt_u: 0x49,
+  i32_gt_s: 0x4a,
+  i32_gt_u: 0x4b,
+  i32_le_s: 0x4c,
+  i32_le_u: 0x4d,
+  i32_ge_s: 0x4e,
+  i32_ge_u: 0x4f,
+
+  // i32 arithmetic
+  i32_clz: 0x67,
+  i32_ctz: 0x68,
+  i32_popcnt: 0x69,
+  i32_add: 0x6a,
+  i32_sub: 0x6b,
+  i32_mul: 0x6c,
+  i32_div_s: 0x6d,
+  i32_div_u: 0x6e,
+  i32_rem_s: 0x6f,
+  i32_rem_u: 0x70,
+  i32_and: 0x71,
+  i32_or: 0x72,
+  i32_xor: 0x73,
+  i32_shl: 0x74,
+  i32_shr_s: 0x75,
+  i32_shr_u: 0x76,
+  i32_rotl: 0x77,
+  i32_rotr: 0x78,
+
+  // f64 comparison
+  f64_eq: 0x61,
+  f64_ne: 0x62,
+  f64_lt: 0x63,
+  f64_gt: 0x64,
+  f64_le: 0x65,
+  f64_ge: 0x66,
+
+  // f64 arithmetic
+  f64_abs: 0x99,
+  f64_neg: 0x9a,
+  f64_ceil: 0x9b,
+  f64_floor: 0x9c,
+  f64_trunc: 0x9d,
+  f64_sqrt: 0x9f,
+  f64_add: 0xa0,
+  f64_sub: 0xa1,
+  f64_mul: 0xa2,
+  f64_div: 0xa3,
+  f64_min: 0xa4,
+  f64_max: 0xa5,
+
+  // Conversions
+  i32_trunc_f64_s: 0xaa,
+  f64_convert_i32_s: 0xb7,
+  i32_wrap_i64: 0xa7,
+  i64_extend_i32_s: 0xac,
+};
+
+// === Section IDs ===
+const Section = {
+  Custom: 0,
+  Type: 1,
+  Import: 2,
+  Function: 3,
+  Table: 4,
+  Memory: 5,
+  Global: 6,
+  Export: 7,
+  Start: 8,
+  Element: 9,
+  Code: 10,
+  Data: 11,
+  DataCount: 12,
+};
+
+// === Export Kinds ===
+export const ExportKind = {
+  Func: 0x00,
+  Table: 0x01,
+  Memory: 0x02,
+  Global: 0x03,
+};
+
+// === Function Body Builder ===
+
+export class FuncBodyBuilder {
+  constructor() {
+    this.locals = [];    // [{type, count}]
+    this.code = [];      // raw bytes
+  }
+
+  addLocal(type, count = 1) {
+    this.locals.push({ type, count });
+  }
+
+  emit(opcode, ...operands) {
+    this.code.push(opcode);
+    for (const op of operands) {
+      if (Array.isArray(op)) {
+        this.code.push(...op);
+      } else {
+        this.code.push(op);
+      }
+    }
+    return this;
+  }
+
+  i32Const(value) {
+    return this.emit(Op.i32_const, ...encodeSLEB128(value));
+  }
+
+  f64Const(value) {
+    const buf = new ArrayBuffer(8);
+    new Float64Array(buf)[0] = value;
+    return this.emit(Op.f64_const, ...new Uint8Array(buf));
+  }
+
+  localGet(index) { return this.emit(Op.local_get, ...encodeULEB128(index)); }
+  localSet(index) { return this.emit(Op.local_set, ...encodeULEB128(index)); }
+  localTee(index) { return this.emit(Op.local_tee, ...encodeULEB128(index)); }
+  globalGet(index) { return this.emit(Op.global_get, ...encodeULEB128(index)); }
+  globalSet(index) { return this.emit(Op.global_set, ...encodeULEB128(index)); }
+
+  call(funcIndex) { return this.emit(Op.call, ...encodeULEB128(funcIndex)); }
+
+  // Control flow helpers
+  block(blockType = 0x40) { return this.emit(Op.block, blockType); }
+  loop(blockType = 0x40) { return this.emit(Op.loop, blockType); }
+  if_(blockType = 0x40) { return this.emit(Op.if, blockType); }
+  else_() { return this.emit(Op.else); }
+  end() { return this.emit(Op.end); }
+  br(labelIndex) { return this.emit(Op.br, ...encodeULEB128(labelIndex)); }
+  brIf(labelIndex) { return this.emit(Op.br_if, ...encodeULEB128(labelIndex)); }
+  return_() { return this.emit(Op.return); }
+  drop() { return this.emit(Op.drop); }
+
+  // Memory helpers (align=2 for i32, align=3 for f64)
+  i32Load(offset = 0, align = 2) {
+    return this.emit(Op.i32_load, ...encodeULEB128(align), ...encodeULEB128(offset));
+  }
+  i32Store(offset = 0, align = 2) {
+    return this.emit(Op.i32_store, ...encodeULEB128(align), ...encodeULEB128(offset));
+  }
+
+  encode() {
+    // Locals declaration
+    const localBytes = [];
+    localBytes.push(...encodeULEB128(this.locals.length));
+    for (const { type, count } of this.locals) {
+      localBytes.push(...encodeULEB128(count), type);
+    }
+    // Body = locals + code + end
+    const body = [...localBytes, ...this.code, Op.end];
+    return [...encodeULEB128(body.length), ...body];
+  }
+}
+
+// === WASM Module Builder ===
+
+export class WasmModuleBuilder {
+  constructor() {
+    this.types = [];     // function signatures [{params: [ValType], results: [ValType]}]
+    this.imports = [];   // [{module, name, kind, typeIndex}]
+    this.functions = []; // [{typeIndex, body: FuncBodyBuilder}]
+    this.memories = [];  // [{min, max?}]
+    this.globals = [];   // [{type, mutable, initValue}]
+    this.exports = [];   // [{name, kind, index}]
+    this.dataSegments = []; // [{offset, bytes}]
+    this._typeCache = new Map();
+  }
+
+  // Add or reuse a function type signature. Returns the type index.
+  addType(params, results) {
+    const key = `${params.join(',')}->${results.join(',')}`;
+    if (this._typeCache.has(key)) return this._typeCache.get(key);
+    const idx = this.types.length;
+    this.types.push({ params, results });
+    this._typeCache.set(key, idx);
+    return idx;
+  }
+
+  // Add a function import. Returns the function index.
+  addImport(module, name, params, results) {
+    const typeIndex = this.addType(params, results);
+    const idx = this.imports.length; // imports come first in function index space
+    this.imports.push({ module, name, kind: 0x00, typeIndex });
+    return idx;
+  }
+
+  // Add a function. Returns the function index (imports.length + functions.length - 1).
+  addFunction(params, results) {
+    const typeIndex = this.addType(params, results);
+    const body = new FuncBodyBuilder();
+    const idx = this.imports.length + this.functions.length;
+    this.functions.push({ typeIndex, body });
+    return { index: idx, body };
+  }
+
+  // Add a memory (min pages, optional max pages). Returns memory index.
+  addMemory(min, max) {
+    const idx = this.memories.length;
+    this.memories.push({ min, max });
+    return idx;
+  }
+
+  // Add a mutable global. Returns global index.
+  addGlobal(type, mutable, initValue = 0) {
+    const idx = this.globals.length;
+    this.globals.push({ type, mutable, initValue });
+    return idx;
+  }
+
+  // Add an export.
+  addExport(name, kind, index) {
+    this.exports.push({ name, kind, index });
+  }
+
+  // Add a data segment (at a fixed offset in memory).
+  addDataSegment(offset, bytes) {
+    this.dataSegments.push({ offset, bytes: Array.isArray(bytes) ? bytes : [...bytes] });
+  }
+
+  // Build the complete WASM binary.
+  build() {
+    const sections = [];
+
+    // Type section
+    if (this.types.length > 0) {
+      const bytes = [];
+      bytes.push(...encodeULEB128(this.types.length));
+      for (const { params, results } of this.types) {
+        bytes.push(0x60); // functype
+        bytes.push(...encodeULEB128(params.length));
+        bytes.push(...params);
+        bytes.push(...encodeULEB128(results.length));
+        bytes.push(...results);
+      }
+      sections.push(this._makeSection(Section.Type, bytes));
+    }
+
+    // Import section
+    if (this.imports.length > 0) {
+      const bytes = [];
+      bytes.push(...encodeULEB128(this.imports.length));
+      for (const { module, name, kind, typeIndex } of this.imports) {
+        bytes.push(...encodeString(module));
+        bytes.push(...encodeString(name));
+        bytes.push(kind); // 0x00 = function
+        bytes.push(...encodeULEB128(typeIndex));
+      }
+      sections.push(this._makeSection(Section.Import, bytes));
+    }
+
+    // Function section (type indices for locally-defined functions)
+    if (this.functions.length > 0) {
+      const bytes = [];
+      bytes.push(...encodeULEB128(this.functions.length));
+      for (const { typeIndex } of this.functions) {
+        bytes.push(...encodeULEB128(typeIndex));
+      }
+      sections.push(this._makeSection(Section.Function, bytes));
+    }
+
+    // Memory section
+    if (this.memories.length > 0) {
+      const bytes = [];
+      bytes.push(...encodeULEB128(this.memories.length));
+      for (const { min, max } of this.memories) {
+        if (max !== undefined) {
+          bytes.push(0x01); // has max
+          bytes.push(...encodeULEB128(min));
+          bytes.push(...encodeULEB128(max));
+        } else {
+          bytes.push(0x00); // no max
+          bytes.push(...encodeULEB128(min));
+        }
+      }
+      sections.push(this._makeSection(Section.Memory, bytes));
+    }
+
+    // Global section
+    if (this.globals.length > 0) {
+      const bytes = [];
+      bytes.push(...encodeULEB128(this.globals.length));
+      for (const { type, mutable, initValue } of this.globals) {
+        bytes.push(type);
+        bytes.push(mutable ? 0x01 : 0x00);
+        // init expression: i32.const value, end
+        if (type === ValType.i32) {
+          bytes.push(Op.i32_const, ...encodeSLEB128(initValue), Op.end);
+        } else if (type === ValType.f64) {
+          const buf = new ArrayBuffer(8);
+          new Float64Array(buf)[0] = initValue;
+          bytes.push(Op.f64_const, ...new Uint8Array(buf), Op.end);
+        }
+      }
+      sections.push(this._makeSection(Section.Global, bytes));
+    }
+
+    // Export section
+    if (this.exports.length > 0) {
+      const bytes = [];
+      bytes.push(...encodeULEB128(this.exports.length));
+      for (const { name, kind, index } of this.exports) {
+        bytes.push(...encodeString(name));
+        bytes.push(kind);
+        bytes.push(...encodeULEB128(index));
+      }
+      sections.push(this._makeSection(Section.Export, bytes));
+    }
+
+    // Code section
+    if (this.functions.length > 0) {
+      const bytes = [];
+      bytes.push(...encodeULEB128(this.functions.length));
+      for (const { body } of this.functions) {
+        bytes.push(...body.encode());
+      }
+      sections.push(this._makeSection(Section.Code, bytes));
+    }
+
+    // Data section
+    if (this.dataSegments.length > 0) {
+      const bytes = [];
+      bytes.push(...encodeULEB128(this.dataSegments.length));
+      for (const { offset, bytes: data } of this.dataSegments) {
+        bytes.push(0x00); // active segment, memory index 0
+        bytes.push(Op.i32_const, ...encodeSLEB128(offset), Op.end);
+        bytes.push(...encodeULEB128(data.length));
+        bytes.push(...data);
+      }
+      sections.push(this._makeSection(Section.Data, bytes));
+    }
+
+    // Assemble: magic + version + sections
+    const module = [
+      0x00, 0x61, 0x73, 0x6d, // magic: \0asm
+      0x01, 0x00, 0x00, 0x00, // version: 1
+    ];
+    for (const section of sections) {
+      module.push(...section);
+    }
+
+    return new Uint8Array(module);
+  }
+
+  _makeSection(id, bytes) {
+    return [id, ...encodeULEB128(bytes.length), ...bytes];
+  }
+}
+
+// === Utility: Compile and instantiate a module ===
+
+export async function instantiateModule(builder, imports = {}) {
+  const binary = builder.build();
+  const module = await WebAssembly.compile(binary);
+  return WebAssembly.instantiate(module, imports);
+}
+
+// Export encoding utils for tests
+export { encodeULEB128, encodeSLEB128, encodeString };
