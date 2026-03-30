@@ -12711,6 +12711,610 @@ async function compileToInstance(input, options = {}) {
   memoryRef.memory = instance.exports.memory;
   return instance;
 }
+
+// src/wasm-dis.js
+var BinaryReader = class {
+  constructor(buffer) {
+    this.buffer = new Uint8Array(buffer);
+    this.offset = 0;
+  }
+  get eof() {
+    return this.offset >= this.buffer.length;
+  }
+  get remaining() {
+    return this.buffer.length - this.offset;
+  }
+  readByte() {
+    if (this.offset >= this.buffer.length) throw new Error("Unexpected end of binary");
+    return this.buffer[this.offset++];
+  }
+  readBytes(n) {
+    if (this.offset + n > this.buffer.length) throw new Error("Unexpected end of binary");
+    const bytes = this.buffer.slice(this.offset, this.offset + n);
+    this.offset += n;
+    return bytes;
+  }
+  readULEB128() {
+    let result = 0;
+    let shift = 0;
+    let byte;
+    do {
+      byte = this.readByte();
+      result |= (byte & 127) << shift;
+      shift += 7;
+    } while (byte & 128);
+    return result >>> 0;
+  }
+  readSLEB128() {
+    let result = 0;
+    let shift = 0;
+    let byte;
+    do {
+      byte = this.readByte();
+      result |= (byte & 127) << shift;
+      shift += 7;
+    } while (byte & 128);
+    if (shift < 32 && byte & 64) {
+      result |= ~0 << shift;
+    }
+    return result;
+  }
+  readF32() {
+    const bytes = this.readBytes(4);
+    return new Float32Array(bytes.buffer)[0];
+  }
+  readF64() {
+    const bytes = this.readBytes(8);
+    return new Float64Array(bytes.buffer)[0];
+  }
+  readString() {
+    const len = this.readULEB128();
+    const bytes = this.readBytes(len);
+    return new TextDecoder().decode(bytes);
+  }
+};
+var SectionId = {
+  0: "custom",
+  1: "type",
+  2: "import",
+  3: "function",
+  4: "table",
+  5: "memory",
+  6: "global",
+  7: "export",
+  8: "start",
+  9: "element",
+  10: "code",
+  11: "data",
+  12: "datacount"
+};
+var ValTypeName = {
+  127: "i32",
+  126: "i64",
+  125: "f32",
+  124: "f64",
+  112: "funcref",
+  111: "externref"
+};
+var ExportKindName = {
+  0: "func",
+  1: "table",
+  2: "memory",
+  3: "global"
+};
+var OpNames = {
+  0: "unreachable",
+  1: "nop",
+  2: "block",
+  3: "loop",
+  4: "if",
+  5: "else",
+  11: "end",
+  12: "br",
+  13: "br_if",
+  14: "br_table",
+  15: "return",
+  16: "call",
+  17: "call_indirect",
+  26: "drop",
+  27: "select",
+  32: "local.get",
+  33: "local.set",
+  34: "local.tee",
+  35: "global.get",
+  36: "global.set",
+  40: "i32.load",
+  41: "i64.load",
+  42: "f32.load",
+  43: "f64.load",
+  44: "i32.load8_s",
+  45: "i32.load8_u",
+  46: "i32.load16_s",
+  47: "i32.load16_u",
+  54: "i32.store",
+  55: "i64.store",
+  56: "f32.store",
+  57: "f64.store",
+  58: "i32.store8",
+  59: "i32.store16",
+  63: "memory.size",
+  64: "memory.grow",
+  65: "i32.const",
+  66: "i64.const",
+  67: "f32.const",
+  68: "f64.const",
+  69: "i32.eqz",
+  70: "i32.eq",
+  71: "i32.ne",
+  72: "i32.lt_s",
+  73: "i32.lt_u",
+  74: "i32.gt_s",
+  75: "i32.gt_u",
+  76: "i32.le_s",
+  77: "i32.le_u",
+  78: "i32.ge_s",
+  79: "i32.ge_u",
+  80: "i64.eqz",
+  81: "i64.eq",
+  82: "i64.ne",
+  97: "f64.eq",
+  98: "f64.ne",
+  99: "f64.lt",
+  100: "f64.gt",
+  101: "f64.le",
+  102: "f64.ge",
+  103: "i32.clz",
+  104: "i32.ctz",
+  105: "i32.popcnt",
+  106: "i32.add",
+  107: "i32.sub",
+  108: "i32.mul",
+  109: "i32.div_s",
+  110: "i32.div_u",
+  111: "i32.rem_s",
+  112: "i32.rem_u",
+  113: "i32.and",
+  114: "i32.or",
+  115: "i32.xor",
+  116: "i32.shl",
+  117: "i32.shr_s",
+  118: "i32.shr_u",
+  119: "i32.rotl",
+  120: "i32.rotr",
+  153: "f64.abs",
+  154: "f64.neg",
+  155: "f64.ceil",
+  156: "f64.floor",
+  157: "f64.trunc",
+  159: "f64.sqrt",
+  160: "f64.add",
+  161: "f64.sub",
+  162: "f64.mul",
+  163: "f64.div",
+  164: "f64.min",
+  165: "f64.max",
+  167: "i32.wrap_i64",
+  170: "i32.trunc_f64_s",
+  172: "i64.extend_i32_s",
+  183: "f64.convert_i32_s"
+};
+var WasmDisassembler = class {
+  constructor(buffer) {
+    this.reader = new BinaryReader(buffer);
+    this.module = {
+      types: [],
+      imports: [],
+      functions: [],
+      // type indices
+      tables: [],
+      memories: [],
+      globals: [],
+      exports: [],
+      start: null,
+      elements: [],
+      codes: [],
+      // function bodies
+      datas: []
+    };
+  }
+  disassemble() {
+    this.readHeader();
+    this.readSections();
+    return this.module;
+  }
+  readHeader() {
+    const magic = this.reader.readBytes(4);
+    if (magic[0] !== 0 || magic[1] !== 97 || magic[2] !== 115 || magic[3] !== 109) {
+      throw new Error("Not a valid WASM binary (bad magic)");
+    }
+    const version = this.reader.readBytes(4);
+    this.module.version = version[0];
+  }
+  readSections() {
+    while (!this.reader.eof) {
+      const id = this.reader.readByte();
+      const size = this.reader.readULEB128();
+      const startOffset = this.reader.offset;
+      const name = SectionId[id] || `unknown(${id})`;
+      switch (id) {
+        case 1:
+          this.readTypeSection();
+          break;
+        case 2:
+          this.readImportSection();
+          break;
+        case 3:
+          this.readFunctionSection();
+          break;
+        case 4:
+          this.readTableSection();
+          break;
+        case 5:
+          this.readMemorySection();
+          break;
+        case 6:
+          this.readGlobalSection();
+          break;
+        case 7:
+          this.readExportSection();
+          break;
+        case 8:
+          this.readStartSection();
+          break;
+        case 9:
+          this.readElementSection();
+          break;
+        case 10:
+          this.readCodeSection();
+          break;
+        case 11:
+          this.readDataSection();
+          break;
+        default:
+          this.reader.readBytes(size);
+      }
+      const consumed = this.reader.offset - startOffset;
+      if (consumed < size) {
+        this.reader.readBytes(size - consumed);
+      }
+    }
+  }
+  readTypeSection() {
+    const count = this.reader.readULEB128();
+    for (let i = 0; i < count; i++) {
+      const form = this.reader.readByte();
+      const paramCount = this.reader.readULEB128();
+      const params = [];
+      for (let j = 0; j < paramCount; j++) params.push(this.reader.readByte());
+      const resultCount = this.reader.readULEB128();
+      const results = [];
+      for (let j = 0; j < resultCount; j++) results.push(this.reader.readByte());
+      this.module.types.push({ params, results });
+    }
+  }
+  readImportSection() {
+    const count = this.reader.readULEB128();
+    for (let i = 0; i < count; i++) {
+      const module = this.reader.readString();
+      const name = this.reader.readString();
+      const kind = this.reader.readByte();
+      let desc;
+      if (kind === 0) {
+        desc = { kind: "func", typeIndex: this.reader.readULEB128() };
+      } else if (kind === 1) {
+        const type = this.reader.readByte();
+        const { min, max } = this.readLimits();
+        desc = { kind: "table", type, min, max };
+      } else if (kind === 2) {
+        const { min, max } = this.readLimits();
+        desc = { kind: "memory", min, max };
+      } else if (kind === 3) {
+        const type = this.reader.readByte();
+        const mutable = this.reader.readByte();
+        desc = { kind: "global", type, mutable: mutable === 1 };
+      }
+      this.module.imports.push({ module, name, ...desc });
+    }
+  }
+  readFunctionSection() {
+    const count = this.reader.readULEB128();
+    for (let i = 0; i < count; i++) {
+      this.module.functions.push(this.reader.readULEB128());
+    }
+  }
+  readTableSection() {
+    const count = this.reader.readULEB128();
+    for (let i = 0; i < count; i++) {
+      const type = this.reader.readByte();
+      const { min, max } = this.readLimits();
+      this.module.tables.push({ type, min, max });
+    }
+  }
+  readMemorySection() {
+    const count = this.reader.readULEB128();
+    for (let i = 0; i < count; i++) {
+      const { min, max } = this.readLimits();
+      this.module.memories.push({ min, max });
+    }
+  }
+  readGlobalSection() {
+    const count = this.reader.readULEB128();
+    for (let i = 0; i < count; i++) {
+      const type = this.reader.readByte();
+      const mutable = this.reader.readByte();
+      const init = this.readInitExpr();
+      this.module.globals.push({ type, mutable: mutable === 1, init });
+    }
+  }
+  readExportSection() {
+    const count = this.reader.readULEB128();
+    for (let i = 0; i < count; i++) {
+      const name = this.reader.readString();
+      const kind = this.reader.readByte();
+      const index = this.reader.readULEB128();
+      this.module.exports.push({ name, kind, index });
+    }
+  }
+  readStartSection() {
+    this.module.start = this.reader.readULEB128();
+  }
+  readElementSection() {
+    const count = this.reader.readULEB128();
+    for (let i = 0; i < count; i++) {
+      const flags = this.reader.readByte();
+      const offset = this.readInitExpr();
+      const funcCount = this.reader.readULEB128();
+      const funcIndices = [];
+      for (let j = 0; j < funcCount; j++) {
+        funcIndices.push(this.reader.readULEB128());
+      }
+      this.module.elements.push({ flags, offset, funcIndices });
+    }
+  }
+  readCodeSection() {
+    const count = this.reader.readULEB128();
+    for (let i = 0; i < count; i++) {
+      const bodySize = this.reader.readULEB128();
+      const bodyStart = this.reader.offset;
+      const localDeclCount = this.reader.readULEB128();
+      const locals = [];
+      for (let j = 0; j < localDeclCount; j++) {
+        const count2 = this.reader.readULEB128();
+        const type = this.reader.readByte();
+        locals.push({ count: count2, type });
+      }
+      const instructions = [];
+      while (this.reader.offset < bodyStart + bodySize) {
+        instructions.push(this.readInstruction());
+      }
+      this.module.codes.push({ locals, instructions });
+    }
+  }
+  readDataSection() {
+    const count = this.reader.readULEB128();
+    for (let i = 0; i < count; i++) {
+      const flags = this.reader.readByte();
+      let offset = null;
+      if (flags === 0) {
+        offset = this.readInitExpr();
+      }
+      const size = this.reader.readULEB128();
+      const data = this.reader.readBytes(size);
+      this.module.datas.push({ flags, offset, data });
+    }
+  }
+  readLimits() {
+    const flags = this.reader.readByte();
+    const min = this.reader.readULEB128();
+    const max = flags & 1 ? this.reader.readULEB128() : void 0;
+    return { min, max };
+  }
+  readInitExpr() {
+    const instructions = [];
+    while (true) {
+      const inst = this.readInstruction();
+      instructions.push(inst);
+      if (inst.op === "end") break;
+    }
+    if (instructions.length === 2 && instructions[0].operands.length > 0) {
+      return instructions[0];
+    }
+    return instructions;
+  }
+  readInstruction() {
+    const opcode = this.reader.readByte();
+    const name = OpNames[opcode] || `unknown(0x${opcode.toString(16)})`;
+    const operands = [];
+    switch (opcode) {
+      // Block-type instructions
+      case 2:
+      case 3:
+      case 4: {
+        const bt = this.reader.readSLEB128();
+        if (bt === -64) {
+          operands.push("(result)");
+        } else if (ValTypeName[bt & 255]) {
+          operands.push(`(result ${ValTypeName[bt & 255]})`);
+        }
+        break;
+      }
+      // Branch
+      case 12:
+      case 13:
+        operands.push(this.reader.readULEB128());
+        break;
+      // br_table
+      case 14: {
+        const count = this.reader.readULEB128();
+        const targets = [];
+        for (let i = 0; i <= count; i++) targets.push(this.reader.readULEB128());
+        operands.push(targets);
+        break;
+      }
+      // call
+      case 16:
+        operands.push(this.reader.readULEB128());
+        break;
+      // call_indirect
+      case 17:
+        operands.push(this.reader.readULEB128());
+        operands.push(this.reader.readULEB128());
+        break;
+      // Variable instructions
+      case 32:
+      case 33:
+      case 34:
+      // local.get/set/tee
+      case 35:
+      case 36:
+        operands.push(this.reader.readULEB128());
+        break;
+      // Memory instructions
+      case 40:
+      case 41:
+      case 42:
+      case 43:
+      // load
+      case 44:
+      case 45:
+      case 46:
+      case 47:
+      case 54:
+      case 55:
+      case 56:
+      case 57:
+      // store
+      case 58:
+      case 59:
+        operands.push({ align: this.reader.readULEB128(), offset: this.reader.readULEB128() });
+        break;
+      // memory.size, memory.grow
+      case 63:
+      case 64:
+        operands.push(this.reader.readByte());
+        break;
+      // Constants
+      case 65:
+        operands.push(this.reader.readSLEB128());
+        break;
+      case 66:
+        operands.push(this.reader.readSLEB128());
+        break;
+      case 67:
+        operands.push(this.reader.readF32());
+        break;
+      case 68:
+        operands.push(this.reader.readF64());
+        break;
+    }
+    return { op: name, opcode, operands };
+  }
+};
+function formatWAT(module) {
+  const lines = [];
+  const indent = (depth) => "  ".repeat(depth);
+  lines.push("(module");
+  for (let i = 0; i < module.types.length; i++) {
+    const t = module.types[i];
+    const params = t.params.map((p) => ValTypeName[p] || `0x${p.toString(16)}`).join(" ");
+    const results = t.results.map((r) => ValTypeName[r] || `0x${r.toString(16)}`).join(" ");
+    lines.push(`${indent(1)}(type (;${i};) (func${params ? " (param " + params + ")" : ""}${results ? " (result " + results + ")" : ""}))`);
+  }
+  for (let i = 0; i < module.imports.length; i++) {
+    const imp = module.imports[i];
+    let desc = "";
+    if (imp.kind === "func") desc = `(func (;${i};) (type ${imp.typeIndex}))`;
+    else if (imp.kind === "memory") desc = `(memory (;${i};) ${imp.min}${imp.max !== void 0 ? " " + imp.max : ""})`;
+    else if (imp.kind === "table") desc = `(table (;${i};) ${imp.min}${imp.max !== void 0 ? " " + imp.max : ""} ${ValTypeName[imp.type] || "funcref"})`;
+    else if (imp.kind === "global") desc = `(global (;${i};) ${imp.mutable ? "(mut " : ""}${ValTypeName[imp.type] || "?"}${imp.mutable ? ")" : ""})`;
+    lines.push(`${indent(1)}(import "${imp.module}" "${imp.name}" ${desc})`);
+  }
+  const importFuncCount = module.imports.filter((i) => i.kind === "func").length;
+  for (let i = 0; i < module.tables.length; i++) {
+    const t = module.tables[i];
+    lines.push(`${indent(1)}(table (;${i};) ${t.min}${t.max !== void 0 ? " " + t.max : ""} ${ValTypeName[t.type] || "funcref"})`);
+  }
+  for (let i = 0; i < module.memories.length; i++) {
+    const m = module.memories[i];
+    lines.push(`${indent(1)}(memory (;${i};) ${m.min}${m.max !== void 0 ? " " + m.max : ""})`);
+  }
+  for (let i = 0; i < module.globals.length; i++) {
+    const g = module.globals[i];
+    const typeName = ValTypeName[g.type] || "?";
+    const initStr = g.init?.op ? `(${g.init.op} ${g.init.operands[0]})` : "(i32.const 0)";
+    lines.push(`${indent(1)}(global (;${i};) ${g.mutable ? "(mut " + typeName + ")" : typeName} ${initStr})`);
+  }
+  for (const exp of module.exports) {
+    const kindName = ExportKindName[exp.kind] || "?";
+    lines.push(`${indent(1)}(export "${exp.name}" (${kindName} ${exp.index}))`);
+  }
+  for (const elem of module.elements) {
+    const offsetStr = elem.offset?.op ? `(${elem.offset.op} ${elem.offset.operands[0]})` : "(i32.const 0)";
+    lines.push(`${indent(1)}(elem ${offsetStr} func ${elem.funcIndices.join(" ")})`);
+  }
+  for (let i = 0; i < module.codes.length; i++) {
+    const funcIdx = importFuncCount + i;
+    const typeIdx = module.functions[i];
+    const code = module.codes[i];
+    const type = module.types[typeIdx];
+    const exportName = module.exports.find((e) => e.kind === 0 && e.index === funcIdx);
+    const nameComment = exportName ? ` ;; ${exportName.name}` : "";
+    lines.push(`${indent(1)}(func (;${funcIdx};) (type ${typeIdx})${nameComment}`);
+    if (type.params.length > 0) {
+      lines.push(`${indent(2)}(param ${type.params.map((p) => ValTypeName[p]).join(" ")})`);
+    }
+    if (type.results.length > 0) {
+      lines.push(`${indent(2)}(result ${type.results.map((r) => ValTypeName[r]).join(" ")})`);
+    }
+    for (const local of code.locals) {
+      const typeName = ValTypeName[local.type] || "?";
+      for (let j = 0; j < local.count; j++) {
+        lines.push(`${indent(2)}(local ${typeName})`);
+      }
+    }
+    let depth = 2;
+    for (const inst of code.instructions) {
+      if (inst.op === "end" || inst.op === "else") depth--;
+      const line = formatInstruction(inst, depth);
+      if (line) lines.push(line);
+      if (inst.op === "block" || inst.op === "loop" || inst.op === "if" || inst.op === "else") depth++;
+    }
+    lines.push(`${indent(1)})`);
+  }
+  for (let i = 0; i < module.datas.length; i++) {
+    const d = module.datas[i];
+    const offsetStr = d.offset?.op ? `(${d.offset.op} ${d.offset.operands[0]})` : "";
+    const hexBytes = Array.from(d.data).map((b) => "\\" + b.toString(16).padStart(2, "0")).join("");
+    lines.push(`${indent(1)}(data ${offsetStr} "${hexBytes}")`);
+  }
+  lines.push(")");
+  return lines.join("\n");
+}
+function formatInstruction(inst, depth) {
+  const ind = "  ".repeat(depth);
+  if (inst.op === "end") return `${ind}${inst.op}`;
+  const ops = inst.operands;
+  if (ops.length === 0) return `${ind}${inst.op}`;
+  if (typeof ops[0] === "object" && ops[0] !== null && "align" in ops[0]) {
+    const { align, offset } = ops[0];
+    const parts = [];
+    if (offset > 0) parts.push(`offset=${offset}`);
+    if (align > 0) parts.push(`align=${1 << align}`);
+    return `${ind}${inst.op}${parts.length ? " " + parts.join(" ") : ""}`;
+  }
+  if (inst.op === "block" || inst.op === "loop" || inst.op === "if") {
+    return `${ind}${inst.op}${ops[0] !== "(result)" ? " " + ops[0] : ""}`;
+  }
+  if (inst.op === "call_indirect") {
+    return `${ind}${inst.op} (type ${ops[0]})`;
+  }
+  return `${ind}${inst.op} ${ops.join(" ")}`;
+}
+function disassemble(buffer) {
+  const dis = new WasmDisassembler(buffer);
+  const module = dis.disassemble();
+  return formatWAT(module);
+}
 export {
   Compiler,
   Environment,
@@ -12731,5 +13335,6 @@ export {
   monkeyEval,
   compileAndRun as wasmCompileAndRun,
   compileToInstance as wasmCompileToInstance,
+  disassemble as wasmDisassemble,
   withStdlib
 };
