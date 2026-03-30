@@ -780,6 +780,55 @@ function createMotionBlur() {
   return world;
 }
 
+function createFinalScene() {
+  const world = new HittableList();
+
+  // Ground: boxes forming a surface
+  const ground = new Lambertian(new Vec3(0.48, 0.83, 0.53));
+  for (let i = 0; i < 20; i++) {
+    for (let j = 0; j < 20; j++) {
+      const w = 100;
+      const x0 = -1000 + i * w;
+      const z0 = -1000 + j * w;
+      const y0 = 0;
+      const y1 = 1 + Math.random() * 100;
+      world.add(new Box(new Vec3(x0, y0, z0), new Vec3(x0 + w, y1, z0 + w), ground));
+    }
+  }
+
+  // Area light
+  world.add(new XZRect(123, 423, 147, 412, 554, new DiffuseLight(new Vec3(7, 7, 7))));
+
+  // Moving sphere (motion blur)
+  const c1 = new Vec3(400, 400, 200);
+  const c2 = c1.add(new Vec3(30, 0, 0));
+  world.add(new MovingSphere(c1, c2, 0, 1, 50, new Lambertian(new Vec3(0.7, 0.3, 0.1))));
+
+  // Glass sphere
+  world.add(new Sphere(new Vec3(260, 150, 45), 50, new Dielectric(1.5)));
+  // Metal sphere
+  world.add(new Sphere(new Vec3(0, 150, 145), 50, new Metal(new Vec3(0.8, 0.8, 0.9), 1.0)));
+
+  // Glass sphere with fog inside (subsurface scattering)
+  const boundary1 = new Sphere(new Vec3(360, 150, 145), 70, new Dielectric(1.5));
+  world.add(boundary1);
+  world.add(new ConstantMedium(new Sphere(new Vec3(360, 150, 145), 70, new Dielectric(1.5)), 0.2, new Vec3(0.2, 0.4, 0.9)));
+
+  // Global fog
+  world.add(new ConstantMedium(new Sphere(new Vec3(0, 0, 0), 5000, new Dielectric(1.5)), 0.0001, new Vec3(1, 1, 1)));
+
+  // Marble sphere
+  world.add(new Sphere(new Vec3(220, 280, 300), 80, new Lambertian(new MarbleTexture(new Vec3(0.9, 0.9, 0.9), 0.1))));
+
+  // Cluster of small spheres (noise textured)
+  for (let i = 0; i < 50; i++) {
+    const center = new Vec3(165 + Math.random() * 165, 270 + Math.random() * 165, 395 + Math.random() * 165);
+    world.add(new Sphere(center, 10, new Lambertian(new Vec3(0.73, 0.73, 0.73))));
+  }
+
+  return world;
+}
+
 // ===== Expose to global =====
 if (typeof self !== 'undefined') {
   self.RayTracer = {
@@ -788,6 +837,6 @@ if (typeof self !== 'undefined') {
     Isotropic, ConstantMedium,
     Lambertian, Metal, Dielectric, DiffuseLight, Camera,
     createRandomScene, createSimpleScene, createCornellBox,
-    createGlassStudy, createMetalShowcase, createLitRoom, createTexturedWorld, createSmokyCornell, createSolarSystem, createShowcase, createMotionBlur, MovingSphere
+    createGlassStudy, createMetalShowcase, createLitRoom, createTexturedWorld, createSmokyCornell, createSolarSystem, createShowcase, createMotionBlur, createFinalScene, MovingSphere
   };
 }

@@ -93,6 +93,7 @@
       <option value="solar">Solar System (procedural planets)</option>
       <option value="showcase">✨ Showcase (everything combined)</option>
       <option value="motion">Motion Blur (bouncing spheres)</option>
+      <option value="final">🏆 Final Scene (everything!)</option>
     </select>
   </div>
   <div class="control-group">
@@ -242,6 +243,12 @@ const scenes = {
   motion: {
     lookFrom: { x: 8, y: 3, z: 8 }, lookAt: { x: 0, y: 0.5, z: 0 },
     vfov: 25, aperture: 0.1, focusDist: 10, aspectRatio: 3/2,
+    time0: 0, time1: 1
+  },
+  'final': {
+    lookFrom: { x: 478, y: 278, z: -600 }, lookAt: { x: 278, y: 278, z: 0 },
+    vfov: 40, aperture: 0, focusDist: 1, aspectRatio: 1,
+    background: { x: 0, y: 0, z: 0 },
     time0: 0, time1: 1
   },
   cornell: {
