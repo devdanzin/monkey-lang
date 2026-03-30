@@ -3,7 +3,7 @@ importScripts('bundle.js');
 
 const { Vec3, Camera, BVHNode, HittableList,
         createRandomScene, createSimpleScene, createCornellBox,
-        createGlassStudy, createMetalShowcase, createLitRoom, createTexturedWorld, createSmokyCornell, createSolarSystem, createShowcase, createMotionBlur, createFinalScene } = self.RayTracer;
+        createGlassStudy, createMetalShowcase, createLitRoom, createTexturedWorld, createSmokyCornell, createSolarSystem, createShowcase, createMotionBlur, createFinalScene, createMuseum } = self.RayTracer;
 
 self.onmessage = function(e) {
   const { tile, config } = e.data;
@@ -23,6 +23,7 @@ self.onmessage = function(e) {
   else if (scene === 'showcase') world = createShowcase();
   else if (scene === 'motion') world = createMotionBlur();
   else if (scene === 'final') world = createFinalScene();
+  else if (scene === 'museum') world = createMuseum();
   else world = createSimpleScene();
 
   let sceneHit;

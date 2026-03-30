@@ -94,6 +94,7 @@
       <option value="showcase">✨ Showcase (everything combined)</option>
       <option value="motion">Motion Blur (bouncing spheres)</option>
       <option value="final">🏆 Final Scene (everything!)</option>
+      <option value="museum">🏛️ Museum (pedestals + colored glass)</option>
     </select>
   </div>
   <div class="control-group">
@@ -248,8 +249,11 @@ const scenes = {
   'final': {
     lookFrom: { x: 478, y: 278, z: -600 }, lookAt: { x: 278, y: 278, z: 0 },
     vfov: 40, aperture: 0, focusDist: 1, aspectRatio: 1,
-    background: { x: 0, y: 0, z: 0 },
-    time0: 0, time1: 1
+    background: { x: 0, y: 0, z: 0 }, time0: 0, time1: 1
+  },
+  museum: {
+    lookFrom: { x: 0, y: 3, z: 7 }, lookAt: { x: 0, y: 1.5, z: -1 },
+    vfov: 35, aperture: 0.05, focusDist: 8, aspectRatio: 3/2
   },
   cornell: {
     lookFrom: { x: 278, y: 278, z: -800 }, lookAt: { x: 278, y: 278, z: 0 },

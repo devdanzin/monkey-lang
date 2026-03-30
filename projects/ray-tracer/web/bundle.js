@@ -435,6 +435,67 @@ class DiffuseLight {
   emitted(u, v, p) { return this.emit; }
 }
 
+class ColoredGlass {
+  constructor(ir, color, density = 1.0) { this.ir = ir; this.color = color; this.density = density; }
+  scatter(rayIn, rec) {
+    const ratio = rec.frontFace ? (1.0/this.ir) : this.ir;
+    const ud = rayIn.direction.unit();
+    const cos = Math.min(ud.negate().dot(rec.normal), 1.0);
+    const sin = Math.sqrt(1.0 - cos*cos);
+    let r0 = (1-ratio)/(1+ratio); r0*=r0;
+    const refl = r0 + (1-r0)*Math.pow(1-cos,5);
+    if (ratio*sin > 1.0 || refl > Math.random()) {
+      return { scattered: new Ray(rec.p, ud.reflect(rec.normal)), attenuation: new Vec3(1,1,1) };
+    }
+    const dir = ud.refract(rec.normal, ratio);
+    const att = rec.frontFace ? new Vec3(1,1,1) : new Vec3(
+      Math.exp(-this.density*(1-this.color.x)*rec.t),
+      Math.exp(-this.density*(1-this.color.y)*rec.t),
+      Math.exp(-this.density*(1-this.color.z)*rec.t));
+    return { scattered: new Ray(rec.p, dir, rayIn.time), attenuation: att };
+  }
+}
+
+// ===== Cylinder/Disk/Cone =====
+class Disk {
+  constructor(center, normal, radius, material) { this.center = center; this.normal = normal.unit(); this.radius = radius; this.material = material; }
+  hit(ray, tMin, tMax) {
+    const d = this.normal.dot(ray.direction);
+    if (Math.abs(d) < 1e-8) return null;
+    const t = this.center.sub(ray.origin).dot(this.normal) / d;
+    if (t < tMin || t > tMax) return null;
+    const p = ray.at(t);
+    if (p.sub(this.center).lengthSquared() > this.radius*this.radius) return null;
+    const rec = new HitRecord();
+    rec.t = t; rec.p = p; rec.setFaceNormal(ray, this.normal); rec.material = this.material;
+    return rec;
+  }
+  boundingBox() { const r = this.radius; return new AABB(this.center.sub(new Vec3(r,r,r)), this.center.add(new Vec3(r,r,r))); }
+}
+
+class Cylinder {
+  constructor(center, radius, y0, y1, material) { this.center = center; this.radius = radius; this.y0 = y0; this.y1 = y1; this.material = material; }
+  hit(ray, tMin, tMax) {
+    const ox = ray.origin.x-this.center.x, oz = ray.origin.z-this.center.z;
+    const dx = ray.direction.x, dz = ray.direction.z;
+    const a = dx*dx+dz*dz, b = 2*(ox*dx+oz*dz), c = ox*ox+oz*oz-this.radius*this.radius;
+    const disc = b*b-4*a*c; if (disc < 0) return null;
+    const sq = Math.sqrt(disc); let best = null;
+    for (const s of [-1,1]) {
+      const t = (-b+s*sq)/(2*a);
+      if (t < tMin || t > tMax || (best && t >= best.t)) continue;
+      const y = ray.origin.y+t*ray.direction.y;
+      if (y < this.y0 || y > this.y1) continue;
+      const p = ray.at(t);
+      const rec = new HitRecord(); rec.t = t; rec.p = p;
+      rec.setFaceNormal(ray, new Vec3(p.x-this.center.x, 0, p.z-this.center.z).div(this.radius));
+      rec.material = this.material; best = rec;
+    }
+    return best;
+  }
+  boundingBox() { return new AABB(new Vec3(this.center.x-this.radius, this.y0, this.center.z-this.radius), new Vec3(this.center.x+this.radius, this.y1, this.center.z+this.radius)); }
+}
+
 // ===== Camera =====
 class Camera {
   constructor({ lookFrom, lookAt, vup, vfov = 90, aspectRatio = 16/9, aperture = 0, focusDist = 1, time0 = 0, time1 = 0 } = {}) {
@@ -829,14 +890,50 @@ function createFinalScene() {
   return world;
 }
 
+function createMuseum() {
+  const world = new HittableList();
+
+  // Floor: marble checker
+  world.add(new Sphere(new Vec3(0, -1000, 0), 1000, new Lambertian(new CheckerTexture(new Vec3(0.1, 0.1, 0.1), new Vec3(0.95, 0.9, 0.85), 8))));
+
+  // Ceiling light
+  world.add(new XZRect(-4, 4, -8, 4, 6, new DiffuseLight(new Vec3(4, 3.8, 3.5))));
+
+  // Pedestal 1: marble sphere on cylinder base
+  world.add(new Cylinder(new Vec3(-3, 0, -1), 0.6, 0, 1.5, new Lambertian(new Vec3(0.9, 0.9, 0.88))));
+  world.add(new Disk(new Vec3(-3, 1.5, -1), new Vec3(0, 1, 0), 0.6, new Lambertian(new Vec3(0.9, 0.9, 0.88))));
+  world.add(new Sphere(new Vec3(-3, 2.2, -1), 0.5, new Lambertian(new MarbleTexture(new Vec3(0.95, 0.9, 0.85), 5))));
+
+  // Pedestal 2: colored glass sphere
+  world.add(new Cylinder(new Vec3(0, 0, -1), 0.6, 0, 1.0, new Lambertian(new Vec3(0.85, 0.85, 0.82))));
+  world.add(new Disk(new Vec3(0, 1.0, -1), new Vec3(0, 1, 0), 0.6, new Lambertian(new Vec3(0.85, 0.85, 0.82))));
+  world.add(new Sphere(new Vec3(0, 1.7, -1), 0.5, new ColoredGlass(1.5, new Vec3(0.2, 0.8, 0.2), 2.0)));
+
+  // Pedestal 3: perfect mirror sphere
+  world.add(new Cylinder(new Vec3(3, 0, -1), 0.6, 0, 1.8, new Lambertian(new Vec3(0.88, 0.88, 0.85))));
+  world.add(new Disk(new Vec3(3, 1.8, -1), new Vec3(0, 1, 0), 0.6, new Lambertian(new Vec3(0.88, 0.88, 0.85))));
+  world.add(new Sphere(new Vec3(3, 2.5, -1), 0.5, new Metal(new Vec3(0.97, 0.97, 0.97), 0.0)));
+
+  // Red glass sphere (ruby)
+  world.add(new Sphere(new Vec3(1.5, 0.5, 1), 0.5, new ColoredGlass(1.77, new Vec3(0.9, 0.1, 0.1), 3.0)));
+
+  // Blue glass sphere (sapphire)
+  world.add(new Sphere(new Vec3(-1.5, 0.5, 1), 0.5, new ColoredGlass(1.77, new Vec3(0.1, 0.1, 0.9), 3.0)));
+
+  // Back wall with noise texture
+  world.add(new Sphere(new Vec3(0, 0, -(1005)), 1000, new Lambertian(new NoiseTexture(new Vec3(0.9, 0.85, 0.8), 2))));
+
+  return world;
+}
+
 // ===== Expose to global =====
 if (typeof self !== 'undefined') {
   self.RayTracer = {
-    Vec3, Ray, HitRecord, HittableList, AABB, BVHNode, Sphere, XZRect, XYRect, YZRect, Box, Translate, RotateY,
+    Vec3, Ray, HitRecord, HittableList, AABB, BVHNode, Sphere, XZRect, XYRect, YZRect, Box, Translate, RotateY, Disk, Cylinder, ColoredGlass,
     SolidColor, CheckerTexture, NoiseTexture, MarbleTexture,
     Isotropic, ConstantMedium,
     Lambertian, Metal, Dielectric, DiffuseLight, Camera,
     createRandomScene, createSimpleScene, createCornellBox,
-    createGlassStudy, createMetalShowcase, createLitRoom, createTexturedWorld, createSmokyCornell, createSolarSystem, createShowcase, createMotionBlur, createFinalScene, MovingSphere
+    createGlassStudy, createMetalShowcase, createLitRoom, createTexturedWorld, createSmokyCornell, createSolarSystem, createShowcase, createMotionBlur, createFinalScene, createMuseum, MovingSphere
   };
 }
