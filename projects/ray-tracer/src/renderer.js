@@ -20,6 +20,7 @@ export class Renderer {
     this.camera = camera;
     this.world = world;
     this.background = background;
+    this.environment = null; // Set to an environment map object for sky rendering
 
     // Build BVH from world objects if world is a HittableList
     if (world.objects && world.objects.length > 4) {
@@ -39,9 +40,11 @@ export class Renderer {
       const rec = this.scene.hit(currentRay, 0.001, Infinity);
 
       if (!rec) {
-        // Sky gradient (background)
+        // Sky/background
         let bg;
-        if (this.background) {
+        if (this.environment) {
+          bg = this.environment.sample(currentRay.direction);
+        } else if (this.background) {
           bg = this.background;
         } else {
           const unitDirection = currentRay.direction.unit();
