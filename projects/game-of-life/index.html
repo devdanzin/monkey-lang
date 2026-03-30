@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game of Life — Henry</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    background: #0d1117; color: #c9d1d9; display: flex; flex-direction: column;
+    align-items: center; min-height: 100vh; padding: 1rem;
+  }
+  h1 { font-size: 1.6rem; color: #f0f6fc; margin-bottom: 0.2rem; }
+  h1 span { color: #58a6ff; }
+  .sub { color: #8b949e; font-size: 0.85rem; margin-bottom: 1rem; }
+  canvas { border: 1px solid #30363d; border-radius: 4px; cursor: crosshair; }
+  .controls {
+    display: flex; gap: 0.8rem; margin: 1rem 0; flex-wrap: wrap; justify-content: center;
+    align-items: center;
+  }
+  button {
+    background: #21262d; color: #c9d1d9; border: 1px solid #30363d;
+    padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem;
+  }
+  button:hover { border-color: #58a6ff; }
+  button.active { background: #238636; border-color: #238636; color: #fff; }
+  .stats { color: #8b949e; font-size: 0.8rem; }
+  .stats span { color: #c9d1d9; }
+  select {
+    background: #161b22; color: #c9d1d9; border: 1px solid #30363d;
+    padding: 0.3rem 0.5rem; border-radius: 4px; font-size: 0.85rem;
+  }
+  .info { max-width: 600px; text-align: center; color: #8b949e; font-size: 0.8rem; margin-top: 1rem; line-height: 1.5; }
+  .info a { color: #58a6ff; text-decoration: none; }
+</style>
+</head>
+<body>
+<h1>🦠 <span>Game of Life</span></h1>
+<p class="sub">Conway's cellular automaton — click to draw, press play</p>
+
+<canvas id="canvas"></canvas>
+
+<div class="controls">
+  <button id="playBtn" onclick="togglePlay()">▶ Play</button>
+  <button onclick="step()">⏭ Step</button>
+  <button onclick="randomize()">🎲 Random</button>
+  <button onclick="clear()">🗑 Clear</button>
+  <select id="pattern" onchange="loadPattern()">
+    <option value="">— Patterns —</option>
+    <option value="glider">Glider</option>
+    <option value="blinker">Blinker</option>
+    <option value="pulsar">Pulsar</option>
+    <option value="lwss">Lightweight Spaceship</option>
+    <option value="gosper">Gosper Glider Gun</option>
+    <option value="rpentomino">R-pentomino</option>
+  </select>
+  <select id="speed" onchange="setSpeed()">
+    <option value="500">Slow</option>
+    <option value="100" selected>Normal</option>
+    <option value="30">Fast</option>
+    <option value="10">Blazing</option>
+  </select>
+</div>
+
+<div class="stats">
+  Generation: <span id="gen">0</span> |
+  Population: <span id="pop">0</span> |
+  Grid: <span id="size">0×0</span>
+</div>
+
+<div class="info">
+  Click/drag to draw cells. Each cell follows 4 simple rules:
+  underpopulation (&lt;2 neighbors: die), survival (2-3: live), reproduction (3: born), overcrowding (&gt;3: die).
+  <br><a href="https://github.com/henry-the-frog">Built by Henry</a>
+</div>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+const CELL = 8;
+let COLS, ROWS;
+let grid, nextGrid;
+let generation = 0;
+let running = false;
+let interval = null;
+let delay = 100;
+
+function resize() {
+  const w = Math.min(window.innerWidth - 32, 800);
+  const h = Math.min(window.innerHeight - 250, 500);
+  COLS = Math.floor(w / CELL);
+  ROWS = Math.floor(h / CELL);
+  canvas.width = COLS * CELL;
+  canvas.height = ROWS * CELL;
+  document.getElementById('size').textContent = `${COLS}×${ROWS}`;
+  grid = Array.from({ length: ROWS }, () => new Uint8Array(COLS));
+  nextGrid = Array.from({ length: ROWS }, () => new Uint8Array(COLS));
+}
+
+function draw() {
+  ctx.fillStyle = '#0d1117';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  let pop = 0;
+  for (let y = 0; y < ROWS; y++) {
+    for (let x = 0; x < COLS; x++) {
+      if (grid[y][x]) {
+        pop++;
+        const age = grid[y][x];
+        // Color based on age: new cells bright, old cells dimmer
+        const g = Math.min(255, 100 + age * 20);
+        const b = Math.max(50, 255 - age * 15);
+        ctx.fillStyle = `rgb(${Math.min(50 + age * 5, 100)},${g},${b})`;
+        ctx.fillRect(x * CELL, y * CELL, CELL - 1, CELL - 1);
+      }
+    }
+  }
+
+  document.getElementById('gen').textContent = generation;
+  document.getElementById('pop').textContent = pop;
+}
+
+function step() {
+  for (let y = 0; y < ROWS; y++) {
+    for (let x = 0; x < COLS; x++) {
+      let neighbors = 0;
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          if (dx === 0 && dy === 0) continue;
+          const ny = (y + dy + ROWS) % ROWS;
+          const nx = (x + dx + COLS) % COLS;
+          if (grid[ny][nx]) neighbors++;
+        }
+      }
+
+      if (grid[y][x]) {
+        nextGrid[y][x] = (neighbors === 2 || neighbors === 3) ? Math.min(grid[y][x] + 1, 20) : 0;
+      } else {
+        nextGrid[y][x] = neighbors === 3 ? 1 : 0;
+      }
+    }
+  }
+
+  [grid, nextGrid] = [nextGrid, grid];
+  generation++;
+  draw();
+}
+
+function togglePlay() {
+  running = !running;
+  const btn = document.getElementById('playBtn');
+  if (running) {
+    btn.textContent = '⏸ Pause';
+    btn.classList.add('active');
+    interval = setInterval(step, delay);
+  } else {
+    btn.textContent = '▶ Play';
+    btn.classList.remove('active');
+    clearInterval(interval);
+  }
+}
+
+function setSpeed() {
+  delay = parseInt(document.getElementById('speed').value);
+  if (running) { clearInterval(interval); interval = setInterval(step, delay); }
+}
+
+function randomize() {
+  generation = 0;
+  for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) grid[y][x] = Math.random() < 0.3 ? 1 : 0;
+  draw();
+}
+
+function clear() {
+  generation = 0;
+  for (let y = 0; y < ROWS; y++) grid[y].fill(0);
+  draw();
+}
+
+function place(pattern, ox, oy) {
+  for (const [dy, dx] of pattern) {
+    const y = (oy + dy + ROWS) % ROWS;
+    const x = (ox + dx + COLS) % COLS;
+    grid[y][x] = 1;
+  }
+}
+
+const PATTERNS = {
+  glider: [[0,1],[1,2],[2,0],[2,1],[2,2]],
+  blinker: [[0,0],[0,1],[0,2]],
+  lwss: [[0,1],[0,4],[1,0],[2,0],[2,4],[3,0],[3,1],[3,2],[3,3]],
+  rpentomino: [[0,1],[0,2],[1,0],[1,1],[2,1]],
+  pulsar: (function() {
+    const p = [];
+    const offsets = [[0,2],[0,3],[0,4],[2,0],[3,0],[4,0],[2,5],[3,5],[4,5],[5,2],[5,3],[5,4]];
+    for (const [y,x] of offsets) {
+      p.push([y,x],[y,12-x],[12-y,x],[12-y,12-x]);
+    }
+    return p;
+  })(),
+  gosper: [[0,24],[1,22],[1,24],[2,12],[2,13],[2,20],[2,21],[2,34],[2,35],[3,11],[3,15],[3,20],[3,21],[3,34],[3,35],[4,0],[4,1],[4,10],[4,16],[4,20],[4,21],[5,0],[5,1],[5,10],[5,14],[5,16],[5,17],[5,22],[5,24],[6,10],[6,16],[6,24],[7,11],[7,15],[8,12],[8,13]]
+};
+
+function loadPattern() {
+  const name = document.getElementById('pattern').value;
+  if (!name || !PATTERNS[name]) return;
+  clear();
+  const p = PATTERNS[name];
+  const oy = Math.floor(ROWS / 2) - 5;
+  const ox = Math.floor(COLS / 2) - 5;
+  place(p, oy, ox);
+  draw();
+  document.getElementById('pattern').value = '';
+}
+
+// Mouse drawing
+let isDrawing = false;
+canvas.addEventListener('mousedown', (e) => { isDrawing = true; drawCell(e); });
+canvas.addEventListener('mousemove', (e) => { if (isDrawing) drawCell(e); });
+window.addEventListener('mouseup', () => isDrawing = false);
+
+function drawCell(e) {
+  const rect = canvas.getBoundingClientRect();
+  const x = Math.floor((e.clientX - rect.left) / CELL);
+  const y = Math.floor((e.clientY - rect.top) / CELL);
+  if (x >= 0 && x < COLS && y >= 0 && y < ROWS) {
+    grid[y][x] = grid[y][x] ? 0 : 1;
+    draw();
+  }
+}
+
+// Init
+resize();
+randomize();
+</script>
+</body>
+</html>
