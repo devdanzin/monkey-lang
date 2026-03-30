@@ -1258,5 +1258,17 @@ describe('WASM Compiler', () => {
         reduce(map(filter([1,2,3,4,5,6,7,8,9,10], fn(x) { x % 2 != 0 }), fn(x) { x * x }), 0, fn(a,b) { a + b })
       `), 165);
     });
+
+    it('runtime type checking', async () => {
+      const lines = [];
+      await compileAndRun('let x = [1,2]; if (type(x) == "ARRAY") { puts("array"); } else { puts("other"); }', { outputLines: lines });
+      assert.strictEqual(lines[0], 'array');
+    });
+
+    it('string iteration and rebuild', async () => {
+      const lines = [];
+      await compileAndRun('let s = "abc"; let r = ""; for (ch in s) { r = r + ch; } puts(r)', { outputLines: lines });
+      assert.strictEqual(lines[0], 'abc');
+    });
   });
 });

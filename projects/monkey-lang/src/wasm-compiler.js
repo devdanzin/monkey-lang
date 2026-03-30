@@ -859,11 +859,11 @@ export class WasmCompiler {
 
     switch (node.operator) {
       case '+':
-        // Use runtime dispatch only when an operand might be a string
-        if (this._mightBeString(node.left) || this._mightBeString(node.right)) {
-          this.currentBody.call(this._runtimeFuncs.add);
-        } else {
+        // Use runtime dispatch when string operations are possible
+        if (this._isDefinitelyInteger(node.left) && this._isDefinitelyInteger(node.right)) {
           this.currentBody.emit(Op.i32_add);
+        } else {
+          this.currentBody.call(this._runtimeFuncs.add);
         }
         break;
       case '-':  this.currentBody.emit(Op.i32_sub); break;
@@ -871,18 +871,18 @@ export class WasmCompiler {
       case '/':  this.currentBody.emit(Op.i32_div_s); break;
       case '%':  this.currentBody.emit(Op.i32_rem_s); break;
       case '==':
-        if (this._mightBeString(node.left) || this._mightBeString(node.right)) {
-          this.currentBody.call(this._runtimeFuncs.eq);
-        } else {
+        if (this._isDefinitelyInteger(node.left) && this._isDefinitelyInteger(node.right)) {
           this.currentBody.emit(Op.i32_eq);
+        } else {
+          this.currentBody.call(this._runtimeFuncs.eq);
         }
         break;
       case '!=':
-        if (this._mightBeString(node.left) || this._mightBeString(node.right)) {
+        if (this._isDefinitelyInteger(node.left) && this._isDefinitelyInteger(node.right)) {
+          this.currentBody.emit(Op.i32_ne);
+        } else {
           this.currentBody.call(this._runtimeFuncs.eq);
           this.currentBody.emit(Op.i32_eqz);
-        } else {
-          this.currentBody.emit(Op.i32_ne);
         }
         break;
       case '<':  this.currentBody.emit(Op.i32_lt_s); break;
