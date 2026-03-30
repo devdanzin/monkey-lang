@@ -790,9 +790,12 @@
     {
       "id": "T76",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add --stats flag showing project statistics (tests, LOC, features)",
-      "started": "2026-03-30T17:22:08.554Z"
+      "started": "2026-03-30T17:22:08.554Z",
+      "completed": "2026-03-30T17:22:54.426Z",
+      "duration_ms": 60000,
+      "summary": "--stats flag: shows project overview (5 backends, 50+ features, 7 stdlib modules, 1292 tests, performance stats)."
     }
   ],
   "backlog": [],
