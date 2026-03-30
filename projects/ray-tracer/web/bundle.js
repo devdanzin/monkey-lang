@@ -245,6 +245,57 @@ class Box {
   boundingBox() { return new AABB(this.p0, this.p1); }
 }
 
+// ===== Transforms =====
+class Translate {
+  constructor(object, offset) { this.object = object; this.offset = offset; }
+  hit(ray, tMin, tMax) {
+    const movedRay = new Ray(ray.origin.sub(this.offset), ray.direction);
+    const rec = this.object.hit(movedRay, tMin, tMax);
+    if (!rec) return null;
+    rec.p = rec.p.add(this.offset);
+    rec.setFaceNormal(movedRay, rec.normal);
+    return rec;
+  }
+  boundingBox() {
+    const box = this.object.boundingBox();
+    if (!box) return null;
+    return new AABB(box.minimum.add(this.offset), box.maximum.add(this.offset));
+  }
+}
+
+class RotateY {
+  constructor(object, angle) {
+    this.object = object;
+    const rad = angle * Math.PI / 180;
+    this.sinT = Math.sin(rad); this.cosT = Math.cos(rad);
+    const box = object.boundingBox();
+    if (box) {
+      let mn = new Vec3(Infinity, Infinity, Infinity), mx = new Vec3(-Infinity, -Infinity, -Infinity);
+      for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) for (let k = 0; k < 2; k++) {
+        const x = i ? box.maximum.x : box.minimum.x;
+        const y = j ? box.maximum.y : box.minimum.y;
+        const z = k ? box.maximum.z : box.minimum.z;
+        const nx = this.cosT * x + this.sinT * z;
+        const nz = -this.sinT * x + this.cosT * z;
+        mn = new Vec3(Math.min(mn.x, nx), Math.min(mn.y, y), Math.min(mn.z, nz));
+        mx = new Vec3(Math.max(mx.x, nx), Math.max(mx.y, y), Math.max(mx.z, nz));
+      }
+      this.box = new AABB(mn, mx);
+    } else this.box = null;
+  }
+  hit(ray, tMin, tMax) {
+    const o = new Vec3(this.cosT*ray.origin.x - this.sinT*ray.origin.z, ray.origin.y, this.sinT*ray.origin.x + this.cosT*ray.origin.z);
+    const d = new Vec3(this.cosT*ray.direction.x - this.sinT*ray.direction.z, ray.direction.y, this.sinT*ray.direction.x + this.cosT*ray.direction.z);
+    const rec = this.object.hit(new Ray(o, d), tMin, tMax);
+    if (!rec) return null;
+    rec.p = new Vec3(this.cosT*rec.p.x + this.sinT*rec.p.z, rec.p.y, -this.sinT*rec.p.x + this.cosT*rec.p.z);
+    const n = new Vec3(this.cosT*rec.normal.x + this.sinT*rec.normal.z, rec.normal.y, -this.sinT*rec.normal.x + this.cosT*rec.normal.z);
+    rec.setFaceNormal(new Ray(o, d), n);
+    return rec;
+  }
+  boundingBox() { return this.box; }
+}
+
 // ===== Textures =====
 class SolidColor {
   constructor(color) { this.color = color; }
@@ -430,9 +481,11 @@ function createCornellBox() {
   world.add(new XZRect(0, 555, 0, 555, 555, white));  // Ceiling
   world.add(new XYRect(0, 555, 0, 555, 555, white));  // Back wall
 
-  // Two boxes
-  world.add(new Box(new Vec3(130, 0, 65), new Vec3(295, 165, 230), white));
-  world.add(new Box(new Vec3(265, 0, 295), new Vec3(430, 330, 460), white));
+  // Two rotated boxes
+  const box1 = new Translate(new RotateY(new Box(new Vec3(0, 0, 0), new Vec3(165, 165, 165), white), -18), new Vec3(130, 0, 65));
+  const box2 = new Translate(new RotateY(new Box(new Vec3(0, 0, 0), new Vec3(165, 330, 165), white), 15), new Vec3(265, 0, 295));
+  world.add(box1);
+  world.add(box2);
 
   return world;
 }
@@ -497,7 +550,7 @@ function createTexturedWorld() {
 // ===== Expose to global =====
 if (typeof self !== 'undefined') {
   self.RayTracer = {
-    Vec3, Ray, HitRecord, HittableList, AABB, BVHNode, Sphere, XZRect, XYRect, YZRect, Box,
+    Vec3, Ray, HitRecord, HittableList, AABB, BVHNode, Sphere, XZRect, XYRect, YZRect, Box, Translate, RotateY,
     SolidColor, CheckerTexture, NoiseTexture, MarbleTexture,
     Lambertian, Metal, Dielectric, DiffuseLight, Camera,
     createRandomScene, createSimpleScene, createCornellBox,
