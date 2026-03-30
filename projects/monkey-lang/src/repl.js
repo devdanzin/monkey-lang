@@ -31,18 +31,26 @@ if (process.argv.includes('--version') || process.argv.includes('-v')) {
 if (process.argv.includes('--help') || process.argv.includes('-h')) {
   console.log(`Monkey Language v${VERSION}`);
   console.log(`\nUsage: monkey [options] [file.monkey]`);
-  console.log(`\nOptions:`);
-  console.log(`  --engine=vm|eval|jit  Select execution engine (default: jit)`);
-  console.log(`  --engine=vm|eval|jit|wasm|transpiler  Select execution engine`);
-  console.log(`  --compile             Compile .monkey file to .wasm binary`);
+  console.log(`\nExecution:`);
+  console.log(`  --wasm                Run with WebAssembly backend (fastest)`);
+  console.log(`  --engine=<name>       Select engine: vm|eval|jit|wasm|transpiler`);
+  console.log(`\nTools:`);
+  console.log(`  --compile             Compile .monkey to .wasm binary`);
+  console.log(`  --dis, --disassemble  Disassemble .wasm or .monkey to WAT`);
+  console.log(`  --check               Validate file syntax and WASM compatibility`);
+  console.log(`  --stats               Show language and engine statistics`);
+  console.log(`  --benchmark           Run 5-engine performance comparison`);
   console.log(`  --version, -v         Show version`);
   console.log(`  --help, -h            Show this help`);
   console.log(`\nREPL Commands:`);
   console.log(`  :engine <name>        Switch engine (vm|eval|jit|wasm|transpiler)`);
-  console.log(`  :jit                  Show JIT statistics`);
+  console.log(`  :dis <code>           Disassemble expression to WAT`);
+  console.log(`  :analyze <code>       Show WASM binary size breakdown`);
+  console.log(`  :timing               Toggle timing display`);
+  console.log(`  :example <name>       Load an example (fib, closures, sieve...)`);
+  console.log(`  :help                 Show REPL help`);
   console.log(`  :quit                 Exit`);
-  console.log(`\nModules: math, string, algorithms, array, json, functional`);
-  console.log(`Website: https://henry-the-frog.github.io/playground/`);
+  console.log(`\nPlayground: https://henry-the-frog.github.io/playground/`);
   process.exit(0);
 }
 

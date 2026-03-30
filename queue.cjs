@@ -25,6 +25,23 @@ const fs = require('fs');
 const path = require('path');
 
 const SCHEDULE_PATH = path.join(__dirname, 'schedule.json');
+const DASHBOARD_URL = 'http://localhost:3000';
+
+// --- Dashboard webhook (fire-and-forget, never blocks work) ---
+
+function dashboardPost(endpoint, body) {
+  try {
+    const token = process.env.DASHBOARD_TOKEN || '';
+    const payload = JSON.stringify(body);
+    const { execSync } = require('child_process');
+    execSync(
+      `curl -s -X POST "${DASHBOARD_URL}${endpoint}" -H "Content-Type: application/json" -H "Authorization: Bearer ${token}" -d '${payload.replace(/'/g, "'\\''")}' --max-time 2`,
+      { stdio: 'ignore', timeout: 3000 }
+    );
+  } catch (_) {
+    // Dashboard never blocks work
+  }
+}
 
 // --- Helpers ---
 
@@ -100,6 +117,7 @@ function cmdStart(args, data) {
   task.started = now();
   saveSchedule(data);
   output({ started: task });
+  dashboardPost('/api/task-update', { action: 'start', task });
 }
 
 function cmdDone(args, data) {
@@ -116,6 +134,7 @@ function cmdDone(args, data) {
   task.summary = summary;
   saveSchedule(data);
   output({ done: task });
+  dashboardPost('/api/task-update', { action: 'complete', task });
 }
 
 function cmdFill(args, data) {
@@ -172,6 +191,7 @@ function cmdFill(args, data) {
   addAdjustment(data, `PLAN ${planId} filled ${filled} BUILD tasks`);
   saveSchedule(data);
   output({ filled, tasks: tasks.length });
+  dashboardPost('/api/queue-update', data);
 }
 
 function cmdYield(args, data) {
