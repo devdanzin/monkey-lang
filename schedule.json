@@ -165,16 +165,20 @@
       "id": "T18",
       "mode": "BUILD",
       "task": "Write blog post: Compiling Monkey to WebAssembly",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T10",
-      "started": "2026-03-30T15:34:10.794Z"
+      "started": "2026-03-30T15:34:10.794Z",
+      "completed": "2026-03-30T15:35:51.649Z",
+      "duration_ms": 300000,
+      "summary": "Blog post published: Compiling Monkey to WebAssembly. Covers binary encoder, compilation strategy, value representation, JS imports, performance numbers, test coverage. Pushed to GitHub Pages."
     },
     {
       "id": "T19",
       "mode": "BUILD",
       "task": "Update TASKS.md with WASM backend progress and next steps",
-      "status": "upcoming",
-      "plan_ref": "T10"
+      "status": "in-progress",
+      "plan_ref": "T10",
+      "started": "2026-03-30T15:36:00.973Z"
     },
     {
       "id": "T12",
