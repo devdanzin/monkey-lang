@@ -2,6 +2,7 @@
 var TokenType = {
   // Literals
   INT: "INT",
+  FLOAT: "FLOAT",
   STRING: "STRING",
   TEMPLATE_STRING: "TEMPLATE_STRING",
   // backtick string with ${} interpolation
@@ -145,10 +146,18 @@ var Lexer = class {
   }
   readNumber() {
     const start = this.position;
+    let isFloat = false;
     while (this.ch && isDigit(this.ch)) {
       this.readChar();
     }
-    return this.input.slice(start, this.position);
+    if (this.ch === "." && isDigit(this.peekChar())) {
+      isFloat = true;
+      this.readChar();
+      while (this.ch && isDigit(this.ch)) {
+        this.readChar();
+      }
+    }
+    return { value: this.input.slice(start, this.position), isFloat };
   }
   readString() {
     this.readChar();
@@ -393,7 +402,8 @@ var Lexer = class {
           const type = KEYWORDS[ident] || TokenType.IDENT;
           return new Token(type, ident);
         } else if (isDigit(this.ch)) {
-          return new Token(TokenType.INT, this.readNumber());
+          const num = this.readNumber();
+          return new Token(num.isFloat ? TokenType.FLOAT : TokenType.INT, num.value);
         } else {
           tok = new Token(TokenType.ILLEGAL, this.ch);
         }
@@ -514,6 +524,18 @@ var Identifier = class {
   }
 };
 var IntegerLiteral = class {
+  constructor(token, value) {
+    this.token = token;
+    this.value = value;
+  }
+  tokenLiteral() {
+    return this.token.literal;
+  }
+  toString() {
+    return this.token.literal;
+  }
+};
+var FloatLiteral = class {
   constructor(token, value) {
     this.token = token;
     this.value = value;
@@ -1015,6 +1037,7 @@ var Parser = class _Parser {
     this.infixParseFns = {};
     this.registerPrefix(TokenType.IDENT, () => this.parseIdentifier());
     this.registerPrefix(TokenType.INT, () => this.parseIntegerLiteral());
+    this.registerPrefix(TokenType.FLOAT, () => this.parseFloatLiteral());
     this.registerPrefix(TokenType.STRING, () => this.parseStringLiteral());
     this.registerPrefix(TokenType.TEMPLATE_STRING, () => this.parseTemplateLiteral());
     this.registerPrefix(TokenType.TRUE, () => this.parseBooleanLiteral());
@@ -1299,6 +1322,14 @@ var Parser = class _Parser {
       return null;
     }
     return new IntegerLiteral(this.curToken, value);
+  }
+  parseFloatLiteral() {
+    const value = parseFloat(this.curToken.literal);
+    if (isNaN(value)) {
+      this.errors.push(`could not parse ${this.curToken.literal} as float`);
+      return null;
+    }
+    return new FloatLiteral(this.curToken, value);
   }
   parseStringLiteral() {
     return new StringLiteral(this.curToken, this.curToken.literal);
@@ -2134,6 +2165,7 @@ var SymbolTable = class {
 // src/object.js
 var OBJ = {
   INTEGER: "INTEGER",
+  FLOAT: "FLOAT",
   BOOLEAN: "BOOLEAN",
   NULL: "NULL",
   STRING: "STRING",
@@ -2163,6 +2195,25 @@ var MonkeyInteger = class {
   fastHashKey() {
     return this.value;
   }
+};
+var MonkeyFloat = class {
+  constructor(value) {
+    this.value = value;
+  }
+  type() {
+    return OBJ.FLOAT;
+  }
+  inspect() {
+    return String(this.value);
+  }
+  hashKey() {
+    if (this._hk === void 0) this._hk = `float:${this.value}`;
+    return this._hk;
+  }
+  fastHashKey() {
+    return this.value + 0.1;
+  }
+  // offset to avoid collision with integers
 };
 var MonkeyBoolean = class {
   constructor(value) {
@@ -2479,13 +2530,6 @@ var stringModule = () => buildModule({
   })
 });
 var functionalModule = () => buildModule({
-  compose: new MonkeyBuiltin((...args) => {
-    if (args.length !== 2) return new MonkeyNull();
-    const f = args[0], g = args[1];
-    return new MonkeyBuiltin((...innerArgs) => {
-      return new MonkeyNull();
-    });
-  }),
   identity: new MonkeyBuiltin((...args) => args[0] || new MonkeyNull()),
   constant: new MonkeyBuiltin((...args) => {
     const val = args[0] || new MonkeyNull();
@@ -2689,13 +2733,29 @@ var jsonModule = () => buildModule({
     }
   })
 });
+var sysModule = () => buildModule({
+  time: new MonkeyBuiltin((...args) => {
+    return mkInt(Date.now());
+  }),
+  random: new MonkeyBuiltin((...args) => {
+    if (args.length === 0) return mkInt(Math.floor(Math.random() * 2147483647));
+    if (args.length === 1) return mkInt(Math.floor(Math.random() * args[0].value));
+    if (args.length === 2) {
+      const [lo, hi] = [args[0].value, args[1].value];
+      return mkInt(lo + Math.floor(Math.random() * (hi - lo)));
+    }
+    return new MonkeyNull();
+  }),
+  version: mkStr("0.2.0")
+});
 var MODULE_REGISTRY = {
   math: mathModuleEnhanced,
   string: stringModuleEnhanced,
   functional: functionalModule,
   algorithms: algorithmsModule,
   array: arrayModule,
-  json: jsonModule
+  json: jsonModule,
+  sys: sysModule
 };
 function getModule(name) {
   const factory = MODULE_REGISTRY[name];
@@ -2773,6 +2833,9 @@ var Compiler = class _Compiler {
   tryFoldConstant(node) {
     if (node instanceof IntegerLiteral) {
       return new MonkeyInteger(node.value);
+    }
+    if (node instanceof FloatLiteral) {
+      return new MonkeyFloat(node.value);
     }
     if (node instanceof PrefixExpression && node.operator === "-") {
       const right = this.tryFoldConstant(node.right);
@@ -3092,6 +3155,9 @@ var Compiler = class _Compiler {
     } else if (node instanceof IntegerLiteral) {
       const idx = this.addConstant(new MonkeyInteger(node.value));
       this.emitInt(Opcodes.OpConstant, idx);
+    } else if (node instanceof FloatLiteral) {
+      const idx = this.addConstant(new MonkeyFloat(node.value));
+      this.emit(Opcodes.OpConstant, idx);
     } else if (node instanceof StringLiteral) {
       const idx = this.addConstant(internString(node.value));
       this.emit(Opcodes.OpConstant, idx);
@@ -8232,6 +8298,29 @@ var VM = class _VM {
                 break;
             }
             this.push(cachedInteger(result));
+          } else if ((left instanceof MonkeyFloat || right instanceof MonkeyFloat) && (left instanceof MonkeyInteger || left instanceof MonkeyFloat) && (right instanceof MonkeyInteger || right instanceof MonkeyFloat)) {
+            if (recording()) {
+              this._abortRecording();
+            }
+            let result;
+            switch (op) {
+              case Opcodes.OpAdd:
+                result = left.value + right.value;
+                break;
+              case Opcodes.OpSub:
+                result = left.value - right.value;
+                break;
+              case Opcodes.OpMul:
+                result = left.value * right.value;
+                break;
+              case Opcodes.OpDiv:
+                result = left.value / right.value;
+                break;
+              case Opcodes.OpMod:
+                result = left.value % right.value;
+                break;
+            }
+            this.push(new MonkeyFloat(result));
           } else if (left instanceof MonkeyString && right instanceof MonkeyString && op === Opcodes.OpAdd) {
             if (recording()) {
               const rRef = this.recorder.popRef();
@@ -8337,6 +8426,23 @@ var VM = class _VM {
                 throw new Error(`unknown operator for booleans`);
             }
             this.push(result ? TRUE : FALSE);
+          } else if ((left2 instanceof MonkeyFloat || right2 instanceof MonkeyFloat) && (left2 instanceof MonkeyInteger || left2 instanceof MonkeyFloat) && (right2 instanceof MonkeyInteger || right2 instanceof MonkeyFloat)) {
+            if (recording()) {
+              this._abortRecording();
+            }
+            let result;
+            switch (op) {
+              case Opcodes.OpEqual:
+                result = left2.value === right2.value;
+                break;
+              case Opcodes.OpNotEqual:
+                result = left2.value !== right2.value;
+                break;
+              case Opcodes.OpGreaterThan:
+                result = left2.value > right2.value;
+                break;
+            }
+            this.push(result ? TRUE : FALSE);
           } else if (left2 instanceof MonkeyString && right2 instanceof MonkeyString) {
             if (recording()) {
               this._abortRecording();
@@ -8374,6 +8480,13 @@ var VM = class _VM {
         }
         case Opcodes.OpMinus: {
           const operand = this.pop();
+          if (operand instanceof MonkeyFloat) {
+            if (recording()) {
+              this._abortRecording();
+            }
+            this.push(new MonkeyFloat(-operand.value));
+            break;
+          }
           if (!(operand instanceof MonkeyInteger)) {
             throw new Error(`unsupported type for negation: ${operand.type()}`);
           }
@@ -10188,6 +10301,7 @@ function monkeyEval(node, env) {
     return enumHash;
   }
   if (node instanceof IntegerLiteral) return new MonkeyInteger(node.value);
+  if (node instanceof FloatLiteral) return new MonkeyFloat(node.value);
   if (node instanceof StringLiteral) return internString(node.value);
   if (node instanceof BooleanLiteral) return nativeBoolToBooleanObject(node.value);
   if (node instanceof PrefixExpression) {
@@ -10518,12 +10632,13 @@ function evalBangOperator(right) {
   return FALSE;
 }
 function evalMinusPrefix(right) {
+  if (right.type() === OBJ.FLOAT) return new MonkeyFloat(-right.value);
   if (right.type() !== OBJ.INTEGER) return newError(`unknown operator: -${right.type()}`);
   return new MonkeyInteger(-right.value);
 }
 function evalInfixExpression(op, left, right) {
-  if (left.type() === OBJ.INTEGER && right.type() === OBJ.INTEGER) {
-    return evalIntegerInfix(op, left, right);
+  if ((left.type() === OBJ.INTEGER || left.type() === OBJ.FLOAT) && (right.type() === OBJ.INTEGER || right.type() === OBJ.FLOAT)) {
+    return evalNumericInfix(op, left, right);
   }
   if (op === "*") {
     if (left.type() === OBJ.STRING && right.type() === OBJ.INTEGER) {
@@ -10560,19 +10675,21 @@ function evalInfixExpression(op, left, right) {
   }
   return newError(`unknown operator: ${left.type()} ${op} ${right.type()}`);
 }
-function evalIntegerInfix(op, left, right) {
+function evalNumericInfix(op, left, right) {
   const l = left.value, r = right.value;
+  const isFloat = left.type() === OBJ.FLOAT || right.type() === OBJ.FLOAT;
+  const mkNum = (v) => isFloat ? new MonkeyFloat(v) : new MonkeyInteger(v);
   switch (op) {
     case "+":
-      return new MonkeyInteger(l + r);
+      return mkNum(l + r);
     case "-":
-      return new MonkeyInteger(l - r);
+      return mkNum(l - r);
     case "*":
-      return new MonkeyInteger(l * r);
+      return mkNum(l * r);
     case "/":
-      return new MonkeyInteger(Math.trunc(l / r));
+      return isFloat ? new MonkeyFloat(l / r) : new MonkeyInteger(Math.trunc(l / r));
     case "%":
-      return new MonkeyInteger(l % r);
+      return mkNum(l % r);
     case "<":
       return nativeBoolToBooleanObject(l < r);
     case ">":
@@ -10860,6 +10977,23 @@ let sort = fn(arr) {
   }
   arr
 };
+
+let compose = fn(f, g) { fn(x) { f(g(x)) } };
+let pipe2 = fn(f, g) { fn(x) { g(f(x)) } };
+let partial = fn(f, a) { fn(b) { f(a, b) } };
+let memoize = fn(f) {
+  let cache = {};
+  fn(x) {
+    let key = str(x);
+    if (cache[key] == null) {
+      cache[key] = f(x);
+    }
+    cache[key]
+  }
+};
+let flip = fn(f) { fn(a, b) { f(b, a) } };
+let always = fn(x) { fn() { x } };
+let apply = fn(f, args) { f(args[0], args[1]) };
 `;
 function withStdlib(code) {
   return STDLIB_SOURCE + "\n" + code;
@@ -11097,16 +11231,1068 @@ ${this.i()}})(${subject})`;
     return `/* unsupported: ${node.constructor.name} */`;
   }
 };
+
+// src/wasm.js
+function encodeULEB128(value) {
+  const bytes = [];
+  do {
+    let byte = value & 127;
+    value >>>= 7;
+    if (value !== 0) byte |= 128;
+    bytes.push(byte);
+  } while (value !== 0);
+  return bytes;
+}
+function encodeSLEB128(value) {
+  const bytes = [];
+  let more = true;
+  while (more) {
+    let byte = value & 127;
+    value >>= 7;
+    if (value === 0 && (byte & 64) === 0 || value === -1 && (byte & 64) !== 0) {
+      more = false;
+    } else {
+      byte |= 128;
+    }
+    bytes.push(byte);
+  }
+  return bytes;
+}
+function encodeString(str) {
+  const encoder = new TextEncoder();
+  const bytes = encoder.encode(str);
+  return [...encodeULEB128(bytes.length), ...bytes];
+}
+var ValType = {
+  i32: 127,
+  i64: 126,
+  f32: 125,
+  f64: 124,
+  funcref: 112,
+  externref: 111
+};
+var Op = {
+  // Control
+  unreachable: 0,
+  nop: 1,
+  block: 2,
+  loop: 3,
+  if: 4,
+  else: 5,
+  end: 11,
+  br: 12,
+  br_if: 13,
+  br_table: 14,
+  return: 15,
+  call: 16,
+  call_indirect: 17,
+  // Parametric
+  drop: 26,
+  select: 27,
+  // Variable
+  local_get: 32,
+  local_set: 33,
+  local_tee: 34,
+  global_get: 35,
+  global_set: 36,
+  // Memory
+  i32_load: 40,
+  i64_load: 41,
+  f32_load: 42,
+  f64_load: 43,
+  i32_store: 54,
+  i64_store: 55,
+  f32_store: 56,
+  f64_store: 57,
+  i32_load8_s: 44,
+  i32_load8_u: 45,
+  i32_load16_s: 46,
+  i32_load16_u: 47,
+  i32_store8: 58,
+  i32_store16: 59,
+  memory_size: 63,
+  memory_grow: 64,
+  // Constants
+  i32_const: 65,
+  i64_const: 66,
+  f32_const: 67,
+  f64_const: 68,
+  // i32 comparison
+  i32_eqz: 69,
+  i32_eq: 70,
+  i32_ne: 71,
+  i32_lt_s: 72,
+  i32_lt_u: 73,
+  i32_gt_s: 74,
+  i32_gt_u: 75,
+  i32_le_s: 76,
+  i32_le_u: 77,
+  i32_ge_s: 78,
+  i32_ge_u: 79,
+  // i32 arithmetic
+  i32_clz: 103,
+  i32_ctz: 104,
+  i32_popcnt: 105,
+  i32_add: 106,
+  i32_sub: 107,
+  i32_mul: 108,
+  i32_div_s: 109,
+  i32_div_u: 110,
+  i32_rem_s: 111,
+  i32_rem_u: 112,
+  i32_and: 113,
+  i32_or: 114,
+  i32_xor: 115,
+  i32_shl: 116,
+  i32_shr_s: 117,
+  i32_shr_u: 118,
+  i32_rotl: 119,
+  i32_rotr: 120,
+  // f64 comparison
+  f64_eq: 97,
+  f64_ne: 98,
+  f64_lt: 99,
+  f64_gt: 100,
+  f64_le: 101,
+  f64_ge: 102,
+  // f64 arithmetic
+  f64_abs: 153,
+  f64_neg: 154,
+  f64_ceil: 155,
+  f64_floor: 156,
+  f64_trunc: 157,
+  f64_sqrt: 159,
+  f64_add: 160,
+  f64_sub: 161,
+  f64_mul: 162,
+  f64_div: 163,
+  f64_min: 164,
+  f64_max: 165,
+  // Conversions
+  i32_trunc_f64_s: 170,
+  f64_convert_i32_s: 183,
+  i32_wrap_i64: 167,
+  i64_extend_i32_s: 172
+};
+var Section = {
+  Custom: 0,
+  Type: 1,
+  Import: 2,
+  Function: 3,
+  Table: 4,
+  Memory: 5,
+  Global: 6,
+  Export: 7,
+  Start: 8,
+  Element: 9,
+  Code: 10,
+  Data: 11,
+  DataCount: 12
+};
+var ExportKind = {
+  Func: 0,
+  Table: 1,
+  Memory: 2,
+  Global: 3
+};
+var FuncBodyBuilder = class {
+  constructor() {
+    this.locals = [];
+    this.code = [];
+  }
+  addLocal(type, count = 1) {
+    this.locals.push({ type, count });
+  }
+  emit(opcode, ...operands) {
+    this.code.push(opcode);
+    for (const op of operands) {
+      if (Array.isArray(op)) {
+        this.code.push(...op);
+      } else {
+        this.code.push(op);
+      }
+    }
+    return this;
+  }
+  i32Const(value) {
+    return this.emit(Op.i32_const, ...encodeSLEB128(value));
+  }
+  f64Const(value) {
+    const buf = new ArrayBuffer(8);
+    new Float64Array(buf)[0] = value;
+    return this.emit(Op.f64_const, ...new Uint8Array(buf));
+  }
+  localGet(index) {
+    return this.emit(Op.local_get, ...encodeULEB128(index));
+  }
+  localSet(index) {
+    return this.emit(Op.local_set, ...encodeULEB128(index));
+  }
+  localTee(index) {
+    return this.emit(Op.local_tee, ...encodeULEB128(index));
+  }
+  globalGet(index) {
+    return this.emit(Op.global_get, ...encodeULEB128(index));
+  }
+  globalSet(index) {
+    return this.emit(Op.global_set, ...encodeULEB128(index));
+  }
+  call(funcIndex) {
+    return this.emit(Op.call, ...encodeULEB128(funcIndex));
+  }
+  // Control flow helpers
+  block(blockType = 64) {
+    return this.emit(Op.block, blockType);
+  }
+  loop(blockType = 64) {
+    return this.emit(Op.loop, blockType);
+  }
+  if_(blockType = 64) {
+    return this.emit(Op.if, blockType);
+  }
+  else_() {
+    return this.emit(Op.else);
+  }
+  end() {
+    return this.emit(Op.end);
+  }
+  br(labelIndex) {
+    return this.emit(Op.br, ...encodeULEB128(labelIndex));
+  }
+  brIf(labelIndex) {
+    return this.emit(Op.br_if, ...encodeULEB128(labelIndex));
+  }
+  return_() {
+    return this.emit(Op.return);
+  }
+  drop() {
+    return this.emit(Op.drop);
+  }
+  // Memory helpers (align=2 for i32, align=3 for f64)
+  i32Load(offset = 0, align = 2) {
+    return this.emit(Op.i32_load, ...encodeULEB128(align), ...encodeULEB128(offset));
+  }
+  i32Store(offset = 0, align = 2) {
+    return this.emit(Op.i32_store, ...encodeULEB128(align), ...encodeULEB128(offset));
+  }
+  encode() {
+    const localBytes = [];
+    localBytes.push(...encodeULEB128(this.locals.length));
+    for (const { type, count } of this.locals) {
+      localBytes.push(...encodeULEB128(count), type);
+    }
+    const body = [...localBytes, ...this.code, Op.end];
+    return [...encodeULEB128(body.length), ...body];
+  }
+};
+var WasmModuleBuilder = class {
+  constructor() {
+    this.types = [];
+    this.imports = [];
+    this.functions = [];
+    this.memories = [];
+    this.globals = [];
+    this.exports = [];
+    this.dataSegments = [];
+    this._typeCache = /* @__PURE__ */ new Map();
+  }
+  // Add or reuse a function type signature. Returns the type index.
+  addType(params, results) {
+    const key = `${params.join(",")}->${results.join(",")}`;
+    if (this._typeCache.has(key)) return this._typeCache.get(key);
+    const idx = this.types.length;
+    this.types.push({ params, results });
+    this._typeCache.set(key, idx);
+    return idx;
+  }
+  // Add a function import. Returns the function index.
+  addImport(module, name, params, results) {
+    const typeIndex = this.addType(params, results);
+    const idx = this.imports.length;
+    this.imports.push({ module, name, kind: 0, typeIndex });
+    return idx;
+  }
+  // Add a function. Returns the function index (imports.length + functions.length - 1).
+  addFunction(params, results) {
+    const typeIndex = this.addType(params, results);
+    const body = new FuncBodyBuilder();
+    const idx = this.imports.length + this.functions.length;
+    this.functions.push({ typeIndex, body });
+    return { index: idx, body };
+  }
+  // Add a memory (min pages, optional max pages). Returns memory index.
+  addMemory(min, max) {
+    const idx = this.memories.length;
+    this.memories.push({ min, max });
+    return idx;
+  }
+  // Add a mutable global. Returns global index.
+  addGlobal(type, mutable, initValue = 0) {
+    const idx = this.globals.length;
+    this.globals.push({ type, mutable, initValue });
+    return idx;
+  }
+  // Add an export.
+  addExport(name, kind, index) {
+    this.exports.push({ name, kind, index });
+  }
+  // Add a data segment (at a fixed offset in memory).
+  addDataSegment(offset, bytes) {
+    this.dataSegments.push({ offset, bytes: Array.isArray(bytes) ? bytes : [...bytes] });
+  }
+  // Build the complete WASM binary.
+  build() {
+    const sections = [];
+    if (this.types.length > 0) {
+      const bytes = [];
+      bytes.push(...encodeULEB128(this.types.length));
+      for (const { params, results } of this.types) {
+        bytes.push(96);
+        bytes.push(...encodeULEB128(params.length));
+        bytes.push(...params);
+        bytes.push(...encodeULEB128(results.length));
+        bytes.push(...results);
+      }
+      sections.push(this._makeSection(Section.Type, bytes));
+    }
+    if (this.imports.length > 0) {
+      const bytes = [];
+      bytes.push(...encodeULEB128(this.imports.length));
+      for (const { module: module2, name, kind, typeIndex } of this.imports) {
+        bytes.push(...encodeString(module2));
+        bytes.push(...encodeString(name));
+        bytes.push(kind);
+        bytes.push(...encodeULEB128(typeIndex));
+      }
+      sections.push(this._makeSection(Section.Import, bytes));
+    }
+    if (this.functions.length > 0) {
+      const bytes = [];
+      bytes.push(...encodeULEB128(this.functions.length));
+      for (const { typeIndex } of this.functions) {
+        bytes.push(...encodeULEB128(typeIndex));
+      }
+      sections.push(this._makeSection(Section.Function, bytes));
+    }
+    if (this.memories.length > 0) {
+      const bytes = [];
+      bytes.push(...encodeULEB128(this.memories.length));
+      for (const { min, max } of this.memories) {
+        if (max !== void 0) {
+          bytes.push(1);
+          bytes.push(...encodeULEB128(min));
+          bytes.push(...encodeULEB128(max));
+        } else {
+          bytes.push(0);
+          bytes.push(...encodeULEB128(min));
+        }
+      }
+      sections.push(this._makeSection(Section.Memory, bytes));
+    }
+    if (this.globals.length > 0) {
+      const bytes = [];
+      bytes.push(...encodeULEB128(this.globals.length));
+      for (const { type, mutable, initValue } of this.globals) {
+        bytes.push(type);
+        bytes.push(mutable ? 1 : 0);
+        if (type === ValType.i32) {
+          bytes.push(Op.i32_const, ...encodeSLEB128(initValue), Op.end);
+        } else if (type === ValType.f64) {
+          const buf = new ArrayBuffer(8);
+          new Float64Array(buf)[0] = initValue;
+          bytes.push(Op.f64_const, ...new Uint8Array(buf), Op.end);
+        }
+      }
+      sections.push(this._makeSection(Section.Global, bytes));
+    }
+    if (this.exports.length > 0) {
+      const bytes = [];
+      bytes.push(...encodeULEB128(this.exports.length));
+      for (const { name, kind, index } of this.exports) {
+        bytes.push(...encodeString(name));
+        bytes.push(kind);
+        bytes.push(...encodeULEB128(index));
+      }
+      sections.push(this._makeSection(Section.Export, bytes));
+    }
+    if (this.functions.length > 0) {
+      const bytes = [];
+      bytes.push(...encodeULEB128(this.functions.length));
+      for (const { body } of this.functions) {
+        bytes.push(...body.encode());
+      }
+      sections.push(this._makeSection(Section.Code, bytes));
+    }
+    if (this.dataSegments.length > 0) {
+      const bytes = [];
+      bytes.push(...encodeULEB128(this.dataSegments.length));
+      for (const { offset, bytes: data } of this.dataSegments) {
+        bytes.push(0);
+        bytes.push(Op.i32_const, ...encodeSLEB128(offset), Op.end);
+        bytes.push(...encodeULEB128(data.length));
+        bytes.push(...data);
+      }
+      sections.push(this._makeSection(Section.Data, bytes));
+    }
+    const module = [
+      0,
+      97,
+      115,
+      109,
+      // magic: \0asm
+      1,
+      0,
+      0,
+      0
+      // version: 1
+    ];
+    for (const section of sections) {
+      module.push(...section);
+    }
+    return new Uint8Array(module);
+  }
+  _makeSection(id, bytes) {
+    return [id, ...encodeULEB128(bytes.length), ...bytes];
+  }
+};
+
+// src/wasm-compiler.js
+var TAG_STRING = 1;
+var TAG_ARRAY = 2;
+var Scope = class {
+  constructor(parent = null) {
+    this.parent = parent;
+    this.vars = /* @__PURE__ */ new Map();
+    this.nextLocal = parent ? 0 : 0;
+  }
+  define(name, index, type = ValType.i32) {
+    this.vars.set(name, { index, type });
+  }
+  resolve(name) {
+    if (this.vars.has(name)) return this.vars.get(name);
+    if (this.parent) return this.parent.resolve(name);
+    return null;
+  }
+};
+var WasmCompiler = class {
+  constructor() {
+    this.builder = new WasmModuleBuilder();
+    this.functions = [];
+    this.globalScope = new Scope();
+    this.currentFunc = null;
+    this.currentBody = null;
+    this.currentScope = null;
+    this.nextParamIndex = 0;
+    this.nextLocalIndex = 0;
+    this.loopStack = [];
+    this.errors = [];
+    this.stringConstants = [];
+    this.nextDataOffset = 16;
+    this.builder.addMemory(1);
+    this.builder.addExport("memory", ExportKind.Memory, 0);
+    this.heapPtr = this.builder.addGlobal(ValType.i32, true, 4096);
+    this._runtimeFuncs = {};
+  }
+  compile(input) {
+    const lexer = new Lexer(input);
+    const parser = new Parser(lexer);
+    const program = parser.parseProgram();
+    if (parser.errors.length > 0) {
+      this.errors = parser.errors;
+      return null;
+    }
+    return this.compileProgram(program);
+  }
+  compileProgram(program) {
+    this._addRuntimeFunctions();
+    for (const stmt of program.statements) {
+      if (stmt instanceof LetStatement && stmt.value instanceof FunctionLiteral) {
+        this._declareFunction(stmt.name.value, stmt.value);
+      }
+    }
+    const mainType = this.builder.addType([], [ValType.i32]);
+    const { index: mainIdx, body: mainBody } = this.builder.addFunction([], [ValType.i32]);
+    this.builder.addExport("main", ExportKind.Func, mainIdx);
+    this.currentFunc = { name: "main", index: mainIdx };
+    this.currentBody = mainBody;
+    this.currentScope = new Scope(this.globalScope);
+    this.nextParamIndex = 0;
+    this.nextLocalIndex = 0;
+    let lastIsExpr = false;
+    for (let i = 0; i < program.statements.length; i++) {
+      const stmt = program.statements[i];
+      lastIsExpr = false;
+      if (stmt instanceof LetStatement && stmt.value instanceof FunctionLiteral) {
+        continue;
+      }
+      if (stmt instanceof ExpressionStatement) {
+        this.compileNode(stmt.expression);
+        if (i < program.statements.length - 1) {
+          mainBody.drop();
+        } else {
+          lastIsExpr = true;
+        }
+      } else if (stmt instanceof ReturnStatement) {
+        this.compileNode(stmt.returnValue);
+        mainBody.return_();
+        lastIsExpr = true;
+      } else {
+        this.compileStatement(stmt);
+      }
+    }
+    if (!lastIsExpr) {
+      mainBody.i32Const(0);
+    }
+    this._compileFunctions();
+    for (const sc of this.stringConstants) {
+      const encoder = new TextEncoder();
+      const strBytes = encoder.encode(sc.value);
+      const data = new Uint8Array(8 + strBytes.length);
+      const view = new DataView(data.buffer);
+      view.setInt32(0, TAG_STRING, true);
+      view.setInt32(4, strBytes.length, true);
+      data.set(strBytes, 8);
+      this.builder.addDataSegment(sc.offset, [...data]);
+    }
+    return this.builder;
+  }
+  _addRuntimeFunctions() {
+    const { index: allocIdx, body: allocBody } = this.builder.addFunction(
+      [ValType.i32],
+      [ValType.i32]
+    );
+    allocBody.addLocal(ValType.i32);
+    allocBody.globalGet(this.heapPtr).localTee(1).localGet(0).emit(Op.i32_add).globalSet(this.heapPtr);
+    allocBody.localGet(1);
+    this._runtimeFuncs.alloc = allocIdx;
+    const { index: lenIdx, body: lenBody } = this.builder.addFunction(
+      [ValType.i32],
+      [ValType.i32]
+    );
+    lenBody.localGet(0).i32Const(4).emit(Op.i32_add).i32Load();
+    this._runtimeFuncs.len = lenIdx;
+    const { index: arrGetIdx, body: arrGetBody } = this.builder.addFunction(
+      [ValType.i32, ValType.i32],
+      [ValType.i32]
+    );
+    arrGetBody.localGet(0).i32Const(8).emit(Op.i32_add).localGet(1).i32Const(4).emit(Op.i32_mul).emit(Op.i32_add).i32Load();
+    this._runtimeFuncs.arrayGet = arrGetIdx;
+    const { index: arrSetIdx, body: arrSetBody } = this.builder.addFunction(
+      [ValType.i32, ValType.i32, ValType.i32],
+      []
+    );
+    arrSetBody.localGet(0).i32Const(8).emit(Op.i32_add).localGet(1).i32Const(4).emit(Op.i32_mul).emit(Op.i32_add).localGet(2).i32Store();
+    this._runtimeFuncs.arraySet = arrSetIdx;
+    const { index: makeArrIdx, body: makeArrBody } = this.builder.addFunction(
+      [ValType.i32],
+      [ValType.i32]
+    );
+    makeArrBody.addLocal(ValType.i32);
+    makeArrBody.localGet(0).i32Const(4).emit(Op.i32_mul).i32Const(8).emit(Op.i32_add).call(allocIdx).localTee(1).i32Const(TAG_ARRAY).i32Store().localGet(1).i32Const(4).emit(Op.i32_add).localGet(0).i32Store();
+    makeArrBody.localGet(1);
+    this._runtimeFuncs.makeArray = makeArrIdx;
+    const { index: pushIdx, body: pushBody } = this.builder.addFunction(
+      [ValType.i32, ValType.i32],
+      [ValType.i32]
+    );
+    pushBody.addLocal(ValType.i32);
+    pushBody.addLocal(ValType.i32);
+    pushBody.addLocal(ValType.i32);
+    pushBody.localGet(0).call(lenIdx).localSet(2).localGet(2).i32Const(1).emit(Op.i32_add).call(makeArrIdx).localSet(3).i32Const(0).localSet(4).block().loop().localGet(4).localGet(2).emit(Op.i32_ge_s).brIf(1).localGet(3).localGet(4).localGet(0).localGet(4).call(arrGetIdx).call(arrSetIdx).localGet(4).i32Const(1).emit(Op.i32_add).localSet(4).br(0).end().end().localGet(3).localGet(2).localGet(1).call(arrSetIdx);
+    pushBody.localGet(3);
+    this._runtimeFuncs.push = pushIdx;
+    this.globalScope.define("__alloc", allocIdx, "func");
+    this.globalScope.define("__len", lenIdx, "func");
+    this.globalScope.define("__array_get", arrGetIdx, "func");
+    this.globalScope.define("__array_set", arrSetIdx, "func");
+    this.globalScope.define("__make_array", makeArrIdx, "func");
+    this.globalScope.define("__push", pushIdx, "func");
+  }
+  _declareFunction(name, funcLit) {
+    const params = funcLit.parameters.map(() => ValType.i32);
+    const results = [ValType.i32];
+    const { index, body } = this.builder.addFunction(params, results);
+    this.builder.addExport(name, ExportKind.Func, index);
+    this.functions.push({
+      name,
+      index,
+      body,
+      funcLit,
+      params
+    });
+    this.globalScope.define(name, index, "func");
+  }
+  _compileFunctions() {
+    for (const func of this.functions) {
+      const prevBody = this.currentBody;
+      const prevScope = this.currentScope;
+      const prevFunc = this.currentFunc;
+      const prevLocalIdx = this.nextLocalIndex;
+      const prevParamIdx = this.nextParamIndex;
+      this.currentBody = func.body;
+      this.currentFunc = func;
+      this.currentScope = new Scope(this.globalScope);
+      this.nextParamIndex = 0;
+      this.nextLocalIndex = func.params.length;
+      for (const param of func.funcLit.parameters) {
+        const name = param.value || param.token?.literal;
+        this.currentScope.define(name, this.nextParamIndex, ValType.i32);
+        this.nextParamIndex++;
+      }
+      const body = func.funcLit.body;
+      this._compileBlockReturning(body);
+      this.currentBody = prevBody;
+      this.currentScope = prevScope;
+      this.currentFunc = prevFunc;
+      this.nextLocalIndex = prevLocalIdx;
+      this.nextParamIndex = prevParamIdx;
+    }
+  }
+  _compileBlockReturning(block) {
+    const stmts = block.statements;
+    if (stmts.length === 0) {
+      this.currentBody.i32Const(0);
+      return;
+    }
+    for (let i = 0; i < stmts.length; i++) {
+      const stmt = stmts[i];
+      const isLast = i === stmts.length - 1;
+      if (stmt instanceof ReturnStatement) {
+        this.compileNode(stmt.returnValue);
+        this.currentBody.return_();
+        if (!isLast) continue;
+        return;
+      }
+      if (stmt instanceof ExpressionStatement) {
+        this.compileNode(stmt.expression);
+        if (!isLast) {
+          this.currentBody.drop();
+        }
+      } else {
+        this.compileStatement(stmt);
+        if (isLast) {
+          this.currentBody.i32Const(0);
+        }
+      }
+    }
+  }
+  compileStatement(stmt) {
+    if (stmt instanceof LetStatement) {
+      this.compileLetStatement(stmt);
+    } else if (stmt instanceof ReturnStatement) {
+      this.compileNode(stmt.returnValue);
+      this.currentBody.return_();
+    } else if (stmt instanceof ExpressionStatement) {
+      this.compileNode(stmt.expression);
+      this.currentBody.drop();
+    } else if (stmt instanceof BreakStatement) {
+      if (this.loopStack.length > 0) {
+        const loop = this.loopStack[this.loopStack.length - 1];
+        this.currentBody.br(loop.breakLabel);
+      }
+    } else if (stmt instanceof ContinueStatement) {
+      if (this.loopStack.length > 0) {
+        const loop = this.loopStack[this.loopStack.length - 1];
+        this.currentBody.br(loop.continueLabel);
+      }
+    }
+  }
+  compileLetStatement(stmt) {
+    const name = stmt.name.value;
+    const localIdx = this.nextLocalIndex++;
+    this.currentBody.addLocal(ValType.i32);
+    this.currentScope.define(name, localIdx, ValType.i32);
+    if (stmt.value) {
+      this.compileNode(stmt.value);
+      this.currentBody.localSet(localIdx);
+    }
+  }
+  compileNode(node) {
+    if (node instanceof IntegerLiteral) {
+      this.currentBody.i32Const(node.value);
+    } else if (node instanceof FloatLiteral) {
+      this.currentBody.i32Const(Math.trunc(node.value));
+    } else if (node instanceof BooleanLiteral) {
+      this.currentBody.i32Const(node.value ? 1 : 0);
+    } else if (node instanceof NullLiteral) {
+      this.currentBody.i32Const(0);
+    } else if (node instanceof Identifier) {
+      this.compileIdentifier(node);
+    } else if (node instanceof PrefixExpression) {
+      this.compilePrefixExpression(node);
+    } else if (node instanceof InfixExpression) {
+      this.compileInfixExpression(node);
+    } else if (node instanceof IfExpression) {
+      this.compileIfExpression(node);
+    } else if (node instanceof CallExpression) {
+      this.compileCallExpression(node);
+    } else if (node instanceof FunctionLiteral) {
+      this.currentBody.i32Const(0);
+    } else if (node instanceof WhileExpression) {
+      this.compileWhileExpression(node);
+    } else if (node instanceof ForExpression) {
+      this.compileForExpression(node);
+    } else if (node instanceof AssignExpression) {
+      this.compileAssignExpression(node);
+    } else if (node instanceof BlockStatement) {
+      this._compileBlockReturning(node);
+    } else if (node instanceof TernaryExpression) {
+      this.compileNode(node.condition);
+      this.currentBody.if_(ValType.i32);
+      this.compileNode(node.consequence);
+      this.currentBody.else_();
+      this.compileNode(node.alternative);
+      this.currentBody.end();
+    } else if (node instanceof StringLiteral) {
+      this.compileStringLiteral(node);
+    } else if (node instanceof ArrayLiteral) {
+      this.compileArrayLiteral(node);
+    } else if (node instanceof IndexExpression) {
+      this.compileIndexExpression(node);
+    } else if (node instanceof HashLiteral) {
+      this.currentBody.i32Const(0);
+    } else if (node instanceof IndexAssignExpression) {
+      this.compileNode(node.left);
+      this.compileNode(node.index);
+      this.compileNode(node.value);
+      const tmpLocal = this.nextLocalIndex++;
+      this.currentBody.addLocal(ValType.i32);
+      this.currentBody.localSet(tmpLocal);
+      const tmpIdx = this.nextLocalIndex++;
+      this.currentBody.addLocal(ValType.i32);
+      this.currentBody.localSet(tmpIdx);
+      const tmpArr = this.nextLocalIndex++;
+      this.currentBody.addLocal(ValType.i32);
+      this.currentBody.localSet(tmpArr);
+      this.currentBody.localGet(tmpArr);
+      this.currentBody.localGet(tmpIdx);
+      this.currentBody.localGet(tmpLocal);
+      this.currentBody.call(this._runtimeFuncs.arraySet);
+      this.currentBody.localGet(tmpLocal);
+    } else {
+      this.currentBody.i32Const(0);
+    }
+  }
+  compileIdentifier(node) {
+    const name = node.value;
+    const binding = this.currentScope.resolve(name);
+    if (binding) {
+      if (binding.type === "func") {
+        this.currentBody.i32Const(0);
+      } else {
+        this.currentBody.localGet(binding.index);
+      }
+    } else {
+      this.errors.push(`undefined variable: ${name}`);
+      this.currentBody.i32Const(0);
+    }
+  }
+  compilePrefixExpression(node) {
+    this.compileNode(node.right);
+    switch (node.operator) {
+      case "-":
+        this.currentBody.i32Const(0);
+        break;
+      case "!":
+        this.currentBody.emit(Op.i32_eqz);
+        break;
+      default:
+        break;
+    }
+  }
+  compileInfixExpression(node) {
+    if (node.operator === "&&") {
+      this.compileNode(node.left);
+      this.currentBody.if_(ValType.i32);
+      this.compileNode(node.right);
+      this.currentBody.else_();
+      this.currentBody.i32Const(0);
+      this.currentBody.end();
+      return;
+    }
+    if (node.operator === "||") {
+      this.compileNode(node.left);
+      this.currentBody.localTee(this._getTempLocal());
+      this.currentBody.if_(ValType.i32);
+      this.currentBody.localGet(this._getTempLocal());
+      this.currentBody.else_();
+      this.compileNode(node.right);
+      this.currentBody.end();
+      return;
+    }
+    this.compileNode(node.left);
+    this.compileNode(node.right);
+    switch (node.operator) {
+      case "+":
+        this.currentBody.emit(Op.i32_add);
+        break;
+      case "-":
+        this.currentBody.emit(Op.i32_sub);
+        break;
+      case "*":
+        this.currentBody.emit(Op.i32_mul);
+        break;
+      case "/":
+        this.currentBody.emit(Op.i32_div_s);
+        break;
+      case "%":
+        this.currentBody.emit(Op.i32_rem_s);
+        break;
+      case "==":
+        this.currentBody.emit(Op.i32_eq);
+        break;
+      case "!=":
+        this.currentBody.emit(Op.i32_ne);
+        break;
+      case "<":
+        this.currentBody.emit(Op.i32_lt_s);
+        break;
+      case ">":
+        this.currentBody.emit(Op.i32_gt_s);
+        break;
+      case "<=":
+        this.currentBody.emit(Op.i32_le_s);
+        break;
+      case ">=":
+        this.currentBody.emit(Op.i32_ge_s);
+        break;
+      case "&":
+        this.currentBody.emit(Op.i32_and);
+        break;
+      case "|":
+        this.currentBody.emit(Op.i32_or);
+        break;
+      case "^":
+        this.currentBody.emit(Op.i32_xor);
+        break;
+      case "<<":
+        this.currentBody.emit(Op.i32_shl);
+        break;
+      case ">>":
+        this.currentBody.emit(Op.i32_shr_s);
+        break;
+      default:
+        this.errors.push(`unsupported operator: ${node.operator}`);
+        break;
+    }
+  }
+  compileIfExpression(node) {
+    this.compileNode(node.condition);
+    if (node.alternative) {
+      this.currentBody.if_(ValType.i32);
+      this._compileBlockReturning(node.consequence);
+      this.currentBody.else_();
+      this._compileBlockReturning(node.alternative);
+      this.currentBody.end();
+    } else {
+      this.currentBody.if_(ValType.i32);
+      this._compileBlockReturning(node.consequence);
+      this.currentBody.else_();
+      this.currentBody.i32Const(0);
+      this.currentBody.end();
+    }
+  }
+  compileCallExpression(node) {
+    if (node.function instanceof Identifier) {
+      const name = node.function.value;
+      if (name === "len" && node.arguments.length === 1) {
+        this.compileNode(node.arguments[0]);
+        this.currentBody.call(this._runtimeFuncs.len);
+        return;
+      }
+      if (name === "push" && node.arguments.length === 2) {
+        this.compileNode(node.arguments[0]);
+        this.compileNode(node.arguments[1]);
+        this.currentBody.call(this._runtimeFuncs.push);
+        return;
+      }
+    }
+    for (const arg of node.arguments) {
+      this.compileNode(arg);
+    }
+    if (node.function instanceof Identifier) {
+      const name = node.function.value;
+      const binding = this.currentScope.resolve(name);
+      if (binding && binding.type === "func") {
+        this.currentBody.call(binding.index);
+      } else {
+        this.errors.push(`unknown function: ${name}`);
+        for (let i = 0; i < node.arguments.length; i++) {
+          this.currentBody.drop();
+        }
+        this.currentBody.i32Const(0);
+      }
+    } else {
+      for (let i = 0; i < node.arguments.length; i++) {
+        this.currentBody.drop();
+      }
+      this.currentBody.i32Const(0);
+    }
+  }
+  compileWhileExpression(node) {
+    this.currentBody.block();
+    this.currentBody.loop();
+    this.loopStack.push({ breakLabel: 1, continueLabel: 0 });
+    this.compileNode(node.condition);
+    this.currentBody.emit(Op.i32_eqz);
+    this.currentBody.brIf(1);
+    this._compileBlockStatements(node.body);
+    this.currentBody.br(0);
+    this.loopStack.pop();
+    this.currentBody.end();
+    this.currentBody.end();
+    this.currentBody.i32Const(0);
+  }
+  compileForExpression(node) {
+    if (node.init) {
+      if (node.init instanceof LetStatement) {
+        this.compileLetStatement(node.init);
+      } else {
+        this.compileNode(node.init);
+        this.currentBody.drop();
+      }
+    }
+    this.currentBody.block();
+    this.currentBody.loop();
+    this.loopStack.push({ breakLabel: 1, continueLabel: 0 });
+    if (node.condition) {
+      this.compileNode(node.condition);
+      this.currentBody.emit(Op.i32_eqz);
+      this.currentBody.brIf(1);
+    }
+    this._compileBlockStatements(node.body);
+    if (node.update) {
+      this.compileNode(node.update);
+      this.currentBody.drop();
+    }
+    this.currentBody.br(0);
+    this.loopStack.pop();
+    this.currentBody.end();
+    this.currentBody.end();
+    this.currentBody.i32Const(0);
+  }
+  compileAssignExpression(node) {
+    const name = node.name.value || node.name;
+    const binding = this.currentScope.resolve(name);
+    if (binding) {
+      this.compileNode(node.value);
+      this.currentBody.localTee(binding.index);
+    } else {
+      this.errors.push(`undefined variable for assignment: ${name}`);
+      this.currentBody.i32Const(0);
+    }
+  }
+  _compileBlockStatements(block) {
+    for (const stmt of block.statements) {
+      if (stmt instanceof ExpressionStatement) {
+        this.compileNode(stmt.expression);
+        this.currentBody.drop();
+      } else if (stmt instanceof ReturnStatement) {
+        this.compileNode(stmt.returnValue);
+        this.currentBody.return_();
+      } else {
+        this.compileStatement(stmt);
+      }
+    }
+  }
+  // String literal → data segment constant
+  compileStringLiteral(node) {
+    const str = node.value;
+    const encoder = new TextEncoder();
+    const bytes = encoder.encode(str);
+    const offset = this.nextDataOffset;
+    this.nextDataOffset += 8 + bytes.length;
+    this.nextDataOffset = this.nextDataOffset + 3 & ~3;
+    this.stringConstants.push({ offset, length: bytes.length, value: str });
+    this.currentBody.i32Const(offset);
+  }
+  // Array literal → heap-allocated array
+  compileArrayLiteral(node) {
+    const elements = node.elements.filter((e) => !(e instanceof SpreadElement));
+    const len = elements.length;
+    this.currentBody.i32Const(len);
+    this.currentBody.call(this._runtimeFuncs.makeArray);
+    const arrLocal = this.nextLocalIndex++;
+    this.currentBody.addLocal(ValType.i32);
+    this.currentBody.localSet(arrLocal);
+    for (let i = 0; i < len; i++) {
+      this.currentBody.localGet(arrLocal);
+      this.currentBody.i32Const(i);
+      this.compileNode(elements[i]);
+      this.currentBody.call(this._runtimeFuncs.arraySet);
+    }
+    this.currentBody.localGet(arrLocal);
+  }
+  // Index expression: arr[idx]
+  compileIndexExpression(node) {
+    this.compileNode(node.left);
+    this.compileNode(node.index);
+    this.currentBody.call(this._runtimeFuncs.arrayGet);
+  }
+  // Temp local for || operator
+  _tempLocal = null;
+  _getTempLocal() {
+    if (this._tempLocal === null) {
+      this._tempLocal = this.nextLocalIndex++;
+      this.currentBody.addLocal(ValType.i32);
+    }
+    return this._tempLocal;
+  }
+};
+var origPrefix = WasmCompiler.prototype.compilePrefixExpression;
+WasmCompiler.prototype.compilePrefixExpression = function(node) {
+  if (node.operator === "-") {
+    this.currentBody.i32Const(0);
+    this.compileNode(node.right);
+    this.currentBody.emit(Op.i32_sub);
+    return;
+  }
+  if (node.operator === "!") {
+    this.compileNode(node.right);
+    this.currentBody.emit(Op.i32_eqz);
+    return;
+  }
+  this.compileNode(node.right);
+};
+async function compileAndRun(input) {
+  const compiler = new WasmCompiler();
+  const builder = compiler.compile(input);
+  if (!builder || compiler.errors.length > 0) {
+    throw new Error(`Compilation errors: ${compiler.errors.join(", ")}`);
+  }
+  const binary = builder.build();
+  const module = await WebAssembly.compile(binary);
+  const instance = await WebAssembly.instantiate(module);
+  return instance.exports.main();
+}
+async function compileToInstance(input) {
+  const compiler = new WasmCompiler();
+  const builder = compiler.compile(input);
+  if (!builder || compiler.errors.length > 0) {
+    throw new Error(`Compilation errors: ${compiler.errors.join(", ")}`);
+  }
+  const binary = builder.build();
+  const module = await WebAssembly.compile(binary);
+  return WebAssembly.instantiate(module);
+}
 export {
   Compiler,
   Environment,
+  ExportKind,
+  FuncBodyBuilder,
   IR,
   Lexer,
   NULL,
+  Op,
   Parser,
   STDLIB_SOURCE,
   Transpiler,
   VM,
+  ValType,
+  WasmCompiler,
+  WasmModuleBuilder,
   monkeyEval,
+  compileAndRun as wasmCompileAndRun,
+  compileToInstance as wasmCompileToInstance,
   withStdlib
 };

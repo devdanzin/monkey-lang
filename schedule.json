@@ -101,16 +101,20 @@
       "id": "T16",
       "mode": "BUILD",
       "task": "WASM strings + arrays: linear memory layout, alloc/free, string builtins, array indexing",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T6",
-      "started": "2026-03-30T15:21:15.386Z"
+      "started": "2026-03-30T15:21:15.386Z",
+      "completed": "2026-03-30T15:25:08.123Z",
+      "duration_ms": 480000,
+      "summary": "WASM strings+arrays complete. Bump allocator, array literals/indexing/len/push, string literals with data segments, 73 compiler tests (14 new). 91 total WASM tests."
     },
     {
       "id": "T17",
       "mode": "BUILD",
       "task": "Integrate WASM backend into playground with execution mode toggle",
-      "status": "upcoming",
-      "plan_ref": "T6"
+      "status": "in-progress",
+      "plan_ref": "T6",
+      "started": "2026-03-30T15:25:26.618Z"
     },
     {
       "id": "T8",
