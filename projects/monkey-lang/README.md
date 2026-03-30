@@ -369,6 +369,33 @@ node src/benchmark-runner.js         # Quick: VM vs JIT aggregate
 
 See [`benchmarks/five-backend-2026-03-30.md`](benchmarks/five-backend-2026-03-30.md) for full results.
 
+## Example: Ray Tracer in Monkey
+
+A 100-line ray tracer showcasing arrays, closures, and math:
+
+```monkey
+// Vector operations as arrays
+let vadd = fn(a, b) { [a[0] + b[0], a[1] + b[1], a[2] + b[2]] };
+let vsub = fn(a, b) { [a[0] - b[0], a[1] - b[1], a[2] - b[2]] };
+let vmul = fn(a, t) { [a[0] * t, a[1] * t, a[2] * t] };
+let vdot = fn(a, b) { a[0] * b[0] + a[1] * b[1] + a[2] * b[2] };
+
+// Newton's method sqrt
+let sqrt = fn(x) {
+  let guess = x;
+  let i = 0;
+  while (i < 20) { guess = (guess + x / guess) / 2.0; i = i + 1; }
+  guess
+};
+```
+
+Run it:
+```bash
+node src/repl.js examples/ray-tracer.monkey > scene.ppm
+```
+
+Outputs a 40×22 PPM image with 4 spheres, directional lighting, and a sky gradient. See `examples/ray-tracer.monkey` for the full source.
+
 ## REPL
 
 ```bash
