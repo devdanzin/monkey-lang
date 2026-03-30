@@ -111,12 +111,25 @@ export class Renderer {
 
   // Render to PPM format (portable pixmap — simple image format)
   renderPPM() {
+    const startTime = performance.now();
+    let lastUpdate = startTime;
+    
     const pixels = this.render((p) => {
-      if (Math.floor(p * 100) % 10 === 0) {
-        process.stderr.write(`\r${Math.floor(p * 100)}%`);
+      const now = performance.now();
+      if (now - lastUpdate > 500 || p >= 0.999) { // Update every 500ms
+        lastUpdate = now;
+        const elapsed = (now - startTime) / 1000;
+        const eta = p > 0 ? (elapsed / p) * (1 - p) : 0;
+        const pct = Math.floor(p * 100);
+        const bar = '█'.repeat(Math.floor(p * 30)) + '░'.repeat(30 - Math.floor(p * 30));
+        const raysPerSec = (p * this.width * this.height * this.samplesPerPixel) / elapsed;
+        process.stderr.write(`\r  ${bar} ${pct}% | ${elapsed.toFixed(1)}s elapsed | ETA ${eta.toFixed(1)}s | ${(raysPerSec/1e6).toFixed(1)}M rays/s`);
       }
     });
-    process.stderr.write('\r100%\n');
+    
+    const totalTime = ((performance.now() - startTime) / 1000).toFixed(1);
+    const totalRays = this.width * this.height * this.samplesPerPixel;
+    process.stderr.write(`\r  ${'█'.repeat(30)} 100% | ${totalTime}s | ${(totalRays/1e6).toFixed(1)}M rays\n`);
 
     let ppm = `P3\n${this.width} ${this.height}\n255\n`;
     for (let i = 0; i < pixels.length; i += 4) {
