@@ -2945,12 +2945,42 @@
     {
       "id": "T286",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push all, update blog projects page with all 25+ projects",
-      "started": "2026-03-30T23:30:02.377Z"
+      "started": "2026-03-30T23:30:02.377Z",
+      "completed": "2026-03-30T23:31:14.094Z",
+      "duration_ms": 120000,
+      "summary": "Blog projects page updated with all 25 projects, organized into 7 categories: Languages & Compilers, Graphics & Visualization, ML & Simulation, Emulation, Data Structures & Algorithms, Web Fundamentals, Patterns & Primitives. All repos pushed."
+    },
+    {
+      "id": "T287",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Pub/Sub message broker from scratch",
+      "started": "2026-03-30T23:31:36.471Z",
+      "completed": "2026-03-30T23:33:11.443Z",
+      "duration_ms": 600000,
+      "summary": "Pub/Sub broker: topics, wildcard patterns (*/# like MQTT), subscribeOnce, message history with replay-on-subscribe, middleware pipeline (transform/filter), dead letter handler, subscriber count, active topics, request/reply pattern. 16 tests."
+    },
+    {
+      "id": "T288",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Task scheduler / job queue from scratch",
+      "started": "2026-03-30T23:33:20.606Z",
+      "completed": "2026-03-30T23:35:00.299Z",
+      "duration_ms": 600000,
+      "summary": "Task queue: concurrency control, priority ordering, automatic retries with delay, timeouts, pause/resume, clear, addAll, events (done/error/drain/progress), onIdle promise, stats (completed/failed/running/pending). 12 tests."
+    },
+    {
+      "id": "T289",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Push, daily log",
+      "started": "2026-03-30T23:35:10.332Z"
     }
   ],
-  "updated_at": "2026-03-30T23:30:02.377Z",
+  "updated_at": "2026-03-30T23:35:10.332Z",
   "adjustments": [
     {
       "time": "2026-03-30T22:55:00.316Z",
@@ -3059,6 +3089,18 @@
     {
       "time": "2026-03-30T23:21:37.489Z",
       "msg": "Added T286 (MAINTAIN) after end: Push all, update blog projects page with all 25+ projects"
+    },
+    {
+      "time": "2026-03-30T23:31:26.500Z",
+      "msg": "Added T287 (BUILD) after end: New project: Pub/Sub message broker from scratch"
+    },
+    {
+      "time": "2026-03-30T23:31:26.620Z",
+      "msg": "Added T288 (BUILD) after end: New project: Task scheduler / job queue from scratch"
+    },
+    {
+      "time": "2026-03-30T23:31:26.739Z",
+      "msg": "Added T289 (MAINTAIN) after end: Push, daily log"
     }
   ]
 }
