@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pathfinding Visualizer — Henry</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    background: #0d1117; color: #c9d1d9;
+    display: flex; flex-direction: column; align-items: center;
+    min-height: 100vh; padding: 1rem;
+  }
+  h1 { font-size: 1.6rem; color: #f0f6fc; margin-bottom: 0.2rem; }
+  h1 span { color: #58a6ff; }
+  .sub { color: #8b949e; font-size: 0.85rem; margin-bottom: 0.8rem; }
+  .grid-container { position: relative; }
+  canvas { border: 1px solid #30363d; border-radius: 4px; cursor: crosshair; }
+  .controls {
+    display: flex; gap: 0.6rem; margin: 0.8rem 0; flex-wrap: wrap; justify-content: center;
+    align-items: center;
+  }
+  select, button {
+    background: #21262d; color: #c9d1d9; border: 1px solid #30363d;
+    padding: 0.35rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.82rem;
+  }
+  select:hover, button:hover { border-color: #58a6ff; }
+  button.active { background: #238636; border-color: #238636; color: #fff; }
+  .stats { color: #8b949e; font-size: 0.78rem; margin: 0.4rem 0; }
+  .stats span { color: #c9d1d9; }
+  .legend { display: flex; gap: 0.8rem; margin: 0.4rem 0; font-size: 0.72rem; color: #8b949e; flex-wrap: wrap; }
+  .legend .swatch { width: 12px; height: 12px; border-radius: 2px; display: inline-block; vertical-align: middle; margin-right: 3px; }
+  .tool-bar { display: flex; gap: 0.5rem; margin: 0.5rem 0; }
+  .tool-bar button { font-size: 0.78rem; padding: 0.3rem 0.7rem; }
+  .tool-bar button.selected { background: #58a6ff; color: #0d1117; border-color: #58a6ff; }
+  .info { max-width: 650px; text-align: center; color: #8b949e; font-size: 0.72rem; margin-top: 0.6rem; line-height: 1.5; }
+  .info a { color: #58a6ff; text-decoration: none; }
+</style>
+</head>
+<body>
+<h1>🗺️ <span>Pathfinding</span> Visualizer</h1>
+<p class="sub">Watch algorithms explore — draw walls, place start/end, find the path</p>
+
+<div class="tool-bar">
+  <button class="selected" data-tool="wall" onclick="setTool('wall')">🧱 Wall</button>
+  <button data-tool="start" onclick="setTool('start')">🟢 Start</button>
+  <button data-tool="end" onclick="setTool('end')">🔴 End</button>
+  <button data-tool="weight" onclick="setTool('weight')">⚖️ Weight</button>
+  <button data-tool="erase" onclick="setTool('erase')">🗑 Erase</button>
+</div>
+
+<canvas id="grid"></canvas>
+
+<div class="controls">
+  <select id="algo">
+    <option value="astar" selected>A* (Manhattan)</option>
+    <option value="astar-diag">A* (Diagonal)</option>
+    <option value="dijkstra">Dijkstra</option>
+    <option value="bfs">BFS</option>
+    <option value="dfs">DFS</option>
+    <option value="greedy">Greedy Best-First</option>
+  </select>
+  <button id="runBtn" onclick="run()">▶ Visualize</button>
+  <button onclick="generateMaze()">🌀 Maze</button>
+  <button onclick="clearPath()">🧹 Clear Path</button>
+  <button onclick="clearAll()">🗑 Clear All</button>
+  <select id="speed">
+    <option value="50">Slow</option>
+    <option value="15" selected>Normal</option>
+    <option value="3">Fast</option>
+    <option value="0">Instant</option>
+  </select>
+</div>
+
+<div class="stats">
+  Visited: <span id="visited">0</span> |
+  Path length: <span id="pathLen">0</span> |
+  Time: <span id="time">0ms</span>
+</div>
+
+<div class="legend">
+  <div><span class="swatch" style="background:#238636"></span>Start</div>
+  <div><span class="swatch" style="background:#da3633"></span>End</div>
+  <div><span class="swatch" style="background:#484f58"></span>Wall</div>
+  <div><span class="swatch" style="background:#533d1a"></span>Weight (5×)</div>
+  <div><span class="swatch" style="background:#1f3a5f"></span>Visited</div>
+  <div><span class="swatch" style="background:#58a6ff"></span>Frontier</div>
+  <div><span class="swatch" style="background:#f0c000"></span>Path</div>
+</div>
+
+<div class="info">
+  Click/drag to draw walls. A* uses heuristic + cost. Dijkstra uses only cost. BFS ignores weights. DFS goes deep first.
+  <br>Weights cost 5× more to traverse. Maze uses recursive backtracker.
+  <br><a href="https://github.com/henry-the-frog/pathfinding">Source</a> · <a href="https://github.com/henry-the-frog">Built by Henry</a>
+</div>
+
+<script>
+const canvas = document.getElementById('grid');
+const ctx = canvas.getContext('2d');
+
+const CELL = 20;
+let COLS, ROWS;
+const EMPTY = 0, WALL = 1, START = 2, END = 3, WEIGHT = 4;
+const VIS = 5, FRONTIER = 6, PATH = 7;
+
+let cells, startPos, endPos;
+let currentTool = 'wall';
+let isDrawing = false;
+let running = false;
+let delay = 15;
+
+function init() {
+  const w = Math.min(window.innerWidth - 32, 800);
+  const h = Math.min(window.innerHeight - 380, 400);
+  COLS = Math.floor(w / CELL);
+  ROWS = Math.floor(h / CELL);
+  canvas.width = COLS * CELL;
+  canvas.height = ROWS * CELL;
+  cells = Array.from({ length: ROWS }, () => new Uint8Array(COLS));
+  startPos = [Math.floor(ROWS / 2), Math.floor(COLS / 4)];
+  endPos = [Math.floor(ROWS / 2), Math.floor(3 * COLS / 4)];
+  cells[startPos[0]][startPos[1]] = START;
+  cells[endPos[0]][endPos[1]] = END;
+  draw();
+}
+
+const COLORS = {
+  [EMPTY]: '#0d1117',
+  [WALL]: '#484f58',
+  [START]: '#238636',
+  [END]: '#da3633',
+  [WEIGHT]: '#533d1a',
+  [VIS]: '#1f3a5f',
+  [FRONTIER]: '#1a4a7a',
+  [PATH]: '#f0c000',
+};
+
+function draw() {
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      ctx.fillStyle = COLORS[cells[r][c]] || COLORS[EMPTY];
+      ctx.fillRect(c * CELL, r * CELL, CELL - 1, CELL - 1);
+    }
+  }
+}
+
+function drawCell(r, c) {
+  ctx.fillStyle = COLORS[cells[r][c]] || COLORS[EMPTY];
+  ctx.fillRect(c * CELL, r * CELL, CELL - 1, CELL - 1);
+}
+
+function setTool(tool) {
+  currentTool = tool;
+  document.querySelectorAll('.tool-bar button').forEach(b => b.classList.toggle('selected', b.dataset.tool === tool));
+}
+
+function getCellFromEvent(e) {
+  const rect = canvas.getBoundingClientRect();
+  const c = Math.floor((e.clientX - rect.left) / CELL);
+  const r = Math.floor((e.clientY - rect.top) / CELL);
+  if (r >= 0 && r < ROWS && c >= 0 && c < COLS) return [r, c];
+  return null;
+}
+
+function applyTool(r, c) {
+  if (running) return;
+  const cur = cells[r][c];
+  if (currentTool === 'wall' && cur !== START && cur !== END) { cells[r][c] = WALL; }
+  else if (currentTool === 'weight' && cur !== START && cur !== END) { cells[r][c] = WEIGHT; }
+  else if (currentTool === 'erase' && cur !== START && cur !== END) { cells[r][c] = EMPTY; }
+  else if (currentTool === 'start') {
+    cells[startPos[0]][startPos[1]] = EMPTY;
+    drawCell(startPos[0], startPos[1]);
+    startPos = [r, c]; cells[r][c] = START;
+  } else if (currentTool === 'end') {
+    cells[endPos[0]][endPos[1]] = EMPTY;
+    drawCell(endPos[0], endPos[1]);
+    endPos = [r, c]; cells[r][c] = END;
+  }
+  drawCell(r, c);
+}
+
+canvas.addEventListener('mousedown', (e) => { isDrawing = true; const p = getCellFromEvent(e); if (p) applyTool(...p); });
+canvas.addEventListener('mousemove', (e) => { if (isDrawing) { const p = getCellFromEvent(e); if (p) applyTool(...p); } });
+window.addEventListener('mouseup', () => isDrawing = false);
+
+function sleep(ms) { return ms > 0 ? new Promise(r => setTimeout(r, ms)) : Promise.resolve(); }
+
+function clearPath() {
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+    if (cells[r][c] === VIS || cells[r][c] === FRONTIER || cells[r][c] === PATH) cells[r][c] = EMPTY;
+  }
+  cells[startPos[0]][startPos[1]] = START;
+  cells[endPos[0]][endPos[1]] = END;
+  draw();
+  document.getElementById('visited').textContent = '0';
+  document.getElementById('pathLen').textContent = '0';
+  document.getElementById('time').textContent = '0ms';
+}
+
+function clearAll() { if (!running) { init(); } }
+
+// ===== Priority Queue (min-heap) =====
+class MinHeap {
+  constructor() { this.data = []; }
+  push(item) { this.data.push(item); this._bubbleUp(this.data.length - 1); }
+  pop() { const top = this.data[0]; const last = this.data.pop(); if (this.data.length) { this.data[0] = last; this._sinkDown(0); } return top; }
+  get size() { return this.data.length; }
+  _bubbleUp(i) { while (i > 0) { const p = (i - 1) >> 1; if (this.data[p][0] <= this.data[i][0]) break; [this.data[p], this.data[i]] = [this.data[i], this.data[p]]; i = p; } }
+  _sinkDown(i) { const n = this.data.length; while (true) { let s = i; const l = 2*i+1, r = 2*i+2; if (l < n && this.data[l][0] < this.data[s][0]) s = l; if (r < n && this.data[r][0] < this.data[s][0]) s = r; if (s === i) break; [this.data[s], this.data[i]] = [this.data[i], this.data[s]]; i = s; } }
+}
+
+// ===== Algorithms =====
+function neighbors4(r, c) {
+  const n = [];
+  if (r > 0) n.push([r-1, c]);
+  if (r < ROWS-1) n.push([r+1, c]);
+  if (c > 0) n.push([r, c-1]);
+  if (c < COLS-1) n.push([r, c+1]);
+  return n;
+}
+
+function neighbors8(r, c) {
+  const n = neighbors4(r, c);
+  if (r > 0 && c > 0) n.push([r-1, c-1]);
+  if (r > 0 && c < COLS-1) n.push([r-1, c+1]);
+  if (r < ROWS-1 && c > 0) n.push([r+1, c-1]);
+  if (r < ROWS-1 && c < COLS-1) n.push([r+1, c+1]);
+  return n;
+}
+
+function manhattan(r1, c1, r2, c2) { return Math.abs(r1 - r2) + Math.abs(c1 - c2); }
+function diagonal(r1, c1, r2, c2) { return Math.max(Math.abs(r1 - r2), Math.abs(c1 - c2)); }
+function cellCost(r, c) { return cells[r][c] === WEIGHT ? 5 : 1; }
+
+async function astar(heuristic, diagNeighbors) {
+  const getNeighbors = diagNeighbors ? neighbors8 : neighbors4;
+  const h = heuristic === 'diagonal' ? diagonal : manhattan;
+  const [sr, sc] = startPos, [er, ec] = endPos;
+  const open = new MinHeap();
+  const gScore = Array.from({ length: ROWS }, () => new Float64Array(COLS).fill(Infinity));
+  const parent = Array.from({ length: ROWS }, () => new Array(COLS).fill(null));
+  const visited = Array.from({ length: ROWS }, () => new Uint8Array(COLS));
+  let visitCount = 0;
+
+  gScore[sr][sc] = 0;
+  open.push([h(sr, sc, er, ec), sr, sc]);
+
+  while (open.size) {
+    const [, r, c] = open.pop();
+    if (visited[r][c]) continue;
+    visited[r][c] = 1;
+    visitCount++;
+
+    if (cells[r][c] !== START && cells[r][c] !== END) { cells[r][c] = VIS; drawCell(r, c); }
+    if (r === er && c === ec) break;
+
+    await sleep(delay);
+
+    for (const [nr, nc] of getNeighbors(r, c)) {
+      if (cells[nr][nc] === WALL || visited[nr][nc]) continue;
+      const ng = gScore[r][c] + cellCost(nr, nc);
+      if (ng < gScore[nr][nc]) {
+        gScore[nr][nc] = ng;
+        parent[nr][nc] = [r, c];
+        open.push([ng + h(nr, nc, er, ec), nr, nc]);
+        if (cells[nr][nc] !== START && cells[nr][nc] !== END) { cells[nr][nc] = FRONTIER; drawCell(nr, nc); }
+      }
+    }
+  }
+
+  return { parent, visitCount };
+}
+
+async function dijkstra() {
+  return astar(() => 0, false);
+}
+
+async function bfs() {
+  const [sr, sc] = startPos, [er, ec] = endPos;
+  const queue = [[sr, sc]];
+  const visited = Array.from({ length: ROWS }, () => new Uint8Array(COLS));
+  const parent = Array.from({ length: ROWS }, () => new Array(COLS).fill(null));
+  visited[sr][sc] = 1;
+  let visitCount = 0;
+
+  while (queue.length) {
+    const [r, c] = queue.shift();
+    visitCount++;
+    if (cells[r][c] !== START && cells[r][c] !== END) { cells[r][c] = VIS; drawCell(r, c); }
+    if (r === er && c === ec) break;
+
+    await sleep(delay);
+
+    for (const [nr, nc] of neighbors4(r, c)) {
+      if (cells[nr][nc] === WALL || visited[nr][nc]) continue;
+      visited[nr][nc] = 1;
+      parent[nr][nc] = [r, c];
+      queue.push([nr, nc]);
+      if (cells[nr][nc] !== START && cells[nr][nc] !== END) { cells[nr][nc] = FRONTIER; drawCell(nr, nc); }
+    }
+  }
+
+  return { parent, visitCount };
+}
+
+async function dfs() {
+  const [sr, sc] = startPos, [er, ec] = endPos;
+  const stack = [[sr, sc]];
+  const visited = Array.from({ length: ROWS }, () => new Uint8Array(COLS));
+  const parent = Array.from({ length: ROWS }, () => new Array(COLS).fill(null));
+  visited[sr][sc] = 1;
+  let visitCount = 0;
+
+  while (stack.length) {
+    const [r, c] = stack.pop();
+    visitCount++;
+    if (cells[r][c] !== START && cells[r][c] !== END) { cells[r][c] = VIS; drawCell(r, c); }
+    if (r === er && c === ec) break;
+
+    await sleep(delay);
+
+    for (const [nr, nc] of neighbors4(r, c)) {
+      if (cells[nr][nc] === WALL || visited[nr][nc]) continue;
+      visited[nr][nc] = 1;
+      parent[nr][nc] = [r, c];
+      stack.push([nr, nc]);
+      if (cells[nr][nc] !== START && cells[nr][nc] !== END) { cells[nr][nc] = FRONTIER; drawCell(nr, nc); }
+    }
+  }
+
+  return { parent, visitCount };
+}
+
+async function greedy() {
+  const [sr, sc] = startPos, [er, ec] = endPos;
+  const open = new MinHeap();
+  const visited = Array.from({ length: ROWS }, () => new Uint8Array(COLS));
+  const parent = Array.from({ length: ROWS }, () => new Array(COLS).fill(null));
+  let visitCount = 0;
+
+  open.push([manhattan(sr, sc, er, ec), sr, sc]);
+
+  while (open.size) {
+    const [, r, c] = open.pop();
+    if (visited[r][c]) continue;
+    visited[r][c] = 1;
+    visitCount++;
+
+    if (cells[r][c] !== START && cells[r][c] !== END) { cells[r][c] = VIS; drawCell(r, c); }
+    if (r === er && c === ec) break;
+
+    await sleep(delay);
+
+    for (const [nr, nc] of neighbors4(r, c)) {
+      if (cells[nr][nc] === WALL || visited[nr][nc]) continue;
+      parent[nr][nc] = [r, c];
+      open.push([manhattan(nr, nc, er, ec), nr, nc]);
+      if (cells[nr][nc] !== START && cells[nr][nc] !== END) { cells[nr][nc] = FRONTIER; drawCell(nr, nc); }
+    }
+  }
+
+  return { parent, visitCount };
+}
+
+function tracePath(parent) {
+  const path = [];
+  let [r, c] = endPos;
+  while (parent[r][c]) {
+    [r, c] = parent[r][c];
+    if (cells[r][c] !== START) path.push([r, c]);
+  }
+  return path;
+}
+
+const ALGOS = {
+  'astar': () => astar('manhattan', false),
+  'astar-diag': () => astar('diagonal', true),
+  'dijkstra': () => astar(() => 0, false), // Dijkstra is A* with h=0
+  'bfs': bfs,
+  'dfs': dfs,
+  'greedy': greedy,
+};
+
+window.run = async function() {
+  if (running) return;
+  running = true;
+  clearPath();
+  delay = parseInt(document.getElementById('speed').value);
+  const algo = document.getElementById('algo').value;
+  const btn = document.getElementById('runBtn');
+  btn.textContent = '⏳ Running...'; btn.classList.add('active');
+
+  const t0 = performance.now();
+  const { parent, visitCount } = await ALGOS[algo]();
+  const path = tracePath(parent);
+  const t1 = performance.now();
+
+  // Animate path
+  for (const [r, c] of path.reverse()) {
+    cells[r][c] = PATH; drawCell(r, c);
+    await sleep(Math.max(delay, 10));
+  }
+
+  document.getElementById('visited').textContent = visitCount;
+  document.getElementById('pathLen').textContent = path.length + 1;
+  document.getElementById('time').textContent = Math.round(t1 - t0) + 'ms';
+
+  btn.textContent = '▶ Visualize'; btn.classList.remove('active');
+  running = false;
+};
+
+// ===== Maze Generation (Recursive Backtracker) =====
+window.generateMaze = function() {
+  if (running) return;
+  // Fill all with walls
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) cells[r][c] = WALL;
+
+  // Carve passages using recursive backtracker
+  const visited = Array.from({ length: ROWS }, () => new Uint8Array(COLS));
+  const stack = [];
+  const sr = 1, sc = 1;
+  cells[sr][sc] = EMPTY;
+  visited[sr][sc] = 1;
+  stack.push([sr, sc]);
+
+  const dirs = [[0, 2], [2, 0], [0, -2], [-2, 0]];
+
+  while (stack.length) {
+    const [r, c] = stack[stack.length - 1];
+    // Shuffle directions
+    const shuffled = dirs.slice().sort(() => Math.random() - 0.5);
+    let found = false;
+
+    for (const [dr, dc] of shuffled) {
+      const nr = r + dr, nc = c + dc;
+      if (nr > 0 && nr < ROWS - 1 && nc > 0 && nc < COLS - 1 && !visited[nr][nc]) {
+        visited[nr][nc] = 1;
+        cells[nr][nc] = EMPTY;
+        cells[r + dr / 2][c + dc / 2] = EMPTY; // Remove wall between
+        stack.push([nr, nc]);
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) stack.pop();
+  }
+
+  // Place start and end
+  cells[startPos[0]][startPos[1]] = EMPTY;
+  cells[endPos[0]][endPos[1]] = EMPTY;
+  startPos = [1, 1];
+  endPos = [ROWS - 2, COLS - 2];
+  cells[1][1] = START;
+  cells[ROWS - 2][COLS - 2] = END;
+  draw();
+};
+
+init();
+</script>
+</body>
+</html>
