@@ -546,6 +546,8 @@ export class WasmCompiler {
       this.currentBody.call(this._runtimeFuncs.slice);
     } else if (node instanceof ast.HashLiteral) {
       this.compileHashLiteral(node);
+    } else if (node instanceof ast.MatchExpression) {
+      this.compileMatchExpression(node);
     } else if (node instanceof ast.IndexAssignExpression) {
       this.compileNode(node.left);
       this.compileNode(node.index);
@@ -1459,6 +1461,68 @@ export class WasmCompiler {
     this.compileNode(node.left);
     this.compileNode(node.index);
     this.currentBody.call(this._runtimeFuncs.indexGet);
+  }
+
+  // Match expression: match (subject) { pattern => value, ... }
+  compileMatchExpression(node) {
+    // Evaluate subject once, store in temp
+    this.compileNode(node.subject);
+    const subjectLocal = this.nextLocalIndex++;
+    this.currentBody.addLocal(ValType.i32);
+    this.currentBody.localSet(subjectLocal);
+
+    // Compile as nested if-else chain
+    // For each arm: if (subject == pattern) { value } else { next arm }
+    const arms = node.arms || [];
+    
+    for (let i = 0; i < arms.length; i++) {
+      const arm = arms[i];
+      const isLast = i === arms.length - 1;
+      const isWildcard = arm.pattern === null || 
+                         (arm.pattern?.constructor?.name === 'Identifier' && arm.pattern.value === '_');
+
+      if (isWildcard) {
+        // Wildcard matches everything — just emit the value
+        // If pattern has a binding (like n in "n => ..."), bind subject to it
+        if (arm.pattern && arm.pattern.constructor?.name === 'Identifier' && arm.pattern.value !== '_') {
+          const binding = this.currentScope.define(arm.pattern.value, subjectLocal, 'local');
+        }
+        this.compileNode(arm.value);
+        // Close all remaining if blocks
+        break;
+      }
+
+      // Compare subject to pattern
+      this.currentBody.localGet(subjectLocal);
+      this.compileNode(arm.pattern);
+      this.currentBody.emit(Op.i32_eq);
+
+      if (isLast) {
+        // Last arm, no else needed
+        this.currentBody.if_(ValType.i32);
+        this.compileNode(arm.value);
+        this.currentBody.else_();
+        this.currentBody.i32Const(0); // default if no match
+        this.currentBody.end();
+      } else {
+        this.currentBody.if_(ValType.i32);
+        this.compileNode(arm.value);
+        this.currentBody.else_();
+      }
+    }
+
+    // Close all the else branches (one end per non-wildcard, non-last arm)
+    let closingEnds = 0;
+    for (let i = 0; i < arms.length; i++) {
+      const arm = arms[i];
+      const isWildcard = arm.pattern === null || 
+                         (arm.pattern?.constructor?.name === 'Identifier' && arm.pattern.value === '_');
+      if (isWildcard) break;
+      if (i < arms.length - 1) closingEnds++;
+    }
+    for (let i = 0; i < closingEnds; i++) {
+      this.currentBody.end();
+    }
   }
 
   // Hash literal: {"key": value, ...}

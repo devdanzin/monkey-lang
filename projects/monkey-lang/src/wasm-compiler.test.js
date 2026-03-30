@@ -873,6 +873,24 @@ describe('WASM Compiler', () => {
     });
   });
 
+  describe('Match expressions', () => {
+    it('simple value match', async () => {
+      assert.strictEqual(await compileAndRun('match (3) { 1 => 10, 2 => 20, 3 => 30, _ => 0 }'), 30);
+    });
+
+    it('wildcard match', async () => {
+      assert.strictEqual(await compileAndRun('match (99) { 1 => 10, _ => 42 }'), 42);
+    });
+
+    it('match with variable', async () => {
+      assert.strictEqual(await compileAndRun('let x = 2; match (x) { 1 => 10, 2 => 20, _ => 0 }'), 20);
+    });
+
+    it('match in let binding', async () => {
+      assert.strictEqual(await compileAndRun('let x = match (1) { 1 => 100, _ => 0 }; x + 1'), 101);
+    });
+  });
+
   describe('Integration tests', () => {
     it('Collatz conjecture', async () => {
       assert.strictEqual(await compileAndRun(`

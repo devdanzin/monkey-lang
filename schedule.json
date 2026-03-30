@@ -954,9 +954,12 @@
     {
       "id": "T92",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add better WASM compiler error messages with source location hints",
-      "started": "2026-03-30T18:04:12.578Z"
+      "started": "2026-03-30T18:04:12.578Z",
+      "completed": "2026-03-30T18:05:36.390Z",
+      "duration_ms": 120000,
+      "summary": "WASM compiler warnings for unsupported nodes. Yellow ⚠ in REPL. Much better DX."
     }
   ],
   "backlog": [],
