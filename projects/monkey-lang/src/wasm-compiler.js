@@ -480,6 +480,8 @@ export class WasmCompiler {
       this.currentBody.end();
     } else if (node instanceof ast.StringLiteral) {
       this.compileStringLiteral(node);
+    } else if (node instanceof ast.TemplateLiteral) {
+      this.compileTemplateLiteral(node);
     } else if (node instanceof ast.ArrayLiteral) {
       this.compileArrayLiteral(node);
     } else if (node instanceof ast.IndexExpression) {
@@ -1063,6 +1065,37 @@ export class WasmCompiler {
 
     // Push pointer to the string constant
     this.currentBody.i32Const(offset);
+  }
+
+  // Template literal → concatenation of parts
+  compileTemplateLiteral(node) {
+    if (node.parts.length === 0) {
+      // Empty template → empty string
+      this.compileStringLiteral({ value: '' });
+      return;
+    }
+
+    // Compile first part
+    const firstPart = node.parts[0];
+    if (firstPart instanceof ast.StringLiteral) {
+      this.compileStringLiteral(firstPart);
+    } else {
+      // Expression part — convert to string via str()
+      this.compileNode(firstPart);
+      this.currentBody.call(this._runtimeFuncs.str);
+    }
+
+    // Concatenate remaining parts
+    for (let i = 1; i < node.parts.length; i++) {
+      const part = node.parts[i];
+      if (part instanceof ast.StringLiteral) {
+        this.compileStringLiteral(part);
+      } else {
+        this.compileNode(part);
+        this.currentBody.call(this._runtimeFuncs.str);
+      }
+      this.currentBody.call(this._runtimeFuncs.strConcat);
+    }
   }
 
   // Function literal → closure object on heap
