@@ -200,11 +200,51 @@ function createCornellBox() {
   return world;
 }
 
+function createGlassStudy() {
+  const world = new HittableList();
+  // Ground — checkered effect via two-tone
+  world.add(new Sphere(new Vec3(0, -100.5, -1), 100, new Lambertian(new Vec3(0.2, 0.3, 0.1))));
+  // Center: solid glass sphere
+  world.add(new Sphere(new Vec3(0, 0, -1), 0.5, new Dielectric(1.5)));
+  // Center: hollow glass (negative radius inner sphere)
+  world.add(new Sphere(new Vec3(0, 0, -1), -0.45, new Dielectric(1.5)));
+  // Left: water sphere (lower IOR)
+  world.add(new Sphere(new Vec3(-1.2, 0, -1), 0.5, new Dielectric(1.33)));
+  // Right: diamond (high IOR)
+  world.add(new Sphere(new Vec3(1.2, 0, -1), 0.5, new Dielectric(2.42)));
+  // Behind: colored matte sphere visible through glass
+  world.add(new Sphere(new Vec3(0, 0, -3), 1.0, new Lambertian(new Vec3(0.8, 0.2, 0.2))));
+  world.add(new Sphere(new Vec3(-2, 0.5, -2), 0.8, new Lambertian(new Vec3(0.2, 0.2, 0.8))));
+  world.add(new Sphere(new Vec3(2, 0.3, -2.5), 0.6, new Metal(new Vec3(0.9, 0.8, 0.5), 0.1)));
+  return world;
+}
+
+function createMetalShowcase() {
+  const world = new HittableList();
+  world.add(new Sphere(new Vec3(0, -100.5, -1), 100, new Lambertian(new Vec3(0.3, 0.3, 0.3))));
+  // Row of metals with increasing fuzz
+  for (let i = 0; i < 5; i++) {
+    const fuzz = i * 0.25;
+    const x = (i - 2) * 1.2;
+    const hue = i / 5;
+    // HSL-ish to RGB
+    const r = 0.5 + 0.5 * Math.cos(2 * Math.PI * (hue + 0.0));
+    const g = 0.5 + 0.5 * Math.cos(2 * Math.PI * (hue + 0.33));
+    const b = 0.5 + 0.5 * Math.cos(2 * Math.PI * (hue + 0.67));
+    world.add(new Sphere(new Vec3(x, 0, -1.5), 0.5, new Metal(new Vec3(r, g, b), fuzz)));
+  }
+  // Large mirror sphere behind
+  world.add(new Sphere(new Vec3(0, 1.5, -4), 2.0, new Metal(new Vec3(0.95, 0.95, 0.95), 0.0)));
+  // Glass accent
+  world.add(new Sphere(new Vec3(0, 0.3, 0), 0.3, new Dielectric(1.5)));
+  return world;
+}
+
 // ===== Expose to global =====
 if (typeof self !== 'undefined') {
   self.RayTracer = {
     Vec3, Ray, HitRecord, HittableList, Sphere,
     Lambertian, Metal, Dielectric, Camera,
-    createRandomScene, createSimpleScene, createCornellBox
+    createRandomScene, createSimpleScene, createCornellBox, createGlassStudy, createMetalShowcase
   };
 }

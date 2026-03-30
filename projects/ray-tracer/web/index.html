@@ -131,6 +131,8 @@
       <option value="simple">Three Spheres</option>
       <option value="random" selected>Random Scene (~480 spheres)</option>
       <option value="cornell">Cornell Box</option>
+      <option value="glass">Glass Study</option>
+      <option value="metal">Metal Showcase</option>
     </select>
   </div>
   <div class="control-group">
@@ -194,6 +196,14 @@ const scenes = {
   random: {
     lookFrom: { x: 13, y: 2, z: 3 }, lookAt: { x: 0, y: 0, z: 0 },
     vfov: 20, aperture: 0.1, focusDist: 10.0, aspectRatio: 3/2
+  },
+  glass: {
+    lookFrom: { x: 0, y: 0.5, z: 2 }, lookAt: { x: 0, y: 0, z: -1 },
+    vfov: 40, aperture: 0, focusDist: 1, aspectRatio: 3/2
+  },
+  metal: {
+    lookFrom: { x: 0, y: 2, z: 4 }, lookAt: { x: 0, y: 0.3, z: -1 },
+    vfov: 40, aperture: 0.05, focusDist: 5, aspectRatio: 3/2
   },
   cornell: {
     lookFrom: { x: 0, y: 1, z: 4 }, lookAt: { x: 0, y: 1, z: -1 },

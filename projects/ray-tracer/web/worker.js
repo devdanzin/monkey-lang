@@ -2,7 +2,7 @@
 importScripts('bundle.js');
 
 const { Vec3, Camera, HittableList, Sphere, Lambertian, Metal, Dielectric,
-        createRandomScene, createSimpleScene, createCornellBox } = self.RayTracer;
+        createRandomScene, createSimpleScene, createCornellBox, createGlassStudy, createMetalShowcase } = self.RayTracer;
 
 let stopped = false;
 
@@ -19,6 +19,8 @@ self.onmessage = function(e) {
   let world;
   if (scene === 'random') world = createRandomScene();
   else if (scene === 'cornell') world = createCornellBox();
+  else if (scene === 'glass') world = createGlassStudy();
+  else if (scene === 'metal') world = createMetalShowcase();
   else world = createSimpleScene();
 
   const cam = new Camera(cameraConfig);
