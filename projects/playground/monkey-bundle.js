@@ -12008,6 +12008,12 @@ var WasmCompiler = class {
       this.compileWhileExpression(node);
     } else if (node instanceof ForExpression) {
       this.compileForExpression(node);
+    } else if (node instanceof ForInExpression) {
+      this.compileForInExpression(node);
+    } else if (node instanceof RangeExpression) {
+      this.compileRangeExpression(node);
+    } else if (node instanceof DoWhileExpression) {
+      this.compileDoWhileExpression(node);
     } else if (node instanceof AssignExpression) {
       this.compileAssignExpression(node);
     } else if (node instanceof BlockStatement) {
@@ -12021,6 +12027,8 @@ var WasmCompiler = class {
       this.currentBody.end();
     } else if (node instanceof StringLiteral) {
       this.compileStringLiteral(node);
+    } else if (node instanceof TemplateLiteral) {
+      this.compileTemplateLiteral(node);
     } else if (node instanceof ArrayLiteral) {
       this.compileArrayLiteral(node);
     } else if (node instanceof IndexExpression) {
@@ -12118,6 +12126,11 @@ var WasmCompiler = class {
     }
   }
   compileInfixExpression(node) {
+    const folded = this._tryConstantFold(node);
+    if (folded !== null) {
+      this.currentBody.i32Const(folded);
+      return;
+    }
     if (node.operator === "&&") {
       this.compileNode(node.left);
       this.currentBody.if_(ValType.i32);
@@ -12334,6 +12347,99 @@ var WasmCompiler = class {
     this.currentBody.end();
     this.currentBody.i32Const(0);
   }
+  compileForInExpression(node) {
+    this.compileNode(node.iterable);
+    const arrLocal = this.nextLocalIndex++;
+    this.currentBody.addLocal(ValType.i32);
+    this.currentBody.localSet(arrLocal);
+    this.currentBody.localGet(arrLocal);
+    this.currentBody.call(this._runtimeFuncs.len);
+    const lenLocal = this.nextLocalIndex++;
+    this.currentBody.addLocal(ValType.i32);
+    this.currentBody.localSet(lenLocal);
+    const iLocal = this.nextLocalIndex++;
+    this.currentBody.addLocal(ValType.i32);
+    this.currentBody.i32Const(0);
+    this.currentBody.localSet(iLocal);
+    const varLocal = this.nextLocalIndex++;
+    this.currentBody.addLocal(ValType.i32);
+    this.currentScope.define(node.variable, varLocal, ValType.i32);
+    this.currentBody.block();
+    this.currentBody.loop();
+    this.loopStack.push({ breakLabel: 1, continueLabel: 0 });
+    this.currentBody.localGet(iLocal);
+    this.currentBody.localGet(lenLocal);
+    this.currentBody.emit(Op.i32_ge_s);
+    this.currentBody.brIf(1);
+    this.currentBody.localGet(arrLocal);
+    this.currentBody.localGet(iLocal);
+    this.currentBody.call(this._runtimeFuncs.arrayGet);
+    this.currentBody.localSet(varLocal);
+    this._compileBlockStatements(node.body);
+    this.currentBody.localGet(iLocal);
+    this.currentBody.i32Const(1);
+    this.currentBody.emit(Op.i32_add);
+    this.currentBody.localSet(iLocal);
+    this.currentBody.br(0);
+    this.loopStack.pop();
+    this.currentBody.end();
+    this.currentBody.end();
+    this.currentBody.i32Const(0);
+  }
+  compileRangeExpression(node) {
+    this.compileNode(node.start);
+    const startLocal = this.nextLocalIndex++;
+    this.currentBody.addLocal(ValType.i32);
+    this.currentBody.localSet(startLocal);
+    this.compileNode(node.end);
+    const endLocal = this.nextLocalIndex++;
+    this.currentBody.addLocal(ValType.i32);
+    this.currentBody.localSet(endLocal);
+    this.currentBody.localGet(endLocal);
+    this.currentBody.localGet(startLocal);
+    this.currentBody.emit(Op.i32_sub);
+    const lenLocal = this.nextLocalIndex++;
+    this.currentBody.addLocal(ValType.i32);
+    this.currentBody.localTee(lenLocal);
+    this.currentBody.call(this._runtimeFuncs.makeArray);
+    const arrLocal = this.nextLocalIndex++;
+    this.currentBody.addLocal(ValType.i32);
+    this.currentBody.localSet(arrLocal);
+    const iLocal = this.nextLocalIndex++;
+    this.currentBody.addLocal(ValType.i32);
+    this.currentBody.i32Const(0);
+    this.currentBody.localSet(iLocal);
+    this.currentBody.block().loop();
+    this.currentBody.localGet(iLocal);
+    this.currentBody.localGet(lenLocal);
+    this.currentBody.emit(Op.i32_ge_s);
+    this.currentBody.brIf(1);
+    this.currentBody.localGet(arrLocal);
+    this.currentBody.localGet(iLocal);
+    this.currentBody.localGet(startLocal);
+    this.currentBody.localGet(iLocal);
+    this.currentBody.emit(Op.i32_add);
+    this.currentBody.call(this._runtimeFuncs.arraySet);
+    this.currentBody.localGet(iLocal);
+    this.currentBody.i32Const(1);
+    this.currentBody.emit(Op.i32_add);
+    this.currentBody.localSet(iLocal);
+    this.currentBody.br(0);
+    this.currentBody.end().end();
+    this.currentBody.localGet(arrLocal);
+  }
+  compileDoWhileExpression(node) {
+    this.currentBody.block();
+    this.currentBody.loop();
+    this.loopStack.push({ breakLabel: 1, continueLabel: 0 });
+    this._compileBlockStatements(node.body);
+    this.compileNode(node.condition);
+    this.currentBody.brIf(0);
+    this.loopStack.pop();
+    this.currentBody.end();
+    this.currentBody.end();
+    this.currentBody.i32Const(0);
+  }
   compileAssignExpression(node) {
     const name = node.name.value || node.name;
     const binding = this.currentScope.resolve(name);
@@ -12368,6 +12474,30 @@ var WasmCompiler = class {
     this.nextDataOffset = this.nextDataOffset + 3 & ~3;
     this.stringConstants.push({ offset, length: bytes.length, value: str });
     this.currentBody.i32Const(offset);
+  }
+  // Template literal → concatenation of parts
+  compileTemplateLiteral(node) {
+    if (node.parts.length === 0) {
+      this.compileStringLiteral({ value: "" });
+      return;
+    }
+    const firstPart = node.parts[0];
+    if (firstPart instanceof StringLiteral) {
+      this.compileStringLiteral(firstPart);
+    } else {
+      this.compileNode(firstPart);
+      this.currentBody.call(this._runtimeFuncs.str);
+    }
+    for (let i = 1; i < node.parts.length; i++) {
+      const part = node.parts[i];
+      if (part instanceof StringLiteral) {
+        this.compileStringLiteral(part);
+      } else {
+        this.compileNode(part);
+        this.currentBody.call(this._runtimeFuncs.str);
+      }
+      this.currentBody.call(this._runtimeFuncs.strConcat);
+    }
   }
   // Function literal → closure object on heap
   compileFunctionLiteral(node) {
@@ -12578,6 +12708,63 @@ var WasmCompiler = class {
     if (node instanceof CallExpression && node.function instanceof Identifier && node.function.value === "str") return true;
     if (node instanceof InfixExpression && node.operator === "+" && this._isStringExpression(node.left, node.right)) return true;
     return false;
+  }
+  // Constant folding: try to evaluate an expression at compile time
+  _tryConstantFold(node) {
+    if (!(node instanceof InfixExpression)) return null;
+    const left = this._getConstValue(node.left);
+    const right = this._getConstValue(node.right);
+    if (left === null || right === null) return null;
+    switch (node.operator) {
+      case "+":
+        return left + right | 0;
+      case "-":
+        return left - right | 0;
+      case "*":
+        return Math.imul(left, right);
+      case "/":
+        return right !== 0 ? left / right | 0 : null;
+      case "%":
+        return right !== 0 ? left % right | 0 : null;
+      case "==":
+        return left === right ? 1 : 0;
+      case "!=":
+        return left !== right ? 1 : 0;
+      case "<":
+        return left < right ? 1 : 0;
+      case ">":
+        return left > right ? 1 : 0;
+      case "<=":
+        return left <= right ? 1 : 0;
+      case ">=":
+        return left >= right ? 1 : 0;
+      case "&":
+        return left & right;
+      case "|":
+        return left | right;
+      case "^":
+        return left ^ right;
+      case "<<":
+        return left << right;
+      case ">>":
+        return left >> right;
+      default:
+        return null;
+    }
+  }
+  _getConstValue(node) {
+    if (node instanceof IntegerLiteral) return node.value;
+    if (node instanceof BooleanLiteral) return node.value ? 1 : 0;
+    if (node instanceof InfixExpression) return this._tryConstantFold(node);
+    if (node instanceof PrefixExpression && node.operator === "-") {
+      const val = this._getConstValue(node.right);
+      return val !== null ? -val : null;
+    }
+    if (node instanceof PrefixExpression && node.operator === "!") {
+      const val = this._getConstValue(node.right);
+      return val !== null ? val === 0 ? 1 : 0 : null;
+    }
+    return null;
   }
 };
 var origPrefix = WasmCompiler.prototype.compilePrefixExpression;
