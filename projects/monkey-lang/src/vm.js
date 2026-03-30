@@ -1543,6 +1543,20 @@ export class VM {
               case Opcodes.OpModConst: result = left4.value % right4.value; break;
             }
             this.push(cachedInteger(result));
+          } else if ((left4 instanceof MonkeyFloat || right4 instanceof MonkeyFloat) &&
+                     (left4 instanceof MonkeyInteger || left4 instanceof MonkeyFloat) &&
+                     (right4 instanceof MonkeyInteger || right4 instanceof MonkeyFloat)) {
+            if (recording()) { this.recorder.abort('float constant op'); }
+            const lv = left4.value, rv = right4.value;
+            let result;
+            switch (op) {
+              case Opcodes.OpAddConst: result = lv + rv; break;
+              case Opcodes.OpSubConst: result = lv - rv; break;
+              case Opcodes.OpMulConst: result = lv * rv; break;
+              case Opcodes.OpDivConst: result = lv / rv; break;
+              case Opcodes.OpModConst: result = lv % rv; break;
+            }
+            this.push(new MonkeyFloat(result));
           } else if (left4 instanceof MonkeyString && right4 instanceof MonkeyString && op === Opcodes.OpAddConst) {
             if (recording()) {
               // For OpAddConst, only left is on recorder stack. Push const for right first.
