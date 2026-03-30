@@ -66,8 +66,22 @@ if (process.argv.includes('--compile')) {
     const outFile = fileArg.replace(/\.monkey$/, '.wasm');
     fs.writeFileSync(outFile, binary);
     console.log(`Compiled ${fileArg} → ${outFile} (${binary.length} bytes)`);
-    console.log(`Run with: node -e "const fs=require('fs');const b=fs.readFileSync('${outFile}');WebAssembly.instantiate(b,{env:{puts:v=>console.log(v),str:v=>v,__str_concat:()=>0,__str_eq:()=>0}}).then(({instance})=>console.log(instance.exports.main()))"`);
-  } catch (e) {
+
+    // Show section breakdown
+    const dis = new (await import('./wasm-dis.js')).WasmDisassembler(binary);
+    const mod = dis.disassemble();
+    console.log(`\n  Sections:`);
+    console.log(`    Types:    ${mod.types.length} function signatures`);
+    console.log(`    Imports:  ${mod.imports.length} (${mod.imports.filter(i => i.kind === 'func').length} functions)`);
+    console.log(`    Functions: ${mod.functions.length} defined`);
+    if (mod.tables.length) console.log(`    Tables:   ${mod.tables.length} (${mod.tables[0]?.min || 0} entries)`);
+    if (mod.memories.length) console.log(`    Memory:   ${mod.memories[0]?.min || 0} page(s)`);
+    if (mod.globals.length) console.log(`    Globals:  ${mod.globals.length}`);
+    console.log(`    Exports:  ${mod.exports.length} (${mod.exports.filter(e => e.kind === 0).length} functions)`);
+    if (mod.datas.length) console.log(`    Data:     ${mod.datas.length} segments`);
+    if (compiler.stats.constantsFolded > 0) console.log(`    Optimized: ${compiler.stats.constantsFolded} constants folded`);
+
+    console.log(`\n  Run: node src/repl.js --wasm ${fileArg}`);  } catch (e) {
     console.error(`Error: ${e.message}`);
     process.exit(1);
   }
