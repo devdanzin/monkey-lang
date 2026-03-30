@@ -910,8 +910,24 @@ export class WasmCompiler {
           this.currentBody.call(this._runtimeFuncs.gt);
         }
         break;
-      case '<=': this.currentBody.emit(Op.i32_le_s); break;
-      case '>=': this.currentBody.emit(Op.i32_ge_s); break;
+      case '<=':
+        if (this._isDefinitelyInteger(node.left) && this._isDefinitelyInteger(node.right)) {
+          this.currentBody.emit(Op.i32_le_s);
+        } else {
+          // a <= b === !(a > b)
+          this.currentBody.call(this._runtimeFuncs.gt);
+          this.currentBody.emit(Op.i32_eqz);
+        }
+        break;
+      case '>=':
+        if (this._isDefinitelyInteger(node.left) && this._isDefinitelyInteger(node.right)) {
+          this.currentBody.emit(Op.i32_ge_s);
+        } else {
+          // a >= b === !(a < b)
+          this.currentBody.call(this._runtimeFuncs.lt);
+          this.currentBody.emit(Op.i32_eqz);
+        }
+        break;
       case '&':  this.currentBody.emit(Op.i32_and); break;
       case '|':  this.currentBody.emit(Op.i32_or); break;
       case '^':  this.currentBody.emit(Op.i32_xor); break;
