@@ -1665,23 +1665,63 @@
     {
       "id": "T160",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Update TASKS.md and MEMORY.md with full project state",
-      "started": "2026-03-30T21:32:37.723Z"
+      "started": "2026-03-30T21:32:37.723Z",
+      "completed": "2026-03-30T21:33:57.167Z",
+      "duration_ms": 180000,
+      "summary": "TASKS.md updated with ray tracer stats (116 tests, 11 scenes, v0.7.0). MEMORY.md updated with both projects. All repos pushed and deployed."
+    },
+    {
+      "id": "T161",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: add bilateral filter denoiser for post-processing noisy renders",
+      "started": "2026-03-30T21:34:18.269Z",
+      "completed": "2026-03-30T21:36:59.529Z",
+      "duration_ms": 240000,
+      "summary": "Bilateral filter denoiser: preserves edges while smoothing noise. 3 presets (light σ=2/15, medium σ=3/25, heavy σ=4/40). Applied post-render on canvas. 4 new tests (120 total)."
+    },
+    {
+      "id": "T162",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: add scene import/export (JSON scene format)",
+      "started": "2026-03-30T21:37:06.494Z",
+      "completed": "2026-03-30T21:38:44.860Z",
+      "duration_ms": 240000,
+      "summary": "JSON scene format: loadScene parses spheres, rects, boxes, triangles, all materials, all textures, transforms, constant mediums from JSON. exportScene serializes. String and object input. 6 new tests (126 total)."
+    },
+    {
+      "id": "T163",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: add render presets (preview/draft/quality/production)",
+      "started": "2026-03-30T21:38:52.750Z",
+      "completed": "2026-03-30T21:39:28.234Z",
+      "duration_ms": 60000,
+      "summary": "Render presets: Preview (200px/4spp), Draft (400px/16spp+light denoise), Quality (400px/50spp), Production (800px/500spp+light denoise). Dropdown auto-sets resolution/samples/denoise."
+    },
+    {
+      "id": "T164",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Final deploy round: all repos, update blog, gh-pages",
+      "started": "2026-03-30T21:39:37.329Z"
     }
   ],
   "current": {
-    "id": "T160",
-    "mode": "MAINTAIN",
+    "id": "T164",
+    "mode": "BUILD",
     "status": "in-progress",
-    "task": "Update TASKS.md and MEMORY.md with full project state",
-    "started": "2026-03-30T21:32:37.723Z"
+    "task": "Final deploy round: all repos, update blog, gh-pages",
+    "started": "2026-03-30T21:39:37.329Z"
   },
   "stats": {
-    "completed": 159,
+    "completed": 163,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 23610000
+    "total_duration_ms": 24330000
   },
-  "updated_at": "2026-03-30T21:32:37.723Z"
+  "updated_at": "2026-03-30T21:39:37.329Z"
 }

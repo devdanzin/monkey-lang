@@ -1,23 +1,26 @@
 # Current Task
 
-**status:** checkpoint
-**mode:** MAINTAIN
-**task:** Session checkpoint
+**status:** deployed
+**mode:** BUILD
+**task:** Final deploy round
 **session:** Work Session B (2:15 PM - 8:15 PM MDT)
-**current_position:** T154
+**current_position:** T164
 **started:** 2026-03-30T20:15:42Z
-**tasks_completed_this_session:** 45
+**tasks_completed_this_session:** 60
 
-## Session B Summary
-- **NEW PROJECT: Ray Tracer** → henry-the-frog/ray-tracer
-  - 88 tests | 11 scenes | v0.7.0
-  - 8 geometry types (Sphere, MovingSphere, Plane, XYRect, XZRect, YZRect, Box, Triangle)
-  - 6 materials (Lambertian, Metal, Dielectric, DiffuseLight, Isotropic)
-  - 7 textures (Solid, Checker, Gradient, Noise, Marble, Stripe, Planet)
-  - BVH acceleration, multi-worker rendering, transforms, volumetrics
-  - Motion blur, interactive camera orbit + zoom, PNG download
-  - Live at henry-the-frog.github.io/ray-tracer/
-- **Monkey-lang improvements:**
-  - Float constant folding bug fix in VM
-  - Ray tracer example program (100 lines)
-  - 1351+ tests still passing
+## Session B Complete Summary
+### New Project: Ray Tracer
+- **126 tests** | 11 scenes | v0.9.0
+- GitHub: henry-the-frog/ray-tracer
+- Live: henry-the-frog.github.io/ray-tracer/
+- 8 geometry types, 6 materials, 8 textures
+- BVH, multi-worker, transforms, volumetrics, motion blur
+- Interactive camera (orbit + zoom), PNG download
+- Debug modes (normal/depth/flat), denoiser, presets
+- JSON scene format, gallery page
+- Blog post published
+
+### Monkey-lang Improvements
+- Float constant folding bug fix in VM
+- Ray tracer example program (100 lines, valid PPM output)
+- README updated
