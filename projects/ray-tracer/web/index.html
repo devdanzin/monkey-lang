@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ray Tracer — Henry</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: #0d1117;
+    color: #c9d1d9;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  header {
+    padding: 1.5rem 2rem 1rem;
+    text-align: center;
+    width: 100%;
+    max-width: 900px;
+  }
+  h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #f0f6fc;
+    margin-bottom: 0.3rem;
+  }
+  h1 span { color: #58a6ff; }
+  .subtitle { color: #8b949e; font-size: 0.9rem; }
+  .controls {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    max-width: 900px;
+  }
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .control-group label {
+    font-size: 0.75rem;
+    color: #8b949e;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  select, input[type=range] {
+    background: #161b22;
+    border: 1px solid #30363d;
+    color: #c9d1d9;
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+  }
+  select:focus, input:focus { outline: none; border-color: #58a6ff; }
+  button {
+    background: #238636;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  button:hover { background: #2ea043; }
+  button:disabled { background: #21262d; color: #484f58; cursor: not-allowed; }
+  button.stop { background: #da3633; }
+  button.stop:hover { background: #f85149; }
+  .canvas-wrap {
+    margin: 1rem;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    background: #010409;
+  }
+  canvas { display: block; image-rendering: auto; }
+  .progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: #58a6ff;
+    transition: width 0.1s;
+  }
+  .stats {
+    display: flex;
+    gap: 2rem;
+    padding: 0.5rem 2rem;
+    color: #8b949e;
+    font-size: 0.8rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .stats span { color: #c9d1d9; }
+  .info {
+    max-width: 700px;
+    padding: 2rem;
+    color: #8b949e;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    text-align: center;
+  }
+  .info a { color: #58a6ff; text-decoration: none; }
+  .info a:hover { text-decoration: underline; }
+
+  @media (max-width: 600px) {
+    .controls { gap: 0.5rem; padding: 0.5rem; }
+    canvas { width: 100% !important; height: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🔮 <span>Ray Tracer</span></h1>
+  <p class="subtitle">Built from scratch in JavaScript — real-time progressive rendering</p>
+</header>
+
+<div class="controls">
+  <div class="control-group">
+    <label>Scene</label>
+    <select id="scene">
+      <option value="simple">Three Spheres</option>
+      <option value="random" selected>Random Scene (~480 spheres)</option>
+      <option value="cornell">Cornell Box</option>
+    </select>
+  </div>
+  <div class="control-group">
+    <label>Resolution</label>
+    <select id="resolution">
+      <option value="200">200px (fast)</option>
+      <option value="400" selected>400px</option>
+      <option value="600">600px</option>
+      <option value="800">800px (slow)</option>
+    </select>
+  </div>
+  <div class="control-group">
+    <label>Samples</label>
+    <select id="samples">
+      <option value="4">4 (preview)</option>
+      <option value="16">16 (fast)</option>
+      <option value="50" selected>50 (balanced)</option>
+      <option value="100">100 (quality)</option>
+      <option value="500">500 (high)</option>
+    </select>
+  </div>
+  <div class="control-group">
+    <label>&nbsp;</label>
+    <button id="renderBtn" onclick="startRender()">▶ Render</button>
+  </div>
+</div>
+
+<div class="canvas-wrap">
+  <canvas id="canvas" width="400" height="267"></canvas>
+  <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+</div>
+
+<div class="stats">
+  <div>Status: <span id="status">Ready</span></div>
+  <div>Progress: <span id="progress">0%</span></div>
+  <div>Time: <span id="time">—</span></div>
+  <div>Rays: <span id="rays">—</span></div>
+</div>
+
+<div class="info">
+  <p>
+    A complete ray tracer supporting diffuse, metallic, and dielectric (glass) materials
+    with reflections, refractions, depth of field, and anti-aliasing.
+    Renders progressively row by row using a Web Worker.
+  </p>
+  <p style="margin-top: 0.5rem">
+    Built by <a href="https://henry-the-frog.github.io">Henry</a> •
+    <a href="https://github.com/henry-the-frog/ray-tracer">Source on GitHub</a>
+  </p>
+</div>
+
+<script>
+let worker = null;
+let startTime = 0;
+
+const scenes = {
+  simple: {
+    lookFrom: { x: -2, y: 2, z: 1 }, lookAt: { x: 0, y: 0, z: -1 },
+    vfov: 20, aperture: 0, focusDist: 1, aspectRatio: 3/2
+  },
+  random: {
+    lookFrom: { x: 13, y: 2, z: 3 }, lookAt: { x: 0, y: 0, z: 0 },
+    vfov: 20, aperture: 0.1, focusDist: 10.0, aspectRatio: 3/2
+  },
+  cornell: {
+    lookFrom: { x: 0, y: 1, z: 4 }, lookAt: { x: 0, y: 1, z: -1 },
+    vfov: 50, aperture: 0, focusDist: 1, aspectRatio: 1
+  }
+};
+
+function startRender() {
+  if (worker) { worker.postMessage({ action: 'stop' }); worker.terminate(); }
+
+  const scene = document.getElementById('scene').value;
+  const width = parseInt(document.getElementById('resolution').value);
+  const spp = parseInt(document.getElementById('samples').value);
+  const camConfig = scenes[scene];
+  const height = Math.floor(width / camConfig.aspectRatio);
+
+  const canvas = document.getElementById('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  canvas.style.width = Math.min(width * (width <= 200 ? 2 : 1), 800) + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#010409';
+  ctx.fillRect(0, 0, width, height);
+
+  // Convert camera config to worker format
+  const workerCam = {
+    lookFrom: camConfig.lookFrom,
+    lookAt: camConfig.lookAt,
+    vup: { x: 0, y: 1, z: 0 },
+    vfov: camConfig.vfov,
+    aspectRatio: camConfig.aspectRatio,
+    aperture: camConfig.aperture,
+    focusDist: camConfig.focusDist
+  };
+
+  document.getElementById('renderBtn').textContent = '⏹ Stop';
+  document.getElementById('renderBtn').className = 'stop';
+  document.getElementById('renderBtn').onclick = stopRender;
+  document.getElementById('status').textContent = 'Rendering...';
+  document.getElementById('progressBar').style.width = '0%';
+  startTime = performance.now();
+
+  worker = new Worker('worker.js');
+
+  worker.onmessage = function(e) {
+    const { type, row, pixels, progress } = e.data;
+
+    if (type === 'row') {
+      const imageData = new ImageData(pixels, width, 1);
+      ctx.putImageData(imageData, 0, row);
+      const pct = Math.floor(progress * 100);
+      document.getElementById('progress').textContent = pct + '%';
+      document.getElementById('progressBar').style.width = pct + '%';
+      const elapsed = ((performance.now() - startTime) / 1000).toFixed(1);
+      document.getElementById('time').textContent = elapsed + 's';
+      const totalRays = Math.floor(progress * width * height * spp);
+      document.getElementById('rays').textContent = formatNumber(totalRays);
+    }
+
+    if (type === 'done' || type === 'stopped') {
+      const elapsed = ((performance.now() - startTime) / 1000).toFixed(1);
+      const totalRays = width * height * spp;
+      document.getElementById('status').textContent = type === 'done' ? 'Complete' : 'Stopped';
+      document.getElementById('time').textContent = elapsed + 's';
+      document.getElementById('rays').textContent = formatNumber(totalRays);
+      document.getElementById('renderBtn').textContent = '▶ Render';
+      document.getElementById('renderBtn').className = '';
+      document.getElementById('renderBtn').onclick = startRender;
+      if (type === 'done') document.getElementById('progressBar').style.width = '100%';
+    }
+  };
+
+  worker.postMessage({
+    action: 'render',
+    config: {
+      width, height,
+      samplesPerPixel: spp,
+      maxDepth: 50,
+      scene,
+      cameraConfig: workerCam
+    }
+  });
+}
+
+function stopRender() {
+  if (worker) { worker.postMessage({ action: 'stop' }); worker.terminate(); worker = null; }
+  document.getElementById('status').textContent = 'Stopped';
+  document.getElementById('renderBtn').textContent = '▶ Render';
+  document.getElementById('renderBtn').className = '';
+  document.getElementById('renderBtn').onclick = startRender;
+}
+
+function formatNumber(n) {
+  if (n >= 1e9) return (n / 1e9).toFixed(1) + 'B';
+  if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+  return n.toString();
+}
+
+// Auto-render on load with preview settings
+window.addEventListener('load', () => {
+  document.getElementById('samples').value = '4';
+  startRender();
+  // Reset to default after preview
+  setTimeout(() => { document.getElementById('samples').value = '50'; }, 100);
+});
+</script>
+</body>
+</html>
