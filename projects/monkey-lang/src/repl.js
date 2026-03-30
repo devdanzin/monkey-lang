@@ -32,14 +32,44 @@ if (process.argv.includes('--help') || process.argv.includes('-h')) {
   console.log(`\nUsage: monkey [options] [file.monkey]`);
   console.log(`\nOptions:`);
   console.log(`  --engine=vm|eval|jit  Select execution engine (default: jit)`);
+  console.log(`  --engine=vm|eval|jit|wasm|transpiler  Select execution engine`);
+  console.log(`  --compile             Compile .monkey file to .wasm binary`);
   console.log(`  --version, -v         Show version`);
   console.log(`  --help, -h            Show this help`);
   console.log(`\nREPL Commands:`);
-  console.log(`  :engine <name>        Switch engine at runtime`);
+  console.log(`  :engine <name>        Switch engine (vm|eval|jit|wasm|transpiler)`);
   console.log(`  :jit                  Show JIT statistics`);
   console.log(`  :quit                 Exit`);
   console.log(`\nModules: math, string, algorithms, array, json, functional`);
   console.log(`Website: https://henry-the-frog.github.io/playground/`);
+  process.exit(0);
+}
+
+// Handle --compile: monkey --compile file.monkey → file.wasm
+if (process.argv.includes('--compile')) {
+  const fileArg = process.argv.find(a => a.endsWith('.monkey'));
+  if (!fileArg) {
+    console.error('Usage: monkey --compile <file.monkey>');
+    process.exit(1);
+  }
+  try {
+    const source = fs.readFileSync(fileArg, 'utf8');
+    const compiler = new WasmCompiler();
+    const builder = compiler.compile(source);
+    if (!builder || compiler.errors.length > 0) {
+      console.error('Compilation errors:');
+      compiler.errors.forEach(e => console.error('  ' + e));
+      process.exit(1);
+    }
+    const binary = builder.build();
+    const outFile = fileArg.replace(/\.monkey$/, '.wasm');
+    fs.writeFileSync(outFile, binary);
+    console.log(`Compiled ${fileArg} → ${outFile} (${binary.length} bytes)`);
+    console.log(`Run with: node -e "const fs=require('fs');const b=fs.readFileSync('${outFile}');WebAssembly.instantiate(b,{env:{puts:v=>console.log(v),str:v=>v,__str_concat:()=>0,__str_eq:()=>0}}).then(({instance})=>console.log(instance.exports.main()))"`);
+  } catch (e) {
+    console.error(`Error: ${e.message}`);
+    process.exit(1);
+  }
   process.exit(0);
 }
 

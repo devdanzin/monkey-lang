@@ -459,6 +459,13 @@
       "completed": "2026-03-30T16:15:40.222Z",
       "duration_ms": 420000,
       "summary": "REPL v0.3.0: 5 engine modes (eval/vm/jit/wasm/transpiler). :engine wasm/:engine transpiler. :bench compares all 4 backends. Async WASM execution. --wasm/--transpiler CLI flags."
+    },
+    {
+      "id": "T44",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add monkey compile command: monkey --compile file.monkey → file.wasm",
+      "started": "2026-03-30T16:16:24.667Z"
     }
   ],
   "backlog": [],
@@ -578,6 +585,10 @@
     {
       "time": "2026-03-30T16:10:32.876Z",
       "msg": "Added T43 (BUILD) after end: Add WASM + transpiler engine modes to REPL and :bench command"
+    },
+    {
+      "time": "2026-03-30T16:16:15.335Z",
+      "msg": "Added T44 (BUILD) after end: Add monkey compile command: monkey --compile file.monkey → file.wasm"
     }
   ]
 }
