@@ -62,6 +62,15 @@ export class WasmCompiler {
     this.closureFuncs = []; // [{funcLit, captures, tableIndex, wasmFuncIndex}]
     this.nextTableSlot = 0;
 
+    // Compilation statistics
+    this.stats = {
+      constantsFolded: 0,
+      functionsCompiled: 0,
+      closuresCreated: 0,
+      stringsAllocated: 0,
+      arraysAllocated: 0,
+    };
+
     // Add 1 page of memory for strings/arrays
     this.builder.addMemory(1);
     this.builder.addExport('memory', ExportKind.Memory, 0);
@@ -615,6 +624,7 @@ export class WasmCompiler {
     const folded = this._tryConstantFold(node);
     if (folded !== null) {
       this.currentBody.i32Const(folded);
+      this.stats.constantsFolded++;
       return;
     }
 

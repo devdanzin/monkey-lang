@@ -521,6 +521,12 @@ class MonkeyREPL {
             } else {
               const binary = builder.build();
               console.log(wasmDisassemble(binary));
+              // Show compilation stats
+              const s = compiler.stats;
+              const funcs = builder.functions.length;
+              const imports = builder.imports.length;
+              const closures = compiler.closureFuncs.length;
+              console.log(`\n\x1b[90m${binary.length} bytes | ${funcs + imports} functions (${imports} imported, ${closures} closures) | ${s.constantsFolded} constants folded\x1b[0m`);
             }
           } catch (e) {
             console.error(`Error: ${e.message}`);

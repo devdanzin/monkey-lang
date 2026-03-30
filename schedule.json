@@ -620,9 +620,19 @@
     {
       "id": "T59",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Write a comprehensive WASM examples showcase with timing comparisons",
-      "started": "2026-03-30T16:48:14.705Z"
+      "started": "2026-03-30T16:48:14.705Z",
+      "completed": "2026-03-30T16:49:13.823Z",
+      "duration_ms": 180000,
+      "summary": "WASM showcase program: 7 algorithms (fib, factorial, GCD, power, Collatz, sum of squares, prime counting). All correct, 15ms WASM. Uses closures, template literals, for-in, ranges."
+    },
+    {
+      "id": "T60",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add WASM compilation stats: instruction count, function count, binary size, constant folding count",
+      "started": "2026-03-30T16:49:44.206Z"
     }
   ],
   "backlog": [],
@@ -786,6 +796,10 @@
     {
       "time": "2026-03-30T16:48:14.575Z",
       "msg": "Added T59 (BUILD) after end: Write a comprehensive WASM examples showcase with timing comparisons"
+    },
+    {
+      "time": "2026-03-30T16:49:44.089Z",
+      "msg": "Added T60 (BUILD) after end: Add WASM compilation stats: instruction count, function count, binary size, constant folding count"
     }
   ]
 }
