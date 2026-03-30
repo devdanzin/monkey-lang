@@ -596,3 +596,37 @@ export function disassemble(buffer) {
   const module = dis.disassemble();
   return formatWAT(module);
 }
+
+/**
+ * Disassemble WASM binary with source line annotations.
+ * @param {Uint8Array} binary - WASM binary
+ * @param {string} source - Original Monkey source code
+ * @param {Object} sourceMaps - Map of funcIdx → [{offset, line}]
+ * @returns {string} Annotated WAT
+ */
+export function annotatedDisassemble(binary, source, sourceMaps) {
+  const wat = disassemble(binary);
+  if (!source || !sourceMaps) return wat;
+
+  const sourceLines = source.split('\n');
+  const lines = wat.split('\n');
+  const result = [];
+  let lastLine = -1;
+
+  for (const line of lines) {
+    // Check if this is a function header with a func index
+    const funcMatch = line.match(/\(func \(;(\d+);\)/);
+    if (funcMatch) {
+      const funcIdx = parseInt(funcMatch[1]);
+      const map = sourceMaps[funcIdx];
+      if (map && map.length > 0) {
+        const srcLines = [...new Set(map.map(e => e.line))].sort((a, b) => a - b);
+        result.push(line + `  ;; source lines ${srcLines.join(', ')}`);
+        continue;
+      }
+    }
+    result.push(line);
+  }
+
+  return result.join('\n');
+}

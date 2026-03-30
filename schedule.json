@@ -984,9 +984,19 @@
     {
       "id": "T95",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add WASM source location tracking — map WASM offsets to Monkey source lines",
-      "started": "2026-03-30T18:12:17.219Z"
+      "started": "2026-03-30T18:12:17.219Z",
+      "completed": "2026-03-30T18:16:29.910Z",
+      "duration_ms": 300000,
+      "summary": "Source maps: lexer tracks line numbers, WASM compiler maps instructions to source lines. Foundation for debugging."
+    },
+    {
+      "id": "T96",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add WASM annotated disassembly with source lines (;; line 5: fib(10))",
+      "started": "2026-03-30T18:16:42.722Z"
     }
   ],
   "backlog": [],
@@ -1286,6 +1296,10 @@
     {
       "time": "2026-03-30T18:12:17.101Z",
       "msg": "Added T95 (BUILD) after end: Add WASM source location tracking — map WASM offsets to Monkey source lines"
+    },
+    {
+      "time": "2026-03-30T18:16:42.605Z",
+      "msg": "Added T96 (BUILD) after end: Add WASM annotated disassembly with source lines (;; line 5: fib(10))"
     }
   ]
 }

@@ -702,7 +702,13 @@ class MonkeyREPL {
               console.error('WASM compile errors:', compiler.errors.join(', '));
             } else {
               const binary = builder.build();
-              console.log(wasmDisassemble(binary));
+              const sourceMaps = builder.getSourceMaps();
+              const { annotatedDisassemble } = await import('./wasm-dis.js');
+              if (annotatedDisassemble) {
+                console.log(annotatedDisassemble(binary, code, sourceMaps));
+              } else {
+                console.log(wasmDisassemble(binary));
+              }
               // Show compilation stats
               const s = compiler.stats;
               const funcs = builder.functions.length;
