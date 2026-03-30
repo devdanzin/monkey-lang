@@ -934,5 +934,75 @@ describe('WASM Compiler', () => {
         sum([1, 2, 3, 4, 5])
       `), 15);
     });
+
+    it('user-defined map with closures', async () => {
+      const lines = [];
+      await compileAndRun(`
+        let map = fn(arr, f) {
+          let result = [];
+          for (x in arr) { result = push(result, f(x)); }
+          result
+        };
+        let doubled = map([1, 2, 3], fn(x) { x * 2 });
+        for (x in doubled) { puts(x); }
+      `, { outputLines: lines });
+      assert.deepStrictEqual(lines, ['2', '4', '6']);
+    });
+
+    it('user-defined filter with closures', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let filter = fn(arr, pred) {
+          let result = [];
+          for (x in arr) {
+            if (pred(x) == 1) { result = push(result, x); }
+          }
+          result
+        };
+        len(filter([1, 2, 3, 4, 5, 6], fn(x) { x % 2 == 0 }))
+      `), 3);
+    });
+
+    it('user-defined reduce', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let reduce = fn(arr, init, f) {
+          let acc = init;
+          for (x in arr) { acc = f(acc, x); }
+          acc
+        };
+        reduce([1, 2, 3, 4, 5], 0, fn(acc, x) { acc + x })
+      `), 15);
+    });
+
+    it('chained map + filter + reduce', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let map = fn(arr, f) {
+          let result = [];
+          for (x in arr) { result = push(result, f(x)); }
+          result
+        };
+        let filter = fn(arr, pred) {
+          let result = [];
+          for (x in arr) {
+            if (pred(x) == 1) { result = push(result, x); }
+          }
+          result
+        };
+        let reduce = fn(arr, init, f) {
+          let acc = init;
+          for (x in arr) { acc = f(acc, x); }
+          acc
+        };
+        let nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        let result = reduce(
+          map(
+            filter(nums, fn(x) { x % 2 == 0 }),
+            fn(x) { x * x }
+          ),
+          0,
+          fn(acc, x) { acc + x }
+        );
+        result
+      `), 220);
+    });
   });
 });
