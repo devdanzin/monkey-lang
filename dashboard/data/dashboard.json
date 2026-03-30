@@ -2755,23 +2755,93 @@
     {
       "id": "T267",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push all, update blog",
-      "started": "2026-03-30T23:02:49.818Z"
+      "started": "2026-03-30T23:02:49.818Z",
+      "completed": "2026-03-30T23:03:15.235Z",
+      "duration_ms": 60000,
+      "summary": "All repos pushed. Daily log updated. 11 projects total today."
+    },
+    {
+      "id": "T268",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Lisp interpreter (s-expressions, lambda, define, cond, list ops)",
+      "started": "2026-03-30T23:03:27.982Z",
+      "completed": "2026-03-30T23:05:30.550Z",
+      "duration_ms": 600000,
+      "summary": "Lisp interpreter: tokenizer, recursive descent parser, tree-walking evaluator, environment with lexical scoping. 13 special forms (define, lambda, if, cond, let, begin, set!, quote, and, or, do). 30+ stdlib builtins (arithmetic, list ops, map/filter/reduce, type predicates, strings, math). Closures, recursion, higher-order functions. 52 tests."
+    },
+    {
+      "id": "T269",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Deploy Lisp interpreter",
+      "started": "2026-03-30T23:05:35.386Z",
+      "completed": "2026-03-30T23:05:50.611Z",
+      "duration_ms": 60000,
+      "summary": "Lisp interpreter deployed to GitHub."
+    },
+    {
+      "id": "T270",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Session wind-down",
+      "started": "2026-03-30T23:06:02.711Z",
+      "completed": "2026-03-30T23:06:02.859Z",
+      "duration_ms": 0,
+      "summary": "Not winding down yet — 3 hours remain. Skipping to continue building."
+    },
+    {
+      "id": "T271",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: ECS (Entity Component System) game engine core",
+      "started": "2026-03-30T23:06:16.434Z",
+      "completed": "2026-03-30T23:08:16.114Z",
+      "duration_ms": 600000,
+      "summary": "ECS: World, Entity, Component, System, Query, Resource. defineComponent helper. Entity spawn/despawn, component add/remove/has/get, multi-component AND queries, queryWithout (exclude), system execution order, resources. 20 tests including 10k entity performance test."
+    },
+    {
+      "id": "T272",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: HTTP server from scratch (Node.js net module)",
+      "started": "2026-03-30T23:08:23.325Z",
+      "completed": "2026-03-30T23:10:03.486Z",
+      "duration_ms": 600000,
+      "summary": "HTTP server from scratch on net.createServer. Raw HTTP/1.1 parsing, routing with path params, middleware chain, JSON/HTML/text responses, query string parsing, CORS middleware, logger middleware. 9 tests with real TCP socket requests."
+    },
+    {
+      "id": "T273",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: JSON parser from scratch",
+      "started": "2026-03-30T23:10:10.103Z",
+      "completed": "2026-03-30T23:11:33.495Z",
+      "duration_ms": 600000,
+      "summary": "JSON parser + stringifier: recursive descent parser, all JSON types, string escapes (including unicode \\uXXXX), number parsing (integers, floats, exponents, negatives), error reporting with positions, stringify with indent support, roundtrip compatibility. 43 tests."
+    },
+    {
+      "id": "T274",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Push all repos, final daily log",
+      "started": "2026-03-30T23:11:38.789Z"
     }
   ],
   "current": {
-    "id": "T267",
+    "id": "T274",
     "mode": "MAINTAIN",
     "status": "in-progress",
-    "task": "Push all, update blog",
-    "started": "2026-03-30T23:02:49.818Z"
+    "task": "Push all repos, final daily log",
+    "started": "2026-03-30T23:11:38.789Z"
   },
   "stats": {
-    "completed": 266,
+    "completed": 273,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 35850000
+    "total_duration_ms": 38370000
   },
-  "updated_at": "2026-03-30T23:02:49.818Z"
+  "updated_at": "2026-03-30T23:11:38.789Z"
 }
