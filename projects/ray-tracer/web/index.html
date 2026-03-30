@@ -95,6 +95,7 @@
       <option value="motion">Motion Blur (bouncing spheres)</option>
       <option value="final">🏆 Final Scene (everything!)</option>
       <option value="museum">🏛️ Museum (pedestals + colored glass)</option>
+      <option value="sunset">🌅 Sunset (warm gradient sky)</option>
     </select>
   </div>
   <div class="control-group">
@@ -255,6 +256,11 @@ const scenes = {
     lookFrom: { x: 0, y: 3, z: 7 }, lookAt: { x: 0, y: 1.5, z: -1 },
     vfov: 35, aperture: 0.05, focusDist: 8, aspectRatio: 3/2
   },
+  sunset: {
+    lookFrom: { x: -2, y: 2, z: 1 }, lookAt: { x: 0, y: 0, z: -1 },
+    vfov: 20, aperture: 0, focusDist: 1, aspectRatio: 3/2,
+    bgMode: 'sunset'
+  },
   cornell: {
     lookFrom: { x: 278, y: 278, z: -800 }, lookAt: { x: 278, y: 278, z: 0 },
     vfov: 40, aperture: 0, focusDist: 1, aspectRatio: 1,
@@ -292,7 +298,7 @@ function startRender() {
   const config = {
     width, height, samplesPerPixel: spp, maxDepth: 50,
     scene, cameraConfig: workerCam, background: camConfig.background || null,
-    renderMode
+    renderMode, bgMode: camConfig.bgMode || null
   };
 
   // Generate tiles (32px tiles for good parallelism)

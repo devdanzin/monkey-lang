@@ -7,7 +7,7 @@ const { Vec3, Camera, BVHNode, HittableList,
 
 self.onmessage = function(e) {
   const { tile, config } = e.data;
-  const { width, height, samplesPerPixel, maxDepth, scene, cameraConfig, background, renderMode } = config;
+  const { width, height, samplesPerPixel, maxDepth, scene, cameraConfig, background, renderMode, bgMode } = config;
   const { x0, y0, x1, y1, tileId } = tile;
 
   // Build scene (each worker builds its own — no shared state needed)
@@ -24,6 +24,7 @@ self.onmessage = function(e) {
   else if (scene === 'motion') world = createMotionBlur();
   else if (scene === 'final') world = createFinalScene();
   else if (scene === 'museum') world = createMuseum();
+  else if (scene === 'sunset') world = createSimpleScene();
   else world = createSimpleScene();
 
   let sceneHit;
@@ -86,7 +87,7 @@ self.onmessage = function(e) {
             color = new Vec3(0.5, 0.5, 0.5);
           }
         } else {
-          color = rayColor(ray, sceneHit, maxDepth, bg);
+          color = rayColor(ray, sceneHit, maxDepth, bg, bgMode);
         }
         r += color.x; g += color.y; b += color.z;
       }
@@ -103,7 +104,7 @@ self.onmessage = function(e) {
   self.postMessage({ tileId, x0, y0, tileW, tileH, pixels });
 };
 
-function rayColor(ray, world, depth, bg) {
+function rayColor(ray, world, depth, bg, bgMode) {
   if (depth <= 0) return new Vec3(0, 0, 0);
   const rec = world.hit(ray, 0.001, Infinity);
   if (rec) {
@@ -111,8 +112,17 @@ function rayColor(ray, world, depth, bg) {
       ? rec.material.emitted(0, 0, rec.p)
       : new Vec3(0, 0, 0);
     const result = rec.material.scatter(ray, rec);
-    if (result) return emitted.add(rayColor(result.scattered, world, depth - 1, bg).mul(result.attenuation));
+    if (result) return emitted.add(rayColor(result.scattered, world, depth - 1, bg, bgMode).mul(result.attenuation));
     return emitted;
+  }
+  // Environment background
+  if (bgMode === 'sunset') {
+    const ud = ray.direction.unit();
+    const t = 0.5 * (ud.y + 1.0);
+    if (t < 0.35) return new Vec3(0.05, 0.05, 0.08);
+    if (t < 0.5) { const h = (t-0.35)/0.15; return new Vec3(0.1+h*0.8, 0.05+h*0.35, 0.05+h*0.05); }
+    if (t < 0.7) { const h = (t-0.5)/0.2; return new Vec3(0.9-h*0.6, 0.4-h*0.2, 0.1+h*0.4); }
+    const h = (t-0.7)/0.3; return new Vec3(0.3-h*0.25, 0.2-h*0.15, 0.5-h*0.3);
   }
   if (bg) return bg;
   const unitDir = ray.direction.unit();
