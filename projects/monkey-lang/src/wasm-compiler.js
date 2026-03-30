@@ -218,6 +218,11 @@ export class WasmCompiler {
     const restIdx = this.builder.addImport('env', '__rest', [ValType.i32], [ValType.i32]);
     this._runtimeFuncs.rest = restIdx;
 
+    // Import __type from JS host: env.__type(value: i32) → i32 (returns string pointer of type name)
+    const typeIdx = this.builder.addImport('env', '__type', [ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.type = typeIdx;
+    this.globalScope.define('type', typeIdx, 'func');
+
     // __alloc(size) → pointer — bump allocator
     const { index: allocIdx, body: allocBody } = this.builder.addFunction(
       [ValType.i32], [ValType.i32]
@@ -1585,6 +1590,20 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
           view.setInt32(newPtr + 8 + i * 4, elem, true);
         }
         return newPtr;
+      },
+      __type(value) {
+        const mem = memoryRef.memory;
+        if (!mem) return writeString('unknown');
+        const view = new DataView(mem.buffer);
+        if (value > 0 && value + 8 <= view.byteLength) {
+          try {
+            const tag = view.getInt32(value, true);
+            if (tag === TAG_STRING) return writeString('STRING');
+            if (tag === TAG_ARRAY) return writeString('ARRAY');
+            if (tag === TAG_CLOSURE) return writeString('FUNCTION');
+          } catch (e) {}
+        }
+        return writeString('INTEGER');
       },
     },
   };

@@ -650,9 +650,19 @@
     {
       "id": "T62",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add first/last/rest builtins to WASM compiler via runtime functions",
-      "started": "2026-03-30T16:52:51.092Z"
+      "started": "2026-03-30T16:52:51.092Z",
+      "completed": "2026-03-30T16:55:50.048Z",
+      "duration_ms": 180000,
+      "summary": "first/last/rest builtins in WASM. rest via JS import. Recursive list processing works. 2 new tests (124 total)."
+    },
+    {
+      "id": "T63",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add WASM map/filter builtins using closures + array creation",
+      "started": "2026-03-30T16:56:30.274Z"
     }
   ],
   "backlog": [],
@@ -828,6 +838,10 @@
     {
       "time": "2026-03-30T16:52:50.974Z",
       "msg": "Added T62 (BUILD) after end: Add first/last/rest builtins to WASM compiler via runtime functions"
+    },
+    {
+      "time": "2026-03-30T16:56:30.156Z",
+      "msg": "Added T63 (BUILD) after end: Add WASM map/filter builtins using closures + array creation"
     }
   ]
 }
