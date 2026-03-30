@@ -820,9 +820,19 @@
     {
       "id": "T79",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Improve WASM disassembler: add function names from exports to call instructions",
-      "started": "2026-03-30T17:26:35.120Z"
+      "started": "2026-03-30T17:26:35.120Z",
+      "completed": "2026-03-30T17:28:01.412Z",
+      "duration_ms": 120000,
+      "summary": "WASM disassembler annotates call instructions with function names from exports. Much more readable output."
+    },
+    {
+      "id": "T80",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add Mandelbrot set example for WASM (ASCII art using integer arithmetic)",
+      "started": "2026-03-30T17:28:11.625Z"
     }
   ],
   "backlog": [],
@@ -1066,6 +1076,10 @@
     {
       "time": "2026-03-30T17:26:35.002Z",
       "msg": "Added T79 (BUILD) after end: Improve WASM disassembler: add function names from exports to call instructions"
+    },
+    {
+      "time": "2026-03-30T17:28:11.508Z",
+      "msg": "Added T80 (BUILD) after end: Add Mandelbrot set example for WASM (ASCII art using integer arithmetic)"
     }
   ]
 }
