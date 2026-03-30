@@ -193,6 +193,12 @@ export class FuncBodyBuilder {
   constructor() {
     this.locals = [];    // [{type, count}]
     this.code = [];      // raw bytes
+    this.sourceMap = [];  // [{offset, line}] — source line tracking
+    this._currentLine = 0;
+  }
+
+  setSourceLine(line) {
+    this._currentLine = line;
   }
 
   addLocal(type, count = 1) {
@@ -200,6 +206,9 @@ export class FuncBodyBuilder {
   }
 
   emit(opcode, ...operands) {
+    if (this._currentLine > 0) {
+      this.sourceMap.push({ offset: this.code.length, line: this._currentLine });
+    }
     this.code.push(opcode);
     for (const op of operands) {
       if (Array.isArray(op)) {
@@ -279,6 +288,19 @@ export class WasmModuleBuilder {
     this.elements = [];  // [{tableIndex, offset, funcIndices}]
     this.dataSegments = []; // [{offset, bytes}]
     this._typeCache = new Map();
+  }
+
+  // Get source maps for all functions
+  getSourceMaps() {
+    const maps = {};
+    for (let i = 0; i < this.functions.length; i++) {
+      const func = this.functions[i];
+      if (func.body && func.body.sourceMap && func.body.sourceMap.length > 0) {
+        const funcIdx = this.imports.length + i;
+        maps[funcIdx] = func.body.sourceMap;
+      }
+    }
+    return maps;
   }
 
   // Add or reuse a function type signature. Returns the type index.

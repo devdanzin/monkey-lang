@@ -99,9 +99,10 @@ const KEYWORDS = {
 };
 
 export class Token {
-  constructor(type, literal) {
+  constructor(type, literal, line) {
     this.type = type;
     this.literal = literal;
+    if (line !== undefined) this.line = line;
   }
 }
 
@@ -111,6 +112,7 @@ export class Lexer {
     this.position = 0;     // current position (points to current char)
     this.readPosition = 0; // next position (after current char)
     this.ch = null;        // current char
+    this.line = 1;         // current line number (1-indexed)
     this.readChar();
   }
 
@@ -130,6 +132,7 @@ export class Lexer {
 
   skipWhitespace() {
     while (this.ch === ' ' || this.ch === '\t' || this.ch === '\n' || this.ch === '\r') {
+      if (this.ch === '\n') this.line++;
       this.readChar();
     }
     // Skip single-line comments
@@ -144,6 +147,7 @@ export class Lexer {
       this.readChar(); // skip /
       this.readChar(); // skip *
       while (!(this.ch === '*' && this.peekChar() === '/') && this.ch !== '\0') {
+        if (this.ch === '\n') this.line++;
         this.readChar();
       }
       if (this.ch === '*') {
@@ -228,6 +232,7 @@ export class Lexer {
 
   nextToken() {
     this.skipWhitespace();
+    const line = this.line;
 
     let tok;
     switch (this.ch) {
@@ -386,6 +391,7 @@ export class Lexer {
     }
 
     this.readChar();
+    if (tok) tok.line = line;
     return tok;
   }
 

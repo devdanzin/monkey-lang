@@ -487,6 +487,10 @@ export class WasmCompiler {
   }
 
   compileNode(node) {
+    // Track source line for source map
+    if (node?.token?.line && this.currentBody) {
+      this.currentBody.setSourceLine(node.token.line);
+    }
     if (node instanceof ast.IntegerLiteral) {
       this.currentBody.i32Const(node.value);
     } else if (node instanceof ast.FloatLiteral) {

@@ -909,6 +909,20 @@ describe('WASM Compiler', () => {
     });
   });
 
+  describe('Source maps', () => {
+    it('tracks source lines for functions', () => {
+      const compiler = new WasmCompiler();
+      const builder = compiler.compile('let fib = fn(n) {\n  if (n <= 1) { n }\n  else { fib(n-1) + fib(n-2) }\n};\nfib(10)');
+      const maps = builder.getSourceMaps();
+      const funcIndices = Object.keys(maps);
+      assert.ok(funcIndices.length > 0, 'should have source maps');
+      // Fib function should reference lines 2-3
+      const fibMap = maps[funcIndices[0]];
+      const lines = [...new Set(fibMap.map(e => e.line))];
+      assert.ok(lines.includes(2) || lines.includes(3), `should reference lines 2-3, got ${lines}`);
+    });
+  });
+
   describe('Integration tests', () => {
     it('Collatz conjecture', async () => {
       assert.strictEqual(await compileAndRun(`

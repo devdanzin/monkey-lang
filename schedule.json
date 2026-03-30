@@ -980,6 +980,13 @@
       "completed": "2026-03-30T18:12:02.530Z",
       "duration_ms": 120000,
       "summary": "Verified dot access, const, C-style for loops all already work. Added dot access test."
+    },
+    {
+      "id": "T95",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add WASM source location tracking — map WASM offsets to Monkey source lines",
+      "started": "2026-03-30T18:12:17.219Z"
     }
   ],
   "backlog": [],
@@ -1275,6 +1282,10 @@
     {
       "time": "2026-03-30T18:10:02.587Z",
       "msg": "Added T94 (BUILD) after end: Add WASM dot access for hashes (obj.key), method-style len/push, and DotExpression support"
+    },
+    {
+      "time": "2026-03-30T18:12:17.101Z",
+      "msg": "Added T95 (BUILD) after end: Add WASM source location tracking — map WASM offsets to Monkey source lines"
     }
   ]
 }
