@@ -96,6 +96,16 @@
     </select>
   </div>
   <div class="control-group">
+    <label>Preset</label>
+    <select id="preset" onchange="applyPreset()">
+      <option value="custom">Custom</option>
+      <option value="preview">Preview (fast)</option>
+      <option value="draft">Draft</option>
+      <option value="quality" selected>Quality</option>
+      <option value="production">Production (slow)</option>
+    </select>
+  </div>
+  <div class="control-group">
     <label>Resolution</label>
     <select id="resolution">
       <option value="200">200px (fast)</option>
@@ -364,6 +374,24 @@ function stopRender() {
   document.getElementById('renderBtn').textContent = '▶ Render';
   document.getElementById('renderBtn').className = '';
   document.getElementById('renderBtn').onclick = startRender;
+}
+
+// Render presets
+function applyPreset() {
+  const p = document.getElementById('preset').value;
+  if (p === 'custom') return;
+  const presets = {
+    preview: { resolution: '200', samples: '4', denoise: 'off' },
+    draft: { resolution: '400', samples: '16', denoise: 'light' },
+    quality: { resolution: '400', samples: '50', denoise: 'off' },
+    production: { resolution: '800', samples: '500', denoise: 'light' },
+  };
+  const s = presets[p];
+  if (s) {
+    document.getElementById('resolution').value = s.resolution;
+    document.getElementById('samples').value = s.samples;
+    document.getElementById('denoise').value = s.denoise;
+  }
 }
 
 // Bilateral filter denoiser
