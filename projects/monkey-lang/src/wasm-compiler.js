@@ -170,6 +170,14 @@ export class WasmCompiler {
     this._runtimeFuncs.str = strIdx;
     this.globalScope.define('str', strIdx, 'func');
 
+    // Import __str_concat from JS host: env.__str_concat(ptr1: i32, ptr2: i32) → i32
+    const strConcatIdx = this.builder.addImport('env', '__str_concat', [ValType.i32, ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.strConcat = strConcatIdx;
+
+    // Import __str_eq from JS host: env.__str_eq(ptr1: i32, ptr2: i32) → i32
+    const strEqIdx = this.builder.addImport('env', '__str_eq', [ValType.i32, ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.strEq = strEqIdx;
+
     // __alloc(size) → pointer — bump allocator
     const { index: allocIdx, body: allocBody } = this.builder.addFunction(
       [ValType.i32], [ValType.i32]
@@ -535,6 +543,26 @@ export class WasmCompiler {
       return;
     }
 
+    // Check if this is string concatenation
+    if (node.operator === '+' && this._isStringExpression(node.left, node.right)) {
+      this.compileNode(node.left);
+      this.compileNode(node.right);
+      this.currentBody.call(this._runtimeFuncs.strConcat);
+      return;
+    }
+
+    // Check if this is string comparison
+    if ((node.operator === '==' || node.operator === '!=') &&
+        this._isStringExpression(node.left, node.right)) {
+      this.compileNode(node.left);
+      this.compileNode(node.right);
+      this.currentBody.call(this._runtimeFuncs.strEq);
+      if (node.operator === '!=') {
+        this.currentBody.emit(Op.i32_eqz);
+      }
+      return;
+    }
+
     this.compileNode(node.left);
     this.compileNode(node.right);
 
@@ -804,6 +832,24 @@ export class WasmCompiler {
     }
     return this._tempLocal;
   }
+
+  // Simple type inference: check if an expression produces a string
+  _isStringExpression(...nodes) {
+    return nodes.some(n => this._nodeIsString(n));
+  }
+
+  _nodeIsString(node) {
+    if (node instanceof ast.StringLiteral) return true;
+    // str() call returns a string
+    if (node instanceof ast.CallExpression &&
+        node.function instanceof ast.Identifier &&
+        node.function.value === 'str') return true;
+    // String concatenation (recursive)
+    if (node instanceof ast.InfixExpression &&
+        node.operator === '+' &&
+        this._isStringExpression(node.left, node.right)) return true;
+    return false;
+  }
 }
 
 // === Prefix negation fix ===
@@ -828,6 +874,43 @@ WasmCompiler.prototype.compilePrefixExpression = function(node) {
 
 // Create default JS host imports for WASM modules
 function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
+  // Helper to read string from WASM memory
+  function readString(ptr) {
+    const mem = memoryRef.memory;
+    if (!mem || ptr <= 0) return '';
+    const view = new DataView(mem.buffer);
+    const tag = view.getInt32(ptr, true);
+    if (tag !== TAG_STRING) return String(ptr);
+    const len = view.getInt32(ptr + 4, true);
+    const bytes = new Uint8Array(mem.buffer, ptr + 8, len);
+    return new TextDecoder().decode(bytes);
+  }
+
+  // Helper to write string into WASM memory (bump allocator via global[0])
+  function writeString(str) {
+    const mem = memoryRef.memory;
+    if (!mem) return 0;
+    const encoder = new TextEncoder();
+    const bytes = encoder.encode(str);
+    const view = new DataView(mem.buffer);
+
+    // Read heap pointer from global — we need to bump-allocate
+    // The heap pointer is stored as a WASM global, but we can't read it from JS.
+    // Instead, we'll track our own allocation offset.
+    if (!memoryRef.jsHeapPtr) memoryRef.jsHeapPtr = 60000; // start high to avoid collisions
+    const ptr = memoryRef.jsHeapPtr;
+    memoryRef.jsHeapPtr += 8 + bytes.length;
+    // Align to 4 bytes
+    memoryRef.jsHeapPtr = (memoryRef.jsHeapPtr + 3) & ~3;
+
+    // Write: [TAG_STRING:i32][length:i32][bytes...]
+    view.setInt32(ptr, TAG_STRING, true);
+    view.setInt32(ptr + 4, bytes.length, true);
+    new Uint8Array(mem.buffer).set(bytes, ptr + 8);
+
+    return ptr;
+  }
+
   return {
     env: {
       puts(value) {
@@ -841,10 +924,22 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
         }
       },
       str(value) {
-        // str() converts a value to a string representation in WASM memory
-        // For now, just return the value unchanged (integer stays integer)
-        // A full implementation would allocate a string in WASM memory
-        return value;
+        // Convert value to string representation and store in WASM memory
+        const mem = memoryRef.memory;
+        if (!mem) return value;
+        const view = new DataView(mem.buffer);
+        const formatted = formatWasmValue(value, view);
+        return writeString(formatted);
+      },
+      __str_concat(ptr1, ptr2) {
+        const s1 = readString(ptr1);
+        const s2 = readString(ptr2);
+        return writeString(s1 + s2);
+      },
+      __str_eq(ptr1, ptr2) {
+        const s1 = readString(ptr1);
+        const s2 = readString(ptr2);
+        return s1 === s2 ? 1 : 0;
       },
     },
   };

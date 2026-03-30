@@ -515,6 +515,71 @@ describe('WASM Compiler', () => {
     });
   });
 
+  describe('String operations', () => {
+    it('string concatenation', async () => {
+      const lines = [];
+      await compileAndRun('puts("hello" + " " + "world")', { outputLines: lines });
+      assert.strictEqual(lines[0], 'hello world');
+    });
+
+    it('str() converts integer to string', async () => {
+      const lines = [];
+      await compileAndRun('puts(str(42))', { outputLines: lines });
+      assert.strictEqual(lines[0], '42');
+    });
+
+    it('str() + string concatenation', async () => {
+      const lines = [];
+      await compileAndRun('puts("answer: " + str(42))', { outputLines: lines });
+      assert.strictEqual(lines[0], 'answer: 42');
+    });
+
+    it('string comparison ==', async () => {
+      assert.strictEqual(await compileAndRun('"hello" == "hello"'), 1);
+    });
+
+    it('string comparison == false', async () => {
+      assert.strictEqual(await compileAndRun('"hello" == "world"'), 0);
+    });
+
+    it('string comparison !=', async () => {
+      assert.strictEqual(await compileAndRun('"a" != "b"'), 1);
+    });
+
+    it('string concat in loop', async () => {
+      const lines = [];
+      await compileAndRun(`
+        let i = 0;
+        while (i < 3) {
+          puts("item " + str(i));
+          i = i + 1;
+        }
+      `, { outputLines: lines });
+      assert.deepStrictEqual(lines, ['item 0', 'item 1', 'item 2']);
+    });
+
+    it('string concat with multiple str() calls', async () => {
+      const lines = [];
+      await compileAndRun(`
+        let a = 3;
+        let b = 4;
+        puts(str(a) + " + " + str(b) + " = " + str(a + b))
+      `, { outputLines: lines });
+      assert.strictEqual(lines[0], '3 + 4 = 7');
+    });
+
+    it('fibonacci with string output', async () => {
+      const lines = [];
+      await compileAndRun(`
+        let fib = fn(n) {
+          if (n <= 1) { n } else { fib(n - 1) + fib(n - 2) }
+        };
+        puts("fib(10) = " + str(fib(10)))
+      `, { outputLines: lines });
+      assert.strictEqual(lines[0], 'fib(10) = 55');
+    });
+  });
+
   describe('Complex programs', () => {
     it('GCD', async () => {
       assert.strictEqual(await compileAndRun(`

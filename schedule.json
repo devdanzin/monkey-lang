@@ -176,21 +176,96 @@
       "id": "T19",
       "mode": "BUILD",
       "task": "Update TASKS.md with WASM backend progress and next steps",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T10",
-      "started": "2026-03-30T15:36:00.973Z"
+      "started": "2026-03-30T15:36:00.973Z",
+      "completed": "2026-03-30T15:36:51.508Z",
+      "duration_ms": 120000,
+      "summary": "TASKS.md updated: WASM backend added to project description, today section with full progress, WASM backlog items (closures, string concat, hash maps, GC)."
     },
     {
       "id": "T12",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Research topic TBD based on morning direction"
+      "status": "done",
+      "task": "Research topic TBD based on morning direction",
+      "started": "2026-03-30T15:37:01.935Z",
+      "completed": "2026-03-30T15:38:12.535Z",
+      "duration_ms": 240000,
+      "summary": "Explored WasmGC: standardized in Wasm 3.0 (Sep 2025), baseline in all browsers. Key insight: could target WasmGC structs/arrays for Monkey values instead of linear memory + custom GC. Captured closure strategies and next steps in scratch note."
     },
     {
       "id": "T13",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "End-of-session housekeeping",
+      "started": "2026-03-30T15:38:26.347Z",
+      "completed": "2026-03-30T15:38:26.466Z",
+      "duration_ms": 5000,
+      "summary": "Skipped — only 30min in, 4.5h remaining. Will do end-of-session housekeeping at boundary."
+    },
+    {
+      "id": "T20",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Decide next project/feature: WASM closures, string concat, or new exploration",
+      "started": "2026-03-30T15:38:49.544Z",
+      "completed": "2026-03-30T15:39:07.435Z",
+      "duration_ms": 60000,
+      "summary": "Direction: (1) WASM string operations (concat, comparison, str() builtin), (2) Update monkey-lang README for 5-backend showcase, (3) Additional WASM compiler features if time remains."
+    },
+    {
+      "id": "T21",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan: WASM string operations and README update",
+      "task": null,
+      "started": "2026-03-30T15:39:17.482Z",
+      "completed": "2026-03-30T15:39:31.832Z",
+      "duration_ms": 30000,
+      "summary": "Planned 6 BUILD tasks: string concat, str() builtin, string comparison, tests, README update, final push."
+    },
+    {
+      "id": "T22",
+      "mode": "BUILD",
+      "task": "WASM string concat: implement __str_concat(ptr1, ptr2) → new_ptr, hook up + operator for strings",
+      "status": "in-progress",
+      "plan_ref": "T21",
+      "started": "2026-03-30T15:39:43.119Z"
+    },
+    {
+      "id": "T23",
+      "mode": "BUILD",
+      "task": "WASM str() builtin: convert integers to string representation in linear memory",
       "status": "upcoming",
-      "task": "End-of-session housekeeping"
+      "plan_ref": "T21"
+    },
+    {
+      "id": "T24",
+      "mode": "BUILD",
+      "task": "WASM string comparison: implement == and != for strings",
+      "status": "upcoming",
+      "plan_ref": "T21"
+    },
+    {
+      "id": "T25",
+      "mode": "BUILD",
+      "task": "Add WASM-specific tests for string operations (concat, str, comparison)",
+      "status": "upcoming",
+      "plan_ref": "T21"
+    },
+    {
+      "id": "T26",
+      "mode": "BUILD",
+      "task": "Update monkey-lang README: 5 backends, 1200+ tests, architecture diagram, WASM section",
+      "status": "upcoming",
+      "plan_ref": "T21"
+    },
+    {
+      "id": "T27",
+      "mode": "BUILD",
+      "task": "Push final state, update playground bundle, git push all repos",
+      "status": "upcoming",
+      "plan_ref": "T21"
     }
   ],
   "backlog": [],
@@ -258,6 +333,18 @@
     {
       "time": "2026-03-30T15:30:00.288Z",
       "msg": "PLAN T10 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-03-30T15:38:43.982Z",
+      "msg": "Added T20 (THINK) after end: Decide next project/feature: WASM closures, string concat, or new exploration"
+    },
+    {
+      "time": "2026-03-30T15:39:12.234Z",
+      "msg": "Added T21 (PLAN) after end: Plan: WASM string operations and README update"
+    },
+    {
+      "time": "2026-03-30T15:39:26.230Z",
+      "msg": "PLAN T21 filled 6 BUILD tasks"
     }
   ]
 }
