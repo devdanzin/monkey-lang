@@ -663,6 +663,37 @@ class MonkeyREPL {
         return true;
       }
 
+      case ':example': {
+        const name = parts[1];
+        const examples = {
+          fib: 'let fib = fn(n) { if (n <= 1) { n } else { fib(n-1) + fib(n-2) } }; fib(25)',
+          factorial: 'let fact = fn(n) { if (n <= 1) { 1 } else { n * fact(n-1) } }; fact(10)',
+          closure: 'let makeAdder = fn(x) { fn(y) { x + y } }; let add5 = makeAdder(5); add5(37)',
+          fizzbuzz: 'for (i in 1..16) { if (i % 15 == 0) { puts("FizzBuzz") } else { if (i % 3 == 0) { puts("Fizz") } else { if (i % 5 == 0) { puts("Buzz") } else { puts(str(i)) } } } }',
+          map: 'let map = fn(arr, f) { let r = []; for (x in arr) { r = push(r, f(x)); } r }; map([1,2,3,4,5], fn(x) { x * x })',
+          primes: 'let isPrime = fn(n) { if (n < 2) { return 0; } let i = 2; while (i*i <= n) { if (n%i == 0) { return 0; } i = i + 1; } 1 }; let count = 0; for (n in 2..100) { if (isPrime(n) == 1) { count = count + 1; } } count',
+        };
+        if (!name || !examples[name]) {
+          console.log('Available examples: ' + Object.keys(examples).join(', '));
+        } else {
+          console.log(`\x1b[90m> ${examples[name]}\x1b[0m`);
+          // Execute the example
+          const program = this.parse(examples[name]);
+          if (program) {
+            if (this.engine === 'wasm') {
+              await this.execWasm(examples[name]);
+            } else if (this.engine === 'eval') {
+              this.execEval(program);
+            } else if (this.engine === 'transpiler') {
+              this.execTranspiler(program, examples[name]);
+            } else {
+              this.execVM(program, this.engine === 'jit');
+            }
+          }
+        }
+        return true;
+      }
+
       case ':time': {
         const code = parts.slice(1).join(' ');
         if (!code) {

@@ -700,9 +700,19 @@
     {
       "id": "T67",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add syntax highlighting to Monkey REPL output (colored keywords, strings, numbers)",
-      "started": "2026-03-30T17:08:33.275Z"
+      "started": "2026-03-30T17:08:33.275Z",
+      "completed": "2026-03-30T17:09:40.606Z",
+      "duration_ms": 120000,
+      "summary": "REPL colored output: type-based colorization (integers=yellow, strings=green, booleans=magenta, arrays=cyan, errors=red)."
+    },
+    {
+      "id": "T68",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add :examples command to REPL and some more polishing",
+      "started": "2026-03-30T17:09:56.512Z"
     }
   ],
   "backlog": [],
@@ -898,6 +908,10 @@
     {
       "time": "2026-03-30T17:08:33.158Z",
       "msg": "Added T67 (BUILD) after end: Add syntax highlighting to Monkey REPL output (colored keywords, strings, numbers)"
+    },
+    {
+      "time": "2026-03-30T17:09:56.395Z",
+      "msg": "Added T68 (BUILD) after end: Add :examples command to REPL and some more polishing"
     }
   ]
 }
