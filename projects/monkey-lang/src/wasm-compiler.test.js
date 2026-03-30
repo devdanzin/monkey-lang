@@ -903,6 +903,10 @@ describe('WASM Compiler', () => {
     it('optional chain with null coalescing', async () => {
       assert.strictEqual(await compileAndRun('let h = 0; h?.a ?? 99'), 99);
     });
+
+    it('dot access on hash', async () => {
+      assert.strictEqual(await compileAndRun('let h = {"name": 42}; h.name'), 42);
+    });
   });
 
   describe('Integration tests', () => {

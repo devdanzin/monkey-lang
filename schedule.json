@@ -964,9 +964,22 @@
     {
       "id": "T93",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add WASM optional chaining (?.) and ternary expression support",
-      "started": "2026-03-30T18:07:58.680Z"
+      "started": "2026-03-30T18:07:58.680Z",
+      "completed": "2026-03-30T18:09:50.008Z",
+      "duration_ms": 180000,
+      "summary": "WASM optional chaining + match expressions. 1320 tests, 0 failures."
+    },
+    {
+      "id": "T94",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add WASM dot access for hashes (obj.key), method-style len/push, and DotExpression support",
+      "started": "2026-03-30T18:10:02.704Z",
+      "completed": "2026-03-30T18:12:02.530Z",
+      "duration_ms": 120000,
+      "summary": "Verified dot access, const, C-style for loops all already work. Added dot access test."
     }
   ],
   "backlog": [],
@@ -1258,6 +1271,10 @@
     {
       "time": "2026-03-30T18:07:58.563Z",
       "msg": "Added T93 (BUILD) after end: Add WASM optional chaining (?.) and ternary expression support"
+    },
+    {
+      "time": "2026-03-30T18:10:02.587Z",
+      "msg": "Added T94 (BUILD) after end: Add WASM dot access for hashes (obj.key), method-style len/push, and DotExpression support"
     }
   ]
 }
