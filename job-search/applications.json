@@ -4,8 +4,8 @@
     "total_emails_parsed": 108,
     "job_related_emails": 78,
     "unique_applications": 52,
-    "lastUpdated": "2026-03-30T16:24:51.191804",
-    "totalApplications": 62
+    "lastUpdated": "2026-03-30T16:28:44.518558",
+    "totalApplications": 63
   },
   "applications": [
     {
@@ -271,7 +271,7 @@
     {
       "id": 21,
       "company": "Atlassian",
-      "role": "Solutions Architect | DX",
+      "role": "Associate Solutions Engineer | DX",
       "date_applied": "2026-03-17",
       "status": "applied",
       "location": "Unknown",
@@ -711,16 +711,6 @@
       "response_days": null
     },
     {
-      "company": "Paycom",
-      "role": "Intermediate DevOps Engineer",
-      "date": "2026-03-30",
-      "status": "applied",
-      "location": "Unknown",
-      "salary": null,
-      "source": "Paycom Online",
-      "notes": "Applied today via Paycom"
-    },
-    {
       "company": "Archera",
       "role": "Unknown Role",
       "date": "2026-03-30",
@@ -732,7 +722,7 @@
     },
     {
       "company": "Zoom Communications",
-      "role": "Unknown Role",
+      "role": "DevOps Engineer",
       "date": "2026-03-30",
       "status": "applied",
       "location": "Unknown",
@@ -742,13 +732,13 @@
     },
     {
       "company": "University of Utah",
-      "role": "Unknown Role",
+      "role": "Systems Administrator",
       "date": "2026-03-30",
       "status": "applied",
       "location": "Utah",
       "salary": null,
       "source": "utah.edu",
-      "notes": "Applied today \u2014 separate from U of U Health application"
+      "notes": "Position PRN44288B \u2014 separate from U of U Health"
     },
     {
       "company": "Awardco",
@@ -772,23 +762,43 @@
     },
     {
       "company": "Weave",
-      "role": "Unknown Role",
+      "role": "Senior Platform Engineer, Data Infrastructure",
       "date": "2026-03-30",
       "status": "applied",
       "location": "Unknown",
       "salary": null,
       "source": "Direct",
-      "notes": ""
+      "notes": "Applied today"
     },
     {
       "company": "CARET",
-      "role": "Unknown Role",
+      "role": "Intermediate DevOps Engineer",
       "date": "2026-03-30",
       "status": "applied",
       "location": "Unknown",
       "salary": null,
       "source": "Talent Community",
-      "notes": "Talent community join"
+      "notes": "CARET talent community + application"
+    },
+    {
+      "company": "CHG Healthcare",
+      "role": "Sr Platform Engineer",
+      "date": "2026-03-30",
+      "status": "applied",
+      "location": "Unknown",
+      "salary": null,
+      "source": "Workday",
+      "notes": "Applied today"
+    },
+    {
+      "company": "Packsize",
+      "role": "Cloud Solutions Engineer",
+      "date": "2026-03-30",
+      "status": "applied",
+      "location": "Unknown",
+      "salary": null,
+      "source": "Workday",
+      "notes": "Applied today"
     }
   ]
 }
