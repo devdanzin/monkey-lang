@@ -16,6 +16,7 @@
 // Heap object tags:
 const TAG_STRING = 1;
 const TAG_ARRAY = 2;
+const TAG_CLOSURE = 3;
 
 import { WasmModuleBuilder, FuncBodyBuilder, Op, ValType, ExportKind, encodeULEB128 } from './wasm.js';
 import { Lexer } from './lexer.js';
@@ -56,6 +57,10 @@ export class WasmCompiler {
     this.errors = [];
     this.stringConstants = []; // [{offset, length, value}] — data segment entries
     this.nextDataOffset = 16; // start at 16, skip first bytes as reserved
+
+    // Closure support
+    this.closureFuncs = []; // [{funcLit, captures, tableIndex, wasmFuncIndex}]
+    this.nextTableSlot = 0;
 
     // Add 1 page of memory for strings/arrays
     this.builder.addMemory(1);
@@ -153,8 +158,13 @@ export class WasmCompiler {
       this.builder.addDataSegment(sc.offset, [...data]);
     }
 
-    // Update heap pointer to start after all data segments
-    // (We can't change the global init value after creation, so we set it high enough initially)
+    // Finalize closure table
+    if (this.closureFuncs.length > 0) {
+      const tableSize = this.closureFuncs.length;
+      this.builder.addTable(ValType.funcref, tableSize, tableSize);
+      const funcIndices = this.closureFuncs.map(cf => cf.wasmFuncIndex);
+      this.builder.addElement(0, 0, funcIndices);
+    }
 
     return this.builder;
   }
@@ -428,8 +438,7 @@ export class WasmCompiler {
     } else if (node instanceof ast.CallExpression) {
       this.compileCallExpression(node);
     } else if (node instanceof ast.FunctionLiteral) {
-      // Anonymous function — not supported as value in WASM yet, push 0
-      this.currentBody.i32Const(0);
+      this.compileFunctionLiteral(node);
     } else if (node instanceof ast.WhileExpression) {
       this.compileWhileExpression(node);
     } else if (node instanceof ast.ForExpression) {
@@ -645,32 +654,60 @@ export class WasmCompiler {
       }
     }
 
-    // Compile arguments
-    for (const arg of node.arguments) {
-      this.compileNode(arg);
-    }
-
     // Find function
     if (node.function instanceof ast.Identifier) {
       const name = node.function.value;
       const binding = this.currentScope.resolve(name);
       if (binding && binding.type === 'func') {
+        // Direct function call
+        // Compile arguments
+        for (const arg of node.arguments) {
+          this.compileNode(arg);
+        }
         this.currentBody.call(binding.index);
+      } else if (binding) {
+        // Variable holding a closure — indirect call
+        this._emitClosureCall(node, () => this.currentBody.localGet(binding.index));
       } else {
         this.errors.push(`unknown function: ${name}`);
-        // Clean up args from stack and push 0
-        for (let i = 0; i < node.arguments.length; i++) {
-          this.currentBody.drop();
-        }
         this.currentBody.i32Const(0);
       }
     } else {
-      // Indirect call not supported yet
-      for (let i = 0; i < node.arguments.length; i++) {
-        this.currentBody.drop();
-      }
-      this.currentBody.i32Const(0);
+      // Expression-based call (e.g., immediate function call)
+      this._emitClosureCall(node, () => this.compileNode(node.function));
     }
+  }
+
+  // Emit a closure call via call_indirect
+  _emitClosureCall(node, emitClosure) {
+    // Evaluate the closure to get its pointer
+    emitClosure();
+    const closurePtrLocal = this.nextLocalIndex++;
+    this.currentBody.addLocal(ValType.i32);
+    this.currentBody.localSet(closurePtrLocal);
+
+    // Load env_ptr from closure (offset 8)
+    this.currentBody.localGet(closurePtrLocal);
+    this.currentBody.i32Const(8);
+    this.currentBody.emit(Op.i32_add);
+    this.currentBody.i32Load(); // env_ptr is first arg
+
+    // Compile actual arguments
+    for (const arg of node.arguments) {
+      this.compileNode(arg);
+    }
+
+    // Load table_index from closure (offset 4)
+    this.currentBody.localGet(closurePtrLocal);
+    this.currentBody.i32Const(4);
+    this.currentBody.emit(Op.i32_add);
+    this.currentBody.i32Load(); // table index on top
+
+    // call_indirect with type signature: (env_ptr, arg0, arg1, ...) -> i32
+    const numParams = node.arguments.length + 1; // +1 for env_ptr
+    const paramTypes = Array(numParams).fill(ValType.i32);
+    const typeIdx = this.builder.addType(paramTypes, [ValType.i32]);
+    this.currentBody.callIndirect(typeIdx);
   }
 
   compileWhileExpression(node) {
@@ -790,6 +827,184 @@ export class WasmCompiler {
 
     // Push pointer to the string constant
     this.currentBody.i32Const(offset);
+  }
+
+  // Function literal → closure object on heap
+  compileFunctionLiteral(node) {
+    // 1. Analyze free variables (captures from current scope)
+    const captures = this._findCaptures(node);
+
+    // 2. Create the WASM function with extra env_ptr as first param
+    const params = [ValType.i32, ...node.parameters.map(() => ValType.i32)]; // env_ptr + params
+    const results = [ValType.i32]; // all functions return i32
+
+    const { index: wasmFuncIdx, body: funcBody } = this.builder.addFunction(params, results);
+    const tableSlot = this.nextTableSlot++;
+
+    // 3. Compile the function body in a new scope
+    const prevBody = this.currentBody;
+    const prevScope = this.currentScope;
+    const prevFunc = this.currentFunc;
+    const prevLocalIdx = this.nextLocalIndex;
+    const prevParamIdx = this.nextParamIndex;
+    const prevTempLocal = this._tempLocal;
+
+    this.currentBody = funcBody;
+    this.currentFunc = { name: `closure_${tableSlot}`, index: wasmFuncIdx };
+    this.currentScope = new Scope(this.globalScope);
+    this.nextParamIndex = 0;
+    this.nextLocalIndex = params.length;
+    this._tempLocal = null;
+
+    // Bind env_ptr as local 0
+    const envPtrLocal = 0;
+
+    // Bind actual parameters (starting at local 1)
+    for (let i = 0; i < node.parameters.length; i++) {
+      const name = node.parameters[i].value || node.parameters[i].token?.literal;
+      this.currentScope.define(name, i + 1, ValType.i32);
+    }
+
+    // Bind captured variables — read them from the environment
+    for (let i = 0; i < captures.length; i++) {
+      const localIdx = this.nextLocalIndex++;
+      funcBody.addLocal(ValType.i32);
+      // Load from env: env_ptr + 4 + i*4
+      funcBody
+        .localGet(envPtrLocal)
+        .i32Const(4 + i * 4)
+        .emit(Op.i32_add)
+        .i32Load()
+        .localSet(localIdx);
+      this.currentScope.define(captures[i], localIdx, ValType.i32);
+    }
+
+    // Compile function body
+    this._compileBlockReturning(node.body);
+
+    // Restore state
+    this.currentBody = prevBody;
+    this.currentScope = prevScope;
+    this.currentFunc = prevFunc;
+    this.nextLocalIndex = prevLocalIdx;
+    this.nextParamIndex = prevParamIdx;
+    this._tempLocal = prevTempLocal;
+
+    // 4. Record for table registration
+    this.closureFuncs.push({
+      funcLit: node,
+      captures,
+      tableIndex: tableSlot,
+      wasmFuncIndex: wasmFuncIdx,
+    });
+
+    // 5. Emit code to create the closure object at runtime
+    // Allocate environment: [num_captures:i32][cap0:i32][cap1:i32]...
+    const envSize = 4 + captures.length * 4;
+    this.currentBody.i32Const(envSize);
+    this.currentBody.call(this._runtimeFuncs.alloc);
+
+    const envLocal = this.nextLocalIndex++;
+    this.currentBody.addLocal(ValType.i32);
+    this.currentBody.localSet(envLocal);
+
+    // Store num captures
+    this.currentBody.localGet(envLocal);
+    this.currentBody.i32Const(captures.length);
+    this.currentBody.i32Store();
+
+    // Store captured variables
+    for (let i = 0; i < captures.length; i++) {
+      const binding = this.currentScope.resolve(captures[i]);
+      this.currentBody.localGet(envLocal);
+      this.currentBody.i32Const(4 + i * 4);
+      this.currentBody.emit(Op.i32_add);
+      if (binding) {
+        this.currentBody.localGet(binding.index);
+      } else {
+        this.currentBody.i32Const(0);
+      }
+      this.currentBody.i32Store();
+    }
+
+    // Allocate closure object: [TAG_CLOSURE:i32][table_index:i32][env_ptr:i32]
+    this.currentBody.i32Const(12); // 3 * i32
+    this.currentBody.call(this._runtimeFuncs.alloc);
+
+    const closureLocal = this.nextLocalIndex++;
+    this.currentBody.addLocal(ValType.i32);
+    this.currentBody.localSet(closureLocal);
+
+    // Store tag
+    this.currentBody.localGet(closureLocal);
+    this.currentBody.i32Const(TAG_CLOSURE);
+    this.currentBody.i32Store();
+
+    // Store table index
+    this.currentBody.localGet(closureLocal);
+    this.currentBody.i32Const(4);
+    this.currentBody.emit(Op.i32_add);
+    this.currentBody.i32Const(tableSlot);
+    this.currentBody.i32Store();
+
+    // Store env_ptr
+    this.currentBody.localGet(closureLocal);
+    this.currentBody.i32Const(8);
+    this.currentBody.emit(Op.i32_add);
+    this.currentBody.localGet(envLocal);
+    this.currentBody.i32Store();
+
+    // Leave closure pointer on stack
+    this.currentBody.localGet(closureLocal);
+  }
+
+  // Find free variables in a function literal
+  _findCaptures(funcLit) {
+    const params = new Set(funcLit.parameters.map(p => p.value || p.token?.literal));
+    const captures = new Set();
+
+    const walk = (node) => {
+      if (!node) return;
+      if (node instanceof ast.Identifier) {
+        const name = node.value;
+        if (!params.has(name) && this.currentScope.resolve(name) &&
+            this.currentScope.resolve(name).type !== 'func') {
+          captures.add(name);
+        }
+      }
+      // Walk children
+      if (node.left) walk(node.left);
+      if (node.right) walk(node.right);
+      if (node.condition) walk(node.condition);
+      if (node.consequence) walk(node.consequence);
+      if (node.alternative) walk(node.alternative);
+      if (node.expression) walk(node.expression);
+      if (node.value) walk(node.value);
+      if (node.returnValue) walk(node.returnValue);
+      if (node.index) walk(node.index);
+      if (node.function) walk(node.function);
+      if (node.body && node.body.statements) {
+        for (const stmt of node.body.statements) walk(stmt);
+      }
+      if (node.statements) {
+        for (const stmt of node.statements) walk(stmt);
+      }
+      if (node.arguments) {
+        for (const arg of node.arguments) walk(arg);
+      }
+      if (node.elements) {
+        for (const elem of node.elements) walk(elem);
+      }
+      if (node.parameters) {
+        // Don't walk parameter identifiers — they're definitions not references
+      }
+    };
+
+    if (funcLit.body && funcLit.body.statements) {
+      for (const stmt of funcLit.body.statements) walk(stmt);
+    }
+
+    return [...captures];
   }
 
   // Array literal → heap-allocated array
