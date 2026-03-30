@@ -21,96 +21,50 @@
     width: 100%;
     max-width: 900px;
   }
-  h1 {
-    font-size: 1.8rem;
-    font-weight: 600;
-    color: #f0f6fc;
-    margin-bottom: 0.3rem;
-  }
+  h1 { font-size: 1.8rem; font-weight: 600; color: #f0f6fc; margin-bottom: 0.3rem; }
   h1 span { color: #58a6ff; }
   .subtitle { color: #8b949e; font-size: 0.9rem; }
   .controls {
-    display: flex;
-    gap: 1rem;
-    padding: 1rem 2rem;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    max-width: 900px;
+    display: flex; gap: 1rem; padding: 1rem 2rem; flex-wrap: wrap;
+    justify-content: center; align-items: center; max-width: 900px;
   }
-  .control-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
+  .control-group { display: flex; flex-direction: column; gap: 0.25rem; }
   .control-group label {
-    font-size: 0.75rem;
-    color: #8b949e;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    font-size: 0.75rem; color: #8b949e; text-transform: uppercase; letter-spacing: 0.05em;
   }
   select, input[type=range] {
-    background: #161b22;
-    border: 1px solid #30363d;
-    color: #c9d1d9;
-    padding: 0.4rem 0.6rem;
-    border-radius: 6px;
-    font-size: 0.85rem;
+    background: #161b22; border: 1px solid #30363d; color: #c9d1d9;
+    padding: 0.4rem 0.6rem; border-radius: 6px; font-size: 0.85rem;
   }
   select:focus, input:focus { outline: none; border-color: #58a6ff; }
   button {
-    background: #238636;
-    color: #fff;
-    border: none;
-    padding: 0.5rem 1.5rem;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.2s;
+    background: #238636; color: #fff; border: none; padding: 0.5rem 1.5rem;
+    border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: background 0.2s;
   }
   button:hover { background: #2ea043; }
   button:disabled { background: #21262d; color: #484f58; cursor: not-allowed; }
   button.stop { background: #da3633; }
   button.stop:hover { background: #f85149; }
   .canvas-wrap {
-    margin: 1rem;
-    border: 1px solid #30363d;
-    border-radius: 8px;
-    overflow: hidden;
-    position: relative;
-    background: #010409;
+    margin: 1rem; border: 1px solid #30363d; border-radius: 8px;
+    overflow: hidden; position: relative; background: #010409;
   }
   canvas { display: block; image-rendering: auto; }
   .progress-bar {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 3px;
-    background: #58a6ff;
-    transition: width 0.1s;
+    position: absolute; bottom: 0; left: 0; height: 3px;
+    background: #58a6ff; transition: width 0.1s;
   }
   .stats {
-    display: flex;
-    gap: 2rem;
-    padding: 0.5rem 2rem;
-    color: #8b949e;
-    font-size: 0.8rem;
-    flex-wrap: wrap;
-    justify-content: center;
+    display: flex; gap: 2rem; padding: 0.5rem 2rem; color: #8b949e;
+    font-size: 0.8rem; flex-wrap: wrap; justify-content: center;
   }
   .stats span { color: #c9d1d9; }
   .info {
-    max-width: 700px;
-    padding: 2rem;
-    color: #8b949e;
-    font-size: 0.85rem;
-    line-height: 1.6;
-    text-align: center;
+    max-width: 700px; padding: 2rem; color: #8b949e;
+    font-size: 0.85rem; line-height: 1.6; text-align: center;
   }
   .info a { color: #58a6ff; text-decoration: none; }
   .info a:hover { text-decoration: underline; }
-
   @media (max-width: 600px) {
     .controls { gap: 0.5rem; padding: 0.5rem; }
     canvas { width: 100% !important; height: auto !important; }
@@ -121,7 +75,7 @@
 
 <header>
   <h1>🔮 <span>Ray Tracer</span></h1>
-  <p class="subtitle">Built from scratch in JavaScript — real-time progressive rendering</p>
+  <p class="subtitle">Built from scratch in JavaScript — multi-threaded parallel rendering</p>
 </header>
 
 <div class="controls">
@@ -142,7 +96,7 @@
       <option value="200">200px (fast)</option>
       <option value="400" selected>400px</option>
       <option value="600">600px</option>
-      <option value="800">800px (slow)</option>
+      <option value="800">800px</option>
     </select>
   </div>
   <div class="control-group">
@@ -153,6 +107,16 @@
       <option value="50" selected>50 (balanced)</option>
       <option value="100">100 (quality)</option>
       <option value="500">500 (high)</option>
+    </select>
+  </div>
+  <div class="control-group">
+    <label>Workers</label>
+    <select id="workers">
+      <option value="1">1 (single)</option>
+      <option value="2">2</option>
+      <option value="4" selected>4</option>
+      <option value="8">8</option>
+      <option value="16">16</option>
     </select>
   </div>
   <div class="control-group">
@@ -171,13 +135,14 @@
   <div>Progress: <span id="progress">0%</span></div>
   <div>Time: <span id="time">—</span></div>
   <div>Rays: <span id="rays">—</span></div>
+  <div>Workers: <span id="workerCount">—</span></div>
 </div>
 
 <div class="info">
   <p>
-    A complete ray tracer supporting diffuse, metallic, and dielectric (glass) materials
-    with reflections, refractions, depth of field, and anti-aliasing.
-    Renders progressively row by row using a Web Worker.
+    A complete ray tracer supporting diffuse, metallic, dielectric (glass), and emissive materials
+    with reflections, refractions, depth of field, BVH acceleration, and procedural textures.
+    Renders in parallel using multiple Web Workers.
   </p>
   <p style="margin-top: 0.5rem">
     Built by <a href="https://henry-the-frog.github.io">Henry</a> •
@@ -186,7 +151,7 @@
 </div>
 
 <script>
-let worker = null;
+let workers = [];
 let startTime = 0;
 
 const scenes = {
@@ -218,11 +183,12 @@ const scenes = {
 };
 
 function startRender() {
-  if (worker) { worker.postMessage({ action: 'stop' }); worker.terminate(); }
+  stopRender();
 
   const scene = document.getElementById('scene').value;
   const width = parseInt(document.getElementById('resolution').value);
   const spp = parseInt(document.getElementById('samples').value);
+  const numWorkers = parseInt(document.getElementById('workers').value);
   const camConfig = scenes[scene];
   const height = Math.floor(width / camConfig.aspectRatio);
 
@@ -234,69 +200,97 @@ function startRender() {
   ctx.fillStyle = '#010409';
   ctx.fillRect(0, 0, width, height);
 
-  // Convert camera config to worker format
   const workerCam = {
-    lookFrom: camConfig.lookFrom,
-    lookAt: camConfig.lookAt,
-    vup: { x: 0, y: 1, z: 0 },
-    vfov: camConfig.vfov,
-    aspectRatio: camConfig.aspectRatio,
-    aperture: camConfig.aperture,
+    lookFrom: camConfig.lookFrom, lookAt: camConfig.lookAt,
+    vup: { x: 0, y: 1, z: 0 }, vfov: camConfig.vfov,
+    aspectRatio: camConfig.aspectRatio, aperture: camConfig.aperture,
     focusDist: camConfig.focusDist
   };
+
+  const config = {
+    width, height, samplesPerPixel: spp, maxDepth: 50,
+    scene, cameraConfig: workerCam, background: camConfig.background || null
+  };
+
+  // Generate tiles (32px tiles for good parallelism)
+  const TILE_SIZE = 32;
+  const tiles = [];
+  let tileId = 0;
+  for (let y = 0; y < height; y += TILE_SIZE) {
+    for (let x = 0; x < width; x += TILE_SIZE) {
+      tiles.push({
+        tileId: tileId++,
+        x0: x, y0: y,
+        x1: Math.min(x + TILE_SIZE, width),
+        y1: Math.min(y + TILE_SIZE, height)
+      });
+    }
+  }
+
+  // Shuffle tiles for more even visual progress
+  for (let i = tiles.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
+  }
+
+  const totalTiles = tiles.length;
+  let completedTiles = 0;
+  let tileIndex = 0;
 
   document.getElementById('renderBtn').textContent = '⏹ Stop';
   document.getElementById('renderBtn').className = 'stop';
   document.getElementById('renderBtn').onclick = stopRender;
-  document.getElementById('status').textContent = 'Rendering...';
+  document.getElementById('status').textContent = `Rendering (${numWorkers} workers)...`;
+  document.getElementById('workerCount').textContent = numWorkers;
   document.getElementById('progressBar').style.width = '0%';
   startTime = performance.now();
 
-  worker = new Worker('worker.js');
+  function sendNextTile(worker) {
+    if (tileIndex < tiles.length) {
+      worker.postMessage({ tile: tiles[tileIndex++], config });
+    }
+  }
 
-  worker.onmessage = function(e) {
-    const { type, row, pixels, progress } = e.data;
+  // Create worker pool
+  for (let i = 0; i < numWorkers; i++) {
+    const w = new Worker('tile-worker.js');
+    w.onmessage = function(e) {
+      const { tileId, x0, y0, tileW, tileH, pixels } = e.data;
+      const imageData = new ImageData(pixels, tileW, tileH);
+      ctx.putImageData(imageData, x0, y0);
 
-    if (type === 'row') {
-      const imageData = new ImageData(pixels, width, 1);
-      ctx.putImageData(imageData, 0, row);
-      const pct = Math.floor(progress * 100);
+      completedTiles++;
+      const pct = Math.floor((completedTiles / totalTiles) * 100);
       document.getElementById('progress').textContent = pct + '%';
       document.getElementById('progressBar').style.width = pct + '%';
       const elapsed = ((performance.now() - startTime) / 1000).toFixed(1);
       document.getElementById('time').textContent = elapsed + 's';
-      const totalRays = Math.floor(progress * width * height * spp);
+      const totalRays = Math.floor((completedTiles / totalTiles) * width * height * spp);
       document.getElementById('rays').textContent = formatNumber(totalRays);
-    }
 
-    if (type === 'done' || type === 'stopped') {
-      const elapsed = ((performance.now() - startTime) / 1000).toFixed(1);
-      const totalRays = width * height * spp;
-      document.getElementById('status').textContent = type === 'done' ? 'Complete' : 'Stopped';
-      document.getElementById('time').textContent = elapsed + 's';
-      document.getElementById('rays').textContent = formatNumber(totalRays);
-      document.getElementById('renderBtn').textContent = '▶ Render';
-      document.getElementById('renderBtn').className = '';
-      document.getElementById('renderBtn').onclick = startRender;
-      if (type === 'done') document.getElementById('progressBar').style.width = '100%';
-    }
-  };
-
-  worker.postMessage({
-    action: 'render',
-    config: {
-      width, height,
-      samplesPerPixel: spp,
-      maxDepth: 50,
-      scene,
-      cameraConfig: workerCam,
-      background: camConfig.background || null
-    }
-  });
+      if (completedTiles === totalTiles) {
+        const elapsed = ((performance.now() - startTime) / 1000).toFixed(1);
+        document.getElementById('status').textContent = `Complete (${numWorkers} workers)`;
+        document.getElementById('time').textContent = elapsed + 's';
+        document.getElementById('rays').textContent = formatNumber(width * height * spp);
+        document.getElementById('renderBtn').textContent = '▶ Render';
+        document.getElementById('renderBtn').className = '';
+        document.getElementById('renderBtn').onclick = startRender;
+        document.getElementById('progressBar').style.width = '100%';
+        workers.forEach(w => w.terminate());
+        workers = [];
+      } else {
+        sendNextTile(w);
+      }
+    };
+    workers.push(w);
+    sendNextTile(w);
+  }
 }
 
 function stopRender() {
-  if (worker) { worker.postMessage({ action: 'stop' }); worker.terminate(); worker = null; }
+  workers.forEach(w => w.terminate());
+  workers = [];
   document.getElementById('status').textContent = 'Stopped';
   document.getElementById('renderBtn').textContent = '▶ Render';
   document.getElementById('renderBtn').className = '';
@@ -310,11 +304,18 @@ function formatNumber(n) {
   return n.toString();
 }
 
-// Auto-render on load with preview settings
+// Detect core count and set default
 window.addEventListener('load', () => {
+  const cores = navigator.hardwareConcurrency || 4;
+  const sel = document.getElementById('workers');
+  // Set to closest option
+  const opts = [1, 2, 4, 8, 16];
+  const best = opts.reduce((a, b) => Math.abs(b - cores) < Math.abs(a - cores) ? b : a);
+  sel.value = String(best);
+
+  // Auto-render with preview
   document.getElementById('samples').value = '4';
   startRender();
-  // Reset to default after preview
   setTimeout(() => { document.getElementById('samples').value = '50'; }, 100);
 });
 </script>
