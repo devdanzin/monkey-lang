@@ -134,6 +134,15 @@
     </select>
   </div>
   <div class="control-group">
+    <label>Denoise</label>
+    <select id="denoise">
+      <option value="off" selected>Off</option>
+      <option value="light">Light</option>
+      <option value="medium">Medium</option>
+      <option value="heavy">Heavy</option>
+    </select>
+  </div>
+  <div class="control-group">
     <label>&nbsp;</label>
     <button id="renderBtn" onclick="startRender()">▶ Render</button>
   </div>
@@ -324,6 +333,19 @@ function startRender() {
         document.getElementById('renderBtn').onclick = startRender;
         document.getElementById('progressBar').style.width = '100%';
         document.getElementById('downloadBtn').disabled = false;
+
+        // Apply denoising if selected
+        const denoiseMode = document.getElementById('denoise').value;
+        if (denoiseMode !== 'off') {
+          document.getElementById('status').textContent = 'Denoising...';
+          const imgData = ctx.getImageData(0, 0, width, height);
+          const params = { light: [2, 15], medium: [3, 25], heavy: [4, 40] };
+          const [ss, cs] = params[denoiseMode];
+          const denoised = denoise(imgData.data, width, height, ss, cs);
+          ctx.putImageData(new ImageData(denoised, width, height), 0, 0);
+          document.getElementById('status').textContent = `Complete (denoised)`;
+        }
+
         workers.forEach(w => w.terminate());
         workers = [];
       } else {
@@ -342,6 +364,31 @@ function stopRender() {
   document.getElementById('renderBtn').textContent = '▶ Render';
   document.getElementById('renderBtn').className = '';
   document.getElementById('renderBtn').onclick = startRender;
+}
+
+// Bilateral filter denoiser
+function denoise(pixels, w, h, spatialSigma, colorSigma) {
+  const out = new Uint8ClampedArray(pixels.length);
+  const r = Math.ceil(spatialSigma * 2);
+  const sd = 2 * spatialSigma * spatialSigma;
+  const cd = 2 * colorSigma * colorSigma;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const i = (y*w+x)*4;
+    const cr=pixels[i],cg=pixels[i+1],cb=pixels[i+2];
+    let sr=0,sg=0,sb=0,sw=0;
+    for (let dy=-r;dy<=r;dy++) for (let dx=-r;dx<=r;dx++) {
+      const nx=x+dx,ny=y+dy;
+      if(nx<0||nx>=w||ny<0||ny>=h)continue;
+      const ni=(ny*w+nx)*4;
+      const nr=pixels[ni],ng=pixels[ni+1],nb=pixels[ni+2];
+      const swt=Math.exp(-(dx*dx+dy*dy)/sd);
+      const cwt=Math.exp(-((cr-nr)**2+(cg-ng)**2+(cb-nb)**2)/cd);
+      const wt=swt*cwt;
+      sr+=nr*wt;sg+=ng*wt;sb+=nb*wt;sw+=wt;
+    }
+    out[i]=Math.round(sr/sw);out[i+1]=Math.round(sg/sw);out[i+2]=Math.round(sb/sw);out[i+3]=255;
+  }
+  return out;
 }
 
 function downloadPNG() {
