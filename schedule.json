@@ -720,9 +720,19 @@
     {
       "id": "T69",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add tab completion to REPL (keywords, builtins, variables)",
-      "started": "2026-03-30T17:11:44.572Z"
+      "started": "2026-03-30T17:11:44.572Z",
+      "completed": "2026-03-30T17:12:35.963Z",
+      "duration_ms": 60000,
+      "summary": "REPL tab completion: keywords, builtins, REPL commands. Works with readline tab key."
+    },
+    {
+      "id": "T70",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add multiline input support to REPL (detect unbalanced braces)",
+      "started": "2026-03-30T17:12:46.004Z"
     }
   ],
   "backlog": [],
@@ -926,6 +936,10 @@
     {
       "time": "2026-03-30T17:11:44.450Z",
       "msg": "Added T69 (BUILD) after end: Add tab completion to REPL (keywords, builtins, variables)"
+    },
+    {
+      "time": "2026-03-30T17:12:45.887Z",
+      "msg": "Added T70 (BUILD) after end: Add multiline input support to REPL (detect unbalanced braces)"
     }
   ]
 }

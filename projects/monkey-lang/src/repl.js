@@ -347,6 +347,32 @@ class MonkeyREPL {
     }
   }
 
+  _hasUnbalancedBraces(text) {
+    let depth = 0;
+    for (const ch of text) {
+      if (ch === '{' || ch === '(' || ch === '[') depth++;
+      if (ch === '}' || ch === ')' || ch === ']') depth--;
+    }
+    return depth > 0;
+  }
+
+  _countBraceDepth(text) {
+    let depth = 0;
+    let inString = false;
+    let stringChar = null;
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      if (inString) {
+        if (ch === stringChar && text[i - 1] !== '\\') inString = false;
+        continue;
+      }
+      if (ch === '"' || ch === "'") { inString = true; stringChar = ch; continue; }
+      if (ch === '{' || ch === '(' || ch === '[') depth++;
+      if (ch === '}' || ch === ')' || ch === ']') depth--;
+    }
+    return depth;
+  }
+
   async execWasm(input) {
     try {
       const outputLines = [];
@@ -780,8 +806,26 @@ class MonkeyREPL {
     rl.prompt();
 
     let pendingAsync = null;
+    let multilineBuffer = '';
+    let braceDepth = 0;
 
     rl.on('line', async (line) => {
+      // Multiline support: track brace depth
+      if (multilineBuffer || this._hasUnbalancedBraces(line)) {
+        multilineBuffer += (multilineBuffer ? '\n' : '') + line;
+        braceDepth = this._countBraceDepth(multilineBuffer);
+        if (braceDepth > 0) {
+          rl.setPrompt('... ');
+          rl.prompt();
+          return;
+        }
+        // Braces balanced — process the complete input
+        line = multilineBuffer;
+        multilineBuffer = '';
+        braceDepth = 0;
+        rl.setPrompt(prompt);
+      }
+
       const trimmed = line.trim();
       if (!trimmed) { rl.prompt(); return; }
 
