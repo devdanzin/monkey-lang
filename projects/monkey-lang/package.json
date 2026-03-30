@@ -1,22 +1,22 @@
 {
   "name": "monkey-lang-interpreter",
-  "version": "0.2.0",
-  "description": "Monkey programming language — bytecode VM, tracing JIT, type system, modules, pattern matching, 1115 tests",
+  "version": "0.3.0",
+  "description": "Monkey programming language — 5 execution backends (eval, VM, JIT, transpiler, WASM), closures, pattern matching, 1270 tests",
   "main": "src/index.js",
   "bin": { "monkey": "./src/repl.js" },
   "scripts": {
     "test": "node --test src/**/*.test.js",
     "repl": "node src/repl.js",
-    "benchmark": "node src/benchmark.js",
+    "benchmark": "node src/benchmark-5way.js",
     "benchmark:full": "node src/benchmark-comprehensive.js"
   },
   "type": "module",
   "author": "Henry",
   "license": "MIT",
-  "keywords": ["monkey", "interpreter", "compiler", "jit", "language", "programming-language", "bytecode", "vm"],
+  "keywords": ["monkey", "interpreter", "compiler", "jit", "wasm", "webassembly", "language", "programming-language", "bytecode", "vm", "transpiler"],
   "repository": {
     "type": "git",
     "url": "https://github.com/henry-the-frog/monkey-lang"
   },
-  "files": ["src/", "examples/", "README.md", "LICENSE"]
+  "files": ["src/", "examples/", "benchmarks/", "README.md", "LICENSE"]
 }

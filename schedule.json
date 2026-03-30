@@ -596,6 +596,13 @@
       "completed": "2026-03-30T16:37:28.638Z",
       "duration_ms": 300000,
       "summary": "WASM constant folding: arithmetic, comparisons, nested chains, negation. 2+3→i32.const 5. 7 new tests (106 total WASM compiler tests)."
+    },
+    {
+      "id": "T57",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add dead code elimination to WASM compiler (remove unreachable code after return)",
+      "started": "2026-03-30T16:38:46.389Z"
     }
   ],
   "backlog": [],
@@ -747,6 +754,10 @@
     {
       "time": "2026-03-30T16:32:26.509Z",
       "msg": "Added T56 (BUILD) after end: Add constant folding optimization to WASM compiler"
+    },
+    {
+      "time": "2026-03-30T16:38:46.253Z",
+      "msg": "Added T57 (BUILD) after end: Add dead code elimination to WASM compiler (remove unreachable code after return)"
     }
   ]
 }
