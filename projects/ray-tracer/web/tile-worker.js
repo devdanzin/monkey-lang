@@ -7,7 +7,7 @@ const { Vec3, Camera, BVHNode, HittableList,
 
 self.onmessage = function(e) {
   const { tile, config } = e.data;
-  const { width, height, samplesPerPixel, maxDepth, scene, cameraConfig, background } = config;
+  const { width, height, samplesPerPixel, maxDepth, scene, cameraConfig, background, renderMode } = config;
   const { x0, y0, x1, y1, tileId } = tile;
 
   // Build scene (each worker builds its own — no shared state needed)
@@ -47,7 +47,45 @@ self.onmessage = function(e) {
         const u = (px + Math.random()) / (width - 1);
         const v = (j + Math.random()) / (height - 1);
         const ray = cam.getRay(u, v);
-        const color = rayColor(ray, sceneHit, maxDepth, bg);
+
+        let color;
+        if (renderMode === 'normals') {
+          const rec = sceneHit.hit(ray, 0.001, Infinity);
+          if (rec) {
+            const n = rec.normal;
+            color = new Vec3((n.x+1)*0.5, (n.y+1)*0.5, (n.z+1)*0.5);
+          } else {
+            color = new Vec3(0, 0, 0);
+          }
+        } else if (renderMode === 'depth') {
+          const rec = sceneHit.hit(ray, 0.001, Infinity);
+          if (rec) {
+            const d = 1 - Math.min(rec.t / 20, 1);
+            color = new Vec3(d, d, d);
+          } else {
+            color = new Vec3(0.5, 0.7, 1.0);
+          }
+        } else if (renderMode === 'flat') {
+          const rec = sceneHit.hit(ray, 0.001, Infinity);
+          if (rec && rec.material.texture) {
+            color = rec.material.texture.value(0, 0, rec.p);
+          } else if (rec && rec.material.albedo) {
+            color = rec.material.albedo;
+          } else if (rec && rec.material.emit) {
+            color = rec.material.emit;
+          } else if (!rec) {
+            if (bg) color = bg;
+            else {
+              const ud = ray.direction.unit();
+              const t = 0.5 * (ud.y + 1.0);
+              color = new Vec3(1,1,1).mul(1-t).add(new Vec3(0.5,0.7,1.0).mul(t));
+            }
+          } else {
+            color = new Vec3(0.5, 0.5, 0.5);
+          }
+        } else {
+          color = rayColor(ray, sceneHit, maxDepth, bg);
+        }
         r += color.x; g += color.y; b += color.z;
       }
 
