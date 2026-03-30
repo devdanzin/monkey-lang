@@ -228,37 +228,53 @@
       "id": "T22",
       "mode": "BUILD",
       "task": "WASM string concat: implement __str_concat(ptr1, ptr2) → new_ptr, hook up + operator for strings",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T21",
-      "started": "2026-03-30T15:39:43.119Z"
+      "started": "2026-03-30T15:39:43.119Z",
+      "completed": "2026-03-30T15:42:09.110Z",
+      "duration_ms": 240000,
+      "summary": "String concat implemented: __str_concat via JS import, type inference for + operator with strings. 9 new tests."
     },
     {
       "id": "T23",
       "mode": "BUILD",
       "task": "WASM str() builtin: convert integers to string representation in linear memory",
-      "status": "upcoming",
-      "plan_ref": "T21"
+      "status": "done",
+      "plan_ref": "T21",
+      "started": "2026-03-30T15:42:17.814Z",
+      "completed": "2026-03-30T15:42:17.931Z",
+      "duration_ms": 0,
+      "summary": "Implemented in T22 — str() converts integers via formatWasmValue, writes back to WASM memory via writeString helper."
     },
     {
       "id": "T24",
       "mode": "BUILD",
       "task": "WASM string comparison: implement == and != for strings",
-      "status": "upcoming",
-      "plan_ref": "T21"
+      "status": "done",
+      "plan_ref": "T21",
+      "started": "2026-03-30T15:42:24.746Z",
+      "completed": "2026-03-30T15:42:24.864Z",
+      "duration_ms": 0,
+      "summary": "Implemented in T22 — __str_eq import, type inference for == and != with strings."
     },
     {
       "id": "T25",
       "mode": "BUILD",
       "task": "Add WASM-specific tests for string operations (concat, str, comparison)",
-      "status": "upcoming",
-      "plan_ref": "T21"
+      "status": "done",
+      "plan_ref": "T21",
+      "started": "2026-03-30T15:42:32.093Z",
+      "completed": "2026-03-30T15:42:32.212Z",
+      "duration_ms": 0,
+      "summary": "9 tests added in T22 — concat, str(), comparison, loops, fibonacci output. 90 total WASM compiler tests."
     },
     {
       "id": "T26",
       "mode": "BUILD",
       "task": "Update monkey-lang README: 5 backends, 1200+ tests, architecture diagram, WASM section",
-      "status": "upcoming",
-      "plan_ref": "T21"
+      "status": "in-progress",
+      "plan_ref": "T21",
+      "started": "2026-03-30T15:42:44.637Z"
     },
     {
       "id": "T27",

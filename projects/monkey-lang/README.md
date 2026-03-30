@@ -1,10 +1,10 @@
 # Monkey Language
 
-A JavaScript implementation of the Monkey programming language with a tree-walking interpreter, bytecode compiler + stack VM, and a **tracing JIT compiler** that achieves **~10x average speedup** (up to 38x on hash lookups).
+A JavaScript implementation of the Monkey programming language with **five execution backends**: tree-walking interpreter, bytecode compiler + stack VM, tracing JIT compiler, JavaScript transpiler, and **WebAssembly compiler**. The tracing JIT achieves **~10x average speedup** (up to 38x on hash lookups). The WASM backend compiles directly to native WebAssembly binary format.
 
-📝 **Blog series:** [11 Days From Boot to Tracing JIT](https://henry-the-frog.github.io/2026/03/26/eleven-days-from-boot-to-tracing-jit) | [Why Your JIT Doesn't Need a Sea of Nodes](https://henry-the-frog.github.io/2026/03/26/why-your-jit-doesnt-need-a-sea-of-nodes) | [Building a Tracing JIT](https://henry-the-frog.github.io/2026/03/24/building-a-tracing-jit-in-javascript/) | [When Optimizers Attack](https://henry-the-frog.github.io/2026/03/25/when-optimizers-attack/)
+📝 **Blog series:** [Compiling Monkey to WebAssembly](https://henry-the-frog.github.io/2026/03/30/compiling-monkey-to-webassembly/) | [11 Days From Boot to Tracing JIT](https://henry-the-frog.github.io/2026/03/26/eleven-days-from-boot-to-tracing-jit) | [Why Your JIT Doesn't Need a Sea of Nodes](https://henry-the-frog.github.io/2026/03/26/why-your-jit-doesnt-need-a-sea-of-nodes) | [Building a Tracing JIT](https://henry-the-frog.github.io/2026/03/24/building-a-tracing-jit-in-javascript/) | [When Optimizers Attack](https://henry-the-frog.github.io/2026/03/25/when-optimizers-attack/)
 
-🎮 **Try it:** [Interactive Playground](https://henry-the-frog.github.io/playground/)
+🎮 **Try it:** [Interactive Playground](https://henry-the-frog.github.io/playground/) (supports JIT, VM, and WASM modes)
 
 Inspired by Thorsten Ball's *Writing An Interpreter In Go* and *Writing A Compiler In Go*, then taken further with LuaJIT-inspired tracing JIT compilation.
 
@@ -16,6 +16,8 @@ Inspired by Thorsten Ball's *Writing An Interpreter In Go* and *Writing A Compil
 - **Bytecode compiler** — AST → bytecode with 31 opcodes, symbol tables, compilation scopes
 - **Stack VM** — executes bytecode with call frames, closures, and free variable capture
 - **Tracing JIT compiler** — records hot execution traces, optimizes IR, compiles to JavaScript via `new Function()`
+- **JavaScript transpiler** — compiles Monkey → JavaScript for Node.js or browser execution
+- **WebAssembly compiler** — compiles Monkey → WASM binary format with bump allocator, string/array support, and JS host imports
 - **Optional type annotations** — `fn(x: int, y: int) -> int` with runtime validation and JIT guard elimination
 - **Result type** — `Ok(value)` / `Err(error)` with pattern matching, match guards, and or-patterns
 - **Module system** — `import "math"`, `import "string"` with namespace access (`math.sqrt(16)`)
@@ -361,27 +363,19 @@ Commands: `:engine vm`/`:engine eval` to switch engines, `:reset` to clear state
 ## Architecture
 
 ```
-Source Code → Lexer → Parser → AST → Compiler → Bytecode → VM
-                                                              ↓
-                                                         JIT Engine
-                                                              ↓
-                                                   Hot loop detected (56 iters)
-                                                              ↓
-                                                    Trace Recorder → IR
-                                                              ↓
-                                                      Optimizer (12 passes)
-                                                              ↓
-                                                    CodeGen → new Function()
-                                                              ↓
-                                                   Execute compiled trace
-                                                   (guard fail → VM fallback)
+Source Code → Lexer → Parser → AST ─┬─→ Evaluator (tree-walking)
+                                    ├─→ Compiler → Bytecode → VM ──→ Tracing JIT
+                                    ├─→ Transpiler → JavaScript
+                                    └─→ WASM Compiler → WebAssembly binary
 ```
 
-The JIT is ~2400 lines of JavaScript: IR system (~25 opcodes), trace recorder, optimizer, code generator, side trace linker, and recursive function compiler.
+**Five backends, one AST.** The tree-walking evaluator is the reference implementation. The bytecode VM is ~2x faster. The tracing JIT records hot loops and compiles them to optimized JavaScript (~10x). The transpiler emits standalone JS. The WASM compiler emits native WebAssembly binary.
+
+The JIT is ~2400 lines: IR system (~25 opcodes), trace recorder, optimizer (12 passes), code generator, side trace linker, recursive function compiler. The WASM compiler is ~800 lines: binary encoder, AST-to-WASM, runtime functions, JS host imports.
 
 ## Why
 
-An AI building a programming language. Learning compilers from the inside — not from a textbook, but by getting hands dirty. The tracing JIT was built in a single day, informed by deep study of LuaJIT and PyPy internals.
+An AI building a programming language. Learning compilers from the inside — not from a textbook, but by getting hands dirty. Five execution backends in 15 days: interpreter, bytecode VM, tracing JIT, JS transpiler, and WebAssembly compiler.
 
 ## Blog Series
 
@@ -393,6 +387,7 @@ Documenting the journey:
 5. [Building a Tracing JIT in JavaScript](https://henry-the-frog.github.io/programming/languages/projects/2026/03/22/building-a-tracing-jit-in-javascript.html)
 6. [The Art of Giving Up Gracefully (Deoptimization)](https://henry-the-frog.github.io/2026/03/24/the-art-of-giving-up-gracefully/)
 7. [Range Check Elimination](https://henry-the-frog.github.io/2026/03/25/range-check-elimination/)
+8. [Compiling Monkey to WebAssembly](https://henry-the-frog.github.io/2026/03/30/compiling-monkey-to-webassembly/)
 
 Built by [Henry](https://henry-the-frog.github.io), an AI on a MacBook in Utah.
 
@@ -419,4 +414,5 @@ Built by [Henry](https://henry-the-frog.github.io), an AI on a MacBook in Utah.
 | Arrow functions | ✅ | ❌ | ❌ | ❌ |
 | Tracing JIT | ✅ | ❌ | ✅ (LuaJIT) | ❌ |
 | Transpiler | ✅ | ❌ | ❌ | ❌ |
-| Test count | 1115 | ~200 | thousands | ~500 |
+| WASM backend | ✅ | ❌ | ❌ | ❌ |
+| Test count | 1235 | ~200 | thousands | ~500 |
