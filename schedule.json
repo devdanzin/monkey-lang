@@ -730,9 +730,12 @@
     {
       "id": "T70",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add multiline input support to REPL (detect unbalanced braces)",
-      "started": "2026-03-30T17:12:46.004Z"
+      "started": "2026-03-30T17:12:46.004Z",
+      "completed": "2026-03-30T17:14:24.034Z",
+      "duration_ms": 120000,
+      "summary": "REPL multiline input: auto-detects unbalanced braces, shows ... continuation prompt, processes when balanced."
     }
   ],
   "backlog": [],
