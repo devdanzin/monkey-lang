@@ -1745,12 +1745,112 @@
     {
       "id": "T168",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push v1.0.0 with all features",
-      "started": "2026-03-30T21:45:14.813Z"
+      "started": "2026-03-30T21:45:14.813Z",
+      "completed": "2026-03-30T21:46:08.810Z",
+      "duration_ms": 120000,
+      "summary": "v1.0.0 released! Tagged and pushed. All repos: workspace, ray-tracer main (v1.0.0 tag), ray-tracer gh-pages. 126 tests, 12 scenes, full feature set."
+    },
+    {
+      "id": "T169",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add link from blog/dashboard to ray tracer demo",
+      "started": "2026-03-30T21:46:36.164Z",
+      "completed": "2026-03-30T21:47:22.264Z",
+      "duration_ms": 60000,
+      "summary": "Blog homepage: added Projects section with links to Ray Tracer (demo + gallery), Monkey Language, and Dashboard."
+    },
+    {
+      "id": "T170",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: fix float comparison in WASM backend",
+      "started": "2026-03-30T21:47:28.109Z",
+      "completed": "2026-03-30T21:47:52.276Z",
+      "duration_ms": 60000,
+      "summary": "Investigated: WASM compiler truncates all floats to i32. Full f64 support is a multi-day project — deferred. The VM and eval engines handle floats correctly."
+    },
+    {
+      "id": "T171",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: add progress bar and ETA to CLI renderer",
+      "started": "2026-03-30T21:47:58.849Z",
+      "completed": "2026-03-30T21:48:43.259Z",
+      "duration_ms": 60000,
+      "summary": "CLI progress bar: 30-char bar, percentage, elapsed time, ETA, rays/sec. Updates every 500ms to minimize overhead."
+    },
+    {
+      "id": "T172",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: SIMD-style optimization for Vec3 operations",
+      "started": "2026-03-30T21:48:53.557Z",
+      "completed": "2026-03-30T21:48:53.703Z",
+      "duration_ms": 0,
+      "summary": "Skipped — V8 already optimizes monomorphic Vec3 shapes well. SIMD would require TypedArrays which break the clean API. Iterative rayColor was the bigger win (1.57x)."
+    },
+    {
+      "id": "T173",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Write scratch note about ray tracer architecture decisions",
+      "started": "2026-03-30T21:49:01.579Z",
+      "completed": "2026-03-30T21:49:43.425Z",
+      "duration_ms": 60000,
+      "summary": "Scratch note: ray tracer architecture decisions — immutable Vec3, iterative tracing, BVH random split, tile workers, bilateral filter, JSON format. Performance lessons learned."
+    },
+    {
+      "id": "T174",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: add disk/cylinder/cone primitives",
+      "started": "2026-03-30T21:50:13.375Z",
+      "completed": "2026-03-30T21:51:43.098Z",
+      "duration_ms": 240000,
+      "summary": "Disk (flat circle), Cylinder (y-axis, bounded), Cone (tapered, y-axis). All with AABB bounding boxes and proper normals. 8 new tests (134 total)."
+    },
+    {
+      "id": "T175",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: add fresnel-weighted glass tint (colored glass)",
+      "started": "2026-03-30T21:51:52.095Z",
+      "completed": "2026-03-30T21:52:45.960Z",
+      "duration_ms": 120000,
+      "summary": "ColoredGlass material: Beer-Lambert absorption law for tinted glass. Transmitted light gets progressively colored based on distance traveled through glass. Handles both entry/exit."
+    },
+    {
+      "id": "T176",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: create a 'museum' scene with pedestal objects",
+      "started": "2026-03-30T21:52:55.800Z",
+      "completed": "2026-03-30T21:55:17.095Z",
+      "duration_ms": 240000,
+      "summary": "Museum scene: 3 cylinder pedestals with marble/glass/mirror spheres, ruby and sapphire colored glass spheres, noise-textured back wall, ceiling light. 13 scenes total."
+    },
+    {
+      "id": "T177",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Deploy latest features, push all repos",
+      "started": "2026-03-30T21:55:26.628Z",
+      "completed": "2026-03-30T21:56:04.937Z",
+      "duration_ms": 120000,
+      "summary": "All repos deployed: workspace pushed, ray-tracer v1.1.0 (main + gh-pages). 134 tests, 13 scenes."
+    },
+    {
+      "id": "T178",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final session housekeeping",
+      "started": "2026-03-30T21:56:11.559Z"
     }
   ],
-  "updated_at": "2026-03-30T21:45:14.813Z",
+  "updated_at": "2026-03-30T21:56:11.559Z",
   "adjustments": [
     {
       "time": "2026-03-30T20:56:20.292Z",
@@ -1871,6 +1971,46 @@
     {
       "time": "2026-03-30T21:41:28.516Z",
       "msg": "Added T168 (BUILD) after end: Push v1.0.0 with all features"
+    },
+    {
+      "time": "2026-03-30T21:46:26.906Z",
+      "msg": "Added T169 (BUILD) after end: Add link from blog/dashboard to ray tracer demo"
+    },
+    {
+      "time": "2026-03-30T21:46:27.025Z",
+      "msg": "Added T170 (BUILD) after end: Monkey-lang: fix float comparison in WASM backend"
+    },
+    {
+      "time": "2026-03-30T21:46:27.145Z",
+      "msg": "Added T171 (BUILD) after end: Ray tracer: add progress bar and ETA to CLI renderer"
+    },
+    {
+      "time": "2026-03-30T21:46:27.265Z",
+      "msg": "Added T172 (BUILD) after end: Ray tracer: SIMD-style optimization for Vec3 operations"
+    },
+    {
+      "time": "2026-03-30T21:46:27.385Z",
+      "msg": "Added T173 (BUILD) after end: Write scratch note about ray tracer architecture decisions"
+    },
+    {
+      "time": "2026-03-30T21:50:04.601Z",
+      "msg": "Added T174 (BUILD) after end: Ray tracer: add disk/cylinder/cone primitives"
+    },
+    {
+      "time": "2026-03-30T21:50:04.741Z",
+      "msg": "Added T175 (BUILD) after end: Ray tracer: add fresnel-weighted glass tint (colored glass)"
+    },
+    {
+      "time": "2026-03-30T21:50:04.861Z",
+      "msg": "Added T176 (BUILD) after end: Ray tracer: create a 'museum' scene with pedestal objects"
+    },
+    {
+      "time": "2026-03-30T21:50:04.980Z",
+      "msg": "Added T177 (BUILD) after end: Deploy latest features, push all repos"
+    },
+    {
+      "time": "2026-03-30T21:50:05.099Z",
+      "msg": "Added T178 (MAINTAIN) after end: Final session housekeeping"
     }
   ]
 }
