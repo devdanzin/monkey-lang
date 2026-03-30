@@ -1495,23 +1495,83 @@
     {
       "id": "T143",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Mid-session: daily log, test count, push",
-      "started": "2026-03-30T21:02:12.553Z"
+      "started": "2026-03-30T21:02:12.553Z",
+      "completed": "2026-03-30T21:02:51.485Z",
+      "duration_ms": 120000,
+      "summary": "Daily log updated. All repos pushed and deployed: workspace, ray-tracer v0.5.0 (main + gh-pages). 71 tests, 9 scenes, live demo updated."
+    },
+    {
+      "id": "T144",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Final showcase scene: everything combined (all materials, textures, volumes, transforms)",
+      "started": "2026-03-30T21:03:09.379Z",
+      "completed": "2026-03-30T21:04:39.678Z",
+      "duration_ms": 240000,
+      "summary": "Showcase scene: everything combined — glass+fog sphere, marble, mirror, planet texture, rotated metallic box, noise sphere, area light, small random spheres (some emissive). 10 scenes total."
+    },
+    {
+      "id": "T145",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add sphere UV mapping for better texture coordinates",
+      "started": "2026-03-30T21:04:46.437Z",
+      "completed": "2026-03-30T21:05:17.840Z",
+      "duration_ms": 60000,
+      "summary": "Sphere UV mapping: atan2/acos for longitude/latitude to [0,1] UV coordinates. Stored in hit record. All 71 tests still pass."
+    },
+    {
+      "id": "T146",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Performance: optimize hot paths (Vec3 allocation, BVH traversal)",
+      "started": "2026-03-30T21:05:24.446Z",
+      "completed": "2026-03-30T21:06:16.980Z",
+      "duration_ms": 180000,
+      "summary": "Iterative rayColor loop replaces recursive version. 1.57x speedup (2.2s → 1.4s on quick render). Eliminates call stack overhead for deep bounces. 71 tests pass."
+    },
+    {
+      "id": "T147",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add motion blur (moving spheres)",
+      "started": "2026-03-30T21:06:21.540Z",
+      "completed": "2026-03-30T21:08:26.160Z",
+      "duration_ms": 240000,
+      "summary": "Motion blur: MovingSphere with time-interpolated center, Ray.time parameter, Camera shutter (time0/time1). Random time per ray. 4 new tests (75 total)."
+    },
+    {
+      "id": "T148",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Interactive camera orbit (mouse drag to rotate view)",
+      "started": "2026-03-30T21:08:32.554Z",
+      "completed": "2026-03-30T21:09:38.945Z",
+      "duration_ms": 180000,
+      "summary": "Interactive camera orbit: mouse drag rotates camera around look-at point. Spherical coordinate math, clamped vertical angle, auto-re-renders on release. Grab cursor hint."
+    },
+    {
+      "id": "T149",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Final deploy: update all repos, blog, README",
+      "started": "2026-03-30T21:09:43.973Z"
     }
   ],
   "current": {
-    "id": "T143",
-    "mode": "MAINTAIN",
+    "id": "T149",
+    "mode": "BUILD",
     "status": "in-progress",
-    "task": "Mid-session: daily log, test count, push",
-    "started": "2026-03-30T21:02:12.553Z"
+    "task": "Final deploy: update all repos, blog, README",
+    "started": "2026-03-30T21:09:43.973Z"
   },
   "stats": {
-    "completed": 142,
+    "completed": 148,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 20700000
+    "total_duration_ms": 21720000
   },
-  "updated_at": "2026-03-30T21:02:12.553Z"
+  "updated_at": "2026-03-30T21:09:43.973Z"
 }
