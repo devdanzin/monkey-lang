@@ -8,6 +8,7 @@ import { Compiler } from './compiler.js';
 import { VM, Closure } from './vm.js';
 import { MonkeyInteger, MonkeyBoolean, MonkeyString, MonkeyNull, MonkeyArray, MonkeyHash, MonkeyError, NULL, TRUE, FALSE } from './object.js';
 import { Opcodes, make, disassemble } from './code.js';
+import { STDLIB_SOURCE } from './stdlib.js';
 
 function parse(input) {
   const lexer = new Lexer(input);
@@ -3260,5 +3261,37 @@ describe('Sys Module (compiler+VM)', () => {
 
   it('random with bounds', () => {
     testIntegerObject(compileAndRun('import "sys" for random; let r = random(1, 1); r'), 1);
+  });
+});
+
+// Functional stdlib tests — these need STDLIB_SOURCE prepended for compose/pipe2/partial/flip/memoize/always
+describe('Functional stdlib', () => {
+  function runWithStdlib(code) {
+    return compileAndRun(STDLIB_SOURCE + '\n' + code);
+  }
+  it('compose two functions', () => {
+    testIntegerObject(runWithStdlib('let double = fn(x) { x * 2 }; let inc = fn(x) { x + 1 }; compose(double, inc)(5)'), 12);
+  });
+  it('pipe2 two functions', () => {
+    testIntegerObject(runWithStdlib('let double = fn(x) { x * 2 }; let inc = fn(x) { x + 1 }; pipe2(double, inc)(5)'), 11);
+  });
+  it('partial application', () => {
+    testIntegerObject(runWithStdlib('let add = fn(a, b) { a + b }; let add5 = partial(add, 5); add5(3)'), 8);
+  });
+  it('flip argument order', () => {
+    testIntegerObject(runWithStdlib('let sub = fn(a, b) { a - b }; let rsub = flip(sub); rsub(3, 10)'), 7);
+  });
+  it('memoize caches results', () => {
+    testIntegerObject(runWithStdlib('let calls = 0; let f = fn(x) { calls = calls + 1; x * 2 }; let mf = memoize(f); mf(5); mf(5); mf(5); calls'), 1);
+  });
+  it('always returns constant', () => {
+    testIntegerObject(runWithStdlib('let f = always(42); f() + f()'), 84);
+  });
+  it('compose with map', () => {
+    const result = runWithStdlib('let double = fn(x) { x * 2 }; let inc = fn(x) { x + 1 }; let f = compose(double, inc); map([1,2,3], f)');
+    assert.strictEqual(result.elements.length, 3);
+    testIntegerObject(result.elements[0], 4);
+    testIntegerObject(result.elements[1], 6);
+    testIntegerObject(result.elements[2], 8);
   });
 });
