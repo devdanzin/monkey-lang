@@ -153,6 +153,14 @@
     </select>
   </div>
   <div class="control-group">
+    <label>Tone Map</label>
+    <select id="tonemap">
+      <option value="off" selected>Off (gamma only)</option>
+      <option value="reinhard">Reinhard</option>
+      <option value="aces">ACES Filmic</option>
+    </select>
+  </div>
+  <div class="control-group">
     <label>&nbsp;</label>
     <button id="renderBtn" onclick="startRender()">▶ Render</button>
   </div>
@@ -356,6 +364,14 @@ function startRender() {
           document.getElementById('status').textContent = `Complete (denoised)`;
         }
 
+        // Apply tone mapping
+        const tmMode = document.getElementById('tonemap').value;
+        if (tmMode !== 'off') {
+          const imgData2 = ctx.getImageData(0, 0, width, height);
+          const mapped = tmMode === 'aces' ? toneMapACES(imgData2.data, width, height) : toneMapReinhard(imgData2.data, width, height);
+          ctx.putImageData(new ImageData(mapped, width, height), 0, 0);
+        }
+
         workers.forEach(w => w.terminate());
         workers = [];
       } else {
@@ -374,6 +390,29 @@ function stopRender() {
   document.getElementById('renderBtn').textContent = '▶ Render';
   document.getElementById('renderBtn').className = '';
   document.getElementById('renderBtn').onclick = startRender;
+}
+
+// Tone mapping
+function toneMapReinhard(pixels, w, h) {
+  const out = new Uint8ClampedArray(pixels.length);
+  for (let i = 0; i < pixels.length; i += 4) {
+    let r = (pixels[i]/255)**2, g = (pixels[i+1]/255)**2, b = (pixels[i+2]/255)**2;
+    r = r/(1+r); g = g/(1+g); b = b/(1+b);
+    out[i]=Math.round(Math.sqrt(r)*255);out[i+1]=Math.round(Math.sqrt(g)*255);out[i+2]=Math.round(Math.sqrt(b)*255);out[i+3]=255;
+  }
+  return out;
+}
+function toneMapACES(pixels, w, h) {
+  const out = new Uint8ClampedArray(pixels.length);
+  const a=2.51,b=0.03,c=2.43,d=0.59,e=0.14;
+  for (let i = 0; i < pixels.length; i += 4) {
+    let r = (pixels[i]/255)**2, g = (pixels[i+1]/255)**2, bl = (pixels[i+2]/255)**2;
+    r=Math.max(0,Math.min(1,(r*(a*r+b))/(r*(c*r+d)+e)));
+    g=Math.max(0,Math.min(1,(g*(a*g+b))/(g*(c*g+d)+e)));
+    bl=Math.max(0,Math.min(1,(bl*(a*bl+b))/(bl*(c*bl+d)+e)));
+    out[i]=Math.round(Math.sqrt(r)*255);out[i+1]=Math.round(Math.sqrt(g)*255);out[i+2]=Math.round(Math.sqrt(bl)*255);out[i+3]=255;
+  }
+  return out;
 }
 
 // Render presets

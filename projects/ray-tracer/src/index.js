@@ -11,6 +11,7 @@ export { Translate, RotateY } from './transform.js';
 export { Isotropic, ConstantMedium } from './volume.js';
 export { DebugMode, debugNormal, debugDepth, debugUV, countBVHNodes, heatMapColor } from './debug.js';
 export { bilateralFilter, boxBlur } from './denoise.js';
+export { reinhardToneMap, acesToneMap, adjustExposure } from './tonemap.js';
 export { loadScene, exportScene } from './scene-format.js';
 export { AABB } from './aabb.js';
 export { BVHNode } from './bvh.js';
