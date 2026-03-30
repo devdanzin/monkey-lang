@@ -254,12 +254,20 @@ if (fileArg) {
     if (useWasm) {
       // Run via WASM backend
       const outputLines = [];
-      const start = performance.now();
-      wasmCompileAndRun(source, { outputLines }).then(result => {
-        const elapsed = performance.now() - start;
+      const timings = {};
+      const instanceRef = {};
+      wasmCompileAndRun(source, { outputLines, timings, instance: instanceRef }).then(result => {
         for (const line of outputLines) console.log(line);
-        if (result !== 0 && outputLines.length === 0) console.log(result);
-        console.error(`\x1b[90m(${elapsed.toFixed(2)}ms, WASM)\x1b[0m`);
+        if (result !== 0 && outputLines.length === 0) {
+          // Pretty-print result
+          if (instanceRef.ref?.exports?.memory) {
+            const view = new DataView(instanceRef.ref.exports.memory.buffer);
+            console.log(formatWasmValue(result, view));
+          } else {
+            console.log(result);
+          }
+        }
+        console.error(`\x1b[90m(${timings.total?.toFixed(2) || '?'}ms, WASM)\x1b[0m`);
         process.exit(0);
       }).catch(e => {
         console.error(`WASM error: ${e.message}`);
