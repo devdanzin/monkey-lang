@@ -7,6 +7,7 @@ export { Sphere } from './sphere.js';
 export { MovingSphere } from './moving-sphere.js';
 export { Plane, XYRect, XZRect, YZRect, Box } from './plane.js';
 export { Triangle, Mesh } from './triangle.js';
+export { Disk, Cylinder, Cone } from './cylinder.js';
 export { Translate, RotateY } from './transform.js';
 export { Isotropic, ConstantMedium } from './volume.js';
 export { DebugMode, debugNormal, debugDepth, debugUV, countBVHNodes, heatMapColor } from './debug.js';
