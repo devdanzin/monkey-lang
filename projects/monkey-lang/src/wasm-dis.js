@@ -495,6 +495,12 @@ export function formatWAT(module) {
     lines.push(`${indent(1)}(elem ${offsetStr} func ${elem.funcIndices.join(' ')})`);
   }
 
+  // Build function name map from exports
+  const funcNames = {};
+  for (const exp of module.exports) {
+    if (exp.kind === 0) funcNames[exp.index] = exp.name;
+  }
+
   // Functions with code
   for (let i = 0; i < module.codes.length; i++) {
     const funcIdx = importFuncCount + i;
@@ -528,7 +534,7 @@ export function formatWAT(module) {
     let depth = 2;
     for (const inst of code.instructions) {
       if (inst.op === 'end' || inst.op === 'else') depth--;
-      const line = formatInstruction(inst, depth);
+      const line = formatInstruction(inst, depth, funcNames);
       if (line) lines.push(line);
       if (inst.op === 'block' || inst.op === 'loop' || inst.op === 'if' || inst.op === 'else') depth++;
     }
@@ -548,7 +554,7 @@ export function formatWAT(module) {
   return lines.join('\n');
 }
 
-function formatInstruction(inst, depth) {
+function formatInstruction(inst, depth, funcNames = {}) {
   const ind = '  '.repeat(depth);
 
   if (inst.op === 'end') return `${ind}${inst.op}`;
@@ -568,6 +574,12 @@ function formatInstruction(inst, depth) {
 
   if (inst.op === 'block' || inst.op === 'loop' || inst.op === 'if') {
     return `${ind}${inst.op}${ops[0] !== '(result)' ? ' ' + ops[0] : ''}`;
+  }
+
+  if (inst.op === 'call') {
+    const funcIdx = ops[0];
+    const name = funcNames[funcIdx];
+    return `${ind}call ${funcIdx}${name ? ' ;; ' + name : ''}`;
   }
 
   if (inst.op === 'call_indirect') {
