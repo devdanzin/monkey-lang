@@ -1030,6 +1030,16 @@
       "completed": "2026-03-30T18:23:12.735Z",
       "duration_ms": 120000,
       "summary": "README updated with full WASM feature list: hash maps, optional chaining, match, source maps, string ordering. 1326 tests."
+    },
+    {
+      "id": "T100",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fixed WASM break/continue with proper block depth tracking",
+      "started": "2026-03-30T18:34:04.827Z",
+      "completed": "2026-03-30T18:34:04.945Z",
+      "duration_ms": 600000,
+      "summary": "MAJOR FIX: break/continue in WASM now work correctly with proper block depth tracking. 4 new tests."
     }
   ],
   "backlog": [],
@@ -1345,6 +1355,10 @@
     {
       "time": "2026-03-30T18:22:18.767Z",
       "msg": "Added T99 (BUILD) after end: Add string sort example and update README WASM feature list"
+    },
+    {
+      "time": "2026-03-30T18:33:57.476Z",
+      "msg": "Added T100 (BUILD) after end: Fixed WASM break/continue with proper block depth tracking"
     }
   ]
 }
