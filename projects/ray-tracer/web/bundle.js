@@ -364,6 +364,30 @@ class MarbleTexture {
   }
 }
 
+class StripeTexture {
+  constructor(colors, scale = 10) { this.colors = colors; this.scale = scale; }
+  value(u, v, p) {
+    const t = (Math.sin(this.scale * p.y) + 1) * 0.5;
+    return this.colors[Math.floor(t * this.colors.length) % this.colors.length];
+  }
+}
+
+class PlanetTexture {
+  constructor(land, ocean, cloud, scale = 3) {
+    this.land = land; this.ocean = ocean; this.cloud = cloud; this.scale = scale;
+    this.noise = new NoiseTexture(null, 1);
+  }
+  value(u, v, p) {
+    const elev = this.noise._turbulence(p.mul(this.scale));
+    if (this.cloud) {
+      const cn = this.noise._noise(p.x*5+100, p.y*5, p.z*5);
+      if (cn > 0.55) return this.cloud;
+    }
+    if (elev > 0.5) return this.land.mul(0.6 + elev * 0.4);
+    return this.ocean.mul(0.7 + (0.5 - (0.5 - elev) * 2) * 0.3 + 0.3);
+  }
+}
+
 // ===== Materials =====
 class Lambertian {
   constructor(albedo) {
@@ -608,6 +632,38 @@ function createSmokyCornell() {
   return world;
 }
 
+function createSolarSystem() {
+  const world = new HittableList();
+  // Star (emissive)
+  world.add(new Sphere(new Vec3(0, 0, 0), 3, new DiffuseLight(new Vec3(5, 4, 2))));
+  // Earth-like planet
+  world.add(new Sphere(new Vec3(8, 0, 0), 1.5, new Lambertian(
+    new PlanetTexture(new Vec3(0.2, 0.6, 0.15), new Vec3(0.1, 0.2, 0.7), new Vec3(0.95, 0.95, 0.95), 4)
+  )));
+  // Mars-like (red, rocky)
+  world.add(new Sphere(new Vec3(-6, 1, 5), 0.8, new Lambertian(
+    new NoiseTexture(new Vec3(0.8, 0.3, 0.1), 8)
+  )));
+  // Gas giant with stripes
+  world.add(new Sphere(new Vec3(4, -2, -10), 2.5, new Lambertian(
+    new StripeTexture([
+      new Vec3(0.8, 0.6, 0.3), new Vec3(0.9, 0.7, 0.4),
+      new Vec3(0.7, 0.5, 0.2), new Vec3(0.85, 0.65, 0.35),
+      new Vec3(0.6, 0.4, 0.2)
+    ], 6)
+  )));
+  // Moon (small, gray)
+  world.add(new Sphere(new Vec3(10, 0.8, 0.5), 0.3, new Lambertian(new Vec3(0.7, 0.7, 0.7))));
+  // Ice planet
+  world.add(new Sphere(new Vec3(-10, -1, -6), 1.2, new Lambertian(
+    new MarbleTexture(new Vec3(0.7, 0.8, 0.95), 3)
+  )));
+  // Metallic asteroid
+  world.add(new Sphere(new Vec3(3, 3, 4), 0.4, new Metal(new Vec3(0.6, 0.6, 0.6), 0.3)));
+  world.add(new Sphere(new Vec3(-4, -3, 3), 0.3, new Metal(new Vec3(0.5, 0.5, 0.5), 0.5)));
+  return world;
+}
+
 // ===== Expose to global =====
 if (typeof self !== 'undefined') {
   self.RayTracer = {
@@ -616,6 +672,6 @@ if (typeof self !== 'undefined') {
     Isotropic, ConstantMedium,
     Lambertian, Metal, Dielectric, DiffuseLight, Camera,
     createRandomScene, createSimpleScene, createCornellBox,
-    createGlassStudy, createMetalShowcase, createLitRoom, createTexturedWorld, createSmokyCornell
+    createGlassStudy, createMetalShowcase, createLitRoom, createTexturedWorld, createSmokyCornell, createSolarSystem
   };
 }

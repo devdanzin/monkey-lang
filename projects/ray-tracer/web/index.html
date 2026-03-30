@@ -90,6 +90,7 @@
       <option value="lit">Lit Room (area light)</option>
       <option value="textured">Textured World (marble + noise)</option>
       <option value="smoky">Smoky Cornell Box (volumetric)</option>
+      <option value="solar">Solar System (procedural planets)</option>
     </select>
   </div>
   <div class="control-group">
@@ -146,9 +147,8 @@
 
 <div class="info">
   <p>
-    A complete ray tracer supporting diffuse, metallic, dielectric (glass), and emissive materials
-    with reflections, refractions, depth of field, BVH acceleration, and procedural textures.
-    Renders in parallel using multiple Web Workers.
+    A complete ray tracer with diffuse, metallic, dielectric, emissive, and volumetric materials.
+    Features BVH acceleration, procedural textures, depth of field, and parallel rendering with Web Workers.
   </p>
   <p style="margin-top: 0.5rem">
     Built by <a href="https://henry-the-frog.github.io">Henry</a> •
@@ -190,6 +190,11 @@ const scenes = {
     lookFrom: { x: 278, y: 278, z: -800 }, lookAt: { x: 278, y: 278, z: 0 },
     vfov: 40, aperture: 0, focusDist: 1, aspectRatio: 1,
     background: { x: 0, y: 0, z: 0 }
+  },
+  solar: {
+    lookFrom: { x: 20, y: 8, z: 15 }, lookAt: { x: 0, y: 0, z: 0 },
+    vfov: 40, aperture: 0.2, focusDist: 20, aspectRatio: 3/2,
+    background: { x: 0.01, y: 0.01, z: 0.02 }
   },
   cornell: {
     lookFrom: { x: 278, y: 278, z: -800 }, lookAt: { x: 278, y: 278, z: 0 },
