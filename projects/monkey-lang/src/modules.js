@@ -95,17 +95,8 @@ const stringModule = () => buildModule({
 });
 
 // --- functional module ---
+// Note: compose, pipe, partial, memoize, flip are stdlib globals (no import needed)
 const functionalModule = () => buildModule({
-  compose: new MonkeyBuiltin((...args) => {
-    // compose(f, g) returns fn(x) { f(g(x)) }
-    // Can't easily return a MonkeyFunction from builtins, so return a builtin
-    if (args.length !== 2) return new MonkeyNull();
-    const f = args[0], g = args[1];
-    return new MonkeyBuiltin((...innerArgs) => {
-      // This is tricky without an evaluator reference... skip for now
-      return new MonkeyNull();
-    });
-  }),
   identity: new MonkeyBuiltin((...args) => args[0] || new MonkeyNull()),
   constant: new MonkeyBuiltin((...args) => {
     const val = args[0] || new MonkeyNull();

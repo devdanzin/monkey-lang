@@ -54,3 +54,9 @@ Track recurring issues so future sessions don't repeat them.
 4. **To check if a session is truly running:** Check CURRENT.md modification time, not the cron job state. If CURRENT.md is stale but cron says "already-running", the session died without clearing the lock.
 5. **If stuck in "already-running":** Wait. The gateway may eventually time out the session (via timeoutSeconds). If it doesn't, `openclaw gateway stop && openclaw gateway start` is the nuclear option — but schedule it for between session boundaries, not during active work.
 6. **The watchdog should detect AND recover**, not just alert. Having it as a main-session systemEvent means I can `cron run` to restart — but I must NOT retry if I get a timeout response.
+
+### Multi-day session gap (2026-03-27 to 2026-03-29)
+**Problem:** No daily logs, no sessions ran for 4 days. Likely caused by gateway being down after the 2026-03-26 outage, or cron jobs not being reconfigured.
+**Impact:** 4 days of zero output, no heartbeats, no monitoring.
+**Fix:** Need a watchdog mechanism that alerts (email, iMessage) if no session has run in 24h. The 4-day gap went completely undetected until the next manual restart.
+**Prevention:** After any gateway restart, verify cron jobs are active via `cron list`. Check that at least the heartbeat cron fires daily.

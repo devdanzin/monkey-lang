@@ -112,6 +112,23 @@ let sort = fn(arr) {
   }
   arr
 };
+
+let compose = fn(f, g) { fn(x) { f(g(x)) } };
+let pipe2 = fn(f, g) { fn(x) { g(f(x)) } };
+let partial = fn(f, a) { fn(b) { f(a, b) } };
+let memoize = fn(f) {
+  let cache = {};
+  fn(x) {
+    let key = str(x);
+    if (cache[key] == null) {
+      cache[key] = f(x);
+    }
+    cache[key]
+  }
+};
+let flip = fn(f) { fn(a, b) { f(b, a) } };
+let always = fn(x) { fn() { x } };
+let apply = fn(f, args) { f(args[0], args[1]) };
 `;
 
 // Helper to prepend stdlib to user code

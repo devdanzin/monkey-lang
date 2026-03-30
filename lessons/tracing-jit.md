@@ -388,6 +388,63 @@ Holes: CODE, DATA, OPARG, OPERAND0/1, JUMP_TARGET, ERROR_TARGET, TARGET. Platfor
 - **2nd** (PyPy): specialize(specializer, interpreter) → compiler. Done at build time.
 - **3rd**: specialize(specializer, specializer) → compiler generator. Still theoretical.
 
+---
+
+# Part 4: Deoptimization — The Inverse of JIT
+
+> Promoted from scratch/deoptimization-jit.md (3 uses / 3 days: 2026-03-22, 23, 24)
+
+**Core principle:** The cheaper deopt is, the more aggressively you can speculate.
+
+## Snapshot-Based Deopt (LuaJIT)
+- Snapshots taken at each guard: map interpreter stack slots → IR references
+- `lj_snap_add()` after each guard IR; dead slot elimination via `snap_usedef()` bytecode dataflow
+- `lj_snap_restore()` on guard failure: read exit state, restore slots from registers/spills, handle sunk allocations, set PC
+- Key optimization: Bloom filter for register renames; sunk allocation materialization at deopt time
+
+## V8 TurboFan FrameStates
+- Nodes in IR graph capturing full interpreter state at deopt points
+- Eager (guard fails immediately) vs Lazy (mark for deopt, continue until next entry)
+- Lazy unlinking via `marked_for_deoptimization` bit — saved ~170KB on facebook.com
+- 70+ deopt reasons: type mismatches, numeric edge cases, insufficient feedback, structural changes
+- FrameStates are biggest IR bloat source in method JITs; traces have fewer deopt points per compiled unit
+
+## Graal/Truffle: Deopt as Programming Model
+- `transferToInterpreterAndInvalidate()` — deopt + invalidate compilation
+- Guards auto-generated from `@Specialization` annotations
+- PEA + deopt = objects in registers until escape, materialized on deopt
+
+## Monkey JIT Implementation
+- Guard exits return snapshot: `{pc, locals: {slot→value}}` — much simpler than LuaJIT because JS handles register allocation
+- Space: ~50-100 entries (5-10 guards × ~5 locals). Time: one object literal per guard exit.
+- **The hard part:** optimizer must keep snapshot refs valid through CSE/DCE/LICM transforms
+
+---
+
+# Part 5: Sea of Nodes vs Linear IR
+
+> Promoted from scratch/sea-of-nodes.md (3 uses / 2 days: 2026-03-23, 26)
+
+## Core Insight for Trace JITs
+**Linear IR is the right choice for trace compilers.** Sea-of-nodes (Click & Paleczny 1995) merges data-flow and control-flow into one graph where nodes float freely until scheduling. This is powerful for method compilers (V8 TurboFan, Graal) but overkill for traces.
+
+Why traces don't need SoN:
+1. Single-path execution — no control flow merges, no φ-nodes needed
+2. Schedule is already determined by trace recording order
+3. Only reordering needed is LICM (well-handled by a simple pass)
+4. Guards create side exits, not control flow joins
+
+## V8 Maglev: Validation
+V8's own team built Maglev (mid-tier JIT, Chrome M117) using **CFG-based SSA**, explicitly calling TurboFan's SoN "cache unfriendly." Maglev's structure mirrors our approach:
+- Linear IR, immediate specialization during recording, snapshot-based deopt, fast compilation
+- 10x faster compilation than TurboFan; trades peak perf for speed
+
+## What to Steal from SoN
+1. **Explicit dependency edges** (`deps: [ref, ...]`) — makes LICM trivial
+2. **Known Node Information** from Maglev — propagate type/shape knowledge during graph building
+3. **Late scheduling heuristic** — reorder after optimization to minimize register pressure
+4. **Retroactive spilling** from Maglev — spill at definition, not at register-pressure point
+
 ## See Also
 - `lessons/dispatch-strategies.md` — optimization techniques applicable to JS-based VMs
 - `lessons/vm-internals-production.md` — production VM architecture comparison

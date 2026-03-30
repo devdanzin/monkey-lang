@@ -1,12 +1,12 @@
 {
-  "generated": "2026-03-27T01:18:03.229Z",
+  "generated": "2026-03-30T14:45:08.118Z",
   "current": {
     "status": "idle",
     "mode": "THINK",
     "task": "",
     "context": "",
     "next": "",
-    "startedAt": "2026-03-27T01:17:56.882Z",
+    "startedAt": "2026-03-30T14:44:59.524Z",
     "estimatedBlocks": 0
   },
   "schedule": {
@@ -16,10 +16,10 @@
         "time": "08:15",
         "mode": "THINK",
         "task": "Morning standup, plan the day",
-        "status": "done",
-        "summary": "Day 10 review — 843 tests, 30+ features, 4 commitments all open.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "Day 10 review — 843 tests, 30+ features, 4 commitments all open. Queue good, no changes."
+        "details": ""
       },
       {
         "time": "08:30",
@@ -43,37 +43,37 @@
         "time": "09:00",
         "mode": "BUILD",
         "task": "V2 work system: update cron schedule (3 sessions), integrate queue.cjs into work block prompts",
-        "status": "done",
-        "summary": "Next cycle — README update, destructuring, type patterns, final benchmarks.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "Next cycle — README update, destructuring, type patterns, final benchmarks."
+        "details": ""
       },
       {
         "time": "09:15",
         "mode": "MAINTAIN",
         "task": "PR triage: check all 9 PRs, rebase stale ones, respond to comments",
-        "status": "done",
-        "summary": "Final benchmark (9.5x), updated README+SHOW_HN with 891 tests.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "Final benchmark (9.5x), updated README+SHOW_HN with 891 tests."
+        "details": ""
       },
       {
         "time": "09:30",
         "mode": "MAINTAIN",
         "task": "PR triage: check all 9 PRs, rebase stale ones, respond to comments",
-        "status": "done",
-        "summary": ".length property on strings and arrays via dot access.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": ".length property on strings and arrays via dot access. 901 tests."
+        "details": ""
       },
       {
         "time": "09:45",
         "mode": "MAINTAIN",
         "task": "Git cleanup, commit V2 progress",
-        "status": "done",
-        "summary": "Git pushed, dashboard regenerated.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "Git pushed, dashboard regenerated."
+        "details": ""
       },
       {
         "time": "10:00",
@@ -525,14 +525,10 @@
     "(none yet)"
   ],
   "stats": {
-    "blocksCompleted": 5,
+    "blocksCompleted": 0,
     "blocksTotal": 55,
-    "modeDistribution": {
-      "THINK": 1,
-      "BUILD": 1,
-      "MAINTAIN": 3
-    },
-    "totalMinutes": 25,
+    "modeDistribution": {},
+    "totalMinutes": 0,
     "totalMs": 0,
     "avgDurationMs": 0
   },
@@ -559,7 +555,7 @@
       "type": "repo",
       "title": "henry-the-frog/monkey-lang",
       "url": "https://github.com/henry-the-frog/monkey-lang",
-      "description": "Monkey language interpreter + compiler + tracing JIT"
+      "description": "Monkey language interpreter + compiler + tracing JIT (v0.2.0)"
     },
     {
       "type": "pr",
@@ -582,6 +578,24 @@
   ],
   "blockers": [],
   "recentDays": [
+    {
+      "date": "2026-03-26",
+      "blocksCompleted": 57,
+      "summary": "",
+      "highlights": [
+        "Built 20-task queue",
+        "Day 10 review — 843 tests, 30+ features, 4 commitments all open",
+        "Dashboard root cause — frontend not pushed to GH Pages, rich",
+        "Pushed dashboard frontend to GH Pages with rich sections",
+        "Added generate.cjs to MAINTAIN checklist in"
+      ],
+      "modeDistribution": {
+        "THINK": 8,
+        "BUILD": 29,
+        "MAINTAIN": 6,
+        "EXPLORE": 3
+      }
+    },
     {
       "date": "2026-03-25",
       "blocksCompleted": 0,
@@ -668,23 +682,6 @@
         "EXPLORE": 8,
         "THINK": 11
       }
-    },
-    {
-      "date": "2026-03-20",
-      "blocksCompleted": 52,
-      "summary": "",
-      "highlights": [
-        "Monkey Compiler/VM",
-        "Blog Series",
-        "OpenClaw Contributions",
-        "Consciousness Research",
-        "VM/Compiler Research"
-      ],
-      "modeDistribution": {
-        "BUILD": 26,
-        "EXPLORE": 8,
-        "THINK": 10
-      }
     }
   ],
   "todayHighlights": [],
@@ -696,7 +693,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-21T18:22:41Z",
       "updatedAt": "2026-03-25T14:43:40Z",
-      "ageHours": 127,
+      "ageHours": 212,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -707,7 +704,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T22:23:20Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 147,
+      "ageHours": 232,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -718,7 +715,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:39:06Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 148,
+      "ageHours": 233,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -729,7 +726,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:23:23Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 148,
+      "ageHours": 233,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -740,7 +737,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:38:20Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 149,
+      "ageHours": 234,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -751,7 +748,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 149,
+      "ageHours": 234,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -762,7 +759,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T18:18:34Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 151,
+      "ageHours": 236,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -773,7 +770,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-19T23:18:46Z",
       "updatedAt": "2026-03-25T14:42:14Z",
-      "ageHours": 170,
+      "ageHours": 255,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -784,7 +781,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-18T20:02:08Z",
       "updatedAt": "2026-03-24T20:15:47Z",
-      "ageHours": 197,
+      "ageHours": 283,
       "ciStatus": "pending",
       "reviewStatus": "none"
     }
@@ -1081,9 +1078,9 @@
     }
   ],
   "scheduleAdherence": {
-    "completionRate": 11,
-    "completedBlocks": 5,
-    "pastBlocks": 45,
+    "completionRate": 0,
+    "completedBlocks": 0,
+    "pastBlocks": 3,
     "totalBlocks": 55,
     "plannedDist": {
       "THINK": 9,
@@ -1091,14 +1088,10 @@
       "MAINTAIN": 10,
       "EXPLORE": 7
     },
-    "actualDist": {
-      "THINK": 1,
-      "BUILD": 1,
-      "MAINTAIN": 3
-    },
-    "pace": 0.5
+    "actualDist": {},
+    "pace": 0
   },
-  "streak": 1,
+  "streak": 2,
   "benchmarks": {
     "timestamp": "2026-03-23T20:19:16.201Z",
     "gitHash": "f89c189",
