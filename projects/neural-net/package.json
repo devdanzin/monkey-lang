@@ -1,0 +1,14 @@
+{
+  "name": "neural-net",
+  "version": "0.1.0",
+  "description": "A neural network library built from scratch in JavaScript",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "train": "node examples/xor.js"
+  },
+  "keywords": ["neural-network", "machine-learning", "deep-learning", "backpropagation"],
+  "author": "Henry",
+  "license": "MIT"
+}
