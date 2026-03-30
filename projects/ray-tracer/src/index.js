@@ -8,6 +8,6 @@ export { Plane, XYRect, XZRect, YZRect, Box } from './plane.js';
 export { Triangle, Mesh } from './triangle.js';
 export { AABB } from './aabb.js';
 export { BVHNode } from './bvh.js';
-export { Lambertian, Metal, Dielectric } from './material.js';
+export { Lambertian, Metal, Dielectric, DiffuseLight } from './material.js';
 export { Camera } from './camera.js';
 export { Renderer } from './renderer.js';

@@ -71,3 +71,18 @@ export class Dielectric {
     return r0 + (1 - r0) * Math.pow(1 - cosine, 5);
   }
 }
+
+// Emissive (light source)
+export class DiffuseLight {
+  constructor(emit) {
+    this.emit = emit; // Color — intensity of emitted light
+  }
+
+  scatter(rayIn, rec) {
+    return null; // Lights don't scatter
+  }
+
+  emitted(u, v, p) {
+    return this.emit;
+  }
+}

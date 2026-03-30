@@ -36,11 +36,16 @@ export class Renderer {
     const rec = this.scene.hit(ray, 0.001, Infinity);
 
     if (rec) {
+      // Get emitted light from the material (if any)
+      const emitted = rec.material.emitted
+        ? rec.material.emitted(0, 0, rec.p)
+        : new Color(0, 0, 0);
+
       const result = rec.material.scatter(ray, rec);
       if (result) {
-        return this.rayColor(result.scattered, depth - 1).mul(result.attenuation);
+        return emitted.add(this.rayColor(result.scattered, depth - 1).mul(result.attenuation));
       }
-      return new Color(0, 0, 0);
+      return emitted;
     }
 
     // Sky gradient (background)
