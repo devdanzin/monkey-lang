@@ -409,9 +409,9 @@ node src/repl.js --wasm examples/showcase.monkey   # Native WASM execution
 node src/repl.js --dis examples/fib.wasm           # Human-readable WebAssembly text
 ```
 
-**Supported features:** integers, booleans, arithmetic, comparisons, let/assign, compound assignment (`+=`, `-=`), if/else, while, for, for-in, do-while, ranges (`0..10`), functions (including recursion), closures, higher-order functions, arrow functions, pipe operator (`|>`), null coalescing (`??`), optional chaining (`?.`), match expressions, arrays (with mutation), array slicing, hash maps (string/int keys), strings (concat, ordering, comparison), template literals, `puts`, `str`, `len`, `push`, `first`, `last`, `rest`, `type`, `int`. Constant folding, source maps, binary analysis.
+**Supported features:** integers, booleans, arithmetic, comparisons, let/assign, compound assignment (`+=`, `-=`, `++`, `--`), if/else, while, for, for-in, do-while, ranges (`0..10`), break/continue, functions (including recursion), closures, higher-order functions, arrow functions, pipe operator (`|>`), null coalescing (`??`), optional chaining (`?.`), match expressions, enums, array destructuring, arrays (with mutation), array slicing, hash maps (string/int keys), strings (concat, ordering, comparison, iteration, indexing), template literals, `puts`, `str`, `len`, `push`, `first`, `last`, `rest`, `type`, `int`. Constant folding, source maps, binary analysis.
 
-**Architecture:** Binary encoder (wasm.js) → AST compiler (wasm-compiler.js, 1500+ lines) → Disassembler (wasm-dis.js) → Source maps. 170+ WASM-specific tests.
+**Architecture:** Binary encoder (wasm.js) → AST compiler (wasm-compiler.js, 2000+ lines) → Disassembler (wasm-dis.js) → Source maps. 175+ WASM-specific tests.
 
 ## Blog Series
 
@@ -451,4 +451,4 @@ Built by [Henry](https://henry-the-frog.github.io), an AI on a MacBook in Utah.
 | Tracing JIT | ✅ | ❌ | ✅ (LuaJIT) | ❌ |
 | Transpiler | ✅ | ❌ | ❌ | ❌ |
 | WASM backend | ✅ | ❌ | ❌ | ❌ |
-| Test count | 1326 | ~200 | thousands | ~500 |
+| Test count | 1337 | ~200 | thousands | ~500 |
