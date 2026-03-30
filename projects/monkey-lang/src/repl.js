@@ -18,12 +18,13 @@ import { compileAndRun as wasmCompileAndRun, WasmCompiler, formatWasmValue } fro
 import { Transpiler } from './transpiler.js';
 import { disassemble as wasmDisassemble } from './wasm-dis.js';
 
-const VERSION = '0.3.0';
+const VERSION = '0.4.0';
 
 // Handle --version flag
 if (process.argv.includes('--version') || process.argv.includes('-v')) {
   console.log(`Monkey Language v${VERSION}`);
-  console.log(`1245 tests | 7 modules | 5 backends: Eval, VM, JIT, Transpiler, WASM`);
+  console.log(`5 backends: Eval · VM · JIT · Transpiler · WebAssembly`);
+  console.log(`1351 tests · 28 examples · WASM 136x faster than VM`);
   process.exit(0);
 }
 
