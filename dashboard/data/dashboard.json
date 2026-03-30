@@ -3071,14 +3071,44 @@
       "completed": "2026-03-30T23:52:50.371Z",
       "duration_ms": 400000,
       "summary": "Hash map: open addressing with linear probing, DJB2 hash, auto-resize at load factor, tombstone deletion (DELETED sentinel), keys/values/entries/forEach/iterator. 16 tests including 10k entry performance test."
+    },
+    {
+      "id": "T299",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Bit manipulation utilities",
+      "started": "2026-03-30T23:53:26.000Z",
+      "completed": "2026-03-30T23:54:46.843Z",
+      "duration_ms": 300000,
+      "summary": "20+ bit manipulation utilities: popcount, isPowerOf2, nextPowerOf2, getBit/setBit/clearBit/toggleBit, clz/ctz, reverseBits, xorSwap, log2, hammingDistance, rotateLeft/Right, extractBits, abs/min/max (branchless), sign/sameSign, toBinary. 13 tests."
+    },
+    {
+      "id": "T300",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Rate limiter (token bucket + sliding window)",
+      "started": "2026-03-30T23:54:56.562Z",
+      "completed": "2026-03-30T23:56:24.971Z",
+      "duration_ms": 300000,
+      "summary": "Rate limiter: TokenBucket (refill rate), SlidingWindow (rolling timestamps), FixedWindow (reset-per-interval), KeyedRateLimiter (per-key limits). tryConsume, available, waitTime, reset. 9 tests."
+    },
+    {
+      "id": "T301",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Undo/Redo stack (command pattern)",
+      "started": "2026-03-30T23:56:35.321Z",
+      "completed": "2026-03-30T23:58:02.502Z",
+      "duration_ms": 300000,
+      "summary": "Undo/Redo: command pattern, execute/undo/redo, beginGroup/endGroup, maxHistory, canUndo/canRedo, createCommand helper, setProperty helper. 9 tests."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 298,
+    "completed": 301,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 49070000
+    "total_duration_ms": 49970000
   },
-  "updated_at": "2026-03-30T23:52:50.371Z"
+  "updated_at": "2026-03-30T23:58:02.502Z"
 }
