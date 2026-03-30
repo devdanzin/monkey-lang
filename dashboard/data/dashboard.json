@@ -3011,14 +3011,44 @@
       "completed": "2026-03-30T23:41:27.007Z",
       "duration_ms": 600000,
       "summary": "Schema validator: string (min/max/email/url/regex/trim/toLowerCase/nonempty), number (min/max/int/positive/negative), boolean, array (itemSchema/min/max/nonempty), object (partial/pick/omit/extend/strict), enum, union, optional/nullable/default, transform, refine, safeParse/parse, ValidationError with issues. 29 tests."
+    },
+    {
+      "id": "T293",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Linked list (singly + doubly) with full API",
+      "started": "2026-03-30T23:42:12.190Z",
+      "completed": "2026-03-30T23:43:38.676Z",
+      "duration_ms": 500000,
+      "summary": "Linked List: SinglyLinkedList + DoublyLinkedList. Full API: push/pop/shift/unshift/get/set/insert/remove/indexOf/contains/reverse/clear/toArray/from/iterator. DoublyLinkedList uses bidirectional traversal for O(n/2) access. 28 tests."
+    },
+    {
+      "id": "T294",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Trie (prefix tree) for autocomplete",
+      "started": "2026-03-30T23:43:44.812Z",
+      "completed": "2026-03-30T23:45:15.167Z",
+      "duration_ms": 400000,
+      "summary": "Trie: insert/search/has/delete, startsWith, autocomplete (with limit), countPrefix, words, longestCommonPrefix, clear. Cleanup of empty branches on delete. 13 tests."
+    },
+    {
+      "id": "T295",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Graph (adjacency list) with BFS/DFS/Dijkstra/topological sort",
+      "started": "2026-03-30T23:45:23.495Z",
+      "completed": "2026-03-30T23:47:01.977Z",
+      "duration_ms": 500000,
+      "summary": "Graph: adjacency list for directed/undirected weighted graphs. BFS, DFS, Dijkstra shortest path (with pathTo reconstruction), topological sort (DAG only), cycle detection (both directed and undirected), connected components. addVertex/addEdge/removeEdge/hasVertex/hasEdge/neighbors. 15 tests."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 292,
+    "completed": 295,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 46470000
+    "total_duration_ms": 47870000
   },
-  "updated_at": "2026-03-30T23:41:27.007Z"
+  "updated_at": "2026-03-30T23:47:01.977Z"
 }
