@@ -11892,6 +11892,10 @@ var WasmCompiler = class {
     this._runtimeFuncs.add = addIdx;
     const eqIdx = this.builder.addImport("env", "__eq", [ValType.i32, ValType.i32], [ValType.i32]);
     this._runtimeFuncs.eq = eqIdx;
+    const ltIdx = this.builder.addImport("env", "__lt", [ValType.i32, ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.lt = ltIdx;
+    const gtIdx = this.builder.addImport("env", "__gt", [ValType.i32, ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.gt = gtIdx;
     const arrayConcatIdx = this.builder.addImport("env", "__array_concat", [ValType.i32, ValType.i32], [ValType.i32]);
     this._runtimeFuncs.arrayConcat = arrayConcatIdx;
     const restIdx = this.builder.addImport("env", "__rest", [ValType.i32], [ValType.i32]);
@@ -12089,6 +12093,10 @@ var WasmCompiler = class {
     const localIdx = this.nextLocalIndex++;
     this.currentBody.addLocal(ValType.i32);
     this.currentScope.define(name, localIdx, ValType.i32);
+    if (stmt.isConst) {
+      if (!this._constVars) this._constVars = /* @__PURE__ */ new Set();
+      this._constVars.add(name);
+    }
     if (stmt.value) {
       this.compileNode(stmt.value);
       this.currentBody.localSet(localIdx);
@@ -12401,10 +12409,18 @@ var WasmCompiler = class {
         }
         break;
       case "<":
-        this.currentBody.emit(Op.i32_lt_s);
+        if (this._isDefinitelyInteger(node.left) && this._isDefinitelyInteger(node.right)) {
+          this.currentBody.emit(Op.i32_lt_s);
+        } else {
+          this.currentBody.call(this._runtimeFuncs.lt);
+        }
         break;
       case ">":
-        this.currentBody.emit(Op.i32_gt_s);
+        if (this._isDefinitelyInteger(node.left) && this._isDefinitelyInteger(node.right)) {
+          this.currentBody.emit(Op.i32_gt_s);
+        } else {
+          this.currentBody.call(this._runtimeFuncs.gt);
+        }
         break;
       case "<=":
         this.currentBody.emit(Op.i32_le_s);
@@ -12726,6 +12742,12 @@ var WasmCompiler = class {
   }
   compileAssignExpression(node) {
     const name = node.name.value || node.name;
+    if (this._constVars?.has(name)) {
+      const line = node?.token?.line ? ` (line ${node.token.line})` : "";
+      this.errors.push(`cannot assign to const variable: ${name}${line}`);
+      this.currentBody.i32Const(0);
+      return;
+    }
     const binding = this.currentScope.resolve(name);
     if (binding) {
       this.compileNode(node.value);
@@ -13282,6 +13304,36 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
           }
         }
         return a === b ? 1 : 0;
+      },
+      __lt(a, b) {
+        const mem = memoryRef.memory;
+        if (mem && a > 0 && b > 0) {
+          const view = new DataView(mem.buffer);
+          try {
+            const tagA = view.getInt32(a, true);
+            const tagB = view.getInt32(b, true);
+            if (tagA === TAG_STRING && tagB === TAG_STRING) {
+              return readString(a) < readString(b) ? 1 : 0;
+            }
+          } catch (e) {
+          }
+        }
+        return a < b ? 1 : 0;
+      },
+      __gt(a, b) {
+        const mem = memoryRef.memory;
+        if (mem && a > 0 && b > 0) {
+          const view = new DataView(mem.buffer);
+          try {
+            const tagA = view.getInt32(a, true);
+            const tagB = view.getInt32(b, true);
+            if (tagA === TAG_STRING && tagB === TAG_STRING) {
+              return readString(a) > readString(b) ? 1 : 0;
+            }
+          } catch (e) {
+          }
+        }
+        return a > b ? 1 : 0;
       },
       __array_concat(arrA, arrB) {
         const mem = memoryRef.memory;

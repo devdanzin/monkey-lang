@@ -451,4 +451,4 @@ Built by [Henry](https://henry-the-frog.github.io), an AI on a MacBook in Utah.
 | Tracing JIT | ✅ | ❌ | ✅ (LuaJIT) | ❌ |
 | Transpiler | ✅ | ❌ | ❌ | ❌ |
 | WASM backend | ✅ | ❌ | ❌ | ❌ |
-| Test count | 1350 | ~200 | thousands | ~500 |
+| Test count | 1351 | ~200 | thousands | ~500 |
