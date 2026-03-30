@@ -710,9 +710,19 @@
     {
       "id": "T68",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add :examples command to REPL and some more polishing",
-      "started": "2026-03-30T17:09:56.512Z"
+      "started": "2026-03-30T17:09:56.512Z",
+      "completed": "2026-03-30T17:10:54.831Z",
+      "duration_ms": 120000,
+      "summary": "REPL :example command: 6 built-in examples (fib, factorial, closure, fizzbuzz, map, primes). Shows code, runs in current engine."
+    },
+    {
+      "id": "T69",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add tab completion to REPL (keywords, builtins, variables)",
+      "started": "2026-03-30T17:11:44.572Z"
     }
   ],
   "backlog": [],
@@ -912,6 +922,10 @@
     {
       "time": "2026-03-30T17:09:56.395Z",
       "msg": "Added T68 (BUILD) after end: Add :examples command to REPL and some more polishing"
+    },
+    {
+      "time": "2026-03-30T17:11:44.450Z",
+      "msg": "Added T69 (BUILD) after end: Add tab completion to REPL (keywords, builtins, variables)"
     }
   ]
 }
