@@ -694,7 +694,7 @@ export class WasmCompiler {
       }
     } else {
       // Undefined variable
-      this.errors.push(`undefined variable: ${name}`);
+      const _l = node?.token?.line ? ` (line ${node.token.line})` : ""; this.errors.push(`undefined variable: ${name}${_l}`);
       this.currentBody.i32Const(0);
     }
   }
@@ -895,7 +895,7 @@ export class WasmCompiler {
       case '<<': this.currentBody.emit(Op.i32_shl); break;
       case '>>': this.currentBody.emit(Op.i32_shr_s); break;
       default:
-        this.errors.push(`unsupported operator: ${node.operator}`);
+        const _l2 = node?.token?.line ? ` (line ${node.token.line})` : ""; this.errors.push(`unsupported operator: ${node.operator}${_l2}`);
         break;
     }
   }
@@ -1010,7 +1010,7 @@ export class WasmCompiler {
         // Variable holding a closure — indirect call
         this._emitClosureCall(node, () => this.currentBody.localGet(binding.index));
       } else {
-        this.errors.push(`unknown function: ${name}`);
+        const _l3 = node?.token?.line ? ` (line ${node.token.line})` : ""; this.errors.push(`unknown function: ${name}${_l3}`);
         this.currentBody.i32Const(0);
       }
     } else {
@@ -1312,7 +1312,7 @@ export class WasmCompiler {
       this.compileNode(node.value);
       this.currentBody.localTee(binding.index); // assign and leave value on stack
     } else {
-      this.errors.push(`undefined variable for assignment: ${name}`);
+      const _l4 = node?.token?.line ? ` (line ${node.token.line})` : ""; this.errors.push(`undefined variable for assignment: ${name}${_l4}`);
       this.currentBody.i32Const(0);
     }
   }

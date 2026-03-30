@@ -1,12 +1,12 @@
 {
-  "generated": "2026-03-30T18:24:54.019Z",
+  "generated": "2026-03-30T19:21:16.672Z",
   "current": {
     "status": "idle",
     "mode": "THINK",
     "task": "",
     "context": "",
     "next": "",
-    "startedAt": "2026-03-30T18:24:46.018Z",
+    "startedAt": "2026-03-30T19:21:16.590Z",
     "estimatedBlocks": 0
   },
   "schedule": {
@@ -169,10 +169,10 @@
         "time": "12:30",
         "mode": "BUILD",
         "task": "JIT: complete pre-loop codegen + fix LICM to use it, verify benchmarks",
-        "status": "upcoming",
-        "summary": "",
+        "status": "done",
+        "summary": "WASM binary analysis with section size bars.",
         "artifacts": [],
-        "details": ""
+        "details": "WASM binary analysis with section size bars."
       },
       {
         "time": "12:45",
@@ -525,14 +525,14 @@
     "(none yet)"
   ],
   "stats": {
-    "blocksCompleted": 7,
+    "blocksCompleted": 8,
     "blocksTotal": 55,
     "modeDistribution": {
       "MAINTAIN": 2,
       "THINK": 2,
-      "BUILD": 3
+      "BUILD": 4
     },
-    "totalMinutes": 35,
+    "totalMinutes": 40,
     "totalMs": 0,
     "avgDurationMs": 0
   },
@@ -700,107 +700,7 @@
       "text": "int()/type() builtins, --compile section breakdown, optimizer infrastructure."
     }
   ],
-  "prs": [
-    {
-      "number": 51803,
-      "title": "fix: persist followup queues across gateway restart",
-      "url": "https://github.com/openclaw/openclaw/pull/51803",
-      "repo": "openclaw/openclaw",
-      "createdAt": "2026-03-21T18:22:41Z",
-      "updatedAt": "2026-03-25T14:43:40Z",
-      "ageHours": 216,
-      "ciStatus": "none",
-      "reviewStatus": "none"
-    },
-    {
-      "number": 51308,
-      "title": "fix: redact raw error messages from channel-facing agent failure replies",
-      "url": "https://github.com/openclaw/openclaw/pull/51308",
-      "repo": "openclaw/openclaw",
-      "createdAt": "2026-03-20T22:23:20Z",
-      "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 236,
-      "ciStatus": "pending",
-      "reviewStatus": "none"
-    },
-    {
-      "number": 51292,
-      "title": "feat: configurable exec approval timeout via approvals.timeoutMs",
-      "url": "https://github.com/openclaw/openclaw/pull/51292",
-      "repo": "openclaw/openclaw",
-      "createdAt": "2026-03-20T21:39:06Z",
-      "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 237,
-      "ciStatus": "pending",
-      "reviewStatus": "none"
-    },
-    {
-      "number": 51282,
-      "title": "feat(gateway): make handshake timeout configurable via gateway.handshakeTimeoutMs",
-      "url": "https://github.com/openclaw/openclaw/pull/51282",
-      "repo": "openclaw/openclaw",
-      "createdAt": "2026-03-20T21:23:23Z",
-      "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 237,
-      "ciStatus": "pending",
-      "reviewStatus": "none"
-    },
-    {
-      "number": 51261,
-      "title": "fix: classify HTTP 404 as model_not_found in fallback chain",
-      "url": "https://github.com/openclaw/openclaw/pull/51261",
-      "repo": "openclaw/openclaw",
-      "createdAt": "2026-03-20T20:38:20Z",
-      "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 238,
-      "ciStatus": "pending",
-      "reviewStatus": "none"
-    },
-    {
-      "number": 51257,
-      "title": "feat: surface session label/displayName in /status and TUI",
-      "url": "https://github.com/openclaw/openclaw/pull/51257",
-      "repo": "openclaw/openclaw",
-      "createdAt": "2026-03-20T20:20:35Z",
-      "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 238,
-      "ciStatus": "pending",
-      "reviewStatus": "none"
-    },
-    {
-      "number": 51180,
-      "title": "fix: show all allowFrom entries in channels status --probe",
-      "url": "https://github.com/openclaw/openclaw/pull/51180",
-      "repo": "openclaw/openclaw",
-      "createdAt": "2026-03-20T18:18:34Z",
-      "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 240,
-      "ciStatus": "pending",
-      "reviewStatus": "none"
-    },
-    {
-      "number": 50692,
-      "title": "feat: add Anthropic native web search provider (#49949)",
-      "url": "https://github.com/openclaw/openclaw/pull/50692",
-      "repo": "openclaw/openclaw",
-      "createdAt": "2026-03-19T23:18:46Z",
-      "updatedAt": "2026-03-25T14:42:14Z",
-      "ageHours": 259,
-      "ciStatus": "none",
-      "reviewStatus": "none"
-    },
-    {
-      "number": 50001,
-      "title": "fix: restore export HTML template placeholders broken by Prettier",
-      "url": "https://github.com/openclaw/openclaw/pull/50001",
-      "repo": "openclaw/openclaw",
-      "createdAt": "2026-03-18T20:02:08Z",
-      "updatedAt": "2026-03-24T20:15:47Z",
-      "ageHours": 286,
-      "ciStatus": "pending",
-      "reviewStatus": "none"
-    }
-  ],
+  "prs": [],
   "blogPosts": [
     {
       "title": "Compiling Monkey to WebAssembly",
@@ -1105,9 +1005,9 @@
     }
   ],
   "scheduleAdherence": {
-    "completionRate": 41,
-    "completedBlocks": 7,
-    "pastBlocks": 17,
+    "completionRate": 38,
+    "completedBlocks": 8,
+    "pastBlocks": 21,
     "totalBlocks": 55,
     "plannedDist": {
       "THINK": 9,
@@ -1118,9 +1018,9 @@
     "actualDist": {
       "MAINTAIN": 2,
       "THINK": 2,
-      "BUILD": 3
+      "BUILD": 4
     },
-    "pace": 1.7
+    "pace": 1.6
   },
   "streak": 2,
   "benchmarks": {
