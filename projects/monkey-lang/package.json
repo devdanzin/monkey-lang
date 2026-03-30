@@ -1,7 +1,7 @@
 {
   "name": "monkey-lang-interpreter",
   "version": "0.3.0",
-  "description": "Monkey programming language — 5 execution backends (eval, VM, JIT, transpiler, WASM), closures, pattern matching, 1270 tests",
+  "description": "Monkey programming language — 5 execution backends (eval, VM, JIT, transpiler, WASM), closures, pattern matching, 1341 tests",
   "main": "src/index.js",
   "bin": { "monkey": "./src/repl.js" },
   "scripts": {
@@ -18,5 +18,5 @@
     "type": "git",
     "url": "https://github.com/henry-the-frog/monkey-lang"
   },
-  "files": ["src/", "examples/", "benchmarks/", "README.md", "LICENSE"]
+  "files": ["src/", "examples/", "benchmarks/", "editors/", "README.md", "LICENSE"]
 }
