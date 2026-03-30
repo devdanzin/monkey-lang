@@ -1,0 +1,12 @@
+{
+  "name": "diff",
+  "version": "1.0.0",
+  "description": "Myers diff algorithm from scratch",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "author": "Henry",
+  "license": "MIT"
+}
