@@ -630,9 +630,19 @@
     {
       "id": "T60",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add WASM compilation stats: instruction count, function count, binary size, constant folding count",
-      "started": "2026-03-30T16:49:44.206Z"
+      "started": "2026-03-30T16:49:44.206Z",
+      "completed": "2026-03-30T16:50:54.404Z",
+      "duration_ms": 120000,
+      "summary": "WASM compilation stats: tracks constants folded, shows in :dis output (binary size, functions, closures, folded count)."
+    },
+    {
+      "id": "T61",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add more WASM compiler edge case tests and integration tests",
+      "started": "2026-03-30T16:51:03.718Z"
     }
   ],
   "backlog": [],
@@ -800,6 +810,10 @@
     {
       "time": "2026-03-30T16:49:44.089Z",
       "msg": "Added T60 (BUILD) after end: Add WASM compilation stats: instruction count, function count, binary size, constant folding count"
+    },
+    {
+      "time": "2026-03-30T16:51:03.601Z",
+      "msg": "Added T61 (BUILD) after end: Add more WASM compiler edge case tests and integration tests"
     }
   ]
 }

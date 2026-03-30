@@ -795,4 +795,127 @@ describe('WASM Compiler', () => {
       `), 100);
     });
   });
+
+  describe('Integration tests', () => {
+    it('Collatz conjecture', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let collatz = fn(n) {
+          let steps = 0;
+          while (n != 1) {
+            if (n % 2 == 0) { n = n / 2; } else { n = n * 3 + 1; }
+            steps = steps + 1;
+          }
+          steps
+        };
+        collatz(27)
+      `), 111);
+    });
+
+    it('prime counting', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let isPrime = fn(n) {
+          if (n < 2) { return 0; }
+          let i = 2;
+          while (i * i <= n) {
+            if (n % i == 0) { return 0; }
+            i = i + 1;
+          }
+          1
+        };
+        let count = 0;
+        for (n in 2..100) {
+          if (isPrime(n) == 1) { count = count + 1; }
+        }
+        count
+      `), 25);
+    });
+
+    it('compound assignment', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let x = 10;
+        x += 5;
+        x -= 3;
+        x *= 2;
+        x
+      `), 24);
+    });
+
+    it('template literal with computation', async () => {
+      const lines = [];
+      await compileAndRun('let x = 6; let y = 7; puts(`${x} * ${y} = ${x * y}`)', { outputLines: lines });
+      assert.strictEqual(lines[0], '6 * 7 = 42');
+    });
+
+    it('do-while loop', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let x = 1;
+        do {
+          x = x * 2;
+        } while (x < 100);
+        x
+      `), 128);
+    });
+
+    it('range sum', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let sum = 0;
+        for (i in 0..10) { sum = sum + i; }
+        sum
+      `), 45);
+    });
+
+    it('nested function calls with closures', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let compose = fn(f, g) { fn(x) { f(g(x)) } };
+        let double = fn(x) { x * 2 };
+        let inc = fn(x) { x + 1 };
+        let doubleInc = compose(inc, double);
+        doubleInc(5)
+      `), 11);
+    });
+
+    it('array building in loop', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let squares = [];
+        for (i in 1..6) {
+          squares = push(squares, i * i);
+        }
+        squares[0] + squares[1] + squares[2] + squares[3] + squares[4]
+      `), 55);
+    });
+
+    it('multiple string puts', async () => {
+      const lines = [];
+      await compileAndRun(`
+        puts("hello");
+        puts("world");
+        puts("!" + "!");
+      `, { outputLines: lines });
+      assert.strictEqual(lines.length, 3);
+      assert.strictEqual(lines[0], 'hello');
+      assert.strictEqual(lines[1], 'world');
+      assert.strictEqual(lines[2], '!!');
+    });
+
+    it('fibonacci with puts', async () => {
+      const lines = [];
+      await compileAndRun(`
+        let fib = fn(n) {
+          if (n <= 1) { n } else { fib(n - 1) + fib(n - 2) }
+        };
+        for (i in 0..8) {
+          puts(str(fib(i)));
+        }
+      `, { outputLines: lines });
+      assert.deepStrictEqual(lines, ['0', '1', '1', '2', '3', '5', '8', '13']);
+    });
+
+    it('mutual recursion via closures', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let isEven = fn(n) { if (n == 0) { 1 } else { isOdd(n - 1) } };
+        let isOdd = fn(n) { if (n == 0) { 0 } else { isEven(n - 1) } };
+        isEven(10)
+      `), 1);
+    });
+  });
 });
