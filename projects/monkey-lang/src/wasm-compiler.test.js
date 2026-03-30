@@ -849,6 +849,30 @@ describe('WASM Compiler', () => {
     });
   });
 
+  describe('Hash maps', () => {
+    it('hash literal with integer keys', async () => {
+      assert.strictEqual(await compileAndRun('let h = {1: 10, 2: 20, 3: 30}; h[2]'), 20);
+    });
+
+    it('hash literal with string keys', async () => {
+      const lines = [];
+      await compileAndRun('let h = {"x": 42, "y": 99}; puts(str(h["x"]))', { outputLines: lines });
+      assert.strictEqual(lines[0], '42');
+    });
+
+    it('hash mutation', async () => {
+      assert.strictEqual(await compileAndRun('let h = {1: 10}; h[2] = 20; h[2]'), 20);
+    });
+
+    it('hash overwrite', async () => {
+      assert.strictEqual(await compileAndRun('let h = {1: 10}; h[1] = 99; h[1]'), 99);
+    });
+
+    it('hash missing key returns 0', async () => {
+      assert.strictEqual(await compileAndRun('let h = {1: 10}; h[999]'), 0);
+    });
+  });
+
   describe('Integration tests', () => {
     it('Collatz conjecture', async () => {
       assert.strictEqual(await compileAndRun(`

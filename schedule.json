@@ -866,6 +866,13 @@
       "completed": "2026-03-30T17:39:45.084Z",
       "duration_ms": 120000,
       "summary": "WASM timing breakdown: shows compile, encode, wasm-compile, instantiate, execute phases. REPL :timing shows breakdown."
+    },
+    {
+      "id": "T84",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Implement basic hash maps in WASM (linear probing, string/int keys)",
+      "started": "2026-03-30T17:41:41.134Z"
     }
   ],
   "backlog": [],
@@ -1125,6 +1132,10 @@
     {
       "time": "2026-03-30T17:38:44.739Z",
       "msg": "Added T83 (BUILD) after end: Add WASM compilation time breakdown (parse, compile, optimize, instantiate)"
+    },
+    {
+      "time": "2026-03-30T17:41:41.016Z",
+      "msg": "Added T84 (BUILD) after end: Implement basic hash maps in WASM (linear probing, string/int keys)"
     }
   ]
 }

@@ -104,7 +104,7 @@ export class WasmCompiler {
     const topLevelFuncNames = new Set();
     for (const stmt of program.statements) {
       if (stmt instanceof ast.LetStatement &&
-          (stmt.value instanceof ast.FunctionLiteral || stmt.value instanceof ast.ArrowFunctionLiteral)) {
+          (stmt.value instanceof ast.FunctionLiteral)) {
         topLevelFuncNames.add(stmt.name.value);
       }
     }
@@ -112,7 +112,7 @@ export class WasmCompiler {
     // Second pass: register non-capturing functions
     for (const stmt of program.statements) {
       if (stmt instanceof ast.LetStatement &&
-          (stmt.value instanceof ast.FunctionLiteral || stmt.value instanceof ast.ArrowFunctionLiteral)) {
+          (stmt.value instanceof ast.FunctionLiteral)) {
         const params = new Set(stmt.value.parameters.map(p => p.value || p.token?.literal));
         const hasFreeVars = this._hasFreeVariables(stmt.value, params, topLevelFuncNames);
         if (!hasFreeVars) {
@@ -138,7 +138,7 @@ export class WasmCompiler {
       lastIsExpr = false;
 
       if (stmt instanceof ast.LetStatement &&
-          (stmt.value instanceof ast.FunctionLiteral || stmt.value instanceof ast.ArrowFunctionLiteral)) {
+          (stmt.value instanceof ast.FunctionLiteral)) {
         // Check if already handled as a named (non-capturing) function
         const binding = this.currentScope.resolve(stmt.name.value);
         if (binding && binding.type === 'func') {
@@ -237,6 +237,24 @@ export class WasmCompiler {
     // Import __slice from JS host: env.__slice(arr: i32, start: i32, end: i32) → i32
     const sliceIdx = this.builder.addImport('env', '__slice', [ValType.i32, ValType.i32, ValType.i32], [ValType.i32]);
     this._runtimeFuncs.slice = sliceIdx;
+
+    // Import hash map operations from JS host
+    const hashNewIdx = this.builder.addImport('env', '__hash_new', [], [ValType.i32]);
+    this._runtimeFuncs.hashNew = hashNewIdx;
+
+    const hashSetIdx = this.builder.addImport('env', '__hash_set', [ValType.i32, ValType.i32, ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.hashSet = hashSetIdx;
+
+    const hashGetIdx = this.builder.addImport('env', '__hash_get', [ValType.i32, ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.hashGet = hashGetIdx;
+
+    // Unified index getter: dispatches to arrayGet or hashGet based on object type
+    const indexGetIdx = this.builder.addImport('env', '__index_get', [ValType.i32, ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.indexGet = indexGetIdx;
+
+    // Unified index setter: dispatches to array set or hash set
+    const indexSetIdx = this.builder.addImport('env', '__index_set', [ValType.i32, ValType.i32, ValType.i32], []);
+    this._runtimeFuncs.indexSet = indexSetIdx;
 
     // __alloc(size) → pointer — bump allocator
     const { index: allocIdx, body: allocBody } = this.builder.addFunction(
@@ -487,7 +505,7 @@ export class WasmCompiler {
       this.compileIfExpression(node);
     } else if (node instanceof ast.CallExpression) {
       this.compileCallExpression(node);
-    } else if (node instanceof ast.FunctionLiteral || node instanceof ast.ArrowFunctionLiteral) {
+    } else if (node instanceof ast.FunctionLiteral) {
       this.compileFunctionLiteral(node);
     } else if (node instanceof ast.WhileExpression) {
       this.compileWhileExpression(node);
@@ -499,26 +517,6 @@ export class WasmCompiler {
       this.compileRangeExpression(node);
     } else if (node instanceof ast.DoWhileExpression) {
       this.compileDoWhileExpression(node);
-    } else if (node instanceof ast.NullCoalescingExpression) {
-      // a ?? b — if a is 0 (null), use b
-      this.compileNode(node.left);
-      const tmpLocal = this.nextLocalIndex++;
-      this.currentBody.addLocal(ValType.i32);
-      this.currentBody.localTee(tmpLocal);
-      this.currentBody.if_(ValType.i32);
-        this.currentBody.localGet(tmpLocal);
-      this.currentBody.else_();
-        this.compileNode(node.right);
-      this.currentBody.end();
-    } else if (node instanceof ast.PipeExpression) {
-      // a |> b is equivalent to b(a)
-      // Compile as a call: b(a)
-      const callNode = new ast.CallExpression(
-        node.token || {},
-        node.right,
-        [node.left]
-      );
-      this.compileCallExpression(callNode);
     } else if (node instanceof ast.AssignExpression) {
       this.compileAssignExpression(node);
     } else if (node instanceof ast.BlockStatement) {
@@ -546,7 +544,7 @@ export class WasmCompiler {
       this.compileNode(node.end || { value: 0, constructor: ast.IntegerLiteral });
       this.currentBody.call(this._runtimeFuncs.slice);
     } else if (node instanceof ast.HashLiteral) {
-      this.currentBody.i32Const(0);
+      this.compileHashLiteral(node);
     } else if (node instanceof ast.IndexAssignExpression) {
       this.compileNode(node.left);
       this.compileNode(node.index);
@@ -569,7 +567,7 @@ export class WasmCompiler {
       this.currentBody.localGet(tmpArr);
       this.currentBody.localGet(tmpIdx);
       this.currentBody.localGet(tmpLocal);
-      this.currentBody.call(this._runtimeFuncs.arraySet);
+      this.currentBody.call(this._runtimeFuncs.indexSet);
       this.currentBody.localGet(tmpLocal); // return the assigned value
     } else {
       // Unknown node type — push 0
@@ -695,6 +693,19 @@ export class WasmCompiler {
       this.currentBody.localGet(this._getTempLocal());
       this.currentBody.else_();
       this.compileNode(node.right);
+      this.currentBody.end();
+      return;
+    }
+    if (node.operator === '??') {
+      // Null coalescing: a ?? b — if a is 0 (null), use b
+      this.compileNode(node.left);
+      const tmpLocal = this.nextLocalIndex++;
+      this.currentBody.addLocal(ValType.i32);
+      this.currentBody.localTee(tmpLocal);
+      this.currentBody.if_(ValType.i32);
+        this.currentBody.localGet(tmpLocal);
+      this.currentBody.else_();
+        this.compileNode(node.right);
       this.currentBody.end();
       return;
     }
@@ -1327,7 +1338,7 @@ export class WasmCompiler {
     let hasFree = false;
     const walk = (node) => {
       if (!node || hasFree) return;
-      if (node instanceof ast.FunctionLiteral || node instanceof ast.ArrowFunctionLiteral) return; // Don't walk into nested functions
+      if (node instanceof ast.FunctionLiteral) return; // Don't walk into nested functions
       if (node instanceof ast.Identifier) {
         const name = node.value;
         if (!params.has(name) && !topLevelFuncNames.has(name)) {
@@ -1442,7 +1453,29 @@ export class WasmCompiler {
   compileIndexExpression(node) {
     this.compileNode(node.left);
     this.compileNode(node.index);
-    this.currentBody.call(this._runtimeFuncs.arrayGet);
+    this.currentBody.call(this._runtimeFuncs.indexGet);
+  }
+
+  // Hash literal: {"key": value, ...}
+  compileHashLiteral(node) {
+    // Create new hash map
+    this.currentBody.call(this._runtimeFuncs.hashNew);
+    const hashLocal = this.nextLocalIndex++;
+    this.currentBody.addLocal(ValType.i32);
+    this.currentBody.localSet(hashLocal);
+
+    // Set each key-value pair
+    if (node.pairs) {
+      for (const [key, value] of node.pairs) {
+        this.currentBody.localGet(hashLocal);
+        this.compileNode(key);
+        this.compileNode(value);
+        this.currentBody.call(this._runtimeFuncs.hashSet);
+        this.currentBody.drop(); // hash_set returns the hash
+      }
+    }
+
+    this.currentBody.localGet(hashLocal);
   }
 
   // Temp local for || operator
@@ -1540,6 +1573,9 @@ WasmCompiler.prototype.compilePrefixExpression = function(node) {
 
 // Create default JS host imports for WASM modules
 function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
+  // Hash map storage (JS-side, indexed by unique IDs)
+  const hashMaps = new Map();
+  let nextHashId = 1;
   // Helper to read string from WASM memory
   function readString(ptr) {
     const mem = memoryRef.memory;
@@ -1685,6 +1721,101 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
           view.setInt32(newPtr + 8 + i * 4, elem, true);
         }
         return newPtr;
+      },
+      __hash_new() {
+        const id = nextHashId++;
+        hashMaps.set(id, new Map());
+        return id;
+      },
+      __hash_set(hashId, key, value) {
+        const map = hashMaps.get(hashId);
+        if (!map) return hashId;
+        // Use key as-is (integer keys) or resolve string keys
+        const mem = memoryRef.memory;
+        let resolvedKey = key;
+        if (mem && key > 0) {
+          const view = new DataView(mem.buffer);
+          try {
+            const tag = view.getInt32(key, true);
+            if (tag === TAG_STRING) {
+              resolvedKey = 's:' + readString(key);
+            }
+          } catch (e) {}
+        }
+        map.set(resolvedKey, value);
+        return hashId;
+      },
+      __hash_get(hashId, key) {
+        const map = hashMaps.get(hashId);
+        if (!map) return 0;
+        const mem = memoryRef.memory;
+        let resolvedKey = key;
+        if (mem && key > 0) {
+          const view = new DataView(mem.buffer);
+          try {
+            const tag = view.getInt32(key, true);
+            if (tag === TAG_STRING) {
+              resolvedKey = 's:' + readString(key);
+            }
+          } catch (e) {}
+        }
+        return map.get(resolvedKey) || 0;
+      },
+      __index_get(obj, key) {
+        // Dispatch: if obj is a hash map ID (small number, in hashMaps), use hash_get
+        // Otherwise, treat as array pointer and use arrayGet logic
+        if (hashMaps.has(obj)) {
+          const map = hashMaps.get(obj);
+          const mem = memoryRef.memory;
+          let resolvedKey = key;
+          if (mem && key > 0) {
+            const view = new DataView(mem.buffer);
+            try {
+              const tag = view.getInt32(key, true);
+              if (tag === TAG_STRING) {
+                resolvedKey = 's:' + readString(key);
+              }
+            } catch (e) {}
+          }
+          return map.get(resolvedKey) || 0;
+        }
+        // Array: obj is heap pointer
+        const mem = memoryRef.memory;
+        if (!mem || obj <= 0) return 0;
+        const view = new DataView(mem.buffer);
+        const tag = view.getInt32(obj, true);
+        if (tag !== TAG_ARRAY) return 0;
+        const len = view.getInt32(obj + 4, true);
+        if (key < 0 || key >= len) return 0;
+        return view.getInt32(obj + 8 + key * 4, true);
+      },
+      __index_set(obj, key, value) {
+        // Dispatch: hash map or array
+        if (hashMaps.has(obj)) {
+          const map = hashMaps.get(obj);
+          const mem = memoryRef.memory;
+          let resolvedKey = key;
+          if (mem && key > 0) {
+            const view = new DataView(mem.buffer);
+            try {
+              const tag = view.getInt32(key, true);
+              if (tag === TAG_STRING) {
+                resolvedKey = 's:' + readString(key);
+              }
+            } catch (e) {}
+          }
+          map.set(resolvedKey, value);
+          return;
+        }
+        // Array: obj is heap pointer
+        const mem = memoryRef.memory;
+        if (!mem || obj <= 0) return;
+        const view = new DataView(mem.buffer);
+        const tag = view.getInt32(obj, true);
+        if (tag !== TAG_ARRAY) return;
+        const len = view.getInt32(obj + 4, true);
+        if (key < 0 || key >= len) return;
+        view.setInt32(obj + 8 + key * 4, value, true);
       },
     },
   };
