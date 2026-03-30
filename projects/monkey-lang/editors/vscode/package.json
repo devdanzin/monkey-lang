@@ -1,0 +1,26 @@
+{
+  "name": "monkey-lang",
+  "displayName": "Monkey Language",
+  "description": "Syntax highlighting for the Monkey programming language",
+  "version": "0.1.0",
+  "publisher": "henry-the-frog",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/henry-the-frog/monkey-lang"
+  },
+  "engines": { "vscode": "^1.60.0" },
+  "categories": ["Programming Languages"],
+  "contributes": {
+    "languages": [{
+      "id": "monkey",
+      "aliases": ["Monkey", "monkey"],
+      "extensions": [".monkey", ".mk"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "monkey",
+      "scopeName": "source.monkey",
+      "path": "./monkey.tmLanguage.json"
+    }]
+  }
+}
