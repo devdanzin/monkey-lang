@@ -664,6 +664,54 @@ function createSolarSystem() {
   return world;
 }
 
+function createShowcase() {
+  const world = new HittableList();
+
+  // Ground: checker
+  world.add(new Sphere(new Vec3(0, -1000, 0), 1000, new Lambertian(new CheckerTexture(new Vec3(0.2, 0.3, 0.1), new Vec3(0.9, 0.9, 0.9)))));
+
+  // Random small spheres (fewer than random scene for clarity)
+  for (let a = -6; a < 6; a++) {
+    for (let b = -6; b < 6; b++) {
+      const r = Math.random();
+      const center = new Vec3(a + 0.8 * Math.random(), 0.2, b + 0.8 * Math.random());
+      if (center.sub(new Vec3(0, 0.2, 0)).length() > 2) {
+        if (r < 0.6) world.add(new Sphere(center, 0.2, new Lambertian(Vec3.random().mul(Vec3.random()))));
+        else if (r < 0.8) world.add(new Sphere(center, 0.2, new Metal(Vec3.random(0.5, 1), Math.random() * 0.3)));
+        else if (r < 0.95) world.add(new Sphere(center, 0.2, new Dielectric(1.5)));
+        else world.add(new Sphere(center, 0.2, new DiffuseLight(Vec3.random().mul(3))));
+      }
+    }
+  }
+
+  // Center: large glass sphere with fog inside
+  const glassBoundary = new Sphere(new Vec3(0, 1, 0), 1.0, new Dielectric(1.5));
+  world.add(glassBoundary);
+  world.add(new ConstantMedium(new Sphere(new Vec3(0, 1, 0), 0.9, new Dielectric(1.5)), 0.2, new Vec3(0.2, 0.4, 0.9)));
+
+  // Left: marble sphere
+  world.add(new Sphere(new Vec3(-3, 1, 0), 1.0, new Lambertian(new MarbleTexture(new Vec3(0.9, 0.85, 0.8), 5))));
+
+  // Right: perfect mirror
+  world.add(new Sphere(new Vec3(3, 1, 0), 1.0, new Metal(new Vec3(0.95, 0.95, 0.95), 0.0)));
+
+  // Behind: planet texture
+  world.add(new Sphere(new Vec3(0, 1, -4), 1.0, new Lambertian(
+    new PlanetTexture(new Vec3(0.2, 0.6, 0.15), new Vec3(0.1, 0.2, 0.7), new Vec3(0.95, 0.95, 0.95), 4)
+  )));
+
+  // Rotated metallic box
+  world.add(new Translate(new RotateY(new Box(new Vec3(0,0,0), new Vec3(1,2,1), new Metal(new Vec3(0.8, 0.6, 0.2), 0.1)), 30), new Vec3(-5, 0, 2)));
+
+  // Noise sphere
+  world.add(new Sphere(new Vec3(5, 0.5, 3), 0.5, new Lambertian(new NoiseTexture(new Vec3(0.7, 0.3, 0.8), 8))));
+
+  // Overhead area light
+  world.add(new XZRect(-8, 8, -8, 8, 10, new DiffuseLight(new Vec3(1, 1, 1))));
+
+  return world;
+}
+
 // ===== Expose to global =====
 if (typeof self !== 'undefined') {
   self.RayTracer = {
@@ -672,6 +720,6 @@ if (typeof self !== 'undefined') {
     Isotropic, ConstantMedium,
     Lambertian, Metal, Dielectric, DiffuseLight, Camera,
     createRandomScene, createSimpleScene, createCornellBox,
-    createGlassStudy, createMetalShowcase, createLitRoom, createTexturedWorld, createSmokyCornell, createSolarSystem
+    createGlassStudy, createMetalShowcase, createLitRoom, createTexturedWorld, createSmokyCornell, createSolarSystem, createShowcase
   };
 }
