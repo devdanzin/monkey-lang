@@ -917,5 +917,22 @@ describe('WASM Compiler', () => {
         isEven(10)
       `), 1);
     });
+
+    it('first/last/rest builtins', async () => {
+      assert.strictEqual(await compileAndRun('first([10, 20, 30])'), 10);
+      assert.strictEqual(await compileAndRun('last([10, 20, 30])'), 30);
+      assert.strictEqual(await compileAndRun('len(rest([10, 20, 30]))'), 2);
+      assert.strictEqual(await compileAndRun('rest([10, 20, 30])[0]'), 20);
+    });
+
+    it('recursive list processing with rest', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let sum = fn(arr) {
+          if (len(arr) == 0) { 0 }
+          else { first(arr) + sum(rest(arr)) }
+        };
+        sum([1, 2, 3, 4, 5])
+      `), 15);
+    });
   });
 });

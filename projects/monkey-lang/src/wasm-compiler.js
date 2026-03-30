@@ -214,6 +214,10 @@ export class WasmCompiler {
     const strEqIdx = this.builder.addImport('env', '__str_eq', [ValType.i32, ValType.i32], [ValType.i32]);
     this._runtimeFuncs.strEq = strEqIdx;
 
+    // Import __rest from JS host: env.__rest(arr_ptr: i32) → i32 (new array without first)
+    const restIdx = this.builder.addImport('env', '__rest', [ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.rest = restIdx;
+
     // __alloc(size) → pointer — bump allocator
     const { index: allocIdx, body: allocBody } = this.builder.addFunction(
       [ValType.i32], [ValType.i32]
@@ -747,6 +751,41 @@ export class WasmCompiler {
       if (name === 'str' && node.arguments.length === 1) {
         this.compileNode(node.arguments[0]);
         this.currentBody.call(this._runtimeFuncs.str);
+        return;
+      }
+
+      // Built-in: first(arr)
+      if (name === 'first' && node.arguments.length === 1) {
+        this.compileNode(node.arguments[0]);
+        this.currentBody.i32Const(0);
+        this.currentBody.call(this._runtimeFuncs.arrayGet);
+        return;
+      }
+
+      // Built-in: last(arr)
+      if (name === 'last' && node.arguments.length === 1) {
+        this.compileNode(node.arguments[0]);
+        const arrTmp = this.nextLocalIndex++;
+        this.currentBody.addLocal(ValType.i32);
+        this.currentBody.localTee(arrTmp);
+        this.currentBody.call(this._runtimeFuncs.len);
+        this.currentBody.i32Const(1);
+        this.currentBody.emit(Op.i32_sub);
+        // Now stack has: index. Need arr again.
+        const idxTmp = this.nextLocalIndex++;
+        this.currentBody.addLocal(ValType.i32);
+        this.currentBody.localSet(idxTmp);
+        this.currentBody.localGet(arrTmp);
+        this.currentBody.localGet(idxTmp);
+        this.currentBody.call(this._runtimeFuncs.arrayGet);
+        return;
+      }
+
+      // Built-in: rest(arr) — creates new array without first element
+      if (name === 'rest' && node.arguments.length === 1) {
+        // Import rest from JS host
+        this.compileNode(node.arguments[0]);
+        this.currentBody.call(this._runtimeFuncs.rest);
         return;
       }
     }
@@ -1521,6 +1560,31 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
         const s1 = readString(ptr1);
         const s2 = readString(ptr2);
         return s1 === s2 ? 1 : 0;
+      },
+      __rest(arrPtr) {
+        const mem = memoryRef.memory;
+        if (!mem || arrPtr <= 0) return 0;
+        const view = new DataView(mem.buffer);
+        const tag = view.getInt32(arrPtr, true);
+        if (tag !== TAG_ARRAY) return 0;
+        const len = view.getInt32(arrPtr + 4, true);
+        if (len <= 0) return 0;
+
+        // Allocate new array with len-1 elements
+        const newLen = len - 1;
+        if (!memoryRef.jsHeapPtr) memoryRef.jsHeapPtr = 60000;
+        const newPtr = memoryRef.jsHeapPtr;
+        const newSize = 8 + newLen * 4;
+        memoryRef.jsHeapPtr += newSize;
+        memoryRef.jsHeapPtr = (memoryRef.jsHeapPtr + 3) & ~3;
+
+        view.setInt32(newPtr, TAG_ARRAY, true);
+        view.setInt32(newPtr + 4, newLen, true);
+        for (let i = 0; i < newLen; i++) {
+          const elem = view.getInt32(arrPtr + 8 + (i + 1) * 4, true);
+          view.setInt32(newPtr + 8 + i * 4, elem, true);
+        }
+        return newPtr;
       },
     },
   };

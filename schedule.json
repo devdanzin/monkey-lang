@@ -640,9 +640,19 @@
     {
       "id": "T61",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add more WASM compiler edge case tests and integration tests",
-      "started": "2026-03-30T16:51:03.718Z"
+      "started": "2026-03-30T16:51:03.718Z",
+      "completed": "2026-03-30T16:52:36.576Z",
+      "duration_ms": 240000,
+      "summary": "11 new integration tests: Collatz, prime counting, compound assignment, template literals, do-while, ranges, compose, mutual recursion. 122 WASM compiler tests, 1286 total."
+    },
+    {
+      "id": "T62",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add first/last/rest builtins to WASM compiler via runtime functions",
+      "started": "2026-03-30T16:52:51.092Z"
     }
   ],
   "backlog": [],
@@ -814,6 +824,10 @@
     {
       "time": "2026-03-30T16:51:03.601Z",
       "msg": "Added T61 (BUILD) after end: Add more WASM compiler edge case tests and integration tests"
+    },
+    {
+      "time": "2026-03-30T16:52:50.974Z",
+      "msg": "Added T62 (BUILD) after end: Add first/last/rest builtins to WASM compiler via runtime functions"
     }
   ]
 }

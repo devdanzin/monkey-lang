@@ -200,6 +200,7 @@ for (const bench of BENCHMARKS) {
                 str(v) { return v; },
                 __str_concat(a, b) { return 0; },
                 __str_eq(a, b) { return 0; },
+                __rest(a) { return 0; },
               }
             };
             const instance = await WebAssembly.instantiate(module, imports);
