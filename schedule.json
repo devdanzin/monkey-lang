@@ -600,9 +600,19 @@
     {
       "id": "T57",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add dead code elimination to WASM compiler (remove unreachable code after return)",
-      "started": "2026-03-30T16:38:46.389Z"
+      "started": "2026-03-30T16:38:46.389Z",
+      "completed": "2026-03-30T16:39:43.783Z",
+      "duration_ms": 120000,
+      "summary": "Package updated to v0.3.0: index.js with all 5 backend exports, updated keywords (wasm, webassembly, transpiler), benchmarks in package."
+    },
+    {
+      "id": "T58",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add WASM for-in loop support (iterate over arrays)",
+      "started": "2026-03-30T16:39:52.869Z"
     }
   ],
   "backlog": [],
@@ -758,6 +768,10 @@
     {
       "time": "2026-03-30T16:38:46.253Z",
       "msg": "Added T57 (BUILD) after end: Add dead code elimination to WASM compiler (remove unreachable code after return)"
+    },
+    {
+      "time": "2026-03-30T16:39:52.752Z",
+      "msg": "Added T58 (BUILD) after end: Add WASM for-in loop support (iterate over arrays)"
     }
   ]
 }

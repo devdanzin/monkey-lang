@@ -223,6 +223,27 @@ describe('WASM Compiler', () => {
         result
       `), 120);
     });
+
+    it('for-in loop over array', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let sum = 0;
+        let arr = [10, 20, 30];
+        for (x in arr) {
+          sum = sum + x;
+        }
+        sum
+      `), 60);
+    });
+
+    it('for-in with puts', async () => {
+      const lines = [];
+      await compileAndRun(`
+        for (x in [1, 2, 3]) {
+          puts(x);
+        }
+      `, { outputLines: lines });
+      assert.deepStrictEqual(lines, ['1', '2', '3']);
+    });
   });
 
   describe('Functions', () => {
