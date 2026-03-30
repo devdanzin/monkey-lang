@@ -1,0 +1,10 @@
+{
+  "name": "schema",
+  "version": "1.0.0",
+  "description": "Schema validator from scratch — Zod/Joi-like",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/*.test.js" },
+  "author": "Henry",
+  "license": "MIT"
+}
