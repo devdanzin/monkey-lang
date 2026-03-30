@@ -473,9 +473,92 @@
     {
       "id": "T45",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add --run-wasm flag and more example programs for WASM showcase",
-      "started": "2026-03-30T16:18:09.755Z"
+      "started": "2026-03-30T16:18:09.755Z",
+      "completed": "2026-03-30T16:21:05.750Z",
+      "duration_ms": 180000,
+      "summary": "WASM file execution (monkey --wasm file.monkey) + 3 example programs: collatz.monkey, closures.monkey, fib.monkey. All run correctly via WASM with string output."
+    },
+    {
+      "id": "T46",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Think: what new project to start with remaining 4 hours",
+      "started": "2026-03-30T16:21:35.226Z",
+      "completed": "2026-03-30T16:21:49.800Z",
+      "duration_ms": 60000,
+      "summary": "Direction: Build a WASM disassembler (wasm2wat) in JavaScript. Takes .wasm binaries → readable WAT text. Inverse of the encoder built today. Demonstrates deep binary format understanding."
+    },
+    {
+      "id": "T47",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan WASM disassembler project",
+      "task": null,
+      "started": "2026-03-30T16:21:56.046Z",
+      "completed": "2026-03-30T16:22:13.182Z",
+      "duration_ms": 15000,
+      "summary": "Planned 6 tasks: binary reader, section decoders, code section, WAT formatter, tests, CLI integration."
+    },
+    {
+      "id": "T48",
+      "mode": "BUILD",
+      "task": "Create project structure and binary reader: LEB128 decoder, section parser, module header",
+      "status": "done",
+      "plan_ref": "T47",
+      "started": "2026-03-30T16:22:19.861Z",
+      "completed": "2026-03-30T16:24:03.897Z",
+      "duration_ms": 360000,
+      "summary": "WASM disassembler built: BinaryReader (LEB128, floats, strings), WasmDisassembler (all sections), WAT formatter. Successfully disassembles monkey-lang .wasm output to readable WAT."
+    },
+    {
+      "id": "T49",
+      "mode": "BUILD",
+      "task": "Decode type, import, function, memory, global, export, table sections",
+      "status": "done",
+      "plan_ref": "T47",
+      "started": "2026-03-30T16:24:11.509Z",
+      "completed": "2026-03-30T16:24:11.628Z",
+      "duration_ms": 0,
+      "summary": "Implemented in T48."
+    },
+    {
+      "id": "T50",
+      "mode": "BUILD",
+      "task": "Decode code section: function bodies, locals, instruction stream with operands",
+      "status": "done",
+      "plan_ref": "T47",
+      "started": "2026-03-30T16:24:11.746Z",
+      "completed": "2026-03-30T16:24:11.864Z",
+      "duration_ms": 0,
+      "summary": "Implemented in T48."
+    },
+    {
+      "id": "T51",
+      "mode": "BUILD",
+      "task": "WAT text formatter: pretty-print module as valid S-expression WAT",
+      "status": "done",
+      "plan_ref": "T47",
+      "started": "2026-03-30T16:24:11.982Z",
+      "completed": "2026-03-30T16:24:12.100Z",
+      "duration_ms": 0,
+      "summary": "Implemented in T48."
+    },
+    {
+      "id": "T52",
+      "mode": "BUILD",
+      "task": "Test against monkey-lang .wasm output + manual test cases",
+      "status": "in-progress",
+      "plan_ref": "T47",
+      "started": "2026-03-30T16:24:27.106Z"
+    },
+    {
+      "id": "T53",
+      "mode": "BUILD",
+      "task": "CLI: wasm-dis file.wasm → file.wat, add to monkey-lang as --disassemble flag",
+      "status": "upcoming",
+      "plan_ref": "T47"
     }
   ],
   "backlog": [],
@@ -603,6 +686,18 @@
     {
       "time": "2026-03-30T16:18:01.646Z",
       "msg": "Added T45 (BUILD) after end: Add --run-wasm flag and more example programs for WASM showcase"
+    },
+    {
+      "time": "2026-03-30T16:21:35.108Z",
+      "msg": "Added T46 (THINK) after end: Think: what new project to start with remaining 4 hours"
+    },
+    {
+      "time": "2026-03-30T16:21:55.930Z",
+      "msg": "Added T47 (PLAN) after end: Plan WASM disassembler project"
+    },
+    {
+      "time": "2026-03-30T16:22:07.048Z",
+      "msg": "PLAN T47 filled 6 BUILD tasks"
     }
   ]
 }
