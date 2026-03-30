@@ -736,6 +736,13 @@
       "completed": "2026-03-30T17:14:24.034Z",
       "duration_ms": 120000,
       "summary": "REPL multiline input: auto-detects unbalanced braces, shows ... continuation prompt, processes when balanced."
+    },
+    {
+      "id": "T71",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add GitHub Actions CI for monkey-lang (run tests on push)",
+      "started": "2026-03-30T17:14:54.361Z"
     }
   ],
   "backlog": [],
@@ -943,6 +950,10 @@
     {
       "time": "2026-03-30T17:12:45.887Z",
       "msg": "Added T70 (BUILD) after end: Add multiline input support to REPL (detect unbalanced braces)"
+    },
+    {
+      "time": "2026-03-30T17:14:54.244Z",
+      "msg": "Added T71 (BUILD) after end: Add GitHub Actions CI for monkey-lang (run tests on push)"
     }
   ]
 }
