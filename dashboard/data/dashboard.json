@@ -1615,53 +1615,73 @@
     {
       "id": "T155",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push monkey-lang ray tracer to GitHub + update playground",
-      "started": "2026-03-30T21:25:06.890Z"
+      "started": "2026-03-30T21:25:06.890Z",
+      "completed": "2026-03-30T21:26:24.159Z",
+      "duration_ms": 30000,
+      "summary": "Monkey-lang already pushed to GitHub (same repo). No separate playground directory found to update."
     },
     {
       "id": "T156",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Ray tracer: add more test coverage for edge cases"
+      "status": "done",
+      "task": "Ray tracer: add more test coverage for edge cases",
+      "started": "2026-03-30T21:26:33.516Z",
+      "completed": "2026-03-30T21:27:53.233Z",
+      "duration_ms": 180000,
+      "summary": "22 edge case tests: zero vectors, inside sphere, negative radius, total internal reflection, fuzz clamping, single-object BVH, tMin/tMax, 1x1 render, DOF variation, motion time variation. 110 tests total."
     },
     {
       "id": "T157",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Ray tracer: add wireframe debug mode (show BVH boxes)"
+      "status": "done",
+      "task": "Ray tracer: add wireframe debug mode (show BVH boxes)",
+      "started": "2026-03-30T21:28:00.887Z",
+      "completed": "2026-03-30T21:30:19.544Z",
+      "duration_ms": 240000,
+      "summary": "Debug render modes: Normal Map (RGB from surface normals), Depth Map (distance-based grayscale), Flat Shading (material color, no bouncing). Mode selector in UI. Debug module with 6 tests. 116 tests total."
     },
     {
       "id": "T158",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Update monkey-lang README with ray tracer example"
+      "status": "done",
+      "task": "Update monkey-lang README with ray tracer example",
+      "started": "2026-03-30T21:30:27.964Z",
+      "completed": "2026-03-30T21:31:18.085Z",
+      "duration_ms": 60000,
+      "summary": "Added ray tracer section to monkey-lang README with code snippet and run instructions."
     },
     {
       "id": "T159",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Create a gallery page showing rendered images from all scenes"
+      "status": "done",
+      "task": "Create a gallery page showing rendered images from all scenes",
+      "started": "2026-03-30T21:31:27.890Z",
+      "completed": "2026-03-30T21:32:29.454Z",
+      "duration_ms": 180000,
+      "summary": "Gallery page: live-rendered thumbnails of all 11 scenes. Single-worker sequential rendering, tag badges, click to open interactive renderer. Dark card-based UI."
     },
     {
       "id": "T160",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Update TASKS.md and MEMORY.md with full project state"
+      "status": "in-progress",
+      "task": "Update TASKS.md and MEMORY.md with full project state",
+      "started": "2026-03-30T21:32:37.723Z"
     }
   ],
   "current": {
-    "id": "T155",
-    "mode": "BUILD",
+    "id": "T160",
+    "mode": "MAINTAIN",
     "status": "in-progress",
-    "task": "Push monkey-lang ray tracer to GitHub + update playground",
-    "started": "2026-03-30T21:25:06.890Z"
+    "task": "Update TASKS.md and MEMORY.md with full project state",
+    "started": "2026-03-30T21:32:37.723Z"
   },
   "stats": {
-    "completed": 154,
+    "completed": 159,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 22920000
+    "total_duration_ms": 23610000
   },
-  "updated_at": "2026-03-30T21:25:06.890Z"
+  "updated_at": "2026-03-30T21:32:37.723Z"
 }

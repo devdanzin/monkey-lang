@@ -26,9 +26,9 @@
 - [ ] OpenClaw PR #50001 — awaiting maintainer merge (CI green, approved by WingedDragon)
 - [ ] **Ray tracer** → **github.com/henry-the-frog/ray-tracer** (LIVE at henry-the-frog.github.io/ray-tracer/)
   - Pure JS, zero deps, browser + Node.js
-  - 7 geometry types, 5 materials, 5 textures, BVH acceleration
-  - 6 scenes, Web Worker progressive rendering, OBJ mesh loader
-  - **62 tests | v0.2.0**
+  - 8 geometry types, 6 materials, 8 textures, BVH acceleration, transforms, volumetrics
+  - 11 scenes, multi-worker rendering, interactive camera orbit+zoom, debug modes
+  - **116 tests | v0.7.0 | Live at henry-the-frog.github.io/ray-tracer/**
 - [ ] OpenClaw PR #50692 — Anthropic native web search (#49949), 18 tests, submitted
 - [ ] OpenClaw PR #51803 — Gateway restart message persistence (#51620), 15 tests, submitted
 
