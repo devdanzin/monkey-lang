@@ -530,10 +530,13 @@ export class WasmCompiler {
 
   compileLetStatement(stmt) {
     const name = stmt.name.value;
-    // Allocate a local
     const localIdx = this.nextLocalIndex++;
     this.currentBody.addLocal(ValType.i32);
     this.currentScope.define(name, localIdx, ValType.i32);
+    if (stmt.isConst) {
+      if (!this._constVars) this._constVars = new Set();
+      this._constVars.add(name);
+    }
 
     if (stmt.value) {
       this.compileNode(stmt.value);
@@ -1307,6 +1310,15 @@ export class WasmCompiler {
 
   compileAssignExpression(node) {
     const name = node.name.value || node.name;
+    
+    // Check const enforcement
+    if (this._constVars?.has(name)) {
+      const line = node?.token?.line ? ` (line ${node.token.line})` : '';
+      this.errors.push(`cannot assign to const variable: ${name}${line}`);
+      this.currentBody.i32Const(0);
+      return;
+    }
+
     const binding = this.currentScope.resolve(name);
     if (binding) {
       this.compileNode(node.value);

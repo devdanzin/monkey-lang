@@ -1265,6 +1265,10 @@ describe('WASM Compiler', () => {
       assert.strictEqual(lines[0], 'array');
     });
 
+    it('const enforcement', async () => {
+      await assert.rejects(() => compileAndRun('const x = 5; x = 10; x'), /cannot assign to const/);
+    });
+
     it('string iteration and rebuild', async () => {
       const lines = [];
       await compileAndRun('let s = "abc"; let r = ""; for (ch in s) { r = r + ch; } puts(r)', { outputLines: lines });
