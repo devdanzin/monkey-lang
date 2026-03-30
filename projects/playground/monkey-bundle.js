@@ -11766,12 +11766,12 @@ var WasmCompiler = class {
     this._addRuntimeFunctions();
     const topLevelFuncNames = /* @__PURE__ */ new Set();
     for (const stmt of program.statements) {
-      if (stmt instanceof LetStatement && stmt.value instanceof FunctionLiteral) {
+      if (stmt instanceof LetStatement && (stmt.value instanceof FunctionLiteral || stmt.value instanceof void 0)) {
         topLevelFuncNames.add(stmt.name.value);
       }
     }
     for (const stmt of program.statements) {
-      if (stmt instanceof LetStatement && stmt.value instanceof FunctionLiteral) {
+      if (stmt instanceof LetStatement && (stmt.value instanceof FunctionLiteral || stmt.value instanceof void 0)) {
         const params = new Set(stmt.value.parameters.map((p) => p.value || p.token?.literal));
         const hasFreeVars = this._hasFreeVariables(stmt.value, params, topLevelFuncNames);
         if (!hasFreeVars) {
@@ -11791,7 +11791,7 @@ var WasmCompiler = class {
     for (let i = 0; i < program.statements.length; i++) {
       const stmt = program.statements[i];
       lastIsExpr = false;
-      if (stmt instanceof LetStatement && stmt.value instanceof FunctionLiteral) {
+      if (stmt instanceof LetStatement && (stmt.value instanceof FunctionLiteral || stmt.value instanceof void 0)) {
         const binding = this.currentScope.resolve(stmt.name.value);
         if (binding && binding.type === "func") {
           continue;
@@ -11856,6 +11856,8 @@ var WasmCompiler = class {
     const intIdx = this.builder.addImport("env", "__int", [ValType.i32], [ValType.i32]);
     this._runtimeFuncs.int = intIdx;
     this.globalScope.define("int", intIdx, "func");
+    const sliceIdx = this.builder.addImport("env", "__slice", [ValType.i32, ValType.i32, ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.slice = sliceIdx;
     const { index: allocIdx, body: allocBody } = this.builder.addFunction(
       [ValType.i32],
       [ValType.i32]
@@ -12025,7 +12027,7 @@ var WasmCompiler = class {
       this.compileIfExpression(node);
     } else if (node instanceof CallExpression) {
       this.compileCallExpression(node);
-    } else if (node instanceof FunctionLiteral) {
+    } else if (node instanceof FunctionLiteral || node instanceof void 0) {
       this.compileFunctionLiteral(node);
     } else if (node instanceof WhileExpression) {
       this.compileWhileExpression(node);
@@ -12037,6 +12039,23 @@ var WasmCompiler = class {
       this.compileRangeExpression(node);
     } else if (node instanceof DoWhileExpression) {
       this.compileDoWhileExpression(node);
+    } else if (node instanceof void 0) {
+      this.compileNode(node.left);
+      const tmpLocal = this.nextLocalIndex++;
+      this.currentBody.addLocal(ValType.i32);
+      this.currentBody.localTee(tmpLocal);
+      this.currentBody.if_(ValType.i32);
+      this.currentBody.localGet(tmpLocal);
+      this.currentBody.else_();
+      this.compileNode(node.right);
+      this.currentBody.end();
+    } else if (node instanceof void 0) {
+      const callNode = new CallExpression(
+        node.token || {},
+        node.right,
+        [node.left]
+      );
+      this.compileCallExpression(callNode);
     } else if (node instanceof AssignExpression) {
       this.compileAssignExpression(node);
     } else if (node instanceof BlockStatement) {
@@ -12056,6 +12075,11 @@ var WasmCompiler = class {
       this.compileArrayLiteral(node);
     } else if (node instanceof IndexExpression) {
       this.compileIndexExpression(node);
+    } else if (node instanceof SliceExpression) {
+      this.compileNode(node.left);
+      this.compileNode(node.start || { value: 0, constructor: IntegerLiteral });
+      this.compileNode(node.end || { value: 0, constructor: IntegerLiteral });
+      this.currentBody.call(this._runtimeFuncs.slice);
     } else if (node instanceof HashLiteral) {
       this.currentBody.i32Const(0);
     } else if (node instanceof IndexAssignExpression) {
@@ -12639,7 +12663,7 @@ var WasmCompiler = class {
     let hasFree = false;
     const walk = (node) => {
       if (!node || hasFree) return;
-      if (node instanceof FunctionLiteral) return;
+      if (node instanceof FunctionLiteral || node instanceof void 0) return;
       if (node instanceof Identifier) {
         const name = node.value;
         if (!params.has(name) && !topLevelFuncNames.has(name)) {
@@ -12940,6 +12964,29 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
           }
         }
         return value;
+      },
+      __slice(arrPtr, start, end) {
+        const mem = memoryRef.memory;
+        if (!mem || arrPtr <= 0) return 0;
+        const view = new DataView(mem.buffer);
+        const tag = view.getInt32(arrPtr, true);
+        if (tag !== TAG_ARRAY) return 0;
+        const len = view.getInt32(arrPtr + 4, true);
+        if (end <= 0) end = len;
+        if (start < 0) start = 0;
+        if (end > len) end = len;
+        const newLen = Math.max(0, end - start);
+        if (!memoryRef.jsHeapPtr) memoryRef.jsHeapPtr = 6e4;
+        const newPtr = memoryRef.jsHeapPtr;
+        memoryRef.jsHeapPtr += 8 + newLen * 4;
+        memoryRef.jsHeapPtr = memoryRef.jsHeapPtr + 3 & ~3;
+        view.setInt32(newPtr, TAG_ARRAY, true);
+        view.setInt32(newPtr + 4, newLen, true);
+        for (let i = 0; i < newLen; i++) {
+          const elem = view.getInt32(arrPtr + 8 + (start + i) * 4, true);
+          view.setInt32(newPtr + 8 + i * 4, elem, true);
+        }
+        return newPtr;
       }
     }
   };
@@ -12972,19 +13019,32 @@ function formatWasmValue(value, dataView) {
   return String(value);
 }
 async function compileAndRun(input, options = {}) {
+  const timings = {};
+  const t0 = performance.now();
   const compiler = new WasmCompiler();
   const builder = compiler.compile(input);
+  timings.compile = performance.now() - t0;
   if (!builder || compiler.errors.length > 0) {
     throw new Error(`Compilation errors: ${compiler.errors.join(", ")}`);
   }
+  const t1 = performance.now();
   const binary = builder.build();
+  timings.encode = performance.now() - t1;
+  const t2 = performance.now();
   const module = await WebAssembly.compile(binary);
+  timings.wasmCompile = performance.now() - t2;
   const outputLines = options.outputLines || [];
   const memoryRef = { memory: null };
   const imports = createWasmImports(outputLines, memoryRef);
+  const t3 = performance.now();
   const instance = await WebAssembly.instantiate(module, imports);
   memoryRef.memory = instance.exports.memory;
+  timings.instantiate = performance.now() - t3;
+  const t4 = performance.now();
   const result = instance.exports.main();
+  timings.execute = performance.now() - t4;
+  timings.total = performance.now() - t0;
+  if (options.timings) Object.assign(options.timings, timings);
   return result;
 }
 async function compileToInstance(input, options = {}) {
