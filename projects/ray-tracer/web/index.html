@@ -92,6 +92,7 @@
       <option value="smoky">Smoky Cornell Box (volumetric)</option>
       <option value="solar">Solar System (procedural planets)</option>
       <option value="showcase">✨ Showcase (everything combined)</option>
+      <option value="motion">Motion Blur (bouncing spheres)</option>
     </select>
   </div>
   <div class="control-group">
@@ -202,6 +203,11 @@ const scenes = {
     lookFrom: { x: 10, y: 4, z: 10 }, lookAt: { x: 0, y: 1, z: 0 },
     vfov: 30, aperture: 0.1, focusDist: 12, aspectRatio: 3/2
   },
+  motion: {
+    lookFrom: { x: 8, y: 3, z: 8 }, lookAt: { x: 0, y: 0.5, z: 0 },
+    vfov: 25, aperture: 0.1, focusDist: 10, aspectRatio: 3/2,
+    time0: 0, time1: 1
+  },
   cornell: {
     lookFrom: { x: 278, y: 278, z: -800 }, lookAt: { x: 278, y: 278, z: 0 },
     vfov: 40, aperture: 0, focusDist: 1, aspectRatio: 1,
@@ -231,7 +237,8 @@ function startRender() {
     lookFrom: camConfig.lookFrom, lookAt: camConfig.lookAt,
     vup: { x: 0, y: 1, z: 0 }, vfov: camConfig.vfov,
     aspectRatio: camConfig.aspectRatio, aperture: camConfig.aperture,
-    focusDist: camConfig.focusDist
+    focusDist: camConfig.focusDist,
+    time0: camConfig.time0 || 0, time1: camConfig.time1 || 0
   };
 
   const config = {

@@ -43,7 +43,7 @@ class Vec3 {
 
 // ===== Ray =====
 class Ray {
-  constructor(origin, direction) { this.origin = origin; this.direction = direction; }
+  constructor(origin, direction, time = 0) { this.origin = origin; this.direction = direction; this.time = time; }
   at(t) { return this.origin.add(this.direction.mul(t)); }
 }
 
@@ -437,7 +437,7 @@ class DiffuseLight {
 
 // ===== Camera =====
 class Camera {
-  constructor({ lookFrom, lookAt, vup, vfov = 90, aspectRatio = 16/9, aperture = 0, focusDist = 1 } = {}) {
+  constructor({ lookFrom, lookAt, vup, vfov = 90, aspectRatio = 16/9, aperture = 0, focusDist = 1, time0 = 0, time1 = 0 } = {}) {
     lookFrom = lookFrom ? new Vec3(lookFrom.x, lookFrom.y, lookFrom.z) : new Vec3(0, 0, 0);
     lookAt = lookAt ? new Vec3(lookAt.x, lookAt.y, lookAt.z) : new Vec3(0, 0, -1);
     vup = vup ? new Vec3(vup.x, vup.y, vup.z) : new Vec3(0, 1, 0);
@@ -451,11 +451,48 @@ class Camera {
     this.vertical = this.v.mul(vh * focusDist);
     this.lowerLeftCorner = this.origin.sub(this.horizontal.div(2)).sub(this.vertical.div(2)).sub(this.w.mul(focusDist));
     this.lensRadius = aperture / 2;
+    this.time0 = time0; this.time1 = time1;
   }
   getRay(s, t) {
     const rd = Vec3.randomInUnitDisk().mul(this.lensRadius);
     const offset = this.u.mul(rd.x).add(this.v.mul(rd.y));
-    return new Ray(this.origin.add(offset), this.lowerLeftCorner.add(this.horizontal.mul(s)).add(this.vertical.mul(t)).sub(this.origin).sub(offset));
+    const time = this.time0 + Math.random() * (this.time1 - this.time0);
+    return new Ray(this.origin.add(offset), this.lowerLeftCorner.add(this.horizontal.mul(s)).add(this.vertical.mul(t)).sub(this.origin).sub(offset), time);
+  }
+}
+
+// ===== MovingSphere =====
+class MovingSphere {
+  constructor(c0, c1, t0, t1, radius, material) {
+    this.c0 = c0; this.c1 = c1; this.t0 = t0; this.t1 = t1;
+    this.radius = radius; this.material = material;
+  }
+  center(time) {
+    const t = (time - this.t0) / (this.t1 - this.t0);
+    return this.c0.add(this.c1.sub(this.c0).mul(t));
+  }
+  hit(ray, tMin, tMax) {
+    const cc = this.center(ray.time || 0);
+    const oc = ray.origin.sub(cc);
+    const a = ray.direction.lengthSquared();
+    const hb = oc.dot(ray.direction);
+    const c = oc.lengthSquared() - this.radius * this.radius;
+    const d = hb * hb - a * c;
+    if (d < 0) return null;
+    const sqrtd = Math.sqrt(d);
+    let root = (-hb - sqrtd) / a;
+    if (root <= tMin || root >= tMax) { root = (-hb + sqrtd) / a; if (root <= tMin || root >= tMax) return null; }
+    const rec = new HitRecord();
+    rec.t = root; rec.p = ray.at(root);
+    rec.setFaceNormal(ray, rec.p.sub(cc).div(this.radius));
+    rec.material = this.material;
+    return rec;
+  }
+  boundingBox() {
+    const r = new Vec3(this.radius, this.radius, this.radius);
+    const b0 = new AABB(this.c0.sub(r), this.c0.add(r));
+    const b1 = new AABB(this.c1.sub(r), this.c1.add(r));
+    return AABB.surrounding(b0, b1);
   }
 }
 
@@ -712,6 +749,37 @@ function createShowcase() {
   return world;
 }
 
+function createMotionBlur() {
+  const world = new HittableList();
+  world.add(new Sphere(new Vec3(0, -1000, 0), 1000, new Lambertian(new CheckerTexture(new Vec3(0.2, 0.3, 0.1), new Vec3(0.9, 0.9, 0.9)))));
+
+  // Bouncing spheres with motion blur
+  for (let a = -5; a < 5; a++) {
+    for (let b = -5; b < 5; b++) {
+      const r = Math.random();
+      const center = new Vec3(a + 0.9 * Math.random(), 0.2, b + 0.9 * Math.random());
+      if (center.sub(new Vec3(0, 0.2, 0)).length() > 1.5) {
+        if (r < 0.5) {
+          const albedo = Vec3.random().mul(Vec3.random());
+          const bounce = new Vec3(0, Math.random() * 0.5, 0);
+          world.add(new MovingSphere(center, center.add(bounce), 0, 1, 0.2, new Lambertian(albedo)));
+        } else if (r < 0.75) {
+          world.add(new Sphere(center, 0.2, new Metal(Vec3.random(0.5, 1), Math.random() * 0.3)));
+        } else {
+          world.add(new Sphere(center, 0.2, new Dielectric(1.5)));
+        }
+      }
+    }
+  }
+
+  // Big spheres (stationary)
+  world.add(new Sphere(new Vec3(0, 1, 0), 1.0, new Dielectric(1.5)));
+  world.add(new Sphere(new Vec3(-2, 1, 0), 1.0, new Lambertian(new Vec3(0.4, 0.2, 0.1))));
+  world.add(new Sphere(new Vec3(2, 1, 0), 1.0, new Metal(new Vec3(0.7, 0.6, 0.5), 0.0)));
+
+  return world;
+}
+
 // ===== Expose to global =====
 if (typeof self !== 'undefined') {
   self.RayTracer = {
@@ -720,6 +788,6 @@ if (typeof self !== 'undefined') {
     Isotropic, ConstantMedium,
     Lambertian, Metal, Dielectric, DiffuseLight, Camera,
     createRandomScene, createSimpleScene, createCornellBox,
-    createGlassStudy, createMetalShowcase, createLitRoom, createTexturedWorld, createSmokyCornell, createSolarSystem, createShowcase
+    createGlassStudy, createMetalShowcase, createLitRoom, createTexturedWorld, createSmokyCornell, createSolarSystem, createShowcase, createMotionBlur, MovingSphere
   };
 }
