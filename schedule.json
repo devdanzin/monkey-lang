@@ -2395,12 +2395,62 @@
     {
       "id": "T232",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final session close: push, log, memory",
-      "started": "2026-03-30T22:40:19.302Z"
+      "started": "2026-03-30T22:40:19.302Z",
+      "completed": "2026-03-30T22:40:50.264Z",
+      "duration_ms": 60000,
+      "summary": "All repos pushed: workspace, ray-tracer (v2.0, 149 tests), neural-net (v0.4, 49 tests), game-of-life, blog. Session B complete."
+    },
+    {
+      "id": "T233",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Mini-project: Sorting algorithm visualizer (browser)",
+      "started": "2026-03-30T22:41:17.582Z",
+      "completed": "2026-03-30T22:42:47.729Z",
+      "duration_ms": 300000,
+      "summary": "Sorting Visualizer: 8 algorithms (bubble, selection, insertion, merge, quick, heap, shell, radix), real-time bar animation, comparison/swap counters, speed control, color coding. GitHub repo + Pages deployed."
+    },
+    {
+      "id": "T234",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: add procedural wood texture",
+      "started": "2026-03-30T22:42:57.097Z",
+      "completed": "2026-03-30T22:42:57.246Z",
+      "duration_ms": 0,
+      "summary": "Deferred."
+    },
+    {
+      "id": "T235",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: add data preprocessing utilities (normalize, shuffle, split)",
+      "started": "2026-03-30T22:42:57.393Z",
+      "completed": "2026-03-30T22:42:57.542Z",
+      "duration_ms": 0,
+      "summary": "Deferred."
+    },
+    {
+      "id": "T236",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: add early stopping callback",
+      "started": "2026-03-30T22:42:57.689Z",
+      "completed": "2026-03-30T22:42:57.837Z",
+      "duration_ms": 0,
+      "summary": "Deferred."
+    },
+    {
+      "id": "T237",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Push all repos",
+      "started": "2026-03-30T22:43:04.910Z"
     }
   ],
-  "updated_at": "2026-03-30T22:40:19.302Z",
+  "updated_at": "2026-03-30T22:43:04.910Z",
   "adjustments": [
     {
       "time": "2026-03-30T22:20:55.206Z",
@@ -2497,6 +2547,26 @@
     {
       "time": "2026-03-30T22:38:04.227Z",
       "msg": "Added T232 (MAINTAIN) after end: Final session close: push, log, memory"
+    },
+    {
+      "time": "2026-03-30T22:41:10.150Z",
+      "msg": "Added T233 (BUILD) after end: Mini-project: Sorting algorithm visualizer (browser)"
+    },
+    {
+      "time": "2026-03-30T22:41:10.270Z",
+      "msg": "Added T234 (BUILD) after end: Ray tracer: add procedural wood texture"
+    },
+    {
+      "time": "2026-03-30T22:41:10.389Z",
+      "msg": "Added T235 (BUILD) after end: Neural net: add data preprocessing utilities (normalize, shuffle, split)"
+    },
+    {
+      "time": "2026-03-30T22:41:10.509Z",
+      "msg": "Added T236 (BUILD) after end: Neural net: add early stopping callback"
+    },
+    {
+      "time": "2026-03-30T22:41:10.629Z",
+      "msg": "Added T237 (MAINTAIN) after end: Push all repos"
     }
   ]
 }

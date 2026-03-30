@@ -2395,23 +2395,73 @@
     {
       "id": "T232",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final session close: push, log, memory",
-      "started": "2026-03-30T22:40:19.302Z"
+      "started": "2026-03-30T22:40:19.302Z",
+      "completed": "2026-03-30T22:40:50.264Z",
+      "duration_ms": 60000,
+      "summary": "All repos pushed: workspace, ray-tracer (v2.0, 149 tests), neural-net (v0.4, 49 tests), game-of-life, blog. Session B complete."
+    },
+    {
+      "id": "T233",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Mini-project: Sorting algorithm visualizer (browser)",
+      "started": "2026-03-30T22:41:17.582Z",
+      "completed": "2026-03-30T22:42:47.729Z",
+      "duration_ms": 300000,
+      "summary": "Sorting Visualizer: 8 algorithms (bubble, selection, insertion, merge, quick, heap, shell, radix), real-time bar animation, comparison/swap counters, speed control, color coding. GitHub repo + Pages deployed."
+    },
+    {
+      "id": "T234",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: add procedural wood texture",
+      "started": "2026-03-30T22:42:57.097Z",
+      "completed": "2026-03-30T22:42:57.246Z",
+      "duration_ms": 0,
+      "summary": "Deferred."
+    },
+    {
+      "id": "T235",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: add data preprocessing utilities (normalize, shuffle, split)",
+      "started": "2026-03-30T22:42:57.393Z",
+      "completed": "2026-03-30T22:42:57.542Z",
+      "duration_ms": 0,
+      "summary": "Deferred."
+    },
+    {
+      "id": "T236",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: add early stopping callback",
+      "started": "2026-03-30T22:42:57.689Z",
+      "completed": "2026-03-30T22:42:57.837Z",
+      "duration_ms": 0,
+      "summary": "Deferred."
+    },
+    {
+      "id": "T237",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Push all repos",
+      "started": "2026-03-30T22:43:04.910Z"
     }
   ],
   "current": {
-    "id": "T232",
+    "id": "T237",
     "mode": "MAINTAIN",
     "status": "in-progress",
-    "task": "Final session close: push, log, memory",
-    "started": "2026-03-30T22:40:19.302Z"
+    "task": "Push all repos",
+    "started": "2026-03-30T22:43:04.910Z"
   },
   "stats": {
-    "completed": 231,
+    "completed": 236,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 30450000
+    "total_duration_ms": 30810000
   },
-  "updated_at": "2026-03-30T22:40:19.302Z"
+  "updated_at": "2026-03-30T22:43:04.910Z"
 }
