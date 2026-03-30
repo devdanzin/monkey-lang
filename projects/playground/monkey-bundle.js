@@ -11878,6 +11878,12 @@ var WasmCompiler = class {
     this._runtimeFuncs.strEq = strEqIdx;
     const strCmpIdx = this.builder.addImport("env", "__str_cmp", [ValType.i32, ValType.i32], [ValType.i32]);
     this._runtimeFuncs.strCmp = strCmpIdx;
+    const strCharAtIdx = this.builder.addImport("env", "__str_char_at", [ValType.i32, ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.strCharAt = strCharAtIdx;
+    const addIdx = this.builder.addImport("env", "__add", [ValType.i32, ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.add = addIdx;
+    const eqIdx = this.builder.addImport("env", "__eq", [ValType.i32, ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.eq = eqIdx;
     const restIdx = this.builder.addImport("env", "__rest", [ValType.i32], [ValType.i32]);
     this._runtimeFuncs.rest = restIdx;
     const typeIdx = this.builder.addImport("env", "__type", [ValType.i32], [ValType.i32]);
@@ -12023,6 +12029,17 @@ var WasmCompiler = class {
   compileStatement(stmt) {
     if (stmt instanceof LetStatement) {
       this.compileLetStatement(stmt);
+    } else if (stmt instanceof EnumStatement) {
+      if (!this._enumValues) this._enumValues = {};
+      for (let i = 0; i < stmt.variants.length; i++) {
+        this._enumValues[`${stmt.name}.${stmt.variants[i]}`] = i;
+        this._enumValues[stmt.variants[i]] = i;
+        const localIdx = this.nextLocalIndex++;
+        this.currentBody.addLocal(ValType.i32);
+        this.currentBody.i32Const(i);
+        this.currentBody.localSet(localIdx);
+        this.currentScope.define(stmt.variants[i], localIdx, "local");
+      }
     } else if (stmt instanceof ReturnStatement) {
       this.compileNode(stmt.returnValue);
       this.currentBody.return_();
@@ -12103,6 +12120,13 @@ var WasmCompiler = class {
     } else if (node instanceof ArrayLiteral) {
       this.compileArrayLiteral(node);
     } else if (node instanceof IndexExpression) {
+      if (node.left instanceof Identifier && node.index instanceof StringLiteral && this._enumValues) {
+        const key = `${node.left.value}.${node.index.value}`;
+        if (key in this._enumValues) {
+          this.currentBody.i32Const(this._enumValues[key]);
+          return;
+        }
+      }
       this.compileIndexExpression(node);
     } else if (node instanceof SliceExpression) {
       this.compileNode(node.left);
@@ -12316,7 +12340,11 @@ var WasmCompiler = class {
     this.compileNode(node.right);
     switch (node.operator) {
       case "+":
-        this.currentBody.emit(Op.i32_add);
+        if (this._mightBeString(node.left) || this._mightBeString(node.right)) {
+          this.currentBody.call(this._runtimeFuncs.add);
+        } else {
+          this.currentBody.emit(Op.i32_add);
+        }
         break;
       case "-":
         this.currentBody.emit(Op.i32_sub);
@@ -12331,10 +12359,19 @@ var WasmCompiler = class {
         this.currentBody.emit(Op.i32_rem_s);
         break;
       case "==":
-        this.currentBody.emit(Op.i32_eq);
+        if (this._mightBeString(node.left) || this._mightBeString(node.right)) {
+          this.currentBody.call(this._runtimeFuncs.eq);
+        } else {
+          this.currentBody.emit(Op.i32_eq);
+        }
         break;
       case "!=":
-        this.currentBody.emit(Op.i32_ne);
+        if (this._mightBeString(node.left) || this._mightBeString(node.right)) {
+          this.currentBody.call(this._runtimeFuncs.eq);
+          this.currentBody.emit(Op.i32_eqz);
+        } else {
+          this.currentBody.emit(Op.i32_ne);
+        }
         break;
       case "<":
         this.currentBody.emit(Op.i32_lt_s);
@@ -12571,7 +12608,7 @@ var WasmCompiler = class {
     this.currentBody.brIf(this.blockDepth - breakDepth);
     this.currentBody.localGet(arrLocal);
     this.currentBody.localGet(iLocal);
-    this.currentBody.call(this._runtimeFuncs.arrayGet);
+    this.currentBody.call(this._runtimeFuncs.indexGet);
     this.currentBody.localSet(varLocal);
     this.currentBody.block();
     this.blockDepth++;
@@ -12995,6 +13032,30 @@ var WasmCompiler = class {
     if (node instanceof InfixExpression && node.operator === "+" && this._isStringExpression(node.left, node.right)) return true;
     return false;
   }
+  _isDefinitelyInteger(node) {
+    if (node instanceof IntegerLiteral) return true;
+    if (node instanceof BooleanLiteral) return true;
+    if (node instanceof InfixExpression) {
+      const op = node.operator;
+      if (["-", "*", "/", "%", "==", "!=", "<", ">", "<=", ">="].includes(op)) return true;
+      if (op === "+" && this._isDefinitelyInteger(node.left) && this._isDefinitelyInteger(node.right)) return true;
+    }
+    if (node instanceof PrefixExpression) return true;
+    return false;
+  }
+  _mightBeString(node) {
+    if (node instanceof StringLiteral) return true;
+    if (node instanceof TemplateLiteral) return true;
+    if (node instanceof CallExpression) {
+      if (node.function instanceof Identifier && node.function.value === "str") return true;
+    }
+    if (node instanceof IndexExpression) return true;
+    if (node instanceof InfixExpression && node.operator === "+" && (this._mightBeString(node.left) || this._mightBeString(node.right))) return true;
+    if (node instanceof CallExpression && !(node.function instanceof Identifier && ["len", "first", "last", "type", "int"].includes(node.function.value))) {
+      return false;
+    }
+    return false;
+  }
   // Constant folding: try to evaluate an expression at compile time
   _tryConstantFold(node) {
     if (!(node instanceof InfixExpression)) return null;
@@ -13129,6 +13190,44 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
         const s1 = readString(ptr1);
         const s2 = readString(ptr2);
         return s1 < s2 ? -1 : s1 > s2 ? 1 : 0;
+      },
+      __str_char_at(ptr, index) {
+        const s = readString(ptr);
+        if (index < 0 || index >= s.length) return 0;
+        return writeString(s[index]);
+      },
+      __add(a, b) {
+        const mem = memoryRef.memory;
+        if (mem && a > 0 && b > 0) {
+          const view = new DataView(mem.buffer);
+          try {
+            const tagA = view.getInt32(a, true);
+            const tagB = view.getInt32(b, true);
+            if (tagA === TAG_STRING || tagB === TAG_STRING) {
+              const sA = tagA === TAG_STRING ? readString(a) : String(a);
+              const sB = tagB === TAG_STRING ? readString(b) : String(b);
+              return writeString(sA + sB);
+            }
+          } catch (e) {
+          }
+        }
+        return a + b;
+      },
+      __eq(a, b) {
+        if (a === b) return 1;
+        const mem = memoryRef.memory;
+        if (mem && a > 0 && b > 0) {
+          const view = new DataView(mem.buffer);
+          try {
+            const tagA = view.getInt32(a, true);
+            const tagB = view.getInt32(b, true);
+            if (tagA === TAG_STRING && tagB === TAG_STRING) {
+              return readString(a) === readString(b) ? 1 : 0;
+            }
+          } catch (e) {
+          }
+        }
+        return a === b ? 1 : 0;
       },
       __rest(arrPtr) {
         const mem = memoryRef.memory;
@@ -13267,6 +13366,11 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
         if (!mem || obj <= 0) return 0;
         const view = new DataView(mem.buffer);
         const tag = view.getInt32(obj, true);
+        if (tag === TAG_STRING) {
+          const str = readString(obj);
+          if (key < 0 || key >= str.length) return 0;
+          return writeString(str[key]);
+        }
         if (tag !== TAG_ARRAY) return 0;
         const len = view.getInt32(obj + 4, true);
         if (key < 0 || key >= len) return 0;

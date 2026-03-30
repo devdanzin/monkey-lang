@@ -939,6 +939,16 @@ describe('WASM Compiler', () => {
     });
   });
 
+  describe('Destructuring', () => {
+    it('array destructuring', async () => {
+      assert.strictEqual(await compileAndRun('let [a, b, c] = [10, 20, 30]; a + b + c'), 60);
+    });
+
+    it('destructuring with skip (_)', async () => {
+      assert.strictEqual(await compileAndRun('let [_, b, _] = [10, 20, 30]; b'), 20);
+    });
+  });
+
   describe('Break and Continue', () => {
     it('break exits loop early', async () => {
       const lines = [];
