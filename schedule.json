@@ -402,16 +402,20 @@
       "id": "T38",
       "mode": "BUILD",
       "task": "Run benchmarks, capture results, format as markdown table",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T36",
-      "started": "2026-03-30T16:05:51.897Z"
+      "started": "2026-03-30T16:05:51.897Z",
+      "completed": "2026-03-30T16:06:22.216Z",
+      "duration_ms": 120000,
+      "summary": "Benchmark results formatted as markdown table. WASM 110x vs VM, 52x vs JIT. Wins 9/12 benchmarks."
     },
     {
       "id": "T39",
       "mode": "BUILD",
       "task": "Add benchmark results to README and blog",
-      "status": "upcoming",
-      "plan_ref": "T36"
+      "status": "in-progress",
+      "plan_ref": "T36",
+      "started": "2026-03-30T16:06:27.885Z"
     }
   ],
   "backlog": [],

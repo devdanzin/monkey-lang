@@ -348,9 +348,24 @@ node --test    # 1115 tests (1112 passing, 3 skipped JIT edge cases)
 ## Benchmarks
 
 ```bash
-node src/benchmark.js                # Quick: VM vs eval
-node src/benchmark-runner.js         # Full: 26 benchmarks, ~9.2x aggregate, JIT vs VM
+node src/benchmark-5way.js           # Five-backend comparison (Eval, VM, JIT, Transpiler, WASM)
+node src/benchmark-comprehensive.js  # JIT detailed: 30 benchmarks, all optimizer passes
+node src/benchmark-runner.js         # Quick: VM vs JIT aggregate
 ```
+
+### Five-Backend Comparison (2026-03-30)
+
+| Benchmark | Eval | VM | JIT | Transpiler | WASM |
+|-----------|-----:|---:|----:|-----------:|-----:|
+| fib(30) | 3477ms | 903ms | 108ms | 21ms | **6.7ms** |
+| sum 10k | 12ms | 6ms | 1.3ms | 0.16ms | **0.07ms** |
+| nested 100×100 | 12ms | 7ms | 1.8ms | 0.15ms | **0.14ms** |
+| GCD ×1000 | 7ms | 27ms | 28ms | 0.12ms | **0.08ms** |
+| closure factory 5k | 10ms | 5ms | 1.5ms | N/A | **0.09ms** |
+
+**WASM: 110x faster than VM, 52x faster than JIT** (average across 10 benchmarks).
+
+See [`benchmarks/five-backend-2026-03-30.md`](benchmarks/five-backend-2026-03-30.md) for full results.
 
 ## REPL
 
