@@ -506,6 +506,15 @@ export class WasmCompiler {
       this.currentBody.else_();
         this.compileNode(node.right);
       this.currentBody.end();
+    } else if (node instanceof ast.PipeExpression) {
+      // a |> b is equivalent to b(a)
+      // Compile as a call: b(a)
+      const callNode = new ast.CallExpression(
+        node.token || {},
+        node.right,
+        [node.left]
+      );
+      this.compileCallExpression(callNode);
     } else if (node instanceof ast.AssignExpression) {
       this.compileAssignExpression(node);
     } else if (node instanceof ast.BlockStatement) {
