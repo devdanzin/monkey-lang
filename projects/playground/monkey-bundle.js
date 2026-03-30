@@ -12040,6 +12040,22 @@ var WasmCompiler = class {
         this.currentBody.localSet(localIdx);
         this.currentScope.define(stmt.variants[i], localIdx, "local");
       }
+    } else if (stmt instanceof DestructuringLet) {
+      this.compileNode(stmt.value);
+      const arrLocal = this.nextLocalIndex++;
+      this.currentBody.addLocal(ValType.i32);
+      this.currentBody.localSet(arrLocal);
+      for (let i = 0; i < stmt.names.length; i++) {
+        const name = stmt.names[i];
+        if (!name || name.value === "_") continue;
+        const localIdx = this.nextLocalIndex++;
+        this.currentBody.addLocal(ValType.i32);
+        this.currentBody.localGet(arrLocal);
+        this.currentBody.i32Const(i);
+        this.currentBody.call(this._runtimeFuncs.indexGet);
+        this.currentBody.localSet(localIdx);
+        this.currentScope.define(name.value, localIdx, "local");
+      }
     } else if (stmt instanceof ReturnStatement) {
       this.compileNode(stmt.returnValue);
       this.currentBody.return_();
@@ -13463,6 +13479,7 @@ async function compileAndRun(input, options = {}) {
   timings.execute = performance.now() - t4;
   timings.total = performance.now() - t0;
   if (options.timings) Object.assign(options.timings, timings);
+  if (options.instance) options.instance.ref = instance;
   return result;
 }
 async function compileToInstance(input, options = {}) {

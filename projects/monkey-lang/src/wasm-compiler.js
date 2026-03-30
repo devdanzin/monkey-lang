@@ -238,6 +238,10 @@ export class WasmCompiler {
     const eqIdx = this.builder.addImport('env', '__eq', [ValType.i32, ValType.i32], [ValType.i32]);
     this._runtimeFuncs.eq = eqIdx;
 
+    // Import __array_concat: concatenate two arrays
+    const arrayConcatIdx = this.builder.addImport('env', '__array_concat', [ValType.i32, ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.arrayConcat = arrayConcatIdx;
+
     // Import __rest from JS host: env.__rest(arr_ptr: i32) → i32 (new array without first)
     const restIdx = this.builder.addImport('env', '__rest', [ValType.i32], [ValType.i32]);
     this._runtimeFuncs.rest = restIdx;
@@ -1602,26 +1606,52 @@ export class WasmCompiler {
 
   // Array literal → heap-allocated array
   compileArrayLiteral(node) {
-    const elements = node.elements.filter(e => !(e instanceof ast.SpreadElement));
-    const len = elements.length;
-
-    // Allocate array: make_array(len)
-    this.currentBody.i32Const(len);
-    this.currentBody.call(this._runtimeFuncs.makeArray);
-
-    // Store each element
-    const arrLocal = this.nextLocalIndex++;
-    this.currentBody.addLocal(ValType.i32);
-    this.currentBody.localSet(arrLocal);
-
-    for (let i = 0; i < len; i++) {
+    const hasSpread = node.elements.some(e => e instanceof ast.SpreadElement);
+    
+    if (!hasSpread) {
+      // Fast path: no spreads, allocate exact size
+      const len = node.elements.length;
+      this.currentBody.i32Const(len);
+      this.currentBody.call(this._runtimeFuncs.makeArray);
+      const arrLocal = this.nextLocalIndex++;
+      this.currentBody.addLocal(ValType.i32);
+      this.currentBody.localSet(arrLocal);
+      for (let i = 0; i < len; i++) {
+        this.currentBody.localGet(arrLocal);
+        this.currentBody.i32Const(i);
+        this.compileNode(node.elements[i]);
+        this.currentBody.call(this._runtimeFuncs.arraySet);
+      }
       this.currentBody.localGet(arrLocal);
-      this.currentBody.i32Const(i);
-      this.compileNode(elements[i]);
-      this.currentBody.call(this._runtimeFuncs.arraySet);
+    } else {
+      // Slow path: build with concat for spreads
+      // Start with empty array
+      this.currentBody.i32Const(0);
+      this.currentBody.call(this._runtimeFuncs.makeArray);
+      
+      let batchStart = -1;
+      const arrLocal = this.nextLocalIndex++;
+      this.currentBody.addLocal(ValType.i32);
+      this.currentBody.localSet(arrLocal);
+      
+      for (let i = 0; i < node.elements.length; i++) {
+        const elem = node.elements[i];
+        if (elem instanceof ast.SpreadElement) {
+          // Concat current array with spread array
+          this.currentBody.localGet(arrLocal);
+          this.compileNode(elem.expression);
+          this.currentBody.call(this._runtimeFuncs.arrayConcat);
+          this.currentBody.localSet(arrLocal);
+        } else {
+          // Push single element
+          this.currentBody.localGet(arrLocal);
+          this.compileNode(elem);
+          this.currentBody.call(this._runtimeFuncs.push);
+          this.currentBody.localSet(arrLocal);
+        }
+      }
+      this.currentBody.localGet(arrLocal);
     }
-
-    this.currentBody.localGet(arrLocal); // leave pointer on stack
   }
 
   // Index expression: arr[idx]
@@ -1956,6 +1986,30 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
           } catch (e) {}
         }
         return a === b ? 1 : 0;
+      },
+      __array_concat(arrA, arrB) {
+        const mem = memoryRef.memory;
+        if (!mem) return 0;
+        const view = new DataView(mem.buffer);
+        
+        const lenA = (arrA > 0 && view.getInt32(arrA, true) === TAG_ARRAY) ? view.getInt32(arrA + 4, true) : 0;
+        const lenB = (arrB > 0 && view.getInt32(arrB, true) === TAG_ARRAY) ? view.getInt32(arrB + 4, true) : 0;
+        const newLen = lenA + lenB;
+        
+        if (!memoryRef.jsHeapPtr) memoryRef.jsHeapPtr = 60000;
+        const newPtr = memoryRef.jsHeapPtr;
+        memoryRef.jsHeapPtr += 8 + newLen * 4;
+        memoryRef.jsHeapPtr = (memoryRef.jsHeapPtr + 3) & ~3;
+        
+        view.setInt32(newPtr, TAG_ARRAY, true);
+        view.setInt32(newPtr + 4, newLen, true);
+        for (let i = 0; i < lenA; i++) {
+          view.setInt32(newPtr + 8 + i * 4, view.getInt32(arrA + 8 + i * 4, true), true);
+        }
+        for (let i = 0; i < lenB; i++) {
+          view.setInt32(newPtr + 8 + (lenA + i) * 4, view.getInt32(arrB + 8 + i * 4, true), true);
+        }
+        return newPtr;
       },
       __rest(arrPtr) {
         const mem = memoryRef.memory;

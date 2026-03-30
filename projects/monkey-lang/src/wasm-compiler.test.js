@@ -947,6 +947,20 @@ describe('WASM Compiler', () => {
     it('destructuring with skip (_)', async () => {
       assert.strictEqual(await compileAndRun('let [_, b, _] = [10, 20, 30]; b'), 20);
     });
+
+    it('spread in array literals', async () => {
+      const instanceRef = {};
+      const result = await compileAndRun('let a = [1, 2]; let b = [3, 4]; [...a, ...b]', { instance: instanceRef });
+      const view = new DataView(instanceRef.ref.exports.memory.buffer);
+      assert.strictEqual(formatWasmValue(result, view), '[1, 2, 3, 4]');
+    });
+
+    it('mixed elements and spread', async () => {
+      const instanceRef = {};
+      const result = await compileAndRun('let a = [2, 3]; [1, ...a, 4]', { instance: instanceRef });
+      const view = new DataView(instanceRef.ref.exports.memory.buffer);
+      assert.strictEqual(formatWasmValue(result, view), '[1, 2, 3, 4]');
+    });
   });
 
   describe('Break and Continue', () => {
