@@ -944,9 +944,19 @@
     {
       "id": "T91",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix REPL await bug in handleCommand for :example",
-      "started": "2026-03-30T18:02:40.437Z"
+      "started": "2026-03-30T18:02:40.437Z",
+      "completed": "2026-03-30T18:04:06.096Z",
+      "duration_ms": 120000,
+      "summary": "Fixed REPL await bug: handleCommand is now async. :example works with WASM engine. No more SyntaxError."
+    },
+    {
+      "id": "T92",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add better WASM compiler error messages with source location hints",
+      "started": "2026-03-30T18:04:12.578Z"
     }
   ],
   "backlog": [],
@@ -1230,6 +1240,10 @@
     {
       "time": "2026-03-30T18:02:40.319Z",
       "msg": "Added T91 (BUILD) after end: Fix REPL await bug in handleCommand for :example"
+    },
+    {
+      "time": "2026-03-30T18:04:12.460Z",
+      "msg": "Added T92 (BUILD) after end: Add better WASM compiler error messages with source location hints"
     }
   ]
 }

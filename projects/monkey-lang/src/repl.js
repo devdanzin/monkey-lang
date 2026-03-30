@@ -419,10 +419,17 @@ class MonkeyREPL {
     try {
       const outputLines = [];
       const timings = {};
-      const result = await wasmCompileAndRun(input, { outputLines, timings });
+      const warnings = [];
+      const result = await wasmCompileAndRun(input, { outputLines, timings, warnings });
 
       for (const line of outputLines) {
         console.log(line);
+      }
+
+      if (warnings.length > 0) {
+        for (const w of warnings) {
+          console.log(`\x1b[33m⚠ ${w}\x1b[0m`);
+        }
       }
 
       if (result !== 0 || outputLines.length === 0) {

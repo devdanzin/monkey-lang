@@ -56,6 +56,7 @@ export class WasmCompiler {
     this.nextLocalIndex = 0;
     this.loopStack = []; // for break/continue: [{breakLabel, continueLabel}]
     this.errors = [];
+    this.warnings = [];
     this.stringConstants = []; // [{offset, length, value}] — data segment entries
     this.nextDataOffset = 16; // start at 16, skip first bytes as reserved
 
@@ -570,7 +571,11 @@ export class WasmCompiler {
       this.currentBody.call(this._runtimeFuncs.indexSet);
       this.currentBody.localGet(tmpLocal); // return the assigned value
     } else {
-      // Unknown node type — push 0
+      // Unknown/unsupported node type
+      const nodeName = node?.constructor?.name || 'unknown';
+      const token = node?.token;
+      const loc = token?.line ? ` at line ${token.line}` : '';
+      this.warnings.push(`Unsupported: ${nodeName}${loc} (compiled as 0)`);
       this.currentBody.i32Const(0);
     }
   }
@@ -1862,6 +1867,10 @@ export async function compileAndRun(input, options = {}) {
 
   if (!builder || compiler.errors.length > 0) {
     throw new Error(`Compilation errors: ${compiler.errors.join(', ')}`);
+  }
+
+  if (options.warnings && compiler.warnings.length > 0) {
+    options.warnings.push(...compiler.warnings);
   }
 
   const t1 = performance.now();
