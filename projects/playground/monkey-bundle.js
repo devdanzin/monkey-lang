@@ -11700,6 +11700,11 @@ var WasmModuleBuilder = class {
   }
 };
 
+// src/wasm-optimize.js
+function peepholeOptimize(body) {
+  return 0;
+}
+
 // src/wasm-compiler.js
 var TAG_STRING = 1;
 var TAG_ARRAY = 2;
@@ -11827,6 +11832,9 @@ var WasmCompiler = class {
       const funcIndices = this.closureFuncs.map((cf) => cf.wasmFuncIndex);
       this.builder.addElement(0, 0, funcIndices);
     }
+    for (const func of this.builder.functions) {
+      peepholeOptimize(func.body);
+    }
     return this.builder;
   }
   _addRuntimeFunctions() {
@@ -11845,6 +11853,9 @@ var WasmCompiler = class {
     const typeIdx = this.builder.addImport("env", "__type", [ValType.i32], [ValType.i32]);
     this._runtimeFuncs.type = typeIdx;
     this.globalScope.define("type", typeIdx, "func");
+    const intIdx = this.builder.addImport("env", "__int", [ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.int = intIdx;
+    this.globalScope.define("int", intIdx, "func");
     const { index: allocIdx, body: allocBody } = this.builder.addFunction(
       [ValType.i32],
       [ValType.i32]
@@ -12913,6 +12924,22 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
           }
         }
         return writeString("INTEGER");
+      },
+      __int(value) {
+        const mem = memoryRef.memory;
+        if (!mem) return value;
+        const view = new DataView(mem.buffer);
+        if (value > 0 && value + 8 <= view.byteLength) {
+          try {
+            const tag = view.getInt32(value, true);
+            if (tag === TAG_STRING) {
+              const str = readString(value);
+              return parseInt(str, 10) || 0;
+            }
+          } catch (e) {
+          }
+        }
+        return value;
       }
     }
   };
@@ -13516,6 +13543,10 @@ function formatWAT(module) {
     const offsetStr = elem.offset?.op ? `(${elem.offset.op} ${elem.offset.operands[0]})` : "(i32.const 0)";
     lines.push(`${indent(1)}(elem ${offsetStr} func ${elem.funcIndices.join(" ")})`);
   }
+  const funcNames = {};
+  for (const exp of module.exports) {
+    if (exp.kind === 0) funcNames[exp.index] = exp.name;
+  }
   for (let i = 0; i < module.codes.length; i++) {
     const funcIdx = importFuncCount + i;
     const typeIdx = module.functions[i];
@@ -13539,7 +13570,7 @@ function formatWAT(module) {
     let depth = 2;
     for (const inst of code.instructions) {
       if (inst.op === "end" || inst.op === "else") depth--;
-      const line = formatInstruction(inst, depth);
+      const line = formatInstruction(inst, depth, funcNames);
       if (line) lines.push(line);
       if (inst.op === "block" || inst.op === "loop" || inst.op === "if" || inst.op === "else") depth++;
     }
@@ -13554,7 +13585,7 @@ function formatWAT(module) {
   lines.push(")");
   return lines.join("\n");
 }
-function formatInstruction(inst, depth) {
+function formatInstruction(inst, depth, funcNames = {}) {
   const ind = "  ".repeat(depth);
   if (inst.op === "end") return `${ind}${inst.op}`;
   const ops = inst.operands;
@@ -13568,6 +13599,11 @@ function formatInstruction(inst, depth) {
   }
   if (inst.op === "block" || inst.op === "loop" || inst.op === "if") {
     return `${ind}${inst.op}${ops[0] !== "(result)" ? " " + ops[0] : ""}`;
+  }
+  if (inst.op === "call") {
+    const funcIdx = ops[0];
+    const name = funcNames[funcIdx];
+    return `${ind}call ${funcIdx}${name ? " ;; " + name : ""}`;
   }
   if (inst.op === "call_indirect") {
     return `${ind}${inst.op} (type ${ops[0]})`;

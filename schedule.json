@@ -830,9 +830,19 @@
     {
       "id": "T80",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add Mandelbrot set example for WASM (ASCII art using integer arithmetic)",
-      "started": "2026-03-30T17:28:11.625Z"
+      "started": "2026-03-30T17:28:11.625Z",
+      "completed": "2026-03-30T17:28:52.666Z",
+      "duration_ms": 120000,
+      "summary": "Mandelbrot set ASCII art example: fixed-point arithmetic, renders 40×21 in WASM in 45ms. Classic shape visible."
+    },
+    {
+      "id": "T81",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Polish: rebuild final playground bundle, update all counts, verify CI status",
+      "started": "2026-03-30T17:29:12.116Z"
     }
   ],
   "backlog": [],
@@ -1080,6 +1090,10 @@
     {
       "time": "2026-03-30T17:28:11.508Z",
       "msg": "Added T80 (BUILD) after end: Add Mandelbrot set example for WASM (ASCII art using integer arithmetic)"
+    },
+    {
+      "time": "2026-03-30T17:29:11.999Z",
+      "msg": "Added T81 (MAINTAIN) after end: Polish: rebuild final playground bundle, update all counts, verify CI status"
     }
   ]
 }
