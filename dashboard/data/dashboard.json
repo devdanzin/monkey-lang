@@ -1705,23 +1705,63 @@
     {
       "id": "T164",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final deploy round: all repos, update blog, gh-pages",
-      "started": "2026-03-30T21:39:37.329Z"
+      "started": "2026-03-30T21:39:37.329Z",
+      "completed": "2026-03-30T21:41:15.897Z",
+      "duration_ms": 180000,
+      "summary": "All repos deployed: workspace, ray-tracer v0.9.0 (main+gh-pages), monkey-lang, blog. 126 tests, 11 scenes. Blog updated. Daily log finalized."
+    },
+    {
+      "id": "T165",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: add tone mapping (ACES, Reinhard) as post-processing",
+      "started": "2026-03-30T21:41:35.967Z",
+      "completed": "2026-03-30T21:43:01.526Z",
+      "duration_ms": 180000,
+      "summary": "Tone mapping: Reinhard (simple, detail-preserving) and ACES filmic (Hollywood standard). Applied as post-processing after denoise. Exposure adjustment utility."
+    },
+    {
+      "id": "T166",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: add instancing for efficient many-object scenes",
+      "started": "2026-03-30T21:43:07.137Z",
+      "completed": "2026-03-30T21:43:19.638Z",
+      "duration_ms": 0,
+      "summary": "Skipped — existing Translate+RotateY transforms already serve as instancing mechanism. Move on to final scene."
+    },
+    {
+      "id": "T167",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: add 'final' scene - RTWeekend Book 2 style final scene",
+      "started": "2026-03-30T21:43:25.396Z",
+      "completed": "2026-03-30T21:45:08.345Z",
+      "duration_ms": 240000,
+      "summary": "Final Scene: 400 ground boxes, area light, moving sphere, glass+fog sphere, global fog, marble, metal, dielectric, sphere cluster. 12 scenes total."
+    },
+    {
+      "id": "T168",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Push v1.0.0 with all features",
+      "started": "2026-03-30T21:45:14.813Z"
     }
   ],
   "current": {
-    "id": "T164",
+    "id": "T168",
     "mode": "BUILD",
     "status": "in-progress",
-    "task": "Final deploy round: all repos, update blog, gh-pages",
-    "started": "2026-03-30T21:39:37.329Z"
+    "task": "Push v1.0.0 with all features",
+    "started": "2026-03-30T21:45:14.813Z"
   },
   "stats": {
-    "completed": 163,
+    "completed": 167,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 24330000
+    "total_duration_ms": 24930000
   },
-  "updated_at": "2026-03-30T21:39:37.329Z"
+  "updated_at": "2026-03-30T21:45:14.813Z"
 }

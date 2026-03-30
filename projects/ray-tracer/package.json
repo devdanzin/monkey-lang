@@ -1,6 +1,6 @@
 {
   "name": "ray-tracer",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "A ray tracer built from scratch in JavaScript — spheres, reflections, refractions, and more",
   "main": "src/index.js",
   "type": "module",
