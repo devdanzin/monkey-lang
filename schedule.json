@@ -796,6 +796,23 @@
       "completed": "2026-03-30T17:22:54.426Z",
       "duration_ms": 60000,
       "summary": "--stats flag: shows project overview (5 backends, 50+ features, 7 stdlib modules, 1292 tests, performance stats)."
+    },
+    {
+      "id": "T77",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Improve playground: WASM fallback to JIT on error, better error messages",
+      "started": "2026-03-30T17:24:47.538Z",
+      "completed": "2026-03-30T17:25:12.274Z",
+      "duration_ms": 60000,
+      "summary": "Playground WASM error messages now explain supported features. Guides users to use JIT/VM for full feature set."
+    },
+    {
+      "id": "T78",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add WASM performance regression test to prevent slowdowns",
+      "started": "2026-03-30T17:25:22.115Z"
     }
   ],
   "backlog": [],
@@ -1027,6 +1044,14 @@
     {
       "time": "2026-03-30T17:22:08.437Z",
       "msg": "Added T76 (BUILD) after end: Add --stats flag showing project statistics (tests, LOC, features)"
+    },
+    {
+      "time": "2026-03-30T17:24:47.420Z",
+      "msg": "Added T77 (BUILD) after end: Improve playground: WASM fallback to JIT on error, better error messages"
+    },
+    {
+      "time": "2026-03-30T17:25:21.997Z",
+      "msg": "Added T78 (BUILD) after end: Add WASM performance regression test to prevent slowdowns"
     }
   ]
 }
