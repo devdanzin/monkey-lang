@@ -36,8 +36,9 @@
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, dashboard, PR check"
+      "status": "in-progress",
+      "task": "Housekeeping: git push, dashboard, PR check",
+      "started": "2026-03-30T15:10:01.417Z"
     },
     {
       "id": "T5",
