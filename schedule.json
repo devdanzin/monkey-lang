@@ -2865,12 +2865,45 @@
     {
       "id": "T278",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push all",
-      "started": "2026-03-30T23:16:31.065Z"
+      "started": "2026-03-30T23:16:31.065Z",
+      "completed": "2026-03-30T23:16:58.039Z",
+      "duration_ms": 60000,
+      "summary": "All repos pushed. 19 projects total. 1820+ tests written today."
+    },
+    {
+      "id": "T279",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: State machine library from scratch",
+      "started": "2026-03-30T23:17:25.403Z",
+      "completed": "2026-03-30T23:19:21.393Z",
+      "duration_ms": 600000,
+      "summary": "FSM: states, transitions, guards, actions, entry/exit hooks, conditional transitions (first matching guard), history, is/can/possibleEvents/isFinal, serialization (toJSON/fromJSON), event emission on transition, reset. Traffic light example. 16 tests."
+    },
+    {
+      "id": "T280",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: LRU Cache from scratch",
+      "started": "2026-03-30T23:19:27.111Z",
+      "completed": "2026-03-30T23:20:50.295Z",
+      "duration_ms": 400000,
+      "summary": "LRU Cache: O(1) get/set/delete using doubly-linked list + Map. Eviction callbacks, peek (no refresh), resize, iteration (keys/values/entries/forEach), chaining. 19 tests including 100k operation perf test."
+    },
+    {
+      "id": "T281",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final push and session close",
+      "started": "2026-03-30T23:21:06.362Z",
+      "completed": "2026-03-30T23:21:06.510Z",
+      "duration_ms": 0,
+      "summary": "Not closing yet — 3 hours remain."
     }
   ],
-  "updated_at": "2026-03-30T23:16:31.065Z",
+  "updated_at": "2026-03-30T23:21:06.510Z",
   "adjustments": [
     {
       "time": "2026-03-30T22:55:00.316Z",
@@ -2947,6 +2980,18 @@
     {
       "time": "2026-03-30T23:12:13.067Z",
       "msg": "Added T278 (MAINTAIN) after end: Push all"
+    },
+    {
+      "time": "2026-03-30T23:17:18.195Z",
+      "msg": "Added T279 (BUILD) after end: New project: State machine library from scratch"
+    },
+    {
+      "time": "2026-03-30T23:17:18.314Z",
+      "msg": "Added T280 (BUILD) after end: New project: LRU Cache from scratch"
+    },
+    {
+      "time": "2026-03-30T23:17:18.435Z",
+      "msg": "Added T281 (MAINTAIN) after end: Final push and session close"
     }
   ]
 }
