@@ -36,6 +36,14 @@ export class Sphere {
     rec.setFaceNormal(ray, outwardNormal);
     rec.material = this.material;
 
+    // UV mapping: spherical coordinates
+    // u: [0, 1] longitude, v: [0, 1] latitude
+    const unitP = outwardNormal; // Already a unit vector (point - center / radius)
+    const theta = Math.acos(-unitP.y);
+    const phi = Math.atan2(-unitP.z, unitP.x) + Math.PI;
+    rec.u = phi / (2 * Math.PI);
+    rec.v = theta / Math.PI;
+
     return rec;
   }
 
