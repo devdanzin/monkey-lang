@@ -12367,10 +12367,10 @@ var WasmCompiler = class {
     this.compileNode(node.right);
     switch (node.operator) {
       case "+":
-        if (this._mightBeString(node.left) || this._mightBeString(node.right)) {
-          this.currentBody.call(this._runtimeFuncs.add);
-        } else {
+        if (this._isDefinitelyInteger(node.left) && this._isDefinitelyInteger(node.right)) {
           this.currentBody.emit(Op.i32_add);
+        } else {
+          this.currentBody.call(this._runtimeFuncs.add);
         }
         break;
       case "-":
@@ -12386,18 +12386,18 @@ var WasmCompiler = class {
         this.currentBody.emit(Op.i32_rem_s);
         break;
       case "==":
-        if (this._mightBeString(node.left) || this._mightBeString(node.right)) {
-          this.currentBody.call(this._runtimeFuncs.eq);
-        } else {
+        if (this._isDefinitelyInteger(node.left) && this._isDefinitelyInteger(node.right)) {
           this.currentBody.emit(Op.i32_eq);
+        } else {
+          this.currentBody.call(this._runtimeFuncs.eq);
         }
         break;
       case "!=":
-        if (this._mightBeString(node.left) || this._mightBeString(node.right)) {
+        if (this._isDefinitelyInteger(node.left) && this._isDefinitelyInteger(node.right)) {
+          this.currentBody.emit(Op.i32_ne);
+        } else {
           this.currentBody.call(this._runtimeFuncs.eq);
           this.currentBody.emit(Op.i32_eqz);
-        } else {
-          this.currentBody.emit(Op.i32_ne);
         }
         break;
       case "<":
