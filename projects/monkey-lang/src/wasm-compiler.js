@@ -603,6 +603,13 @@ export class WasmCompiler {
   }
 
   compileInfixExpression(node) {
+    // Constant folding: evaluate at compile time if both operands are constants
+    const folded = this._tryConstantFold(node);
+    if (folded !== null) {
+      this.currentBody.i32Const(folded);
+      return;
+    }
+
     // Special case: short-circuit && and ||
     if (node.operator === '&&') {
       this.compileNode(node.left);
@@ -1179,6 +1186,50 @@ export class WasmCompiler {
         node.operator === '+' &&
         this._isStringExpression(node.left, node.right)) return true;
     return false;
+  }
+
+  // Constant folding: try to evaluate an expression at compile time
+  _tryConstantFold(node) {
+    if (!(node instanceof ast.InfixExpression)) return null;
+
+    const left = this._getConstValue(node.left);
+    const right = this._getConstValue(node.right);
+    if (left === null || right === null) return null;
+
+    switch (node.operator) {
+      case '+':  return (left + right) | 0;
+      case '-':  return (left - right) | 0;
+      case '*':  return Math.imul(left, right);
+      case '/':  return right !== 0 ? (left / right) | 0 : null;
+      case '%':  return right !== 0 ? (left % right) | 0 : null;
+      case '==': return left === right ? 1 : 0;
+      case '!=': return left !== right ? 1 : 0;
+      case '<':  return left < right ? 1 : 0;
+      case '>':  return left > right ? 1 : 0;
+      case '<=': return left <= right ? 1 : 0;
+      case '>=': return left >= right ? 1 : 0;
+      case '&':  return left & right;
+      case '|':  return left | right;
+      case '^':  return left ^ right;
+      case '<<': return left << right;
+      case '>>': return left >> right;
+      default: return null;
+    }
+  }
+
+  _getConstValue(node) {
+    if (node instanceof ast.IntegerLiteral) return node.value;
+    if (node instanceof ast.BooleanLiteral) return node.value ? 1 : 0;
+    if (node instanceof ast.InfixExpression) return this._tryConstantFold(node);
+    if (node instanceof ast.PrefixExpression && node.operator === '-') {
+      const val = this._getConstValue(node.right);
+      return val !== null ? -val : null;
+    }
+    if (node instanceof ast.PrefixExpression && node.operator === '!') {
+      const val = this._getConstValue(node.right);
+      return val !== null ? (val === 0 ? 1 : 0) : null;
+    }
+    return null;
   }
 }
 

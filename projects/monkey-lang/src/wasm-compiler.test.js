@@ -1,7 +1,8 @@
 // Tests for Monkey → WASM Compiler
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { compileAndRun, compileToInstance, formatWasmValue } from './wasm-compiler.js';
+import { compileAndRun, compileToInstance, formatWasmValue, WasmCompiler } from './wasm-compiler.js';
+import { disassemble } from './wasm-dis.js';
 
 describe('WASM Compiler', () => {
 
@@ -654,6 +655,47 @@ describe('WASM Compiler', () => {
         let inc = fn(x) { x + 1 };
         apply(inc, 41)
       `), 42);
+    });
+  });
+
+  describe('Constant folding', () => {
+    it('folds simple addition', async () => {
+      const compiler = new WasmCompiler();
+      const builder = compiler.compile('2 + 3');
+      const binary = builder.build();
+      const wat = disassemble(binary);
+      // Main function should only have i32.const 5, no i32.add
+      const mainFunc = wat.split(';; main')[1] || '';
+      assert.ok(mainFunc.includes('i32.const 5'));
+      assert.ok(!mainFunc.includes('i32.add'));
+      assert.strictEqual(await compileAndRun('2 + 3'), 5);
+    });
+
+    it('folds complex arithmetic', async () => {
+      assert.strictEqual(await compileAndRun('(10 + 20) * (3 - 1)'), 60);
+    });
+
+    it('folds comparisons', async () => {
+      assert.strictEqual(await compileAndRun('5 > 3'), 1);
+      assert.strictEqual(await compileAndRun('2 == 2'), 1);
+      assert.strictEqual(await compileAndRun('1 != 1'), 0);
+    });
+
+    it('folds nested expressions', async () => {
+      assert.strictEqual(await compileAndRun('1 + 2 + 3 + 4 + 5'), 15);
+    });
+
+    it('folds with negation', async () => {
+      assert.strictEqual(await compileAndRun('-5 + 10'), 5);
+    });
+
+    it('folds modulo', async () => {
+      assert.strictEqual(await compileAndRun('100 % 7'), 2);
+    });
+
+    it('does not fold when variables involved', async () => {
+      // This should still work correctly even though x is not constant
+      assert.strictEqual(await compileAndRun('let x = 5; x + 3'), 8);
     });
   });
 
