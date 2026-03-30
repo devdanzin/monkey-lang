@@ -7,6 +7,7 @@ export { Sphere } from './sphere.js';
 export { Plane, XYRect, XZRect, YZRect, Box } from './plane.js';
 export { Triangle, Mesh } from './triangle.js';
 export { Translate, RotateY } from './transform.js';
+export { Isotropic, ConstantMedium } from './volume.js';
 export { AABB } from './aabb.js';
 export { BVHNode } from './bvh.js';
 export { Lambertian, Metal, Dielectric, DiffuseLight } from './material.js';
