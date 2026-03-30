@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sorting Visualizer — Henry</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    background: #0d1117; color: #c9d1d9; display: flex; flex-direction: column;
+    align-items: center; min-height: 100vh; padding: 1rem;
+  }
+  h1 { font-size: 1.6rem; color: #f0f6fc; margin-bottom: 0.2rem; }
+  h1 span { color: #58a6ff; }
+  .sub { color: #8b949e; font-size: 0.85rem; margin-bottom: 1rem; }
+  canvas { border-radius: 4px; }
+  .controls {
+    display: flex; gap: 0.8rem; margin: 1rem 0; flex-wrap: wrap; justify-content: center;
+  }
+  select, button {
+    background: #21262d; color: #c9d1d9; border: 1px solid #30363d;
+    padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem;
+  }
+  select:hover, button:hover { border-color: #58a6ff; }
+  button.running { background: #da3633; border-color: #da3633; color: #fff; }
+  .stats { color: #8b949e; font-size: 0.8rem; margin-top: 0.5rem; }
+  .stats span { color: #c9d1d9; }
+  .info { max-width: 600px; text-align: center; color: #8b949e; font-size: 0.75rem; margin-top: 1rem; line-height: 1.5; }
+  .legend { display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: #8b949e; }
+  .legend .dot { width: 10px; height: 10px; border-radius: 2px; display: inline-block; margin-right: 4px; vertical-align: middle; }
+</style>
+</head>
+<body>
+<h1>📊 <span>Sorting Visualizer</span></h1>
+<p class="sub">Watch algorithms sort in real-time</p>
+
+<canvas id="canvas"></canvas>
+
+<div class="controls">
+  <select id="algo">
+    <option value="bubble">Bubble Sort</option>
+    <option value="selection">Selection Sort</option>
+    <option value="insertion">Insertion Sort</option>
+    <option value="merge" selected>Merge Sort</option>
+    <option value="quick">Quick Sort</option>
+    <option value="heap">Heap Sort</option>
+    <option value="shell">Shell Sort</option>
+    <option value="radix">Radix Sort (LSD)</option>
+  </select>
+  <select id="size">
+    <option value="20">20 bars</option>
+    <option value="50" selected>50 bars</option>
+    <option value="100">100 bars</option>
+    <option value="200">200 bars</option>
+  </select>
+  <select id="speed">
+    <option value="50">Slow</option>
+    <option value="10" selected>Normal</option>
+    <option value="2">Fast</option>
+    <option value="0">Instant</option>
+  </select>
+  <button id="startBtn" onclick="start()">▶ Sort</button>
+  <button onclick="shuffle()">🔀 Shuffle</button>
+</div>
+
+<div class="stats">
+  Comparisons: <span id="comps">0</span> |
+  Swaps: <span id="swaps">0</span> |
+  Time: <span id="time">0ms</span>
+</div>
+<div class="legend">
+  <div><span class="dot" style="background:#58a6ff"></span>Normal</div>
+  <div><span class="dot" style="background:#f0883e"></span>Comparing</div>
+  <div><span class="dot" style="background:#da3633"></span>Swapping</div>
+  <div><span class="dot" style="background:#3fb950"></span>Sorted</div>
+</div>
+
+<div class="info">
+  <a href="https://github.com/henry-the-frog" style="color:#58a6ff;text-decoration:none">Built by Henry</a>
+</div>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+let arr = [], n = 50, running = false, delay = 10;
+let comparing = new Set(), swapping = new Set(), sorted = new Set();
+let comparisons = 0, swapCount = 0;
+
+function resize() {
+  const w = Math.min(window.innerWidth - 32, 800);
+  canvas.width = w;
+  canvas.height = 300;
+}
+
+function draw() {
+  ctx.fillStyle = '#0d1117';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const barW = Math.max(1, canvas.width / n - 1);
+  const maxH = canvas.height - 10;
+
+  for (let i = 0; i < n; i++) {
+    const h = (arr[i] / n) * maxH;
+    const x = i * (canvas.width / n);
+    if (sorted.has(i)) ctx.fillStyle = '#3fb950';
+    else if (swapping.has(i)) ctx.fillStyle = '#da3633';
+    else if (comparing.has(i)) ctx.fillStyle = '#f0883e';
+    else ctx.fillStyle = '#58a6ff';
+    ctx.fillRect(x, canvas.height - h, barW, h);
+  }
+
+  document.getElementById('comps').textContent = comparisons;
+  document.getElementById('swaps').textContent = swapCount;
+}
+
+function shuffle() {
+  if (running) return;
+  n = parseInt(document.getElementById('size').value);
+  arr = Array.from({ length: n }, (_, i) => i + 1);
+  for (let i = n - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; }
+  sorted.clear(); comparing.clear(); swapping.clear();
+  comparisons = 0; swapCount = 0;
+  draw();
+}
+
+function sleep(ms) { return ms > 0 ? new Promise(r => setTimeout(r, ms)) : Promise.resolve(); }
+
+async function highlight(indices, type, ms) {
+  if (type === 'compare') { comparing = new Set(indices); comparisons++; }
+  else if (type === 'swap') { swapping = new Set(indices); swapCount++; }
+  draw();
+  await sleep(ms);
+  comparing.clear(); swapping.clear();
+}
+
+async function swap(i, j) {
+  await highlight([i, j], 'swap', delay);
+  [arr[i], arr[j]] = [arr[j], arr[i]];
+}
+
+// ===== Algorithms =====
+async function bubbleSort() {
+  for (let i = 0; i < n - 1; i++) {
+    for (let j = 0; j < n - 1 - i; j++) {
+      await highlight([j, j+1], 'compare', delay);
+      if (arr[j] > arr[j+1]) await swap(j, j+1);
+    }
+    sorted.add(n - 1 - i);
+  }
+  sorted.add(0);
+}
+
+async function selectionSort() {
+  for (let i = 0; i < n; i++) {
+    let minIdx = i;
+    for (let j = i + 1; j < n; j++) {
+      await highlight([minIdx, j], 'compare', delay);
+      if (arr[j] < arr[minIdx]) minIdx = j;
+    }
+    if (minIdx !== i) await swap(i, minIdx);
+    sorted.add(i);
+  }
+}
+
+async function insertionSort() {
+  for (let i = 1; i < n; i++) {
+    let j = i;
+    while (j > 0) {
+      await highlight([j-1, j], 'compare', delay);
+      if (arr[j-1] <= arr[j]) break;
+      await swap(j-1, j);
+      j--;
+    }
+  }
+  for (let i = 0; i < n; i++) sorted.add(i);
+}
+
+async function mergeSort(lo = 0, hi = n - 1) {
+  if (lo >= hi) return;
+  const mid = Math.floor((lo + hi) / 2);
+  await mergeSort(lo, mid);
+  await mergeSort(mid + 1, hi);
+  // Merge
+  const temp = arr.slice(lo, hi + 1);
+  let i = 0, j = mid - lo + 1, k = lo;
+  while (i <= mid - lo && j <= hi - lo) {
+    await highlight([lo + i, lo + j], 'compare', delay);
+    if (temp[i] <= temp[j]) { arr[k] = temp[i]; i++; }
+    else { arr[k] = temp[j]; j++; }
+    swapCount++; k++;
+  }
+  while (i <= mid - lo) { arr[k] = temp[i]; i++; k++; }
+  while (j <= hi - lo) { arr[k] = temp[j]; j++; k++; }
+  draw();
+  await sleep(delay);
+}
+
+async function quickSort(lo = 0, hi = n - 1) {
+  if (lo >= hi) { if (lo >= 0 && lo < n) sorted.add(lo); return; }
+  const pivot = arr[hi];
+  let i = lo;
+  for (let j = lo; j < hi; j++) {
+    await highlight([j, hi], 'compare', delay);
+    if (arr[j] < pivot) { await swap(i, j); i++; }
+  }
+  await swap(i, hi);
+  sorted.add(i);
+  await quickSort(lo, i - 1);
+  await quickSort(i + 1, hi);
+}
+
+async function heapSort() {
+  async function heapify(n, i) {
+    let largest = i;
+    const l = 2 * i + 1, r = 2 * i + 2;
+    if (l < n) { await highlight([l, largest], 'compare', delay); if (arr[l] > arr[largest]) largest = l; }
+    if (r < n) { await highlight([r, largest], 'compare', delay); if (arr[r] > arr[largest]) largest = r; }
+    if (largest !== i) { await swap(i, largest); await heapify(n, largest); }
+  }
+  for (let i = Math.floor(n/2) - 1; i >= 0; i--) await heapify(n, i);
+  for (let i = n - 1; i > 0; i--) { await swap(0, i); sorted.add(i); await heapify(i, 0); }
+  sorted.add(0);
+}
+
+async function shellSort() {
+  for (let gap = Math.floor(n/2); gap > 0; gap = Math.floor(gap/2)) {
+    for (let i = gap; i < n; i++) {
+      let j = i;
+      while (j >= gap) {
+        await highlight([j-gap, j], 'compare', delay);
+        if (arr[j-gap] <= arr[j]) break;
+        await swap(j-gap, j);
+        j -= gap;
+      }
+    }
+  }
+  for (let i = 0; i < n; i++) sorted.add(i);
+}
+
+async function radixSort() {
+  const max = Math.max(...arr);
+  for (let exp = 1; Math.floor(max / exp) > 0; exp *= 10) {
+    const output = new Array(n);
+    const count = new Array(10).fill(0);
+    for (let i = 0; i < n; i++) count[Math.floor(arr[i] / exp) % 10]++;
+    for (let i = 1; i < 10; i++) count[i] += count[i-1];
+    for (let i = n - 1; i >= 0; i--) {
+      const digit = Math.floor(arr[i] / exp) % 10;
+      output[count[digit] - 1] = arr[i];
+      count[digit]--;
+      swapCount++;
+    }
+    for (let i = 0; i < n; i++) { arr[i] = output[i]; await highlight([i], 'swap', Math.max(1, delay/3)); }
+  }
+  for (let i = 0; i < n; i++) sorted.add(i);
+}
+
+const ALGOS = { bubble: bubbleSort, selection: selectionSort, insertion: insertionSort, merge: mergeSort, quick: quickSort, heap: heapSort, shell: shellSort, radix: radixSort };
+
+async function start() {
+  if (running) return;
+  running = true;
+  const btn = document.getElementById('startBtn');
+  btn.textContent = '⏳ Sorting...';
+  btn.classList.add('running');
+  delay = parseInt(document.getElementById('speed').value);
+  sorted.clear(); comparisons = 0; swapCount = 0;
+
+  const algo = document.getElementById('algo').value;
+  const t0 = performance.now();
+  await ALGOS[algo]();
+  const t1 = performance.now();
+
+  document.getElementById('time').textContent = Math.round(t1 - t0) + 'ms';
+  for (let i = 0; i < n; i++) sorted.add(i);
+  draw();
+  btn.textContent = '▶ Sort';
+  btn.classList.remove('running');
+  running = false;
+}
+
+resize();
+shuffle();
+window.addEventListener('resize', () => { resize(); draw(); });
+</script>
+</body>
+</html>
