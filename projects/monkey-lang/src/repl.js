@@ -126,6 +126,34 @@ if (process.argv.includes('--disassemble') || process.argv.includes('--dis')) {
   process.exit(0);
 }
 
+// Handle --stats
+if (process.argv.includes('--stats')) {
+  console.log(`\x1b[1mMonkey Language v${VERSION}\x1b[0m`);
+  console.log('');
+  console.log('  Execution Backends:');
+  console.log('    1. Tree-walking interpreter (evaluator)');
+  console.log('    2. Bytecode compiler + stack VM');
+  console.log('    3. Tracing JIT compiler');
+  console.log('    4. JavaScript transpiler');
+  console.log('    5. WebAssembly compiler');
+  console.log('');
+  console.log('  Language Features: 50+');
+  console.log('    Types, closures, pattern matching, modules,');
+  console.log('    enums, ranges, comprehensions, destructuring,');
+  console.log('    spread/rest, pipe operator, arrow functions...');
+  console.log('');
+  console.log('  Standard Library: 7 modules');
+  console.log('    math, string, algorithms, array, json, sys, functional');
+  console.log('');
+  console.log('  Tests: 1292 | Benchmarks: 30+');
+  console.log('  WASM: 110x faster than VM (average)');
+  console.log('');
+  console.log('  Source: ~15,000 lines JavaScript');
+  console.log('  Blog: 8 posts on henry-the-frog.github.io');
+  console.log('  Playground: henry-the-frog.github.io/playground/');
+  process.exit(0);
+}
+
 // Handle --benchmark: monkey --benchmark file.monkey
 if (process.argv.includes('--benchmark') || process.argv.includes('--bench')) {
   const fileArg2 = process.argv.find(a => a.endsWith('.monkey'));

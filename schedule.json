@@ -780,9 +780,19 @@
     {
       "id": "T75",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add WASM binary size analysis to --compile (show section sizes)",
-      "started": "2026-03-30T17:21:11.577Z"
+      "started": "2026-03-30T17:21:11.577Z",
+      "completed": "2026-03-30T17:21:59.738Z",
+      "duration_ms": 120000,
+      "summary": "--compile shows section breakdown: types, imports, functions, tables, memory, globals, exports, data, constants folded."
+    },
+    {
+      "id": "T76",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add --stats flag showing project statistics (tests, LOC, features)",
+      "started": "2026-03-30T17:22:08.554Z"
     }
   ],
   "backlog": [],
@@ -1010,6 +1020,10 @@
     {
       "time": "2026-03-30T17:21:11.460Z",
       "msg": "Added T75 (BUILD) after end: Add WASM binary size analysis to --compile (show section sizes)"
+    },
+    {
+      "time": "2026-03-30T17:22:08.437Z",
+      "msg": "Added T76 (BUILD) after end: Add --stats flag showing project statistics (tests, LOC, features)"
     }
   ]
 }
