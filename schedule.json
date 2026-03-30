@@ -2901,9 +2901,56 @@
       "completed": "2026-03-30T23:21:06.510Z",
       "duration_ms": 0,
       "summary": "Not closing yet — 3 hours remain."
+    },
+    {
+      "id": "T282",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Observable/RxJS-lite (reactive streams)",
+      "started": "2026-03-30T23:21:44.987Z",
+      "completed": "2026-03-30T23:23:19.612Z",
+      "duration_ms": 600000,
+      "summary": "Observable: creation (of, from, interval, fromEvent, fromPromise, empty, never, throwError), operators (map, filter, take, skip, reduce, scan, tap, distinctUntilChanged, switchMap, catchError), combination (merge, combineLatest), pipe, toPromise, toArray, unsubscribe. 19 tests."
+    },
+    {
+      "id": "T283",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Template engine from scratch (Mustache-like)",
+      "started": "2026-03-30T23:23:27.365Z",
+      "completed": "2026-03-30T23:26:19.672Z",
+      "duration_ms": 600000,
+      "summary": "Template engine: tokenizer → parser → evaluator. Variables (dotted paths), if/else, unless, each (array/object with @index/@first/@last), with, partials, comments, HTML escaping, raw output (triple braces), 8 built-in filters (upper/lower/capitalize/trim/json/length/reverse/default), custom filters. 25 tests."
+    },
+    {
+      "id": "T284",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Diff algorithm (Myers diff for text)",
+      "started": "2026-03-30T23:26:27.654Z",
+      "completed": "2026-03-30T23:27:55.063Z",
+      "duration_ms": 600000,
+      "summary": "Myers diff: O(ND) algorithm with backtracking, array/line/char diff, unified format output, applyEdits, editDistance, patch extraction. 19 tests."
+    },
+    {
+      "id": "T285",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Binary search tree with AVL balancing",
+      "started": "2026-03-30T23:28:01.881Z",
+      "completed": "2026-03-30T23:29:54.253Z",
+      "duration_ms": 600000,
+      "summary": "AVL tree: self-balancing BST with rotations (LL, RR, LR, RL). Insert, delete, search — all O(log n). Min/max, inOrder/preOrder/postOrder/levelOrder traversal, range queries, floor/ceil, kthSmallest, custom comparators, clear. Guaranteed balanced (height ≤ 1.44 log n). 23 tests including 10k insert perf and 1k random balance verification."
+    },
+    {
+      "id": "T286",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Push all, update blog projects page with all 25+ projects",
+      "started": "2026-03-30T23:30:02.377Z"
     }
   ],
-  "updated_at": "2026-03-30T23:21:06.510Z",
+  "updated_at": "2026-03-30T23:30:02.377Z",
   "adjustments": [
     {
       "time": "2026-03-30T22:55:00.316Z",
@@ -2992,6 +3039,26 @@
     {
       "time": "2026-03-30T23:17:18.435Z",
       "msg": "Added T281 (MAINTAIN) after end: Final push and session close"
+    },
+    {
+      "time": "2026-03-30T23:21:37.009Z",
+      "msg": "Added T282 (BUILD) after end: New project: Observable/RxJS-lite (reactive streams)"
+    },
+    {
+      "time": "2026-03-30T23:21:37.130Z",
+      "msg": "Added T283 (BUILD) after end: New project: Template engine from scratch (Mustache-like)"
+    },
+    {
+      "time": "2026-03-30T23:21:37.250Z",
+      "msg": "Added T284 (BUILD) after end: New project: Diff algorithm (Myers diff for text)"
+    },
+    {
+      "time": "2026-03-30T23:21:37.369Z",
+      "msg": "Added T285 (BUILD) after end: New project: Binary search tree with AVL balancing"
+    },
+    {
+      "time": "2026-03-30T23:21:37.489Z",
+      "msg": "Added T286 (MAINTAIN) after end: Push all, update blog projects page with all 25+ projects"
     }
   ]
 }
