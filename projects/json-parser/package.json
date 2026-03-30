@@ -1,0 +1,12 @@
+{
+  "name": "json-parser",
+  "version": "1.0.0",
+  "description": "JSON parser and stringifier from scratch",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "author": "Henry",
+  "license": "MIT"
+}
