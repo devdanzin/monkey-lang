@@ -326,23 +326,31 @@
       "id": "T31",
       "mode": "BUILD",
       "task": "Implement closure representation: heap-allocated (table_index, env_ptr) pairs in WASM compiler",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T29",
-      "started": "2026-03-30T15:48:57.656Z"
+      "started": "2026-03-30T15:48:57.656Z",
+      "completed": "2026-03-30T15:51:33.242Z",
+      "duration_ms": 360000,
+      "summary": "Closure representation implemented: TAG_CLOSURE heap objects, environment structs, call_indirect dispatch. Free variable analysis. All 90 existing tests pass."
     },
     {
       "id": "T32",
       "mode": "BUILD",
       "task": "Compile anonymous functions and closures to table entries with environment capture",
-      "status": "upcoming",
-      "plan_ref": "T29"
+      "status": "done",
+      "plan_ref": "T29",
+      "started": "2026-03-30T15:51:50.685Z",
+      "completed": "2026-03-30T15:51:50.803Z",
+      "duration_ms": 0,
+      "summary": "Already implemented in T31 — anonymous functions compiled as WASM funcs with env_ptr, registered in function table."
     },
     {
       "id": "T33",
       "mode": "BUILD",
       "task": "Test WASM closures: makeAdder, counter, map/filter with closures",
-      "status": "upcoming",
-      "plan_ref": "T29"
+      "status": "in-progress",
+      "plan_ref": "T29",
+      "started": "2026-03-30T15:52:03.717Z"
     },
     {
       "id": "T34",

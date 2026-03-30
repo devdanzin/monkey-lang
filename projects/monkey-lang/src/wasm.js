@@ -385,24 +385,7 @@ export class WasmModuleBuilder {
       sections.push(this._makeSection(Section.Function, bytes));
     }
 
-    // Memory section
-    if (this.memories.length > 0) {
-      const bytes = [];
-      bytes.push(...encodeULEB128(this.memories.length));
-      for (const { min, max } of this.memories) {
-        if (max !== undefined) {
-          bytes.push(0x01); // has max
-          bytes.push(...encodeULEB128(min));
-          bytes.push(...encodeULEB128(max));
-        } else {
-          bytes.push(0x00); // no max
-          bytes.push(...encodeULEB128(min));
-        }
-      }
-      sections.push(this._makeSection(Section.Memory, bytes));
-    }
-
-    // Table section
+    // Table section (must come before Memory - section ID 4)
     if (this.tables.length > 0) {
       const bytes = [];
       bytes.push(...encodeULEB128(this.tables.length));
@@ -418,6 +401,23 @@ export class WasmModuleBuilder {
         }
       }
       sections.push(this._makeSection(Section.Table, bytes));
+    }
+
+    // Memory section (section ID 5)
+    if (this.memories.length > 0) {
+      const bytes = [];
+      bytes.push(...encodeULEB128(this.memories.length));
+      for (const { min, max } of this.memories) {
+        if (max !== undefined) {
+          bytes.push(0x01); // has max
+          bytes.push(...encodeULEB128(min));
+          bytes.push(...encodeULEB128(max));
+        } else {
+          bytes.push(0x00); // no max
+          bytes.push(...encodeULEB128(min));
+        }
+      }
+      sections.push(this._makeSection(Section.Memory, bytes));
     }
 
     // Global section

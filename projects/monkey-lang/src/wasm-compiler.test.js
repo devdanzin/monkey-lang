@@ -580,6 +580,83 @@ describe('WASM Compiler', () => {
     });
   });
 
+  describe('Closures', () => {
+    it('simple closure capturing outer variable', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let x = 10;
+        let f = fn(y) { x + y };
+        f(32)
+      `), 42);
+    });
+
+    it('makeAdder (closure factory)', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let makeAdder = fn(x) { fn(y) { x + y } };
+        let add5 = makeAdder(5);
+        add5(3)
+      `), 8);
+    });
+
+    it('multiple closures from same factory', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let makeAdder = fn(x) { fn(y) { x + y } };
+        let add10 = makeAdder(10);
+        let add20 = makeAdder(20);
+        add10(5) + add20(5)
+      `), 40);
+    });
+
+    it('closure capturing multiple variables', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let a = 10;
+        let b = 20;
+        let f = fn(c) { a + b + c };
+        f(12)
+      `), 42);
+    });
+
+    it('counter closure', async () => {
+      // Note: can't modify captured variables (value capture, not ref capture)
+      // So this tests the capture at creation time
+      assert.strictEqual(await compileAndRun(`
+        let x = 5;
+        let getX = fn() { x };
+        getX()
+      `), 5);
+    });
+
+    it('closure with function call inside', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let double = fn(x) { x * 2 };
+        let apply = fn(f, x) { f(x) };
+        apply(double, 21)
+      `), 42);
+    });
+
+    it('immediately invoked function', async () => {
+      assert.strictEqual(await compileAndRun(`
+        (fn(x) { x * 2 })(21)
+      `), 42);
+    });
+
+    it('closure in arithmetic', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let makeMultiplier = fn(factor) { fn(x) { factor * x } };
+        let double = makeMultiplier(2);
+        let triple = makeMultiplier(3);
+        double(5) + triple(5)
+      `), 25);
+    });
+
+    it('higher-order: apply function', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let apply = fn(f, x) { f(x) };
+        let inc = fn(x) { x + 1 };
+        apply(inc, 41)
+      `), 42);
+    });
+  });
+
   describe('Complex programs', () => {
     it('GCD', async () => {
       assert.strictEqual(await compileAndRun(`

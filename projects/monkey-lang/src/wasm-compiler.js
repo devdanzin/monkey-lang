@@ -90,11 +90,24 @@ export class WasmCompiler {
     // Add runtime helper functions first
     this._addRuntimeFunctions();
 
-    // First pass: collect top-level function definitions
+    // First pass: collect top-level function names to know what's global
+    const topLevelFuncNames = new Set();
     for (const stmt of program.statements) {
       if (stmt instanceof ast.LetStatement &&
           stmt.value instanceof ast.FunctionLiteral) {
-        this._declareFunction(stmt.name.value, stmt.value);
+        topLevelFuncNames.add(stmt.name.value);
+      }
+    }
+
+    // Second pass: register non-capturing functions
+    for (const stmt of program.statements) {
+      if (stmt instanceof ast.LetStatement &&
+          stmt.value instanceof ast.FunctionLiteral) {
+        const params = new Set(stmt.value.parameters.map(p => p.value || p.token?.literal));
+        const hasFreeVars = this._hasFreeVariables(stmt.value, params, topLevelFuncNames);
+        if (!hasFreeVars) {
+          this._declareFunction(stmt.name.value, stmt.value);
+        }
       }
     }
 
@@ -116,8 +129,12 @@ export class WasmCompiler {
 
       if (stmt instanceof ast.LetStatement &&
           stmt.value instanceof ast.FunctionLiteral) {
-        // Already handled in first pass
-        continue;
+        // Check if already handled as a named (non-capturing) function
+        const binding = this.currentScope.resolve(stmt.name.value);
+        if (binding && binding.type === 'func') {
+          continue; // Already handled in first pass
+        }
+        // Otherwise, compile as a let with a closure value
       }
 
       if (stmt instanceof ast.ExpressionStatement) {
@@ -498,8 +515,8 @@ export class WasmCompiler {
     const binding = this.currentScope.resolve(name);
     if (binding) {
       if (binding.type === 'func') {
-        // Can't use function as value in WASM (no funcref yet)
-        this.currentBody.i32Const(0);
+        // Wrap named function as a closure value
+        this._wrapFunctionAsClosure(name, binding.index);
       } else {
         this.currentBody.localGet(binding.index);
       }
@@ -508,6 +525,61 @@ export class WasmCompiler {
       this.errors.push(`undefined variable: ${name}`);
       this.currentBody.i32Const(0);
     }
+  }
+
+  // Create a closure wrapper for a named WASM function so it can be used as a value
+  _wrapFunctionAsClosure(name, funcIndex) {
+    // Find the function's type signature
+    const funcEntry = this.functions.find(f => f.name === name);
+    if (!funcEntry) {
+      // Runtime function or unknown — just push 0
+      this.currentBody.i32Const(0);
+      return;
+    }
+
+    // Create a wrapper function that takes (env_ptr, ...params) and calls the real function
+    const origParams = funcEntry.funcLit.parameters;
+    const wrapperParams = [ValType.i32, ...origParams.map(() => ValType.i32)]; // env_ptr + params
+    const { index: wrapperIdx, body: wrapperBody } = this.builder.addFunction(wrapperParams, [ValType.i32]);
+
+    // Forward actual params (skip env_ptr at local[0])
+    for (let i = 0; i < origParams.length; i++) {
+      wrapperBody.localGet(i + 1);
+    }
+    wrapperBody.call(funcIndex);
+
+    const tableSlot = this.nextTableSlot++;
+    this.closureFuncs.push({
+      funcLit: funcEntry.funcLit,
+      captures: [],
+      tableIndex: tableSlot,
+      wasmFuncIndex: wrapperIdx,
+    });
+
+    // Allocate a minimal closure: [TAG_CLOSURE][table_index][env_ptr=0]
+    this.currentBody.i32Const(12);
+    this.currentBody.call(this._runtimeFuncs.alloc);
+    const closureLocal = this.nextLocalIndex++;
+    this.currentBody.addLocal(ValType.i32);
+    this.currentBody.localSet(closureLocal);
+
+    this.currentBody.localGet(closureLocal);
+    this.currentBody.i32Const(TAG_CLOSURE);
+    this.currentBody.i32Store();
+
+    this.currentBody.localGet(closureLocal);
+    this.currentBody.i32Const(4);
+    this.currentBody.emit(Op.i32_add);
+    this.currentBody.i32Const(tableSlot);
+    this.currentBody.i32Store();
+
+    this.currentBody.localGet(closureLocal);
+    this.currentBody.i32Const(8);
+    this.currentBody.emit(Op.i32_add);
+    this.currentBody.i32Const(0); // no env
+    this.currentBody.i32Store();
+
+    this.currentBody.localGet(closureLocal);
   }
 
   compilePrefixExpression(node) {
@@ -956,6 +1028,49 @@ export class WasmCompiler {
 
     // Leave closure pointer on stack
     this.currentBody.localGet(closureLocal);
+  }
+
+  // Check if a function literal has free variables (references to non-param, non-global names)
+  _hasFreeVariables(funcLit, params, topLevelFuncNames = new Set()) {
+    let hasFree = false;
+    const walk = (node) => {
+      if (!node || hasFree) return;
+      if (node instanceof ast.FunctionLiteral) return; // Don't walk into nested functions
+      if (node instanceof ast.Identifier) {
+        const name = node.value;
+        if (!params.has(name) && !topLevelFuncNames.has(name)) {
+          const binding = this.globalScope.resolve(name);
+          if (!binding) hasFree = true;
+        }
+      }
+      if (node.left) walk(node.left);
+      if (node.right) walk(node.right);
+      if (node.condition) walk(node.condition);
+      if (node.consequence) walk(node.consequence);
+      if (node.alternative) walk(node.alternative);
+      if (node.expression) walk(node.expression);
+      if (node.value && !(node instanceof ast.LetStatement)) walk(node.value);
+      if (node instanceof ast.LetStatement && node.value) walk(node.value);
+      if (node.returnValue) walk(node.returnValue);
+      if (node.index) walk(node.index);
+      if (node.function) walk(node.function);
+      if (node.body && node.body.statements) {
+        for (const stmt of node.body.statements) walk(stmt);
+      }
+      if (node.statements) {
+        for (const stmt of node.statements) walk(stmt);
+      }
+      if (node.arguments) {
+        for (const arg of node.arguments) walk(arg);
+      }
+      if (node.elements) {
+        for (const elem of node.elements) walk(elem);
+      }
+    };
+    if (funcLit.body && funcLit.body.statements) {
+      for (const stmt of funcLit.body.statements) walk(stmt);
+    }
+    return hasFree;
   }
 
   // Find free variables in a function literal
