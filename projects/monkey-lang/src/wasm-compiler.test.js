@@ -1269,6 +1269,34 @@ describe('WASM Compiler', () => {
       await assert.rejects(() => compileAndRun('const x = 5; x = 10; x'), /cannot assign to const/);
     });
 
+    it('string concatenation in loop', async () => {
+      const lines = [];
+      await compileAndRun('let s = ""; for (i in 0..5) { s = s + str(i); } puts(s)', { outputLines: lines });
+      assert.strictEqual(lines[0], '01234');
+    });
+
+    it('nested closures with captured variables', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let mult = fn(x) { fn(y) { x * y } };
+        let triple = mult(3);
+        triple(14)
+      `), 42);
+    });
+
+    it('fibonacci with array memoization', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let memo = [0, 1];
+        for (i in 2..20) {
+          memo = push(memo, memo[i-1] + memo[i-2]);
+        }
+        memo[19]
+      `), 4181);
+    });
+
+    it('functional composition', async () => {
+      assert.strictEqual(await compileAndRun('let compose = fn(f, g) { fn(x) { f(g(x)) } }; let double = fn(x) { x * 2 }; let inc = fn(x) { x + 1 }; let doubleAndInc = compose(inc, double); doubleAndInc(20)'), 41);
+    });
+
     it('string iteration and rebuild', async () => {
       const lines = [];
       await compileAndRun('let s = "abc"; let r = ""; for (ch in s) { r = r + ch; } puts(r)', { outputLines: lines });
