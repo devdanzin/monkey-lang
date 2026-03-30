@@ -234,6 +234,10 @@ export class WasmCompiler {
     this._runtimeFuncs.int = intIdx;
     this.globalScope.define('int', intIdx, 'func');
 
+    // Import __slice from JS host: env.__slice(arr: i32, start: i32, end: i32) → i32
+    const sliceIdx = this.builder.addImport('env', '__slice', [ValType.i32, ValType.i32, ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.slice = sliceIdx;
+
     // __alloc(size) → pointer — bump allocator
     const { index: allocIdx, body: allocBody } = this.builder.addFunction(
       [ValType.i32], [ValType.i32]
@@ -535,6 +539,12 @@ export class WasmCompiler {
       this.compileArrayLiteral(node);
     } else if (node instanceof ast.IndexExpression) {
       this.compileIndexExpression(node);
+    } else if (node instanceof ast.SliceExpression) {
+      // arr[start:end]
+      this.compileNode(node.left);
+      this.compileNode(node.start || { value: 0, constructor: ast.IntegerLiteral });
+      this.compileNode(node.end || { value: 0, constructor: ast.IntegerLiteral });
+      this.currentBody.call(this._runtimeFuncs.slice);
     } else if (node instanceof ast.HashLiteral) {
       this.currentBody.i32Const(0);
     } else if (node instanceof ast.IndexAssignExpression) {
@@ -1637,7 +1647,6 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
         return writeString('INTEGER');
       },
       __int(value) {
-        // If it's a string, parse it; if it's already an int, return as-is
         const mem = memoryRef.memory;
         if (!mem) return value;
         const view = new DataView(mem.buffer);
@@ -1650,7 +1659,32 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
             }
           } catch (e) {}
         }
-        return value; // Already an integer
+        return value;
+      },
+      __slice(arrPtr, start, end) {
+        const mem = memoryRef.memory;
+        if (!mem || arrPtr <= 0) return 0;
+        const view = new DataView(mem.buffer);
+        const tag = view.getInt32(arrPtr, true);
+        if (tag !== TAG_ARRAY) return 0;
+        const len = view.getInt32(arrPtr + 4, true);
+        if (end <= 0) end = len; // default to full length
+        if (start < 0) start = 0;
+        if (end > len) end = len;
+        const newLen = Math.max(0, end - start);
+
+        if (!memoryRef.jsHeapPtr) memoryRef.jsHeapPtr = 60000;
+        const newPtr = memoryRef.jsHeapPtr;
+        memoryRef.jsHeapPtr += 8 + newLen * 4;
+        memoryRef.jsHeapPtr = (memoryRef.jsHeapPtr + 3) & ~3;
+
+        view.setInt32(newPtr, TAG_ARRAY, true);
+        view.setInt32(newPtr + 4, newLen, true);
+        for (let i = 0; i < newLen; i++) {
+          const elem = view.getInt32(arrPtr + 8 + (start + i) * 4, true);
+          view.setInt32(newPtr + 8 + i * 4, elem, true);
+        }
+        return newPtr;
       },
     },
   };
