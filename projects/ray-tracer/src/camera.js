@@ -11,7 +11,9 @@ export class Camera {
     vfov = 90,  // Vertical field of view in degrees
     aspectRatio = 16 / 9,
     aperture = 0,
-    focusDist = 1
+    focusDist = 1,
+    time0 = 0,
+    time1 = 0
   } = {}) {
     const theta = vfov * Math.PI / 180;
     const h = Math.tan(theta / 2);
@@ -31,11 +33,14 @@ export class Camera {
       .sub(this.w.mul(focusDist));
 
     this.lensRadius = aperture / 2;
+    this.time0 = time0;
+    this.time1 = time1;
   }
 
   getRay(s, t) {
     const rd = Vec3.randomInUnitDisk().mul(this.lensRadius);
     const offset = this.u.mul(rd.x).add(this.v.mul(rd.y));
+    const time = this.time0 + Math.random() * (this.time1 - this.time0);
 
     return new Ray(
       this.origin.add(offset),
@@ -43,7 +48,8 @@ export class Camera {
         .add(this.horizontal.mul(s))
         .add(this.vertical.mul(t))
         .sub(this.origin)
-        .sub(offset)
+        .sub(offset),
+      time
     );
   }
 }

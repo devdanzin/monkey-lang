@@ -4,6 +4,7 @@ export { Vec3, Point3, Color } from './vec3.js';
 export { Ray } from './ray.js';
 export { HitRecord, HittableList } from './hittable.js';
 export { Sphere } from './sphere.js';
+export { MovingSphere } from './moving-sphere.js';
 export { Plane, XYRect, XZRect, YZRect, Box } from './plane.js';
 export { Triangle, Mesh } from './triangle.js';
 export { Translate, RotateY } from './transform.js';
