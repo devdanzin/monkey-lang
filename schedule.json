@@ -391,16 +391,20 @@
       "id": "T37",
       "mode": "BUILD",
       "task": "Build 5-backend benchmark script: eval, VM, JIT, transpiler, WASM — for fibonacci, sum, factorial, GCD, nested loops",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T36",
-      "started": "2026-03-30T16:01:48.117Z"
+      "started": "2026-03-30T16:01:48.117Z",
+      "completed": "2026-03-30T16:05:39.856Z",
+      "duration_ms": 360000,
+      "summary": "5-backend benchmark built and run. WASM: 110x vs VM, 52x vs JIT. Transpiler also fast (V8 optimized). 12 benchmarks across recursive, loops, closures, branching. WASM wins 9/12."
     },
     {
       "id": "T38",
       "mode": "BUILD",
       "task": "Run benchmarks, capture results, format as markdown table",
-      "status": "upcoming",
-      "plan_ref": "T36"
+      "status": "in-progress",
+      "plan_ref": "T36",
+      "started": "2026-03-30T16:05:51.897Z"
     },
     {
       "id": "T39",
