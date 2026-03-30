@@ -548,6 +548,19 @@ export class WasmCompiler {
       this.compileHashLiteral(node);
     } else if (node instanceof ast.MatchExpression) {
       this.compileMatchExpression(node);
+    } else if (node instanceof ast.OptionalChainExpression) {
+      // obj?.key — if obj is 0 (null), return 0; else index
+      this.compileNode(node.left);
+      const tmpLocal = this.nextLocalIndex++;
+      this.currentBody.addLocal(ValType.i32);
+      this.currentBody.localTee(tmpLocal);
+      this.currentBody.if_(ValType.i32);
+        this.currentBody.localGet(tmpLocal);
+        this.compileNode(node.index);
+        this.currentBody.call(this._runtimeFuncs.indexGet);
+      this.currentBody.else_();
+        this.currentBody.i32Const(0);
+      this.currentBody.end();
     } else if (node instanceof ast.IndexAssignExpression) {
       this.compileNode(node.left);
       this.compileNode(node.index);

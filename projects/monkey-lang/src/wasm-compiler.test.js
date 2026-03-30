@@ -891,6 +891,20 @@ describe('WASM Compiler', () => {
     });
   });
 
+  describe('Optional chaining', () => {
+    it('optional chain on hash', async () => {
+      assert.strictEqual(await compileAndRun('let h = {"a": 42}; h?.a'), 42);
+    });
+
+    it('optional chain on null returns 0', async () => {
+      assert.strictEqual(await compileAndRun('let h = 0; h?.a'), 0);
+    });
+
+    it('optional chain with null coalescing', async () => {
+      assert.strictEqual(await compileAndRun('let h = 0; h?.a ?? 99'), 99);
+    });
+  });
+
   describe('Integration tests', () => {
     it('Collatz conjecture', async () => {
       assert.strictEqual(await compileAndRun(`

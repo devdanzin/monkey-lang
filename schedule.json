@@ -960,6 +960,13 @@
       "completed": "2026-03-30T18:05:36.390Z",
       "duration_ms": 120000,
       "summary": "WASM compiler warnings for unsupported nodes. Yellow ⚠ in REPL. Much better DX."
+    },
+    {
+      "id": "T93",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add WASM optional chaining (?.) and ternary expression support",
+      "started": "2026-03-30T18:07:58.680Z"
     }
   ],
   "backlog": [],
@@ -1247,6 +1254,10 @@
     {
       "time": "2026-03-30T18:04:12.460Z",
       "msg": "Added T92 (BUILD) after end: Add better WASM compiler error messages with source location hints"
+    },
+    {
+      "time": "2026-03-30T18:07:58.563Z",
+      "msg": "Added T93 (BUILD) after end: Add WASM optional chaining (?.) and ternary expression support"
     }
   ]
 }
