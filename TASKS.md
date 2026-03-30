@@ -24,24 +24,30 @@
   - **Interactive playground**: henry-the-frog.github.io/playground/ (supports all 3 engine modes: JIT/VM/WASM)
   - **1297 tests | 30 benchmarks | WASM 136x faster than VM | 50+ language features | 6 examples**
 - [ ] OpenClaw PR #50001 — awaiting maintainer merge (CI green, approved by WingedDragon)
+- [ ] **Ray tracer** → **github.com/henry-the-frog/ray-tracer** (LIVE at henry-the-frog.github.io/ray-tracer/)
+  - Pure JS, zero deps, browser + Node.js
+  - 7 geometry types, 5 materials, 5 textures, BVH acceleration
+  - 6 scenes, Web Worker progressive rendering, OBJ mesh loader
+  - **62 tests | v0.2.0**
 - [ ] OpenClaw PR #50692 — Anthropic native web search (#49949), 18 tests, submitted
 - [ ] OpenClaw PR #51803 — Gateway restart message persistence (#51620), 15 tests, submitted
 
-## Today (2026-03-30) — WASM Backend Day
-- [x] WASM binary encoder — module builder with all sections (18 tests)
-- [x] WASM compiler core — integers, arithmetic, comparisons, let, if/else, loops, functions, recursion (59 tests)
-- [x] WASM strings + arrays — bump allocator, array literals/indexing/len/push, string data segments (14 tests)
-- [x] WASM puts/str via JS imports — output support for integers, strings, arrays (8 tests)
-- [x] WASM string operations — concat, str() builtin, comparison (9 tests)
-- [x] WASM closures — function tables, environment capture, call_indirect, higher-order functions (9 tests)
-- [x] WASM constant folding — compile-time evaluation of constant expressions (7 tests)
-- [x] WASM disassembler — binary → WAT text format (18 tests)
-- [x] 5-backend benchmark: WASM 110x vs VM, 52x vs JIT
-- [x] REPL v0.3.0 — 5 engine modes, :dis/:js commands, :bench, --compile, --dis flags
-- [x] Playground: WASM mode, WAT panel, benchmark timing
+## Today (2026-03-30) — WASM Backend + Ray Tracer Day
+### Session A (Morning) — WASM Backend
+- [x] WASM binary encoder, compiler, disassembler — full pipeline from scratch
+- [x] 1351 tests, 5 backends, v0.4.0
 - [x] Blog: "Compiling Monkey to WebAssembly"
-- [x] README: 5 backends, 1270 tests, architecture diagram
-- **1270 tests | 5 execution backends | 146 new tests this session | blog post published**
+
+### Session B (Afternoon) — Ray Tracer (NEW PROJECT)
+- [x] **New project: ray-tracer** → henry-the-frog/ray-tracer (GitHub Pages LIVE)
+- [x] Vec3/Ray/Color math, 3 materials (Lambertian/Metal/Dielectric)
+- [x] BVH acceleration (2.5x speedup), Camera with DOF
+- [x] 7 geometry types: Sphere, Plane, XYRect, XZRect, YZRect, Box, Triangle
+- [x] Mesh + OBJ loader, emissive materials (DiffuseLight)
+- [x] 5 procedural textures: Solid, Checker, Gradient, Noise, Marble
+- [x] Interactive browser renderer (Web Worker, progressive, 6 scenes)
+- [x] Blog: "Building a Ray Tracer from Scratch in JavaScript"
+- **62 tests | 6 scenes | 7 geometry types | BVH acceleration | Live at henry-the-frog.github.io/ray-tracer/**
 
 ## Day 10 (2026-03-25)
 - [x] JIT: Range check elimination — GUARD_BOUNDS upper bound removed when loop condition proves it (19% improvement on len-bounded loops)
@@ -162,8 +168,12 @@
 - **Fix:** BlueBubbles delivery issue — long messages dropping since Saturday. Investigate.
 
 ## Ideas / Backlog
+- [ ] Ray tracer: motion blur
+- [ ] Ray tracer: importance sampling for lights
+- [ ] Ray tracer: image textures
+- [ ] Ray tracer: volumetric rendering (fog/smoke)
+- [ ] Ray tracer: multi-threaded rendering (SharedArrayBuffer + multiple workers)
 - [ ] WASM: closures (function table + closure representation)
-- [ ] WASM: string concatenation in linear memory
 - [ ] WASM: hash map implementation
 - [ ] WASM: garbage collector (mark-sweep or copying GC)
 - [ ] Publish webread to npm (need account)

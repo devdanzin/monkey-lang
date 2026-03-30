@@ -1261,36 +1261,43 @@
       "id": "T123",
       "mode": "BUILD",
       "task": "Update blog post with new features and performance numbers",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T114",
-      "started": "2026-03-30T20:36:58.319Z"
+      "started": "2026-03-30T20:36:58.319Z",
+      "completed": "2026-03-30T20:39:53.459Z",
+      "duration_ms": 300000,
+      "summary": "Updated web bundle with BVH, textures, emissive materials, 6 scenes. Blog post updated. All repos pushed (workspace, ray-tracer main, ray-tracer gh-pages, blog)."
     },
     {
       "id": "T115",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-03-30T20:39:59.882Z",
+      "completed": "2026-03-30T20:40:00.026Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled placeholder."
     },
     {
       "id": "T116",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping"
+      "status": "in-progress",
+      "task": "Housekeeping",
+      "started": "2026-03-30T20:40:10.795Z"
     }
   ],
   "current": {
-    "id": "T123",
-    "mode": "BUILD",
-    "task": "Update blog post with new features and performance numbers",
+    "id": "T116",
+    "mode": "MAINTAIN",
     "status": "in-progress",
-    "plan_ref": "T114",
-    "started": "2026-03-30T20:36:58.319Z"
+    "task": "Housekeeping",
+    "started": "2026-03-30T20:40:10.795Z"
   },
   "stats": {
-    "completed": 120,
+    "completed": 122,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 17820000
+    "total_duration_ms": 18120000
   },
-  "updated_at": "2026-03-30T20:36:58.319Z"
+  "updated_at": "2026-03-30T20:40:10.795Z"
 }
