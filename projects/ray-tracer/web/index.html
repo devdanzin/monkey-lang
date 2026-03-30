@@ -89,6 +89,7 @@
       <option value="metal">Metal Showcase</option>
       <option value="lit">Lit Room (area light)</option>
       <option value="textured">Textured World (marble + noise)</option>
+      <option value="smoky">Smoky Cornell Box (volumetric)</option>
     </select>
   </div>
   <div class="control-group">
@@ -184,6 +185,11 @@ const scenes = {
   textured: {
     lookFrom: { x: 5, y: 3, z: 6 }, lookAt: { x: 0, y: 0.5, z: 0 },
     vfov: 30, aperture: 0.05, focusDist: 7, aspectRatio: 3/2
+  },
+  smoky: {
+    lookFrom: { x: 278, y: 278, z: -800 }, lookAt: { x: 278, y: 278, z: 0 },
+    vfov: 40, aperture: 0, focusDist: 1, aspectRatio: 1,
+    background: { x: 0, y: 0, z: 0 }
   },
   cornell: {
     lookFrom: { x: 278, y: 278, z: -800 }, lookAt: { x: 278, y: 278, z: 0 },

@@ -435,6 +435,44 @@ class Camera {
   }
 }
 
+// ===== Volumetrics =====
+class Isotropic {
+  constructor(albedo) { this.albedo = albedo; }
+  scatter(rayIn, rec) {
+    return { scattered: new Ray(rec.p, Vec3.randomInUnitSphere()), attenuation: this.albedo };
+  }
+}
+
+class ConstantMedium {
+  constructor(boundary, density, color) {
+    this.boundary = boundary;
+    this.negInvDensity = -1.0 / density;
+    this.phaseFunction = new Isotropic(color);
+  }
+  hit(ray, tMin, tMax) {
+    const rec1 = this.boundary.hit(ray, -Infinity, Infinity);
+    if (!rec1) return null;
+    const rec2 = this.boundary.hit(ray, rec1.t + 0.0001, Infinity);
+    if (!rec2) return null;
+    if (rec1.t < tMin) rec1.t = tMin;
+    if (rec2.t > tMax) rec2.t = tMax;
+    if (rec1.t >= rec2.t) return null;
+    if (rec1.t < 0) rec1.t = 0;
+    const rayLength = ray.direction.length();
+    const distInside = (rec2.t - rec1.t) * rayLength;
+    const hitDist = this.negInvDensity * Math.log(Math.random());
+    if (hitDist > distInside) return null;
+    const rec = new HitRecord();
+    rec.t = rec1.t + hitDist / rayLength;
+    rec.p = ray.at(rec.t);
+    rec.normal = new Vec3(1, 0, 0);
+    rec.frontFace = true;
+    rec.material = this.phaseFunction;
+    return rec;
+  }
+  boundingBox() { return this.boundary.boundingBox(); }
+}
+
 // ===== Scenes =====
 function createRandomScene() {
   const world = new HittableList();
@@ -547,13 +585,37 @@ function createTexturedWorld() {
   return world;
 }
 
+function createSmokyCornell() {
+  const world = new HittableList();
+  const red   = new Lambertian(new Vec3(0.65, 0.05, 0.05));
+  const white = new Lambertian(new Vec3(0.73, 0.73, 0.73));
+  const green = new Lambertian(new Vec3(0.12, 0.45, 0.15));
+  const light = new DiffuseLight(new Vec3(7, 7, 7));
+
+  world.add(new YZRect(0, 555, 0, 555, 555, green));
+  world.add(new YZRect(0, 555, 0, 555, 0, red));
+  world.add(new XZRect(113, 443, 127, 432, 554, light));
+  world.add(new XZRect(0, 555, 0, 555, 0, white));
+  world.add(new XZRect(0, 555, 0, 555, 555, white));
+  world.add(new XYRect(0, 555, 0, 555, 555, white));
+
+  const box1 = new Translate(new RotateY(new Box(new Vec3(0,0,0), new Vec3(165,165,165), white), -18), new Vec3(130,0,65));
+  const box2 = new Translate(new RotateY(new Box(new Vec3(0,0,0), new Vec3(165,330,165), white), 15), new Vec3(265,0,295));
+
+  world.add(new ConstantMedium(box1, 0.01, new Vec3(1, 1, 1)));
+  world.add(new ConstantMedium(box2, 0.01, new Vec3(0, 0, 0)));
+
+  return world;
+}
+
 // ===== Expose to global =====
 if (typeof self !== 'undefined') {
   self.RayTracer = {
     Vec3, Ray, HitRecord, HittableList, AABB, BVHNode, Sphere, XZRect, XYRect, YZRect, Box, Translate, RotateY,
     SolidColor, CheckerTexture, NoiseTexture, MarbleTexture,
+    Isotropic, ConstantMedium,
     Lambertian, Metal, Dielectric, DiffuseLight, Camera,
     createRandomScene, createSimpleScene, createCornellBox,
-    createGlassStudy, createMetalShowcase, createLitRoom, createTexturedWorld
+    createGlassStudy, createMetalShowcase, createLitRoom, createTexturedWorld, createSmokyCornell
   };
 }
