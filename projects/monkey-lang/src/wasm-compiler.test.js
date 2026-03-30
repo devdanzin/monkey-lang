@@ -923,6 +923,30 @@ describe('WASM Compiler', () => {
     });
   });
 
+  describe('Break and Continue', () => {
+    it('break exits loop early', async () => {
+      const lines = [];
+      await compileAndRun('for (i in 0..10) { if (i == 3) { break; } puts(str(i)); }', { outputLines: lines });
+      assert.deepStrictEqual(lines, ['0', '1', '2']);
+    });
+
+    it('continue skips iteration', async () => {
+      const lines = [];
+      await compileAndRun('for (i in 0..6) { if (i % 2 == 0) { continue; } puts(str(i)); }', { outputLines: lines });
+      assert.deepStrictEqual(lines, ['1', '3', '5']);
+    });
+
+    it('break in while loop', async () => {
+      assert.strictEqual(await compileAndRun('let x = 0; while (true) { x += 1; if (x == 5) { break; } } x'), 5);
+    });
+
+    it('continue in while loop', async () => {
+      const lines = [];
+      await compileAndRun('let i = 0; while (i < 5) { i += 1; if (i == 3) { continue; } puts(str(i)); }', { outputLines: lines });
+      assert.deepStrictEqual(lines, ['1', '2', '4', '5']);
+    });
+  });
+
   describe('String ordering', () => {
     it('string less than', async () => {
       assert.strictEqual(await compileAndRun('"apple" < "banana"'), 1);

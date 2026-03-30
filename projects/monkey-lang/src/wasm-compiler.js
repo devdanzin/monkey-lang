@@ -54,7 +54,8 @@ export class WasmCompiler {
     this.currentScope = null;
     this.nextParamIndex = 0;
     this.nextLocalIndex = 0;
-    this.loopStack = []; // for break/continue: [{breakLabel, continueLabel}]
+    this.loopStack = []; // for break/continue: [{breakDepth, continueDepth}]
+    this.blockDepth = 0; // current nesting depth for label calculation
     this.errors = [];
     this.warnings = [];
     this.stringConstants = []; // [{offset, length, value}] — data segment entries
@@ -395,8 +396,10 @@ export class WasmCompiler {
       const prevFunc = this.currentFunc;
       const prevLocalIdx = this.nextLocalIndex;
       const prevParamIdx = this.nextParamIndex;
+      const prevBlockDepth = this.blockDepth;
 
       this.currentBody = func.body;
+      this.blockDepth = 0;
       this.currentFunc = func;
       this.currentScope = new Scope(this.globalScope);
       this.nextParamIndex = 0;
@@ -414,6 +417,7 @@ export class WasmCompiler {
       this._compileBlockReturning(body);
 
       this.currentBody = prevBody;
+      this.blockDepth = prevBlockDepth;
       this.currentScope = prevScope;
       this.currentFunc = prevFunc;
       this.nextLocalIndex = prevLocalIdx;
@@ -467,12 +471,12 @@ export class WasmCompiler {
       // break jumps to the block wrapping the loop
       if (this.loopStack.length > 0) {
         const loop = this.loopStack[this.loopStack.length - 1];
-        this.currentBody.br(loop.breakLabel);
+        this.currentBody.br(this.blockDepth - loop.breakDepth);
       }
     } else if (stmt instanceof ast.ContinueStatement) {
       if (this.loopStack.length > 0) {
         const loop = this.loopStack[this.loopStack.length - 1];
-        this.currentBody.br(loop.continueLabel);
+        this.currentBody.br(this.blockDepth - loop.continueDepth);
       }
     }
   }
@@ -596,6 +600,24 @@ export class WasmCompiler {
     } else {
       // Unknown/unsupported node type
       const nodeName = node?.constructor?.name || 'unknown';
+
+      // Handle break/continue that appear as expressions
+      if (node instanceof ast.BreakStatement) {
+        if (this.loopStack.length > 0) {
+          const loop = this.loopStack[this.loopStack.length - 1];
+          this.currentBody.br(this.blockDepth - loop.breakDepth);
+        }
+        this.currentBody.i32Const(0); // unreachable but needed for type
+        return;
+      }
+      if (node instanceof ast.ContinueStatement) {
+        if (this.loopStack.length > 0) {
+          const loop = this.loopStack[this.loopStack.length - 1];
+          this.currentBody.br(this.blockDepth - loop.continueDepth);
+        }
+        this.currentBody.i32Const(0);
+        return;
+      }
       const token = node?.token;
       const loc = token?.line ? ` at line ${token.line}` : '';
       this.warnings.push(`Unsupported: ${nodeName}${loc} (compiled as 0)`);
@@ -806,15 +828,19 @@ export class WasmCompiler {
 
     if (node.alternative) {
       this.currentBody.if_(ValType.i32);
+      this.blockDepth++;
       this._compileBlockReturning(node.consequence);
       this.currentBody.else_();
       this._compileBlockReturning(node.alternative);
+      this.blockDepth--;
       this.currentBody.end();
     } else {
       this.currentBody.if_(ValType.i32);
+      this.blockDepth++;
       this._compileBlockReturning(node.consequence);
       this.currentBody.else_();
       this.currentBody.i32Const(0);
+      this.blockDepth--;
       this.currentBody.end();
     }
   }
@@ -949,33 +975,27 @@ export class WasmCompiler {
   }
 
   compileWhileExpression(node) {
-    // block $break
-    //   loop $continue
-    //     condition
-    //     br_if (not condition) $break
-    //     body
-    //     br $continue
-    //   end
-    // end
-    // push 0 (while returns null/0)
+    this.currentBody.block();
+    this.blockDepth++;
+    const breakDepth = this.blockDepth;
+    this.currentBody.loop();
+    this.blockDepth++;
+    const continueDepth = this.blockDepth;
 
-    this.currentBody.block(); // $break (label 1 from inside loop)
-    this.currentBody.loop();  // $continue (label 0 from inside loop)
-
-    this.loopStack.push({ breakLabel: 1, continueLabel: 0 });
+    this.loopStack.push({ breakDepth, continueDepth });
 
     this.compileNode(node.condition);
     this.currentBody.emit(Op.i32_eqz);
-    this.currentBody.brIf(1); // break if condition is false
+    this.currentBody.brIf(this.blockDepth - breakDepth); // break if condition is false
 
-    // Compile body, drop result
     this._compileBlockStatements(node.body);
 
-    this.currentBody.br(0); // continue
+    this.currentBody.br(this.blockDepth - continueDepth); // continue
 
     this.loopStack.pop();
-
+    this.blockDepth--;
     this.currentBody.end(); // end loop
+    this.blockDepth--;
     this.currentBody.end(); // end block
 
     this.currentBody.i32Const(0); // while produces 0
@@ -992,32 +1012,45 @@ export class WasmCompiler {
       }
     }
 
-    this.currentBody.block(); // $break
-    this.currentBody.loop();  // $continue
-
-    this.loopStack.push({ breakLabel: 1, continueLabel: 0 });
+    this.currentBody.block();
+    this.blockDepth++;
+    const breakDepth = this.blockDepth;
+    this.currentBody.loop();
+    this.blockDepth++;
+    const loopStartDepth = this.blockDepth;
 
     // Condition
     if (node.condition) {
       this.compileNode(node.condition);
       this.currentBody.emit(Op.i32_eqz);
-      this.currentBody.brIf(1);
+      this.currentBody.brIf(this.blockDepth - breakDepth);
     }
+
+    // block $continue — continue exits this block, falls through to update
+    this.currentBody.block();
+    this.blockDepth++;
+    const continueDepth = this.blockDepth;
+
+    this.loopStack.push({ breakDepth, continueDepth });
 
     // Body
     this._compileBlockStatements(node.body);
 
-    // Update
+    this.loopStack.pop();
+    this.blockDepth--;
+    this.currentBody.end(); // end $continue block
+
+    // Update (always executes, even after continue)
     if (node.update) {
       this.compileNode(node.update);
       this.currentBody.drop();
     }
 
-    this.currentBody.br(0);
+    this.currentBody.br(this.blockDepth - loopStartDepth);
 
-    this.loopStack.pop();
-
+    this.blockDepth--;
     this.currentBody.end();
+    this.blockDepth--;
     this.currentBody.end();
 
     this.currentBody.i32Const(0);
@@ -1061,15 +1094,17 @@ export class WasmCompiler {
 
     // block $break
     this.currentBody.block();
-    this.currentBody.loop(); // $continue
-
-    this.loopStack.push({ breakLabel: 1, continueLabel: 0 });
+    this.blockDepth++;
+    const breakDepth = this.blockDepth;
+    this.currentBody.loop(); // $loop_start
+    this.blockDepth++;
+    const loopStartDepth = this.blockDepth;
 
     // if i >= len, break
     this.currentBody.localGet(iLocal);
     this.currentBody.localGet(lenLocal);
     this.currentBody.emit(Op.i32_ge_s);
-    this.currentBody.brIf(1);
+    this.currentBody.brIf(this.blockDepth - breakDepth);
 
     // x = arr[i]
     this.currentBody.localGet(arrLocal);
@@ -1077,20 +1112,31 @@ export class WasmCompiler {
     this.currentBody.call(this._runtimeFuncs.arrayGet);
     this.currentBody.localSet(varLocal);
 
+    // block $continue — continue exits this block, falls through to increment
+    this.currentBody.block();
+    this.blockDepth++;
+    const continueDepth = this.blockDepth;
+
+    this.loopStack.push({ breakDepth, continueDepth });
+
     // body
     this._compileBlockStatements(node.body);
 
-    // i++
+    this.loopStack.pop();
+    this.blockDepth--;
+    this.currentBody.end(); // end $continue block
+
+    // i++ (always executes, even after continue)
     this.currentBody.localGet(iLocal);
     this.currentBody.i32Const(1);
     this.currentBody.emit(Op.i32_add);
     this.currentBody.localSet(iLocal);
 
-    this.currentBody.br(0); // continue
+    this.currentBody.br(this.blockDepth - loopStartDepth); // loop back to start
 
-    this.loopStack.pop();
-
+    this.blockDepth--;
     this.currentBody.end(); // end loop
+    this.blockDepth--;
     this.currentBody.end(); // end block
 
     this.currentBody.i32Const(0); // for-in produces 0
@@ -1129,7 +1175,10 @@ export class WasmCompiler {
     this.currentBody.i32Const(0);
     this.currentBody.localSet(iLocal);
 
-    this.currentBody.block().loop();
+    this.currentBody.block();
+    this.blockDepth++;
+    this.currentBody.loop();
+    this.blockDepth++;
       this.currentBody.localGet(iLocal);
       this.currentBody.localGet(lenLocal);
       this.currentBody.emit(Op.i32_ge_s);
@@ -1147,28 +1196,33 @@ export class WasmCompiler {
       this.currentBody.emit(Op.i32_add);
       this.currentBody.localSet(iLocal);
       this.currentBody.br(0);
-    this.currentBody.end().end();
+    this.blockDepth--;
+    this.currentBody.end();
+    this.blockDepth--;
+    this.currentBody.end();
 
     this.currentBody.localGet(arrLocal);
   }
 
   compileDoWhileExpression(node) {
-    // do { body } while (condition)
-    this.currentBody.block(); // $break
-    this.currentBody.loop();  // $continue
+    this.currentBody.block();
+    this.blockDepth++;
+    const breakDepth = this.blockDepth;
+    this.currentBody.loop();
+    this.blockDepth++;
+    const continueDepth = this.blockDepth;
 
-    this.loopStack.push({ breakLabel: 1, continueLabel: 0 });
+    this.loopStack.push({ breakDepth, continueDepth });
 
-    // body (always executes at least once)
     this._compileBlockStatements(node.body);
 
-    // condition
     this.compileNode(node.condition);
-    this.currentBody.brIf(0); // continue if true
+    this.currentBody.brIf(this.blockDepth - continueDepth); // continue if true
 
     this.loopStack.pop();
-
+    this.blockDepth--;
     this.currentBody.end(); // end loop
+    this.blockDepth--;
     this.currentBody.end(); // end block
 
     this.currentBody.i32Const(0);
@@ -1268,8 +1322,10 @@ export class WasmCompiler {
     const prevLocalIdx = this.nextLocalIndex;
     const prevParamIdx = this.nextParamIndex;
     const prevTempLocal = this._tempLocal;
+    const prevBlockDepth = this.blockDepth;
 
     this.currentBody = funcBody;
+    this.blockDepth = 0;
     this.currentFunc = { name: `closure_${tableSlot}`, index: wasmFuncIdx };
     this.currentScope = new Scope(this.globalScope);
     this.nextParamIndex = 0;
@@ -1304,6 +1360,7 @@ export class WasmCompiler {
 
     // Restore state
     this.currentBody = prevBody;
+    this.blockDepth = prevBlockDepth;
     this.currentScope = prevScope;
     this.currentFunc = prevFunc;
     this.nextLocalIndex = prevLocalIdx;
@@ -1536,20 +1593,22 @@ export class WasmCompiler {
       this.currentBody.emit(Op.i32_eq);
 
       if (isLast) {
-        // Last arm, no else needed
         this.currentBody.if_(ValType.i32);
+        this.blockDepth++;
         this.compileNode(arm.value);
         this.currentBody.else_();
-        this.currentBody.i32Const(0); // default if no match
+        this.currentBody.i32Const(0);
+        this.blockDepth--;
         this.currentBody.end();
       } else {
         this.currentBody.if_(ValType.i32);
+        this.blockDepth++;
         this.compileNode(arm.value);
         this.currentBody.else_();
       }
     }
 
-    // Close all the else branches (one end per non-wildcard, non-last arm)
+    // Close all the else branches
     let closingEnds = 0;
     for (let i = 0; i < arms.length; i++) {
       const arm = arms[i];
@@ -1559,6 +1618,7 @@ export class WasmCompiler {
       if (i < arms.length - 1) closingEnds++;
     }
     for (let i = 0; i < closingEnds; i++) {
+      this.blockDepth--;
       this.currentBody.end();
     }
   }

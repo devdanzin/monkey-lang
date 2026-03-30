@@ -1024,9 +1024,12 @@
     {
       "id": "T99",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add string sort example and update README WASM feature list",
-      "started": "2026-03-30T18:22:18.884Z"
+      "started": "2026-03-30T18:22:18.884Z",
+      "completed": "2026-03-30T18:23:12.735Z",
+      "duration_ms": 120000,
+      "summary": "README updated with full WASM feature list: hash maps, optional chaining, match, source maps, string ordering. 1326 tests."
     }
   ],
   "backlog": [],
