@@ -263,6 +263,56 @@ class CheckerTexture {
   }
 }
 
+class NoiseTexture {
+  constructor(color, scale = 4) {
+    this.color = color || new Vec3(1, 1, 1);
+    this.scale = scale;
+    this._perm = [];
+    for (let i = 0; i < 256; i++) this._perm[i] = i;
+    for (let i = 255; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [this._perm[i], this._perm[j]] = [this._perm[j], this._perm[i]];
+    }
+    this._perm = [...this._perm, ...this._perm];
+  }
+  _noise(x, y, z) {
+    const xi = Math.floor(x) & 255, yi = Math.floor(y) & 255, zi = Math.floor(z) & 255;
+    const xf = x - Math.floor(x), yf = y - Math.floor(y), zf = z - Math.floor(z);
+    const u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf), w = zf * zf * (3 - 2 * zf);
+    const p = this._perm;
+    const aaa = p[p[p[xi]+yi]+zi]/255, aba = p[p[p[xi]+yi+1]+zi]/255;
+    const aab = p[p[p[xi]+yi]+zi+1]/255, abb = p[p[p[xi]+yi+1]+zi+1]/255;
+    const baa = p[p[p[xi+1]+yi]+zi]/255, bba = p[p[p[xi+1]+yi+1]+zi]/255;
+    const bab = p[p[p[xi+1]+yi]+zi+1]/255, bbb = p[p[p[xi+1]+yi+1]+zi+1]/255;
+    const x1 = aaa*(1-u)+baa*u, x2 = aba*(1-u)+bba*u;
+    const x3 = aab*(1-u)+bab*u, x4 = abb*(1-u)+bbb*u;
+    const y1 = x1*(1-v)+x2*v, y2 = x3*(1-v)+x4*v;
+    return y1*(1-w)+y2*w;
+  }
+  _turbulence(p, depth = 7) {
+    let accum = 0, weight = 1, temp = p;
+    for (let i = 0; i < depth; i++) {
+      accum += weight * this._noise(temp.x, temp.y, temp.z);
+      weight *= 0.5; temp = temp.mul(2);
+    }
+    return Math.abs(accum);
+  }
+  value(u, v, p) {
+    return this.color.mul(this._turbulence(p.mul(this.scale)));
+  }
+}
+
+class MarbleTexture {
+  constructor(color, scale = 4) {
+    this.noise = new NoiseTexture(null, 1);
+    this.scale = scale;
+    this.color = color || new Vec3(1, 1, 1);
+  }
+  value(u, v, p) {
+    return this.color.mul(0.5 * (1 + Math.sin(this.scale * p.z + 10 * this.noise._turbulence(p))));
+  }
+}
+
 // ===== Materials =====
 class Lambertian {
   constructor(albedo) {
@@ -432,13 +482,25 @@ function createLitRoom() {
   return world;
 }
 
+function createTexturedWorld() {
+  const world = new HittableList();
+  world.add(new Sphere(new Vec3(0, -1000, 0), 1000, new Lambertian(new CheckerTexture(new Vec3(0.2, 0.3, 0.1), new Vec3(0.9, 0.9, 0.9)))));
+  world.add(new Sphere(new Vec3(0, 1, 0), 1.0, new Lambertian(new MarbleTexture(new Vec3(0.9, 0.85, 0.8), 5))));
+  world.add(new Sphere(new Vec3(-2.5, 1, 0), 1.0, new Lambertian(new NoiseTexture(new Vec3(0.4, 0.6, 0.9), 6))));
+  world.add(new Sphere(new Vec3(2.5, 1, 0), 1.0, new Metal(new Vec3(0.95, 0.95, 0.95), 0.0)));
+  world.add(new Sphere(new Vec3(0, 0.5, 2), 0.5, new Dielectric(1.5)));
+  world.add(new Sphere(new Vec3(-1.2, 0.3, 1.5), 0.3, new Lambertian(new Vec3(0.9, 0.2, 0.1))));
+  world.add(new Sphere(new Vec3(1.2, 0.3, 1.5), 0.3, new Lambertian(new Vec3(0.1, 0.2, 0.9))));
+  return world;
+}
+
 // ===== Expose to global =====
 if (typeof self !== 'undefined') {
   self.RayTracer = {
     Vec3, Ray, HitRecord, HittableList, AABB, BVHNode, Sphere, XZRect, XYRect, YZRect, Box,
-    SolidColor, CheckerTexture,
+    SolidColor, CheckerTexture, NoiseTexture, MarbleTexture,
     Lambertian, Metal, Dielectric, DiffuseLight, Camera,
     createRandomScene, createSimpleScene, createCornellBox,
-    createGlassStudy, createMetalShowcase, createLitRoom
+    createGlassStudy, createMetalShowcase, createLitRoom, createTexturedWorld
   };
 }
