@@ -11440,6 +11440,9 @@ var FuncBodyBuilder = class {
   call(funcIndex) {
     return this.emit(Op.call, ...encodeULEB128(funcIndex));
   }
+  callIndirect(typeIndex, tableIndex = 0) {
+    return this.emit(Op.call_indirect, ...encodeULEB128(typeIndex), ...encodeULEB128(tableIndex));
+  }
   // Control flow helpers
   block(blockType = 64) {
     return this.emit(Op.block, blockType);
@@ -11493,6 +11496,8 @@ var WasmModuleBuilder = class {
     this.memories = [];
     this.globals = [];
     this.exports = [];
+    this.tables = [];
+    this.elements = [];
     this.dataSegments = [];
     this._typeCache = /* @__PURE__ */ new Map();
   }
@@ -11536,6 +11541,16 @@ var WasmModuleBuilder = class {
   addExport(name, kind, index) {
     this.exports.push({ name, kind, index });
   }
+  // Add a table (for funcref, call_indirect). Returns table index.
+  addTable(type, min, max) {
+    const idx = this.tables.length;
+    this.tables.push({ type: type || ValType.funcref, min, max });
+    return idx;
+  }
+  // Add an element segment (initializes table entries).
+  addElement(tableIndex, offset, funcIndices) {
+    this.elements.push({ tableIndex, offset, funcIndices });
+  }
   // Add a data segment (at a fixed offset in memory).
   addDataSegment(offset, bytes) {
     this.dataSegments.push({ offset, bytes: Array.isArray(bytes) ? bytes : [...bytes] });
@@ -11573,6 +11588,22 @@ var WasmModuleBuilder = class {
         bytes.push(...encodeULEB128(typeIndex));
       }
       sections.push(this._makeSection(Section.Function, bytes));
+    }
+    if (this.tables.length > 0) {
+      const bytes = [];
+      bytes.push(...encodeULEB128(this.tables.length));
+      for (const { type, min, max } of this.tables) {
+        bytes.push(type);
+        if (max !== void 0) {
+          bytes.push(1);
+          bytes.push(...encodeULEB128(min));
+          bytes.push(...encodeULEB128(max));
+        } else {
+          bytes.push(0);
+          bytes.push(...encodeULEB128(min));
+        }
+      }
+      sections.push(this._makeSection(Section.Table, bytes));
     }
     if (this.memories.length > 0) {
       const bytes = [];
@@ -11614,6 +11645,19 @@ var WasmModuleBuilder = class {
         bytes.push(...encodeULEB128(index));
       }
       sections.push(this._makeSection(Section.Export, bytes));
+    }
+    if (this.elements.length > 0) {
+      const bytes = [];
+      bytes.push(...encodeULEB128(this.elements.length));
+      for (const { tableIndex, offset, funcIndices } of this.elements) {
+        bytes.push(0);
+        bytes.push(Op.i32_const, ...encodeSLEB128(offset), Op.end);
+        bytes.push(...encodeULEB128(funcIndices.length));
+        for (const fi of funcIndices) {
+          bytes.push(...encodeULEB128(fi));
+        }
+      }
+      sections.push(this._makeSection(Section.Element, bytes));
     }
     if (this.functions.length > 0) {
       const bytes = [];
@@ -11659,6 +11703,7 @@ var WasmModuleBuilder = class {
 // src/wasm-compiler.js
 var TAG_STRING = 1;
 var TAG_ARRAY = 2;
+var TAG_CLOSURE = 3;
 var Scope = class {
   constructor(parent = null) {
     this.parent = parent;
@@ -11688,6 +11733,8 @@ var WasmCompiler = class {
     this.errors = [];
     this.stringConstants = [];
     this.nextDataOffset = 16;
+    this.closureFuncs = [];
+    this.nextTableSlot = 0;
     this.builder.addMemory(1);
     this.builder.addExport("memory", ExportKind.Memory, 0);
     this.heapPtr = this.builder.addGlobal(ValType.i32, true, 4096);
@@ -11705,9 +11752,19 @@ var WasmCompiler = class {
   }
   compileProgram(program) {
     this._addRuntimeFunctions();
+    const topLevelFuncNames = /* @__PURE__ */ new Set();
     for (const stmt of program.statements) {
       if (stmt instanceof LetStatement && stmt.value instanceof FunctionLiteral) {
-        this._declareFunction(stmt.name.value, stmt.value);
+        topLevelFuncNames.add(stmt.name.value);
+      }
+    }
+    for (const stmt of program.statements) {
+      if (stmt instanceof LetStatement && stmt.value instanceof FunctionLiteral) {
+        const params = new Set(stmt.value.parameters.map((p) => p.value || p.token?.literal));
+        const hasFreeVars = this._hasFreeVariables(stmt.value, params, topLevelFuncNames);
+        if (!hasFreeVars) {
+          this._declareFunction(stmt.name.value, stmt.value);
+        }
       }
     }
     const mainType = this.builder.addType([], [ValType.i32]);
@@ -11723,7 +11780,10 @@ var WasmCompiler = class {
       const stmt = program.statements[i];
       lastIsExpr = false;
       if (stmt instanceof LetStatement && stmt.value instanceof FunctionLiteral) {
-        continue;
+        const binding = this.currentScope.resolve(stmt.name.value);
+        if (binding && binding.type === "func") {
+          continue;
+        }
       }
       if (stmt instanceof ExpressionStatement) {
         this.compileNode(stmt.expression);
@@ -11753,6 +11813,12 @@ var WasmCompiler = class {
       view.setInt32(4, strBytes.length, true);
       data.set(strBytes, 8);
       this.builder.addDataSegment(sc.offset, [...data]);
+    }
+    if (this.closureFuncs.length > 0) {
+      const tableSize = this.closureFuncs.length;
+      this.builder.addTable(ValType.funcref, tableSize, tableSize);
+      const funcIndices = this.closureFuncs.map((cf) => cf.wasmFuncIndex);
+      this.builder.addElement(0, 0, funcIndices);
     }
     return this.builder;
   }
@@ -11937,7 +12003,7 @@ var WasmCompiler = class {
     } else if (node instanceof CallExpression) {
       this.compileCallExpression(node);
     } else if (node instanceof FunctionLiteral) {
-      this.currentBody.i32Const(0);
+      this.compileFunctionLiteral(node);
     } else if (node instanceof WhileExpression) {
       this.compileWhileExpression(node);
     } else if (node instanceof ForExpression) {
@@ -11988,7 +12054,7 @@ var WasmCompiler = class {
     const binding = this.currentScope.resolve(name);
     if (binding) {
       if (binding.type === "func") {
-        this.currentBody.i32Const(0);
+        this._wrapFunctionAsClosure(name, binding.index);
       } else {
         this.currentBody.localGet(binding.index);
       }
@@ -11996,6 +12062,47 @@ var WasmCompiler = class {
       this.errors.push(`undefined variable: ${name}`);
       this.currentBody.i32Const(0);
     }
+  }
+  // Create a closure wrapper for a named WASM function so it can be used as a value
+  _wrapFunctionAsClosure(name, funcIndex) {
+    const funcEntry = this.functions.find((f) => f.name === name);
+    if (!funcEntry) {
+      this.currentBody.i32Const(0);
+      return;
+    }
+    const origParams = funcEntry.funcLit.parameters;
+    const wrapperParams = [ValType.i32, ...origParams.map(() => ValType.i32)];
+    const { index: wrapperIdx, body: wrapperBody } = this.builder.addFunction(wrapperParams, [ValType.i32]);
+    for (let i = 0; i < origParams.length; i++) {
+      wrapperBody.localGet(i + 1);
+    }
+    wrapperBody.call(funcIndex);
+    const tableSlot = this.nextTableSlot++;
+    this.closureFuncs.push({
+      funcLit: funcEntry.funcLit,
+      captures: [],
+      tableIndex: tableSlot,
+      wasmFuncIndex: wrapperIdx
+    });
+    this.currentBody.i32Const(12);
+    this.currentBody.call(this._runtimeFuncs.alloc);
+    const closureLocal = this.nextLocalIndex++;
+    this.currentBody.addLocal(ValType.i32);
+    this.currentBody.localSet(closureLocal);
+    this.currentBody.localGet(closureLocal);
+    this.currentBody.i32Const(TAG_CLOSURE);
+    this.currentBody.i32Store();
+    this.currentBody.localGet(closureLocal);
+    this.currentBody.i32Const(4);
+    this.currentBody.emit(Op.i32_add);
+    this.currentBody.i32Const(tableSlot);
+    this.currentBody.i32Store();
+    this.currentBody.localGet(closureLocal);
+    this.currentBody.i32Const(8);
+    this.currentBody.emit(Op.i32_add);
+    this.currentBody.i32Const(0);
+    this.currentBody.i32Store();
+    this.currentBody.localGet(closureLocal);
   }
   compilePrefixExpression(node) {
     this.compileNode(node.right);
@@ -12145,27 +12252,45 @@ var WasmCompiler = class {
         return;
       }
     }
-    for (const arg of node.arguments) {
-      this.compileNode(arg);
-    }
     if (node.function instanceof Identifier) {
       const name = node.function.value;
       const binding = this.currentScope.resolve(name);
       if (binding && binding.type === "func") {
+        for (const arg of node.arguments) {
+          this.compileNode(arg);
+        }
         this.currentBody.call(binding.index);
+      } else if (binding) {
+        this._emitClosureCall(node, () => this.currentBody.localGet(binding.index));
       } else {
         this.errors.push(`unknown function: ${name}`);
-        for (let i = 0; i < node.arguments.length; i++) {
-          this.currentBody.drop();
-        }
         this.currentBody.i32Const(0);
       }
     } else {
-      for (let i = 0; i < node.arguments.length; i++) {
-        this.currentBody.drop();
-      }
-      this.currentBody.i32Const(0);
+      this._emitClosureCall(node, () => this.compileNode(node.function));
     }
+  }
+  // Emit a closure call via call_indirect
+  _emitClosureCall(node, emitClosure) {
+    emitClosure();
+    const closurePtrLocal = this.nextLocalIndex++;
+    this.currentBody.addLocal(ValType.i32);
+    this.currentBody.localSet(closurePtrLocal);
+    this.currentBody.localGet(closurePtrLocal);
+    this.currentBody.i32Const(8);
+    this.currentBody.emit(Op.i32_add);
+    this.currentBody.i32Load();
+    for (const arg of node.arguments) {
+      this.compileNode(arg);
+    }
+    this.currentBody.localGet(closurePtrLocal);
+    this.currentBody.i32Const(4);
+    this.currentBody.emit(Op.i32_add);
+    this.currentBody.i32Load();
+    const numParams = node.arguments.length + 1;
+    const paramTypes = Array(numParams).fill(ValType.i32);
+    const typeIdx = this.builder.addType(paramTypes, [ValType.i32]);
+    this.currentBody.callIndirect(typeIdx);
   }
   compileWhileExpression(node) {
     this.currentBody.block();
@@ -12243,6 +12368,174 @@ var WasmCompiler = class {
     this.nextDataOffset = this.nextDataOffset + 3 & ~3;
     this.stringConstants.push({ offset, length: bytes.length, value: str });
     this.currentBody.i32Const(offset);
+  }
+  // Function literal → closure object on heap
+  compileFunctionLiteral(node) {
+    const captures = this._findCaptures(node);
+    const params = [ValType.i32, ...node.parameters.map(() => ValType.i32)];
+    const results = [ValType.i32];
+    const { index: wasmFuncIdx, body: funcBody } = this.builder.addFunction(params, results);
+    const tableSlot = this.nextTableSlot++;
+    const prevBody = this.currentBody;
+    const prevScope = this.currentScope;
+    const prevFunc = this.currentFunc;
+    const prevLocalIdx = this.nextLocalIndex;
+    const prevParamIdx = this.nextParamIndex;
+    const prevTempLocal = this._tempLocal;
+    this.currentBody = funcBody;
+    this.currentFunc = { name: `closure_${tableSlot}`, index: wasmFuncIdx };
+    this.currentScope = new Scope(this.globalScope);
+    this.nextParamIndex = 0;
+    this.nextLocalIndex = params.length;
+    this._tempLocal = null;
+    const envPtrLocal = 0;
+    for (let i = 0; i < node.parameters.length; i++) {
+      const name = node.parameters[i].value || node.parameters[i].token?.literal;
+      this.currentScope.define(name, i + 1, ValType.i32);
+    }
+    for (let i = 0; i < captures.length; i++) {
+      const localIdx = this.nextLocalIndex++;
+      funcBody.addLocal(ValType.i32);
+      funcBody.localGet(envPtrLocal).i32Const(4 + i * 4).emit(Op.i32_add).i32Load().localSet(localIdx);
+      this.currentScope.define(captures[i], localIdx, ValType.i32);
+    }
+    this._compileBlockReturning(node.body);
+    this.currentBody = prevBody;
+    this.currentScope = prevScope;
+    this.currentFunc = prevFunc;
+    this.nextLocalIndex = prevLocalIdx;
+    this.nextParamIndex = prevParamIdx;
+    this._tempLocal = prevTempLocal;
+    this.closureFuncs.push({
+      funcLit: node,
+      captures,
+      tableIndex: tableSlot,
+      wasmFuncIndex: wasmFuncIdx
+    });
+    const envSize = 4 + captures.length * 4;
+    this.currentBody.i32Const(envSize);
+    this.currentBody.call(this._runtimeFuncs.alloc);
+    const envLocal = this.nextLocalIndex++;
+    this.currentBody.addLocal(ValType.i32);
+    this.currentBody.localSet(envLocal);
+    this.currentBody.localGet(envLocal);
+    this.currentBody.i32Const(captures.length);
+    this.currentBody.i32Store();
+    for (let i = 0; i < captures.length; i++) {
+      const binding = this.currentScope.resolve(captures[i]);
+      this.currentBody.localGet(envLocal);
+      this.currentBody.i32Const(4 + i * 4);
+      this.currentBody.emit(Op.i32_add);
+      if (binding) {
+        this.currentBody.localGet(binding.index);
+      } else {
+        this.currentBody.i32Const(0);
+      }
+      this.currentBody.i32Store();
+    }
+    this.currentBody.i32Const(12);
+    this.currentBody.call(this._runtimeFuncs.alloc);
+    const closureLocal = this.nextLocalIndex++;
+    this.currentBody.addLocal(ValType.i32);
+    this.currentBody.localSet(closureLocal);
+    this.currentBody.localGet(closureLocal);
+    this.currentBody.i32Const(TAG_CLOSURE);
+    this.currentBody.i32Store();
+    this.currentBody.localGet(closureLocal);
+    this.currentBody.i32Const(4);
+    this.currentBody.emit(Op.i32_add);
+    this.currentBody.i32Const(tableSlot);
+    this.currentBody.i32Store();
+    this.currentBody.localGet(closureLocal);
+    this.currentBody.i32Const(8);
+    this.currentBody.emit(Op.i32_add);
+    this.currentBody.localGet(envLocal);
+    this.currentBody.i32Store();
+    this.currentBody.localGet(closureLocal);
+  }
+  // Check if a function literal has free variables (references to non-param, non-global names)
+  _hasFreeVariables(funcLit, params, topLevelFuncNames = /* @__PURE__ */ new Set()) {
+    let hasFree = false;
+    const walk = (node) => {
+      if (!node || hasFree) return;
+      if (node instanceof FunctionLiteral) return;
+      if (node instanceof Identifier) {
+        const name = node.value;
+        if (!params.has(name) && !topLevelFuncNames.has(name)) {
+          const binding = this.globalScope.resolve(name);
+          if (!binding) hasFree = true;
+        }
+      }
+      if (node.left) walk(node.left);
+      if (node.right) walk(node.right);
+      if (node.condition) walk(node.condition);
+      if (node.consequence) walk(node.consequence);
+      if (node.alternative) walk(node.alternative);
+      if (node.expression) walk(node.expression);
+      if (node.value && !(node instanceof LetStatement)) walk(node.value);
+      if (node instanceof LetStatement && node.value) walk(node.value);
+      if (node.returnValue) walk(node.returnValue);
+      if (node.index) walk(node.index);
+      if (node.function) walk(node.function);
+      if (node.body && node.body.statements) {
+        for (const stmt of node.body.statements) walk(stmt);
+      }
+      if (node.statements) {
+        for (const stmt of node.statements) walk(stmt);
+      }
+      if (node.arguments) {
+        for (const arg of node.arguments) walk(arg);
+      }
+      if (node.elements) {
+        for (const elem of node.elements) walk(elem);
+      }
+    };
+    if (funcLit.body && funcLit.body.statements) {
+      for (const stmt of funcLit.body.statements) walk(stmt);
+    }
+    return hasFree;
+  }
+  // Find free variables in a function literal
+  _findCaptures(funcLit) {
+    const params = new Set(funcLit.parameters.map((p) => p.value || p.token?.literal));
+    const captures = /* @__PURE__ */ new Set();
+    const walk = (node) => {
+      if (!node) return;
+      if (node instanceof Identifier) {
+        const name = node.value;
+        if (!params.has(name) && this.currentScope.resolve(name) && this.currentScope.resolve(name).type !== "func") {
+          captures.add(name);
+        }
+      }
+      if (node.left) walk(node.left);
+      if (node.right) walk(node.right);
+      if (node.condition) walk(node.condition);
+      if (node.consequence) walk(node.consequence);
+      if (node.alternative) walk(node.alternative);
+      if (node.expression) walk(node.expression);
+      if (node.value) walk(node.value);
+      if (node.returnValue) walk(node.returnValue);
+      if (node.index) walk(node.index);
+      if (node.function) walk(node.function);
+      if (node.body && node.body.statements) {
+        for (const stmt of node.body.statements) walk(stmt);
+      }
+      if (node.statements) {
+        for (const stmt of node.statements) walk(stmt);
+      }
+      if (node.arguments) {
+        for (const arg of node.arguments) walk(arg);
+      }
+      if (node.elements) {
+        for (const elem of node.elements) walk(elem);
+      }
+      if (node.parameters) {
+      }
+    };
+    if (funcLit.body && funcLit.body.statements) {
+      for (const stmt of funcLit.body.statements) walk(stmt);
+    }
+    return [...captures];
   }
   // Array literal → heap-allocated array
   compileArrayLiteral(node) {

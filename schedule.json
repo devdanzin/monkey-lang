@@ -359,9 +359,55 @@
       "id": "T34",
       "mode": "BUILD",
       "task": "Mid-session: git commit, push, update daily log",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T29",
-      "started": "2026-03-30T16:00:00.868Z"
+      "started": "2026-03-30T16:00:00.868Z",
+      "completed": "2026-03-30T16:00:35.929Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed all repos. Playground bundle updated with closures + string operations. Daily log updated."
+    },
+    {
+      "id": "T35",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Plan next work: what else can be done in the remaining ~4 hours",
+      "started": "2026-03-30T16:01:05.113Z",
+      "completed": "2026-03-30T16:01:19.607Z",
+      "duration_ms": 60000,
+      "summary": "Direction: Build a comprehensive benchmark suite comparing all 5 backends (eval, VM, JIT, transpiler, WASM) on the same programs. Add benchmark script and results to repo."
+    },
+    {
+      "id": "T36",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan benchmark suite",
+      "task": null,
+      "started": "2026-03-30T16:01:32.320Z",
+      "completed": "2026-03-30T16:01:38.097Z",
+      "duration_ms": 15000,
+      "summary": "Planned 3 tasks: benchmark script, run and capture results, add to README/blog."
+    },
+    {
+      "id": "T37",
+      "mode": "BUILD",
+      "task": "Build 5-backend benchmark script: eval, VM, JIT, transpiler, WASM — for fibonacci, sum, factorial, GCD, nested loops",
+      "status": "in-progress",
+      "plan_ref": "T36",
+      "started": "2026-03-30T16:01:48.117Z"
+    },
+    {
+      "id": "T38",
+      "mode": "BUILD",
+      "task": "Run benchmarks, capture results, format as markdown table",
+      "status": "upcoming",
+      "plan_ref": "T36"
+    },
+    {
+      "id": "T39",
+      "mode": "BUILD",
+      "task": "Add benchmark results to README and blog",
+      "status": "upcoming",
+      "plan_ref": "T36"
     }
   ],
   "backlog": [],
@@ -453,6 +499,18 @@
     {
       "time": "2026-03-30T15:46:31.273Z",
       "msg": "PLAN T29 filled 5 BUILD tasks"
+    },
+    {
+      "time": "2026-03-30T16:00:59.651Z",
+      "msg": "Added T35 (THINK) after end: Plan next work: what else can be done in the remaining ~4 hours"
+    },
+    {
+      "time": "2026-03-30T16:01:24.995Z",
+      "msg": "Added T36 (PLAN) after end: Plan benchmark suite"
+    },
+    {
+      "time": "2026-03-30T16:01:32.438Z",
+      "msg": "PLAN T36 filled 3 BUILD tasks"
     }
   ]
 }
