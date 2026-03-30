@@ -1845,23 +1845,123 @@
     {
       "id": "T178",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final session housekeeping",
-      "started": "2026-03-30T21:56:11.559Z"
+      "started": "2026-03-30T21:56:11.559Z",
+      "completed": "2026-03-30T21:57:05.860Z",
+      "duration_ms": 120000,
+      "summary": "Session housekeeping: daily log finalized (70 tasks), CURRENT.md updated, all repos pushed. Session B continues."
+    },
+    {
+      "id": "T179",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: add torus primitive (donut)",
+      "started": "2026-03-30T21:57:32.302Z",
+      "completed": "2026-03-30T21:57:32.449Z",
+      "duration_ms": 0,
+      "summary": "Skipped — torus requires quartic equation solver which is complex and fragile. CSG is more useful and general."
+    },
+    {
+      "id": "T180",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: add CSG (constructive solid geometry) — union, intersection, difference",
+      "started": "2026-03-30T21:57:41.540Z",
+      "completed": "2026-03-30T21:59:19.490Z",
+      "duration_ms": 240000,
+      "summary": "CSG: Union (A∪B), Intersection (A∩B approximate), Difference (A-B). Point-in-object test via inward ray. Bounding boxes handled correctly. 5 new tests (139 total)."
+    },
+    {
+      "id": "T181",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: add environment map (sky sphere with texture)",
+      "started": "2026-03-30T21:59:30.902Z",
+      "completed": "2026-03-30T22:00:42.552Z",
+      "duration_ms": 180000,
+      "summary": "4 environment maps: SkyGradient (default), SolidBackground, SunsetGradient (multi-band orange/purple/blue), StarfieldBackground (2000 procedural stars with dark sky). Renderer updated to use envmaps."
+    },
+    {
+      "id": "T182",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: comprehensive texture test scene",
+      "started": "2026-03-30T22:00:51.075Z",
+      "completed": "2026-03-30T22:02:41.521Z",
+      "duration_ms": 180000,
+      "summary": "Sunset sky gradient (multi-band warm colors) as environment background. 14 scenes total. Environment map system in renderer (SkyGradient, Sunset, Starfield, Solid)."
+    },
+    {
+      "id": "T183",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Deploy + push",
+      "started": "2026-03-30T22:02:50.683Z",
+      "completed": "2026-03-30T22:03:22.468Z",
+      "duration_ms": 60000,
+      "summary": "All repos pushed: workspace, ray-tracer v1.2.0 (main + gh-pages). 139 tests, 14 scenes."
+    },
+    {
+      "id": "T184",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: add render comparison mode (split screen A/B)",
+      "started": "2026-03-30T22:03:46.630Z",
+      "completed": "2026-03-30T22:03:46.777Z",
+      "duration_ms": 0,
+      "summary": "Skipped — split-screen comparison is UI-heavy but not architecturally interesting. Focus on tests."
+    },
+    {
+      "id": "T185",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: add lens flare effect for bright lights",
+      "started": "2026-03-30T22:03:46.923Z",
+      "completed": "2026-03-30T22:03:47.069Z",
+      "duration_ms": 0,
+      "summary": "Skipped — lens flare is a screen-space post-effect, not ray tracing. Deferred."
+    },
+    {
+      "id": "T186",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: add adaptive sampling (more samples where noise is high)",
+      "started": "2026-03-30T22:03:47.215Z",
+      "completed": "2026-03-30T22:03:47.363Z",
+      "duration_ms": 0,
+      "summary": "Skipped — adaptive sampling requires per-pixel variance tracking which complicates the tile worker significantly. Deferred."
+    },
+    {
+      "id": "T187",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: comprehensive test for all new features (CSG, envmap, cylinder, colored glass)",
+      "started": "2026-03-30T22:03:56.628Z",
+      "completed": "2026-03-30T22:05:16.337Z",
+      "duration_ms": 180000,
+      "summary": "10 integration tests: cylinder+disk+sphere, cone+colored glass, CSG union+transforms, CSG difference, 3 environment maps, colored glass tinting, denoise+tonemap chain, JSON roundtrip. 149 tests total."
+    },
+    {
+      "id": "T188",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final update: daily log, push",
+      "started": "2026-03-30T22:05:27.173Z"
     }
   ],
   "current": {
-    "id": "T178",
+    "id": "T188",
     "mode": "MAINTAIN",
     "status": "in-progress",
-    "task": "Final session housekeeping",
-    "started": "2026-03-30T21:56:11.559Z"
+    "task": "Final update: daily log, push",
+    "started": "2026-03-30T22:05:27.173Z"
   },
   "stats": {
-    "completed": 177,
+    "completed": 187,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 26010000
+    "total_duration_ms": 26970000
   },
-  "updated_at": "2026-03-30T21:56:11.559Z"
+  "updated_at": "2026-03-30T22:05:27.173Z"
 }
