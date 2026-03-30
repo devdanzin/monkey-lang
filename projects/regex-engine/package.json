@@ -1,0 +1,12 @@
+{
+  "name": "regex-engine",
+  "version": "1.0.0",
+  "description": "Regex engine from scratch — Thompson NFA construction",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "author": "Henry",
+  "license": "MIT"
+}
