@@ -230,6 +230,14 @@ export class WasmCompiler {
     const strCharAtIdx = this.builder.addImport('env', '__str_char_at', [ValType.i32, ValType.i32], [ValType.i32]);
     this._runtimeFuncs.strCharAt = strCharAtIdx;
 
+    // Import __add: runtime-dispatched addition (int + int or string concat)
+    const addIdx = this.builder.addImport('env', '__add', [ValType.i32, ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.add = addIdx;
+
+    // Import __eq: runtime-dispatched equality (handles strings and ints)
+    const eqIdx = this.builder.addImport('env', '__eq', [ValType.i32, ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.eq = eqIdx;
+
     // Import __rest from JS host: env.__rest(arr_ptr: i32) → i32 (new array without first)
     const restIdx = this.builder.addImport('env', '__rest', [ValType.i32], [ValType.i32]);
     this._runtimeFuncs.rest = restIdx;
@@ -829,13 +837,33 @@ export class WasmCompiler {
     this.compileNode(node.right);
 
     switch (node.operator) {
-      case '+':  this.currentBody.emit(Op.i32_add); break;
+      case '+':
+        // Use runtime dispatch only when an operand might be a string
+        if (this._mightBeString(node.left) || this._mightBeString(node.right)) {
+          this.currentBody.call(this._runtimeFuncs.add);
+        } else {
+          this.currentBody.emit(Op.i32_add);
+        }
+        break;
       case '-':  this.currentBody.emit(Op.i32_sub); break;
       case '*':  this.currentBody.emit(Op.i32_mul); break;
       case '/':  this.currentBody.emit(Op.i32_div_s); break;
       case '%':  this.currentBody.emit(Op.i32_rem_s); break;
-      case '==': this.currentBody.emit(Op.i32_eq); break;
-      case '!=': this.currentBody.emit(Op.i32_ne); break;
+      case '==':
+        if (this._mightBeString(node.left) || this._mightBeString(node.right)) {
+          this.currentBody.call(this._runtimeFuncs.eq);
+        } else {
+          this.currentBody.emit(Op.i32_eq);
+        }
+        break;
+      case '!=':
+        if (this._mightBeString(node.left) || this._mightBeString(node.right)) {
+          this.currentBody.call(this._runtimeFuncs.eq);
+          this.currentBody.emit(Op.i32_eqz);
+        } else {
+          this.currentBody.emit(Op.i32_ne);
+        }
+        break;
       case '<':  this.currentBody.emit(Op.i32_lt_s); break;
       case '>':  this.currentBody.emit(Op.i32_gt_s); break;
       case '<=': this.currentBody.emit(Op.i32_le_s); break;
@@ -1701,6 +1729,39 @@ export class WasmCompiler {
     return false;
   }
 
+  _isDefinitelyInteger(node) {
+    if (node instanceof ast.IntegerLiteral) return true;
+    if (node instanceof ast.BooleanLiteral) return true;
+    if (node instanceof ast.InfixExpression) {
+      const op = node.operator;
+      if (['-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>='].includes(op)) return true;
+      if (op === '+' && this._isDefinitelyInteger(node.left) && this._isDefinitelyInteger(node.right)) return true;
+    }
+    if (node instanceof ast.PrefixExpression) return true;
+    return false;
+  }
+
+  _mightBeString(node) {
+    // Returns true if the node might produce a string at runtime
+    if (node instanceof ast.StringLiteral) return true;
+    if (node instanceof ast.TemplateLiteral) return true;
+    if (node instanceof ast.CallExpression) {
+      if (node.function instanceof ast.Identifier && node.function.value === 'str') return true;
+    }
+    // Array/hash index could return a string
+    if (node instanceof ast.IndexExpression) return true;
+    // String concat
+    if (node instanceof ast.InfixExpression && node.operator === '+' &&
+        (this._mightBeString(node.left) || this._mightBeString(node.right))) return true;
+    // CallExpression with unknown return type
+    if (node instanceof ast.CallExpression && 
+        !(node.function instanceof ast.Identifier && ['len', 'first', 'last', 'type', 'int'].includes(node.function.value))) {
+      // Most function calls could potentially return strings
+      return false; // Conservative: assume functions return integers unless we know otherwise
+    }
+    return false;
+  }
+
   // Constant folding: try to evaluate an expression at compile time
   _tryConstantFold(node) {
     if (!(node instanceof ast.InfixExpression)) return null;
@@ -1847,6 +1908,37 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
         const s = readString(ptr);
         if (index < 0 || index >= s.length) return 0;
         return writeString(s[index]);
+      },
+      __add(a, b) {
+        const mem = memoryRef.memory;
+        if (mem && a > 0 && b > 0) {
+          const view = new DataView(mem.buffer);
+          try {
+            const tagA = view.getInt32(a, true);
+            const tagB = view.getInt32(b, true);
+            if (tagA === TAG_STRING || tagB === TAG_STRING) {
+              const sA = tagA === TAG_STRING ? readString(a) : String(a);
+              const sB = tagB === TAG_STRING ? readString(b) : String(b);
+              return writeString(sA + sB);
+            }
+          } catch (e) {}
+        }
+        return a + b;
+      },
+      __eq(a, b) {
+        if (a === b) return 1;
+        const mem = memoryRef.memory;
+        if (mem && a > 0 && b > 0) {
+          const view = new DataView(mem.buffer);
+          try {
+            const tagA = view.getInt32(a, true);
+            const tagB = view.getInt32(b, true);
+            if (tagA === TAG_STRING && tagB === TAG_STRING) {
+              return readString(a) === readString(b) ? 1 : 0;
+            }
+          } catch (e) {}
+        }
+        return a === b ? 1 : 0;
       },
       __rest(arrPtr) {
         const mem = memoryRef.memory;
