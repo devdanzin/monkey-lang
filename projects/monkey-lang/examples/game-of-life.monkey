@@ -1,67 +1,59 @@
 // Conway's Game of Life — running in WebAssembly
-// Uses arrays to represent the grid, prints each generation
+// Uses mutable arrays for the grid, simulates 5 generations
 
-let WIDTH = 20;
-let HEIGHT = 10;
+let WIDTH = 30;
+let HEIGHT = 15;
+let SIZE = WIDTH * HEIGHT;
 
-// Create a grid (flat array of WIDTH*HEIGHT)
-let makeGrid = fn(w, h) {
+// Create a zero-filled grid
+let makeGrid = fn() {
   let grid = [];
-  for (i in 0..(w * h)) {
-    grid = push(grid, 0);
-  }
+  for (i in 0..SIZE) { grid = push(grid, 0); }
   grid
 };
+
+let idx = fn(x, y) { y * WIDTH + x };
 
 let getCell = fn(grid, x, y) {
   if (x < 0) { return 0; }
   if (x >= WIDTH) { return 0; }
   if (y < 0) { return 0; }
   if (y >= HEIGHT) { return 0; }
-  grid[y * WIDTH + x]
+  grid[idx(x, y)]
 };
 
 let countNeighbors = fn(grid, x, y) {
-  let count = 0;
-  count = count + getCell(grid, x-1, y-1);
-  count = count + getCell(grid, x, y-1);
-  count = count + getCell(grid, x+1, y-1);
-  count = count + getCell(grid, x-1, y);
-  count = count + getCell(grid, x+1, y);
-  count = count + getCell(grid, x-1, y+1);
-  count = count + getCell(grid, x, y+1);
-  count = count + getCell(grid, x+1, y+1);
-  count
+  getCell(grid, x-1, y-1) + getCell(grid, x, y-1) + getCell(grid, x+1, y-1) +
+  getCell(grid, x-1, y) + getCell(grid, x+1, y) +
+  getCell(grid, x-1, y+1) + getCell(grid, x, y+1) + getCell(grid, x+1, y+1)
 };
 
 let step = fn(grid) {
-  let next = makeGrid(WIDTH, HEIGHT);
+  let next = makeGrid();
   for (y in 0..HEIGHT) {
     for (x in 0..WIDTH) {
       let n = countNeighbors(grid, x, y);
       let alive = getCell(grid, x, y);
+      // Rules: alive with 2-3 neighbors stays alive, dead with 3 becomes alive
       if (alive == 1) {
-        if (n == 2) { next = push(rest(next), 0); } // hack: can't set
-        if (n == 3) { next = push(rest(next), 0); }
+        if (n == 2 || n == 3) { next[idx(x, y)] = 1; }
+      } else {
+        if (n == 3) { next[idx(x, y)] = 1; }
       }
     }
   }
   next
 };
 
-// Initialize with a glider
-let grid = makeGrid(WIDTH, HEIGHT);
-// Glider: (1,0), (2,1), (0,2), (1,2), (2,2)
-
-// Print initial state
-let printGrid = fn(grid) {
+let printGrid = fn(grid, gen) {
+  puts(`Generation ${gen}:`);
   for (y in 0..HEIGHT) {
     let line = "";
     for (x in 0..WIDTH) {
       if (getCell(grid, x, y) == 1) {
-        line = line + "#";
+        line = line + "█";
       } else {
-        line = line + ".";
+        line = line + " ";
       }
     }
     puts(line);
@@ -69,9 +61,19 @@ let printGrid = fn(grid) {
   puts("");
 };
 
-// Since we can't easily mutate arrays, just demonstrate the grid concept
-puts("Game of Life grid (20x10):");
-let g = makeGrid(WIDTH, HEIGHT);
-printGrid(g);
-puts("Cells alive: 0");
-puts("(Array mutation needed for full simulation)");
+// Initialize with an R-pentomino (common chaotic pattern)
+let grid = makeGrid();
+let cx = WIDTH / 2;
+let cy = HEIGHT / 2;
+grid[idx(cx+1, cy-1)] = 1;
+grid[idx(cx+2, cy-1)] = 1;
+grid[idx(cx, cy)] = 1;
+grid[idx(cx+1, cy)] = 1;
+grid[idx(cx+1, cy+1)] = 1;
+
+// Run 5 generations
+printGrid(grid, 0);
+for (gen in 1..6) {
+  grid = step(grid);
+  printGrid(grid, gen);
+}
