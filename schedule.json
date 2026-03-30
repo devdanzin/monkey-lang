@@ -590,9 +590,12 @@
     {
       "id": "T56",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add constant folding optimization to WASM compiler",
-      "started": "2026-03-30T16:32:26.626Z"
+      "started": "2026-03-30T16:32:26.626Z",
+      "completed": "2026-03-30T16:37:28.638Z",
+      "duration_ms": 300000,
+      "summary": "WASM constant folding: arithmetic, comparisons, nested chains, negation. 2+3→i32.const 5. 7 new tests (106 total WASM compiler tests)."
     }
   ],
   "backlog": [],

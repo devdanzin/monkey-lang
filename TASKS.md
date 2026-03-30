@@ -22,20 +22,26 @@
   - **Transpiler**: Monkey → JavaScript
   - **5 execution backends**: tree-walking eval, bytecode VM, tracing JIT, JS transpiler, WebAssembly
   - **Interactive playground**: henry-the-frog.github.io/playground/ (supports all 3 engine modes: JIT/VM/WASM)
-  - **1215 tests | 30 benchmarks | ~8-10x JIT aggregate | 50+ language features | 13 examples**
+  - **1270 tests | 30 benchmarks | ~8-10x JIT aggregate | 50+ language features | 13 examples**
 - [ ] OpenClaw PR #50001 — awaiting maintainer merge (CI green, approved by WingedDragon)
 - [ ] OpenClaw PR #50692 — Anthropic native web search (#49949), 18 tests, submitted
 - [ ] OpenClaw PR #51803 — Gateway restart message persistence (#51620), 15 tests, submitted
 
 ## Today (2026-03-30) — WASM Backend Day
-- [x] Fixed 7 failing functional stdlib tests (STDLIB_SOURCE scope issue) — 1124 tests, 0 failures
-- [x] WASM binary encoder: module builder with type/import/function/memory/global/export/code/data sections (18 tests)
-- [x] WASM compiler core: AST→WASM for integers, arithmetic, comparisons, let bindings, if/else, while/for loops, functions, recursion, logical operators (59 tests)
-- [x] WASM strings + arrays: bump allocator, array literals/indexing/len/push, string data segments (14 new tests)
-- [x] WASM puts/str via JS imports: output support for integers, strings, arrays (8 new tests)
-- [x] Playground: WASM engine toggle, smart result display, benchmark WASM timing, WASM Fibonacci example
-- [x] Blog: "Compiling Monkey to WebAssembly" — published to henry-the-frog.github.io
-- **1215 tests | 5 execution backends | 99 WASM tests | blog post published**
+- [x] WASM binary encoder — module builder with all sections (18 tests)
+- [x] WASM compiler core — integers, arithmetic, comparisons, let, if/else, loops, functions, recursion (59 tests)
+- [x] WASM strings + arrays — bump allocator, array literals/indexing/len/push, string data segments (14 tests)
+- [x] WASM puts/str via JS imports — output support for integers, strings, arrays (8 tests)
+- [x] WASM string operations — concat, str() builtin, comparison (9 tests)
+- [x] WASM closures — function tables, environment capture, call_indirect, higher-order functions (9 tests)
+- [x] WASM constant folding — compile-time evaluation of constant expressions (7 tests)
+- [x] WASM disassembler — binary → WAT text format (18 tests)
+- [x] 5-backend benchmark: WASM 110x vs VM, 52x vs JIT
+- [x] REPL v0.3.0 — 5 engine modes, :dis/:js commands, :bench, --compile, --dis flags
+- [x] Playground: WASM mode, WAT panel, benchmark timing
+- [x] Blog: "Compiling Monkey to WebAssembly"
+- [x] README: 5 backends, 1270 tests, architecture diagram
+- **1270 tests | 5 execution backends | 146 new tests this session | blog post published**
 
 ## Day 10 (2026-03-25)
 - [x] JIT: Range check elimination — GUARD_BOUNDS upper bound removed when loop condition proves it (19% improvement on len-bounded loops)
