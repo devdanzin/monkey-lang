@@ -870,9 +870,63 @@
     {
       "id": "T84",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement basic hash maps in WASM (linear probing, string/int keys)",
-      "started": "2026-03-30T17:41:41.134Z"
+      "started": "2026-03-30T17:41:41.134Z",
+      "completed": "2026-03-30T17:58:47.492Z",
+      "duration_ms": 600000,
+      "summary": "WASM hash maps: create, read, write with integer and string keys. Unified index dispatch. Fixed dead AST references. 5 new tests, 1314 total, 0 failures."
+    },
+    {
+      "id": "T85",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Think: what to build next — more WASM features, new project, or something different",
+      "started": "2026-03-30T17:59:09.706Z",
+      "completed": "2026-03-30T17:59:23.353Z",
+      "duration_ms": 30000,
+      "summary": "Direction: Improve playground UX — example selector, better errors, showcase examples. Then update blog with hash maps."
+    },
+    {
+      "id": "T86",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan: Playground improvements and blog update",
+      "task": null,
+      "started": "2026-03-30T17:59:29.286Z",
+      "completed": "2026-03-30T17:59:41.636Z",
+      "duration_ms": 15000,
+      "summary": "Planned 3 tasks: playground example selector, blog update, final push."
+    },
+    {
+      "id": "T87",
+      "mode": "BUILD",
+      "task": "Add example selector dropdown to playground with 8+ examples (fib, closures, sorting, mandelbrot, game-of-life, hash-maps, functional, showcase)",
+      "status": "done",
+      "plan_ref": "T86",
+      "started": "2026-03-30T17:59:46.615Z",
+      "completed": "2026-03-30T18:00:51.781Z",
+      "duration_ms": 300000,
+      "summary": "Playground: added hash maps and game of life examples, 5 backends subtitle, rebuilt bundle. 17 examples total."
+    },
+    {
+      "id": "T88",
+      "mode": "BUILD",
+      "task": "Update blog post with hash maps section and final session stats",
+      "status": "done",
+      "plan_ref": "T86",
+      "started": "2026-03-30T18:00:57.211Z",
+      "completed": "2026-03-30T18:01:44.915Z",
+      "duration_ms": 120000,
+      "summary": "Blog updated: hash maps section, 144+ tests, expanded feature list, removed outdated limitations."
+    },
+    {
+      "id": "T89",
+      "mode": "BUILD",
+      "task": "Final playground bundle build and push",
+      "status": "in-progress",
+      "plan_ref": "T86",
+      "started": "2026-03-30T18:01:50.653Z"
     }
   ],
   "backlog": [],
@@ -1136,6 +1190,18 @@
     {
       "time": "2026-03-30T17:41:41.016Z",
       "msg": "Added T84 (BUILD) after end: Implement basic hash maps in WASM (linear probing, string/int keys)"
+    },
+    {
+      "time": "2026-03-30T17:59:09.588Z",
+      "msg": "Added T85 (THINK) after end: Think: what to build next — more WASM features, new project, or something different"
+    },
+    {
+      "time": "2026-03-30T17:59:29.168Z",
+      "msg": "Added T86 (PLAN) after end: Plan: Playground improvements and blog update"
+    },
+    {
+      "time": "2026-03-30T17:59:36.412Z",
+      "msg": "PLAN T86 filled 3 BUILD tasks"
     }
   ]
 }

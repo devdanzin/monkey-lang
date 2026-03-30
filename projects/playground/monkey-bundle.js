@@ -11766,12 +11766,12 @@ var WasmCompiler = class {
     this._addRuntimeFunctions();
     const topLevelFuncNames = /* @__PURE__ */ new Set();
     for (const stmt of program.statements) {
-      if (stmt instanceof LetStatement && (stmt.value instanceof FunctionLiteral || stmt.value instanceof void 0)) {
+      if (stmt instanceof LetStatement && stmt.value instanceof FunctionLiteral) {
         topLevelFuncNames.add(stmt.name.value);
       }
     }
     for (const stmt of program.statements) {
-      if (stmt instanceof LetStatement && (stmt.value instanceof FunctionLiteral || stmt.value instanceof void 0)) {
+      if (stmt instanceof LetStatement && stmt.value instanceof FunctionLiteral) {
         const params = new Set(stmt.value.parameters.map((p) => p.value || p.token?.literal));
         const hasFreeVars = this._hasFreeVariables(stmt.value, params, topLevelFuncNames);
         if (!hasFreeVars) {
@@ -11791,7 +11791,7 @@ var WasmCompiler = class {
     for (let i = 0; i < program.statements.length; i++) {
       const stmt = program.statements[i];
       lastIsExpr = false;
-      if (stmt instanceof LetStatement && (stmt.value instanceof FunctionLiteral || stmt.value instanceof void 0)) {
+      if (stmt instanceof LetStatement && stmt.value instanceof FunctionLiteral) {
         const binding = this.currentScope.resolve(stmt.name.value);
         if (binding && binding.type === "func") {
           continue;
@@ -11858,6 +11858,16 @@ var WasmCompiler = class {
     this.globalScope.define("int", intIdx, "func");
     const sliceIdx = this.builder.addImport("env", "__slice", [ValType.i32, ValType.i32, ValType.i32], [ValType.i32]);
     this._runtimeFuncs.slice = sliceIdx;
+    const hashNewIdx = this.builder.addImport("env", "__hash_new", [], [ValType.i32]);
+    this._runtimeFuncs.hashNew = hashNewIdx;
+    const hashSetIdx = this.builder.addImport("env", "__hash_set", [ValType.i32, ValType.i32, ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.hashSet = hashSetIdx;
+    const hashGetIdx = this.builder.addImport("env", "__hash_get", [ValType.i32, ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.hashGet = hashGetIdx;
+    const indexGetIdx = this.builder.addImport("env", "__index_get", [ValType.i32, ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.indexGet = indexGetIdx;
+    const indexSetIdx = this.builder.addImport("env", "__index_set", [ValType.i32, ValType.i32, ValType.i32], []);
+    this._runtimeFuncs.indexSet = indexSetIdx;
     const { index: allocIdx, body: allocBody } = this.builder.addFunction(
       [ValType.i32],
       [ValType.i32]
@@ -12027,7 +12037,7 @@ var WasmCompiler = class {
       this.compileIfExpression(node);
     } else if (node instanceof CallExpression) {
       this.compileCallExpression(node);
-    } else if (node instanceof FunctionLiteral || node instanceof void 0) {
+    } else if (node instanceof FunctionLiteral) {
       this.compileFunctionLiteral(node);
     } else if (node instanceof WhileExpression) {
       this.compileWhileExpression(node);
@@ -12039,23 +12049,6 @@ var WasmCompiler = class {
       this.compileRangeExpression(node);
     } else if (node instanceof DoWhileExpression) {
       this.compileDoWhileExpression(node);
-    } else if (node instanceof void 0) {
-      this.compileNode(node.left);
-      const tmpLocal = this.nextLocalIndex++;
-      this.currentBody.addLocal(ValType.i32);
-      this.currentBody.localTee(tmpLocal);
-      this.currentBody.if_(ValType.i32);
-      this.currentBody.localGet(tmpLocal);
-      this.currentBody.else_();
-      this.compileNode(node.right);
-      this.currentBody.end();
-    } else if (node instanceof void 0) {
-      const callNode = new CallExpression(
-        node.token || {},
-        node.right,
-        [node.left]
-      );
-      this.compileCallExpression(callNode);
     } else if (node instanceof AssignExpression) {
       this.compileAssignExpression(node);
     } else if (node instanceof BlockStatement) {
@@ -12081,7 +12074,7 @@ var WasmCompiler = class {
       this.compileNode(node.end || { value: 0, constructor: IntegerLiteral });
       this.currentBody.call(this._runtimeFuncs.slice);
     } else if (node instanceof HashLiteral) {
-      this.currentBody.i32Const(0);
+      this.compileHashLiteral(node);
     } else if (node instanceof IndexAssignExpression) {
       this.compileNode(node.left);
       this.compileNode(node.index);
@@ -12098,7 +12091,7 @@ var WasmCompiler = class {
       this.currentBody.localGet(tmpArr);
       this.currentBody.localGet(tmpIdx);
       this.currentBody.localGet(tmpLocal);
-      this.currentBody.call(this._runtimeFuncs.arraySet);
+      this.currentBody.call(this._runtimeFuncs.indexSet);
       this.currentBody.localGet(tmpLocal);
     } else {
       this.currentBody.i32Const(0);
@@ -12193,6 +12186,18 @@ var WasmCompiler = class {
       this.currentBody.localTee(this._getTempLocal());
       this.currentBody.if_(ValType.i32);
       this.currentBody.localGet(this._getTempLocal());
+      this.currentBody.else_();
+      this.compileNode(node.right);
+      this.currentBody.end();
+      return;
+    }
+    if (node.operator === "??") {
+      this.compileNode(node.left);
+      const tmpLocal = this.nextLocalIndex++;
+      this.currentBody.addLocal(ValType.i32);
+      this.currentBody.localTee(tmpLocal);
+      this.currentBody.if_(ValType.i32);
+      this.currentBody.localGet(tmpLocal);
       this.currentBody.else_();
       this.compileNode(node.right);
       this.currentBody.end();
@@ -12663,7 +12668,7 @@ var WasmCompiler = class {
     let hasFree = false;
     const walk = (node) => {
       if (!node || hasFree) return;
-      if (node instanceof FunctionLiteral || node instanceof void 0) return;
+      if (node instanceof FunctionLiteral) return;
       if (node instanceof Identifier) {
         const name = node.value;
         if (!params.has(name) && !topLevelFuncNames.has(name)) {
@@ -12763,7 +12768,24 @@ var WasmCompiler = class {
   compileIndexExpression(node) {
     this.compileNode(node.left);
     this.compileNode(node.index);
-    this.currentBody.call(this._runtimeFuncs.arrayGet);
+    this.currentBody.call(this._runtimeFuncs.indexGet);
+  }
+  // Hash literal: {"key": value, ...}
+  compileHashLiteral(node) {
+    this.currentBody.call(this._runtimeFuncs.hashNew);
+    const hashLocal = this.nextLocalIndex++;
+    this.currentBody.addLocal(ValType.i32);
+    this.currentBody.localSet(hashLocal);
+    if (node.pairs) {
+      for (const [key, value] of node.pairs) {
+        this.currentBody.localGet(hashLocal);
+        this.compileNode(key);
+        this.compileNode(value);
+        this.currentBody.call(this._runtimeFuncs.hashSet);
+        this.currentBody.drop();
+      }
+    }
+    this.currentBody.localGet(hashLocal);
   }
   // Temp local for || operator
   _tempLocal = null;
@@ -12858,6 +12880,8 @@ WasmCompiler.prototype.compilePrefixExpression = function(node) {
   this.compileNode(node.right);
 };
 function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
+  const hashMaps = /* @__PURE__ */ new Map();
+  let nextHashId = 1;
   function readString(ptr) {
     const mem = memoryRef.memory;
     if (!mem || ptr <= 0) return "";
@@ -12987,6 +13011,99 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
           view.setInt32(newPtr + 8 + i * 4, elem, true);
         }
         return newPtr;
+      },
+      __hash_new() {
+        const id = nextHashId++;
+        hashMaps.set(id, /* @__PURE__ */ new Map());
+        return id;
+      },
+      __hash_set(hashId, key, value) {
+        const map = hashMaps.get(hashId);
+        if (!map) return hashId;
+        const mem = memoryRef.memory;
+        let resolvedKey = key;
+        if (mem && key > 0) {
+          const view = new DataView(mem.buffer);
+          try {
+            const tag = view.getInt32(key, true);
+            if (tag === TAG_STRING) {
+              resolvedKey = "s:" + readString(key);
+            }
+          } catch (e) {
+          }
+        }
+        map.set(resolvedKey, value);
+        return hashId;
+      },
+      __hash_get(hashId, key) {
+        const map = hashMaps.get(hashId);
+        if (!map) return 0;
+        const mem = memoryRef.memory;
+        let resolvedKey = key;
+        if (mem && key > 0) {
+          const view = new DataView(mem.buffer);
+          try {
+            const tag = view.getInt32(key, true);
+            if (tag === TAG_STRING) {
+              resolvedKey = "s:" + readString(key);
+            }
+          } catch (e) {
+          }
+        }
+        return map.get(resolvedKey) || 0;
+      },
+      __index_get(obj, key) {
+        if (hashMaps.has(obj)) {
+          const map = hashMaps.get(obj);
+          const mem2 = memoryRef.memory;
+          let resolvedKey = key;
+          if (mem2 && key > 0) {
+            const view2 = new DataView(mem2.buffer);
+            try {
+              const tag2 = view2.getInt32(key, true);
+              if (tag2 === TAG_STRING) {
+                resolvedKey = "s:" + readString(key);
+              }
+            } catch (e) {
+            }
+          }
+          return map.get(resolvedKey) || 0;
+        }
+        const mem = memoryRef.memory;
+        if (!mem || obj <= 0) return 0;
+        const view = new DataView(mem.buffer);
+        const tag = view.getInt32(obj, true);
+        if (tag !== TAG_ARRAY) return 0;
+        const len = view.getInt32(obj + 4, true);
+        if (key < 0 || key >= len) return 0;
+        return view.getInt32(obj + 8 + key * 4, true);
+      },
+      __index_set(obj, key, value) {
+        if (hashMaps.has(obj)) {
+          const map = hashMaps.get(obj);
+          const mem2 = memoryRef.memory;
+          let resolvedKey = key;
+          if (mem2 && key > 0) {
+            const view2 = new DataView(mem2.buffer);
+            try {
+              const tag2 = view2.getInt32(key, true);
+              if (tag2 === TAG_STRING) {
+                resolvedKey = "s:" + readString(key);
+              }
+            } catch (e) {
+            }
+          }
+          map.set(resolvedKey, value);
+          return;
+        }
+        const mem = memoryRef.memory;
+        if (!mem || obj <= 0) return;
+        const view = new DataView(mem.buffer);
+        const tag = view.getInt32(obj, true);
+        if (tag !== TAG_ARRAY) return;
+        const len = view.getInt32(obj + 4, true);
+        if (key < 0 || key >= len) return;
+        view.setInt32(obj + 8 + key * 4, value, true);
       }
     }
   };
