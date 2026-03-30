@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ray Tracer Gallery — Henry</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: #0d1117; color: #c9d1d9; min-height: 100vh; padding: 2rem;
+  }
+  h1 { text-align: center; font-size: 1.8rem; color: #f0f6fc; margin-bottom: 0.3rem; }
+  h1 span { color: #58a6ff; }
+  .subtitle { text-align: center; color: #8b949e; font-size: 0.9rem; margin-bottom: 2rem; }
+  .gallery {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem; max-width: 1200px; margin: 0 auto;
+  }
+  .card {
+    background: #161b22; border: 1px solid #30363d; border-radius: 8px;
+    overflow: hidden; transition: border-color 0.2s;
+  }
+  .card:hover { border-color: #58a6ff; }
+  .card canvas { width: 100%; display: block; cursor: pointer; }
+  .card-info { padding: 0.75rem 1rem; }
+  .card-info h3 { font-size: 0.95rem; color: #f0f6fc; margin-bottom: 0.25rem; }
+  .card-info p { font-size: 0.75rem; color: #8b949e; }
+  .card-info .badge {
+    display: inline-block; background: #21262d; border: 1px solid #30363d;
+    border-radius: 4px; padding: 0.1rem 0.4rem; font-size: 0.7rem; margin-right: 0.3rem;
+  }
+  .progress { font-size: 0.7rem; color: #58a6ff; margin-top: 0.3rem; }
+  .nav { text-align: center; margin-bottom: 2rem; }
+  .nav a { color: #58a6ff; text-decoration: none; font-size: 0.9rem; }
+  .nav a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<h1>🔮 <span>Ray Tracer</span> Gallery</h1>
+<p class="subtitle">All 11 scenes rendered live in your browser</p>
+<div class="nav">
+  <a href="index.html">← Back to interactive renderer</a> •
+  <a href="https://github.com/henry-the-frog/ray-tracer">Source on GitHub</a>
+</div>
+
+<div class="gallery" id="gallery"></div>
+
+<script src="bundle.js"></script>
+<script>
+const scenes = [
+  { id: 'simple', name: 'Three Spheres', desc: 'Glass, matte, and metal', tags: ['Lambertian','Metal','Dielectric'], cam: { lookFrom:{x:-2,y:2,z:1},lookAt:{x:0,y:0,z:-1},vfov:20,aspectRatio:3/2 } },
+  { id: 'random', name: 'Random Scene', desc: '~480 spheres with checker ground', tags: ['BVH','CheckerTexture'], cam: { lookFrom:{x:13,y:2,z:3},lookAt:{x:0,y:0,z:0},vfov:20,aspectRatio:3/2,aperture:0.1,focusDist:10 } },
+  { id: 'cornell', name: 'Cornell Box', desc: 'Classic rendering test with area light', tags: ['DiffuseLight','Box','Rects'], cam: { lookFrom:{x:278,y:278,z:-800},lookAt:{x:278,y:278,z:0},vfov:40,aspectRatio:1 }, bg: {x:0,y:0,z:0} },
+  { id: 'glass', name: 'Glass Study', desc: 'Hollow glass, water, diamond', tags: ['Dielectric','IOR'], cam: { lookFrom:{x:0,y:0.5,z:2},lookAt:{x:0,y:0,z:-1},vfov:40,aspectRatio:3/2 } },
+  { id: 'metal', name: 'Metal Showcase', desc: 'Five metals with increasing fuzz', tags: ['Metal','Fuzz'], cam: { lookFrom:{x:0,y:2,z:4},lookAt:{x:0,y:0.3,z:-1},vfov:40,aspectRatio:3/2 } },
+  { id: 'lit', name: 'Lit Room', desc: 'Area light with checker floor', tags: ['DiffuseLight','XZRect'], cam: { lookFrom:{x:0,y:2,z:4},lookAt:{x:0,y:0,z:-1},vfov:40,aspectRatio:3/2 }, bg: {x:0,y:0,z:0} },
+  { id: 'textured', name: 'Textured World', desc: 'Marble, noise, mirror, glass', tags: ['MarbleTexture','NoiseTexture'], cam: { lookFrom:{x:5,y:3,z:6},lookAt:{x:0,y:0.5,z:0},vfov:30,aspectRatio:3/2 } },
+  { id: 'smoky', name: 'Smoky Cornell Box', desc: 'Volumetric fog and smoke', tags: ['ConstantMedium','Isotropic'], cam: { lookFrom:{x:278,y:278,z:-800},lookAt:{x:278,y:278,z:0},vfov:40,aspectRatio:1 }, bg: {x:0,y:0,z:0} },
+  { id: 'solar', name: 'Solar System', desc: 'Procedural planets and star', tags: ['PlanetTexture','StripeTexture','Emissive'], cam: { lookFrom:{x:20,y:8,z:15},lookAt:{x:0,y:0,z:0},vfov:40,aspectRatio:3/2 }, bg: {x:0.01,y:0.01,z:0.02} },
+  { id: 'showcase', name: '✨ Showcase', desc: 'Everything combined', tags: ['All materials','All textures','Volumetric'], cam: { lookFrom:{x:10,y:4,z:10},lookAt:{x:0,y:1,z:0},vfov:30,aspectRatio:3/2 } },
+  { id: 'motion', name: 'Motion Blur', desc: 'Bouncing spheres with blur', tags: ['MovingSphere','Time'], cam: { lookFrom:{x:8,y:3,z:8},lookAt:{x:0,y:0.5,z:0},vfov:25,aspectRatio:3/2,time0:0,time1:1 } },
+];
+
+const gallery = document.getElementById('gallery');
+const { Vec3, Camera, BVHNode, createRandomScene, createSimpleScene, createCornellBox,
+        createGlassStudy, createMetalShowcase, createLitRoom, createTexturedWorld,
+        createSmokyCornell, createSolarSystem, createShowcase, createMotionBlur } = self.RayTracer;
+
+const sceneBuilders = {
+  simple: createSimpleScene, random: createRandomScene, cornell: createCornellBox,
+  glass: createGlassStudy, metal: createMetalShowcase, lit: createLitRoom,
+  textured: createTexturedWorld, smoky: createSmokyCornell, solar: createSolarSystem,
+  showcase: createShowcase, motion: createMotionBlur
+};
+
+// Create cards
+for (const s of scenes) {
+  const card = document.createElement('div');
+  card.className = 'card';
+  const ar = s.cam.aspectRatio || (3/2);
+  const w = 300, h = Math.floor(w / ar);
+  card.innerHTML = `
+    <canvas id="canvas-${s.id}" width="${w}" height="${h}"></canvas>
+    <div class="card-info">
+      <h3>${s.name}</h3>
+      <p>${s.desc}</p>
+      <div>${s.tags.map(t => `<span class="badge">${t}</span>`).join('')}</div>
+      <div class="progress" id="prog-${s.id}">Queued...</div>
+    </div>`;
+  card.querySelector('canvas').addEventListener('click', () => {
+    window.location.href = `index.html#scene=${s.id}`;
+  });
+  gallery.appendChild(card);
+}
+
+// Render scenes sequentially using workers
+let sceneIdx = 0;
+function renderNext() {
+  if (sceneIdx >= scenes.length) return;
+  const s = scenes[sceneIdx++];
+  const prog = document.getElementById(`prog-${s.id}`);
+  prog.textContent = 'Rendering...';
+
+  const worker = new Worker('tile-worker.js');
+  const canvas = document.getElementById(`canvas-${s.id}`);
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  const SPP = 8;
+  const TILE = 32;
+  const tiles = [];
+  let tid = 0;
+  for (let y = 0; y < h; y += TILE) for (let x = 0; x < w; x += TILE)
+    tiles.push({ tileId: tid++, x0: x, y0: y, x1: Math.min(x+TILE,w), y1: Math.min(y+TILE,h) });
+
+  let done = 0, total = tiles.length, tileI = 0;
+  const config = {
+    width: w, height: h, samplesPerPixel: SPP, maxDepth: 20,
+    scene: s.id,
+    cameraConfig: { ...s.cam, vup: {x:0,y:1,z:0} },
+    background: s.bg || null, renderMode: 'normal'
+  };
+
+  function send() { if (tileI < tiles.length) worker.postMessage({ tile: tiles[tileI++], config }); }
+
+  worker.onmessage = (e) => {
+    const { x0, y0, tileW, tileH, pixels } = e.data;
+    ctx.putImageData(new ImageData(pixels, tileW, tileH), x0, y0);
+    done++;
+    prog.textContent = `${Math.floor(done/total*100)}%`;
+    if (done === total) {
+      prog.textContent = 'Done';
+      worker.terminate();
+      renderNext();
+    } else {
+      send();
+    }
+  };
+  send();
+}
+
+renderNext();
+</script>
+</body>
+</html>
