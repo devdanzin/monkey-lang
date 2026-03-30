@@ -4,10 +4,11 @@ import { Matrix } from './matrix.js';
 import { getActivation } from './activation.js';
 
 export class Dense {
-  constructor(inputSize, outputSize, activation = 'relu') {
+  constructor(inputSize, outputSize, activation = 'relu', { dropout = 0 } = {}) {
     this.inputSize = inputSize;
     this.outputSize = outputSize;
     this.activation = getActivation(activation);
+    this.dropoutRate = dropout;
 
     // Weights and biases (Xavier initialized)
     this.weights = Matrix.random(inputSize, outputSize);
@@ -17,6 +18,8 @@ export class Dense {
     this.input = null;
     this.z = null;  // Pre-activation
     this.a = null;  // Post-activation (output)
+    this.dropoutMask = null;
+    this.training = true;
 
     // Gradients
     this.dWeights = null;
@@ -28,6 +31,13 @@ export class Dense {
     this.input = input;
     this.z = input.dot(this.weights).add(this.biases);
     this.a = this.activation.forward(this.z);
+
+    // Apply dropout during training
+    if (this.dropoutRate > 0 && this.training) {
+      this.dropoutMask = this.a.map(() => Math.random() > this.dropoutRate ? 1 / (1 - this.dropoutRate) : 0);
+      this.a = this.a.mul(this.dropoutMask);
+    }
+
     return this.a;
   }
 
