@@ -22,6 +22,7 @@ import { WasmModuleBuilder, FuncBodyBuilder, Op, ValType, ExportKind, encodeULEB
 import { Lexer } from './lexer.js';
 import { Parser } from './parser.js';
 import * as ast from './ast.js';
+import { peepholeOptimize } from './wasm-optimize.js';
 
 // Compilation environment — tracks variable bindings per scope
 class Scope {
@@ -190,6 +191,11 @@ export class WasmCompiler {
       this.builder.addTable(ValType.funcref, tableSize, tableSize);
       const funcIndices = this.closureFuncs.map(cf => cf.wasmFuncIndex);
       this.builder.addElement(0, 0, funcIndices);
+    }
+
+    // Peephole optimize all function bodies
+    for (const func of this.builder.functions) {
+      peepholeOptimize(func.body);
     }
 
     return this.builder;
