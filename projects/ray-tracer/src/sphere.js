@@ -1,6 +1,8 @@
 // sphere.js — Ray-sphere intersection
 
 import { HitRecord } from './hittable.js';
+import { Vec3 } from './vec3.js';
+import { AABB } from './aabb.js';
 
 export class Sphere {
   constructor(center, radius, material) {
@@ -35,5 +37,10 @@ export class Sphere {
     rec.material = this.material;
 
     return rec;
+  }
+
+  boundingBox() {
+    const r = new Vec3(this.radius, this.radius, this.radius);
+    return new AABB(this.center.sub(r), this.center.add(r));
   }
 }
