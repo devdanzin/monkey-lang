@@ -409,9 +409,9 @@ node src/repl.js --wasm examples/showcase.monkey   # Native WASM execution
 node src/repl.js --dis examples/fib.wasm           # Human-readable WebAssembly text
 ```
 
-**Supported features:** integers, booleans, arithmetic, comparisons, let/assign, compound assignment (`+=`, `-=`), if/else, while, for, for-in, do-while, ranges (`0..10`), functions (including recursion), closures, higher-order functions, arrays, strings, string concatenation, template literals, `puts`, `str`, `len`, `push`, `first`, `last`, `rest`, `type`. Constant folding optimization.
+**Supported features:** integers, booleans, arithmetic, comparisons, let/assign, compound assignment (`+=`, `-=`), if/else, while, for, for-in, do-while, ranges (`0..10`), functions (including recursion), closures, higher-order functions, arrays, strings, string concatenation, template literals, `puts`, `str`, `len`, `push`, `first`, `last`, `rest`, `type`, `int`. Constant folding optimization.
 
-**Architecture:** Binary encoder (wasm.js, 350 lines) → AST compiler (wasm-compiler.js, 600 lines) → Disassembler (wasm-dis.js, 400 lines). 161 WASM-specific tests.
+**Architecture:** Binary encoder (wasm.js, 350 lines) → AST compiler (wasm-compiler.js, 700 lines) → Disassembler (wasm-dis.js, 400 lines). 165 WASM-specific tests.
 
 ## Blog Series
 

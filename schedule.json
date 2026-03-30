@@ -750,9 +750,19 @@
     {
       "id": "T72",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add int() builtin to WASM compiler (parse string to integer)",
-      "started": "2026-03-30T17:16:07.576Z"
+      "started": "2026-03-30T17:16:07.576Z",
+      "completed": "2026-03-30T17:17:09.414Z",
+      "duration_ms": 120000,
+      "summary": "int() and type() builtins in WASM via JS host imports."
+    },
+    {
+      "id": "T73",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "End-of-session: comprehensive verification, final updates, clean push",
+      "started": "2026-03-30T17:17:19.181Z"
     }
   ],
   "backlog": [],
@@ -968,6 +978,10 @@
     {
       "time": "2026-03-30T17:16:07.459Z",
       "msg": "Added T72 (BUILD) after end: Add int() builtin to WASM compiler (parse string to integer)"
+    },
+    {
+      "time": "2026-03-30T17:17:19.064Z",
+      "msg": "Added T73 (MAINTAIN) after end: End-of-session: comprehensive verification, final updates, clean push"
     }
   ]
 }
