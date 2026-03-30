@@ -323,7 +323,27 @@ class MonkeyREPL {
         if (traces > 0) info += `, ${traces} trace${traces > 1 ? 's' : ''}`;
       }
       const timing = this.showTiming ? `  \x1b[90m(${info})\x1b[0m` : '';
-      console.log(result.inspect() + timing);
+      console.log(this.colorizeResult(result) + timing);
+    }
+  }
+
+  colorizeResult(result) {
+    if (!result) return '';
+    const text = result.inspect ? result.inspect() : String(result);
+    const type = result.type ? result.type() : '';
+
+    switch (type) {
+      case 'INTEGER': return `\x1b[33m${text}\x1b[0m`; // yellow
+      case 'FLOAT': return `\x1b[33m${text}\x1b[0m`;
+      case 'BOOLEAN': return `\x1b[35m${text}\x1b[0m`; // magenta
+      case 'STRING': return `\x1b[32m${text}\x1b[0m`; // green
+      case 'ARRAY': return `\x1b[36m${text}\x1b[0m`; // cyan
+      case 'HASH': return `\x1b[36m${text}\x1b[0m`;
+      case 'FUNCTION': return `\x1b[34m${text}\x1b[0m`; // blue
+      case 'CLOSURE': return `\x1b[34m${text}\x1b[0m`;
+      case 'NULL': return `\x1b[90m${text}\x1b[0m`; // gray
+      case 'ERROR': return `\x1b[31m${text}\x1b[0m`; // red
+      default: return text;
     }
   }
 

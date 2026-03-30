@@ -680,9 +680,29 @@
     {
       "id": "T65",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add --benchmark flag that compares all backends on a .monkey file",
-      "started": "2026-03-30T17:04:42.660Z"
+      "started": "2026-03-30T17:04:42.660Z",
+      "completed": "2026-03-30T17:07:27.413Z",
+      "duration_ms": 180000,
+      "summary": "--benchmark flag: compares VM, JIT, WASM on any .monkey file. 20 iterations, median. fib(30): WASM 136x faster than VM."
+    },
+    {
+      "id": "T66",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Write blog post: Building a WASM Compilation Pipeline in One Session",
+      "started": "2026-03-30T17:07:38.707Z",
+      "completed": "2026-03-30T17:08:13.955Z",
+      "duration_ms": 120000,
+      "summary": "Blog post updated with same-day additions: closures, 136x speedup, functional programming, disassembler, CLI tools. Pushed to GitHub Pages."
+    },
+    {
+      "id": "T67",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add syntax highlighting to Monkey REPL output (colored keywords, strings, numbers)",
+      "started": "2026-03-30T17:08:33.275Z"
     }
   ],
   "backlog": [],
@@ -870,6 +890,14 @@
     {
       "time": "2026-03-30T17:04:42.543Z",
       "msg": "Added T65 (BUILD) after end: Add --benchmark flag that compares all backends on a .monkey file"
+    },
+    {
+      "time": "2026-03-30T17:07:38.589Z",
+      "msg": "Added T66 (BUILD) after end: Write blog post: Building a WASM Compilation Pipeline in One Session"
+    },
+    {
+      "time": "2026-03-30T17:08:33.158Z",
+      "msg": "Added T67 (BUILD) after end: Add syntax highlighting to Monkey REPL output (colored keywords, strings, numbers)"
     }
   ]
 }
