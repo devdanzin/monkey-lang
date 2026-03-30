@@ -229,6 +229,10 @@ export class FuncBodyBuilder {
 
   call(funcIndex) { return this.emit(Op.call, ...encodeULEB128(funcIndex)); }
 
+  callIndirect(typeIndex, tableIndex = 0) {
+    return this.emit(Op.call_indirect, ...encodeULEB128(typeIndex), ...encodeULEB128(tableIndex));
+  }
+
   // Control flow helpers
   block(blockType = 0x40) { return this.emit(Op.block, blockType); }
   loop(blockType = 0x40) { return this.emit(Op.loop, blockType); }
@@ -271,6 +275,8 @@ export class WasmModuleBuilder {
     this.memories = [];  // [{min, max?}]
     this.globals = [];   // [{type, mutable, initValue}]
     this.exports = [];   // [{name, kind, index}]
+    this.tables = [];    // [{type, min, max?}]
+    this.elements = [];  // [{tableIndex, offset, funcIndices}]
     this.dataSegments = []; // [{offset, bytes}]
     this._typeCache = new Map();
   }
@@ -319,6 +325,18 @@ export class WasmModuleBuilder {
   // Add an export.
   addExport(name, kind, index) {
     this.exports.push({ name, kind, index });
+  }
+
+  // Add a table (for funcref, call_indirect). Returns table index.
+  addTable(type, min, max) {
+    const idx = this.tables.length;
+    this.tables.push({ type: type || ValType.funcref, min, max });
+    return idx;
+  }
+
+  // Add an element segment (initializes table entries).
+  addElement(tableIndex, offset, funcIndices) {
+    this.elements.push({ tableIndex, offset, funcIndices });
   }
 
   // Add a data segment (at a fixed offset in memory).
@@ -384,6 +402,24 @@ export class WasmModuleBuilder {
       sections.push(this._makeSection(Section.Memory, bytes));
     }
 
+    // Table section
+    if (this.tables.length > 0) {
+      const bytes = [];
+      bytes.push(...encodeULEB128(this.tables.length));
+      for (const { type, min, max } of this.tables) {
+        bytes.push(type); // element type (funcref = 0x70)
+        if (max !== undefined) {
+          bytes.push(0x01);
+          bytes.push(...encodeULEB128(min));
+          bytes.push(...encodeULEB128(max));
+        } else {
+          bytes.push(0x00);
+          bytes.push(...encodeULEB128(min));
+        }
+      }
+      sections.push(this._makeSection(Section.Table, bytes));
+    }
+
     // Global section
     if (this.globals.length > 0) {
       const bytes = [];
@@ -413,6 +449,21 @@ export class WasmModuleBuilder {
         bytes.push(...encodeULEB128(index));
       }
       sections.push(this._makeSection(Section.Export, bytes));
+    }
+
+    // Element section (table initialization)
+    if (this.elements.length > 0) {
+      const bytes = [];
+      bytes.push(...encodeULEB128(this.elements.length));
+      for (const { tableIndex, offset, funcIndices } of this.elements) {
+        bytes.push(0x00); // active element, table index 0 (implicit)
+        bytes.push(Op.i32_const, ...encodeSLEB128(offset), Op.end); // offset expr
+        bytes.push(...encodeULEB128(funcIndices.length));
+        for (const fi of funcIndices) {
+          bytes.push(...encodeULEB128(fi));
+        }
+      }
+      sections.push(this._makeSection(Section.Element, bytes));
     }
 
     // Code section

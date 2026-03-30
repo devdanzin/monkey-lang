@@ -278,5 +278,37 @@ describe('WASM Binary Encoder', () => {
       assert.strictEqual(instance.exports.addF64(1.5, 2.5), 4.0);
       assert.strictEqual(instance.exports.addF64(-1.0, 1.0), 0.0);
     });
+
+    it('table + call_indirect', async () => {
+      const builder = new WasmModuleBuilder();
+
+      // Two functions with the same signature: (i32) -> i32
+      const typeIdx = builder.addType([ValType.i32], [ValType.i32]);
+
+      // func0: double(x) = x * 2
+      const { index: f0, body: b0 } = builder.addFunction([ValType.i32], [ValType.i32]);
+      b0.localGet(0).i32Const(2).emit(Op.i32_mul);
+
+      // func1: triple(x) = x * 3
+      const { index: f1, body: b1 } = builder.addFunction([ValType.i32], [ValType.i32]);
+      b1.localGet(0).i32Const(3).emit(Op.i32_mul);
+
+      // Table with 2 entries
+      builder.addTable(ValType.funcref, 2, 2);
+      builder.addElement(0, 0, [f0, f1]);
+
+      // Dispatch: call function at table[idx](arg)
+      const { index: dispatchIdx, body: dispatchBody } = builder.addFunction(
+        [ValType.i32, ValType.i32], [ValType.i32]
+      );
+      // arg=local[0], table_idx=local[1]
+      dispatchBody.localGet(0).localGet(1).callIndirect(typeIdx);
+
+      builder.addExport('dispatch', ExportKind.Func, dispatchIdx);
+
+      const instance = await instantiateModule(builder);
+      assert.strictEqual(instance.exports.dispatch(5, 0), 10);  // double(5)
+      assert.strictEqual(instance.exports.dispatch(5, 1), 15);  // triple(5)
+    });
   });
 });

@@ -272,16 +272,80 @@
       "id": "T26",
       "mode": "BUILD",
       "task": "Update monkey-lang README: 5 backends, 1200+ tests, architecture diagram, WASM section",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T21",
-      "started": "2026-03-30T15:42:44.637Z"
+      "started": "2026-03-30T15:42:44.637Z",
+      "completed": "2026-03-30T15:44:48.943Z",
+      "duration_ms": 300000,
+      "summary": "README updated: 5 backends in subtitle, WASM blog post link, architecture diagram with all 5 backends, WASM in feature comparison, 1235 test count."
     },
     {
       "id": "T27",
       "mode": "BUILD",
       "task": "Push final state, update playground bundle, git push all repos",
+      "status": "done",
+      "plan_ref": "T21",
+      "started": "2026-03-30T15:45:00.253Z",
+      "completed": "2026-03-30T15:45:34.944Z",
+      "duration_ms": 60000,
+      "summary": "All repos pushed: workspace, monkey-lang, github.io. Playground bundle updated with string operations. All 3 repos in sync."
+    },
+    {
+      "id": "T28",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Decide next: WASM closures, new project, or deepen existing work",
+      "started": "2026-03-30T15:45:56.776Z",
+      "completed": "2026-03-30T15:46:12.817Z",
+      "duration_ms": 60000,
+      "summary": "Direction: WASM closures using function tables and call_indirect. Will represent closures as (env_ptr, table_index) pairs. Makes the WASM backend support first-class functions."
+    },
+    {
+      "id": "T29",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan WASM closures implementation",
+      "task": null,
+      "started": "2026-03-30T15:46:22.850Z",
+      "completed": "2026-03-30T15:46:37.103Z",
+      "duration_ms": 30000,
+      "summary": "Planned 5 tasks for WASM closures: table support in encoder, closure representation, anonymous function compilation, tests, housekeeping."
+    },
+    {
+      "id": "T30",
+      "mode": "BUILD",
+      "task": "Add WASM table support to binary encoder (table section, element section, call_indirect)",
+      "status": "in-progress",
+      "plan_ref": "T29",
+      "started": "2026-03-30T15:46:46.986Z"
+    },
+    {
+      "id": "T31",
+      "mode": "BUILD",
+      "task": "Implement closure representation: heap-allocated (table_index, env_ptr) pairs in WASM compiler",
       "status": "upcoming",
-      "plan_ref": "T21"
+      "plan_ref": "T29"
+    },
+    {
+      "id": "T32",
+      "mode": "BUILD",
+      "task": "Compile anonymous functions and closures to table entries with environment capture",
+      "status": "upcoming",
+      "plan_ref": "T29"
+    },
+    {
+      "id": "T33",
+      "mode": "BUILD",
+      "task": "Test WASM closures: makeAdder, counter, map/filter with closures",
+      "status": "upcoming",
+      "plan_ref": "T29"
+    },
+    {
+      "id": "T34",
+      "mode": "BUILD",
+      "task": "Mid-session: git commit, push, update daily log",
+      "status": "upcoming",
+      "plan_ref": "T29"
     }
   ],
   "backlog": [],
@@ -361,6 +425,18 @@
     {
       "time": "2026-03-30T15:39:26.230Z",
       "msg": "PLAN T21 filled 6 BUILD tasks"
+    },
+    {
+      "time": "2026-03-30T15:45:52.051Z",
+      "msg": "Added T28 (THINK) after end: Decide next: WASM closures, new project, or deepen existing work"
+    },
+    {
+      "time": "2026-03-30T15:46:18.148Z",
+      "msg": "Added T29 (PLAN) after end: Plan WASM closures implementation"
+    },
+    {
+      "time": "2026-03-30T15:46:31.273Z",
+      "msg": "PLAN T29 filled 5 BUILD tasks"
     }
   ]
 }

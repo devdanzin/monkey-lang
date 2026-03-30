@@ -11763,6 +11763,10 @@ var WasmCompiler = class {
     const strIdx = this.builder.addImport("env", "str", [ValType.i32], [ValType.i32]);
     this._runtimeFuncs.str = strIdx;
     this.globalScope.define("str", strIdx, "func");
+    const strConcatIdx = this.builder.addImport("env", "__str_concat", [ValType.i32, ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.strConcat = strConcatIdx;
+    const strEqIdx = this.builder.addImport("env", "__str_eq", [ValType.i32, ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.strEq = strEqIdx;
     const { index: allocIdx, body: allocBody } = this.builder.addFunction(
       [ValType.i32],
       [ValType.i32]
@@ -12026,6 +12030,21 @@ var WasmCompiler = class {
       this.currentBody.end();
       return;
     }
+    if (node.operator === "+" && this._isStringExpression(node.left, node.right)) {
+      this.compileNode(node.left);
+      this.compileNode(node.right);
+      this.currentBody.call(this._runtimeFuncs.strConcat);
+      return;
+    }
+    if ((node.operator === "==" || node.operator === "!=") && this._isStringExpression(node.left, node.right)) {
+      this.compileNode(node.left);
+      this.compileNode(node.right);
+      this.currentBody.call(this._runtimeFuncs.strEq);
+      if (node.operator === "!=") {
+        this.currentBody.emit(Op.i32_eqz);
+      }
+      return;
+    }
     this.compileNode(node.left);
     this.compileNode(node.right);
     switch (node.operator) {
@@ -12257,6 +12276,16 @@ var WasmCompiler = class {
     }
     return this._tempLocal;
   }
+  // Simple type inference: check if an expression produces a string
+  _isStringExpression(...nodes) {
+    return nodes.some((n) => this._nodeIsString(n));
+  }
+  _nodeIsString(node) {
+    if (node instanceof StringLiteral) return true;
+    if (node instanceof CallExpression && node.function instanceof Identifier && node.function.value === "str") return true;
+    if (node instanceof InfixExpression && node.operator === "+" && this._isStringExpression(node.left, node.right)) return true;
+    return false;
+  }
 };
 var origPrefix = WasmCompiler.prototype.compilePrefixExpression;
 WasmCompiler.prototype.compilePrefixExpression = function(node) {
@@ -12274,6 +12303,31 @@ WasmCompiler.prototype.compilePrefixExpression = function(node) {
   this.compileNode(node.right);
 };
 function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
+  function readString(ptr) {
+    const mem = memoryRef.memory;
+    if (!mem || ptr <= 0) return "";
+    const view = new DataView(mem.buffer);
+    const tag = view.getInt32(ptr, true);
+    if (tag !== TAG_STRING) return String(ptr);
+    const len = view.getInt32(ptr + 4, true);
+    const bytes = new Uint8Array(mem.buffer, ptr + 8, len);
+    return new TextDecoder().decode(bytes);
+  }
+  function writeString(str) {
+    const mem = memoryRef.memory;
+    if (!mem) return 0;
+    const encoder = new TextEncoder();
+    const bytes = encoder.encode(str);
+    const view = new DataView(mem.buffer);
+    if (!memoryRef.jsHeapPtr) memoryRef.jsHeapPtr = 6e4;
+    const ptr = memoryRef.jsHeapPtr;
+    memoryRef.jsHeapPtr += 8 + bytes.length;
+    memoryRef.jsHeapPtr = memoryRef.jsHeapPtr + 3 & ~3;
+    view.setInt32(ptr, TAG_STRING, true);
+    view.setInt32(ptr + 4, bytes.length, true);
+    new Uint8Array(mem.buffer).set(bytes, ptr + 8);
+    return ptr;
+  }
   return {
     env: {
       puts(value) {
@@ -12287,7 +12341,21 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
         }
       },
       str(value) {
-        return value;
+        const mem = memoryRef.memory;
+        if (!mem) return value;
+        const view = new DataView(mem.buffer);
+        const formatted = formatWasmValue(value, view);
+        return writeString(formatted);
+      },
+      __str_concat(ptr1, ptr2) {
+        const s1 = readString(ptr1);
+        const s2 = readString(ptr2);
+        return writeString(s1 + s2);
+      },
+      __str_eq(ptr1, ptr2) {
+        const s1 = readString(ptr1);
+        const s2 = readString(ptr2);
+        return s1 === s2 ? 1 : 0;
       }
     }
   };
