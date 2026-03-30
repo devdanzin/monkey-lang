@@ -29,30 +29,44 @@ export class Renderer {
     }
   }
 
-  // Trace a single ray
+  // Trace a single ray (iterative for performance)
   rayColor(ray, depth) {
-    if (depth <= 0) return new Color(0, 0, 0);
+    let currentRay = ray;
+    let currentAttenuation = new Color(1, 1, 1);
+    let totalEmitted = new Color(0, 0, 0);
 
-    const rec = this.scene.hit(ray, 0.001, Infinity);
+    for (let d = 0; d < depth; d++) {
+      const rec = this.scene.hit(currentRay, 0.001, Infinity);
 
-    if (rec) {
-      // Get emitted light from the material (if any)
+      if (!rec) {
+        // Sky gradient (background)
+        let bg;
+        if (this.background) {
+          bg = this.background;
+        } else {
+          const unitDirection = currentRay.direction.unit();
+          const t = 0.5 * (unitDirection.y + 1.0);
+          bg = new Color(1, 1, 1).mul(1 - t).add(new Color(0.5, 0.7, 1.0).mul(t));
+        }
+        return totalEmitted.add(currentAttenuation.mul(bg));
+      }
+
+      // Emitted light
       const emitted = rec.material.emitted
         ? rec.material.emitted(0, 0, rec.p)
         : new Color(0, 0, 0);
+      totalEmitted = totalEmitted.add(currentAttenuation.mul(emitted));
 
-      const result = rec.material.scatter(ray, rec);
-      if (result) {
-        return emitted.add(this.rayColor(result.scattered, depth - 1).mul(result.attenuation));
+      const result = rec.material.scatter(currentRay, rec);
+      if (!result) {
+        return totalEmitted;
       }
-      return emitted;
+
+      currentAttenuation = currentAttenuation.mul(result.attenuation);
+      currentRay = result.scattered;
     }
 
-    // Sky gradient (background)
-    if (this.background) return this.background;
-    const unitDirection = ray.direction.unit();
-    const t = 0.5 * (unitDirection.y + 1.0);
-    return new Color(1, 1, 1).mul(1 - t).add(new Color(0.5, 0.7, 1.0).mul(t));
+    return totalEmitted; // Max depth reached
   }
 
   // Render to a flat RGBA array (for Canvas or image output)
