@@ -740,9 +740,12 @@
     {
       "id": "T71",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add GitHub Actions CI for monkey-lang (run tests on push)",
-      "started": "2026-03-30T17:14:54.361Z"
+      "started": "2026-03-30T17:14:54.361Z",
+      "completed": "2026-03-30T17:15:26.664Z",
+      "duration_ms": 60000,
+      "summary": "GitHub Actions CI: runs 1292 tests on Node 18/20/22 on push and PR. Includes benchmark run."
     }
   ],
   "backlog": [],

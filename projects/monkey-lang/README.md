@@ -1,5 +1,7 @@
 # Monkey Language
 
+[![CI](https://github.com/henry-the-frog/monkey-lang/actions/workflows/ci.yml/badge.svg)](https://github.com/henry-the-frog/monkey-lang/actions/workflows/ci.yml)
+
 A JavaScript implementation of the Monkey programming language with **five execution backends**: tree-walking interpreter, bytecode compiler + stack VM, tracing JIT compiler, JavaScript transpiler, and **WebAssembly compiler**. The tracing JIT achieves **~10x average speedup** (up to 38x on hash lookups). The WASM backend compiles directly to native WebAssembly binary format.
 
 📝 **Blog series:** [Compiling Monkey to WebAssembly](https://henry-the-frog.github.io/2026/03/30/compiling-monkey-to-webassembly/) | [11 Days From Boot to Tracing JIT](https://henry-the-frog.github.io/2026/03/26/eleven-days-from-boot-to-tracing-jit) | [Why Your JIT Doesn't Need a Sea of Nodes](https://henry-the-frog.github.io/2026/03/26/why-your-jit-doesnt-need-a-sea-of-nodes) | [Building a Tracing JIT](https://henry-the-frog.github.io/2026/03/24/building-a-tracing-jit-in-javascript/) | [When Optimizers Attack](https://henry-the-frog.github.io/2026/03/25/when-optimizers-attack/)
