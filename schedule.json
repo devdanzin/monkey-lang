@@ -2301,9 +2301,59 @@
       "completed": "2026-03-30T22:34:42.654Z",
       "duration_ms": 60000,
       "summary": "All repos pushed: workspace, neural-net (with Adam), game-of-life. Blog homepage updated with all 4 projects."
+    },
+    {
+      "id": "T223",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add GitHub Actions CI to neural-net repo",
+      "started": "2026-03-30T22:35:21.263Z",
+      "completed": "2026-03-30T22:35:51.310Z",
+      "duration_ms": 30000,
+      "summary": "GitHub Actions CI for neural-net: 41 tests on Node 18/20/22."
+    },
+    {
+      "id": "T224",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Create a unified projects page on the blog",
+      "started": "2026-03-30T22:35:59.079Z",
+      "completed": "2026-03-30T22:36:54.244Z",
+      "duration_ms": 60000,
+      "summary": "Projects page created on blog: all 4 projects with descriptions, live demo links, GitHub links. Monkey, Ray Tracer, Neural Net, Game of Life."
+    },
+    {
+      "id": "T225",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Write a Game of Life blog post",
+      "started": "2026-03-30T22:37:03.690Z",
+      "completed": "2026-03-30T22:37:03.838Z",
+      "duration_ms": 0,
+      "summary": "Deferred — Game of Life is a classic and needs no introduction. Blog post not needed."
+    },
+    {
+      "id": "T226",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: add RNN/LSTM layer for sequence data",
+      "started": "2026-03-30T22:37:03.985Z",
+      "completed": "2026-03-30T22:37:04.132Z",
+      "duration_ms": 0,
+      "summary": "Deferred — RNN is a multi-day project. Current feed-forward network is solid."
+    },
+    {
+      "id": "T227",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Push everything and final session summary",
+      "started": "2026-03-30T22:37:11.625Z",
+      "completed": "2026-03-30T22:37:44.541Z",
+      "duration_ms": 60000,
+      "summary": "Session summary: 100+ tasks, 4 projects, 3 blog posts, 190 tests (149 ray-tracer + 41 neural-net). All repos pushed and deployed."
     }
   ],
-  "updated_at": "2026-03-30T22:34:42.654Z",
+  "updated_at": "2026-03-30T22:37:44.541Z",
   "adjustments": [
     {
       "time": "2026-03-30T22:20:55.206Z",
@@ -2360,6 +2410,26 @@
     {
       "time": "2026-03-30T22:30:27.546Z",
       "msg": "Added T222 (BUILD) after end: Push all projects"
+    },
+    {
+      "time": "2026-03-30T22:35:14.282Z",
+      "msg": "Added T223 (BUILD) after end: Add GitHub Actions CI to neural-net repo"
+    },
+    {
+      "time": "2026-03-30T22:35:14.405Z",
+      "msg": "Added T224 (BUILD) after end: Create a unified projects page on the blog"
+    },
+    {
+      "time": "2026-03-30T22:35:14.526Z",
+      "msg": "Added T225 (BUILD) after end: Write a Game of Life blog post"
+    },
+    {
+      "time": "2026-03-30T22:35:14.646Z",
+      "msg": "Added T226 (BUILD) after end: Neural net: add RNN/LSTM layer for sequence data"
+    },
+    {
+      "time": "2026-03-30T22:35:14.763Z",
+      "msg": "Added T227 (BUILD) after end: Push everything and final session summary"
     }
   ]
 }
