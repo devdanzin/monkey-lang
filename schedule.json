@@ -676,6 +676,13 @@
       "completed": "2026-03-30T17:00:44.293Z",
       "duration_ms": 120000,
       "summary": "README updated with WASM section (CLI examples, feature list, architecture). Playground rebuilt with all features. 1288 tests. All repos pushed."
+    },
+    {
+      "id": "T65",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add --benchmark flag that compares all backends on a .monkey file",
+      "started": "2026-03-30T17:04:42.660Z"
     }
   ],
   "backlog": [],
@@ -859,6 +866,10 @@
     {
       "time": "2026-03-30T16:59:16.270Z",
       "msg": "Added T64 (MAINTAIN) after end: Final updates: README with complete WASM feature list, rebuild playground, final test count"
+    },
+    {
+      "time": "2026-03-30T17:04:42.543Z",
+      "msg": "Added T65 (BUILD) after end: Add --benchmark flag that compares all backends on a .monkey file"
     }
   ]
 }

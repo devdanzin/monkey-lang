@@ -112,6 +112,94 @@ if (process.argv.includes('--disassemble') || process.argv.includes('--dis')) {
   process.exit(0);
 }
 
+// Handle --benchmark: monkey --benchmark file.monkey
+if (process.argv.includes('--benchmark') || process.argv.includes('--bench')) {
+  const fileArg2 = process.argv.find(a => a.endsWith('.monkey'));
+  if (!fileArg2) {
+    console.error('Usage: monkey --benchmark <file.monkey>');
+    process.exit(1);
+  }
+
+  (async () => {
+    try {
+      const source = fs.readFileSync(fileArg2, 'utf8');
+      const fullSource = STDLIB_SOURCE + '\n' + source;
+      const N = 20;
+
+      console.log(`\x1b[1mBenchmark: ${fileArg2}\x1b[0m (${N} iterations, median)\n`);
+
+      // Parse
+      const lexer = new Lexer(fullSource);
+      const parser = new Parser(lexer);
+      const program = parser.parseProgram();
+
+      // VM
+      let vmTimes = [];
+      for (let i = 0; i < N; i++) {
+        const c = new Compiler();
+        c.compile(program);
+        const vm = new VM(c.bytecode());
+        const start = performance.now();
+        vm.run();
+        vmTimes.push(performance.now() - start);
+      }
+      vmTimes.sort((a, b) => a - b);
+      const vmMedian = vmTimes[Math.floor(N / 2)];
+      console.log(`  VM:         ${vmMedian.toFixed(3)}ms`);
+
+      // JIT
+      let jitTimes = [];
+      for (let i = 0; i < N; i++) {
+        const c = new Compiler();
+        c.compile(program);
+        const vm = new VM(c.bytecode());
+        vm.enableJIT();
+        const start = performance.now();
+        vm.run();
+        jitTimes.push(performance.now() - start);
+      }
+      jitTimes.sort((a, b) => a - b);
+      const jitMedian = jitTimes[Math.floor(N / 2)];
+      console.log(`  JIT:        ${jitMedian.toFixed(3)}ms (${(vmMedian / jitMedian).toFixed(1)}x vs VM)`);
+
+      // WASM
+      try {
+        const compiler = new WasmCompiler();
+        const builder = compiler.compile(source); // No stdlib for WASM
+        if (builder && compiler.errors.length === 0) {
+          const binary = builder.build();
+          const module = await WebAssembly.compile(binary);
+          const imports2 = {
+            env: {
+              puts() {}, str(v) { return v; },
+              __str_concat() { return 0; }, __str_eq() { return 0; },
+              __rest() { return 0; }, __type() { return 0; },
+            }
+          };
+          let wasmTimes = [];
+          for (let i = 0; i < N; i++) {
+            const instance = await WebAssembly.instantiate(module, imports2);
+            const start = performance.now();
+            instance.exports.main();
+            wasmTimes.push(performance.now() - start);
+          }
+          wasmTimes.sort((a, b) => a - b);
+          const wasmMedian = wasmTimes[Math.floor(N / 2)];
+          console.log(`  WASM:       ${wasmMedian.toFixed(3)}ms (\x1b[32m${(vmMedian / wasmMedian).toFixed(1)}x vs VM\x1b[0m)`);
+          console.log(`\n  Binary: ${binary.length} bytes`);
+        } else {
+          console.log(`  WASM:       N/A (compile error)`);
+        }
+      } catch (e) {
+        console.log(`  WASM:       N/A (${e.message.slice(0, 40)})`);
+      }
+    } catch (e) {
+      console.error(`Error: ${e.message}`);
+      process.exit(1);
+    }
+  })();
+} else {
+
 // Handle file execution: monkey file.monkey [--wasm]
 const fileArg = process.argv.find(a => a.endsWith('.monkey') && !process.argv.includes('--compile'));
 let fileRunning = false;
@@ -697,3 +785,5 @@ if (!fileRunning) {
   const repl = new MonkeyREPL(engine);
   repl.run();
 }
+
+} // close benchmark else block
