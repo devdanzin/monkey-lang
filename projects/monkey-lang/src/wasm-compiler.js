@@ -104,7 +104,7 @@ export class WasmCompiler {
     const topLevelFuncNames = new Set();
     for (const stmt of program.statements) {
       if (stmt instanceof ast.LetStatement &&
-          stmt.value instanceof ast.FunctionLiteral) {
+          (stmt.value instanceof ast.FunctionLiteral || stmt.value instanceof ast.ArrowFunctionLiteral)) {
         topLevelFuncNames.add(stmt.name.value);
       }
     }
@@ -112,7 +112,7 @@ export class WasmCompiler {
     // Second pass: register non-capturing functions
     for (const stmt of program.statements) {
       if (stmt instanceof ast.LetStatement &&
-          stmt.value instanceof ast.FunctionLiteral) {
+          (stmt.value instanceof ast.FunctionLiteral || stmt.value instanceof ast.ArrowFunctionLiteral)) {
         const params = new Set(stmt.value.parameters.map(p => p.value || p.token?.literal));
         const hasFreeVars = this._hasFreeVariables(stmt.value, params, topLevelFuncNames);
         if (!hasFreeVars) {
@@ -138,7 +138,7 @@ export class WasmCompiler {
       lastIsExpr = false;
 
       if (stmt instanceof ast.LetStatement &&
-          stmt.value instanceof ast.FunctionLiteral) {
+          (stmt.value instanceof ast.FunctionLiteral || stmt.value instanceof ast.ArrowFunctionLiteral)) {
         // Check if already handled as a named (non-capturing) function
         const binding = this.currentScope.resolve(stmt.name.value);
         if (binding && binding.type === 'func') {
@@ -483,7 +483,7 @@ export class WasmCompiler {
       this.compileIfExpression(node);
     } else if (node instanceof ast.CallExpression) {
       this.compileCallExpression(node);
-    } else if (node instanceof ast.FunctionLiteral) {
+    } else if (node instanceof ast.FunctionLiteral || node instanceof ast.ArrowFunctionLiteral) {
       this.compileFunctionLiteral(node);
     } else if (node instanceof ast.WhileExpression) {
       this.compileWhileExpression(node);
@@ -495,6 +495,17 @@ export class WasmCompiler {
       this.compileRangeExpression(node);
     } else if (node instanceof ast.DoWhileExpression) {
       this.compileDoWhileExpression(node);
+    } else if (node instanceof ast.NullCoalescingExpression) {
+      // a ?? b — if a is 0 (null), use b
+      this.compileNode(node.left);
+      const tmpLocal = this.nextLocalIndex++;
+      this.currentBody.addLocal(ValType.i32);
+      this.currentBody.localTee(tmpLocal);
+      this.currentBody.if_(ValType.i32);
+        this.currentBody.localGet(tmpLocal);
+      this.currentBody.else_();
+        this.compileNode(node.right);
+      this.currentBody.end();
     } else if (node instanceof ast.AssignExpression) {
       this.compileAssignExpression(node);
     } else if (node instanceof ast.BlockStatement) {
@@ -1297,7 +1308,7 @@ export class WasmCompiler {
     let hasFree = false;
     const walk = (node) => {
       if (!node || hasFree) return;
-      if (node instanceof ast.FunctionLiteral) return; // Don't walk into nested functions
+      if (node instanceof ast.FunctionLiteral || node instanceof ast.ArrowFunctionLiteral) return; // Don't walk into nested functions
       if (node instanceof ast.Identifier) {
         const name = node.value;
         if (!params.has(name) && !topLevelFuncNames.has(name)) {
