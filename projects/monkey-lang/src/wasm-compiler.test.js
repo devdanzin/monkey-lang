@@ -1228,5 +1228,35 @@ describe('WASM Compiler', () => {
         result
       `), 220);
     });
+
+    it('sieve of eratosthenes', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let sieve = fn(n) {
+          let is_prime = [];
+          for (i in 0..n) { is_prime = push(is_prime, 1); }
+          is_prime[0] = 0;
+          is_prime[1] = 0;
+          for (i in 2..n) {
+            if (is_prime[i] == 1) {
+              let j = i * i;
+              while (j < n) { is_prime[j] = 0; j += i; }
+            }
+          }
+          let count = 0;
+          for (i in 0..n) { if (is_prime[i] == 1) { count += 1; } }
+          count
+        };
+        sieve(100)
+      `), 25);
+    });
+
+    it('map/filter/reduce pipeline', async () => {
+      assert.strictEqual(await compileAndRun(`
+        let map = fn(arr, f) { let r = []; for (x in arr) { r = push(r, f(x)); } r };
+        let filter = fn(arr, p) { let r = []; for (x in arr) { if (p(x)) { r = push(r, x); } } r };
+        let reduce = fn(arr, init, f) { let acc = init; for (x in arr) { acc = f(acc, x); } acc };
+        reduce(map(filter([1,2,3,4,5,6,7,8,9,10], fn(x) { x % 2 != 0 }), fn(x) { x * x }), 0, fn(a,b) { a + b })
+      `), 165);
+    });
   });
 });
