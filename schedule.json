@@ -994,9 +994,12 @@
     {
       "id": "T96",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add WASM annotated disassembly with source lines (;; line 5: fib(10))",
-      "started": "2026-03-30T18:16:42.722Z"
+      "started": "2026-03-30T18:16:42.722Z",
+      "completed": "2026-03-30T18:18:16.696Z",
+      "duration_ms": 180000,
+      "summary": "Annotated WASM disassembly with source line numbers. Functions show which Monkey source lines they correspond to."
     }
   ],
   "backlog": [],
