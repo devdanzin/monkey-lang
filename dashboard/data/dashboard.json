@@ -1605,23 +1605,63 @@
     {
       "id": "T154",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Session checkpoint: push, log, MEMORY.md",
-      "started": "2026-03-30T21:23:42.405Z"
+      "started": "2026-03-30T21:23:42.405Z",
+      "completed": "2026-03-30T21:24:45.172Z",
+      "duration_ms": 120000,
+      "summary": "Session checkpoint complete. All repos pushed: workspace, ray-tracer (main+gh-pages), monkey-lang. 45 tasks done in Session B."
+    },
+    {
+      "id": "T155",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Push monkey-lang ray tracer to GitHub + update playground",
+      "started": "2026-03-30T21:25:06.890Z"
+    },
+    {
+      "id": "T156",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Ray tracer: add more test coverage for edge cases"
+    },
+    {
+      "id": "T157",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Ray tracer: add wireframe debug mode (show BVH boxes)"
+    },
+    {
+      "id": "T158",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Update monkey-lang README with ray tracer example"
+    },
+    {
+      "id": "T159",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Create a gallery page showing rendered images from all scenes"
+    },
+    {
+      "id": "T160",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Update TASKS.md and MEMORY.md with full project state"
     }
   ],
   "current": {
-    "id": "T154",
-    "mode": "MAINTAIN",
+    "id": "T155",
+    "mode": "BUILD",
     "status": "in-progress",
-    "task": "Session checkpoint: push, log, MEMORY.md",
-    "started": "2026-03-30T21:23:42.405Z"
+    "task": "Push monkey-lang ray tracer to GitHub + update playground",
+    "started": "2026-03-30T21:25:06.890Z"
   },
   "stats": {
-    "completed": 153,
+    "completed": 154,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 22800000
+    "total_duration_ms": 22920000
   },
-  "updated_at": "2026-03-30T21:23:42.405Z"
+  "updated_at": "2026-03-30T21:25:06.890Z"
 }

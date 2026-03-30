@@ -1605,12 +1605,52 @@
     {
       "id": "T154",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Session checkpoint: push, log, MEMORY.md",
-      "started": "2026-03-30T21:23:42.405Z"
+      "started": "2026-03-30T21:23:42.405Z",
+      "completed": "2026-03-30T21:24:45.172Z",
+      "duration_ms": 120000,
+      "summary": "Session checkpoint complete. All repos pushed: workspace, ray-tracer (main+gh-pages), monkey-lang. 45 tasks done in Session B."
+    },
+    {
+      "id": "T155",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Push monkey-lang ray tracer to GitHub + update playground",
+      "started": "2026-03-30T21:25:06.890Z"
+    },
+    {
+      "id": "T156",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Ray tracer: add more test coverage for edge cases"
+    },
+    {
+      "id": "T157",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Ray tracer: add wireframe debug mode (show BVH boxes)"
+    },
+    {
+      "id": "T158",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Update monkey-lang README with ray tracer example"
+    },
+    {
+      "id": "T159",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Create a gallery page showing rendered images from all scenes"
+    },
+    {
+      "id": "T160",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Update TASKS.md and MEMORY.md with full project state"
     }
   ],
-  "updated_at": "2026-03-30T21:23:42.405Z",
+  "updated_at": "2026-03-30T21:25:06.890Z",
   "adjustments": [
     {
       "time": "2026-03-30T20:56:20.292Z",
@@ -1675,6 +1715,30 @@
     {
       "time": "2026-03-30T21:10:48.216Z",
       "msg": "Added T154 (MAINTAIN) after end: Session checkpoint: push, log, MEMORY.md"
+    },
+    {
+      "time": "2026-03-30T21:24:56.687Z",
+      "msg": "Added T155 (BUILD) after end: Push monkey-lang ray tracer to GitHub + update playground"
+    },
+    {
+      "time": "2026-03-30T21:24:56.806Z",
+      "msg": "Added T156 (BUILD) after end: Ray tracer: add more test coverage for edge cases"
+    },
+    {
+      "time": "2026-03-30T21:24:56.925Z",
+      "msg": "Added T157 (BUILD) after end: Ray tracer: add wireframe debug mode (show BVH boxes)"
+    },
+    {
+      "time": "2026-03-30T21:24:57.044Z",
+      "msg": "Added T158 (BUILD) after end: Update monkey-lang README with ray tracer example"
+    },
+    {
+      "time": "2026-03-30T21:24:57.163Z",
+      "msg": "Added T159 (BUILD) after end: Create a gallery page showing rendered images from all scenes"
+    },
+    {
+      "time": "2026-03-30T21:24:57.282Z",
+      "msg": "Added T160 (MAINTAIN) after end: Update TASKS.md and MEMORY.md with full project state"
     }
   ]
 }
