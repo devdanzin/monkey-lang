@@ -1,11 +1,11 @@
-// Sorting algorithms with in-place mutation
-// Demonstrates: array mutation, for-loops, break, template literals
+// Sorting Algorithms in WebAssembly
+// Demonstrates array mutation, recursion, and closures in WASM
 
-// Bubble Sort — O(n²) but simple
-let bubble_sort = fn(arr) {
+// Bubble sort (in-place with array mutation)
+let bubbleSort = fn(arr) {
   let n = len(arr);
-  for (let i = 0; i < n; i += 1) {
-    for (let j = 0; j < n - i - 1; j += 1) {
+  for (i in 0..n) {
+    for (j in 0..(n - 1 - i)) {
       if (arr[j] > arr[j + 1]) {
         let temp = arr[j];
         arr[j] = arr[j + 1];
@@ -16,39 +16,59 @@ let bubble_sort = fn(arr) {
   arr
 };
 
-// Selection Sort — also O(n²), fewer swaps
-let selection_sort = fn(arr) {
+// Insertion sort
+let insertionSort = fn(arr) {
   let n = len(arr);
-  for (let i = 0; i < n - 1; i += 1) {
-    let min_idx = i;
-    for (let j = i + 1; j < n; j += 1) {
-      if (arr[j] < arr[min_idx]) {
-        min_idx = j;
+  for (i in 1..n) {
+    let key = arr[i];
+    let j = i - 1;
+    while (j >= 0) {
+      if (arr[j] > key) {
+        arr[j + 1] = arr[j];
+        j = j - 1;
+      } else {
+        j = -1; // break (no break statement in for-in context)
       }
     }
-    if (min_idx != i) {
-      let temp = arr[i];
-      arr[i] = arr[min_idx];
-      arr[min_idx] = temp;
-    }
+    arr[j + 1] = key;
   }
   arr
 };
 
-puts("=== Bubble Sort ===");
-let data1 = [38, 27, 43, 3, 9, 82, 10];
-puts(`Input:  ${str(data1)}`);
-bubble_sort(data1);
-puts(`Sorted: ${str(data1)}`);
+// Print array
+let printArr = fn(label, arr) {
+  let s = label + ": [";
+  for (i in 0..len(arr)) {
+    if (i > 0) { s = s + ", "; }
+    s = s + str(arr[i]);
+  }
+  puts(s + "]");
+};
 
-puts("\n=== Selection Sort ===");
-let data2 = [64, 25, 12, 22, 11];
-puts(`Input:  ${str(data2)}`);
-selection_sort(data2);
-puts(`Sorted: ${str(data2)}`);
+// Test bubble sort
+let arr1 = [64, 34, 25, 12, 22, 11, 90];
+printArr("Before", arr1);
+bubbleSort(arr1);
+printArr("Bubble", arr1);
 
-puts("\n=== Sort Strings ===");
-let words = ["banana", "apple", "cherry", "date", "elderberry"];
-puts(`Input:  ${str(words)}`);
-bubble_sort(words);
-puts(`Sorted: ${str(words)}`);
+puts("");
+
+// Test insertion sort
+let arr2 = [5, 2, 4, 6, 1, 3];
+printArr("Before", arr2);
+insertionSort(arr2);
+printArr("Insert", arr2);
+
+puts("");
+
+// Sort larger array
+let arr3 = [];
+let seed = 42;
+for (i in 0..20) {
+  seed = (seed * 1103515245 + 12345) % 1000;
+  if (seed < 0) { seed = 0 - seed; }
+  arr3 = push(arr3, seed % 100);
+}
+printArr("Random", arr3);
+bubbleSort(arr3);
+printArr("Sorted", arr3);
