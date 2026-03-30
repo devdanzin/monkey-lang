@@ -348,16 +348,20 @@
       "id": "T33",
       "mode": "BUILD",
       "task": "Test WASM closures: makeAdder, counter, map/filter with closures",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T29",
-      "started": "2026-03-30T15:52:03.717Z"
+      "started": "2026-03-30T15:52:03.717Z",
+      "completed": "2026-03-30T15:59:49.991Z",
+      "duration_ms": 600000,
+      "summary": "WASM closure tests: 9 new tests all passing (makeAdder, factory, multi-capture, higher-order, IIFE). Fixed section ordering, free variable analysis, named function wrapping. 99 total WASM compiler tests."
     },
     {
       "id": "T34",
       "mode": "BUILD",
       "task": "Mid-session: git commit, push, update daily log",
-      "status": "upcoming",
-      "plan_ref": "T29"
+      "status": "in-progress",
+      "plan_ref": "T29",
+      "started": "2026-03-30T16:00:00.868Z"
     }
   ],
   "backlog": [],
