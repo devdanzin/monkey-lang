@@ -2675,23 +2675,55 @@
     {
       "id": "T256",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push and deploy",
-      "started": "2026-03-30T22:54:24.465Z"
+      "started": "2026-03-30T22:54:24.465Z",
+      "completed": "2026-03-30T22:54:51.711Z",
+      "duration_ms": 60000,
+      "summary": "All repos pushed. Blog homepage updated with 8 projects."
+    },
+    {
+      "id": "T260",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fractal Explorer: Mandelbrot + Julia set with zoom/pan, color schemes, browser demo",
+      "started": "2026-03-30T22:55:05.360Z",
+      "completed": "2026-03-30T22:56:08.435Z",
+      "duration_ms": 600000,
+      "summary": "Fractal Explorer: 4 fractals (Mandelbrot, Julia, Burning Ship, Tricorn), 6 color palettes (classic, fire, ocean, grayscale, neon, rainbow), smooth coloring (escape-time + log smoothing), click-zoom, right-click zoom out, drag-pan, scroll iterations, J key for Julia parameter switching."
+    },
+    {
+      "id": "T261",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Deploy fractal explorer to GitHub",
+      "started": "2026-03-30T22:56:14.138Z"
+    },
+    {
+      "id": "T262",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "New project: Regex engine from scratch (NFA-based)"
+    },
+    {
+      "id": "T263",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final session push"
     }
   ],
   "current": {
-    "id": "T256",
-    "mode": "MAINTAIN",
+    "id": "T261",
+    "mode": "BUILD",
     "status": "in-progress",
-    "task": "Push and deploy",
-    "started": "2026-03-30T22:54:24.465Z"
+    "task": "Deploy fractal explorer to GitHub",
+    "started": "2026-03-30T22:56:14.138Z"
   },
   "stats": {
-    "completed": 258,
+    "completed": 260,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 33090000
+    "total_duration_ms": 33750000
   },
-  "updated_at": "2026-03-30T22:54:24.465Z"
+  "updated_at": "2026-03-30T22:56:14.138Z"
 }

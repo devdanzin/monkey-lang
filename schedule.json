@@ -2675,10 +2675,60 @@
     {
       "id": "T256",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push and deploy",
-      "started": "2026-03-30T22:54:24.465Z"
+      "started": "2026-03-30T22:54:24.465Z",
+      "completed": "2026-03-30T22:54:51.711Z",
+      "duration_ms": 60000,
+      "summary": "All repos pushed. Blog homepage updated with 8 projects."
+    },
+    {
+      "id": "T260",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fractal Explorer: Mandelbrot + Julia set with zoom/pan, color schemes, browser demo",
+      "started": "2026-03-30T22:55:05.360Z",
+      "completed": "2026-03-30T22:56:08.435Z",
+      "duration_ms": 600000,
+      "summary": "Fractal Explorer: 4 fractals (Mandelbrot, Julia, Burning Ship, Tricorn), 6 color palettes (classic, fire, ocean, grayscale, neon, rainbow), smooth coloring (escape-time + log smoothing), click-zoom, right-click zoom out, drag-pan, scroll iterations, J key for Julia parameter switching."
+    },
+    {
+      "id": "T261",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Deploy fractal explorer to GitHub",
+      "started": "2026-03-30T22:56:14.138Z"
+    },
+    {
+      "id": "T262",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "New project: Regex engine from scratch (NFA-based)"
+    },
+    {
+      "id": "T263",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final session push"
     }
   ],
-  "updated_at": "2026-03-30T22:54:24.465Z"
+  "updated_at": "2026-03-30T22:56:14.138Z",
+  "adjustments": [
+    {
+      "time": "2026-03-30T22:55:00.316Z",
+      "msg": "Added T260 (BUILD) after end: Fractal Explorer: Mandelbrot + Julia set with zoom/pan, color schemes, browser demo"
+    },
+    {
+      "time": "2026-03-30T22:55:00.436Z",
+      "msg": "Added T261 (BUILD) after end: Deploy fractal explorer to GitHub"
+    },
+    {
+      "time": "2026-03-30T22:55:00.556Z",
+      "msg": "Added T262 (BUILD) after end: New project: Regex engine from scratch (NFA-based)"
+    },
+    {
+      "time": "2026-03-30T22:55:00.676Z",
+      "msg": "Added T263 (MAINTAIN) after end: Final session push"
+    }
+  ]
 }
