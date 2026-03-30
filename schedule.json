@@ -1368,10 +1368,159 @@
       "id": "T131",
       "mode": "BUILD",
       "task": "Push all repos, update gh-pages",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T125",
-      "started": "2026-03-30T20:48:14.695Z"
+      "started": "2026-03-30T20:48:14.695Z",
+      "completed": "2026-03-30T20:48:38.970Z",
+      "duration_ms": 60000,
+      "summary": "All repos pushed: workspace, ray-tracer main, ray-tracer gh-pages. Live at henry-the-frog.github.io/ray-tracer/"
+    },
+    {
+      "id": "T132",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan phase 3: noise scene, download button, performance tests",
+      "task": null,
+      "started": "2026-03-30T20:48:55.852Z",
+      "completed": "2026-03-30T20:49:01.467Z",
+      "duration_ms": 30000,
+      "summary": "6 tasks: PNG download, noise scene, Node multi-core, transforms, rotated boxes, deploy."
+    },
+    {
+      "id": "T133",
+      "mode": "BUILD",
+      "task": "Download PNG button in web UI (canvas.toBlob)",
+      "status": "done",
+      "plan_ref": "T132",
+      "started": "2026-03-30T20:49:06.619Z",
+      "completed": "2026-03-30T20:49:51.109Z",
+      "duration_ms": 120000,
+      "summary": "PNG download button: canvas.toBlob with scene/resolution/samples in filename. Enabled after render completes, disabled during render."
+    },
+    {
+      "id": "T134",
+      "mode": "BUILD",
+      "task": "Add noise/marble textured scene to web demo",
+      "status": "done",
+      "plan_ref": "T132",
+      "started": "2026-03-30T20:49:55.708Z",
+      "completed": "2026-03-30T20:51:59.102Z",
+      "duration_ms": 180000,
+      "summary": "Textured World scene: marble sphere, noise sphere, mirror sphere, glass sphere, checker ground, colored accents. NoiseTexture and MarbleTexture added to bundle. 7 scenes total."
+    },
+    {
+      "id": "T135",
+      "mode": "BUILD",
+      "task": "Benchmark: Node.js multi-core rendering via worker_threads",
+      "status": "done",
+      "plan_ref": "T132",
+      "started": "2026-03-30T20:52:05.859Z",
+      "completed": "2026-03-30T20:53:02.860Z",
+      "duration_ms": 180000,
+      "summary": "Node.js multi-core benchmark using worker_threads. Results: 2x single=2.06s, 2 threads=0.84s (2.5x), 4 threads=0.66s (3.1x), 8 threads=0.80s (2.6x due to workload contention)."
+    },
+    {
+      "id": "T136",
+      "mode": "BUILD",
+      "task": "Add transform support (translate/rotate objects)",
+      "status": "done",
+      "plan_ref": "T132",
+      "started": "2026-03-30T20:53:10.249Z",
+      "completed": "2026-03-30T20:54:20.897Z",
+      "duration_ms": 180000,
+      "summary": "Translate and RotateY transform wrappers. Ray transformation trick (move ray instead of geometry). Bounding box recomputation for rotations. 5 new tests (67 total)."
+    },
+    {
+      "id": "T137",
+      "mode": "BUILD",
+      "task": "Scene with transformed boxes (rotated Cornell box)",
+      "status": "done",
+      "plan_ref": "T132",
+      "started": "2026-03-30T20:54:29.547Z",
+      "completed": "2026-03-30T20:55:18.122Z",
+      "duration_ms": 120000,
+      "summary": "Cornell box with properly rotated boxes: short box at -18°, tall box at 15°. Translate + RotateY transforms added to bundle."
+    },
+    {
+      "id": "T138",
+      "mode": "BUILD",
+      "task": "Update repos and deploy",
+      "status": "done",
+      "plan_ref": "T132",
+      "started": "2026-03-30T20:55:27.695Z",
+      "completed": "2026-03-30T20:56:02.614Z",
+      "duration_ms": 60000,
+      "summary": "All repos deployed: workspace pushed, ray-tracer v0.4.0 (main + gh-pages). Live at henry-the-frog.github.io/ray-tracer/"
+    },
+    {
+      "id": "T139",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add constant medium (volumetric fog/smoke) material",
+      "started": "2026-03-30T20:56:27.424Z",
+      "completed": "2026-03-30T20:57:41.451Z",
+      "duration_ms": 180000,
+      "summary": "ConstantMedium volumetric: Isotropic scattering, probabilistic ray intersection inside boundary, density-based absorption. 4 new tests (71 total)."
+    },
+    {
+      "id": "T140",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add smoky Cornell box scene",
+      "started": "2026-03-30T20:57:46.114Z",
+      "completed": "2026-03-30T20:59:15.248Z",
+      "duration_ms": 180000,
+      "summary": "Smoky Cornell Box: white fog short box, dark smoke tall box. ConstantMedium + Isotropic added to bundle. 8 scenes total."
+    },
+    {
+      "id": "T141",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add image texture support (procedural earth/planets)",
+      "started": "2026-03-30T20:59:22.112Z",
+      "completed": "2026-03-30T21:00:03.697Z",
+      "duration_ms": 120000,
+      "summary": "StripeTexture (gas giant bands) and PlanetTexture (noise-based continents/oceans with optional cloud layer). Procedural — no image loading needed."
+    },
+    {
+      "id": "T142",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Create solar system scene (textured spheres + star light)",
+      "started": "2026-03-30T21:00:11.966Z",
+      "completed": "2026-03-30T21:02:04.906Z",
+      "duration_ms": 180000,
+      "summary": "Solar System scene: emissive star, earth (PlanetTexture with clouds), Mars (noise), gas giant (stripes), ice planet (marble), moon, asteroids. 9 scenes total."
+    },
+    {
+      "id": "T143",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Mid-session: daily log, test count, push",
+      "started": "2026-03-30T21:02:12.553Z"
     }
   ],
-  "updated_at": "2026-03-30T20:48:14.695Z"
+  "updated_at": "2026-03-30T21:02:12.553Z",
+  "adjustments": [
+    {
+      "time": "2026-03-30T20:56:20.292Z",
+      "msg": "Added T139 (BUILD) after end: Add constant medium (volumetric fog/smoke) material"
+    },
+    {
+      "time": "2026-03-30T20:56:20.411Z",
+      "msg": "Added T140 (BUILD) after end: Add smoky Cornell box scene"
+    },
+    {
+      "time": "2026-03-30T20:56:20.530Z",
+      "msg": "Added T141 (BUILD) after end: Add image texture support (procedural earth/planets)"
+    },
+    {
+      "time": "2026-03-30T20:56:20.647Z",
+      "msg": "Added T142 (BUILD) after end: Create solar system scene (textured spheres + star light)"
+    },
+    {
+      "time": "2026-03-30T20:56:20.766Z",
+      "msg": "Added T143 (MAINTAIN) after end: Mid-session: daily log, test count, push"
+    }
+  ]
 }
