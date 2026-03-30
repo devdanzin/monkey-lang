@@ -507,6 +507,48 @@ class MonkeyREPL {
         return true;
       }
 
+      case ':dis':
+      case ':disassemble': {
+        const code = parts.slice(1).join(' ');
+        if (!code) {
+          console.log('Usage: :dis <code>');
+        } else {
+          try {
+            const compiler = new WasmCompiler();
+            const builder = compiler.compile(code);
+            if (!builder || compiler.errors.length > 0) {
+              console.error('WASM compile errors:', compiler.errors.join(', '));
+            } else {
+              const binary = builder.build();
+              console.log(wasmDisassemble(binary));
+            }
+          } catch (e) {
+            console.error(`Error: ${e.message}`);
+          }
+        }
+        return true;
+      }
+
+      case ':transpile':
+      case ':js': {
+        const code = parts.slice(1).join(' ');
+        if (!code) {
+          console.log('Usage: :transpile <code>');
+        } else {
+          try {
+            const program = this.parse(code);
+            if (program) {
+              const transpiler = new Transpiler();
+              const js = transpiler.transpile(program);
+              console.log(js);
+            }
+          } catch (e) {
+            console.error(`Error: ${e.message}`);
+          }
+        }
+        return true;
+      }
+
       case ':time': {
         const code = parts.slice(1).join(' ');
         if (!code) {

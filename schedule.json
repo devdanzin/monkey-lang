@@ -560,9 +560,19 @@
       "id": "T53",
       "mode": "BUILD",
       "task": "CLI: wasm-dis file.wasm → file.wat, add to monkey-lang as --disassemble flag",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T47",
-      "started": "2026-03-30T16:26:15.598Z"
+      "started": "2026-03-30T16:26:15.598Z",
+      "completed": "2026-03-30T16:27:11.521Z",
+      "duration_ms": 120000,
+      "summary": "CLI integration: --disassemble/--dis flag. Works with both .wasm binaries and .monkey source files (compile + disassemble)."
+    },
+    {
+      "id": "T54",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add :dis REPL command and :transpile command for interactive inspection",
+      "started": "2026-03-30T16:27:46.972Z"
     }
   ],
   "backlog": [],
@@ -702,6 +712,10 @@
     {
       "time": "2026-03-30T16:22:07.048Z",
       "msg": "PLAN T47 filled 6 BUILD tasks"
+    },
+    {
+      "time": "2026-03-30T16:27:46.855Z",
+      "msg": "Added T54 (BUILD) after end: Add :dis REPL command and :transpile command for interactive inspection"
     }
   ]
 }
