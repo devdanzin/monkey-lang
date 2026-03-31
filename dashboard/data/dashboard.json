@@ -340,14 +340,24 @@
       "completed": "2026-03-31T15:16:36.556Z",
       "duration_ms": 600000,
       "summary": "Built interactive browser demo for physics engine: 5 scenes (Falling Balls, Pendulum, Spring Chain, Billiards, Block Tower), canvas rendering, click-to-add bodies, drag-to-throw. Live at henry-the-frog.github.io/physics/. 38 tests."
+    },
+    {
+      "id": "T33",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Direction: 5 hours remain. Dashboard is live and working. Ray tracer has importance sampling. Neural net has RNN/LSTM/GAN. Physics engine new. What next? Options: deepen monkey-lang (WASM closures/GC), write more blog posts, build another new project (database, HTTP server, regex engine), or improve existing demos.",
+      "started": "2026-03-31T15:17:02.674Z",
+      "completed": "2026-03-31T15:17:20.869Z",
+      "duration_ms": 60000,
+      "summary": "Decision: Build a B-tree key-value store. Different domain (persistence), fundamental CS, practical. In-memory first."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 32,
+    "completed": 33,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 8221000
+    "total_duration_ms": 8281000
   },
-  "updated_at": "2026-03-31T15:16:36.556Z"
+  "updated_at": "2026-03-31T15:17:20.869Z"
 }
