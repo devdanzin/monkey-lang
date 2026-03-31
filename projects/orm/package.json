@@ -1,0 +1,7 @@
+{
+  "name": "tiny-orm",
+  "version": "1.0.0",
+  "description": "In-memory ORM with models, queries, relations, hooks, validation",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/index.test.js" }
+}
