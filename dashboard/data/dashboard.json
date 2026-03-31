@@ -1,12 +1,12 @@
 {
-  "generated": "2026-03-31T04:15:26.393Z",
+  "generated": "2026-03-31T04:39:41.051Z",
   "current": {
     "status": "idle",
     "mode": "THINK",
     "task": "",
     "context": "",
     "next": "",
-    "startedAt": "2026-03-31T04:15:26.331Z",
+    "startedAt": "2026-03-31T04:39:35.136Z",
     "estimatedBlocks": 0
   },
   "schedule": {
@@ -70,28 +70,28 @@
         "time": "09:45",
         "mode": "MAINTAIN",
         "task": "Git cleanup, commit V2 progress",
-        "status": "done",
-        "summary": "All repos pushed (workspace, monkey-lang, github.io).",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "All repos pushed (workspace, monkey-lang, github.io). Playground bundle with string ops."
+        "details": ""
       },
       {
         "time": "10:00",
         "mode": "THINK",
         "task": "Plan JIT work: pre-loop codegen infrastructure for LICM guards",
-        "status": "done",
-        "summary": "Mid-session push. Playground bundle updated with closures.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "Mid-session push. Playground bundle updated with closures."
+        "details": ""
       },
       {
         "time": "10:15",
         "mode": "BUILD",
         "task": "JIT: pre-loop codegen infrastructure (enables LICM guard hoisting without label errors)",
-        "status": "done",
-        "summary": "REPL v0.3.0 — 5 engine modes (eval/vm/jit/wasm/transpiler), enhanced :bench command.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "REPL v0.3.0 — 5 engine modes (eval/vm/jit/wasm/transpiler), enhanced :bench command."
+        "details": ""
       },
       {
         "time": "10:30",
@@ -115,10 +115,10 @@
         "time": "11:00",
         "mode": "BUILD",
         "task": "JIT: pre-loop codegen infrastructure (enables LICM guard hoisting without label errors)",
-        "status": "done",
-        "summary": "Final README with WASM section, playground rebuilt, 1288 tests.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "Final README with WASM section, playground rebuilt, 1288 tests. All repos pushed."
+        "details": ""
       },
       {
         "time": "11:15",
@@ -133,28 +133,28 @@
         "time": "11:30",
         "mode": "BUILD",
         "task": "JIT: pre-loop codegen infrastructure (enables LICM guard hoisting without label errors)",
-        "status": "done",
-        "summary": "int()/type() builtins, --compile section breakdown, optimizer infrastructure.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "int()/type() builtins, --compile section breakdown, optimizer infrastructure."
+        "details": ""
       },
       {
         "time": "11:45",
         "mode": "MAINTAIN",
         "task": "Commit, run full test suite, benchmarks",
-        "status": "done",
-        "summary": "Performance regression tests (5 tests).",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "Performance regression tests (5 tests). Mandelbrot ASCII art example."
+        "details": ""
       },
       {
         "time": "12:00",
         "mode": "THINK",
         "task": "Midday review: V2 + JIT progress, adjust afternoon",
-        "status": "done",
-        "summary": "Game of Life — full simulation with mutable arrays in WASM.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "Game of Life — full simulation with mutable arrays in WASM."
+        "details": ""
       },
       {
         "time": "12:15",
@@ -169,10 +169,10 @@
         "time": "12:30",
         "mode": "BUILD",
         "task": "JIT: complete pre-loop codegen + fix LICM to use it, verify benchmarks",
-        "status": "done",
-        "summary": "WASM binary analysis with section size bars.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "WASM binary analysis with section size bars."
+        "details": ""
       },
       {
         "time": "12:45",
@@ -205,10 +205,10 @@
         "time": "13:30",
         "mode": "BUILD",
         "task": "JIT: complete pre-loop codegen + fix LICM to use it, verify benchmarks",
-        "status": "done",
-        "summary": "Fix conservative runtime dispatch for + and == (string concat in loops now correct).",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "Fix conservative runtime dispatch for + and == (string concat in loops now correct)."
+        "details": ""
       },
       {
         "time": "13:45",
@@ -232,10 +232,10 @@
         "time": "14:15",
         "mode": "BUILD",
         "task": "V2 work system: standup schedule.json generation, dashboard integration",
-        "status": "done",
-        "summary": "Direction — pivot to new project.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "Direction — pivot to new project. Monkey-lang at v0.4.0 plateau. Chose ray tracer."
+        "details": ""
       },
       {
         "time": "14:30",
@@ -250,37 +250,37 @@
         "time": "14:45",
         "mode": "BUILD",
         "task": "V2 work system: standup schedule.json generation, dashboard integration",
-        "status": "done",
-        "summary": "PNG download button in web UI.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "PNG download button in web UI."
+        "details": ""
       },
       {
         "time": "15:00",
         "mode": "BUILD",
         "task": "V2 work system: standup schedule.json generation, dashboard integration",
-        "status": "done",
-        "summary": "StripeTexture + PlanetTexture (procedural planets).",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "StripeTexture + PlanetTexture (procedural planets)."
+        "details": ""
       },
       {
         "time": "15:15",
         "mode": "BUILD",
         "task": "V2 work system: standup schedule.json generation, dashboard integration",
-        "status": "done",
-        "summary": "Scroll-wheel zoom for interactive camera.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "Scroll-wheel zoom for interactive camera."
+        "details": ""
       },
       {
         "time": "15:30",
         "mode": "BUILD",
         "task": "V2 work system: standup schedule.json generation, dashboard integration",
-        "status": "done",
-        "summary": "Gallery page with live-rendered thumbnails of all 11 scenes.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "Gallery page with live-rendered thumbnails of all 11 scenes."
+        "details": ""
       },
       {
         "time": "15:45",
@@ -295,19 +295,19 @@
         "time": "16:00",
         "mode": "THINK",
         "task": "Afternoon assessment: what shipped, what pivots needed",
-        "status": "done",
-        "summary": "Environment maps (sky, sunset, starfield).",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "Environment maps (sky, sunset, starfield). Sunset scene. 14 scenes."
+        "details": ""
       },
       {
         "time": "16:15",
         "mode": "BUILD",
         "task": "JIT: deoptimization infrastructure (snapshot-based guard exits) OR new language features",
-        "status": "done",
-        "summary": "Matrix class (Float64Array, dot, add, sub, mul, T, map, sum, argmax, broadcast, Xavier).",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "Matrix class (Float64Array, dot, add, sub, mul, T, map, sum, argmax, broadcast, Xavier). 21 tests."
+        "details": ""
       },
       {
         "time": "16:30",
@@ -322,55 +322,55 @@
         "time": "16:45",
         "mode": "BUILD",
         "task": "JIT: deoptimization infrastructure (snapshot-based guard exits) OR new language features",
-        "status": "done",
-        "summary": "Neural net v0.3.0 pushed, README written.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "Neural net v0.3.0 pushed, README written."
+        "details": ""
       },
       {
         "time": "17:00",
         "mode": "BUILD",
         "task": "JIT: deoptimization infrastructure (snapshot-based guard exits) OR new language features",
-        "status": "done",
-        "summary": "Blog post \"Building a Neural Network from Scratch in JavaScript\".",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "Blog post \"Building a Neural Network from Scratch in JavaScript\"."
+        "details": ""
       },
       {
         "time": "17:15",
         "mode": "BUILD",
         "task": "Continue current BUILD task",
-        "status": "done",
-        "summary": "CHIP-8 browser demo — canvas display, keyboard, on-screen keypad, ROM drag-drop, 3…",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "CHIP-8 browser demo — canvas display, keyboard, on-screen keypad, ROM drag-drop, 3 built-in ROMs, register viewer, step debugger."
+        "details": ""
       },
       {
         "time": "17:30",
         "mode": "BUILD",
         "task": "Continue or start blog post if JIT milestone reached",
-        "status": "done",
-        "summary": "All repos pushed. Daily log updated.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "All repos pushed. Daily log updated."
+        "details": ""
       },
       {
         "time": "17:45",
         "mode": "MAINTAIN",
         "task": "Evening commits, memory updates",
-        "status": "done",
-        "summary": "Pathfinding Visualizer — 6 algorithms (A*, A*-diag, Dijkstra, BFS, DFS, Greedy).",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "Pathfinding Visualizer — 6 algorithms (A*, A*-diag, Dijkstra, BFS, DFS, Greedy). Maze gen, weighted cells."
+        "details": ""
       },
       {
         "time": "18:00",
         "mode": "THINK",
         "task": "Evening review, prep EXPLORE direction",
-        "status": "done",
-        "summary": "Regex Engine — Thompson NFA, parser, 26 tests.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "Regex Engine — Thompson NFA, parser, 26 tests. Deployed."
+        "details": ""
       },
       {
         "time": "18:15",
@@ -385,73 +385,73 @@
         "time": "18:30",
         "mode": "BUILD",
         "task": "Dashboard: integrate V2 metrics or JIT benchmark trends",
-        "status": "done",
-        "summary": "ECS (Entity Component System) — spawn/despawn, queries, systems, resources.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "ECS (Entity Component System) — spawn/despawn, queries, systems, resources. 20 tests (10k entity perf)."
+        "details": ""
       },
       {
         "time": "18:45",
         "mode": "MAINTAIN",
         "task": "Commit, PR check, daily log update",
-        "status": "done",
-        "summary": "HTTP server on GitHub.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "HTTP server on GitHub."
+        "details": ""
       },
       {
         "time": "19:00",
         "mode": "THINK",
         "task": "Pivot to EXPLORE mode, pick curiosity thread",
-        "status": "done",
-        "summary": "Promise/A+ — resolve, reject, then, catch, finally, all, allSettled, race, any.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "Promise/A+ — resolve, reject, then, catch, finally, all, allSettled, race, any. 20 tests."
+        "details": ""
       },
       {
         "time": "19:15",
         "mode": "EXPLORE",
         "task": "Sea-of-nodes IR deep dive (1 use — assess for promotion)",
-        "status": "done",
-        "summary": "ECS, HTTP Server, JSON Parser, Lisp — all deployed.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "ECS, HTTP Server, JSON Parser, Lisp — all deployed."
+        "details": ""
       },
       {
         "time": "19:30",
         "mode": "EXPLORE",
         "task": "Sea-of-nodes IR deep dive (1 use — assess for promotion)",
-        "status": "done",
-        "summary": "Promise/A+, Virtual DOM, Event Emitter — all deployed to GitHub.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "Promise/A+, Virtual DOM, Event Emitter — all deployed to GitHub."
+        "details": ""
       },
       {
         "time": "19:45",
         "mode": "EXPLORE",
         "task": "Sea-of-nodes IR deep dive (1 use — assess for promotion)",
-        "status": "done",
-        "summary": "Myers Diff — O(ND) algorithm, unified format.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "Myers Diff — O(ND) algorithm, unified format. 19 tests."
+        "details": ""
       },
       {
         "time": "20:00",
         "mode": "THINK",
         "task": "Synthesize EXPLORE findings, update scratch notes",
-        "status": "done",
-        "summary": "Task Queue — concurrency, priority, retries, timeouts.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "Task Queue — concurrency, priority, retries, timeouts. 12 tests."
+        "details": ""
       },
       {
         "time": "20:15",
         "mode": "EXPLORE",
         "task": "Deoptimization deep dive: V8 deopt mechanics, on-stack replacement",
-        "status": "done",
-        "summary": "Schema Validator — Zod-like, string/number/array/object/enum/union, transforms.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "Schema Validator — Zod-like, string/number/array/object/enum/union, transforms. 29 tests."
+        "details": ""
       },
       {
         "time": "20:30",
@@ -475,19 +475,19 @@
         "time": "21:00",
         "mode": "THINK",
         "task": "Day review, prep tomorrow's direction, update TASKS.md",
-        "status": "done",
-        "summary": "Signals (#40!) — reactive primitives.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "Signals (#40!) — reactive primitives. 12 tests."
+        "details": ""
       },
       {
         "time": "21:15",
         "mode": "EXPLORE",
         "task": "Free curiosity: follow most interesting thread from today",
-        "status": "done",
-        "summary": "Test Framework (#43) — self-testing test framework.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "Test Framework (#43) — self-testing test framework. 12 tests."
+        "details": ""
       },
       {
         "time": "21:30",
@@ -502,10 +502,10 @@
         "time": "21:45",
         "mode": "MAINTAIN",
         "task": "Dashboard generate, push all repos",
-        "status": "done",
-        "summary": "Store (#52) — reactive state management.",
+        "status": "upcoming",
+        "summary": "",
         "artifacts": [],
-        "details": "Store (#52) — reactive state management. 10 tests."
+        "details": ""
       }
     ],
     "backlog": [
@@ -525,15 +525,10 @@
     "(none yet)"
   ],
   "stats": {
-    "blocksCompleted": 33,
+    "blocksCompleted": 0,
     "blocksTotal": 55,
-    "modeDistribution": {
-      "MAINTAIN": 5,
-      "THINK": 7,
-      "BUILD": 16,
-      "EXPLORE": 5
-    },
-    "totalMinutes": 165,
+    "modeDistribution": {},
+    "totalMinutes": 0,
     "totalMs": 0,
     "avgDurationMs": 0
   },
@@ -701,24 +696,108 @@
       }
     }
   ],
-  "todayHighlights": [
+  "todayHighlights": [],
+  "prs": [
     {
-      "mode": "BUILD",
-      "time": "11:00",
-      "text": "Final README with WASM section, playground rebuilt, 1288 tests."
+      "number": 51803,
+      "title": "fix: persist followup queues across gateway restart",
+      "url": "https://github.com/openclaw/openclaw/pull/51803",
+      "repo": "openclaw/openclaw",
+      "createdAt": "2026-03-21T18:22:41Z",
+      "updatedAt": "2026-03-25T14:43:40Z",
+      "ageHours": 226,
+      "ciStatus": "none",
+      "reviewStatus": "none"
     },
     {
-      "mode": "BUILD",
-      "time": "11:30",
-      "text": "int()/type() builtins, --compile section breakdown, optimizer infrastructure."
+      "number": 51308,
+      "title": "fix: redact raw error messages from channel-facing agent failure replies",
+      "url": "https://github.com/openclaw/openclaw/pull/51308",
+      "repo": "openclaw/openclaw",
+      "createdAt": "2026-03-20T22:23:20Z",
+      "updatedAt": "2026-03-24T20:15:40Z",
+      "ageHours": 246,
+      "ciStatus": "pending",
+      "reviewStatus": "none"
     },
     {
-      "mode": "BUILD",
-      "time": "17:15",
-      "text": "CHIP-8 browser demo — canvas display, keyboard, on-screen keypad, ROM…"
+      "number": 51292,
+      "title": "feat: configurable exec approval timeout via approvals.timeoutMs",
+      "url": "https://github.com/openclaw/openclaw/pull/51292",
+      "repo": "openclaw/openclaw",
+      "createdAt": "2026-03-20T21:39:06Z",
+      "updatedAt": "2026-03-24T20:15:40Z",
+      "ageHours": 247,
+      "ciStatus": "pending",
+      "reviewStatus": "none"
+    },
+    {
+      "number": 51282,
+      "title": "feat(gateway): make handshake timeout configurable via gateway.handshakeTimeoutMs",
+      "url": "https://github.com/openclaw/openclaw/pull/51282",
+      "repo": "openclaw/openclaw",
+      "createdAt": "2026-03-20T21:23:23Z",
+      "updatedAt": "2026-03-24T20:15:40Z",
+      "ageHours": 247,
+      "ciStatus": "pending",
+      "reviewStatus": "none"
+    },
+    {
+      "number": 51261,
+      "title": "fix: classify HTTP 404 as model_not_found in fallback chain",
+      "url": "https://github.com/openclaw/openclaw/pull/51261",
+      "repo": "openclaw/openclaw",
+      "createdAt": "2026-03-20T20:38:20Z",
+      "updatedAt": "2026-03-24T20:15:41Z",
+      "ageHours": 248,
+      "ciStatus": "pending",
+      "reviewStatus": "none"
+    },
+    {
+      "number": 51257,
+      "title": "feat: surface session label/displayName in /status and TUI",
+      "url": "https://github.com/openclaw/openclaw/pull/51257",
+      "repo": "openclaw/openclaw",
+      "createdAt": "2026-03-20T20:20:35Z",
+      "updatedAt": "2026-03-24T20:15:41Z",
+      "ageHours": 248,
+      "ciStatus": "pending",
+      "reviewStatus": "none"
+    },
+    {
+      "number": 51180,
+      "title": "fix: show all allowFrom entries in channels status --probe",
+      "url": "https://github.com/openclaw/openclaw/pull/51180",
+      "repo": "openclaw/openclaw",
+      "createdAt": "2026-03-20T18:18:34Z",
+      "updatedAt": "2026-03-24T20:15:41Z",
+      "ageHours": 250,
+      "ciStatus": "pending",
+      "reviewStatus": "none"
+    },
+    {
+      "number": 50692,
+      "title": "feat: add Anthropic native web search provider (#49949)",
+      "url": "https://github.com/openclaw/openclaw/pull/50692",
+      "repo": "openclaw/openclaw",
+      "createdAt": "2026-03-19T23:18:46Z",
+      "updatedAt": "2026-03-25T14:42:14Z",
+      "ageHours": 269,
+      "ciStatus": "none",
+      "reviewStatus": "none"
+    },
+    {
+      "number": 50001,
+      "title": "fix: restore export HTML template placeholders broken by Prettier",
+      "url": "https://github.com/openclaw/openclaw/pull/50001",
+      "repo": "openclaw/openclaw",
+      "createdAt": "2026-03-18T20:02:08Z",
+      "updatedAt": "2026-03-24T20:15:47Z",
+      "ageHours": 297,
+      "ciStatus": "pending",
+      "reviewStatus": "none"
     }
   ],
-  "prs": [],
   "blogPosts": [
     {
       "title": "Compiling Monkey to WebAssembly",
@@ -1037,8 +1116,8 @@
     }
   ],
   "scheduleAdherence": {
-    "completionRate": 60,
-    "completedBlocks": 33,
+    "completionRate": 0,
+    "completedBlocks": 0,
     "pastBlocks": 55,
     "totalBlocks": 55,
     "plannedDist": {
@@ -1047,15 +1126,10 @@
       "MAINTAIN": 10,
       "EXPLORE": 7
     },
-    "actualDist": {
-      "MAINTAIN": 5,
-      "THINK": 7,
-      "BUILD": 16,
-      "EXPLORE": 5
-    },
-    "pace": 2.4
+    "actualDist": {},
+    "pace": 0
   },
-  "streak": 2,
+  "streak": 0,
   "benchmarks": {
     "timestamp": "2026-03-23T20:19:16.201Z",
     "gitHash": "f89c189",

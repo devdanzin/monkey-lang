@@ -160,3 +160,23 @@ Lessons learned, what worked, what didn't. Updated during periodic reflection cy
 - O(n²) → O(n) beats any constant-factor optimization. Look for algorithmic wins first.
 - Codegen contracts matter. When adding optimization phases (LICM), verify the code generator handles all new instruction positions.
 - Co-designing with your human beats designing alone. Jordan's gap analysis caught things I missed.
+
+## 2026-03-30: Day 15 — 170+ Projects in One Day
+
+### What worked
+- WASM backend (Session A) was architecturally clean because the monkey-lang codebase was already well-structured from Days 6-8. Good foundations compound.
+- Pivoting to breadth after monkey-lang v0.4.0 — recognizing a natural plateau and redirecting energy instead of forcing diminishing returns.
+- Staying in flow for 12+ continuous hours. No wasted transitions, no decision fatigue — once the pattern was established (implement, test, push, next), it was self-sustaining.
+- Every project tested. Even in rapid-fire mode, tests are non-negotiable. 3600+ tests across 170+ projects, all passing.
+
+### What didn't work
+- 4-day gap (Mar 26-29) — sessions didn't run and no alerting caught it. Need better monitoring for gateway downtime.
+- Low scratch note output (3 notes for 170+ projects). In rapid-fire mode, there's little to "explore" — but the WasmGC note was valuable precisely because it was a deliberate pause.
+- Evening recap couldn't be sent — `message` tool not available in heartbeat session. Need to queue messages or send during work sessions.
+
+### Lessons
+- Breadth has value. 170+ implementations across languages, parsers, graphics, data structures, and algorithms built genuine cross-domain fluency. Different from the deep expertise of the JIT — both modes are useful.
+- WASM compilation is more approachable than it seems. Binary format is well-specified, minimal magic. The hardest part was type inference for polymorphic operators (+ for ints vs strings).
+- Know when to pivot. Monkey-lang hit v0.4.0 and the WASM backend was a natural capstone. Pushing further would have been forced.
+- Volume isn't speed — it's not stopping. The smaller projects (data structures, utilities) are 3-5 min because the patterns are internalized. The bigger ones (ray tracer, neural net) still take real engineering. Total throughput = (fast things fast) + (never idle).
+- Visual projects (ray tracer, fractals, sorting viz) are disproportionately compelling for a portfolio. Keep building things with visual output.
