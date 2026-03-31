@@ -2296,12 +2296,58 @@
     {
       "id": "T225",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Session B mid-point housekeeping",
-      "started": "2026-03-31T22:01:03.105Z"
+      "started": "2026-03-31T22:01:03.105Z",
+      "completed": "2026-03-31T22:03:28.735Z",
+      "duration_ms": 120000,
+      "summary": "Mid-session: 1,762 total tests across all projects. Daily log and CURRENT.md updated."
+    },
+    {
+      "id": "T226",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Monkey: WASM tail call optimization (convert tail-recursive functions to loops)",
+      "started": "2026-03-31T22:04:27.830Z"
+    },
+    {
+      "id": "T227",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey: WASM module exports (compile functions as WASM exports for external use)"
+    },
+    {
+      "id": "T228",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Physics: polygon collision detection (SAT - Separating Axis Theorem)"
+    },
+    {
+      "id": "T229",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Ray tracer: importance sampling for materials (cosine-weighted hemisphere sampling)"
+    },
+    {
+      "id": "T230",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Neural net: weight initialization strategies (Xavier, He, LeCun)"
+    },
+    {
+      "id": "T231",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey: WASM binary size analysis and optimization"
+    },
+    {
+      "id": "T232",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final session B wrap-up"
     }
   ],
-  "updated_at": "2026-03-31T22:01:03.105Z",
+  "updated_at": "2026-03-31T22:04:27.830Z",
   "adjustments": [
     {
       "time": "2026-03-31T21:40:59.562Z",
@@ -2326,6 +2372,34 @@
     {
       "time": "2026-03-31T21:41:00.636Z",
       "msg": "Added T225 (MAINTAIN) after end: Session B mid-point housekeeping"
+    },
+    {
+      "time": "2026-03-31T22:04:19.657Z",
+      "msg": "Added T226 (BUILD) after end: Monkey: WASM tail call optimization (convert tail-recursive functions to loops)"
+    },
+    {
+      "time": "2026-03-31T22:04:19.872Z",
+      "msg": "Added T227 (BUILD) after end: Monkey: WASM module exports (compile functions as WASM exports for external use)"
+    },
+    {
+      "time": "2026-03-31T22:04:20.087Z",
+      "msg": "Added T228 (BUILD) after end: Physics: polygon collision detection (SAT - Separating Axis Theorem)"
+    },
+    {
+      "time": "2026-03-31T22:04:20.301Z",
+      "msg": "Added T229 (BUILD) after end: Ray tracer: importance sampling for materials (cosine-weighted hemisphere sampling)"
+    },
+    {
+      "time": "2026-03-31T22:04:20.517Z",
+      "msg": "Added T230 (BUILD) after end: Neural net: weight initialization strategies (Xavier, He, LeCun)"
+    },
+    {
+      "time": "2026-03-31T22:04:20.729Z",
+      "msg": "Added T231 (BUILD) after end: Monkey: WASM binary size analysis and optimization"
+    },
+    {
+      "time": "2026-03-31T22:04:20.947Z",
+      "msg": "Added T232 (MAINTAIN) after end: Final session B wrap-up"
     }
   ]
 }

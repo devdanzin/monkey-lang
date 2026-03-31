@@ -2296,23 +2296,69 @@
     {
       "id": "T225",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Session B mid-point housekeeping",
-      "started": "2026-03-31T22:01:03.105Z"
+      "started": "2026-03-31T22:01:03.105Z",
+      "completed": "2026-03-31T22:03:28.735Z",
+      "duration_ms": 120000,
+      "summary": "Mid-session: 1,762 total tests across all projects. Daily log and CURRENT.md updated."
+    },
+    {
+      "id": "T226",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Monkey: WASM tail call optimization (convert tail-recursive functions to loops)",
+      "started": "2026-03-31T22:04:27.830Z"
+    },
+    {
+      "id": "T227",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey: WASM module exports (compile functions as WASM exports for external use)"
+    },
+    {
+      "id": "T228",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Physics: polygon collision detection (SAT - Separating Axis Theorem)"
+    },
+    {
+      "id": "T229",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Ray tracer: importance sampling for materials (cosine-weighted hemisphere sampling)"
+    },
+    {
+      "id": "T230",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Neural net: weight initialization strategies (Xavier, He, LeCun)"
+    },
+    {
+      "id": "T231",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey: WASM binary size analysis and optimization"
+    },
+    {
+      "id": "T232",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final session B wrap-up"
     }
   ],
   "current": {
-    "id": "T225",
-    "mode": "MAINTAIN",
+    "id": "T226",
+    "mode": "BUILD",
     "status": "in-progress",
-    "task": "Session B mid-point housekeeping",
-    "started": "2026-03-31T22:01:03.105Z"
+    "task": "Monkey: WASM tail call optimization (convert tail-recursive functions to loops)",
+    "started": "2026-03-31T22:04:27.830Z"
   },
   "stats": {
-    "completed": 224,
+    "completed": 225,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 54563000
+    "total_duration_ms": 54683000
   },
-  "updated_at": "2026-03-31T22:01:03.105Z"
+  "updated_at": "2026-03-31T22:04:27.830Z"
 }
