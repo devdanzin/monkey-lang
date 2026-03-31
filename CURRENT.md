@@ -1,18 +1,17 @@
-# CURRENT.md — Session State
+# CURRENT.md
 
-## Status: session-ended
-## Session: Work Session C
-## Date: 2026-03-30
-## Time: 8:15 PM - 10:05 PM MDT
+## Status: session-active
 
-## Session C Summary
-- **37 tasks completed** this session
-- Built 37 new from-scratch projects, all tests passing
-- Estimated ~400+ new tests this session alone
-- Total project count now ~190, estimated ~1900+ total tests
+### Session C (Evening) — 2026-03-30
+- **Started:** 9:40 PM MDT
+- **Boundary:** 10:15 PM MDT
+- **Tasks completed:** 7 (T424, T432, T435, T436, T437, T438, T439, T440, T441)
 
-## Projects Built This Session
-type-checker, orm, fst, yaml, lz77, immutable, rope, kd-tree, forth, xpath,
-peg, money, arena, pipe, clamped, string-template, prolog, ecs, sat, diff,
-btree, lambda, genetic, nfa-regex, tensor, crdt, graph-db, actor, physics,
-sql-parser, reactive, datalog, rbtree, pratt, markov, wav, interpreter
+### Completed This Session
+- bloom-clock: probabilistic causal ordering (13 tests)
+- ray-marcher: SDF sphere tracing with CSG, shadows, reflections (30 tests)
+- constraint-solver: AC-3, backtracking, Sudoku/8-Queens/map coloring (12 tests)
+- lisp: Scheme interpreter with macros, TCO, quasiquote (43 tests)
+- type-infer: Hindley-Milner Algorithm W (37 tests)
+- ecs: fixed CJS/ESM test mismatch (11 tests)
+- Fixed schedule.json corruption (duplicate JSON ending)
