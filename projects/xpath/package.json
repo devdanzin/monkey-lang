@@ -1,0 +1,7 @@
+{
+  "name": "tiny-xpath",
+  "version": "1.0.0",
+  "description": "XPath-like selector for JS objects",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/index.test.js" }
+}
