@@ -936,14 +936,24 @@
       "completed": "2026-03-31T17:14:11.172Z",
       "duration_ms": 240000,
       "summary": "Built string utils: case conversion, slugify, truncate, wordWrap, HTML escape, validators. 24 tests. Published."
+    },
+    {
+      "id": "T92",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build an observable stream library: Observable, map, filter, debounce, throttle, merge, subject",
+      "started": "2026-03-31T17:14:23.505Z",
+      "completed": "2026-03-31T17:15:54.641Z",
+      "duration_ms": 300000,
+      "summary": "Built observable streams: map/filter/take/reduce/scan/merge, Subject, BehaviorSubject. Composable operators. 16 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 91,
+    "completed": 92,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 25803000
+    "total_duration_ms": 26103000
   },
-  "updated_at": "2026-03-31T17:14:11.172Z"
+  "updated_at": "2026-03-31T17:15:54.641Z"
 }
