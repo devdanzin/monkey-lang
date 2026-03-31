@@ -1,0 +1,7 @@
+{
+  "name": "tiny-interpreter",
+  "version": "1.0.0",
+  "description": "Tree-walking interpreter with closures, loops, functions",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/index.test.js" }
+}
