@@ -2236,23 +2236,63 @@
     {
       "id": "T209",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final session housekeeping",
-      "started": "2026-03-31T21:40:02.667Z"
+      "started": "2026-03-31T21:40:02.667Z",
+      "completed": "2026-03-31T21:40:47.466Z",
+      "duration_ms": 60000,
+      "summary": "Daily log updated, pushed."
+    },
+    {
+      "id": "T220",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Physics engine: web demo with Canvas rendering (bouncing balls, springs, constraints)",
+      "started": "2026-03-31T21:41:09.350Z"
+    },
+    {
+      "id": "T221",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Physics engine: rotation and torque (angular velocity, moment of inertia)"
+    },
+    {
+      "id": "T222",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey lang: WASM string interning (deduplicate identical strings at compile time)"
+    },
+    {
+      "id": "T223",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Ray tracer: perlin noise turbulence for wood/marble textures"
+    },
+    {
+      "id": "T224",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Neural net: learning rate warmup and cosine annealing scheduler"
+    },
+    {
+      "id": "T225",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Session B mid-point housekeeping"
     }
   ],
   "current": {
-    "id": "T209",
-    "mode": "MAINTAIN",
+    "id": "T220",
+    "mode": "BUILD",
     "status": "in-progress",
-    "task": "Final session housekeeping",
-    "started": "2026-03-31T21:40:02.667Z"
+    "task": "Physics engine: web demo with Canvas rendering (bouncing balls, springs, constraints)",
+    "started": "2026-03-31T21:41:09.350Z"
   },
   "stats": {
-    "completed": 218,
+    "completed": 219,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 53303000
+    "total_duration_ms": 53363000
   },
-  "updated_at": "2026-03-31T21:40:02.667Z"
+  "updated_at": "2026-03-31T21:41:09.351Z"
 }
