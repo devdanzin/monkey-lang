@@ -3211,14 +3211,34 @@
       "completed": "2026-03-31T00:17:05.478Z",
       "duration_ms": 300000,
       "summary": "CSS parser: tokenizer, rule parser (selectors, declarations, !important), comment skipping, at-rules (media queries with nested rules), specificity calculator (IDs/classes/elements), stringify with indent/minify options. 12 tests."
+    },
+    {
+      "id": "T313",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Pipe/Compose utilities (function composition)",
+      "started": "2026-03-31T00:18:28.996Z",
+      "completed": "2026-03-31T00:19:34.576Z",
+      "duration_ms": 300000,
+      "summary": "15+ FP utilities: pipe, compose, pipeAsync, curry, partial, memoize, once, noop, identity, constant, flip, not, tap, attempt, juxt, converge, trampoline. 14 tests."
+    },
+    {
+      "id": "T314",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny reactive store (like Zustand)",
+      "started": "2026-03-31T00:19:40.934Z",
+      "completed": "2026-03-31T00:20:42.255Z",
+      "duration_ms": 300000,
+      "summary": "Store: getState/setState/subscribe, actions bound to set/get, select (slice subscription), applyMiddleware, logger/persist middleware, destroy. 10 tests."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 312,
+    "completed": 314,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 53570000
+    "total_duration_ms": 54170000
   },
-  "updated_at": "2026-03-31T00:17:05.478Z"
+  "updated_at": "2026-03-31T00:20:42.255Z"
 }

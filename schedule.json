@@ -3211,9 +3211,29 @@
       "completed": "2026-03-31T00:17:05.478Z",
       "duration_ms": 300000,
       "summary": "CSS parser: tokenizer, rule parser (selectors, declarations, !important), comment skipping, at-rules (media queries with nested rules), specificity calculator (IDs/classes/elements), stringify with indent/minify options. 12 tests."
+    },
+    {
+      "id": "T313",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Pipe/Compose utilities (function composition)",
+      "started": "2026-03-31T00:18:28.996Z",
+      "completed": "2026-03-31T00:19:34.576Z",
+      "duration_ms": 300000,
+      "summary": "15+ FP utilities: pipe, compose, pipeAsync, curry, partial, memoize, once, noop, identity, constant, flip, not, tap, attempt, juxt, converge, trampoline. 14 tests."
+    },
+    {
+      "id": "T314",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny reactive store (like Zustand)",
+      "started": "2026-03-31T00:19:40.934Z",
+      "completed": "2026-03-31T00:20:42.255Z",
+      "duration_ms": 300000,
+      "summary": "Store: getState/setState/subscribe, actions bound to set/get, select (slice subscription), applyMiddleware, logger/persist middleware, destroy. 10 tests."
     }
   ],
-  "updated_at": "2026-03-31T00:17:05.478Z",
+  "updated_at": "2026-03-31T00:20:42.255Z",
   "adjustments": [
     {
       "time": "2026-03-30T22:55:00.316Z",
@@ -3426,6 +3446,14 @@
     {
       "time": "2026-03-31T00:10:40.705Z",
       "msg": "Added T312 (BUILD) after end: New project: Tiny CSS parser"
+    },
+    {
+      "time": "2026-03-31T00:18:21.786Z",
+      "msg": "Added T313 (BUILD) after end: New project: Pipe/Compose utilities (function composition)"
+    },
+    {
+      "time": "2026-03-31T00:18:21.906Z",
+      "msg": "Added T314 (BUILD) after end: New project: Tiny reactive store (like Zustand)"
     }
   ]
 }
