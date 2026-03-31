@@ -2075,16 +2075,20 @@
       "id": "T210",
       "mode": "BUILD",
       "task": "Neural net: Adam optimizer with momentum and adaptive learning rates",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T203",
-      "started": "2026-03-31T21:05:35.570Z"
+      "started": "2026-03-31T21:05:35.570Z",
+      "completed": "2026-03-31T21:08:36.869Z",
+      "duration_ms": 360000,
+      "summary": "Optimizer module: SGD, MomentumSGD, Adam, RMSProp. Each with proper state management, bias correction (Adam), decay (RMSProp). 10 tests. createOptimizer factory."
     },
     {
       "id": "T211",
       "mode": "BUILD",
       "task": "Neural net: batch normalization layer (normalize activations, learnable gamma/beta)",
-      "status": "upcoming",
-      "plan_ref": "T203"
+      "status": "in-progress",
+      "plan_ref": "T203",
+      "started": "2026-03-31T21:08:46.104Z"
     },
     {
       "id": "T212",
@@ -2140,18 +2144,18 @@
     }
   ],
   "current": {
-    "id": "T210",
+    "id": "T211",
     "mode": "BUILD",
-    "task": "Neural net: Adam optimizer with momentum and adaptive learning rates",
+    "task": "Neural net: batch normalization layer (normalize activations, learnable gamma/beta)",
     "status": "in-progress",
     "plan_ref": "T203",
-    "started": "2026-03-31T21:05:35.570Z"
+    "started": "2026-03-31T21:08:46.104Z"
   },
   "stats": {
-    "completed": 203,
+    "completed": 204,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 50303000
+    "total_duration_ms": 50663000
   },
-  "updated_at": "2026-03-31T21:05:35.570Z"
+  "updated_at": "2026-03-31T21:08:46.104Z"
 }
