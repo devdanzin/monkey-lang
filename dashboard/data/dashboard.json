@@ -1640,16 +1640,20 @@
     {
       "id": "T162",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Build a tiny protocol buffers: define schema, encode/decode binary messages"
+      "status": "done",
+      "task": "Build a tiny protocol buffers: define schema, encode/decode binary messages",
+      "started": "2026-03-31T19:11:15.358Z",
+      "completed": "2026-03-31T19:13:05.629Z",
+      "duration_ms": 300000,
+      "summary": "Built protobuf: varint (LEB128), zigzag, wire format, schema encode/decode. String/uint32/int32/bool/bytes/repeated. 10 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 161,
+    "completed": 162,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 42303000
+    "total_duration_ms": 42603000
   },
-  "updated_at": "2026-03-31T19:11:05.117Z"
+  "updated_at": "2026-03-31T19:13:05.629Z"
 }
