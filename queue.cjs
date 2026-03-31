@@ -93,17 +93,47 @@ function output(obj) {
 
 // --- Commands ---
 
+// Auto-resolve orphaned in-progress tasks (started 30+ min ago)
+function resolveOrphans(data) {
+  const ORPHAN_THRESHOLD_MS = 30 * 60 * 1000; // 30 minutes
+  const cutoff = Date.now() - ORPHAN_THRESHOLD_MS;
+  const resolved = [];
+  for (const task of data.queue) {
+    if (task.status === 'in-progress' && task.started) {
+      const startedMs = new Date(task.started).getTime();
+      if (startedMs < cutoff) {
+        task.status = 'done';
+        task.completed = now();
+        task.summary = (task.summary || '') + ' [auto-resolved: orphaned in-progress task]';
+        resolved.push(task);
+        dashboardPost('/api/task-update', { action: 'complete', task });
+      }
+    }
+  }
+  if (resolved.length > 0) {
+    saveSchedule(data);
+    console.error(`Auto-resolved ${resolved.length} orphaned task(s): ${resolved.map(t => t.id).join(', ')}`);
+  }
+  return resolved;
+}
+
 function cmdNext(args, data) {
   const peekAll = args.includes('--peek-all');
+  
+  // Always check for orphans before returning next task
+  const orphans = resolveOrphans(data);
+  
   if (peekAll) {
-    output({ queue: data.queue, backlog: data.backlog || [] });
+    const result = { queue: data.queue, backlog: data.backlog || [] };
+    if (orphans.length > 0) result.orphansResolved = orphans.map(t => t.id);
+    output(result);
     return;
   }
   const next = data.queue.find(t => t.status === 'upcoming' || t.status === 'in-progress');
   if (!next) {
-    output({ next: null, message: 'Queue empty' });
+    output({ next: null, message: 'Queue empty', orphansResolved: orphans.map(t => t.id) });
   } else {
-    output({ next });
+    output({ next, orphansResolved: orphans.length > 0 ? orphans.map(t => t.id) : undefined });
   }
 }
 
