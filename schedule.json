@@ -816,9 +816,19 @@
       "completed": "2026-03-31T16:53:13.675Z",
       "duration_ms": 240000,
       "summary": "Built INI parser: sections, key=value, comments, type coercion, stringify, get(). 15 tests. Published. MILESTONE: 1000+ new tests in session!"
+    },
+    {
+      "id": "T80",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a TOML parser: tables, arrays, strings, dates, inline tables, dotted keys",
+      "started": "2026-03-31T16:53:48.309Z",
+      "completed": "2026-03-31T16:55:17.787Z",
+      "duration_ms": 300000,
+      "summary": "Built TOML parser: tables, arrays, strings, dates, inline tables, dotted keys, array of tables, stringify. 16 tests. Published."
     }
   ],
-  "updated_at": "2026-03-31T16:53:13.675Z",
+  "updated_at": "2026-03-31T16:55:17.787Z",
   "adjustments": [
     {
       "time": "2026-03-31T15:25:10.585Z",
@@ -979,6 +989,10 @@
     {
       "time": "2026-03-31T16:52:02.749Z",
       "msg": "Added T79 (BUILD) after end: Build an INI file parser: parse sections, keys, values, comments, stringify back"
+    },
+    {
+      "time": "2026-03-31T16:53:47.811Z",
+      "msg": "Added T80 (BUILD) after end: Build a TOML parser: tables, arrays, strings, dates, inline tables, dotted keys"
     }
   ]
 }
