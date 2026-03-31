@@ -2086,16 +2086,20 @@
       "id": "T211",
       "mode": "BUILD",
       "task": "Neural net: batch normalization layer (normalize activations, learnable gamma/beta)",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T203",
-      "started": "2026-03-31T21:08:46.104Z"
+      "started": "2026-03-31T21:08:46.104Z",
+      "completed": "2026-03-31T21:10:44.584Z",
+      "duration_ms": 300000,
+      "summary": "BatchNorm: normalize activations, learnable gamma/beta, running stats for inference, full backward pass. 8 tests."
     },
     {
       "id": "T212",
       "mode": "BUILD",
       "task": "Neural net: dropout layer for regularization",
-      "status": "upcoming",
-      "plan_ref": "T203"
+      "status": "in-progress",
+      "plan_ref": "T203",
+      "started": "2026-03-31T21:11:03.661Z"
     },
     {
       "id": "T213",
@@ -2143,5 +2147,5 @@
       "task": "Final session housekeeping"
     }
   ],
-  "updated_at": "2026-03-31T21:08:46.104Z"
+  "updated_at": "2026-03-31T21:11:03.661Z"
 }
