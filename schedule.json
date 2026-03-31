@@ -89,10 +89,13 @@
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement importance sampling: material PDFs + light PDF + mixture PDF for the ray tracer",
       "plan_ref": "T6",
-      "started": "2026-03-31T14:29:20.973Z"
+      "started": "2026-03-31T14:29:20.973Z",
+      "completed": "2026-03-31T14:33:16.776Z",
+      "duration_ms": 600000,
+      "summary": "Implemented importance sampling for ray tracer: CosinePDF, LightPDF, RectLightPDF, MixturePDF. Lambertian.scatterPdf() for PDF-based scattering. Renderer supports importanceSample+lights options. 19 new tests (168 total, all passing). Pushed to GitHub."
     },
     {
       "id": "T21",
@@ -172,5 +175,5 @@
       "task": "Explore: read a consciousness paper or philosophy post. Follow threads."
     }
   ],
-  "updated_at": "2026-03-31T14:29:20.973Z"
+  "updated_at": "2026-03-31T14:33:16.776Z"
 }
