@@ -1864,21 +1864,29 @@
       "id": "T195",
       "mode": "BUILD",
       "task": "Add WASM GC + native hash tests, update benchmarks and README",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T181",
-      "started": "2026-03-31T20:34:28.684Z"
+      "started": "2026-03-31T20:34:28.684Z",
+      "completed": "2026-03-31T20:35:34.700Z",
+      "duration_ms": 180000,
+      "summary": "Updated README with GC and native hash map docs. Pushed to GitHub. 212 total WASM tests."
     },
     {
       "id": "T182",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-03-31T20:35:53.315Z",
+      "completed": "2026-03-31T20:35:53.578Z",
+      "duration_ms": 0,
+      "summary": "Placeholder — filled by T193-T195"
     },
     {
       "id": "T183",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, dashboard health"
+      "status": "in-progress",
+      "task": "Housekeeping: git push, dashboard health",
+      "started": "2026-03-31T20:35:58.584Z"
     },
     {
       "id": "T184",
@@ -1938,18 +1946,17 @@
     }
   ],
   "current": {
-    "id": "T195",
-    "mode": "BUILD",
-    "task": "Add WASM GC + native hash tests, update benchmarks and README",
+    "id": "T183",
+    "mode": "MAINTAIN",
     "status": "in-progress",
-    "plan_ref": "T181",
-    "started": "2026-03-31T20:34:28.684Z"
+    "task": "Housekeeping: git push, dashboard health",
+    "started": "2026-03-31T20:35:58.584Z"
   },
   "stats": {
-    "completed": 183,
+    "completed": 185,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 47663000
+    "total_duration_ms": 47843000
   },
-  "updated_at": "2026-03-31T20:34:28.684Z"
+  "updated_at": "2026-03-31T20:35:58.584Z"
 }
