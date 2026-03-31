@@ -1,0 +1,7 @@
+{
+  "name": "tiny-lz77",
+  "version": "1.0.0",
+  "description": "LZ77 sliding window compression from scratch",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/index.test.js" }
+}
