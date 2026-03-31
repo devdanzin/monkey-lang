@@ -1246,9 +1246,29 @@
       "completed": "2026-03-31T18:14:57.191Z",
       "duration_ms": 300000,
       "summary": "Built assembler: 25+ opcodes, labels, two-pass assembly, disassembler, comments. 10 tests. Published."
+    },
+    {
+      "id": "T123",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny linker: resolve symbols across modules, output combined bytecode",
+      "started": "2026-03-31T18:15:14.595Z",
+      "completed": "2026-03-31T18:15:24.595Z",
+      "duration_ms": 5000,
+      "summary": "Pivoting to garbage collector"
+    },
+    {
+      "id": "T124",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a garbage collector simulation: mark-and-sweep, reference counting, heap visualization",
+      "started": "2026-03-31T18:15:25.290Z",
+      "completed": "2026-03-31T18:17:22.470Z",
+      "duration_ms": 300000,
+      "summary": "Built GC simulation: mark-and-sweep (handles cycles!) + reference counting. Stats tracking. 10 tests. Published."
     }
   ],
-  "updated_at": "2026-03-31T18:14:57.191Z",
+  "updated_at": "2026-03-31T18:17:22.470Z",
   "adjustments": [
     {
       "time": "2026-03-31T15:25:10.585Z",
@@ -1581,6 +1601,14 @@
     {
       "time": "2026-03-31T18:13:12.414Z",
       "msg": "Added T122 (BUILD) after end: Build a tiny assembler: define opcodes, labels, assemble to bytecode, disassemble"
+    },
+    {
+      "time": "2026-03-31T18:15:14.090Z",
+      "msg": "Added T123 (BUILD) after end: Build a tiny linker: resolve symbols across modules, output combined bytecode"
+    },
+    {
+      "time": "2026-03-31T18:15:24.786Z",
+      "msg": "Added T124 (BUILD) after end: Build a garbage collector simulation: mark-and-sweep, reference counting, heap visualization"
     }
   ]
 }
