@@ -1,0 +1,7 @@
+{
+  "name": "tiny-string-template",
+  "version": "1.0.0",
+  "description": "String template engine with filters, conditionals, loops, partials",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/index.test.js" }
+}
