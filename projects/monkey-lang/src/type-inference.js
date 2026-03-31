@@ -170,8 +170,20 @@ export class TypeInference {
       if (expr.operator === '+') {
         // String + anything = string
         if (leftType === Types.STRING || rightType === Types.STRING) {
+          if (leftType !== Types.STRING && leftType !== Types.UNKNOWN) {
+            this.warnings.push(`Implicit string conversion: '${leftType}' + '${rightType}'`);
+          }
+          if (rightType !== Types.STRING && rightType !== Types.UNKNOWN) {
+            this.warnings.push(`Implicit string conversion: '${leftType}' + '${rightType}'`);
+          }
           expr.inferredType = Types.STRING;
           return Types.STRING;
+        }
+        if (leftType !== Types.INT && leftType !== Types.UNKNOWN) {
+          this.warnings.push(`Addition of non-integer type '${leftType}'`);
+        }
+        if (rightType !== Types.INT && rightType !== Types.UNKNOWN) {
+          this.warnings.push(`Addition of non-integer type '${rightType}'`);
         }
         expr.inferredType = Types.INT;
         return Types.INT;
@@ -179,7 +191,10 @@ export class TypeInference {
       if (['-', '*', '/', '%'].includes(expr.operator)) {
         expr.inferredType = Types.INT;
         if (leftType !== Types.INT && leftType !== Types.UNKNOWN) {
-          this.warnings.push(`Arithmetic on non-integer type '${leftType}'`);
+          this.warnings.push(`Arithmetic operator '${expr.operator}' on non-integer type '${leftType}'`);
+        }
+        if (rightType !== Types.INT && rightType !== Types.UNKNOWN) {
+          this.warnings.push(`Arithmetic operator '${expr.operator}' on non-integer type '${rightType}'`);
         }
         return Types.INT;
       }

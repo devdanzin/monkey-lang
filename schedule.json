@@ -2205,16 +2205,20 @@
       "id": "T218",
       "mode": "BUILD",
       "task": "Add WASM optimization benchmarks: measure speedup from optimizations",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T207",
-      "started": "2026-03-31T21:31:00.521Z"
+      "started": "2026-03-31T21:31:00.521Z",
+      "completed": "2026-03-31T21:36:49.901Z",
+      "duration_ms": 300000,
+      "summary": "Optimization benchmarks: 7 benchmarks, constant folding shows 1.56x speedup, string concat 1.30x. Pushed."
     },
     {
       "id": "T219",
       "mode": "BUILD",
       "task": "Monkey: comprehensive error messages using type inference (type mismatch warnings)",
-      "status": "upcoming",
-      "plan_ref": "T207"
+      "status": "in-progress",
+      "plan_ref": "T207",
+      "started": "2026-03-31T21:36:58.018Z"
     },
     {
       "id": "T208",
@@ -2229,5 +2233,5 @@
       "task": "Final session housekeeping"
     }
   ],
-  "updated_at": "2026-03-31T21:31:00.521Z"
+  "updated_at": "2026-03-31T21:36:58.018Z"
 }
