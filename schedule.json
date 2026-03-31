@@ -1096,9 +1096,19 @@
       "completed": "2026-03-31T17:43:31.076Z",
       "duration_ms": 300000,
       "summary": "Built circuit breaker: closed/open/half-open, threshold, fallback, recovery, state changes. 11 tests. Published."
+    },
+    {
+      "id": "T108",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a retry utility: exponential backoff, jitter, max attempts, timeout, abort signal",
+      "started": "2026-03-31T17:43:43.341Z",
+      "completed": "2026-03-31T17:45:15.623Z",
+      "duration_ms": 240000,
+      "summary": "Built retry utility: exponential/linear/fixed backoff, jitter, retryIf, withTimeout, retryable. 11 tests. Published. MILESTONE: 1500+ new tests!"
     }
   ],
-  "updated_at": "2026-03-31T17:43:31.076Z",
+  "updated_at": "2026-03-31T17:45:15.623Z",
   "adjustments": [
     {
       "time": "2026-03-31T15:25:10.585Z",
@@ -1371,6 +1381,10 @@
     {
       "time": "2026-03-31T17:41:35.009Z",
       "msg": "Added T107 (BUILD) after end: Build a circuit breaker: closed/open/half-open states, failure threshold, reset timeout, fallback"
+    },
+    {
+      "time": "2026-03-31T17:43:43.040Z",
+      "msg": "Added T108 (BUILD) after end: Build a retry utility: exponential backoff, jitter, max attempts, timeout, abort signal"
     }
   ]
 }
