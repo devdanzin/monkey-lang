@@ -1266,14 +1266,24 @@
       "completed": "2026-03-31T18:17:22.470Z",
       "duration_ms": 300000,
       "summary": "Built GC simulation: mark-and-sweep (handles cycles!) + reference counting. Stats tracking. 10 tests. Published."
+    },
+    {
+      "id": "T125",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny allocator: first-fit, best-fit, buddy system, memory pool, fragmentation tracking",
+      "started": "2026-03-31T18:17:33.402Z",
+      "completed": "2026-03-31T18:19:26.543Z",
+      "duration_ms": 300000,
+      "summary": "Built allocator: first-fit, best-fit, pool. Block coalescing, fragmentation tracking. 8 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 124,
+    "completed": 125,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 34693000
+    "total_duration_ms": 34993000
   },
-  "updated_at": "2026-03-31T18:17:22.470Z"
+  "updated_at": "2026-03-31T18:19:26.543Z"
 }
