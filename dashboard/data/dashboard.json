@@ -3994,6 +3994,128 @@
       "completed": "2026-03-31T01:36:56.553Z",
       "duration_ms": 120000,
       "summary": "Option: Some/None, isSome/isNone, unwrap/unwrapOr, map, flatMap, filter, match, from, tryCatch. 16 tests."
+    },
+    {
+      "id": "T399",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny either type (Left/Right)",
+      "started": "2026-03-31T01:37:28.885Z",
+      "completed": "2026-03-31T01:38:17.019Z",
+      "duration_ms": 120000,
+      "summary": "Either: Left/Right, isLeft/isRight, unwrap/unwrapLeft, map, flatMap, mapLeft, match, tryCatch, fromNullable. 15 tests."
+    },
+    {
+      "id": "T400",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "New project: Tiny clamped number"
+    },
+    {
+      "id": "T401",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "New project: Tiny string template (tagged)"
+    },
+    {
+      "id": "T402",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny args parser",
+      "started": "2026-03-31T01:38:25.731Z",
+      "completed": "2026-03-31T01:39:22.294Z",
+      "duration_ms": 120000,
+      "summary": "Args: --long, --key=val, -s, -abc combined, boolean, alias, defaults, -- separator, number coercion, positional. 10 tests."
+    },
+    {
+      "id": "T403",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny escape HTML",
+      "started": "2026-03-31T01:39:42.312Z",
+      "completed": "2026-03-31T01:40:37.938Z",
+      "duration_ms": 100000,
+      "summary": "Escape: escapeHTML, unescapeHTML, escapeRegex, escapeShell, escapeJSON, escapeCSV, escapeXML. 8 tests."
+    },
+    {
+      "id": "T404",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny table formatter",
+      "started": "2026-03-31T01:41:49.358Z",
+      "completed": "2026-03-31T01:42:38.947Z",
+      "duration_ms": 100000,
+      "summary": "Table: ASCII table formatter, borders, alignment (left/right/center), padding. 4 tests."
+    },
+    {
+      "id": "T405",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny counter map",
+      "started": "2026-03-31T01:40:46.950Z",
+      "completed": "2026-03-31T01:41:39.403Z",
+      "duration_ms": 100000,
+      "summary": "Counter: extends Map, increment, decrement, total, mostCommon, leastCommon, merge, subtract, from, toObject. 8 tests."
+    },
+    {
+      "id": "T406",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny morse code",
+      "started": "2026-03-31T01:42:53.157Z",
+      "completed": "2026-03-31T01:43:42.829Z",
+      "duration_ms": 80000,
+      "summary": "Morse: 36 letters + digits + punctuation, encode, decode. 5 tests."
+    },
+    {
+      "id": "T407",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny ROT13/Caesar cipher",
+      "started": "2026-03-31T01:43:51.774Z",
+      "completed": "2026-03-31T01:44:44.158Z",
+      "duration_ms": 80000,
+      "summary": "Cipher: rot13, caesar (shift N), vigenere (encrypt/decrypt), xorCipher (symmetric), atbash. 10 tests."
+    },
+    {
+      "id": "T408",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny multi-map",
+      "started": "2026-03-31T01:44:53.758Z",
+      "completed": "2026-03-31T01:45:42.364Z",
+      "duration_ms": 80000,
+      "summary": "MultiMap: set, get, has, delete (value or key), size, keyCount, keys, values, entries, clear, toObject. 6 tests."
+    },
+    {
+      "id": "T409",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny ordered map",
+      "started": "2026-03-31T01:45:52.195Z",
+      "completed": "2026-03-31T01:46:43.782Z",
+      "duration_ms": 80000,
+      "summary": "OrderedMap: insertion order, set/get/has/delete, first/last/at, keys/values/entries/iterator, toObject, clear. 6 tests."
+    },
+    {
+      "id": "T410",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny string padding",
+      "started": "2026-03-31T01:46:52.787Z",
+      "completed": "2026-03-31T01:47:41.182Z",
+      "duration_ms": 80000,
+      "summary": "String: padStart, padEnd, center, truncate, wordWrap, repeat, reverse, capitalize, indent, dedent, strip, squeeze. 9 tests."
+    },
+    {
+      "id": "T411",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny two-way map (BiMap)",
+      "started": "2026-03-31T01:48:00.621Z",
+      "completed": "2026-03-31T01:48:52.563Z",
+      "duration_ms": 80000,
+      "summary": "BiMap: two-way mapping, set/get/getKey, has/hasValue, delete/deleteValue, inverse, size, iterator. 6 tests."
     }
   ],
   "current": {
@@ -4004,10 +4126,10 @@
     "started": "2026-03-31T01:05:36.793Z"
   },
   "stats": {
-    "completed": 377,
+    "completed": 388,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 65060000
+    "total_duration_ms": 66080000
   },
-  "updated_at": "2026-03-31T01:36:56.553Z"
+  "updated_at": "2026-03-31T01:48:52.563Z"
 }
