@@ -14,15 +14,33 @@
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Iterate on dashboard — Jordan's main window. Add useful views, improve UX. Check COMMITMENTS.md.",
-      "task": null
+      "task": null,
+      "started": "2026-03-31T14:16:07.383Z",
+      "completed": "2026-03-31T14:17:13.063Z",
+      "duration_ms": 120000,
+      "summary": "Planned 3 dashboard BUILD tasks: fix queue rendering, add projects gallery, fix session timing"
     },
     {
       "id": "T3",
       "mode": "BUILD",
       "status": "upcoming",
-      "task": null,
+      "task": "Fix dashboard queue rendering: show task IDs instead of fake times, proper queue-based progress",
+      "plan_ref": "T2"
+    },
+    {
+      "id": "T19",
+      "mode": "BUILD",
+      "task": "Add projects gallery to dashboard — generate.cjs fetches repo list from GitHub, frontend renders project cards with stars/language",
+      "status": "upcoming",
+      "plan_ref": "T2"
+    },
+    {
+      "id": "T20",
+      "mode": "BUILD",
+      "task": "Fix session timing calculations — remove 15-min block assumption, use queue-based estimates",
+      "status": "upcoming",
       "plan_ref": "T2"
     },
     {
@@ -124,10 +142,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 1,
+    "completed": 2,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 60000
+    "total_duration_ms": 180000
   },
-  "updated_at": "2026-03-31T14:15:50.226Z"
+  "updated_at": "2026-03-31T14:17:13.063Z"
 }
