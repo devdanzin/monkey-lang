@@ -866,14 +866,24 @@
       "completed": "2026-03-31T17:03:28.400Z",
       "duration_ms": 300000,
       "summary": "Built parser combinators: str, regex, seq, alt, many, map, chain, lazy, sepBy. Arithmetic parser example. 20 tests. Published."
+    },
+    {
+      "id": "T85",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build A* pathfinding: grid-based, diagonal movement, weighted terrain, path visualization",
+      "started": "2026-03-31T17:03:43.156Z",
+      "completed": "2026-03-31T17:05:12.797Z",
+      "duration_ms": 300000,
+      "summary": "Built A* pathfinding: grid, diagonal, weighted terrain, BFS. Priority queue, path reconstruction. 13 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 84,
+    "completed": 85,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 23943000
+    "total_duration_ms": 24243000
   },
-  "updated_at": "2026-03-31T17:03:28.400Z"
+  "updated_at": "2026-03-31T17:05:12.797Z"
 }
