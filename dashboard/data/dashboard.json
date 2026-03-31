@@ -486,14 +486,24 @@
       "completed": "2026-03-31T15:49:37.700Z",
       "duration_ms": 360000,
       "summary": "Built reactive state management: signals, computed, effects, batch, watch, store. Diamond dependency handling. 20 tests. Published."
+    },
+    {
+      "id": "T47",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build event loop / async task scheduler: microtasks, macrotasks, timers, Promises integration",
+      "started": "2026-03-31T15:50:10.203Z",
+      "completed": "2026-03-31T15:52:07.843Z",
+      "duration_ms": 360000,
+      "summary": "Built event loop: microtasks, macrotasks, timers (setTimeout/setInterval), LoopPromise. Auto-advance time. 16 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 46,
+    "completed": 47,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 12298000
+    "total_duration_ms": 12658000
   },
-  "updated_at": "2026-03-31T15:49:37.700Z"
+  "updated_at": "2026-03-31T15:52:07.843Z"
 }
