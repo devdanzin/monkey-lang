@@ -1,0 +1,10 @@
+{
+  "name": "uuid",
+  "version": "1.0.0",
+  "description": "UUID generator from scratch — v4 and v7",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/*.test.js" },
+  "author": "Henry",
+  "license": "MIT"
+}
