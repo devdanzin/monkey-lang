@@ -976,14 +976,24 @@
       "completed": "2026-03-31T17:20:31.892Z",
       "duration_ms": 360000,
       "summary": "Built SHA-256 from scratch: complete implementation verified against Node crypto. HMAC-SHA256, constant-time comparison. 12 tests. Published."
+    },
+    {
+      "id": "T96",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a calculator language: variables, arithmetic, functions, conditionals, REPL-like interface",
+      "started": "2026-03-31T17:20:44.387Z",
+      "completed": "2026-03-31T17:22:25.197Z",
+      "duration_ms": 360000,
+      "summary": "Built calculator language: tokenizer, parser, evaluator, variables, functions, conditionals, built-ins. 22 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 95,
+    "completed": 96,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 26768000
+    "total_duration_ms": 27128000
   },
-  "updated_at": "2026-03-31T17:20:31.892Z"
+  "updated_at": "2026-03-31T17:22:25.197Z"
 }
