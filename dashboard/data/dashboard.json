@@ -3750,6 +3750,124 @@
       "completed": "2026-03-31T01:09:31.559Z",
       "duration_ms": 100000,
       "summary": "Built"
+    },
+    {
+      "id": "T372",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny SHA-256 (pure JS)",
+      "started": "2026-03-31T01:13:50.583Z",
+      "completed": "2026-03-31T01:15:03.548Z",
+      "duration_ms": 200000,
+      "summary": "SHA-256: pure JS, NIST test vectors, string + Uint8Array input, padding, 64 rounds. 6 tests."
+    },
+    {
+      "id": "T373",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny arithmetic expression evaluator",
+      "started": "2026-03-31T01:15:11.365Z",
+      "completed": "2026-03-31T01:16:06.950Z",
+      "duration_ms": 200000,
+      "summary": "Calc: recursive descent, +/-/*/÷/%/^, parentheses, unary minus, 12 math functions, variables, pi/e constants. 18 tests."
+    },
+    {
+      "id": "T374",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny dependency resolver",
+      "started": "2026-03-31T01:16:16.281Z",
+      "completed": "2026-03-31T01:17:07.213Z",
+      "duration_ms": 150000,
+      "summary": "Dep resolver: resolve (single target), resolveAll, dependsOn, dependedBy, hasCycle. Diamond deps, cycle detection. 8 tests."
+    },
+    {
+      "id": "T375",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "New project: Tiny XPath-like selector"
+    },
+    {
+      "id": "T376",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "New project: Tiny PEG parser generator"
+    },
+    {
+      "id": "T377",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny LRU-TTL cache",
+      "started": "2026-03-31T01:17:25.992Z",
+      "completed": "2026-03-31T01:18:19.091Z",
+      "duration_ms": 150000,
+      "summary": "LRU-TTL cache: get/set, max size eviction, TTL expiry, per-key TTL, has/delete/clear/keys/values/entries. 8 tests."
+    },
+    {
+      "id": "T378",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny tokenizer/lexer",
+      "started": "2026-03-31T01:19:35.936Z",
+      "completed": "2026-03-31T01:20:37.911Z",
+      "duration_ms": 150000,
+      "summary": "Tokenizer"
+    },
+    {
+      "id": "T379",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny type coercion",
+      "started": "2026-03-31T01:20:53.127Z",
+      "completed": "2026-03-31T01:21:43.811Z",
+      "duration_ms": 150000,
+      "summary": "Coerce: toNumber, toString, toBoolean, toArray, toDate, toInteger, toFloat, typeOf. 17 tests."
+    },
+    {
+      "id": "T380",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny validator (email/url/ip)",
+      "started": "2026-03-31T01:18:27.135Z",
+      "completed": "2026-03-31T01:19:26.195Z",
+      "duration_ms": 150000,
+      "summary": "15 validators: isEmail, isURL, isIPv4, isIPv6, isUUID, isHex, isAlpha, isAlphanumeric, isNumeric, isEmpty, isJSON, isBase64, isCreditCard (Luhn), isSlug, isMACAddress. 21 tests."
+    },
+    {
+      "id": "T381",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "New project: Tiny money/currency"
+    },
+    {
+      "id": "T382",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny random utilities",
+      "started": "2026-03-31T01:21:54.663Z",
+      "completed": "2026-03-31T01:22:43.857Z",
+      "duration_ms": 150000,
+      "summary": "Random: int, float, bool, pick, pickN, shuffle (Fisher-Yates), weighted, hex, string, gaussian (Box-Muller), color. 10 tests."
+    },
+    {
+      "id": "T383",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny math utilities",
+      "started": "2026-03-31T01:22:52.842Z",
+      "completed": "2026-03-31T01:23:44.231Z",
+      "duration_ms": 150000,
+      "summary": "Math: clamp, lerp, inverseLerp, remap, degToRad, radToDeg, gcd, lcm, isPrime, factorial, fibonacci, mean, median, variance, stddev, sum, product, round. 15 tests."
+    },
+    {
+      "id": "T384",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny string similarity (Jaccard/Sorensen)",
+      "started": "2026-03-31T01:23:52.124Z",
+      "completed": "2026-03-31T01:24:45.591Z",
+      "duration_ms": 150000,
+      "summary": "String similarity: Jaccard (set), Sørensen-Dice (bigram), cosine (char frequency), Hamming distance, Jaro distance. 11 tests."
     }
   ],
   "current": {
@@ -3760,10 +3878,10 @@
     "started": "2026-03-31T01:05:36.793Z"
   },
   "stats": {
-    "completed": 357,
+    "completed": 367,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 62170000
+    "total_duration_ms": 63770000
   },
-  "updated_at": "2026-03-31T01:09:31.708Z"
+  "updated_at": "2026-03-31T01:24:45.591Z"
 }
