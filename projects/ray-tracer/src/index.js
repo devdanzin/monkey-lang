@@ -19,6 +19,7 @@ export { loadScene, exportScene } from './scene-format.js';
 export { AABB } from './aabb.js';
 export { BVHNode } from './bvh.js';
 export { Lambertian, Metal, Dielectric, DiffuseLight, ColoredGlass } from './material.js';
+export { MicrofacetMaterial, beckmannNDF, ggxNDF, schlickFresnel, smithGeometry } from './microfacet.js';
 export { SolidColor, CheckerTexture, GradientTexture, NoiseTexture, MarbleTexture, WoodTexture, TurbulenceTexture, StripeTexture, PlanetTexture, ImageTexture } from './texture.js';
 export { Camera } from './camera.js';
 export { Renderer } from './renderer.js';

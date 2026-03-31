@@ -2386,15 +2386,19 @@
     {
       "id": "T234",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Physics: ray casting for game physics queries",
-      "started": "2026-03-31T22:27:31.943Z"
+      "started": "2026-03-31T22:27:31.943Z",
+      "completed": "2026-03-31T22:28:52.470Z",
+      "duration_ms": 240000,
+      "summary": "Raycasting: circle/AABB/polygon intersection, closest hit, normal computation. 10 tests (66 total physics)."
     },
     {
       "id": "T235",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Ray tracer: Beckmann microfacet BRDF for glossy reflections"
+      "status": "in-progress",
+      "task": "Ray tracer: Beckmann microfacet BRDF for glossy reflections",
+      "started": "2026-03-31T22:29:03.642Z"
     },
     {
       "id": "T236",
@@ -2421,7 +2425,7 @@
       "task": "Final wrap-up"
     }
   ],
-  "updated_at": "2026-03-31T22:27:31.943Z",
+  "updated_at": "2026-03-31T22:29:03.642Z",
   "adjustments": [
     {
       "time": "2026-03-31T21:40:59.562Z",
