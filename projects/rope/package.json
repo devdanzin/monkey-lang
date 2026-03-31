@@ -1,0 +1,7 @@
+{
+  "name": "tiny-rope",
+  "version": "1.0.0",
+  "description": "Rope data structure for efficient string editing",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/index.test.js" }
+}
