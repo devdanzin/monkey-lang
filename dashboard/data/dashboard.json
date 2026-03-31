@@ -3121,14 +3121,34 @@
       "completed": "2026-03-31T00:03:09.951Z",
       "duration_ms": 400000,
       "summary": "PROJECT #41! Itertools: 35+ lazy iterator utilities. Creation (range, repeat, cycle, generate), Transform (map, filter, flatMap, scan, enumerate), Combination (zip, zipLongest, chain, interleave), Slicing (take, skip, takeWhile, skipWhile, slice), Grouping (chunk, window, unique), Reduction (reduce, count, some, every, find, first, last, sum, min, max), pipe. All lazy (generator-based). Laziness verified in test — processing only evaluates needed elements. 32 tests."
+    },
+    {
+      "id": "T304",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Color utilities (hex/rgb/hsl conversion, interpolation, palette generation)",
+      "started": "2026-03-31T00:03:58.058Z",
+      "completed": "2026-03-31T00:05:43.546Z",
+      "duration_ms": 400000,
+      "summary": "Color: RGB/Hex/HSL conversion (bidirectional), lighten/darken/saturate/desaturate/rotate/invert/grayscale/opacity, luminance (WCAG), contrast ratio, isLight/isDark, lerp interpolation, gradient generation, palette generation (complementary/triadic/analogous/splitComplementary). Named constants. 24 tests."
+    },
+    {
+      "id": "T305",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny test framework from scratch (describe/it/assert/beforeEach)",
+      "started": "2026-03-31T00:05:50.189Z",
+      "completed": "2026-03-31T00:07:03.200Z",
+      "duration_ms": 400000,
+      "summary": "Test framework: describe/it/test, beforeEach/afterEach/beforeAll/afterAll hooks, nested suites, 10 assertion types (equal, notEqual, deepEqual, ok, throws, doesNotThrow, isType, match, fail), async test support, verbose runner with pass/fail/failures output. Self-testing: framework tested by framework. 12 tests."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 303,
+    "completed": 305,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 50770000
+    "total_duration_ms": 51570000
   },
-  "updated_at": "2026-03-31T00:03:09.951Z"
+  "updated_at": "2026-03-31T00:07:03.200Z"
 }
