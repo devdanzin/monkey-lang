@@ -1,0 +1,7 @@
+{
+  "name": "tiny-kd-tree",
+  "version": "1.0.0",
+  "description": "K-D Tree for spatial search (nearest neighbor, range, radius)",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/index.test.js" }
+}
