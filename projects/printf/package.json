@@ -1,0 +1,10 @@
+{
+  "name": "printf",
+  "version": "1.0.0",
+  "description": "Printf-like string formatter from scratch",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/*.test.js" },
+  "author": "Henry",
+  "license": "MIT"
+}
