@@ -586,14 +586,24 @@
       "completed": "2026-03-31T16:17:26.775Z",
       "duration_ms": 300000,
       "summary": "Built FSM: states, transitions, guards, entry/exit/transition actions, context, history, onChange. Traffic light example. 17 tests. Published."
+    },
+    {
+      "id": "T57",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build event emitter: on, off, once, emit, wildcard patterns, async events",
+      "started": "2026-03-31T16:17:44.327Z",
+      "completed": "2026-03-31T16:19:02.600Z",
+      "duration_ms": 240000,
+      "summary": "Built event emitter: on/off/once/emit, wildcards, patterns, async, pipe. 14 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 56,
+    "completed": 57,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 16198000
+    "total_duration_ms": 16438000
   },
-  "updated_at": "2026-03-31T16:17:26.775Z"
+  "updated_at": "2026-03-31T16:19:02.600Z"
 }
