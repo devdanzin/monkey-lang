@@ -1,0 +1,7 @@
+{
+  "name": "tiny-fst",
+  "version": "1.0.0",
+  "description": "Finite state transducers (Mealy/Moore) from scratch",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/index.test.js" }
+}
