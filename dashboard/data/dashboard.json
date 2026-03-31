@@ -566,14 +566,24 @@
       "completed": "2026-03-31T16:13:31.519Z",
       "duration_ms": 360000,
       "summary": "Built template engine: variables, conditionals, loops, 7 filters, partials, dot notation. 22 tests. Published."
+    },
+    {
+      "id": "T55",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a query engine: SELECT, WHERE, ORDER BY, GROUP BY, JOIN, LIMIT on in-memory data",
+      "started": "2026-03-31T16:13:51.590Z",
+      "completed": "2026-03-31T16:15:26.498Z",
+      "duration_ms": 360000,
+      "summary": "Built query engine: SELECT/WHERE/ORDER BY/GROUP BY/JOIN/LIMIT/DISTINCT, aggregates (count/sum/avg/min/max). Fluent API. 20 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 54,
+    "completed": 55,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 15538000
+    "total_duration_ms": 15898000
   },
-  "updated_at": "2026-03-31T16:13:31.519Z"
+  "updated_at": "2026-03-31T16:15:26.498Z"
 }
