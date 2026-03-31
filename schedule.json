@@ -377,16 +377,24 @@
       "id": "T36",
       "mode": "BUILD",
       "task": "Add B-tree delete with redistribution and merging, range queries, iteration",
-      "status": "upcoming",
-      "plan_ref": "T34"
+      "status": "done",
+      "plan_ref": "T34",
+      "started": "2026-03-31T15:20:50.277Z",
+      "completed": "2026-03-31T15:20:50.421Z",
+      "duration_ms": 1000,
+      "summary": "Already implemented in T35"
     },
     {
       "id": "T37",
       "mode": "BUILD",
       "task": "Add comprehensive tests: random operations, stress test, correctness verification",
-      "status": "upcoming",
-      "plan_ref": "T34"
+      "status": "done",
+      "plan_ref": "T34",
+      "started": "2026-03-31T15:20:50.682Z",
+      "completed": "2026-03-31T15:20:50.825Z",
+      "duration_ms": 1000,
+      "summary": "Already implemented in T35 — 26 tests including stress test with 500 random ops"
     }
   ],
-  "updated_at": "2026-03-31T15:20:17.467Z"
+  "updated_at": "2026-03-31T15:20:50.825Z"
 }
