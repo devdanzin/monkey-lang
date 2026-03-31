@@ -1,0 +1,9 @@
+{
+  "name": "tiny-type-infer",
+  "version": "1.0.0",
+  "description": "Hindley-Milner type inference with Algorithm W, let-polymorphism, and unification",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node --test test/"
+  }
+}
