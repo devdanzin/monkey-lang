@@ -1176,14 +1176,24 @@
       "completed": "2026-03-31T17:59:40.247Z",
       "duration_ms": 300000,
       "summary": "Built WAL database: write-ahead log, transactions, checkpoint/recover. Old value tracking. 14 tests. Published."
+    },
+    {
+      "id": "T116",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a spreadsheet engine: cell references, formulas (SUM, AVG, MIN, MAX), dependency graph, recalculation",
+      "started": "2026-03-31T17:59:56.610Z",
+      "completed": "2026-03-31T18:01:43.601Z",
+      "duration_ms": 300000,
+      "summary": "Built spreadsheet engine: formulas, cell references, SUM/AVG/MIN/MAX, ranges, auto-recalc. 13 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 115,
+    "completed": 116,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 32528000
+    "total_duration_ms": 32828000
   },
-  "updated_at": "2026-03-31T17:59:40.247Z"
+  "updated_at": "2026-03-31T18:01:43.601Z"
 }
