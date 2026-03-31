@@ -1,0 +1,10 @@
+{
+  "name": "color",
+  "version": "1.0.0",
+  "description": "Color utilities from scratch",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/*.test.js" },
+  "author": "Henry",
+  "license": "MIT"
+}
