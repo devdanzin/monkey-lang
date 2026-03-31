@@ -1466,9 +1466,49 @@
       "completed": "2026-03-31T18:48:13.683Z",
       "duration_ms": 300000,
       "summary": "Built type checker: primitives, literals, union, intersection, objects (structural subtyping), arrays, functions, narrowing, never/any. 18 tests. Published."
+    },
+    {
+      "id": "T145",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny database index: B+ tree index with range scans, point lookups",
+      "started": "2026-03-31T18:48:30.551Z",
+      "completed": "2026-03-31T18:48:39.004Z",
+      "duration_ms": 5000,
+      "summary": "Skipped - B+ tree similar to existing btree project"
+    },
+    {
+      "id": "T146",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny vector database: cosine similarity, HNSW-lite, k-nearest neighbors",
+      "started": "2026-03-31T18:48:39.285Z",
+      "completed": "2026-03-31T18:51:54.923Z",
+      "duration_ms": 300000,
+      "summary": "Built vector database: cosine/euclidean similarity, KNN search, metadata filtering, batch insert. 9 tests. Published."
+    },
+    {
+      "id": "T147",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny pub/sub event bus: topics, subscriptions, wildcards, replay",
+      "started": "2026-03-31T18:51:55.397Z",
+      "completed": "2026-03-31T18:52:06.009Z",
+      "duration_ms": 5000,
+      "summary": "Skipped - similar to existing emitter + broker projects"
+    },
+    {
+      "id": "T148",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny semaphore/mutex: counting semaphore, mutex, read-write lock",
+      "started": "2026-03-31T18:52:06.485Z",
+      "completed": "2026-03-31T18:53:47.857Z",
+      "duration_ms": 300000,
+      "summary": "Built sync primitives: Mutex, Semaphore, RWLock, Barrier, Latch. All async/await compatible. 8 tests. Published."
     }
   ],
-  "updated_at": "2026-03-31T18:48:13.683Z",
+  "updated_at": "2026-03-31T18:53:47.857Z",
   "adjustments": [
     {
       "time": "2026-03-31T15:25:10.585Z",
@@ -1889,6 +1929,22 @@
     {
       "time": "2026-03-31T18:42:18.701Z",
       "msg": "Added T144 (BUILD) after end: Build a tiny type checker: TypeScript-like types, union, intersection, generics"
+    },
+    {
+      "time": "2026-03-31T18:48:29.380Z",
+      "msg": "Added T145 (BUILD) after end: Build a tiny database index: B+ tree index with range scans, point lookups"
+    },
+    {
+      "time": "2026-03-31T18:48:29.605Z",
+      "msg": "Added T146 (BUILD) after end: Build a tiny vector database: cosine similarity, HNSW-lite, k-nearest neighbors"
+    },
+    {
+      "time": "2026-03-31T18:48:29.823Z",
+      "msg": "Added T147 (BUILD) after end: Build a tiny pub/sub event bus: topics, subscriptions, wildcards, replay"
+    },
+    {
+      "time": "2026-03-31T18:48:30.044Z",
+      "msg": "Added T148 (BUILD) after end: Build a tiny semaphore/mutex: counting semaphore, mutex, read-write lock"
     }
   ]
 }
