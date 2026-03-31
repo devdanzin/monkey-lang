@@ -1,18 +1,21 @@
-// WASM Peephole Optimizer
-// Optimizes at the FuncBodyBuilder instruction level.
-// Operates on body.code (raw bytes) after all instructions are emitted
-// but before encoding (before body.encode() is called).
+// wasm-optimize.js — WASM Peephole Optimizer
+//
+// Currently a lightweight pass — the main optimization happens at the AST level
+// (constant folding, dead code elimination) before WASM codegen.
+//
+// The peephole pass handles instruction-level patterns that survive AST optimization.
 
 import { Op } from './wasm.js';
 
-// Peephole optimize doesn't work well on raw bytes due to variable-length
-// operand encoding. Instead, we rely on compile-time optimizations
-// (constant folding) in the compiler itself.
-//
-// Future: add an instruction-level IR for optimization passes.
-
 export function peepholeOptimize(body) {
-  // Currently a no-op — compile-time constant folding handles the main cases.
-  // Peephole on raw bytes is error-prone with LEB128 operands.
+  // Currently a no-op at the bytecode level.
+  // AST-level constant folding and dead code elimination
+  // handle the main optimization cases before codegen.
+  //
+  // Future work:
+  //   - local.set X; local.get X → local.tee X
+  //   - const 0; add → nop
+  //   - const 1; mul → nop
+  //   - Instruction-level IR would make this safe
   return 0;
 }
