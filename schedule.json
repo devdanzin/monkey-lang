@@ -289,20 +289,42 @@
     {
       "id": "T28",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Build 2D physics engine: rigid bodies, collision detection, springs, browser demo",
-      "task": null
-    }
-  ],
-  "updated_at": "2026-03-31T15:07:57.811Z",
-  "adjustments": [
-    {
-      "time": "2026-03-31T15:07:44.448Z",
-      "msg": "Added T27 (THINK) after end: Plan next deep work: ray tracer spectral rendering, monkey-lang WASM closures, or new project (e.g., physics engine, database, OS kernel)"
+      "task": null,
+      "started": "2026-03-31T15:08:09.702Z",
+      "completed": "2026-03-31T15:08:26.601Z",
+      "duration_ms": 30000,
+      "summary": "Planned 4 BUILD tasks: core physics, collisions, constraints, browser demo"
     },
     {
-      "time": "2026-03-31T15:08:03.843Z",
-      "msg": "Added T28 (PLAN) after end: Build 2D physics engine: rigid bodies, collision detection, springs, browser demo"
+      "id": "T29",
+      "mode": "BUILD",
+      "task": "Build physics engine core: Vec2, rigid bodies (circles+rects), verlet integration, gravity",
+      "status": "upcoming",
+      "plan_ref": "T28"
+    },
+    {
+      "id": "T30",
+      "mode": "BUILD",
+      "task": "Add collision detection: circle-circle, circle-rect, rect-rect, impulse resolution, restitution",
+      "status": "upcoming",
+      "plan_ref": "T28"
+    },
+    {
+      "id": "T31",
+      "mode": "BUILD",
+      "task": "Add constraints: springs, distance joints, friction",
+      "status": "upcoming",
+      "plan_ref": "T28"
+    },
+    {
+      "id": "T32",
+      "mode": "BUILD",
+      "task": "Build browser demo: canvas visualization, interactive bodies, prebuilt scenes",
+      "status": "upcoming",
+      "plan_ref": "T28"
     }
-  ]
+  ],
+  "updated_at": "2026-03-31T15:08:26.602Z"
 }
