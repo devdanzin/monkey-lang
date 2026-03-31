@@ -626,9 +626,29 @@
       "completed": "2026-03-31T16:24:46.371Z",
       "duration_ms": 300000,
       "summary": "Built validation library: Zod-like API, string/number/boolean/array/object/enum schemas, nested validation, custom validators. 24 tests. Published."
+    },
+    {
+      "id": "T61",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a router (URL pattern matching): path params, query parsing, nested routes, middleware",
+      "started": "2026-03-31T16:25:04.528Z",
+      "completed": "2026-03-31T16:25:14.582Z",
+      "duration_ms": 5000,
+      "summary": "Skipped — router already built as part of HTTP server project"
+    },
+    {
+      "id": "T62",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a rate limiter: token bucket, sliding window, fixed window algorithms",
+      "started": "2026-03-31T16:25:21.883Z",
+      "completed": "2026-03-31T16:26:44.866Z",
+      "duration_ms": 240000,
+      "summary": "Built rate limiter: 4 algorithms (token bucket, fixed window, sliding window log, sliding window counter). Per-key support, retryAfter. 12 tests. Published."
     }
   ],
-  "updated_at": "2026-03-31T16:24:46.371Z",
+  "updated_at": "2026-03-31T16:26:44.866Z",
   "adjustments": [
     {
       "time": "2026-03-31T15:25:10.585Z",
@@ -713,6 +733,14 @@
     {
       "time": "2026-03-31T16:23:17.975Z",
       "msg": "Added T60 (BUILD) after end: Build a schema validation library: string, number, object, array, required, min/max, custom validators"
+    },
+    {
+      "time": "2026-03-31T16:25:04.051Z",
+      "msg": "Added T61 (BUILD) after end: Build a router (URL pattern matching): path params, query parsing, nested routes, middleware"
+    },
+    {
+      "time": "2026-03-31T16:25:21.591Z",
+      "msg": "Added T62 (BUILD) after end: Build a rate limiter: token bucket, sliding window, fixed window algorithms"
     }
   ]
 }
