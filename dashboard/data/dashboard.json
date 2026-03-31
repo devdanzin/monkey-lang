@@ -3101,14 +3101,24 @@
       "completed": "2026-03-30T23:58:02.502Z",
       "duration_ms": 300000,
       "summary": "Undo/Redo: command pattern, execute/undo/redo, beginGroup/endGroup, maxHistory, canUndo/canRedo, createCommand helper, setProperty helper. 9 tests."
+    },
+    {
+      "id": "T302",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project #40: Signal/Computed (reactive primitives like Solid.js)",
+      "started": "2026-03-30T23:58:43.203Z",
+      "completed": "2026-03-31T00:00:40.091Z",
+      "duration_ms": 400000,
+      "summary": "PROJECT #40! Signals: createSignal ([get, set] tuple), createEffect (auto-tracking dependency detection), createComputed (derived signals), createMemo (cached computation), batch (group updates, single re-run), watch (onChange handler). Fine-grained reactivity — effects automatically subscribe to signals they read. 12 tests."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 301,
+    "completed": 302,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 49970000
+    "total_duration_ms": 50370000
   },
-  "updated_at": "2026-03-30T23:58:02.502Z"
+  "updated_at": "2026-03-31T00:00:40.091Z"
 }
