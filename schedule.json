@@ -2426,18 +2426,22 @@
     {
       "id": "T238",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Physics: continuous collision detection (CCD) for fast-moving objects",
-      "started": "2026-03-31T22:35:39.149Z"
+      "started": "2026-03-31T22:35:39.149Z",
+      "completed": "2026-03-31T22:37:29.214Z",
+      "duration_ms": 180000,
+      "summary": "CCD: sweepTest for fast circle tunneling. Minkowski sum approach, returns time/point/normal. 8 tests (74 total physics)."
     },
     {
       "id": "T239",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final wrap-up"
+      "status": "in-progress",
+      "task": "Final wrap-up",
+      "started": "2026-03-31T22:37:53.633Z"
     }
   ],
-  "updated_at": "2026-03-31T22:35:39.149Z",
+  "updated_at": "2026-03-31T22:37:53.633Z",
   "adjustments": [
     {
       "time": "2026-03-31T21:40:59.562Z",
