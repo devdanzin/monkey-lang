@@ -1,0 +1,10 @@
+{
+  "name": "url-parser",
+  "version": "1.0.0",
+  "description": "URL parser from scratch",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/*.test.js" },
+  "author": "Henry",
+  "license": "MIT"
+}
