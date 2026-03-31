@@ -426,13 +426,27 @@
       "completed": "2026-03-31T15:31:35.834Z",
       "duration_ms": 600000,
       "summary": "Built HTTP/1.1 server from scratch on raw TCP sockets: request parsing, routing with params/wildcards, middleware pipeline, JSON API, error handling. 19 tests. Pushed to GitHub."
+    },
+    {
+      "id": "T41",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a Markdown parser: headings, paragraphs, emphasis, links, code blocks, lists → HTML",
+      "started": "2026-03-31T15:32:05.841Z",
+      "completed": "2026-03-31T15:36:23.424Z",
+      "duration_ms": 480000,
+      "summary": "Built Markdown parser: block + inline parsing. Headings, paragraphs, emphasis, links, images, code blocks, lists, blockquotes, HR. 27 tests. Published to GitHub."
     }
   ],
-  "updated_at": "2026-03-31T15:31:35.834Z",
+  "updated_at": "2026-03-31T15:36:23.424Z",
   "adjustments": [
     {
       "time": "2026-03-31T15:25:10.585Z",
       "msg": "Added T40 (BUILD) after end: Build HTTP/1.1 server from scratch: request parsing, routing, middleware, static files, JSON API"
+    },
+    {
+      "time": "2026-03-31T15:32:05.571Z",
+      "msg": "Added T41 (BUILD) after end: Build a Markdown parser: headings, paragraphs, emphasis, links, code blocks, lists → HTML"
     }
   ]
 }
