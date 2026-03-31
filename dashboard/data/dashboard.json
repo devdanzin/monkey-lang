@@ -676,14 +676,24 @@
       "completed": "2026-03-31T16:31:54.440Z",
       "duration_ms": 240000,
       "summary": "Built heap: min/max heap, priority queue, heapsort, pushPop. 13 tests. Published."
+    },
+    {
+      "id": "T66",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a graph: adjacency list, BFS, DFS, shortest path (Dijkstra), topological sort, cycle detection",
+      "started": "2026-03-31T16:32:01.832Z",
+      "completed": "2026-03-31T16:33:23.566Z",
+      "duration_ms": 300000,
+      "summary": "Built graph: adjacency list, BFS/DFS, Dijkstra shortest path, topological sort, cycle detection, connected components. 16 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 65,
+    "completed": 66,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 18303000
+    "total_duration_ms": 18603000
   },
-  "updated_at": "2026-03-31T16:31:54.440Z"
+  "updated_at": "2026-03-31T16:33:23.566Z"
 }
