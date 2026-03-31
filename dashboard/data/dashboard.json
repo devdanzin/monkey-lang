@@ -706,14 +706,24 @@
       "completed": "2026-03-31T16:35:40.028Z",
       "duration_ms": 240000,
       "summary": "Built hash map: separate chaining, dynamic resizing, iterators. Stress test vs native Map. 15 tests. Published."
+    },
+    {
+      "id": "T69",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a bloom filter: insert, test, optimal parameters, false positive rate estimation",
+      "started": "2026-03-31T16:35:48.215Z",
+      "completed": "2026-03-31T16:37:04.985Z",
+      "duration_ms": 240000,
+      "summary": "Built bloom filter: FNV-1a double hashing, optimal params, merge, FP rate estimation. 9 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 68,
+    "completed": 69,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 19083000
+    "total_duration_ms": 19323000
   },
-  "updated_at": "2026-03-31T16:35:40.028Z"
+  "updated_at": "2026-03-31T16:37:04.985Z"
 }
