@@ -576,14 +576,24 @@
       "completed": "2026-03-31T16:15:26.498Z",
       "duration_ms": 360000,
       "summary": "Built query engine: SELECT/WHERE/ORDER BY/GROUP BY/JOIN/LIMIT/DISTINCT, aggregates (count/sum/avg/min/max). Fluent API. 20 tests. Published."
+    },
+    {
+      "id": "T56",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a finite state machine: states, transitions, guards, actions, hierarchical states",
+      "started": "2026-03-31T16:15:53.248Z",
+      "completed": "2026-03-31T16:17:26.775Z",
+      "duration_ms": 300000,
+      "summary": "Built FSM: states, transitions, guards, entry/exit/transition actions, context, history, onChange. Traffic light example. 17 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 55,
+    "completed": 56,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 15898000
+    "total_duration_ms": 16198000
   },
-  "updated_at": "2026-03-31T16:15:26.498Z"
+  "updated_at": "2026-03-31T16:17:26.775Z"
 }
