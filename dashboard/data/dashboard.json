@@ -766,14 +766,24 @@
       "completed": "2026-03-31T16:44:56.290Z",
       "duration_ms": 240000,
       "summary": "Built encoding library: base64, hex, percent-encoding, ROT13, Caesar cipher. 22 tests. Published."
+    },
+    {
+      "id": "T75",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a CSS parser: tokenize, parse selectors, declarations, media queries, specificity calculation",
+      "started": "2026-03-31T16:45:03.969Z",
+      "completed": "2026-03-31T16:46:32.697Z",
+      "duration_ms": 300000,
+      "summary": "Built CSS parser: selectors, declarations, @media, @import, specificity calculation, stringify. 15 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 74,
+    "completed": 75,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 20823000
+    "total_duration_ms": 21123000
   },
-  "updated_at": "2026-03-31T16:44:56.290Z"
+  "updated_at": "2026-03-31T16:46:32.697Z"
 }
