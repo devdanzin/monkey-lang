@@ -2306,15 +2306,19 @@
     {
       "id": "T226",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Monkey: WASM tail call optimization (convert tail-recursive functions to loops)",
-      "started": "2026-03-31T22:04:27.830Z"
+      "started": "2026-03-31T22:04:27.830Z",
+      "completed": "2026-03-31T22:07:59.686Z",
+      "duration_ms": 300000,
+      "summary": "TCO: detects tail-recursive functions, marks tail calls on AST. Handles accumulators, if/else branches, return. 10 tests."
     },
     {
       "id": "T227",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Monkey: WASM module exports (compile functions as WASM exports for external use)"
+      "status": "in-progress",
+      "task": "Monkey: WASM module exports (compile functions as WASM exports for external use)",
+      "started": "2026-03-31T22:08:11.179Z"
     },
     {
       "id": "T228",
@@ -2348,17 +2352,17 @@
     }
   ],
   "current": {
-    "id": "T226",
+    "id": "T227",
     "mode": "BUILD",
     "status": "in-progress",
-    "task": "Monkey: WASM tail call optimization (convert tail-recursive functions to loops)",
-    "started": "2026-03-31T22:04:27.830Z"
+    "task": "Monkey: WASM module exports (compile functions as WASM exports for external use)",
+    "started": "2026-03-31T22:08:11.179Z"
   },
   "stats": {
-    "completed": 225,
+    "completed": 226,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 54683000
+    "total_duration_ms": 54983000
   },
-  "updated_at": "2026-03-31T22:04:27.830Z"
+  "updated_at": "2026-03-31T22:08:11.179Z"
 }
