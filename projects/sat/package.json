@@ -1,0 +1,7 @@
+{
+  "name": "tiny-sat",
+  "version": "1.0.0",
+  "description": "SAT solver (DPLL algorithm) from scratch",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/index.test.js" }
+}
