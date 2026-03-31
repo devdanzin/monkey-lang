@@ -172,9 +172,12 @@ class SpatialHashGrid {
 class World {
   constructor(opts = {}) {
     this.bodies = [];
+    this.constraints = [];
+    this.springs = [];
     this.gravity = opts.gravity || new Vec2(0, 9.81);
     this.iterations = opts.iterations || 1;
-    this.broadphase = opts.broadphase !== false; // Enable by default
+    this.constraintIterations = opts.constraintIterations || 4;
+    this.broadphase = opts.broadphase !== false;
     this.cellSize = opts.cellSize || 50;
     this._grid = new SpatialHashGrid(this.cellSize);
     this._broadphaseChecks = 0;
@@ -183,6 +186,12 @@ class World {
 
   addBody(body) { this.bodies.push(body); return body; }
   removeBody(body) { this.bodies = this.bodies.filter(b => b !== body); }
+  
+  addConstraint(constraint) { this.constraints.push(constraint); return constraint; }
+  removeConstraint(constraint) { this.constraints = this.constraints.filter(c => c !== constraint); }
+  
+  addSpring(spring) { this.springs.push(spring); return spring; }
+  removeSpring(spring) { this.springs = this.springs.filter(s => s !== spring); }
 
   step(dt) {
     // Apply gravity
@@ -190,6 +199,11 @@ class World {
       if (!body.isStatic && !body.isSleeping) {
         body.applyForce(this.gravity.mul(body.mass));
       }
+    }
+    
+    // Apply spring forces
+    for (const spring of this.springs) {
+      spring.apply();
     }
 
     // Integrate
@@ -206,6 +220,13 @@ class World {
         this._collideWithBroadphase();
       } else {
         this._collideNaive();
+      }
+    }
+    
+    // Solve distance constraints (multiple iterations for stability)
+    for (let iter = 0; iter < this.constraintIterations; iter++) {
+      for (const constraint of this.constraints) {
+        constraint.solve();
       }
     }
   }
@@ -253,6 +274,8 @@ class World {
   get stats() {
     return {
       bodies: this.bodies.length,
+      constraints: this.constraints.length,
+      springs: this.springs.length,
       broadphaseChecks: this._broadphaseChecks,
       narrowphaseChecks: this._narrowphaseChecks,
     };
@@ -343,4 +366,67 @@ function resolveCollision(a, b, collision) {
   }
 }
 
-module.exports = { Vec2, Body, World, SpatialHashGrid, detectCollision, resolveCollision };
+// === Constraints ===
+
+class DistanceConstraint {
+  // Maintains a fixed distance between two bodies
+  constructor(bodyA, bodyB, opts = {}) {
+    this.bodyA = bodyA;
+    this.bodyB = bodyB;
+    this.distance = opts.distance || bodyA.position.distance(bodyB.position);
+    this.stiffness = opts.stiffness || 1.0; // 0..1, how rigidly to enforce
+  }
+
+  solve() {
+    const delta = this.bodyB.position.sub(this.bodyA.position);
+    const currentDist = delta.length();
+    if (currentDist < 0.0001) return;
+
+    const diff = (currentDist - this.distance) / currentDist;
+    const totalInvMass = this.bodyA.inverseMass + this.bodyB.inverseMass;
+    if (totalInvMass === 0) return;
+
+    const correction = delta.mul(diff * this.stiffness / totalInvMass);
+    
+    if (!this.bodyA.isStatic && !this.bodyA.isSleeping) {
+      this.bodyA.position = this.bodyA.position.add(correction.mul(this.bodyA.inverseMass));
+    }
+    if (!this.bodyB.isStatic && !this.bodyB.isSleeping) {
+      this.bodyB.position = this.bodyB.position.sub(correction.mul(this.bodyB.inverseMass));
+    }
+  }
+}
+
+class SpringConstraint {
+  // Hooke's law spring between two bodies
+  constructor(bodyA, bodyB, opts = {}) {
+    this.bodyA = bodyA;
+    this.bodyB = bodyB;
+    this.restLength = opts.restLength || bodyA.position.distance(bodyB.position);
+    this.stiffness = opts.stiffness || 50;  // spring constant k
+    this.damping = opts.damping || 1;       // damping coefficient
+  }
+
+  apply() {
+    const delta = this.bodyB.position.sub(this.bodyA.position);
+    const currentLen = delta.length();
+    if (currentLen < 0.0001) return;
+
+    const direction = delta.normalize();
+    const displacement = currentLen - this.restLength;
+    
+    // Hooke's law: F = -k * x
+    const springForce = direction.mul(this.stiffness * displacement);
+    
+    // Damping: F = -c * v_relative_along_spring
+    const relVel = this.bodyB.velocity.sub(this.bodyA.velocity);
+    const dampingForce = direction.mul(this.damping * relVel.dot(direction));
+    
+    const totalForce = springForce.add(dampingForce);
+    
+    if (!this.bodyA.isStatic) this.bodyA.applyForce(totalForce);
+    if (!this.bodyB.isStatic) this.bodyB.applyForce(totalForce.mul(-1));
+  }
+}
+
+module.exports = { Vec2, Body, World, SpatialHashGrid, DistanceConstraint, SpringConstraint, detectCollision, resolveCollision };

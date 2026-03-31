@@ -1992,16 +1992,20 @@
       "id": "T201",
       "mode": "BUILD",
       "task": "Physics: Coulomb friction (tangential impulse during collision)",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T187",
-      "started": "2026-03-31T20:54:57.675Z"
+      "started": "2026-03-31T20:54:57.675Z",
+      "completed": "2026-03-31T20:57:30.768Z",
+      "duration_ms": 300000,
+      "summary": "Coulomb friction: tangential impulse clamped by mu*Fn, combined coefficient, energy-conserving. 5 tests (28 total physics)."
     },
     {
       "id": "T202",
       "mode": "BUILD",
       "task": "Physics: distance constraints (spring joints, rigid joints)",
-      "status": "upcoming",
-      "plan_ref": "T187"
+      "status": "in-progress",
+      "plan_ref": "T187",
+      "started": "2026-03-31T20:57:35.957Z"
     },
     {
       "id": "T188",
@@ -2034,5 +2038,5 @@
       "task": "End-of-session housekeeping"
     }
   ],
-  "updated_at": "2026-03-31T20:54:57.675Z"
+  "updated_at": "2026-03-31T20:57:35.957Z"
 }
