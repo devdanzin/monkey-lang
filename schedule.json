@@ -78,15 +78,26 @@
     {
       "id": "T6",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Deepen ray tracer: add volumetric rendering, motion blur, or importance sampling",
-      "task": null
+      "task": null,
+      "started": "2026-03-31T14:28:53.538Z",
+      "completed": "2026-03-31T14:29:09.803Z",
+      "duration_ms": 60000,
+      "summary": "Planned 2 BUILD tasks: importance sampling implementation (PDFs) + test scenes with web demo update"
     },
     {
       "id": "T7",
       "mode": "BUILD",
       "status": "upcoming",
-      "task": null,
+      "task": "Implement importance sampling: material PDFs + light PDF + mixture PDF for the ray tracer",
+      "plan_ref": "T6"
+    },
+    {
+      "id": "T21",
+      "mode": "BUILD",
+      "task": "Add importance sampling test scenes + before/after comparison, update web demo",
+      "status": "upcoming",
       "plan_ref": "T6"
     },
     {
@@ -160,5 +171,5 @@
       "task": "Explore: read a consciousness paper or philosophy post. Follow threads."
     }
   ],
-  "updated_at": "2026-03-31T14:28:37.262Z"
+  "updated_at": "2026-03-31T14:29:09.803Z"
 }
