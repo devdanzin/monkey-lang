@@ -25,6 +25,9 @@ import { Parser } from './parser.js';
 import * as ast from './ast.js';
 import { peepholeOptimize } from './wasm-optimize.js';
 import { WasmGC, createGCImports } from './wasm-gc.js';
+import { constantFold } from './constant-fold.js';
+import { eliminateDeadCode } from './dead-code.js';
+import { TypeInference } from './type-inference.js';
 
 // Compilation environment — tracks variable bindings per scope
 class Scope {
@@ -2583,11 +2586,50 @@ export async function compileAndRun(input, options = {}) {
   const t0 = performance.now();
 
   const compiler = new WasmCompiler();
-  const builder = compiler.compile(input);
-  timings.compile = performance.now() - t0;
-
-  if (!builder || compiler.errors.length > 0) {
-    throw new Error(`Compilation errors: ${compiler.errors.join(', ')}`);
+  
+  // Run optimization pipeline if enabled
+  if (options.optimize) {
+    const lexer = new Lexer(input);
+    const parser = new Parser(lexer);
+    const program = parser.parseProgram();
+    
+    if (parser.errors.length > 0) {
+      throw new Error(`Parse errors: ${parser.errors.join(', ')}`);
+    }
+    
+    const tOpt = performance.now();
+    // 1. Constant folding
+    constantFold(program);
+    // 2. Dead code elimination
+    eliminateDeadCode(program);
+    // 3. Type inference (for warnings and future optimizations)
+    if (options.typeCheck) {
+      const ti = new TypeInference();
+      const result = ti.infer(program);
+      if (options.warnings) {
+        options.warnings.push(...result.warnings);
+      }
+      if (options.typeErrors) {
+        options.typeErrors.push(...result.errors);
+      }
+    }
+    timings.optimize = performance.now() - tOpt;
+    
+    // Compile the optimized AST
+    const builder = compiler.compileProgram(program);
+    timings.compile = performance.now() - t0;
+    
+    if (!builder || compiler.errors.length > 0) {
+      throw new Error(`Compilation errors: ${compiler.errors.join(', ')}`);
+    }
+  } else {
+    // Standard path: compile from source
+    compiler.compile(input);
+    timings.compile = performance.now() - t0;
+    
+    if (compiler.errors.length > 0) {
+      throw new Error(`Compilation errors: ${compiler.errors.join(', ')}`);
+    }
   }
 
   if (options.warnings && compiler.warnings.length > 0) {
@@ -2595,7 +2637,7 @@ export async function compileAndRun(input, options = {}) {
   }
 
   const t1 = performance.now();
-  const binary = builder.build();
+  const binary = compiler.builder.build();
   timings.encode = performance.now() - t1;
 
   const t2 = performance.now();

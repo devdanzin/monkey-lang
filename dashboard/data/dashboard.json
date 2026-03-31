@@ -2162,22 +2162,55 @@
       "id": "T216",
       "mode": "BUILD",
       "task": "Monkey: WASM dead code elimination (remove unreachable code after return/break)",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T205",
-      "started": "2026-03-31T21:22:37.311Z"
+      "started": "2026-03-31T21:22:37.311Z",
+      "completed": "2026-03-31T21:24:51.296Z",
+      "duration_ms": 240000,
+      "summary": "Dead code elimination: removes unreachable code after return/break/continue, nested functions, if/else branches. 11 tests."
     },
     {
       "id": "T206",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-03-31T21:25:02.821Z",
+      "completed": "2026-03-31T21:25:03.084Z",
+      "duration_ms": 0,
+      "summary": "Placeholder"
     },
     {
       "id": "T207",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Plan new project: ECS game engine or compiler for a new language",
-      "task": null
+      "task": null,
+      "started": "2026-03-31T21:25:45.740Z",
+      "completed": "2026-03-31T21:26:08.840Z",
+      "duration_ms": 60000,
+      "summary": "Planned 3 tasks: integrate optimization pipeline, benchmarks, type-based error messages."
+    },
+    {
+      "id": "T217",
+      "mode": "BUILD",
+      "task": "Integrate optimization pipeline into WASM compiler: constant fold + dead code elim + type inference before compilation",
+      "status": "in-progress",
+      "plan_ref": "T207",
+      "started": "2026-03-31T21:26:22.987Z"
+    },
+    {
+      "id": "T218",
+      "mode": "BUILD",
+      "task": "Add WASM optimization benchmarks: measure speedup from optimizations",
+      "status": "upcoming",
+      "plan_ref": "T207"
+    },
+    {
+      "id": "T219",
+      "mode": "BUILD",
+      "task": "Monkey: comprehensive error messages using type inference (type mismatch warnings)",
+      "status": "upcoming",
+      "plan_ref": "T207"
     },
     {
       "id": "T208",
@@ -2193,18 +2226,18 @@
     }
   ],
   "current": {
-    "id": "T216",
+    "id": "T217",
     "mode": "BUILD",
-    "task": "Monkey: WASM dead code elimination (remove unreachable code after return/break)",
+    "task": "Integrate optimization pipeline into WASM compiler: constant fold + dead code elim + type inference before compilation",
     "status": "in-progress",
-    "plan_ref": "T205",
-    "started": "2026-03-31T21:22:37.311Z"
+    "plan_ref": "T207",
+    "started": "2026-03-31T21:26:22.987Z"
   },
   "stats": {
-    "completed": 211,
+    "completed": 214,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 52223000
+    "total_duration_ms": 52523000
   },
-  "updated_at": "2026-03-31T21:22:37.311Z"
+  "updated_at": "2026-03-31T21:26:22.987Z"
 }
