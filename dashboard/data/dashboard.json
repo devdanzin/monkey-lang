@@ -89,9 +89,10 @@
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Implement importance sampling: material PDFs + light PDF + mixture PDF for the ray tracer",
-      "plan_ref": "T6"
+      "plan_ref": "T6",
+      "started": "2026-03-31T14:29:20.973Z"
     },
     {
       "id": "T21",
@@ -171,12 +172,19 @@
       "task": "Explore: read a consciousness paper or philosophy post. Follow threads."
     }
   ],
-  "current": null,
+  "current": {
+    "id": "T7",
+    "mode": "BUILD",
+    "status": "in-progress",
+    "task": "Implement importance sampling: material PDFs + light PDF + mixture PDF for the ray tracer",
+    "plan_ref": "T6",
+    "started": "2026-03-31T14:29:20.973Z"
+  },
   "stats": {
     "completed": 8,
     "yielded": 0,
     "skipped": 0,
     "total_duration_ms": 1620000
   },
-  "updated_at": "2026-03-31T14:29:09.803Z"
+  "updated_at": "2026-03-31T14:29:20.973Z"
 }

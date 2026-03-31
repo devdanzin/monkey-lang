@@ -1,9 +1,8 @@
 // tile-worker.js — Renders a tile (rectangular region) of the image
 importScripts('bundle.js');
 
-const { Vec3, Camera, BVHNode, HittableList,
-        createRandomScene, createSimpleScene, createCornellBox,
-        createGlassStudy, createMetalShowcase, createLitRoom, createTexturedWorld, createSmokyCornell, createSolarSystem, createShowcase, createMotionBlur, createFinalScene, createMuseum } = self.RayTracer;
+// Access everything via RT to avoid redeclaring class bindings from bundle.js
+const RT = self.RayTracer;
 
 self.onmessage = function(e) {
   const { tile, config } = e.data;
@@ -15,30 +14,30 @@ self.onmessage = function(e) {
 
   // Build scene (each worker builds its own — no shared state needed)
   let world;
-  if (scene === 'random') world = createRandomScene();
-  else if (scene === 'cornell') world = createCornellBox();
-  else if (scene === 'glass') world = createGlassStudy();
-  else if (scene === 'metal') world = createMetalShowcase();
-  else if (scene === 'lit') world = createLitRoom();
-  else if (scene === 'textured') world = createTexturedWorld();
-  else if (scene === 'smoky') world = createSmokyCornell();
-  else if (scene === 'solar') world = createSolarSystem();
-  else if (scene === 'showcase') world = createShowcase();
-  else if (scene === 'motion') world = createMotionBlur();
-  else if (scene === 'final') world = createFinalScene();
-  else if (scene === 'museum') world = createMuseum();
-  else if (scene === 'sunset') world = createSimpleScene();
-  else world = createSimpleScene();
+  if (scene === 'random') world = RT.createRandomScene();
+  else if (scene === 'cornell') world = RT.createCornellBox();
+  else if (scene === 'glass') world = RT.createGlassStudy();
+  else if (scene === 'metal') world = RT.createMetalShowcase();
+  else if (scene === 'lit') world = RT.createLitRoom();
+  else if (scene === 'textured') world = RT.createTexturedWorld();
+  else if (scene === 'smoky') world = RT.createSmokyCornell();
+  else if (scene === 'solar') world = RT.createSolarSystem();
+  else if (scene === 'showcase') world = RT.createShowcase();
+  else if (scene === 'motion') world = RT.createMotionBlur();
+  else if (scene === 'final') world = RT.createFinalScene();
+  else if (scene === 'museum') world = RT.createMuseum();
+  else if (scene === 'sunset') world = RT.createSimpleScene();
+  else world = RT.createSimpleScene();
 
   let sceneHit;
   if (world.objects && world.objects.length > 4) {
-    sceneHit = new BVHNode([...world.objects]);
+    sceneHit = new RT.BVHNode([...world.objects]);
   } else {
     sceneHit = world;
   }
 
-  const cam = new Camera(cameraConfig);
-  const bg = background ? new Vec3(background.x, background.y, background.z) : null;
+  const cam = new RT.Camera(cameraConfig);
+  const bg = background ? new RT.Vec3(background.x, background.y, background.z) : null;
 
   const tileW = x1 - x0;
   const tileH = y1 - y0;
@@ -59,17 +58,17 @@ self.onmessage = function(e) {
           const rec = sceneHit.hit(ray, 0.001, Infinity);
           if (rec) {
             const n = rec.normal;
-            color = new Vec3((n.x+1)*0.5, (n.y+1)*0.5, (n.z+1)*0.5);
+            color = new RT.Vec3((n.x+1)*0.5, (n.y+1)*0.5, (n.z+1)*0.5);
           } else {
-            color = new Vec3(0, 0, 0);
+            color = new RT.Vec3(0, 0, 0);
           }
         } else if (renderMode === 'depth') {
           const rec = sceneHit.hit(ray, 0.001, Infinity);
           if (rec) {
             const d = 1 - Math.min(rec.t / 20, 1);
-            color = new Vec3(d, d, d);
+            color = new RT.Vec3(d, d, d);
           } else {
-            color = new Vec3(0.5, 0.7, 1.0);
+            color = new RT.Vec3(0.5, 0.7, 1.0);
           }
         } else if (renderMode === 'flat') {
           const rec = sceneHit.hit(ray, 0.001, Infinity);
@@ -84,10 +83,10 @@ self.onmessage = function(e) {
             else {
               const ud = ray.direction.unit();
               const t = 0.5 * (ud.y + 1.0);
-              color = new Vec3(1,1,1).mul(1-t).add(new Vec3(0.5,0.7,1.0).mul(t));
+              color = new RT.Vec3(1,1,1).mul(1-t).add(new RT.Vec3(0.5,0.7,1.0).mul(t));
             }
           } else {
-            color = new Vec3(0.5, 0.5, 0.5);
+            color = new RT.Vec3(0.5, 0.5, 0.5);
           }
         } else {
           color = rayColor(ray, sceneHit, maxDepth, bg, bgMode);
@@ -108,12 +107,12 @@ self.onmessage = function(e) {
 };
 
 function rayColor(ray, world, depth, bg, bgMode) {
-  if (depth <= 0) return new Vec3(0, 0, 0);
+  if (depth <= 0) return new RT.Vec3(0, 0, 0);
   const rec = world.hit(ray, 0.001, Infinity);
   if (rec) {
     const emitted = rec.material.emitted
       ? rec.material.emitted(0, 0, rec.p)
-      : new Vec3(0, 0, 0);
+      : new RT.Vec3(0, 0, 0);
     const result = rec.material.scatter(ray, rec);
     if (result) return emitted.add(rayColor(result.scattered, world, depth - 1, bg, bgMode).mul(result.attenuation));
     return emitted;
@@ -122,13 +121,13 @@ function rayColor(ray, world, depth, bg, bgMode) {
   if (bgMode === 'sunset') {
     const ud = ray.direction.unit();
     const t = 0.5 * (ud.y + 1.0);
-    if (t < 0.35) return new Vec3(0.05, 0.05, 0.08);
-    if (t < 0.5) { const h = (t-0.35)/0.15; return new Vec3(0.1+h*0.8, 0.05+h*0.35, 0.05+h*0.05); }
-    if (t < 0.7) { const h = (t-0.5)/0.2; return new Vec3(0.9-h*0.6, 0.4-h*0.2, 0.1+h*0.4); }
-    const h = (t-0.7)/0.3; return new Vec3(0.3-h*0.25, 0.2-h*0.15, 0.5-h*0.3);
+    if (t < 0.35) return new RT.Vec3(0.05, 0.05, 0.08);
+    if (t < 0.5) { const h = (t-0.35)/0.15; return new RT.Vec3(0.1+h*0.8, 0.05+h*0.35, 0.05+h*0.05); }
+    if (t < 0.7) { const h = (t-0.5)/0.2; return new RT.Vec3(0.9-h*0.6, 0.4-h*0.2, 0.1+h*0.4); }
+    const h = (t-0.7)/0.3; return new RT.Vec3(0.3-h*0.25, 0.2-h*0.15, 0.5-h*0.3);
   }
   if (bg) return bg;
   const unitDir = ray.direction.unit();
   const t = 0.5 * (unitDir.y + 1.0);
-  return new Vec3(1, 1, 1).mul(1 - t).add(new Vec3(0.5, 0.7, 1.0).mul(t));
+  return new RT.Vec3(1, 1, 1).mul(1 - t).add(new RT.Vec3(0.5, 0.7, 1.0).mul(t));
 }
