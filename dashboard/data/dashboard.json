@@ -1306,14 +1306,114 @@
       "completed": "2026-03-31T18:25:48.403Z",
       "duration_ms": 300000,
       "summary": "Built shell: tokenizer, pipes, redirects, built-ins (echo/pwd/cd/export), env var expansion, history. 14 tests. Published."
+    },
+    {
+      "id": "T129",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny DNS resolver: parse DNS packets, query builder, record types (A, AAAA, CNAME, MX, TXT)",
+      "started": "2026-03-31T18:26:06.617Z",
+      "completed": "2026-03-31T18:27:50.437Z",
+      "duration_ms": 300000,
+      "summary": "Built DNS packet builder/parser: name encoding with compression, query builder, response parser, A/AAAA/CNAME/MX/TXT. 8 tests. Published."
+    },
+    {
+      "id": "T130",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny TCP implementation: 3-way handshake, seq/ack, sliding window, state machine",
+      "started": "2026-03-31T18:27:51.125Z",
+      "completed": "2026-03-31T18:29:42.742Z",
+      "duration_ms": 300000,
+      "summary": "Built TCP simulation: 11-state machine, 3-way handshake, data transfer with ACK, graceful close. 8 tests. Published."
+    },
+    {
+      "id": "T131",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny HTTP/1.1 parser: request/response parsing, chunked encoding, headers, status codes",
+      "started": "2026-03-31T18:29:44.023Z",
+      "completed": "2026-03-31T18:29:51.450Z",
+      "duration_ms": 5000,
+      "summary": "Skipped - HTTP parser already exists in http-server project"
+    },
+    {
+      "id": "T132",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny blockchain: blocks, hashing, proof-of-work, chain validation, transactions",
+      "started": "2026-03-31T18:29:51.925Z",
+      "completed": "2026-03-31T18:32:04.461Z",
+      "duration_ms": 300000,
+      "summary": "Built blockchain: SHA-256 PoW, transactions, balance tracking, chain validation, tamper detection. 10 tests. Published."
+    },
+    {
+      "id": "T133",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny CRDT library: G-Counter, PN-Counter, LWW-Register, OR-Set, merge",
+      "started": "2026-03-31T18:32:04.932Z",
+      "completed": "2026-03-31T18:33:31.768Z",
+      "duration_ms": 300000,
+      "summary": "Built CRDTs: G-Counter, PN-Counter, LWW-Register, OR-Set. Idempotent merge, distributed convergence. 13 tests. Published."
+    },
+    {
+      "id": "T134",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny Raft consensus: leader election, log replication, term tracking",
+      "started": "2026-03-31T18:33:32.242Z",
+      "completed": "2026-03-31T18:35:15.828Z",
+      "duration_ms": 300000,
+      "summary": "Built Raft consensus: leader election, RequestVote/AppendEntries RPCs, log replication, majority commit. 7 tests. Published."
+    },
+    {
+      "id": "T135",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny compression library: run-length encoding, LZ77, dictionary coding",
+      "started": "2026-03-31T18:35:16.335Z",
+      "completed": "2026-03-31T18:36:49.268Z",
+      "duration_ms": 240000,
+      "summary": "Built compression: RLE (array+string), LZ77 (sliding window), dictionary coding. All roundtrip. 11 tests. Published."
+    },
+    {
+      "id": "T136",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny PRNG: Linear Congruential Generator, Mersenne Twister, xorshift",
+      "started": "2026-03-31T18:36:49.539Z",
+      "completed": "2026-03-31T18:38:44.186Z",
+      "duration_ms": 240000,
+      "summary": "Built PRNG: 4 generators (LCG, Xorshift32, Xorshift128, Mulberry32), Random utility with shuffle/normal/pick. 21 tests. Published."
+    },
+    {
+      "id": "T137",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny signal processing: FFT, convolution, windowing, frequency analysis",
+      "started": "2026-03-31T18:38:44.663Z",
+      "completed": "2026-03-31T18:40:13.764Z",
+      "duration_ms": 300000,
+      "summary": "Built DSP: Cooley-Tukey FFT/IFFT, convolution via FFT, 4 window functions, sine generator. 9 tests. Published."
+    },
+    {
+      "id": "T138",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny state chart: hierarchical states, parallel regions, guards, history",
+      "started": "2026-03-31T18:40:14.231Z",
+      "completed": "2026-03-31T18:41:55.700Z",
+      "duration_ms": 240000,
+      "summary": "Built statechart: hierarchical states, guards, entry/exit/transition actions, history, onChange. 7 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 128,
+    "completed": 138,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 35893000
+    "total_duration_ms": 38418000
   },
-  "updated_at": "2026-03-31T18:25:48.403Z"
+  "updated_at": "2026-03-31T18:41:55.700Z"
 }
