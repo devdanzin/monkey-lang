@@ -1,0 +1,9 @@
+{
+  "name": "tiny-constraint-solver",
+  "version": "1.0.0",
+  "description": "Constraint satisfaction problem solver with arc consistency (AC-3) and backtracking search",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node --test test/"
+  }
+}
