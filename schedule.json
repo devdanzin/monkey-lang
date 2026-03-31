@@ -3161,9 +3161,59 @@
       "completed": "2026-03-31T00:10:13.484Z",
       "duration_ms": 300000,
       "summary": "Base64: encode (string/Uint8Array), decode (to string), decodeToBytes (to Uint8Array), URL-safe mode (- _ instead of + /), padding control, isValid/isValidUrlSafe. Verified against Node.js Buffer.toString('base64'). 16 tests."
+    },
+    {
+      "id": "T308",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Debounce/Throttle utilities",
+      "started": "2026-03-31T00:10:46.659Z",
+      "completed": "2026-03-31T00:11:50.778Z",
+      "duration_ms": 300000,
+      "summary": "Timing: debounce (trailing/leading/maxWait, cancel/flush/pending), throttle (leading/trailing, cancel), delay, sleep (with value), timeout (promise race), measure (execution time). 8 tests."
+    },
+    {
+      "id": "T309",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Deep clone / deep merge",
+      "started": "2026-03-31T00:11:57.603Z",
+      "completed": "2026-03-31T00:13:01.422Z",
+      "duration_ms": 300000,
+      "summary": "Deep: clone (Date/Map/Set/RegExp/array/object), merge (recursive), equal, freeze, flatten/unflatten, get/set (dot-path). 13 tests."
+    },
+    {
+      "id": "T310",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Result type (Ok/Err — Rust-inspired)",
+      "started": "2026-03-31T00:13:07.516Z",
+      "completed": "2026-03-31T00:14:05.466Z",
+      "duration_ms": 300000,
+      "summary": "Result: Ok/Err, isOk/isErr, unwrap/unwrapOr/unwrapOrElse/expect, map/mapErr, andThen/orElse, match, from/fromAsync, toString. 13 tests."
+    },
+    {
+      "id": "T311",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Retry utility with backoff",
+      "started": "2026-03-31T00:14:12.733Z",
+      "completed": "2026-03-31T00:15:38.899Z",
+      "duration_ms": 200000,
+      "summary": "Retry: exponential/linear/constant backoff, maxRetries, maxDelay, jitter, onRetry callback, retryIf conditional, withRetry wrapper. 6 tests."
+    },
+    {
+      "id": "T312",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny CSS parser",
+      "started": "2026-03-31T00:15:47.141Z",
+      "completed": "2026-03-31T00:17:05.478Z",
+      "duration_ms": 300000,
+      "summary": "CSS parser: tokenizer, rule parser (selectors, declarations, !important), comment skipping, at-rules (media queries with nested rules), specificity calculator (IDs/classes/elements), stringify with indent/minify options. 12 tests."
     }
   ],
-  "updated_at": "2026-03-31T00:10:13.484Z",
+  "updated_at": "2026-03-31T00:17:05.478Z",
   "adjustments": [
     {
       "time": "2026-03-30T22:55:00.316Z",
@@ -3356,6 +3406,26 @@
     {
       "time": "2026-03-31T00:07:27.866Z",
       "msg": "Added T307 (BUILD) after end: New project: Base64 encoder/decoder from scratch"
+    },
+    {
+      "time": "2026-03-31T00:10:39.989Z",
+      "msg": "Added T308 (BUILD) after end: New project: Debounce/Throttle utilities"
+    },
+    {
+      "time": "2026-03-31T00:10:40.157Z",
+      "msg": "Added T309 (BUILD) after end: New project: Deep clone / deep merge"
+    },
+    {
+      "time": "2026-03-31T00:10:40.323Z",
+      "msg": "Added T310 (BUILD) after end: New project: Result type (Ok/Err — Rust-inspired)"
+    },
+    {
+      "time": "2026-03-31T00:10:40.536Z",
+      "msg": "Added T311 (BUILD) after end: New project: Retry utility with backoff"
+    },
+    {
+      "time": "2026-03-31T00:10:40.705Z",
+      "msg": "Added T312 (BUILD) after end: New project: Tiny CSS parser"
     }
   ]
 }
