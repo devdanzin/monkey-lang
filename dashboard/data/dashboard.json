@@ -796,14 +796,24 @@
       "completed": "2026-03-31T16:50:15.414Z",
       "duration_ms": 360000,
       "summary": "Built DateTime library: parse, format, add/subtract, diff, relative time, comparison, startOf, leap year. 23 tests. Published."
+    },
+    {
+      "id": "T78",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a color library: RGB, HSL, HEX conversion, lighten, darken, mix, contrast ratio, parse",
+      "started": "2026-03-31T16:50:25.161Z",
+      "completed": "2026-03-31T16:51:53.856Z",
+      "duration_ms": 300000,
+      "summary": "Built color library: RGB/HSL/HEX conversion, lighten/darken/mix/invert/grayscale, WCAG contrast ratio, luminance. 21 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 77,
+    "completed": 78,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 21723000
+    "total_duration_ms": 22023000
   },
-  "updated_at": "2026-03-31T16:50:15.414Z"
+  "updated_at": "2026-03-31T16:51:53.856Z"
 }
