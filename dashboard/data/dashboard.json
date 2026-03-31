@@ -58,9 +58,12 @@
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, dashboard health, email check",
-      "started": "2026-03-31T14:25:33.041Z"
+      "started": "2026-03-31T14:25:33.041Z",
+      "completed": "2026-03-31T14:27:13.341Z",
+      "duration_ms": 180000,
+      "summary": "Git pushed, server restarted with projects data (137 repos), dashboard live. 34 unread emails (GitHub notifications, not urgent)."
     },
     {
       "id": "T5",
@@ -153,18 +156,12 @@
       "task": "Explore: read a consciousness paper or philosophy post. Follow threads."
     }
   ],
-  "current": {
-    "id": "T4",
-    "mode": "MAINTAIN",
-    "status": "in-progress",
-    "task": "Housekeeping: git push, dashboard health, email check",
-    "started": "2026-03-31T14:25:33.041Z"
-  },
+  "current": null,
   "stats": {
-    "completed": 5,
+    "completed": 6,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 1260000
+    "total_duration_ms": 1440000
   },
-  "updated_at": "2026-03-31T14:25:33.041Z"
+  "updated_at": "2026-03-31T14:27:13.341Z"
 }
