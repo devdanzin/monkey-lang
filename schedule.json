@@ -334,9 +334,13 @@
       "id": "T32",
       "mode": "BUILD",
       "task": "Build browser demo: canvas visualization, interactive bodies, prebuilt scenes",
-      "status": "upcoming",
-      "plan_ref": "T28"
+      "status": "done",
+      "plan_ref": "T28",
+      "started": "2026-03-31T15:14:02.602Z",
+      "completed": "2026-03-31T15:16:36.556Z",
+      "duration_ms": 600000,
+      "summary": "Built interactive browser demo for physics engine: 5 scenes (Falling Balls, Pendulum, Spring Chain, Billiards, Block Tower), canvas rendering, click-to-add bodies, drag-to-throw. Live at henry-the-frog.github.io/physics/. 38 tests."
     }
   ],
-  "updated_at": "2026-03-31T15:13:41.034Z"
+  "updated_at": "2026-03-31T15:16:36.556Z"
 }
