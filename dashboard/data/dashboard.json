@@ -68,8 +68,12 @@
     {
       "id": "T5",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Reflect on dashboard progress. Review ray-tracer and neural-net — any depth opportunities?"
+      "status": "done",
+      "task": "Reflect on dashboard progress. Review ray-tracer and neural-net — any depth opportunities?",
+      "started": "2026-03-31T14:27:30.352Z",
+      "completed": "2026-03-31T14:28:37.262Z",
+      "duration_ms": 120000,
+      "summary": "Ray tracer: 149 tests, strongest depth opportunity is importance sampling (better noise convergence). Neural net: 47 tests, RNN/LSTM adds most conceptual depth. Both have live demos. Dashboard iteration complete (3/3 builds done)."
     },
     {
       "id": "T6",
@@ -158,10 +162,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 6,
+    "completed": 7,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 1440000
+    "total_duration_ms": 1560000
   },
-  "updated_at": "2026-03-31T14:27:13.341Z"
+  "updated_at": "2026-03-31T14:28:37.262Z"
 }
