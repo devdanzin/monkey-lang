@@ -3141,14 +3141,34 @@
       "completed": "2026-03-31T00:07:03.200Z",
       "duration_ms": 400000,
       "summary": "Test framework: describe/it/test, beforeEach/afterEach/beforeAll/afterAll hooks, nested suites, 10 assertion types (equal, notEqual, deepEqual, ok, throws, doesNotThrow, isType, match, fail), async test support, verbose runner with pass/fail/failures output. Self-testing: framework tested by framework. 12 tests."
+    },
+    {
+      "id": "T306",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: UUID generator (v4 + v7 spec-compliant)",
+      "started": "2026-03-31T00:07:33.939Z",
+      "completed": "2026-03-31T00:08:52.945Z",
+      "duration_ms": 300000,
+      "summary": "UUID: v4 (random, RFC 4122), v7 (timestamp-ordered, RFC 9562 draft), NIL UUID, parse (string→bytes), validate (regex), version extraction, compare (for sorting). 15 tests."
+    },
+    {
+      "id": "T307",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Base64 encoder/decoder from scratch",
+      "started": "2026-03-31T00:08:58.779Z",
+      "completed": "2026-03-31T00:10:13.484Z",
+      "duration_ms": 300000,
+      "summary": "Base64: encode (string/Uint8Array), decode (to string), decodeToBytes (to Uint8Array), URL-safe mode (- _ instead of + /), padding control, isValid/isValidUrlSafe. Verified against Node.js Buffer.toString('base64'). 16 tests."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 305,
+    "completed": 307,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 51570000
+    "total_duration_ms": 52170000
   },
-  "updated_at": "2026-03-31T00:07:03.200Z"
+  "updated_at": "2026-03-31T00:10:13.484Z"
 }

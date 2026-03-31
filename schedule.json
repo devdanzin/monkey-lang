@@ -3141,9 +3141,29 @@
       "completed": "2026-03-31T00:07:03.200Z",
       "duration_ms": 400000,
       "summary": "Test framework: describe/it/test, beforeEach/afterEach/beforeAll/afterAll hooks, nested suites, 10 assertion types (equal, notEqual, deepEqual, ok, throws, doesNotThrow, isType, match, fail), async test support, verbose runner with pass/fail/failures output. Self-testing: framework tested by framework. 12 tests."
+    },
+    {
+      "id": "T306",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: UUID generator (v4 + v7 spec-compliant)",
+      "started": "2026-03-31T00:07:33.939Z",
+      "completed": "2026-03-31T00:08:52.945Z",
+      "duration_ms": 300000,
+      "summary": "UUID: v4 (random, RFC 4122), v7 (timestamp-ordered, RFC 9562 draft), NIL UUID, parse (string→bytes), validate (regex), version extraction, compare (for sorting). 15 tests."
+    },
+    {
+      "id": "T307",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Base64 encoder/decoder from scratch",
+      "started": "2026-03-31T00:08:58.779Z",
+      "completed": "2026-03-31T00:10:13.484Z",
+      "duration_ms": 300000,
+      "summary": "Base64: encode (string/Uint8Array), decode (to string), decodeToBytes (to Uint8Array), URL-safe mode (- _ instead of + /), padding control, isValid/isValidUrlSafe. Verified against Node.js Buffer.toString('base64'). 16 tests."
     }
   ],
-  "updated_at": "2026-03-31T00:07:03.200Z",
+  "updated_at": "2026-03-31T00:10:13.484Z",
   "adjustments": [
     {
       "time": "2026-03-30T22:55:00.316Z",
@@ -3328,6 +3348,14 @@
     {
       "time": "2026-03-31T00:03:49.443Z",
       "msg": "Added T305 (BUILD) after end: New project: Tiny test framework from scratch (describe/it/assert/beforeEach)"
+    },
+    {
+      "time": "2026-03-31T00:07:27.745Z",
+      "msg": "Added T306 (BUILD) after end: New project: UUID generator (v4 + v7 spec-compliant)"
+    },
+    {
+      "time": "2026-03-31T00:07:27.866Z",
+      "msg": "Added T307 (BUILD) after end: New project: Base64 encoder/decoder from scratch"
     }
   ]
 }
