@@ -1,0 +1,7 @@
+{
+  "name": "tiny-datalog",
+  "version": "1.0.0",
+  "description": "Datalog query engine with rules, joins, negation",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/index.test.js" }
+}
