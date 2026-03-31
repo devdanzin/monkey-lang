@@ -1296,14 +1296,24 @@
       "completed": "2026-03-31T18:22:56.643Z",
       "duration_ms": 300000,
       "summary": "Built in-memory file system: dirs, files, paths, stat, copy, rename, du. INode tree. 12 tests. Published."
+    },
+    {
+      "id": "T128",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny shell: command parsing, pipes, redirects, built-ins (cd, echo, ls), environment variables",
+      "started": "2026-03-31T18:23:18.439Z",
+      "completed": "2026-03-31T18:25:48.403Z",
+      "duration_ms": 300000,
+      "summary": "Built shell: tokenizer, pipes, redirects, built-ins (echo/pwd/cd/export), env var expansion, history. 14 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 127,
+    "completed": 128,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 35593000
+    "total_duration_ms": 35893000
   },
-  "updated_at": "2026-03-31T18:22:56.643Z"
+  "updated_at": "2026-03-31T18:25:48.403Z"
 }
