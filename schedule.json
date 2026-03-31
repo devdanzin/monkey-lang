@@ -1917,16 +1917,20 @@
       "id": "T197",
       "mode": "BUILD",
       "task": "Add area lights with soft shadows: rectangular and spherical area light sources",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T184",
-      "started": "2026-03-31T20:40:37.064Z"
+      "started": "2026-03-31T20:40:37.064Z",
+      "completed": "2026-03-31T20:45:24.626Z",
+      "duration_ms": 300000,
+      "summary": "Area lights with soft shadows: rectangle randomPoint/area, direct light sampling (next event estimation) in renderer. 7 new tests (160 total ray tracer)."
     },
     {
       "id": "T198",
       "mode": "BUILD",
       "task": "New showcase scene combining all features: image textures, area lights, volumes, motion blur",
-      "status": "upcoming",
-      "plan_ref": "T184"
+      "status": "in-progress",
+      "plan_ref": "T184",
+      "started": "2026-03-31T20:45:41.354Z"
     },
     {
       "id": "T185",
@@ -1978,5 +1982,5 @@
       "task": "End-of-session housekeeping"
     }
   ],
-  "updated_at": "2026-03-31T20:40:37.064Z"
+  "updated_at": "2026-03-31T20:45:41.354Z"
 }
