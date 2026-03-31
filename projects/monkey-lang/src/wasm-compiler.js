@@ -17,6 +17,7 @@
 const TAG_STRING = 1;
 const TAG_ARRAY = 2;
 const TAG_CLOSURE = 3;
+const TAG_HASH = 4;
 
 import { WasmModuleBuilder, FuncBodyBuilder, Op, ValType, ExportKind, encodeULEB128 } from './wasm.js';
 import { Lexer } from './lexer.js';
@@ -409,6 +410,177 @@ export class WasmCompiler {
       .localGet(3).localGet(2).localGet(1).call(arrSetIdx);
     pushBody.localGet(3); // return new array
     this._runtimeFuncs.push = pushIdx;
+
+    // === Native Hash Map Functions ===
+    // Hash map layout: [TAG_HASH:i32][capacity:i32][size:i32][entries_ptr:i32]
+    // Entry layout: [status:i32][key:i32][value:i32] (12 bytes per entry)
+    // Status: 0=empty, 1=occupied, 2=deleted
+    const INITIAL_CAPACITY = 8;
+    const ENTRY_SIZE = 12;
+
+    // __hash_fnv(key: i32) → i32 — FNV-1a hash of an integer key
+    const { index: hashFnvIdx, body: hashFnvBody } = this.builder.addFunction(
+      [ValType.i32], [ValType.i32]
+    );
+    // Simple integer hash: multiply by golden ratio and shift
+    hashFnvBody
+      .localGet(0)
+      .i32Const(0x9e3779b9)  // golden ratio constant
+      .emit(Op.i32_mul)
+      .localGet(0)
+      .i32Const(16)
+      .emit(Op.i32_shr_u)
+      .emit(Op.i32_xor);     // key * golden_ratio ^ (key >> 16)
+    this._runtimeFuncs.hashFnv = hashFnvIdx;
+
+    // __hash_new_native() → ptr — allocate a new hash map
+    const { index: hashNewNativeIdx, body: hashNewNativeBody } = this.builder.addFunction(
+      [], [ValType.i32]
+    );
+    hashNewNativeBody.addLocal(ValType.i32); // local[0] = map_ptr
+    hashNewNativeBody.addLocal(ValType.i32); // local[1] = entries_ptr
+    hashNewNativeBody
+      // Allocate hash map header: 16 bytes
+      .i32Const(16)
+      .call(allocIdx)
+      .localTee(0)
+      // Store TAG_HASH
+      .i32Const(TAG_HASH)
+      .i32Store()
+      // Store capacity
+      .localGet(0).i32Const(4).emit(Op.i32_add)
+      .i32Const(INITIAL_CAPACITY)
+      .i32Store()
+      // Store size = 0
+      .localGet(0).i32Const(8).emit(Op.i32_add)
+      .i32Const(0)
+      .i32Store()
+      // Allocate entries: INITIAL_CAPACITY * 12 bytes (zero-initialized by bump allocator)
+      .i32Const(INITIAL_CAPACITY * ENTRY_SIZE)
+      .call(allocIdx)
+      .localSet(1)
+      // Store entries_ptr
+      .localGet(0).i32Const(12).emit(Op.i32_add)
+      .localGet(1)
+      .i32Store();
+    // Zero-initialize entries (status=0 means empty)
+    // Bump allocator starts from zeroed memory, so entries are already 0
+    hashNewNativeBody.localGet(0); // return map_ptr
+    this._runtimeFuncs.hashNewNative = hashNewNativeIdx;
+
+    // __hash_find_slot(entries_ptr: i32, capacity: i32, key: i32) → slot_index: i32
+    // Linear probe: returns index where key is found, or first empty/deleted slot.
+    // Uses a result local to avoid complex typed blocks.
+    const { index: hashFindSlotIdx, body: hashFindSlotBody } = this.builder.addFunction(
+      [ValType.i32, ValType.i32, ValType.i32], [ValType.i32]
+    );
+    hashFindSlotBody.addLocal(ValType.i32); // local[3] = index
+    hashFindSlotBody.addLocal(ValType.i32); // local[4] = entry_addr
+    hashFindSlotBody.addLocal(ValType.i32); // local[5] = status
+    hashFindSlotBody.addLocal(ValType.i32); // local[6] = result
+    hashFindSlotBody.addLocal(ValType.i32); // local[7] = found flag (0=searching)
+    hashFindSlotBody
+      // index = hash(key) & (capacity - 1)
+      .localGet(2).call(hashFnvIdx)
+      .localGet(1).i32Const(1).emit(Op.i32_sub).emit(Op.i32_and)
+      .localSet(3)
+      .i32Const(0).localSet(7)   // found = 0
+      // Probe loop
+      .block().loop()
+        // if found, break
+        .localGet(7).brIf(1)
+        // entry_addr = entries_ptr + index * 12
+        .localGet(0).localGet(3).i32Const(ENTRY_SIZE).emit(Op.i32_mul).emit(Op.i32_add)
+        .localSet(4)
+        // status = entry.status
+        .localGet(4).i32Load().localSet(5)
+        // if empty: return current index
+        .localGet(5).emit(Op.i32_eqz)
+        .if_()
+          .localGet(3).localSet(6)
+          .i32Const(1).localSet(7)
+        .end()
+        // if occupied and key matches: return current index
+        .localGet(5).i32Const(1).emit(Op.i32_eq)
+        .if_()
+          .localGet(4).i32Const(4).emit(Op.i32_add).i32Load()
+          .localGet(2).emit(Op.i32_eq)
+          .if_()
+            .localGet(3).localSet(6)
+            .i32Const(1).localSet(7)
+          .end()
+        .end()
+        // if deleted and not found yet: use as candidate
+        .localGet(5).i32Const(2).emit(Op.i32_eq)
+        .if_()
+          .localGet(7).emit(Op.i32_eqz)
+          .if_()
+            .localGet(3).localSet(6)
+            .i32Const(1).localSet(7)
+          .end()
+        .end()
+        // advance: index = (index + 1) & (capacity - 1)
+        .localGet(3).i32Const(1).emit(Op.i32_add)
+        .localGet(1).i32Const(1).emit(Op.i32_sub).emit(Op.i32_and)
+        .localSet(3)
+        .br(0)
+      .end().end();
+    hashFindSlotBody.localGet(6);  // return result
+    this._runtimeFuncs.hashFindSlot = hashFindSlotIdx;
+
+    // __hash_set_native(map_ptr: i32, key: i32, value: i32) → map_ptr: i32
+    const { index: hashSetNativeIdx, body: hashSetNativeBody } = this.builder.addFunction(
+      [ValType.i32, ValType.i32, ValType.i32], [ValType.i32]
+    );
+    hashSetNativeBody.addLocal(ValType.i32); // local[3] = entries_ptr
+    hashSetNativeBody.addLocal(ValType.i32); // local[4] = capacity
+    hashSetNativeBody.addLocal(ValType.i32); // local[5] = slot_index
+    hashSetNativeBody.addLocal(ValType.i32); // local[6] = entry_addr
+    hashSetNativeBody.addLocal(ValType.i32); // local[7] = old_status
+    hashSetNativeBody
+      .localGet(0).i32Const(12).emit(Op.i32_add).i32Load().localSet(3) // entries_ptr
+      .localGet(0).i32Const(4).emit(Op.i32_add).i32Load().localSet(4)  // capacity
+      // Find slot
+      .localGet(3).localGet(4).localGet(1).call(hashFindSlotIdx).localSet(5)
+      // entry_addr = entries_ptr + slot * 12
+      .localGet(3).localGet(5).i32Const(ENTRY_SIZE).emit(Op.i32_mul).emit(Op.i32_add).localSet(6)
+      // old_status
+      .localGet(6).i32Load().localSet(7)
+      // Write entry
+      .localGet(6).i32Const(1).i32Store()                                    // status = occupied
+      .localGet(6).i32Const(4).emit(Op.i32_add).localGet(1).i32Store()       // key
+      .localGet(6).i32Const(8).emit(Op.i32_add).localGet(2).i32Store()       // value
+      // If new entry, increment size
+      .localGet(7).i32Const(1).emit(Op.i32_ne)
+      .if_()
+        .localGet(0).i32Const(8).emit(Op.i32_add)
+        .localGet(0).i32Const(8).emit(Op.i32_add).i32Load()
+        .i32Const(1).emit(Op.i32_add).i32Store()
+      .end();
+    hashSetNativeBody.localGet(0); // return map_ptr
+    this._runtimeFuncs.hashSetNative = hashSetNativeIdx;
+
+    // __hash_get_native(map_ptr: i32, key: i32) → value: i32
+    const { index: hashGetNativeIdx, body: hashGetNativeBody } = this.builder.addFunction(
+      [ValType.i32, ValType.i32], [ValType.i32]
+    );
+    hashGetNativeBody.addLocal(ValType.i32); // local[2] = entries_ptr
+    hashGetNativeBody.addLocal(ValType.i32); // local[3] = capacity
+    hashGetNativeBody.addLocal(ValType.i32); // local[4] = slot_index
+    hashGetNativeBody.addLocal(ValType.i32); // local[5] = entry_addr
+    hashGetNativeBody
+      .localGet(0).i32Const(12).emit(Op.i32_add).i32Load().localSet(2)
+      .localGet(0).i32Const(4).emit(Op.i32_add).i32Load().localSet(3)
+      .localGet(2).localGet(3).localGet(1).call(hashFindSlotIdx).localSet(4)
+      .localGet(2).localGet(4).i32Const(ENTRY_SIZE).emit(Op.i32_mul).emit(Op.i32_add).localSet(5)
+      // If occupied, return value; else 0
+      .localGet(5).i32Load().i32Const(1).emit(Op.i32_eq)
+      .if_(ValType.i32)
+        .localGet(5).i32Const(8).emit(Op.i32_add).i32Load()
+      .else_()
+        .i32Const(0)
+      .end();
+    this._runtimeFuncs.hashGetNative = hashGetNativeIdx;
 
     // Register builtins in global scope
     this.globalScope.define('__alloc', allocIdx, 'func');
@@ -1797,24 +1969,50 @@ export class WasmCompiler {
 
   // Hash literal: {"key": value, ...}
   compileHashLiteral(node) {
-    // Create new hash map
-    this.currentBody.call(this._runtimeFuncs.hashNew);
-    const hashLocal = this.nextLocalIndex++;
-    this.currentBody.addLocal(ValType.i32);
-    this.currentBody.localSet(hashLocal);
-
-    // Set each key-value pair
+    // Check if all keys are integer-like (no string keys)
+    let allIntKeys = true;
     if (node.pairs) {
+      for (const [key] of node.pairs) {
+        if (key instanceof ast.StringLiteral) {
+          allIntKeys = false;
+          break;
+        }
+      }
+    }
+
+    if (allIntKeys && node.pairs && node.pairs.size > 0) {
+      // Native WASM hash map (integer keys only) 
+      this.currentBody.call(this._runtimeFuncs.hashNewNative);
+      const hashLocal = this.nextLocalIndex++;
+      this.currentBody.addLocal(ValType.i32);
+      this.currentBody.localSet(hashLocal);
+
       for (const [key, value] of node.pairs) {
         this.currentBody.localGet(hashLocal);
         this.compileNode(key);
         this.compileNode(value);
-        this.currentBody.call(this._runtimeFuncs.hashSet);
-        this.currentBody.drop(); // hash_set returns the hash
+        this.currentBody.call(this._runtimeFuncs.hashSetNative);
+        this.currentBody.drop();
       }
-    }
+      this.currentBody.localGet(hashLocal);
+    } else {
+      // JS-hosted hash map (handles string keys correctly)
+      this.currentBody.call(this._runtimeFuncs.hashNew);
+      const hashLocal = this.nextLocalIndex++;
+      this.currentBody.addLocal(ValType.i32);
+      this.currentBody.localSet(hashLocal);
 
-    this.currentBody.localGet(hashLocal);
+      if (node.pairs) {
+        for (const [key, value] of node.pairs) {
+          this.currentBody.localGet(hashLocal);
+          this.compileNode(key);
+          this.compileNode(value);
+          this.currentBody.call(this._runtimeFuncs.hashSet);
+          this.currentBody.drop();
+        }
+      }
+      this.currentBody.localGet(hashLocal);
+    }
   }
 
   // Temp local for || operator
@@ -2227,9 +2425,9 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
         return map.get(resolvedKey) || 0;
       },
       __index_get(obj, key) {
-        // Dispatch: if obj is a hash map ID (small number, in hashMaps), use hash_get
-        // Otherwise, treat as array pointer and use arrayGet logic
+        // Dispatch based on object type in linear memory
         if (hashMaps.has(obj)) {
+          // Legacy JS-hosted hash map (backward compat)
           const map = hashMaps.get(obj);
           const mem = memoryRef.memory;
           let resolvedKey = key;
@@ -2244,13 +2442,32 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
           }
           return map.get(resolvedKey) || 0;
         }
-        // Array: obj is heap pointer
         const mem = memoryRef.memory;
         if (!mem || obj <= 0) return 0;
         const view = new DataView(mem.buffer);
         const tag = view.getInt32(obj, true);
+
+        // Native hash map (TAG_HASH = 4): linear probe lookup
+        if (tag === TAG_HASH) {
+          const capacity = view.getInt32(obj + 4, true);
+          const entriesPtr = view.getInt32(obj + 12, true);
+          const mask = capacity - 1;
+          // Hash the key (same golden ratio as WASM-side __hash_fnv)
+          let hash = Math.imul(key, 0x9e3779b9) ^ (key >>> 16);
+          let idx = (hash & mask) >>> 0;
+          for (let probe = 0; probe < capacity; probe++) {
+            const entryAddr = entriesPtr + idx * 12;
+            const status = view.getInt32(entryAddr, true);
+            if (status === 0) return 0; // empty — not found
+            if (status === 1 && view.getInt32(entryAddr + 4, true) === key) {
+              return view.getInt32(entryAddr + 8, true); // found!
+            }
+            idx = (idx + 1) & mask;
+          }
+          return 0;
+        }
+
         if (tag === TAG_STRING) {
-          // String: return single character at index
           const str = readString(obj);
           if (key < 0 || key >= str.length) return 0;
           return writeString(str[key]);
@@ -2261,8 +2478,9 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
         return view.getInt32(obj + 8 + key * 4, true);
       },
       __index_set(obj, key, value) {
-        // Dispatch: hash map or array
+        // Dispatch based on object type
         if (hashMaps.has(obj)) {
+          // Legacy JS-hosted hash map
           const map = hashMaps.get(obj);
           const mem = memoryRef.memory;
           let resolvedKey = key;
@@ -2278,11 +2496,42 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
           map.set(resolvedKey, value);
           return;
         }
-        // Array: obj is heap pointer
         const mem = memoryRef.memory;
         if (!mem || obj <= 0) return;
         const view = new DataView(mem.buffer);
         const tag = view.getInt32(obj, true);
+
+        // Native hash map set
+        if (tag === TAG_HASH) {
+          const capacity = view.getInt32(obj + 4, true);
+          const entriesPtr = view.getInt32(obj + 12, true);
+          const mask = capacity - 1;
+          let hash = Math.imul(key, 0x9e3779b9) ^ (key >>> 16);
+          let idx = (hash & mask) >>> 0;
+          for (let probe = 0; probe < capacity; probe++) {
+            const entryAddr = entriesPtr + idx * 12;
+            const status = view.getInt32(entryAddr, true);
+            if (status === 0 || status === 2) {
+              // Empty or deleted — insert
+              view.setInt32(entryAddr, 1, true);     // occupied
+              view.setInt32(entryAddr + 4, key, true);
+              view.setInt32(entryAddr + 8, value, true);
+              if (status !== 1) {
+                // Increment size
+                view.setInt32(obj + 8, view.getInt32(obj + 8, true) + 1, true);
+              }
+              return;
+            }
+            if (status === 1 && view.getInt32(entryAddr + 4, true) === key) {
+              // Overwrite existing
+              view.setInt32(entryAddr + 8, value, true);
+              return;
+            }
+            idx = (idx + 1) & mask;
+          }
+          return;
+        }
+
         if (tag !== TAG_ARRAY) return;
         const len = view.getInt32(obj + 4, true);
         if (key < 0 || key >= len) return;
