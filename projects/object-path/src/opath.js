@@ -1,0 +1,8 @@
+// Object path utilities — get/set/has/delete with dot notation
+export function get(obj, path, defaultVal) { const keys = parsePath(path); let cur = obj; for (const k of keys) { if (cur == null || typeof cur !== 'object') return defaultVal; cur = cur[k]; } return cur === undefined ? defaultVal : cur; }
+export function set(obj, path, value) { const keys = parsePath(path); let cur = obj; for (let i = 0; i < keys.length - 1; i++) { const k = keys[i]; if (cur[k] == null || typeof cur[k] !== 'object') cur[k] = /^\d+$/.test(keys[i+1]) ? [] : {}; cur = cur[k]; } cur[keys[keys.length - 1]] = value; return obj; }
+export function has(obj, path) { const keys = parsePath(path); let cur = obj; for (const k of keys) { if (cur == null || typeof cur !== 'object' || !(k in cur)) return false; cur = cur[k]; } return true; }
+export function del(obj, path) { const keys = parsePath(path); let cur = obj; for (let i = 0; i < keys.length - 1; i++) { if (cur == null) return false; cur = cur[keys[i]]; } if (cur == null) return false; delete cur[keys[keys.length - 1]]; return true; }
+export function flatten(obj, prefix = '') { const result = {}; for (const [k, v] of Object.entries(obj)) { const key = prefix ? `${prefix}.${k}` : k; if (v && typeof v === 'object' && !Array.isArray(v)) Object.assign(result, flatten(v, key)); else result[key] = v; } return result; }
+export function unflatten(obj) { const result = {}; for (const [path, value] of Object.entries(obj)) set(result, path, value); return result; }
+function parsePath(path) { return typeof path === 'string' ? path.replace(/\[(\d+)\]/g, '.$1').split('.').filter(Boolean) : path; }
