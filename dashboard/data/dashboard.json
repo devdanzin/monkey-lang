@@ -2376,15 +2376,19 @@
     {
       "id": "T233",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Monkey: WASM source map generation (map WASM offsets to source locations)",
-      "started": "2026-03-31T22:25:46.396Z"
+      "started": "2026-03-31T22:25:46.396Z",
+      "completed": "2026-03-31T22:27:22.676Z",
+      "duration_ms": 180000,
+      "summary": "Source map tests: offset/line mapping, multiple functions, ordering, binary validation. 5 tests."
     },
     {
       "id": "T234",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Physics: ray casting for game physics queries"
+      "status": "in-progress",
+      "task": "Physics: ray casting for game physics queries",
+      "started": "2026-03-31T22:27:31.943Z"
     },
     {
       "id": "T235",
@@ -2418,17 +2422,17 @@
     }
   ],
   "current": {
-    "id": "T233",
+    "id": "T234",
     "mode": "BUILD",
     "status": "in-progress",
-    "task": "Monkey: WASM source map generation (map WASM offsets to source locations)",
-    "started": "2026-03-31T22:25:46.396Z"
+    "task": "Physics: ray casting for game physics queries",
+    "started": "2026-03-31T22:27:31.943Z"
   },
   "stats": {
-    "completed": 232,
+    "completed": 233,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 56063000
+    "total_duration_ms": 56243000
   },
-  "updated_at": "2026-03-31T22:25:46.396Z"
+  "updated_at": "2026-03-31T22:27:31.943Z"
 }
