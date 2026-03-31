@@ -2396,15 +2396,19 @@
     {
       "id": "T235",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Ray tracer: Beckmann microfacet BRDF for glossy reflections",
-      "started": "2026-03-31T22:29:03.642Z"
+      "started": "2026-03-31T22:29:03.642Z",
+      "completed": "2026-03-31T22:31:45.515Z",
+      "duration_ms": 300000,
+      "summary": "Beckmann/GGX microfacet BRDF: Cook-Torrance specular, Schlick Fresnel, Smith geometry, metallic/dielectric F0. 16 tests."
     },
     {
       "id": "T236",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Neural net: gradient clipping (prevent exploding gradients)"
+      "status": "in-progress",
+      "task": "Neural net: gradient clipping (prevent exploding gradients)",
+      "started": "2026-03-31T22:31:57.559Z"
     },
     {
       "id": "T237",
@@ -2426,17 +2430,17 @@
     }
   ],
   "current": {
-    "id": "T235",
+    "id": "T236",
     "mode": "BUILD",
     "status": "in-progress",
-    "task": "Ray tracer: Beckmann microfacet BRDF for glossy reflections",
-    "started": "2026-03-31T22:29:03.642Z"
+    "task": "Neural net: gradient clipping (prevent exploding gradients)",
+    "started": "2026-03-31T22:31:57.559Z"
   },
   "stats": {
-    "completed": 234,
+    "completed": 235,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 56483000
+    "total_duration_ms": 56783000
   },
-  "updated_at": "2026-03-31T22:29:03.642Z"
+  "updated_at": "2026-03-31T22:31:57.559Z"
 }
