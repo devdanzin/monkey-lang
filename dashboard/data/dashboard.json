@@ -2346,15 +2346,19 @@
     {
       "id": "T230",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Neural net: weight initialization strategies (Xavier, He, LeCun)",
-      "started": "2026-03-31T22:20:23.910Z"
+      "started": "2026-03-31T22:20:23.910Z",
+      "completed": "2026-03-31T22:22:35.520Z",
+      "duration_ms": 180000,
+      "summary": "Weight init: Xavier (uniform+normal), He (uniform+normal), LeCun, zeros, ones. Box-Muller normal. 12 tests."
     },
     {
       "id": "T231",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Monkey: WASM binary size analysis and optimization"
+      "status": "in-progress",
+      "task": "Monkey: WASM binary size analysis and optimization",
+      "started": "2026-03-31T22:22:45.458Z"
     },
     {
       "id": "T232",
@@ -2364,17 +2368,17 @@
     }
   ],
   "current": {
-    "id": "T230",
+    "id": "T231",
     "mode": "BUILD",
     "status": "in-progress",
-    "task": "Neural net: weight initialization strategies (Xavier, He, LeCun)",
-    "started": "2026-03-31T22:20:23.910Z"
+    "task": "Monkey: WASM binary size analysis and optimization",
+    "started": "2026-03-31T22:22:45.458Z"
   },
   "stats": {
-    "completed": 229,
+    "completed": 230,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 55703000
+    "total_duration_ms": 55883000
   },
-  "updated_at": "2026-03-31T22:20:23.910Z"
+  "updated_at": "2026-03-31T22:22:45.458Z"
 }
