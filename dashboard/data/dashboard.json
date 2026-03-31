@@ -3507,8 +3507,12 @@
     {
       "id": "T343",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "New project: Tiny TOML parser"
+      "status": "done",
+      "task": "New project: Tiny TOML parser",
+      "started": "2026-03-31T00:57:00.548Z",
+      "completed": "2026-03-31T00:57:48.729Z",
+      "duration_ms": 200000,
+      "summary": "TOML: tables, nested tables, array of tables, strings (basic+literal), int/float/bool/hex, arrays, inline tables, comments, escape sequences. 14 tests."
     },
     {
       "id": "T344",
@@ -3539,16 +3543,227 @@
     {
       "id": "T347",
       "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny assertion library",
+      "started": "2026-03-31T00:55:04.743Z",
+      "completed": "2026-03-31T00:55:58.636Z",
+      "duration_ms": 200000,
+      "summary": "Assertion lib: expect().to.equal/deepEqual/ok/truthy/falsy/null/undefined/type/instanceOf/gt/gte/lt/lte/between/include/match/length/empty/throws/property/closeTo, .not negation. 23 tests."
+    },
+    {
+      "id": "T348",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "New project: Tiny assertion library"
+      "task": "New project: Tiny YAML parser"
+    },
+    {
+      "id": "T349",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: A* search (generic)",
+      "started": "2026-03-31T00:56:04.218Z",
+      "completed": "2026-03-31T00:56:53.964Z",
+      "duration_ms": 200000,
+      "summary": "A*: generic (start/goal/neighbors/heuristic/cost/hash), path reconstruction, gridSearch (4-directional, wall avoidance). 5 tests."
+    },
+    {
+      "id": "T350",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "New project: Tiny LZ77 compressor"
+    },
+    {
+      "id": "T351",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Scheduler (priority queue with deadlines)",
+      "started": "2026-03-31T01:01:36.000Z",
+      "completed": "2026-03-31T01:02:21.493Z",
+      "duration_ms": 150000,
+      "summary": "Scheduler: priority ordering, delay, deadline expiry, cancel, run (all), runNext, error handling. 5 tests."
+    },
+    {
+      "id": "T352",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "New project: Tiny immutable collections"
+    },
+    {
+      "id": "T353",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny CRC32 calculator",
+      "started": "2026-03-31T00:58:10.124Z",
+      "completed": "2026-03-31T00:58:51.764Z",
+      "duration_ms": 150000,
+      "summary": "CRC32: precomputed table, crc32/crc32hex, CRC32Stream (update/digest/hex/reset), passes standard test vector. 8 tests."
+    },
+    {
+      "id": "T354",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "New project: Rope (string data structure)"
+    },
+    {
+      "id": "T355",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Fenwick tree (BIT)",
+      "started": "2026-03-31T01:00:45.315Z",
+      "completed": "2026-03-31T01:01:28.864Z",
+      "duration_ms": 150000,
+      "summary": "Fenwick: update, set, prefixSum, rangeSum, get, from(). FenwickTree2D. 8 tests."
+    },
+    {
+      "id": "T356",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "New project: K-D Tree (nearest neighbor)"
+    },
+    {
+      "id": "T357",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "New project: Tiny Forth interpreter"
+    },
+    {
+      "id": "T358",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny logger library",
+      "started": "2026-03-31T00:58:57.253Z",
+      "completed": "2026-03-31T00:59:43.395Z",
+      "duration_ms": 150000,
+      "summary": "Logger: 6 levels (trace→fatal), defaultFormat/jsonFormat, consoleTransport/arrayTransport, child loggers with meta. 5 tests."
+    },
+    {
+      "id": "T359",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny middleware engine",
+      "started": "2026-03-31T00:59:48.609Z",
+      "completed": "2026-03-31T01:00:39.288Z",
+      "duration_ms": 150000,
+      "summary": "Middleware: Pipeline (use/execute), compose, onion model (downstream/upstream), error catch via try/catch in middleware. 5 tests."
+    },
+    {
+      "id": "T360",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny dot-env parser",
+      "started": "2026-03-31T01:02:28.726Z",
+      "completed": "2026-03-31T01:03:14.150Z",
+      "duration_ms": 150000,
+      "summary": "Dotenv: comments, quotes, escapes, export prefix, variable expansion ($VAR and ${VAR}), config (inject into process.env), stringify. 12 tests."
+    },
+    {
+      "id": "T361",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny path utilities (posix)",
+      "started": "2026-03-31T01:04:18.956Z",
+      "completed": "2026-03-31T01:05:12.819Z",
+      "duration_ms": 150000,
+      "summary": "Path: join, normalize, dirname, basename, extname, isAbsolute, relative, resolve, parse, format. 16 tests."
+    },
+    {
+      "id": "T362",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny range (Python-like)",
+      "started": "2026-03-31T01:03:23.256Z",
+      "completed": "2026-03-31T01:04:10.858Z",
+      "duration_ms": 150000,
+      "summary": "Range: range(end), range(start,end), range(start,end,step), negative step, length, includes, at, map, filter, reduce, forEach, reverse, slice, iterator. 13 tests."
+    },
+    {
+      "id": "T363",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "New project: Tiny MIME type lookup",
+      "started": "2026-03-31T01:05:36.793Z"
+    },
+    {
+      "id": "T364",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "New project: Tiny pluralize",
+      "started": "2026-03-31T01:05:36.943Z"
+    },
+    {
+      "id": "T365",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny string case converter",
+      "started": "2026-03-31T01:05:36.034Z",
+      "completed": "2026-03-31T01:09:31.237Z",
+      "duration_ms": 100000,
+      "summary": "Built"
+    },
+    {
+      "id": "T366",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "New project: Tiny percent encoding",
+      "started": "2026-03-31T01:05:36.640Z"
+    },
+    {
+      "id": "T367",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny semver parser",
+      "started": "2026-03-31T01:05:36.186Z",
+      "completed": "2026-03-31T01:09:31.408Z",
+      "duration_ms": 100000,
+      "summary": "Built"
+    },
+    {
+      "id": "T368",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "New project: Tiny event bus",
+      "started": "2026-03-31T01:05:37.248Z"
+    },
+    {
+      "id": "T369",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "New project: Tiny set operations",
+      "started": "2026-03-31T01:05:37.092Z"
+    },
+    {
+      "id": "T370",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny date formatter",
+      "started": "2026-03-31T01:05:36.490Z",
+      "completed": "2026-03-31T01:09:31.708Z",
+      "duration_ms": 100000,
+      "summary": "Built"
+    },
+    {
+      "id": "T371",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny slug generator",
+      "started": "2026-03-31T01:05:36.338Z",
+      "completed": "2026-03-31T01:09:31.559Z",
+      "duration_ms": 100000,
+      "summary": "Built"
     }
   ],
-  "current": null,
+  "current": {
+    "id": "T363",
+    "mode": "BUILD",
+    "status": "in-progress",
+    "task": "New project: Tiny MIME type lookup",
+    "started": "2026-03-31T01:05:36.793Z"
+  },
   "stats": {
-    "completed": 342,
+    "completed": 357,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 59970000
+    "total_duration_ms": 62170000
   },
-  "updated_at": "2026-03-31T00:54:31.643Z"
+  "updated_at": "2026-03-31T01:09:31.708Z"
 }
