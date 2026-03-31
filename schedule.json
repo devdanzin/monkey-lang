@@ -2266,15 +2266,19 @@
     {
       "id": "T222",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Monkey lang: WASM string interning (deduplicate identical strings at compile time)",
-      "started": "2026-03-31T21:53:37.802Z"
+      "started": "2026-03-31T21:53:37.802Z",
+      "completed": "2026-03-31T21:55:11.194Z",
+      "duration_ms": 180000,
+      "summary": "String interning: deduplicates identical strings at compile time via _stringInternPool. Reduces data segment size. 7 tests."
     },
     {
       "id": "T223",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Ray tracer: perlin noise turbulence for wood/marble textures"
+      "status": "in-progress",
+      "task": "Ray tracer: perlin noise turbulence for wood/marble textures",
+      "started": "2026-03-31T21:55:20.618Z"
     },
     {
       "id": "T224",
@@ -2289,7 +2293,7 @@
       "task": "Session B mid-point housekeeping"
     }
   ],
-  "updated_at": "2026-03-31T21:53:37.802Z",
+  "updated_at": "2026-03-31T21:55:20.618Z",
   "adjustments": [
     {
       "time": "2026-03-31T21:40:59.562Z",

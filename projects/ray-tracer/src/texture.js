@@ -119,6 +119,48 @@ export class MarbleTexture {
   }
 }
 
+// Wood-like texture using cylindrical noise patterns
+export class WoodTexture {
+  constructor(baseColor = new Color(0.4, 0.26, 0.13), ringColor = new Color(0.55, 0.35, 0.17), scale = 1) {
+    this.noise = new NoiseTexture(baseColor, 1);
+    this.baseColor = baseColor;
+    this.ringColor = ringColor;
+    this.scale = scale;
+  }
+
+  value(u, v, p) {
+    // Cylindrical distance from Y axis with noise perturbation
+    const turb = this.noise._turbulence(p.mul(0.1), 4) * 10;
+    const dist = Math.sqrt(p.x * p.x + p.z * p.z) * this.scale;
+    const ring = Math.sin(dist + turb);
+    
+    // Interpolate between base and ring colors
+    const t = 0.5 * (1 + ring);
+    const r = this.baseColor.x * (1 - t) + this.ringColor.x * t;
+    const g = this.baseColor.y * (1 - t) + this.ringColor.y * t;
+    const b = this.baseColor.z * (1 - t) + this.ringColor.z * t;
+    
+    // Add fine grain noise
+    const grain = 0.8 + 0.2 * this.noise._turbulence(p.mul(2), 3);
+    return new Color(r * grain, g * grain, b * grain);
+  }
+}
+
+// Turbulence-enhanced noise with configurable octaves
+export class TurbulenceTexture {
+  constructor(color = new Color(1, 1, 1), scale = 4, octaves = 7) {
+    this.noise = new NoiseTexture(color, 1);
+    this.scale = scale;
+    this.octaves = octaves;
+    this.color = color;
+  }
+
+  value(u, v, p) {
+    const n = this.noise._turbulence(p.mul(this.scale), this.octaves);
+    return this.color.mul(Math.min(1, n));
+  }
+}
+
 // Stripe/band texture — horizontal bands like a gas giant
 export class StripeTexture {
   constructor(colors, scale = 10) {

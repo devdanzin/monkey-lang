@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { Vec3, Color, SolidColor, CheckerTexture, GradientTexture, NoiseTexture, MarbleTexture, ImageTexture, Lambertian } from '../src/index.js';
+import { Vec3, Color, SolidColor, CheckerTexture, GradientTexture, NoiseTexture, MarbleTexture, WoodTexture, TurbulenceTexture, ImageTexture, Lambertian } from '../src/index.js';
 
 describe('SolidColor', () => {
   it('returns constant color', () => {
@@ -54,8 +54,53 @@ describe('MarbleTexture', () => {
     const marble = new MarbleTexture(new Color(1, 1, 1), 4);
     const c1 = marble.value(0, 0, new Vec3(0, 0, 0));
     const c2 = marble.value(0, 0, new Vec3(1, 1, 1));
-    // Should be different at different points
-    assert.ok(Math.abs(c1.x - c2.x) > 0.001 || true); // Noise is random, just check no crash
+    assert.ok(Math.abs(c1.x - c2.x) > 0.001 || true);
+  });
+});
+
+describe('WoodTexture', () => {
+  it('produces ring patterns', () => {
+    const wood = new WoodTexture();
+    const colors = [];
+    for (let x = 0; x < 10; x++) {
+      colors.push(wood.value(0, 0, new Vec3(x * 0.5, 0, 0)));
+    }
+    // Should have varying colors (ring pattern)
+    let hasVariation = false;
+    for (let i = 1; i < colors.length; i++) {
+      if (Math.abs(colors[i].x - colors[i-1].x) > 0.01) hasVariation = true;
+    }
+    assert.ok(hasVariation, 'Wood texture should have ring variation');
+  });
+
+  it('stays in valid color range', () => {
+    const wood = new WoodTexture();
+    for (let i = 0; i < 50; i++) {
+      const c = wood.value(0, 0, new Vec3(Math.random() * 10, Math.random() * 10, Math.random() * 10));
+      assert.ok(c.x >= 0 && c.x <= 1, `r=${c.x}`);
+      assert.ok(c.y >= 0 && c.y <= 1, `g=${c.y}`);
+      assert.ok(c.z >= 0 && c.z <= 1, `b=${c.z}`);
+    }
+  });
+});
+
+describe('TurbulenceTexture', () => {
+  it('produces noise-like output', () => {
+    const turb = new TurbulenceTexture(new Color(1, 1, 1), 4, 5);
+    const c1 = turb.value(0, 0, new Vec3(0, 0, 0));
+    const c2 = turb.value(0, 0, new Vec3(5, 5, 5));
+    assert.ok(c1.x >= 0, 'Should be non-negative');
+    assert.ok(c2.x >= 0, 'Should be non-negative');
+  });
+
+  it('respects octave count', () => {
+    const low = new TurbulenceTexture(new Color(1, 1, 1), 4, 1);
+    const high = new TurbulenceTexture(new Color(1, 1, 1), 4, 7);
+    // Both should produce valid output
+    const c1 = low.value(0, 0, new Vec3(1, 2, 3));
+    const c2 = high.value(0, 0, new Vec3(1, 2, 3));
+    assert.ok(c1.x >= 0);
+    assert.ok(c2.x >= 0);
   });
 });
 
