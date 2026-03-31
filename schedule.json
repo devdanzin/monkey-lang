@@ -2097,16 +2097,20 @@
       "id": "T212",
       "mode": "BUILD",
       "task": "Neural net: dropout layer for regularization",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T203",
-      "started": "2026-03-31T21:11:03.661Z"
+      "started": "2026-03-31T21:11:03.661Z",
+      "completed": "2026-03-31T21:12:07.757Z",
+      "duration_ms": 180000,
+      "summary": "Dropout layer: inverted dropout, eval pass-through, correct backward, 7 tests."
     },
     {
       "id": "T213",
       "mode": "BUILD",
       "task": "Neural net: train on MNIST-like digit recognition with all features",
-      "status": "upcoming",
-      "plan_ref": "T203"
+      "status": "in-progress",
+      "plan_ref": "T203",
+      "started": "2026-03-31T21:12:23.241Z"
     },
     {
       "id": "T204",
@@ -2147,5 +2151,5 @@
       "task": "Final session housekeeping"
     }
   ],
-  "updated_at": "2026-03-31T21:11:03.661Z"
+  "updated_at": "2026-03-31T21:12:23.241Z"
 }

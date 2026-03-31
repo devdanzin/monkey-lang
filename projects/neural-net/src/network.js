@@ -87,10 +87,6 @@ export class Network {
         lr = learningRate * (1 - epoch / epochs);
       }
 
-    for (let epoch = 0; epoch < epochs; epoch++) {
-      let epochLoss = 0;
-      let batches = 0;
-
       // Shuffle indices
       const indices = Array.from({ length: n }, (_, i) => i);
       for (let i = n - 1; i > 0; i--) {
