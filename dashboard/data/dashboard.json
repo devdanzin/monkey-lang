@@ -1906,16 +1906,20 @@
       "id": "T196",
       "mode": "BUILD",
       "task": "Add image texture support to ray tracer: load image data, UV sphere mapping, bilinear interpolation",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T184",
-      "started": "2026-03-31T20:37:55.896Z"
+      "started": "2026-03-31T20:37:55.896Z",
+      "completed": "2026-03-31T20:40:24.549Z",
+      "duration_ms": 300000,
+      "summary": "ImageTexture with bilinear interpolation, UV mapping, clamping. 5 new tests. Exported in index.js."
     },
     {
       "id": "T197",
       "mode": "BUILD",
       "task": "Add area lights with soft shadows: rectangular and spherical area light sources",
-      "status": "upcoming",
-      "plan_ref": "T184"
+      "status": "in-progress",
+      "plan_ref": "T184",
+      "started": "2026-03-31T20:40:37.064Z"
     },
     {
       "id": "T198",
@@ -1975,18 +1979,18 @@
     }
   ],
   "current": {
-    "id": "T196",
+    "id": "T197",
     "mode": "BUILD",
-    "task": "Add image texture support to ray tracer: load image data, UV sphere mapping, bilinear interpolation",
+    "task": "Add area lights with soft shadows: rectangular and spherical area light sources",
     "status": "in-progress",
     "plan_ref": "T184",
-    "started": "2026-03-31T20:37:55.896Z"
+    "started": "2026-03-31T20:40:37.064Z"
   },
   "stats": {
-    "completed": 187,
+    "completed": 188,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 48023000
+    "total_duration_ms": 48323000
   },
-  "updated_at": "2026-03-31T20:37:55.896Z"
+  "updated_at": "2026-03-31T20:40:37.064Z"
 }

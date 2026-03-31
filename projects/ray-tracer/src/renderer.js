@@ -1,6 +1,7 @@
 // renderer.js — The core ray tracing loop
 
 import { Color, Vec3 } from './vec3.js';
+import { Ray } from './ray.js';
 import { BVHNode } from './bvh.js';
 
 export class Renderer {
@@ -11,7 +12,8 @@ export class Renderer {
     maxDepth = 50,
     camera,
     world,
-    background = null  // null = sky gradient
+    background = null,  // null = sky gradient
+    lights = []          // Array of area light objects (rectangles/spheres with DiffuseLight)
   } = {}) {
     this.width = width;
     this.height = height;
@@ -20,7 +22,8 @@ export class Renderer {
     this.camera = camera;
     this.world = world;
     this.background = background;
-    this.environment = null; // Set to an environment map object for sky rendering
+    this.lights = lights; // For importance sampling
+    this.environment = null;
 
     // Build BVH from world objects if world is a HittableList
     if (world.objects && world.objects.length > 4) {
@@ -65,11 +68,55 @@ export class Renderer {
         return totalEmitted;
       }
 
+      // Direct light sampling (next event estimation) for area lights
+      if (this.lights.length > 0 && !rec.material.emitted) {
+        const directLight = this._sampleLights(rec);
+        totalEmitted = totalEmitted.add(currentAttenuation.mul(result.attenuation).mul(directLight));
+      }
+
       currentAttenuation = currentAttenuation.mul(result.attenuation);
       currentRay = result.scattered;
     }
 
     return totalEmitted; // Max depth reached
+  }
+
+  // Sample area lights for direct illumination (next event estimation)
+  _sampleLights(rec) {
+    let totalLight = new Color(0, 0, 0);
+
+    for (const light of this.lights) {
+      if (!light.randomPoint || !light.material?.emitted) continue;
+
+      // Random point on the light surface
+      const lightPoint = light.randomPoint();
+      const toLight = lightPoint.sub(rec.p);
+      const distSq = toLight.lengthSquared();
+      const dist = Math.sqrt(distSq);
+      const lightDir = toLight.mul(1 / dist);
+
+      // Check if surface faces the light
+      const cosTheta = lightDir.dot(rec.normal);
+      if (cosTheta <= 0) continue;
+
+      // Check if light faces the surface
+      const lightNormal = light.normal || new Vec3(0, -1, 0);
+      const cosAlpha = Math.abs(lightDir.negate().dot(lightNormal));
+      if (cosAlpha <= 0) continue;
+
+      // Shadow ray
+      const shadowRay = new Ray(rec.p, lightDir);
+      const shadowHit = this.scene.hit(shadowRay, 0.001, dist - 0.001);
+      if (shadowHit) continue; // Occluded
+
+      // Light contribution: Le * cos(theta) * cos(alpha) * area / dist^2
+      const lightEmission = light.material.emitted(0, 0, lightPoint);
+      const lightArea = light.area ? light.area() : 1;
+      const contribution = lightEmission.mul(cosTheta * cosAlpha * lightArea / (distSq * Math.PI));
+      totalLight = totalLight.add(contribution);
+    }
+
+    return totalLight;
   }
 
   // Render to a flat RGBA array (for Canvas or image output)

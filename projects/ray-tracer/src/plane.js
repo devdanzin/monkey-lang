@@ -43,6 +43,17 @@ export class XYRect {
     this.material = material;
   }
 
+  randomPoint() {
+    return new Vec3(
+      this.x0 + Math.random() * (this.x1 - this.x0),
+      this.y0 + Math.random() * (this.y1 - this.y0),
+      this.k
+    );
+  }
+
+  area() { return (this.x1 - this.x0) * (this.y1 - this.y0); }
+  get normal() { return new Vec3(0, 0, 1); }
+
   hit(ray, tMin, tMax) {
     const t = (this.k - ray.origin.z) / ray.direction.z;
     if (t < tMin || t > tMax) return null;
@@ -73,6 +84,23 @@ export class XZRect {
     this.z0 = z0; this.z1 = z1;
     this.k = k;  // y position
     this.material = material;
+  }
+
+  // Random point on the rectangle surface (for area light sampling)
+  randomPoint() {
+    const x = this.x0 + Math.random() * (this.x1 - this.x0);
+    const z = this.z0 + Math.random() * (this.z1 - this.z0);
+    return new Vec3(x, this.k, z);
+  }
+
+  // Area of the rectangle
+  area() {
+    return (this.x1 - this.x0) * (this.z1 - this.z0);
+  }
+
+  // Normal direction
+  get normal() {
+    return new Vec3(0, 1, 0);
   }
 
   hit(ray, tMin, tMax) {
@@ -106,6 +134,17 @@ export class YZRect {
     this.k = k;  // x position
     this.material = material;
   }
+
+  randomPoint() {
+    return new Vec3(
+      this.k,
+      this.y0 + Math.random() * (this.y1 - this.y0),
+      this.z0 + Math.random() * (this.z1 - this.z0)
+    );
+  }
+
+  area() { return (this.y1 - this.y0) * (this.z1 - this.z0); }
+  get normal() { return new Vec3(1, 0, 0); }
 
   hit(ray, tMin, tMax) {
     const t = (this.k - ray.origin.x) / ray.direction.x;
