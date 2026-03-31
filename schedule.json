@@ -1156,9 +1156,19 @@
       "completed": "2026-03-31T17:55:34.292Z",
       "duration_ms": 300000,
       "summary": "Built Union-Find: path compression, union by rank, named variant, Kruskal MST example. 17 tests. Published."
+    },
+    {
+      "id": "T114",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build an AST visitor/transformer: walk, visit, transform, builder pattern, code generation",
+      "started": "2026-03-31T17:56:09.359Z",
+      "completed": "2026-03-31T17:57:44.375Z",
+      "duration_ms": 300000,
+      "summary": "Built AST toolkit: walk, transform, collect, find, builder, code generation. Visitor pattern. 13 tests. Published."
     }
   ],
-  "updated_at": "2026-03-31T17:55:34.292Z",
+  "updated_at": "2026-03-31T17:57:44.375Z",
   "adjustments": [
     {
       "time": "2026-03-31T15:25:10.585Z",
@@ -1455,6 +1465,10 @@
     {
       "time": "2026-03-31T17:53:13.322Z",
       "msg": "Added T113 (BUILD) after end: Build Union-Find (Disjoint Set): union, find, connected, path compression, union by rank"
+    },
+    {
+      "time": "2026-03-31T17:56:08.859Z",
+      "msg": "Added T114 (BUILD) after end: Build an AST visitor/transformer: walk, visit, transform, builder pattern, code generation"
     }
   ]
 }
