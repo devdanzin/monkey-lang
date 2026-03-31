@@ -2246,15 +2246,19 @@
     {
       "id": "T220",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Physics engine: web demo with Canvas rendering (bouncing balls, springs, constraints)",
-      "started": "2026-03-31T21:41:09.350Z"
+      "started": "2026-03-31T21:41:09.350Z",
+      "completed": "2026-03-31T21:48:49.623Z",
+      "duration_ms": 360000,
+      "summary": "Physics web demo: Canvas rendering, interactive (drag, add balls, springs, chains, explosion), boundary walls, constraint solver."
     },
     {
       "id": "T221",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Physics engine: rotation and torque (angular velocity, moment of inertia)"
+      "status": "in-progress",
+      "task": "Physics engine: rotation and torque (angular velocity, moment of inertia)",
+      "started": "2026-03-31T21:48:59.492Z"
     },
     {
       "id": "T222",
@@ -2281,7 +2285,7 @@
       "task": "Session B mid-point housekeeping"
     }
   ],
-  "updated_at": "2026-03-31T21:41:09.351Z",
+  "updated_at": "2026-03-31T21:48:59.492Z",
   "adjustments": [
     {
       "time": "2026-03-31T21:40:59.562Z",
