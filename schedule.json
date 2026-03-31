@@ -2356,18 +2356,68 @@
     {
       "id": "T231",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Monkey: WASM binary size analysis and optimization",
-      "started": "2026-03-31T22:22:45.458Z"
+      "started": "2026-03-31T22:22:45.458Z",
+      "completed": "2026-03-31T22:24:42.177Z",
+      "duration_ms": 180000,
+      "summary": "WASM binary size analysis: size budgets, string interning verification, section reporting. 8 tests."
     },
     {
       "id": "T232",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final session B wrap-up",
+      "started": "2026-03-31T22:25:35.753Z",
+      "completed": "2026-03-31T22:25:36.013Z",
+      "duration_ms": 0,
+      "summary": "Deferred, more work added."
+    },
+    {
+      "id": "T233",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Monkey: WASM source map generation (map WASM offsets to source locations)",
+      "started": "2026-03-31T22:25:46.396Z"
+    },
+    {
+      "id": "T234",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Final session B wrap-up"
+      "task": "Physics: ray casting for game physics queries"
+    },
+    {
+      "id": "T235",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Ray tracer: Beckmann microfacet BRDF for glossy reflections"
+    },
+    {
+      "id": "T236",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Neural net: gradient clipping (prevent exploding gradients)"
+    },
+    {
+      "id": "T237",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey: WASM peephole optimizer improvements (register-like optimization)"
+    },
+    {
+      "id": "T238",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Physics: continuous collision detection (CCD) for fast-moving objects"
+    },
+    {
+      "id": "T239",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final wrap-up"
     }
   ],
-  "updated_at": "2026-03-31T22:22:45.458Z",
+  "updated_at": "2026-03-31T22:25:46.396Z",
   "adjustments": [
     {
       "time": "2026-03-31T21:40:59.562Z",
@@ -2420,6 +2470,34 @@
     {
       "time": "2026-03-31T22:04:20.947Z",
       "msg": "Added T232 (MAINTAIN) after end: Final session B wrap-up"
+    },
+    {
+      "time": "2026-03-31T22:25:17.832Z",
+      "msg": "Added T233 (BUILD) after end: Monkey: WASM source map generation (map WASM offsets to source locations)"
+    },
+    {
+      "time": "2026-03-31T22:25:18.054Z",
+      "msg": "Added T234 (BUILD) after end: Physics: ray casting for game physics queries"
+    },
+    {
+      "time": "2026-03-31T22:25:18.269Z",
+      "msg": "Added T235 (BUILD) after end: Ray tracer: Beckmann microfacet BRDF for glossy reflections"
+    },
+    {
+      "time": "2026-03-31T22:25:18.484Z",
+      "msg": "Added T236 (BUILD) after end: Neural net: gradient clipping (prevent exploding gradients)"
+    },
+    {
+      "time": "2026-03-31T22:25:18.703Z",
+      "msg": "Added T237 (BUILD) after end: Monkey: WASM peephole optimizer improvements (register-like optimization)"
+    },
+    {
+      "time": "2026-03-31T22:25:18.920Z",
+      "msg": "Added T238 (BUILD) after end: Physics: continuous collision detection (CCD) for fast-moving objects"
+    },
+    {
+      "time": "2026-03-31T22:25:19.146Z",
+      "msg": "Added T239 (MAINTAIN) after end: Final wrap-up"
     }
   ]
 }
