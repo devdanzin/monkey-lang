@@ -3261,9 +3261,289 @@
       "completed": "2026-03-31T00:24:52.984Z",
       "duration_ms": 300000,
       "summary": "Fuzzy: levenshtein (DP), similarity (normalized), fuzzyMatch (subsequence), fuzzySearch (ranked, with key), closestMatch, damerauLevenshtein (transpositions). 11 tests."
+    },
+    {
+      "id": "T318",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Pool (object/connection pool with acquire/release)",
+      "started": "2026-03-31T00:25:36.367Z",
+      "completed": "2026-03-31T00:26:38.613Z",
+      "duration_ms": 200000,
+      "summary": "Pool: async factory, acquire/release, max size limit, waiting queue with timeout, validation, drain, stats. 5 tests."
+    },
+    {
+      "id": "T319",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Circuit breaker (resilience pattern)",
+      "started": "2026-03-31T00:26:44.929Z",
+      "completed": "2026-03-31T00:27:53.623Z",
+      "duration_ms": 200000,
+      "summary": "Circuit breaker: closed→open→half-open, failure threshold, timeout, auto-recovery (resetTimeout), onStateChange callback, manual reset. 7 tests."
+    },
+    {
+      "id": "T320",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Semaphore/Mutex (async concurrency primitives)",
+      "started": "2026-03-31T00:28:03.261Z",
+      "completed": "2026-03-31T00:29:40.970Z",
+      "duration_ms": 200000,
+      "summary": "Semaphore (permits, queue, use()), Mutex (lock/unlock/withLock), ReadWriteLock (reader/writer priority), Barrier (N-party sync). 9 tests."
+    },
+    {
+      "id": "T321",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny ELF parser (read ELF headers)",
+      "started": "2026-03-31T00:29:52.934Z",
+      "completed": "2026-03-31T00:31:02.970Z",
+      "duration_ms": 200000,
+      "summary": "ELF parser: magic check, ELF32/64, LE/BE, header (class/type/machine/entry), section headers with name resolution, program headers (segments). 9 tests."
+    },
+    {
+      "id": "T322",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: S-expression parser",
+      "started": "2026-03-31T00:31:07.786Z",
+      "completed": "2026-03-31T00:33:01.856Z",
+      "duration_ms": 200000,
+      "summary": "S-expr parser: integers, floats, symbols, booleans, nil, strings (escaped), lists, nested, quote shorthand, stringify, roundtrip. 21 tests."
+    },
+    {
+      "id": "T323",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: INI file parser",
+      "started": "2026-03-31T00:33:07.038Z",
+      "completed": "2026-03-31T00:34:12.957Z",
+      "duration_ms": 200000,
+      "summary": "INI parser: sections, comments (;/#), global keys, quoted values, inline comments, type coercion (int/float/bool), stringify, get (dot path). 12 tests."
+    },
+    {
+      "id": "T324",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Brainfuck interpreter",
+      "started": "2026-03-31T00:34:17.906Z",
+      "completed": "2026-03-31T00:35:34.376Z",
+      "duration_ms": 200000,
+      "summary": "Brainfuck: interpreter (30K tape, wrapping, bracket jumps), compile (run-length optimization), minify. Hello World works. 11 tests."
+    },
+    {
+      "id": "T325",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Stack-based calculator (RPN)",
+      "started": "2026-03-31T00:35:39.246Z",
+      "completed": "2026-03-31T00:36:36.800Z",
+      "duration_ms": 200000,
+      "summary": "RPN calc: 8 binary ops, 11 unary ops, 6 stack ops, constants (pi/e/tau), shunting-yard infix→RPN. 21 tests."
+    },
+    {
+      "id": "T326",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny VM (bytecode assembler + interpreter)",
+      "started": "2026-03-31T00:36:54.428Z",
+      "completed": "2026-03-31T00:38:17.803Z",
+      "duration_ms": 300000,
+      "summary": "Tiny VM: 30 opcodes (arithmetic, bitwise, comparison, control flow, memory), assembler with labels, disassembler, call/ret stack. 16 tests."
+    },
+    {
+      "id": "T327",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Printf-like string formatter",
+      "started": "2026-03-31T00:38:22.635Z",
+      "completed": "2026-03-31T00:39:16.437Z",
+      "duration_ms": 200000,
+      "summary": "sprintf: %d/%i/%o/%u/%x/%X/%f/%e/%E/%g/%G/%s/%c/%b/%j/%%, flags (-/0/+/space/#), width, precision. 23 tests."
+    },
+    {
+      "id": "T328",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Glob pattern matcher",
+      "started": "2026-03-31T00:39:21.453Z",
+      "completed": "2026-03-31T00:40:17.561Z",
+      "duration_ms": 200000,
+      "summary": "Glob: * (no path sep), ? (single char), ** (globstar), [abc], [a-z], [!x], backslash escape, dotfile protection, case insensitive, globToRegex, filter. 17 tests."
+    },
+    {
+      "id": "T329",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Topological sort (Kahn's algorithm)",
+      "started": "2026-03-31T00:40:22.674Z",
+      "completed": "2026-03-31T00:41:23.663Z",
+      "duration_ms": 200000,
+      "summary": "Toposort: Kahn's (BFS), DFS-based, allTopoOrders (backtracking), hasCycle. 9 tests."
+    },
+    {
+      "id": "T330",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: BitSet (dense bit operations)",
+      "started": "2026-03-31T00:41:28.564Z",
+      "completed": "2026-03-31T00:42:24.714Z",
+      "duration_ms": 200000,
+      "summary": "BitSet: Uint32Array backing, set/get/clear/toggle, popcount, and/or/xor/not, equals, clone, iterator, from(), toString. 14 tests."
+    },
+    {
+      "id": "T331",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: URL parser (parse/format/resolve)",
+      "started": "2026-03-31T00:42:36.796Z",
+      "completed": "2026-03-31T00:43:33.449Z",
+      "duration_ms": 200000,
+      "summary": "URL parser: regex-based parsing (protocol/auth/host/port/path/search/hash), format, parseQuery (duplicates), formatQuery, resolve (absolute/root/relative). 13 tests."
+    },
+    {
+      "id": "T332",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: CSV parser/serializer",
+      "started": "2026-03-31T00:43:39.908Z",
+      "completed": "2026-03-31T00:44:33.074Z",
+      "duration_ms": 200000,
+      "summary": "CSV: RFC 4180, parseRows, parse (with header → objects), stringify (escape commas/quotes/newlines), CRLF support, roundtrip. 13 tests."
+    },
+    {
+      "id": "T333",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny query builder (SQL)",
+      "started": "2026-03-31T00:44:38.382Z",
+      "completed": "2026-03-31T00:45:39.244Z",
+      "duration_ms": 200000,
+      "summary": "SQL query builder: SELECT/INSERT/UPDATE/DELETE, fluent API, parameterized (?), where/orWhere, orderBy, limit/offset, join/leftJoin, groupBy/having. 11 tests."
+    },
+    {
+      "id": "T334",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Ring buffer (circular queue)",
+      "started": "2026-03-31T00:45:44.438Z",
+      "completed": "2026-03-31T00:46:32.817Z",
+      "duration_ms": 200000,
+      "summary": "Ring buffer: fixed capacity, push/shift, peek/peekLast, overflow overwrites oldest, toArray, iterator, at, clear. 11 tests."
+    },
+    {
+      "id": "T335",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Skip list",
+      "started": "2026-03-31T00:46:38.583Z",
+      "completed": "2026-03-31T00:47:41.520Z",
+      "duration_ms": 200000,
+      "summary": "Skip list: random levels, insert/get/has/delete, range query, sorted iterator, toArray. Stress test 100 items. 9 tests."
+    },
+    {
+      "id": "T336",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "New project: Tiny type checker (Hindley-Milner)"
+    },
+    {
+      "id": "T337",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Interval tree",
+      "started": "2026-03-31T00:52:46.599Z",
+      "completed": "2026-03-31T00:53:32.477Z",
+      "duration_ms": 150000,
+      "summary": "Interval tree: augmented BST, insert, search (overlap), contains (point), toArray. 6 tests."
+    },
+    {
+      "id": "T338",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Disjoint set (Union-Find)",
+      "started": "2026-03-31T00:48:01.407Z",
+      "completed": "2026-03-31T00:48:42.368Z",
+      "duration_ms": 150000,
+      "summary": "Union-Find: path compression, union by rank, connected, componentSize, components. 7 tests."
+    },
+    {
+      "id": "T339",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Matrix math library",
+      "started": "2026-03-31T00:48:47.390Z",
+      "completed": "2026-03-31T00:49:40.367Z",
+      "duration_ms": 200000,
+      "summary": "Matrix: Float64Array backing, zeros/ones/identity/from, add/sub/scale/mul/transpose, determinant (cofactor expansion), minor, trace, equals, clone. 15 tests."
+    },
+    {
+      "id": "T340",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Huffman encoding",
+      "started": "2026-03-31T00:49:45.698Z",
+      "completed": "2026-03-31T00:50:35.054Z",
+      "duration_ms": 200000,
+      "summary": "Huffman: frequency analysis, tree construction, code table (prefix-free), encode/decode roundtrip, compression ratio. 10 tests."
+    },
+    {
+      "id": "T341",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "New project: Tiny ORM (object-relational mapping)"
+    },
+    {
+      "id": "T342",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Deque (double-ended queue)",
+      "started": "2026-03-31T00:50:41.854Z",
+      "completed": "2026-03-31T00:51:28.814Z",
+      "duration_ms": 150000,
+      "summary": "Deque: circular buffer, pushFront/Back, popFront/Back, auto-grow, peek, at, iterator. 8 tests."
+    },
+    {
+      "id": "T343",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "New project: Tiny TOML parser"
+    },
+    {
+      "id": "T344",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Run-length encoding (RLE)",
+      "started": "2026-03-31T00:51:40.640Z",
+      "completed": "2026-03-31T00:52:35.061Z",
+      "duration_ms": 150000,
+      "summary": "RLE: string encode/decode, binary Uint8Array encode/decode, compression ratio. 12 tests."
+    },
+    {
+      "id": "T345",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "New project: Finite state transducer"
+    },
+    {
+      "id": "T346",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny parser combinator library",
+      "started": "2026-03-31T00:53:38.535Z",
+      "completed": "2026-03-31T00:54:31.643Z",
+      "duration_ms": 200000,
+      "summary": "Parser combinator: char, string, regex, seq, alt, many, many1, optional, map, sepBy, between, lazy (recursive), built-in digit/letter/integer. 17 tests."
+    },
+    {
+      "id": "T347",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "New project: Tiny assertion library"
     }
   ],
-  "updated_at": "2026-03-31T00:24:52.984Z",
+  "updated_at": "2026-03-31T00:54:31.643Z",
   "adjustments": [
     {
       "time": "2026-03-30T22:55:00.316Z",
@@ -3496,6 +3776,126 @@
     {
       "time": "2026-03-31T00:21:07.630Z",
       "msg": "Added T317 (BUILD) after end: New project: Levenshtein distance / fuzzy match"
+    },
+    {
+      "time": "2026-03-31T00:25:29.917Z",
+      "msg": "Added T318 (BUILD) after end: New project: Pool (object/connection pool with acquire/release)"
+    },
+    {
+      "time": "2026-03-31T00:25:30.054Z",
+      "msg": "Added T319 (BUILD) after end: New project: Circuit breaker (resilience pattern)"
+    },
+    {
+      "time": "2026-03-31T00:25:30.175Z",
+      "msg": "Added T320 (BUILD) after end: New project: Semaphore/Mutex (async concurrency primitives)"
+    },
+    {
+      "time": "2026-03-31T00:29:47.574Z",
+      "msg": "Added T321 (BUILD) after end: New project: Tiny ELF parser (read ELF headers)"
+    },
+    {
+      "time": "2026-03-31T00:29:47.716Z",
+      "msg": "Added T322 (BUILD) after end: New project: S-expression parser"
+    },
+    {
+      "time": "2026-03-31T00:29:47.836Z",
+      "msg": "Added T323 (BUILD) after end: New project: INI file parser"
+    },
+    {
+      "time": "2026-03-31T00:29:47.957Z",
+      "msg": "Added T324 (BUILD) after end: New project: Brainfuck interpreter"
+    },
+    {
+      "time": "2026-03-31T00:29:48.077Z",
+      "msg": "Added T325 (BUILD) after end: New project: Stack-based calculator (RPN)"
+    },
+    {
+      "time": "2026-03-31T00:36:49.297Z",
+      "msg": "Added T326 (BUILD) after end: New project: Tiny VM (bytecode assembler + interpreter)"
+    },
+    {
+      "time": "2026-03-31T00:36:49.417Z",
+      "msg": "Added T327 (BUILD) after end: New project: Printf-like string formatter"
+    },
+    {
+      "time": "2026-03-31T00:36:49.538Z",
+      "msg": "Added T328 (BUILD) after end: New project: Glob pattern matcher"
+    },
+    {
+      "time": "2026-03-31T00:36:49.658Z",
+      "msg": "Added T329 (BUILD) after end: New project: Topological sort (Kahn's algorithm)"
+    },
+    {
+      "time": "2026-03-31T00:36:49.779Z",
+      "msg": "Added T330 (BUILD) after end: New project: BitSet (dense bit operations)"
+    },
+    {
+      "time": "2026-03-31T00:42:31.608Z",
+      "msg": "Added T331 (BUILD) after end: New project: URL parser (parse/format/resolve)"
+    },
+    {
+      "time": "2026-03-31T00:42:31.728Z",
+      "msg": "Added T332 (BUILD) after end: New project: CSV parser/serializer"
+    },
+    {
+      "time": "2026-03-31T00:42:31.848Z",
+      "msg": "Added T333 (BUILD) after end: New project: Tiny query builder (SQL)"
+    },
+    {
+      "time": "2026-03-31T00:42:31.969Z",
+      "msg": "Added T334 (BUILD) after end: New project: Ring buffer (circular queue)"
+    },
+    {
+      "time": "2026-03-31T00:42:32.089Z",
+      "msg": "Added T335 (BUILD) after end: New project: Skip list"
+    },
+    {
+      "time": "2026-03-31T00:47:54.652Z",
+      "msg": "Added T336 (BUILD) after end: New project: Tiny type checker (Hindley-Milner)"
+    },
+    {
+      "time": "2026-03-31T00:47:54.772Z",
+      "msg": "Added T337 (BUILD) after end: New project: Interval tree"
+    },
+    {
+      "time": "2026-03-31T00:47:54.892Z",
+      "msg": "Added T338 (BUILD) after end: New project: Disjoint set (Union-Find)"
+    },
+    {
+      "time": "2026-03-31T00:47:55.012Z",
+      "msg": "Added T339 (BUILD) after end: New project: Matrix math library"
+    },
+    {
+      "time": "2026-03-31T00:47:55.132Z",
+      "msg": "Added T340 (BUILD) after end: New project: Huffman encoding"
+    },
+    {
+      "time": "2026-03-31T00:47:55.259Z",
+      "msg": "Added T341 (BUILD) after end: New project: Tiny ORM (object-relational mapping)"
+    },
+    {
+      "time": "2026-03-31T00:47:55.380Z",
+      "msg": "Added T342 (BUILD) after end: New project: Deque (double-ended queue)"
+    },
+    {
+      "time": "2026-03-31T00:51:35.038Z",
+      "msg": "Added T343 (BUILD) after end: New project: Tiny TOML parser"
+    },
+    {
+      "time": "2026-03-31T00:51:35.159Z",
+      "msg": "Added T344 (BUILD) after end: New project: Run-length encoding (RLE)"
+    },
+    {
+      "time": "2026-03-31T00:51:35.279Z",
+      "msg": "Added T345 (BUILD) after end: New project: Finite state transducer"
+    },
+    {
+      "time": "2026-03-31T00:52:41.074Z",
+      "msg": "Added T346 (BUILD) after end: New project: Tiny parser combinator library"
+    },
+    {
+      "time": "2026-03-31T00:52:41.194Z",
+      "msg": "Added T347 (BUILD) after end: New project: Tiny assertion library"
     }
   ]
 }
