@@ -1,0 +1,7 @@
+{
+  "name": "tiny-crdt",
+  "version": "1.0.0",
+  "description": "CRDTs: G-Counter, PN-Counter, G-Set, OR-Set, LWW-Register, LWW-Map",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/index.test.js" }
+}
