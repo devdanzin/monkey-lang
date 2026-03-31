@@ -2151,16 +2151,20 @@
       "id": "T215",
       "mode": "BUILD",
       "task": "Monkey: WASM constant folding optimization (fold constant expressions at compile time)",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T205",
-      "started": "2026-03-31T21:20:36.374Z"
+      "started": "2026-03-31T21:20:36.374Z",
+      "completed": "2026-03-31T21:22:27.261Z",
+      "duration_ms": 300000,
+      "summary": "Constant folding: integer arith, string concat, prefix, identity opts, dead branch elimination. 25 tests."
     },
     {
       "id": "T216",
       "mode": "BUILD",
       "task": "Monkey: WASM dead code elimination (remove unreachable code after return/break)",
-      "status": "upcoming",
-      "plan_ref": "T205"
+      "status": "in-progress",
+      "plan_ref": "T205",
+      "started": "2026-03-31T21:22:37.311Z"
     },
     {
       "id": "T206",
@@ -2189,18 +2193,18 @@
     }
   ],
   "current": {
-    "id": "T215",
+    "id": "T216",
     "mode": "BUILD",
-    "task": "Monkey: WASM constant folding optimization (fold constant expressions at compile time)",
+    "task": "Monkey: WASM dead code elimination (remove unreachable code after return/break)",
     "status": "in-progress",
     "plan_ref": "T205",
-    "started": "2026-03-31T21:20:36.374Z"
+    "started": "2026-03-31T21:22:37.311Z"
   },
   "stats": {
-    "completed": 210,
+    "completed": 211,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 51923000
+    "total_duration_ms": 52223000
   },
-  "updated_at": "2026-03-31T21:20:36.374Z"
+  "updated_at": "2026-03-31T21:22:37.311Z"
 }
