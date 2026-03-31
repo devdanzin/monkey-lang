@@ -1730,16 +1730,50 @@
     {
       "id": "T171",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Build a tiny token bucket: rate limiting with smooth refill, burst capacity"
+      "status": "done",
+      "task": "Build a tiny token bucket: rate limiting with smooth refill, burst capacity",
+      "started": "2026-03-31T19:35:58.081Z",
+      "completed": "2026-03-31T19:36:09.973Z",
+      "duration_ms": 5000,
+      "summary": "Skipped - TokenBucket exists in rate-limiter project"
+    },
+    {
+      "id": "T172",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny cron scheduler: parse cron expressions, schedule callbacks, next/prev occurrence",
+      "started": "2026-03-31T19:36:10.629Z",
+      "completed": "2026-03-31T19:36:19.876Z",
+      "duration_ms": 5000,
+      "summary": "Skipped - cron-parser already exists"
+    },
+    {
+      "id": "T173",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny schema migration: version tracking, up/down migrations, rollback",
+      "started": "2026-03-31T19:36:40.067Z",
+      "completed": "2026-03-31T19:36:40.331Z",
+      "duration_ms": 5000,
+      "summary": "Skipped - migrate project already exists"
+    },
+    {
+      "id": "T174",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny finite automaton: NFA, DFA, NFA-to-DFA conversion, minimize",
+      "started": "2026-03-31T19:36:40.806Z",
+      "completed": "2026-03-31T19:48:00.707Z",
+      "duration_ms": 300000,
+      "summary": "Built finite automata: DFA, NFA, epsilon closure, NFA-to-DFA subset construction. 8 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 170,
+    "completed": 174,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 44883000
+    "total_duration_ms": 45198000
   },
-  "updated_at": "2026-03-31T19:35:40.832Z"
+  "updated_at": "2026-03-31T19:48:00.707Z"
 }

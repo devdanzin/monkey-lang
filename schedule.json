@@ -1730,11 +1730,45 @@
     {
       "id": "T171",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Build a tiny token bucket: rate limiting with smooth refill, burst capacity"
+      "status": "done",
+      "task": "Build a tiny token bucket: rate limiting with smooth refill, burst capacity",
+      "started": "2026-03-31T19:35:58.081Z",
+      "completed": "2026-03-31T19:36:09.973Z",
+      "duration_ms": 5000,
+      "summary": "Skipped - TokenBucket exists in rate-limiter project"
+    },
+    {
+      "id": "T172",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny cron scheduler: parse cron expressions, schedule callbacks, next/prev occurrence",
+      "started": "2026-03-31T19:36:10.629Z",
+      "completed": "2026-03-31T19:36:19.876Z",
+      "duration_ms": 5000,
+      "summary": "Skipped - cron-parser already exists"
+    },
+    {
+      "id": "T173",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny schema migration: version tracking, up/down migrations, rollback",
+      "started": "2026-03-31T19:36:40.067Z",
+      "completed": "2026-03-31T19:36:40.331Z",
+      "duration_ms": 5000,
+      "summary": "Skipped - migrate project already exists"
+    },
+    {
+      "id": "T174",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny finite automaton: NFA, DFA, NFA-to-DFA conversion, minimize",
+      "started": "2026-03-31T19:36:40.806Z",
+      "completed": "2026-03-31T19:48:00.707Z",
+      "duration_ms": 300000,
+      "summary": "Built finite automata: DFA, NFA, epsilon closure, NFA-to-DFA subset construction. 8 tests. Published."
     }
   ],
-  "updated_at": "2026-03-31T19:35:40.832Z",
+  "updated_at": "2026-03-31T19:48:00.707Z",
   "adjustments": [
     {
       "time": "2026-03-31T15:25:10.585Z",
@@ -2263,6 +2297,18 @@
     {
       "time": "2026-03-31T19:33:23.580Z",
       "msg": "Added T171 (BUILD) after end: Build a tiny token bucket: rate limiting with smooth refill, burst capacity"
+    },
+    {
+      "time": "2026-03-31T19:36:10.084Z",
+      "msg": "Added T172 (BUILD) after end: Build a tiny cron scheduler: parse cron expressions, schedule callbacks, next/prev occurrence"
+    },
+    {
+      "time": "2026-03-31T19:36:10.212Z",
+      "msg": "Added T173 (BUILD) after end: Build a tiny schema migration: version tracking, up/down migrations, rollback"
+    },
+    {
+      "time": "2026-03-31T19:36:10.339Z",
+      "msg": "Added T174 (BUILD) after end: Build a tiny finite automaton: NFA, DFA, NFA-to-DFA conversion, minimize"
     }
   ]
 }
