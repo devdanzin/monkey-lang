@@ -2326,15 +2326,19 @@
     {
       "id": "T228",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Physics: polygon collision detection (SAT - Separating Axis Theorem)",
-      "started": "2026-03-31T22:12:48.420Z"
+      "started": "2026-03-31T22:12:48.420Z",
+      "completed": "2026-03-31T22:17:02.092Z",
+      "duration_ms": 300000,
+      "summary": "SAT polygon collision: polygon-polygon, circle-polygon, rotation support. Edge normals, projection, separating axis. 10 tests (56 total physics)."
     },
     {
       "id": "T229",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Ray tracer: importance sampling for materials (cosine-weighted hemisphere sampling)"
+      "status": "in-progress",
+      "task": "Ray tracer: importance sampling for materials (cosine-weighted hemisphere sampling)",
+      "started": "2026-03-31T22:17:13.122Z"
     },
     {
       "id": "T230",
@@ -2355,7 +2359,7 @@
       "task": "Final session B wrap-up"
     }
   ],
-  "updated_at": "2026-03-31T22:12:48.420Z",
+  "updated_at": "2026-03-31T22:17:13.122Z",
   "adjustments": [
     {
       "time": "2026-03-31T21:40:59.562Z",
