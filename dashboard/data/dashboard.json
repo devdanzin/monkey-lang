@@ -2286,29 +2286,33 @@
     {
       "id": "T224",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Neural net: learning rate warmup and cosine annealing scheduler",
-      "started": "2026-03-31T21:57:36.120Z"
+      "started": "2026-03-31T21:57:36.120Z",
+      "completed": "2026-03-31T22:00:47.476Z",
+      "duration_ms": 180000,
+      "summary": "LR schedulers: Constant, LinearWarmup, CosineAnnealing, StepDecay, WarmupCosine, ExponentialDecay, CyclicLR. 11 tests."
     },
     {
       "id": "T225",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Session B mid-point housekeeping"
+      "status": "in-progress",
+      "task": "Session B mid-point housekeeping",
+      "started": "2026-03-31T22:01:03.105Z"
     }
   ],
   "current": {
-    "id": "T224",
-    "mode": "BUILD",
+    "id": "T225",
+    "mode": "MAINTAIN",
     "status": "in-progress",
-    "task": "Neural net: learning rate warmup and cosine annealing scheduler",
-    "started": "2026-03-31T21:57:36.120Z"
+    "task": "Session B mid-point housekeeping",
+    "started": "2026-03-31T22:01:03.105Z"
   },
   "stats": {
-    "completed": 223,
+    "completed": 224,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 54383000
+    "total_duration_ms": 54563000
   },
-  "updated_at": "2026-03-31T21:57:36.120Z"
+  "updated_at": "2026-03-31T22:01:03.105Z"
 }
