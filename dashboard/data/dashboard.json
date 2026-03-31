@@ -896,14 +896,24 @@
       "completed": "2026-03-31T17:07:49.698Z",
       "duration_ms": 240000,
       "summary": "Built unit conversion: 7 categories, 50+ units, temperature, fluent API. 25 tests. Published."
+    },
+    {
+      "id": "T88",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a middleware pipeline: use, compose, error handling, context, before/after hooks",
+      "started": "2026-03-31T17:08:08.466Z",
+      "completed": "2026-03-31T17:09:17.025Z",
+      "duration_ms": 240000,
+      "summary": "Built middleware pipeline: Koa-style, compose, before/after, when, error handling. HTTP example. 10 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 87,
+    "completed": 88,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 24783000
+    "total_duration_ms": 25023000
   },
-  "updated_at": "2026-03-31T17:07:49.698Z"
+  "updated_at": "2026-03-31T17:09:17.025Z"
 }
