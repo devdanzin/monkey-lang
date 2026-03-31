@@ -1,0 +1,7 @@
+{
+  "name": "tiny-rbtree",
+  "version": "1.0.0",
+  "description": "Red-black tree with insert, search, floor/ceil, range",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/index.test.js" }
+}
