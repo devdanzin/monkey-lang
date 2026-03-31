@@ -656,9 +656,19 @@
       "completed": "2026-03-31T16:29:05.693Z",
       "duration_ms": 300000,
       "summary": "Built CLI parser: options, flags, positionals, subcommands, help, version. Git-like routing. 16 tests. Published."
+    },
+    {
+      "id": "T64",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build linked list: singly + doubly linked, insert/delete/reverse/sort/merge, iterator",
+      "started": "2026-03-31T16:29:14.332Z",
+      "completed": "2026-03-31T16:30:44.084Z",
+      "duration_ms": 300000,
+      "summary": "Built linked lists: singly + doubly, push/pop/shift/unshift, insertAt, removeAt, reverse, iterators. 18 tests. Published."
     }
   ],
-  "updated_at": "2026-03-31T16:29:05.693Z",
+  "updated_at": "2026-03-31T16:30:44.084Z",
   "adjustments": [
     {
       "time": "2026-03-31T15:25:10.585Z",
@@ -755,6 +765,10 @@
     {
       "time": "2026-03-31T16:26:57.379Z",
       "msg": "Added T63 (BUILD) after end: Build CLI argument parser: positional args, flags, options, subcommands, help generation"
+    },
+    {
+      "time": "2026-03-31T16:29:13.840Z",
+      "msg": "Added T64 (BUILD) after end: Build linked list: singly + doubly linked, insert/delete/reverse/sort/merge, iterator"
     }
   ]
 }
