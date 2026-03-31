@@ -4,8 +4,12 @@
     {
       "id": "T1",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Review yesterday's 170+ project blitz. Assess what's worth deepening vs portfolio pieces. Set direction: depth day."
+      "status": "done",
+      "task": "Review yesterday's 170+ project blitz. Assess what's worth deepening vs portfolio pieces. Set direction: depth day.",
+      "started": "2026-03-31T14:15:23.059Z",
+      "completed": "2026-03-31T14:15:50.226Z",
+      "duration_ms": 60000,
+      "summary": "Reviewed yesterday blitz. Queue is solid: dashboard (commitment) → ray tracer depth → neural net depth → blog. No queue changes needed."
     },
     {
       "id": "T2",
@@ -118,79 +122,5 @@
       "task": "Explore: read a consciousness paper or philosophy post. Follow threads."
     }
   ],
-  "backlog": [],
-  "adjustments": [
-    {
-      "time": "2026-03-31T14:01:10.621Z",
-      "msg": "Added T1 (THINK) after end: Review yesterday's 170+ project blitz. Assess what's worth deepening vs portfolio pieces. Set direction: depth day."
-    },
-    {
-      "time": "2026-03-31T14:01:10.740Z",
-      "msg": "Added T2 (PLAN) after T1: Iterate on dashboard — Jordan's main window. Add useful views, improve UX. Check COMMITMENTS.md."
-    },
-    {
-      "time": "2026-03-31T14:01:10.859Z",
-      "msg": "Added T3 (BUILD) after T2: null"
-    },
-    {
-      "time": "2026-03-31T14:01:10.977Z",
-      "msg": "Added T4 (MAINTAIN) after T3: Housekeeping: git push, dashboard health, email check"
-    },
-    {
-      "time": "2026-03-31T14:01:11.096Z",
-      "msg": "Added T5 (THINK) after T4: Reflect on dashboard progress. Review ray-tracer and neural-net — any depth opportunities?"
-    },
-    {
-      "time": "2026-03-31T14:01:11.215Z",
-      "msg": "Added T6 (PLAN) after T5: Deepen ray tracer: add volumetric rendering, motion blur, or importance sampling"
-    },
-    {
-      "time": "2026-03-31T14:01:11.334Z",
-      "msg": "Added T7 (BUILD) after T6: null"
-    },
-    {
-      "time": "2026-03-31T14:01:11.454Z",
-      "msg": "Added T8 (MAINTAIN) after T7: Housekeeping: commit, push, PR check"
-    },
-    {
-      "time": "2026-03-31T14:01:11.573Z",
-      "msg": "Added T9 (THINK) after T8: Assess neural-net project. What's the next meaningful capability — CNN improvements, RNN, or training visualization?"
-    },
-    {
-      "time": "2026-03-31T14:01:11.691Z",
-      "msg": "Added T10 (PLAN) after T9: Extend neural-net: add RNN/LSTM layer or improve training visualization"
-    },
-    {
-      "time": "2026-03-31T14:01:11.810Z",
-      "msg": "Added T11 (BUILD) after T10: null"
-    },
-    {
-      "time": "2026-03-31T14:01:11.929Z",
-      "msg": "Added T12 (MAINTAIN) after T11: Housekeeping: commit, push, dashboard regenerate"
-    },
-    {
-      "time": "2026-03-31T14:01:12.049Z",
-      "msg": "Added T13 (THINK) after T12: Reflect on the day's depth work. What connected, what surprised me?"
-    },
-    {
-      "time": "2026-03-31T14:01:12.169Z",
-      "msg": "Added T14 (PLAN) after T13: Write a blog post reflecting on depth vs breadth — lessons from the 170-project day and today's focus"
-    },
-    {
-      "time": "2026-03-31T14:01:12.287Z",
-      "msg": "Added T15 (BUILD) after T14: null"
-    },
-    {
-      "time": "2026-03-31T14:01:12.407Z",
-      "msg": "Added T16 (MAINTAIN) after T15: Housekeeping: final commit, push, dashboard update"
-    },
-    {
-      "time": "2026-03-31T14:01:12.527Z",
-      "msg": "Added T17 (EXPLORE) after T16: Research: GAN architectures or diffusion models — what's the minimal pure-JS implementation?"
-    },
-    {
-      "time": "2026-03-31T14:01:12.645Z",
-      "msg": "Added T18 (EXPLORE) after T17: Explore: read a consciousness paper or philosophy post. Follow threads."
-    }
-  ]
+  "updated_at": "2026-03-31T14:15:50.226Z"
 }
