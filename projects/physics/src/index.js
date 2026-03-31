@@ -617,7 +617,61 @@ class SpringConstraint {
   }
 }
 
-module.exports = { Vec2, Body, World, SpatialHashGrid, DistanceConstraint, SpringConstraint, raycast, detectCollision, resolveCollision };
+module.exports = { Vec2, Body, World, SpatialHashGrid, DistanceConstraint, SpringConstraint, raycast, sweepTest, detectCollision, resolveCollision };
+
+// === Continuous Collision Detection (CCD) ===
+
+/**
+ * Sweep test: check if a moving circle will collide with a static circle
+ * during the timestep [0, dt].
+ * Uses swept sphere (Minkowski sum) approach.
+ * 
+ * Returns: { time, point, normal } or null
+ *   time: fraction [0,1] of dt when collision first occurs
+ */
+function sweepTest(movingBody, staticBody, dt) {
+  if (movingBody.shape.type !== 'circle' || staticBody.shape.type !== 'circle') {
+    return null; // Only circle-circle CCD for now
+  }
+  
+  const pos = movingBody.position;
+  const vel = movingBody.velocity;
+  const r = movingBody.shape.radius + staticBody.shape.radius; // Minkowski sum radius
+  const center = staticBody.position;
+  
+  // Ray from pos in direction vel*dt, checking intersection with sphere of radius r at center
+  const motion = vel.mul(dt);
+  const oc = pos.sub(center);
+  
+  const a = motion.dot(motion);
+  if (a < 0.0001) return null; // Not moving
+  
+  const b = 2 * oc.dot(motion);
+  const c = oc.dot(oc) - r * r;
+  
+  // Check if already overlapping
+  if (c < 0) {
+    return { time: 0, point: pos, normal: oc.length() > 0 ? oc.mul(1/oc.length()) : new Vec2(0, 1) };
+  }
+  
+  const discriminant = b * b - 4 * a * c;
+  if (discriminant < 0) return null;
+  
+  const sqrtD = Math.sqrt(discriminant);
+  const t = (-b - sqrtD) / (2 * a);
+  
+  if (t < 0 || t > 1) return null; // Collision outside [0, dt]
+  
+  const hitPos = pos.add(motion.mul(t));
+  const normal = hitPos.sub(center);
+  const normalLen = normal.length();
+  
+  return {
+    time: t,
+    point: hitPos,
+    normal: normalLen > 0 ? normal.mul(1 / normalLen) : new Vec2(0, 1),
+  };
+}
 
 // === Ray Casting ===
 

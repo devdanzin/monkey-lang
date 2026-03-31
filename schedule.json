@@ -2416,15 +2416,19 @@
     {
       "id": "T237",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Monkey: WASM peephole optimizer improvements (register-like optimization)",
-      "started": "2026-03-31T22:33:33.402Z"
+      "started": "2026-03-31T22:33:33.402Z",
+      "completed": "2026-03-31T22:35:24.843Z",
+      "duration_ms": 180000,
+      "summary": "Investigated WASM peephole: raw byte manipulation unsafe with LEB128. AST-level optimization already handles main cases. Deferred to instruction IR."
     },
     {
       "id": "T238",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Physics: continuous collision detection (CCD) for fast-moving objects"
+      "status": "in-progress",
+      "task": "Physics: continuous collision detection (CCD) for fast-moving objects",
+      "started": "2026-03-31T22:35:39.149Z"
     },
     {
       "id": "T239",
@@ -2433,7 +2437,7 @@
       "task": "Final wrap-up"
     }
   ],
-  "updated_at": "2026-03-31T22:33:33.402Z",
+  "updated_at": "2026-03-31T22:35:39.149Z",
   "adjustments": [
     {
       "time": "2026-03-31T21:40:59.562Z",
