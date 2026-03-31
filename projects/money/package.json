@@ -1,1 +1,7 @@
-{"name":"money","version":"1.0.0","description":"Money formatter","type":"module","main":"src/index.js","scripts":{"test":"node --test test/*.test.js"},"author":"Henry","license":"MIT"}
+{
+  "name": "tiny-money",
+  "version": "1.0.0",
+  "description": "Precise money/currency arithmetic from scratch",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/index.test.js" }
+}
