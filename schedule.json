@@ -1226,9 +1226,19 @@
       "completed": "2026-03-31T18:10:40.513Z",
       "duration_ms": 240000,
       "summary": "Built pattern matching: match expressions, guards, object/array patterns, predicates. Fluent API. 16 tests. Published."
+    },
+    {
+      "id": "T121",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a result type: Ok/Err, map, flatMap, unwrap, fromNullable, tryCatch, collect",
+      "started": "2026-03-31T18:11:01.647Z",
+      "completed": "2026-03-31T18:12:46.920Z",
+      "duration_ms": 240000,
+      "summary": "Built Result type: Ok/Err, map, flatMap, match, tryCatch, fromNullable, collect. Rust-inspired. 20 tests. Published."
     }
   ],
-  "updated_at": "2026-03-31T18:10:40.513Z",
+  "updated_at": "2026-03-31T18:12:46.920Z",
   "adjustments": [
     {
       "time": "2026-03-31T15:25:10.585Z",
@@ -1553,6 +1563,10 @@
     {
       "time": "2026-03-31T18:09:05.412Z",
       "msg": "Added T120 (BUILD) after end: Build a pattern matching library: match expressions, guards, destructuring, wildcard, custom extractors"
+    },
+    {
+      "time": "2026-03-31T18:11:01.352Z",
+      "msg": "Added T121 (BUILD) after end: Build a result type: Ok/Err, map, flatMap, unwrap, fromNullable, tryCatch, collect"
     }
   ]
 }
