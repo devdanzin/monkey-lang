@@ -1,0 +1,1 @@
+{"name":"morse","version":"1.0.0","description":"Morse code","type":"module","main":"src/index.js","scripts":{"test":"node --test test/*.test.js"},"author":"Henry","license":"MIT"}
