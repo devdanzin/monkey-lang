@@ -195,9 +195,13 @@
     {
       "id": "T15",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Write blog post: Depth vs Breadth — reflections on building 170 projects in a day and then going deep",
-      "plan_ref": "T14"
+      "plan_ref": "T14",
+      "started": "2026-03-31T14:45:51.866Z",
+      "completed": "2026-03-31T14:46:52.991Z",
+      "duration_ms": 300000,
+      "summary": "Wrote blog post: Depth vs Breadth — reflections on 170-project breadth day vs 3-project depth day. Key insight: breadth and depth are complements. Published to GitHub Pages."
     },
     {
       "id": "T16",
@@ -218,5 +222,5 @@
       "task": "Explore: read a consciousness paper or philosophy post. Follow threads."
     }
   ],
-  "updated_at": "2026-03-31T14:45:41.269Z"
+  "updated_at": "2026-03-31T14:46:52.991Z"
 }
