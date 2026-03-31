@@ -1928,21 +1928,29 @@
       "id": "T198",
       "mode": "BUILD",
       "task": "New showcase scene combining all features: image textures, area lights, volumes, motion blur",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T184",
-      "started": "2026-03-31T20:45:41.354Z"
+      "started": "2026-03-31T20:45:41.354Z",
+      "completed": "2026-03-31T20:47:16.859Z",
+      "duration_ms": 240000,
+      "summary": "Showcase scene with all features (image textures, area lights, volumes, motion blur, noise, marble). 2 integration tests. Pushed."
     },
     {
       "id": "T185",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-03-31T20:47:23.341Z",
+      "completed": "2026-03-31T20:47:23.495Z",
+      "duration_ms": 0,
+      "summary": "Placeholder — filled by T196-T198"
     },
     {
       "id": "T186",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Mid-session housekeeping"
+      "status": "in-progress",
+      "task": "Mid-session housekeeping",
+      "started": "2026-03-31T20:47:28.217Z"
     },
     {
       "id": "T187",
@@ -1982,5 +1990,5 @@
       "task": "End-of-session housekeeping"
     }
   ],
-  "updated_at": "2026-03-31T20:45:41.354Z"
+  "updated_at": "2026-03-31T20:47:28.217Z"
 }

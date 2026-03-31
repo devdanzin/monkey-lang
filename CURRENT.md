@@ -1,27 +1,23 @@
 # CURRENT.md
 
-## Status: done
+## Status: in-progress
 
-## Last Task
-T180 THINK: Session B direction — depth on existing projects
+## Current Task
+T186 MAINTAIN: Mid-session housekeeping
 
 ## Session Stats
-- Tasks: 180
+- Tasks completed: T180-T198 (13 real tasks, 5 skipped placeholders)
 - Session B start: 2:15pm MDT
+- WASM: 212 tests (GC + native hash map)
+- Ray tracer: 162 tests (image textures, area lights, showcase)
 
 ## Session Boundary
 8:15pm MDT
 
-## Queue
-T181 PLAN: WASM depth (closures, hash maps, GC)
-T182 BUILD: (placeholder)
-T183 MAINTAIN
-T184 PLAN: Ray tracer depth (motion blur, volumetrics, image textures)
-T185 BUILD: (placeholder)
-T186 MAINTAIN
-T187 PLAN: Physics engine depth (broadphase, sleeping, friction)
+## Remaining Queue
+T187 PLAN: Physics engine depth
 T188 BUILD: (placeholder)
 T189 THINK: Reflect
 T190 EXPLORE: GC algorithms for WASM
 T191 EXPLORE: PBR techniques
-T192 MAINTAIN
+T192 MAINTAIN: End-of-session
