@@ -1,0 +1,5 @@
+// Tiny pluralize — basic English
+const IRREGULARS = new Map([['child','children'],['person','people'],['man','men'],['woman','women'],['mouse','mice'],['goose','geese'],['tooth','teeth'],['foot','feet'],['ox','oxen'],['fish','fish'],['sheep','sheep'],['deer','deer'],['series','series'],['species','species']]);
+const RULES = [[/s$/i,'ses'],[/([^aeiou])y$/i,'$1ies'],[/(x|ch|ss|sh)$/i,'$1es'],[/([^s])$/i,'$1s']];
+export function pluralize(word, count) { if (count === 1) return word; const lower = word.toLowerCase(); if (IRREGULARS.has(lower)) return IRREGULARS.get(lower); for (const [re, rep] of RULES) { if (re.test(word)) return word.replace(re, rep); } return word; }
+export function singularize(word) { for (const [s, p] of IRREGULARS) { if (word.toLowerCase() === p) return s; } if (word.endsWith('ies')) return word.slice(0,-3)+'y'; if (word.endsWith('ses')||word.endsWith('xes')||word.endsWith('ches')||word.endsWith('shes')) return word.slice(0,-2); if (word.endsWith('s')&&!word.endsWith('ss')) return word.slice(0,-1); return word; }
