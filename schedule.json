@@ -3911,9 +3911,92 @@
       "completed": "2026-03-31T01:27:23.293Z",
       "duration_ms": 150000,
       "summary": "Duration: parse (ms/s/m/h/d/w/mo/y), format, formatVerbose. 12 tests."
+    },
+    {
+      "id": "T390",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny byte formatter (humanize bytes)",
+      "started": "2026-03-31T01:29:31.958Z",
+      "completed": "2026-03-31T01:30:21.978Z",
+      "duration_ms": 120000,
+      "summary": "Bytes: format (B/KB/MB/GB/TB), IEC mode (KiB/MiB), parse (string→bytes), negative values. 10 tests."
+    },
+    {
+      "id": "T391",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny color gradient",
+      "started": "2026-03-31T01:30:32.308Z",
+      "completed": "2026-03-31T01:31:25.192Z",
+      "duration_ms": 120000,
+      "summary": "Gradient: multi-stop color gradient, interpolate, presets (rainbow/warm/cool/grayscale). 8 tests."
+    },
+    {
+      "id": "T392",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "New project: Tiny emoji lookup",
+      "started": "2026-03-31T01:31:53.057Z"
+    },
+    {
+      "id": "T393",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny stack data structure",
+      "started": "2026-03-31T01:32:58.818Z",
+      "completed": "2026-03-31T01:33:53.204Z",
+      "duration_ms": 120000,
+      "summary": "Stack: push/pop/peek/isEmpty/clear/toArray/iterator/clone/contains/from. MinStack: O(1) getMin. 9 tests."
+    },
+    {
+      "id": "T394",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "New project: Tiny pipe operator"
+    },
+    {
+      "id": "T395",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny object path (get/set/has)",
+      "started": "2026-03-31T01:32:01.481Z",
+      "completed": "2026-03-31T01:32:49.963Z",
+      "duration_ms": 120000,
+      "summary": "Object path: get/set/has/del with dot notation and bracket notation, flatten, unflatten. 11 tests."
+    },
+    {
+      "id": "T396",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny chunked array",
+      "started": "2026-03-31T01:34:02.842Z",
+      "completed": "2026-03-31T01:34:51.920Z",
+      "duration_ms": 120000,
+      "summary": "Array: chunk, zip, unzip, unique, groupBy, compact, flatten (with depth), partition, interleave, windows. 11 tests."
+    },
+    {
+      "id": "T397",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny number formatter",
+      "started": "2026-03-31T01:35:03.125Z",
+      "completed": "2026-03-31T01:35:50.489Z",
+      "duration_ms": 120000,
+      "summary": "NumFmt: compact (K/M/B/T), ordinal (1st/2nd/3rd), percentage, padLeft, commaSeparate, toRoman, fromRoman. 14 tests."
+    },
+    {
+      "id": "T398",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny option type (Some/None)",
+      "started": "2026-03-31T01:35:58.842Z",
+      "completed": "2026-03-31T01:36:56.553Z",
+      "duration_ms": 120000,
+      "summary": "Option: Some/None, isSome/isNone, unwrap/unwrapOr, map, flatMap, filter, match, from, tryCatch. 16 tests."
     }
   ],
-  "updated_at": "2026-03-31T01:28:31.116Z",
+  "updated_at": "2026-03-31T01:36:56.553Z",
   "adjustments": [
     {
       "time": "2026-03-30T22:55:00.316Z",
@@ -4434,6 +4517,42 @@
     {
       "time": "2026-03-31T01:25:22.024Z",
       "msg": "Added T389 (BUILD) after end: New project: Tiny duration parser"
+    },
+    {
+      "time": "2026-03-31T01:29:31.667Z",
+      "msg": "Added T390 (BUILD) after end: New project: Tiny byte formatter (humanize bytes)"
+    },
+    {
+      "time": "2026-03-31T01:29:31.790Z",
+      "msg": "Added T391 (BUILD) after end: New project: Tiny color gradient"
+    },
+    {
+      "time": "2026-03-31T01:31:52.396Z",
+      "msg": "Added T392 (BUILD) after end: New project: Tiny emoji lookup"
+    },
+    {
+      "time": "2026-03-31T01:31:52.517Z",
+      "msg": "Added T393 (BUILD) after end: New project: Tiny stack data structure"
+    },
+    {
+      "time": "2026-03-31T01:31:52.639Z",
+      "msg": "Added T394 (BUILD) after end: New project: Tiny pipe operator"
+    },
+    {
+      "time": "2026-03-31T01:31:52.777Z",
+      "msg": "Added T395 (BUILD) after end: New project: Tiny object path (get/set/has)"
+    },
+    {
+      "time": "2026-03-31T01:31:52.898Z",
+      "msg": "Added T396 (BUILD) after end: New project: Tiny chunked array"
+    },
+    {
+      "time": "2026-03-31T01:35:02.845Z",
+      "msg": "Added T397 (BUILD) after end: New project: Tiny number formatter"
+    },
+    {
+      "time": "2026-03-31T01:35:02.967Z",
+      "msg": "Added T398 (BUILD) after end: New project: Tiny option type (Some/None)"
     }
   ]
 }
