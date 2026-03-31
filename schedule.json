@@ -2108,22 +2108,55 @@
       "id": "T213",
       "mode": "BUILD",
       "task": "Neural net: train on MNIST-like digit recognition with all features",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T203",
-      "started": "2026-03-31T21:12:23.241Z"
+      "started": "2026-03-31T21:12:23.241Z",
+      "completed": "2026-03-31T21:16:22.198Z",
+      "duration_ms": 360000,
+      "summary": "MNIST demo: Dense→BatchNorm→Dropout→Softmax, ~90% accuracy. Fixed network.js duplicate loop. 3 integration tests. 73 total NN tests."
     },
     {
       "id": "T204",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-03-31T21:16:30.178Z",
+      "completed": "2026-03-31T21:16:30.438Z",
+      "duration_ms": 0,
+      "summary": "Placeholder"
     },
     {
       "id": "T205",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Plan Monkey language depth: WASM register allocation, type inference for JIT",
-      "task": null
+      "task": null,
+      "started": "2026-03-31T21:16:37.913Z",
+      "completed": "2026-03-31T21:17:02.483Z",
+      "duration_ms": 60000,
+      "summary": "Planned 3 Monkey compiler depth tasks: type inference, constant folding, dead code elimination."
+    },
+    {
+      "id": "T214",
+      "mode": "BUILD",
+      "task": "Monkey: type inference pass (infer types for variables/expressions, annotate AST)",
+      "status": "in-progress",
+      "plan_ref": "T205",
+      "started": "2026-03-31T21:17:09.750Z"
+    },
+    {
+      "id": "T215",
+      "mode": "BUILD",
+      "task": "Monkey: WASM constant folding optimization (fold constant expressions at compile time)",
+      "status": "upcoming",
+      "plan_ref": "T205"
+    },
+    {
+      "id": "T216",
+      "mode": "BUILD",
+      "task": "Monkey: WASM dead code elimination (remove unreachable code after return/break)",
+      "status": "upcoming",
+      "plan_ref": "T205"
     },
     {
       "id": "T206",
@@ -2151,5 +2184,5 @@
       "task": "Final session housekeeping"
     }
   ],
-  "updated_at": "2026-03-31T21:12:23.241Z"
+  "updated_at": "2026-03-31T21:17:09.750Z"
 }
