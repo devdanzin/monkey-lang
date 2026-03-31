@@ -2316,15 +2316,19 @@
     {
       "id": "T227",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Monkey: WASM module exports (compile functions as WASM exports for external use)",
-      "started": "2026-03-31T22:08:11.179Z"
+      "started": "2026-03-31T22:08:11.179Z",
+      "completed": "2026-03-31T22:12:37.364Z",
+      "duration_ms": 180000,
+      "summary": "WASM module exports: verified function exports, binary format, module size. 7 tests."
     },
     {
       "id": "T228",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Physics: polygon collision detection (SAT - Separating Axis Theorem)"
+      "status": "in-progress",
+      "task": "Physics: polygon collision detection (SAT - Separating Axis Theorem)",
+      "started": "2026-03-31T22:12:48.420Z"
     },
     {
       "id": "T229",
@@ -2351,7 +2355,7 @@
       "task": "Final session B wrap-up"
     }
   ],
-  "updated_at": "2026-03-31T22:08:11.179Z",
+  "updated_at": "2026-03-31T22:12:48.420Z",
   "adjustments": [
     {
       "time": "2026-03-31T21:40:59.562Z",
