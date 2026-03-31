@@ -1186,9 +1186,19 @@
       "completed": "2026-03-31T18:01:43.601Z",
       "duration_ms": 300000,
       "summary": "Built spreadsheet engine: formulas, cell references, SUM/AVG/MIN/MAX, ranges, auto-recalc. 13 tests. Published."
+    },
+    {
+      "id": "T117",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build an immutable data structures library: List, Map, Set with structural sharing",
+      "started": "2026-03-31T18:02:15.029Z",
+      "completed": "2026-03-31T18:04:10.629Z",
+      "duration_ms": 240000,
+      "summary": "Built immutable collections: List, Map, Set. All ops return new instances. Equality, iterators. 19 tests. Published."
     }
   ],
-  "updated_at": "2026-03-31T18:01:43.601Z",
+  "updated_at": "2026-03-31T18:04:10.629Z",
   "adjustments": [
     {
       "time": "2026-03-31T15:25:10.585Z",
@@ -1497,6 +1507,10 @@
     {
       "time": "2026-03-31T17:59:56.123Z",
       "msg": "Added T116 (BUILD) after end: Build a spreadsheet engine: cell references, formulas (SUM, AVG, MIN, MAX), dependency graph, recalculation"
+    },
+    {
+      "time": "2026-03-31T18:02:14.528Z",
+      "msg": "Added T117 (BUILD) after end: Build an immutable data structures library: List, Map, Set with structural sharing"
     }
   ]
 }
