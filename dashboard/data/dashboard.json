@@ -394,14 +394,32 @@
       "completed": "2026-03-31T15:20:50.825Z",
       "duration_ms": 1000,
       "summary": "Already implemented in T35 — 26 tests including stress test with 500 random ops"
+    },
+    {
+      "id": "T38",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Build a regex engine from scratch: NFA construction, epsilon-NFA to NFA conversion, matching",
+      "task": null,
+      "started": "2026-03-31T15:21:41.316Z",
+      "completed": "2026-03-31T15:21:53.614Z",
+      "duration_ms": 15000,
+      "summary": "Planned 1 BUILD task for regex engine"
+    },
+    {
+      "id": "T39",
+      "mode": "BUILD",
+      "task": "Build regex engine: parser, NFA construction (Thompson), epsilon closure, matching. Full test suite.",
+      "status": "upcoming",
+      "plan_ref": "T38"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 37,
+    "completed": 38,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 8913000
+    "total_duration_ms": 8928000
   },
-  "updated_at": "2026-03-31T15:20:50.825Z"
+  "updated_at": "2026-03-31T15:21:53.614Z"
 }
