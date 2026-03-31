@@ -2140,16 +2140,20 @@
       "id": "T214",
       "mode": "BUILD",
       "task": "Monkey: type inference pass (infer types for variables/expressions, annotate AST)",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T205",
-      "started": "2026-03-31T21:17:09.750Z"
+      "started": "2026-03-31T21:17:09.750Z",
+      "completed": "2026-03-31T21:20:30.155Z",
+      "duration_ms": 360000,
+      "summary": "Type inference: constraint-based, infers int/bool/string/array/hash/function/null/unknown. Warnings for type mismatches. 29 tests."
     },
     {
       "id": "T215",
       "mode": "BUILD",
       "task": "Monkey: WASM constant folding optimization (fold constant expressions at compile time)",
-      "status": "upcoming",
-      "plan_ref": "T205"
+      "status": "in-progress",
+      "plan_ref": "T205",
+      "started": "2026-03-31T21:20:36.374Z"
     },
     {
       "id": "T216",
@@ -2184,5 +2188,5 @@
       "task": "Final session housekeeping"
     }
   ],
-  "updated_at": "2026-03-31T21:17:09.750Z"
+  "updated_at": "2026-03-31T21:20:36.374Z"
 }
