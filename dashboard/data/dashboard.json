@@ -1106,14 +1106,24 @@
       "completed": "2026-03-31T17:45:15.623Z",
       "duration_ms": 240000,
       "summary": "Built retry utility: exponential/linear/fixed backoff, jitter, retryIf, withTimeout, retryable. 11 tests. Published. MILESTONE: 1500+ new tests!"
+    },
+    {
+      "id": "T109",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a skip list: probabilistic balanced list, insert/delete/search in O(log n), range queries",
+      "started": "2026-03-31T17:45:39.928Z",
+      "completed": "2026-03-31T17:47:05.705Z",
+      "duration_ms": 300000,
+      "summary": "Built skip list: probabilistic balanced search, O(log n) insert/search/delete, range queries. 12 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 108,
+    "completed": 109,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 30548000
+    "total_duration_ms": 30848000
   },
-  "updated_at": "2026-03-31T17:45:15.623Z"
+  "updated_at": "2026-03-31T17:47:05.705Z"
 }
