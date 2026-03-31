@@ -36,16 +36,36 @@ class Body {
     this.shape = opts.shape || { type: 'circle', radius: 10 };
     this.isStatic = opts.isStatic || false;
     this.forces = new Vec2();
+    
+    // Sleeping state
+    this.isSleeping = false;
+    this.sleepThreshold = opts.sleepThreshold || 0.5; // velocity below this → can sleep
+    this.sleepTimer = 0;    // how long velocity has been below threshold
+    this.sleepDelay = opts.sleepDelay || 0.5; // seconds below threshold before sleeping
+    this.canSleep = opts.canSleep !== false; // enable sleeping by default
   }
 
   get inverseMass() { return this.isStatic ? 0 : 1 / this.mass; }
 
   applyForce(force) {
+    if (force.x === 0 && force.y === 0) return;
+    if (this.isSleeping) this.wake();
     this.forces = this.forces.add(force);
   }
 
+  wake() {
+    this.isSleeping = false;
+    this.sleepTimer = 0;
+  }
+
+  sleep() {
+    this.isSleeping = true;
+    this.velocity = new Vec2();
+    this.acceleration = new Vec2();
+  }
+
   update(dt) {
-    if (this.isStatic) return;
+    if (this.isStatic || this.isSleeping) return;
     this.acceleration = this.forces.div(this.mass);
     this.velocity = this.velocity.add(this.acceleration.mul(dt));
     if (this.friction > 0) {
@@ -53,6 +73,16 @@ class Body {
     }
     this.position = this.position.add(this.velocity.mul(dt));
     this.forces = new Vec2();
+    
+    // Sleep check
+    if (this.canSleep && this.velocity.length() < this.sleepThreshold) {
+      this.sleepTimer += dt;
+      if (this.sleepTimer >= this.sleepDelay) {
+        this.sleep();
+      }
+    } else {
+      this.sleepTimer = 0;
+    }
   }
 }
 
@@ -157,7 +187,7 @@ class World {
   step(dt) {
     // Apply gravity
     for (const body of this.bodies) {
-      if (!body.isStatic) {
+      if (!body.isStatic && !body.isSleeping) {
         body.applyForce(this.gravity.mul(body.mass));
       }
     }
@@ -183,10 +213,13 @@ class World {
   _collideNaive() {
     for (let i = 0; i < this.bodies.length; i++) {
       for (let j = i + 1; j < this.bodies.length; j++) {
+        const a = this.bodies[i], b = this.bodies[j];
+        // Skip pairs where both are sleeping or static
+        if ((a.isSleeping || a.isStatic) && (b.isSleeping || b.isStatic)) continue;
         this._narrowphaseChecks++;
-        const collision = detectCollision(this.bodies[i], this.bodies[j]);
+        const collision = detectCollision(a, b);
         if (collision) {
-          resolveCollision(this.bodies[i], this.bodies[j], collision);
+          resolveCollision(a, b, collision);
         }
       }
     }
@@ -262,6 +295,10 @@ function resolveCollision(a, b, collision) {
   const { normal, overlap } = collision;
   const totalInvMass = a.inverseMass + b.inverseMass;
   if (totalInvMass === 0) return;
+
+  // Wake sleeping bodies on collision
+  if (a.isSleeping && !b.isStatic) a.wake();
+  if (b.isSleeping && !a.isStatic) b.wake();
 
   // Separate bodies
   const correction = normal.mul(overlap / totalInvMass);

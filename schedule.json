@@ -1970,16 +1970,20 @@
       "id": "T199",
       "mode": "BUILD",
       "task": "Physics: spatial hash grid broadphase collision detection",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T187",
-      "started": "2026-03-31T20:49:20.017Z"
+      "started": "2026-03-31T20:49:20.017Z",
+      "completed": "2026-03-31T20:51:32.896Z",
+      "duration_ms": 300000,
+      "summary": "SpatialHashGrid broadphase: insert/query/clear, body IDs, auto-switch >8 bodies, stats tracking. 7 new tests (16 total physics)."
     },
     {
       "id": "T200",
       "mode": "BUILD",
       "task": "Physics: body sleeping (auto-sleep/wake based on velocity threshold)",
-      "status": "upcoming",
-      "plan_ref": "T187"
+      "status": "in-progress",
+      "plan_ref": "T187",
+      "started": "2026-03-31T20:51:39.677Z"
     },
     {
       "id": "T201",
@@ -2026,5 +2030,5 @@
       "task": "End-of-session housekeeping"
     }
   ],
-  "updated_at": "2026-03-31T20:49:20.017Z"
+  "updated_at": "2026-03-31T20:51:39.677Z"
 }
