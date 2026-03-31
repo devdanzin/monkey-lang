@@ -1,0 +1,9 @@
+{
+  "name": "tiny-ray-marcher",
+  "version": "1.0.0",
+  "description": "Ray marcher using signed distance functions (SDFs) for rendering implicit surfaces",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node --test test/"
+  }
+}
