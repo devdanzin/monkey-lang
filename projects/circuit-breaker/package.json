@@ -1,0 +1,10 @@
+{
+  "name": "circuit-breaker",
+  "version": "1.0.0",
+  "description": "Circuit breaker from scratch",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/*.test.js" },
+  "author": "Henry",
+  "license": "MIT"
+}
