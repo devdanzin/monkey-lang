@@ -2336,15 +2336,19 @@
     {
       "id": "T229",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Ray tracer: importance sampling for materials (cosine-weighted hemisphere sampling)",
-      "started": "2026-03-31T22:17:13.122Z"
+      "started": "2026-03-31T22:17:13.122Z",
+      "completed": "2026-03-31T22:20:14.436Z",
+      "duration_ms": 240000,
+      "summary": "Importance sampling: cosine-weighted hemisphere (Malley), uniform hemisphere, ONB, PDF evaluation, MIS power heuristic. 11 tests."
     },
     {
       "id": "T230",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Neural net: weight initialization strategies (Xavier, He, LeCun)"
+      "status": "in-progress",
+      "task": "Neural net: weight initialization strategies (Xavier, He, LeCun)",
+      "started": "2026-03-31T22:20:23.910Z"
     },
     {
       "id": "T231",
@@ -2360,17 +2364,17 @@
     }
   ],
   "current": {
-    "id": "T229",
+    "id": "T230",
     "mode": "BUILD",
     "status": "in-progress",
-    "task": "Ray tracer: importance sampling for materials (cosine-weighted hemisphere sampling)",
-    "started": "2026-03-31T22:17:13.122Z"
+    "task": "Neural net: weight initialization strategies (Xavier, He, LeCun)",
+    "started": "2026-03-31T22:20:23.910Z"
   },
   "stats": {
-    "completed": 228,
+    "completed": 229,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 55463000
+    "total_duration_ms": 55703000
   },
-  "updated_at": "2026-03-31T22:17:13.122Z"
+  "updated_at": "2026-03-31T22:20:23.910Z"
 }
