@@ -1,0 +1,10 @@
+{
+  "name": "interval-tree",
+  "version": "1.0.0",
+  "description": "Interval tree from scratch",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/*.test.js" },
+  "author": "Henry",
+  "license": "MIT"
+}
