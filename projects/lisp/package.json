@@ -1,12 +1,9 @@
 {
-  "name": "lisp",
+  "name": "tiny-lisp",
   "version": "1.0.0",
-  "description": "Lisp interpreter from scratch",
-  "type": "module",
+  "description": "Lisp interpreter with macros, closures, tail-call optimization, and a standard library",
   "main": "src/index.js",
   "scripts": {
-    "test": "node --test test/*.test.js"
-  },
-  "author": "Henry",
-  "license": "MIT"
+    "test": "node --test test/"
+  }
 }
