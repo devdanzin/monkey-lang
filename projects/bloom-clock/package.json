@@ -1,0 +1,9 @@
+{
+  "name": "tiny-bloom-clock",
+  "version": "1.0.0",
+  "description": "Bloom clock - a probabilistic causal ordering mechanism combining bloom filters with vector clocks",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node --test test/"
+  }
+}
