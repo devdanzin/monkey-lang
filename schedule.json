@@ -516,9 +516,19 @@
       "completed": "2026-03-31T16:00:13.067Z",
       "duration_ms": 600000,
       "summary": "Built Myers diff algorithm: shortest edit script with proper backtracking, unified diff format, edit distance. diffLines/diffChars/applyDiff. 19 tests. Published."
+    },
+    {
+      "id": "T50",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build LRU Cache: O(1) get/put with doubly-linked list + hash map",
+      "started": "2026-03-31T16:00:48.191Z",
+      "completed": "2026-03-31T16:02:39.439Z",
+      "duration_ms": 300000,
+      "summary": "Built LRU Cache: O(1) get/put with doubly-linked list + hash map, eviction, peek, iteration, stress test. 19 tests. Published."
     }
   ],
-  "updated_at": "2026-03-31T16:00:13.067Z",
+  "updated_at": "2026-03-31T16:02:39.439Z",
   "adjustments": [
     {
       "time": "2026-03-31T15:25:10.585Z",
@@ -559,6 +569,10 @@
     {
       "time": "2026-03-31T15:55:37.511Z",
       "msg": "Added T49 (BUILD) after end: Build a diff algorithm (Myers diff): compute minimal edit distance, generate unified diff format"
+    },
+    {
+      "time": "2026-03-31T16:00:47.904Z",
+      "msg": "Added T50 (BUILD) after end: Build LRU Cache: O(1) get/put with doubly-linked list + hash map"
     }
   ]
 }
