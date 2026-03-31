@@ -101,8 +101,12 @@
       "id": "T21",
       "mode": "BUILD",
       "task": "Add importance sampling test scenes + before/after comparison, update web demo",
-      "status": "upcoming",
-      "plan_ref": "T6"
+      "status": "done",
+      "plan_ref": "T6",
+      "started": "2026-03-31T14:33:35.882Z",
+      "completed": "2026-03-31T14:37:02.975Z",
+      "duration_ms": 420000,
+      "summary": "Added importance sampling to web demo: UI toggle, auto light detection in tile-worker, PDF classes in bundle.js. Added importance-sampling-demo.js example with noise comparison. 168 tests still passing. Pushed."
     },
     {
       "id": "T8",
@@ -177,10 +181,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 9,
+    "completed": 10,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 2220000
+    "total_duration_ms": 2640000
   },
-  "updated_at": "2026-03-31T14:33:16.776Z"
+  "updated_at": "2026-03-31T14:37:02.975Z"
 }
