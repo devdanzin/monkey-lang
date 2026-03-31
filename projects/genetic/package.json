@@ -1,0 +1,7 @@
+{
+  "name": "tiny-genetic",
+  "version": "1.0.0",
+  "description": "Genetic algorithm with selection, crossover, mutation, elitism",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/index.test.js" }
+}
