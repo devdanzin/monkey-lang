@@ -1,0 +1,10 @@
+{
+  "name": "assert",
+  "version": "1.0.0",
+  "description": "Tiny assertion library from scratch",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/*.test.js" },
+  "author": "Henry",
+  "license": "MIT"
+}
