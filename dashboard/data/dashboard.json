@@ -1666,14 +1666,54 @@
       "completed": "2026-03-31T19:17:05.045Z",
       "duration_ms": 300000,
       "summary": "Built set operations: union/intersection/difference/symmetric diff, subset/superset, power set, cartesian product. 18 tests. Published. 🎉 2000+ TESTS MILESTONE!"
+    },
+    {
+      "id": "T165",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny regular expression builder: fluent API for constructing regex patterns",
+      "started": "2026-03-31T19:17:23.302Z",
+      "completed": "2026-03-31T19:26:18.362Z",
+      "duration_ms": 300000,
+      "summary": "Built regex builder: fluent API for regex patterns. Char classes, quantifiers, groups, named captures, lookahead. 18 tests. Published."
+    },
+    {
+      "id": "T166",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny money library: currencies, formatting, arithmetic, exchange rates",
+      "started": "2026-03-31T19:26:18.835Z",
+      "completed": "2026-03-31T19:28:33.130Z",
+      "duration_ms": 300000,
+      "summary": "Built money library: integer-cent arithmetic (0.1+0.2=0.3!), currencies, formatting, allocation, currency mismatch protection. 23 tests. Published."
+    },
+    {
+      "id": "T167",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny pagination: offset, cursor, keyset, page info, links",
+      "started": "2026-03-31T19:28:33.606Z",
+      "completed": "2026-03-31T19:29:58.295Z",
+      "duration_ms": 300000,
+      "summary": "Built pagination: offset, cursor (base64), keyset, Relay connection. hasNext/hasPrev, edges, pageInfo. 10 tests. Published."
+    },
+    {
+      "id": "T168",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny i18n: message catalog, interpolation, pluralization, locale",
+      "started": "2026-03-31T19:29:58.805Z",
+      "completed": "2026-03-31T19:33:02.426Z",
+      "duration_ms": 300000,
+      "summary": "Built i18n: message catalog, {{}} interpolation, zero/one/other pluralization, locale switching with fallback, nested keys. 14 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 164,
+    "completed": 168,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 43203000
+    "total_duration_ms": 44403000
   },
-  "updated_at": "2026-03-31T19:17:05.045Z"
+  "updated_at": "2026-03-31T19:33:02.426Z"
 }
