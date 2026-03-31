@@ -836,14 +836,24 @@
       "completed": "2026-03-31T16:57:28.579Z",
       "duration_ms": 360000,
       "summary": "Built YAML parser: mappings, sequences, scalars, flow style, nested structures, stringify. Docker-compose example. 17 tests. Published."
+    },
+    {
+      "id": "T82",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny in-memory SQL database: CREATE TABLE, INSERT, SELECT with WHERE/ORDER BY/JOIN, UPDATE, DELETE",
+      "started": "2026-03-31T16:57:39.861Z",
+      "completed": "2026-03-31T16:59:48.915Z",
+      "duration_ms": 420000,
+      "summary": "Built SQL database: CREATE TABLE, INSERT, SELECT (WHERE/ORDER BY/JOIN/LIMIT), UPDATE, DELETE, DROP. LIKE, AND/OR. 19 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 81,
+    "completed": 82,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 22923000
+    "total_duration_ms": 23343000
   },
-  "updated_at": "2026-03-31T16:57:28.579Z"
+  "updated_at": "2026-03-31T16:59:48.915Z"
 }
