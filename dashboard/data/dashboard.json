@@ -350,14 +350,46 @@
       "completed": "2026-03-31T15:17:20.869Z",
       "duration_ms": 60000,
       "summary": "Decision: Build a B-tree key-value store. Different domain (persistence), fundamental CS, practical. In-memory first."
+    },
+    {
+      "id": "T34",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Build B-tree key-value store: insert, search, delete, range queries",
+      "task": null,
+      "started": "2026-03-31T15:17:27.308Z",
+      "completed": "2026-03-31T15:17:43.247Z",
+      "duration_ms": 30000,
+      "summary": "Planned 3 BUILD tasks for B-tree KV store"
+    },
+    {
+      "id": "T35",
+      "mode": "BUILD",
+      "task": "Build B-tree core: BTreeNode + BTree class with insert, search, and node splitting (order-configurable)",
+      "status": "upcoming",
+      "plan_ref": "T34"
+    },
+    {
+      "id": "T36",
+      "mode": "BUILD",
+      "task": "Add B-tree delete with redistribution and merging, range queries, iteration",
+      "status": "upcoming",
+      "plan_ref": "T34"
+    },
+    {
+      "id": "T37",
+      "mode": "BUILD",
+      "task": "Add comprehensive tests: random operations, stress test, correctness verification",
+      "status": "upcoming",
+      "plan_ref": "T34"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 33,
+    "completed": 34,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 8281000
+    "total_duration_ms": 8311000
   },
-  "updated_at": "2026-03-31T15:17:20.869Z"
+  "updated_at": "2026-03-31T15:17:43.247Z"
 }
