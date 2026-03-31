@@ -416,14 +416,24 @@
       "completed": "2026-03-31T15:24:40.369Z",
       "duration_ms": 600000,
       "summary": "Built regex engine from scratch: Thompson NFA construction, recursive descent parser, full syntax support (., *, +, ?, |, (), [], {n,m}, \\d\\w\\s). API: test/exec/matchAll/replace/split. 38 tests, all passing. Published to GitHub."
+    },
+    {
+      "id": "T40",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build HTTP/1.1 server from scratch: request parsing, routing, middleware, static files, JSON API",
+      "started": "2026-03-31T15:25:10.856Z",
+      "completed": "2026-03-31T15:31:35.834Z",
+      "duration_ms": 600000,
+      "summary": "Built HTTP/1.1 server from scratch on raw TCP sockets: request parsing, routing with params/wildcards, middleware pipeline, JSON API, error handling. 19 tests. Pushed to GitHub."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 39,
+    "completed": 40,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 9528000
+    "total_duration_ms": 10128000
   },
-  "updated_at": "2026-03-31T15:24:40.369Z"
+  "updated_at": "2026-03-31T15:31:35.834Z"
 }
