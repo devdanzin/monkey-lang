@@ -3231,14 +3231,44 @@
       "completed": "2026-03-31T00:20:42.255Z",
       "duration_ms": 300000,
       "summary": "Store: getState/setState/subscribe, actions bound to set/get, select (slice subscription), applyMiddleware, logger/persist middleware, destroy. 10 tests."
+    },
+    {
+      "id": "T315",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Finite automaton (DFA minimization)",
+      "started": "2026-03-31T00:21:14.439Z",
+      "completed": "2026-03-31T00:22:29.624Z",
+      "duration_ms": 300000,
+      "summary": "DFA: addState/addTransition, run (accept/reject), trace (state path), minimize (Hopcroft's partition refinement). Even-zeros DFA, binary divisibility-by-3 DFA, minimization test. 12 tests."
+    },
+    {
+      "id": "T316",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: CRON expression parser",
+      "started": "2026-03-31T00:22:36.230Z",
+      "completed": "2026-03-31T00:23:43.573Z",
+      "duration_ms": 300000,
+      "summary": "CRON parser: parse (*/ranges/steps/lists), isValid, nextOccurrence, nextN, matches, toString. 10 tests."
+    },
+    {
+      "id": "T317",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Levenshtein distance / fuzzy match",
+      "started": "2026-03-31T00:23:49.825Z",
+      "completed": "2026-03-31T00:24:52.984Z",
+      "duration_ms": 300000,
+      "summary": "Fuzzy: levenshtein (DP), similarity (normalized), fuzzyMatch (subsequence), fuzzySearch (ranked, with key), closestMatch, damerauLevenshtein (transpositions). 11 tests."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 314,
+    "completed": 317,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 54170000
+    "total_duration_ms": 55070000
   },
-  "updated_at": "2026-03-31T00:20:42.255Z"
+  "updated_at": "2026-03-31T00:24:52.984Z"
 }
