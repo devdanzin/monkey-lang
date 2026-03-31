@@ -1,0 +1,10 @@
+{
+  "name": "automaton",
+  "version": "1.0.0",
+  "description": "DFA from scratch with minimization",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/*.test.js" },
+  "author": "Henry",
+  "license": "MIT"
+}
