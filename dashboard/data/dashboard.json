@@ -1546,14 +1546,64 @@
       "completed": "2026-03-31T18:58:40.252Z",
       "duration_ms": 300000,
       "summary": "Built autograd: computational graph, reverse-mode autodiff, tanh/relu/sigmoid, Neuron/Layer/MLP, XOR training. Micrograd-inspired. 17 tests. Published."
+    },
+    {
+      "id": "T153",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny regex engine v2: NFAtoDFA conversion, minimization, character classes",
+      "started": "2026-03-31T18:58:54.850Z",
+      "completed": "2026-03-31T18:59:05.363Z",
+      "duration_ms": 5000,
+      "summary": "Skipped - regex already exists"
+    },
+    {
+      "id": "T154",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny SAT solver: DPLL algorithm, unit propagation, boolean satisfiability",
+      "started": "2026-03-31T18:59:05.642Z",
+      "completed": "2026-03-31T19:00:34.135Z",
+      "duration_ms": 300000,
+      "summary": "Built SAT solver: DPLL algorithm, unit propagation, pure literal elimination, verify. 10 tests. Published."
+    },
+    {
+      "id": "T155",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny option type: Some/None, map, flatMap, filter, getOrElse",
+      "started": "2026-03-31T19:00:34.605Z",
+      "completed": "2026-03-31T19:02:20.881Z",
+      "duration_ms": 240000,
+      "summary": "Built Option type: Some/None, map, flatMap, filter, match, zip, fromNullable, tryCatch. 27 tests. Published."
+    },
+    {
+      "id": "T156",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny graph database: nodes, edges, Cypher-like queries, traversal",
+      "started": "2026-03-31T19:02:21.367Z",
+      "completed": "2026-03-31T19:03:41.562Z",
+      "duration_ms": 300000,
+      "summary": "Built graph database: labeled nodes, typed edges, BFS traversal, shortest path, Cypher-like pattern matching. 12 tests. Published."
+    },
+    {
+      "id": "T157",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny logger: levels, formatters, transports, structured logging",
+      "started": "2026-03-31T19:03:42.045Z",
+      "completed": "2026-03-31T19:05:06.118Z",
+      "duration_ms": 240000,
+      "summary": "Built logger: 6 levels, structured logging, child loggers, pluggable formatters/transports. 7 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 152,
+    "completed": 157,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 40553000
+    "total_duration_ms": 41638000
   },
-  "updated_at": "2026-03-31T18:58:40.252Z"
+  "updated_at": "2026-03-31T19:05:06.118Z"
 }
