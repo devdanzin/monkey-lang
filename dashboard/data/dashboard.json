@@ -37,8 +37,12 @@
       "id": "T19",
       "mode": "BUILD",
       "task": "Add projects gallery to dashboard — generate.cjs fetches repo list from GitHub, frontend renders project cards with stars/language",
-      "status": "upcoming",
-      "plan_ref": "T2"
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-03-31T14:19:30.920Z",
+      "completed": "2026-03-31T14:23:58.158Z",
+      "duration_ms": 600000,
+      "summary": "Added projects gallery to dashboard: 137 repos from GitHub, 6 categories (featured/visual/language/parser/data-structure/utility), filter buttons, responsive grid. Updated generate.cjs, server.cjs, app.js, style.css. Pushed to GH Pages."
     },
     {
       "id": "T20",
@@ -146,10 +150,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 3,
+    "completed": 4,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 480000
+    "total_duration_ms": 1080000
   },
-  "updated_at": "2026-03-31T14:19:14.235Z"
+  "updated_at": "2026-03-31T14:23:58.158Z"
 }

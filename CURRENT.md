@@ -3,9 +3,9 @@
 ## Status: in-progress
 
 ### Current Task
-- **ID:** T3
+- **ID:** T19
 - **Mode:** BUILD
-- **Task:** Fix dashboard queue rendering: show task IDs instead of fake times, proper queue-based progress
-- **started:** 2026-03-31T14:17:28Z
-- **context-files:** dashboard/js/app.js, dashboard/css/style.css
-- **tasks_completed_this_session:** 2
+- **Task:** Add projects gallery to dashboard — generate.cjs fetches repo list from GitHub, frontend renders project cards
+- **started:** 2026-03-31T14:19:30Z
+- **context-files:** dashboard/generate.cjs, dashboard/js/app.js, dashboard/index.html
+- **tasks_completed_this_session:** 3
