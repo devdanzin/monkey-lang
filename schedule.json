@@ -2256,15 +2256,19 @@
     {
       "id": "T221",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Physics engine: rotation and torque (angular velocity, moment of inertia)",
-      "started": "2026-03-31T21:48:59.492Z"
+      "started": "2026-03-31T21:48:59.492Z",
+      "completed": "2026-03-31T21:53:23.890Z",
+      "duration_ms": 300000,
+      "summary": "Rotation: angle/angularVelocity/torque, moment of inertia, applyForceAtPoint, angular impulse in collisions. 10 tests (46 total physics)."
     },
     {
       "id": "T222",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Monkey lang: WASM string interning (deduplicate identical strings at compile time)"
+      "status": "in-progress",
+      "task": "Monkey lang: WASM string interning (deduplicate identical strings at compile time)",
+      "started": "2026-03-31T21:53:37.802Z"
     },
     {
       "id": "T223",
@@ -2285,7 +2289,7 @@
       "task": "Session B mid-point housekeeping"
     }
   ],
-  "updated_at": "2026-03-31T21:48:59.492Z",
+  "updated_at": "2026-03-31T21:53:37.802Z",
   "adjustments": [
     {
       "time": "2026-03-31T21:40:59.562Z",

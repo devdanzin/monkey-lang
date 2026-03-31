@@ -1578,6 +1578,14 @@ export class WasmCompiler {
   // String literal → data segment constant
   compileStringLiteral(node) {
     const str = node.value;
+    
+    // String interning: check if this string is already in the pool
+    if (this._stringInternPool && this._stringInternPool.has(str)) {
+      const offset = this._stringInternPool.get(str);
+      this.currentBody.i32Const(offset);
+      return;
+    }
+
     const encoder = new TextEncoder();
     const bytes = encoder.encode(str);
 
@@ -1588,6 +1596,10 @@ export class WasmCompiler {
     this.nextDataOffset = (this.nextDataOffset + 3) & ~3;
 
     this.stringConstants.push({ offset, length: bytes.length, value: str });
+
+    // Register in intern pool
+    if (!this._stringInternPool) this._stringInternPool = new Map();
+    this._stringInternPool.set(str, offset);
 
     // Push pointer to the string constant
     this.currentBody.i32Const(offset);
