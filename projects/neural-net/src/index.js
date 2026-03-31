@@ -10,3 +10,4 @@ export { SGD, MomentumSGD, Adam, RMSProp, createOptimizer } from './optimizer.js
 export { ConstantLR, LinearWarmup, CosineAnnealing, StepDecay, WarmupCosine, ExponentialDecay, CyclicLR, createScheduler } from './scheduler.js';
 export { xavierUniform, xavierNormal, heUniform, heNormal, lecunNormal, zeros, ones, createInitializer } from './initializers.js';
 export { clipByValue, clipByNorm, clipByGlobalNorm, l2Norm, gradientStats } from './gradient-clip.js';
+export { serializeWeights, deserializeWeights, saveToJSON, loadFromJSON, weightsChecksum } from './serialize.js';

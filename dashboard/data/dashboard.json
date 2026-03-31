@@ -2466,15 +2466,19 @@
     {
       "id": "T242",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Physics: event system (collision callbacks, triggers)",
-      "started": "2026-03-31T22:43:57.246Z"
+      "started": "2026-03-31T22:43:57.246Z",
+      "completed": "2026-03-31T22:48:41.052Z",
+      "duration_ms": 240000,
+      "summary": "Event system: collision start/active/end, triggers (no-physics-response sensors), on/off. 6 tests (80 total physics)."
     },
     {
       "id": "T243",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Neural net: model serialization (save/load weights as JSON)"
+      "status": "in-progress",
+      "task": "Neural net: model serialization (save/load weights as JSON)",
+      "started": "2026-03-31T22:48:47.307Z"
     },
     {
       "id": "T244",
@@ -2502,17 +2506,17 @@
     }
   ],
   "current": {
-    "id": "T242",
+    "id": "T243",
     "mode": "BUILD",
     "status": "in-progress",
-    "task": "Physics: event system (collision callbacks, triggers)",
-    "started": "2026-03-31T22:43:57.246Z"
+    "task": "Neural net: model serialization (save/load weights as JSON)",
+    "started": "2026-03-31T22:48:47.307Z"
   },
   "stats": {
-    "completed": 241,
+    "completed": 242,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 57923000
+    "total_duration_ms": 58163000
   },
-  "updated_at": "2026-03-31T22:43:57.246Z"
+  "updated_at": "2026-03-31T22:48:47.307Z"
 }
