@@ -312,8 +312,12 @@
       "id": "T30",
       "mode": "BUILD",
       "task": "Add collision detection: circle-circle, circle-rect, rect-rect, impulse resolution, restitution",
-      "status": "upcoming",
-      "plan_ref": "T28"
+      "status": "done",
+      "plan_ref": "T28",
+      "started": "2026-03-31T15:12:16.788Z",
+      "completed": "2026-03-31T15:12:16.934Z",
+      "duration_ms": 1000,
+      "summary": "Already implemented in T29: circle-circle, circle-rect (closest point), rect-rect (SAT), impulse resolution with friction + restitution + positional correction. Tests passing."
     },
     {
       "id": "T31",
@@ -332,10 +336,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 29,
+    "completed": 30,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 7320000
+    "total_duration_ms": 7321000
   },
-  "updated_at": "2026-03-31T15:11:52.706Z"
+  "updated_at": "2026-03-31T15:12:16.934Z"
 }
