@@ -596,14 +596,24 @@
       "completed": "2026-03-31T16:19:02.600Z",
       "duration_ms": 240000,
       "summary": "Built event emitter: on/off/once/emit, wildcards, patterns, async, pipe. 14 tests. Published."
+    },
+    {
+      "id": "T58",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a dependency injection container: register, resolve, singletons, scopes, auto-wiring",
+      "started": "2026-03-31T16:19:21.036Z",
+      "completed": "2026-03-31T16:20:36.703Z",
+      "duration_ms": 240000,
+      "summary": "Built DI container: register/resolve, singletons, scopes, class wiring, invoke. Mini app wiring test. 14 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 57,
+    "completed": 58,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 16438000
+    "total_duration_ms": 16678000
   },
-  "updated_at": "2026-03-31T16:19:02.600Z"
+  "updated_at": "2026-03-31T16:20:36.703Z"
 }
