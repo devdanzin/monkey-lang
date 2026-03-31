@@ -1,0 +1,10 @@
+{
+  "name": "fuzzy",
+  "version": "1.0.0",
+  "description": "Levenshtein distance and fuzzy matching",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/*.test.js" },
+  "author": "Henry",
+  "license": "MIT"
+}
