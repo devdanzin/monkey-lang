@@ -1786,14 +1786,34 @@
       "completed": "2026-03-31T19:51:49.654Z",
       "duration_ms": 300000,
       "summary": "Built event sourcing: EventStore, Aggregate (reducer-based), Projection (cross-stream), SnapshotStore (fast recovery). 7 tests. Published."
+    },
+    {
+      "id": "T177",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny combinator: identity, compose, pipe, curry, memoize, partial, flip, tap",
+      "started": "2026-03-31T19:51:57.959Z",
+      "completed": "2026-03-31T19:52:09.130Z",
+      "duration_ms": 5000,
+      "summary": "Skipped - overlaps with fp library"
+    },
+    {
+      "id": "T178",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny trie-based autocomplete: prefix search, fuzzy match, ranked suggestions",
+      "started": "2026-03-31T19:52:09.830Z",
+      "completed": "2026-03-31T19:56:06.975Z",
+      "duration_ms": 300000,
+      "summary": "Built autocomplete: trie-based prefix search, Levenshtein fuzzy matching, weighted ranking. 11 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 176,
+    "completed": 178,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 45798000
+    "total_duration_ms": 46103000
   },
-  "updated_at": "2026-03-31T19:51:49.654Z"
+  "updated_at": "2026-03-31T19:56:06.975Z"
 }
