@@ -1,0 +1,7 @@
+{
+  "name": "tiny-arena",
+  "version": "1.0.0",
+  "description": "Arena allocator, pool, and stack allocator from scratch",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/index.test.js" }
+}
