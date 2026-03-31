@@ -1,0 +1,7 @@
+{
+  "name": "tiny-lambda",
+  "version": "1.0.0",
+  "description": "Lambda calculus evaluator with Church encodings",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/index.test.js" }
+}
