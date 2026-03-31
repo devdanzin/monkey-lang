@@ -3868,6 +3868,49 @@
       "completed": "2026-03-31T01:24:45.591Z",
       "duration_ms": 150000,
       "summary": "String similarity: Jaccard (set), Sørensen-Dice (bigram), cosine (char frequency), Hamming distance, Jaro distance. 11 tests."
+    },
+    {
+      "id": "T385",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "New project: Tiny sparse matrix",
+      "started": "2026-03-31T01:25:22.183Z"
+    },
+    {
+      "id": "T386",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "New project: Tiny arena allocator"
+    },
+    {
+      "id": "T387",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny PRNG (xorshift)",
+      "started": "2026-03-31T01:25:30.585Z",
+      "completed": "2026-03-31T01:26:18.389Z",
+      "duration_ms": 150000,
+      "summary": "PRNG: Xorshift32, Xorshift128, LCG, seedRandom. All seeded and deterministic. 9 tests."
+    },
+    {
+      "id": "T388",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny money formatter",
+      "started": "2026-03-31T01:27:37.849Z",
+      "completed": "2026-03-31T01:28:31.116Z",
+      "duration_ms": 150000,
+      "summary": "Money: format (USD/EUR/GBP/JPY/BTC), parse, add/subtract/multiply (safe float), split (no penny lost). 9 tests."
+    },
+    {
+      "id": "T389",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny duration parser",
+      "started": "2026-03-31T01:26:30.114Z",
+      "completed": "2026-03-31T01:27:23.293Z",
+      "duration_ms": 150000,
+      "summary": "Duration: parse (ms/s/m/h/d/w/mo/y), format, formatVerbose. 12 tests."
     }
   ],
   "current": {
@@ -3878,10 +3921,10 @@
     "started": "2026-03-31T01:05:36.793Z"
   },
   "stats": {
-    "completed": 367,
+    "completed": 370,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 63770000
+    "total_duration_ms": 64220000
   },
-  "updated_at": "2026-03-31T01:24:45.591Z"
+  "updated_at": "2026-03-31T01:28:31.116Z"
 }
