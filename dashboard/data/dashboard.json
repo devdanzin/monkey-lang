@@ -131,15 +131,26 @@
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Extend neural-net: add RNN/LSTM layer or improve training visualization",
-      "task": null
+      "task": null,
+      "started": "2026-03-31T14:38:42.909Z",
+      "completed": "2026-03-31T14:38:59.791Z",
+      "duration_ms": 60000,
+      "summary": "Planned 2 BUILD tasks: RNN/LSTM + Adam optimizer, then sequence modeling tests + example"
     },
     {
       "id": "T11",
       "mode": "BUILD",
       "status": "upcoming",
-      "task": null,
+      "task": "Implement RNN and LSTM layers with BPTT for neural-net. Add Adam optimizer.",
+      "plan_ref": "T10"
+    },
+    {
+      "id": "T22",
+      "mode": "BUILD",
+      "task": "Add sequence modeling tests + example: character-level text prediction",
+      "status": "upcoming",
       "plan_ref": "T10"
     },
     {
@@ -189,10 +200,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 12,
+    "completed": 13,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 2820000
+    "total_duration_ms": 2880000
   },
-  "updated_at": "2026-03-31T14:38:20.180Z"
+  "updated_at": "2026-03-31T14:38:59.791Z"
 }
