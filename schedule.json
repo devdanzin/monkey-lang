@@ -1126,9 +1126,19 @@
       "completed": "2026-03-31T17:49:02.027Z",
       "duration_ms": 300000,
       "summary": "Built virtual DOM: createElement (h), diff (INSERT/REMOVE/REPLACE/TEXT/PROPS), render to HTML. Components. 15 tests. Published."
+    },
+    {
+      "id": "T111",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build an interval tree: insert intervals, query point/range overlaps, remove, all overlapping",
+      "started": "2026-03-31T17:49:15.221Z",
+      "completed": "2026-03-31T17:51:08.937Z",
+      "duration_ms": 240000,
+      "summary": "Built interval tree: point query, range overlap, schedule conflict detection. 9 tests. Published."
     }
   ],
-  "updated_at": "2026-03-31T17:49:02.027Z",
+  "updated_at": "2026-03-31T17:51:08.937Z",
   "adjustments": [
     {
       "time": "2026-03-31T15:25:10.585Z",
@@ -1413,6 +1423,10 @@
     {
       "time": "2026-03-31T17:47:18.067Z",
       "msg": "Added T110 (BUILD) after end: Build a tiny virtual DOM: createElement, diff, patch, component rendering"
+    },
+    {
+      "time": "2026-03-31T17:49:14.726Z",
+      "msg": "Added T111 (BUILD) after end: Build an interval tree: insert intervals, query point/range overlaps, remove, all overlapping"
     }
   ]
 }
