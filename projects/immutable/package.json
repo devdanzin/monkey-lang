@@ -1,0 +1,7 @@
+{
+  "name": "tiny-immutable",
+  "version": "1.0.0",
+  "description": "Immutable collections (List, Map, Set, Stack) from scratch",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/index.test.js" }
+}
