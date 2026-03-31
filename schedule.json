@@ -826,9 +826,19 @@
       "completed": "2026-03-31T16:55:17.787Z",
       "duration_ms": 300000,
       "summary": "Built TOML parser: tables, arrays, strings, dates, inline tables, dotted keys, array of tables, stringify. 16 tests. Published."
+    },
+    {
+      "id": "T81",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a YAML parser: scalar types, mappings, sequences, nested structures, multi-line strings",
+      "started": "2026-03-31T16:55:32.443Z",
+      "completed": "2026-03-31T16:57:28.579Z",
+      "duration_ms": 360000,
+      "summary": "Built YAML parser: mappings, sequences, scalars, flow style, nested structures, stringify. Docker-compose example. 17 tests. Published."
     }
   ],
-  "updated_at": "2026-03-31T16:55:17.787Z",
+  "updated_at": "2026-03-31T16:57:28.579Z",
   "adjustments": [
     {
       "time": "2026-03-31T15:25:10.585Z",
@@ -993,6 +1003,10 @@
     {
       "time": "2026-03-31T16:53:47.811Z",
       "msg": "Added T80 (BUILD) after end: Build a TOML parser: tables, arrays, strings, dates, inline tables, dotted keys"
+    },
+    {
+      "time": "2026-03-31T16:55:31.941Z",
+      "msg": "Added T81 (BUILD) after end: Build a YAML parser: scalar types, mappings, sequences, nested structures, multi-line strings"
     }
   ]
 }
