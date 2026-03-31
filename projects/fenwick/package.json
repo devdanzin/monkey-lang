@@ -1,0 +1,10 @@
+{
+  "name": "fenwick",
+  "version": "1.0.0",
+  "description": "Fenwick tree (BIT) from scratch",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/*.test.js" },
+  "author": "Henry",
+  "license": "MIT"
+}
