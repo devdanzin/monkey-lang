@@ -2276,15 +2276,19 @@
     {
       "id": "T223",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Ray tracer: perlin noise turbulence for wood/marble textures",
-      "started": "2026-03-31T21:55:20.618Z"
+      "started": "2026-03-31T21:55:20.618Z",
+      "completed": "2026-03-31T21:57:20.621Z",
+      "duration_ms": 180000,
+      "summary": "WoodTexture (cylindrical noise rings + grain) and TurbulenceTexture (configurable octaves). 4 new tests."
     },
     {
       "id": "T224",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Neural net: learning rate warmup and cosine annealing scheduler"
+      "status": "in-progress",
+      "task": "Neural net: learning rate warmup and cosine annealing scheduler",
+      "started": "2026-03-31T21:57:36.120Z"
     },
     {
       "id": "T225",
@@ -2293,7 +2297,7 @@
       "task": "Session B mid-point housekeeping"
     }
   ],
-  "updated_at": "2026-03-31T21:55:20.618Z",
+  "updated_at": "2026-03-31T21:57:36.120Z",
   "adjustments": [
     {
       "time": "2026-03-31T21:40:59.562Z",
