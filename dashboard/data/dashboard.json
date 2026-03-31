@@ -456,14 +456,24 @@
       "completed": "2026-03-31T15:41:42.110Z",
       "duration_ms": 360000,
       "summary": "Built Promise implementation: then/catch/finally/all/race/allSettled/any. Thenable unwrapping, microtask scheduling. 24 tests. Published."
+    },
+    {
+      "id": "T44",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a stack-based virtual machine: bytecode, stack ops, arithmetic, control flow, functions",
+      "started": "2026-03-31T15:42:16.318Z",
+      "completed": "2026-03-31T15:45:36.641Z",
+      "duration_ms": 480000,
+      "summary": "Built stack-based VM: 30+ opcodes, functions with call stack, local/global variables, control flow. Recursive fib(10)=55. Disassembler. 28 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 43,
+    "completed": 44,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 11448000
+    "total_duration_ms": 11928000
   },
-  "updated_at": "2026-03-31T15:41:42.110Z"
+  "updated_at": "2026-03-31T15:45:36.641Z"
 }
