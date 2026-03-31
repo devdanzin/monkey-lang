@@ -1036,9 +1036,19 @@
       "completed": "2026-03-31T17:32:13.189Z",
       "duration_ms": 240000,
       "summary": "Built CSS-in-JS: style objects to CSS, pseudos, media queries, keyframes, themes, cx(). 12 tests. Published."
+    },
+    {
+      "id": "T102",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a schema migration system: up/down migrations, version tracking, rollback, dry-run",
+      "started": "2026-03-31T17:32:25.418Z",
+      "completed": "2026-03-31T17:33:44.589Z",
+      "duration_ms": 240000,
+      "summary": "Built migration system: up/down, rollback, reset, status, dryRun, history. 14 tests. Published."
     }
   ],
-  "updated_at": "2026-03-31T17:32:13.189Z",
+  "updated_at": "2026-03-31T17:33:44.589Z",
   "adjustments": [
     {
       "time": "2026-03-31T15:25:10.585Z",
@@ -1287,6 +1297,10 @@
     {
       "time": "2026-03-31T17:30:39.844Z",
       "msg": "Added T101 (BUILD) after end: Build a tiny CSS-in-JS: style objects to CSS strings, pseudo selectors, media queries, keyframes, theme"
+    },
+    {
+      "time": "2026-03-31T17:32:25.126Z",
+      "msg": "Added T102 (BUILD) after end: Build a schema migration system: up/down migrations, version tracking, rollback, dry-run"
     }
   ]
 }
