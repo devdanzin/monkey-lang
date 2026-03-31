@@ -1948,16 +1948,52 @@
     {
       "id": "T186",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Mid-session housekeeping",
-      "started": "2026-03-31T20:47:28.217Z"
+      "started": "2026-03-31T20:47:28.217Z",
+      "completed": "2026-03-31T20:48:02.159Z",
+      "duration_ms": 60000,
+      "summary": "Daily log updated, CURRENT.md updated, git pushed."
     },
     {
       "id": "T187",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Plan physics engine depth: broadphase, sleeping, friction",
-      "task": null
+      "task": null,
+      "started": "2026-03-31T20:48:07.113Z",
+      "completed": "2026-03-31T20:49:13.218Z",
+      "duration_ms": 60000,
+      "summary": "Planned 4 physics BUILD tasks: spatial hash grid, body sleeping, Coulomb friction, distance constraints."
+    },
+    {
+      "id": "T199",
+      "mode": "BUILD",
+      "task": "Physics: spatial hash grid broadphase collision detection",
+      "status": "in-progress",
+      "plan_ref": "T187",
+      "started": "2026-03-31T20:49:20.017Z"
+    },
+    {
+      "id": "T200",
+      "mode": "BUILD",
+      "task": "Physics: body sleeping (auto-sleep/wake based on velocity threshold)",
+      "status": "upcoming",
+      "plan_ref": "T187"
+    },
+    {
+      "id": "T201",
+      "mode": "BUILD",
+      "task": "Physics: Coulomb friction (tangential impulse during collision)",
+      "status": "upcoming",
+      "plan_ref": "T187"
+    },
+    {
+      "id": "T202",
+      "mode": "BUILD",
+      "task": "Physics: distance constraints (spring joints, rigid joints)",
+      "status": "upcoming",
+      "plan_ref": "T187"
     },
     {
       "id": "T188",
@@ -1990,5 +2026,5 @@
       "task": "End-of-session housekeeping"
     }
   ],
-  "updated_at": "2026-03-31T20:47:28.217Z"
+  "updated_at": "2026-03-31T20:49:20.017Z"
 }
