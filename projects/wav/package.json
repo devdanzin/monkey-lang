@@ -1,0 +1,7 @@
+{
+  "name": "tiny-wav",
+  "version": "1.0.0",
+  "description": "WAV audio parser/creator with tone generators",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/index.test.js" }
+}
