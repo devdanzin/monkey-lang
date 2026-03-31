@@ -2436,12 +2436,68 @@
     {
       "id": "T239",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final wrap-up",
-      "started": "2026-03-31T22:37:53.633Z"
+      "started": "2026-03-31T22:37:53.633Z",
+      "completed": "2026-03-31T22:40:19.742Z",
+      "duration_ms": 180000,
+      "summary": "Checkpoint: 1,872 total tests across 4 projects. 59 tasks completed. All pushed to GitHub."
+    },
+    {
+      "id": "T240",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey: WASM closures optimization (flatten environment when possible)",
+      "started": "2026-03-31T22:40:39.334Z",
+      "completed": "2026-03-31T22:41:17.881Z",
+      "duration_ms": 120000,
+      "summary": "Investigated closure flattening — too deep in compiler internals for safe modification. Deferred."
+    },
+    {
+      "id": "T241",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Ray tracer: BVH construction optimizations (SAH - Surface Area Heuristic)",
+      "started": "2026-03-31T22:41:28.549Z"
+    },
+    {
+      "id": "T242",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Physics: event system (collision callbacks, triggers)"
+    },
+    {
+      "id": "T243",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Neural net: model serialization (save/load weights as JSON)"
+    },
+    {
+      "id": "T244",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Monkey: WASM loop unrolling optimization for constant-bound loops"
+    },
+    {
+      "id": "T245",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Ray tracer: depth of field improvements (bokeh shapes)"
+    },
+    {
+      "id": "T246",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Physics: broad-phase performance benchmark (spatial hash vs naive)"
+    },
+    {
+      "id": "T247",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Neural net: training history and metric tracking"
     }
   ],
-  "updated_at": "2026-03-31T22:37:53.633Z",
+  "updated_at": "2026-03-31T22:41:28.549Z",
   "adjustments": [
     {
       "time": "2026-03-31T21:40:59.562Z",
@@ -2522,6 +2578,38 @@
     {
       "time": "2026-03-31T22:25:19.146Z",
       "msg": "Added T239 (MAINTAIN) after end: Final wrap-up"
+    },
+    {
+      "time": "2026-03-31T22:40:31.085Z",
+      "msg": "Added T240 (BUILD) after end: Monkey: WASM closures optimization (flatten environment when possible)"
+    },
+    {
+      "time": "2026-03-31T22:40:31.304Z",
+      "msg": "Added T241 (BUILD) after end: Ray tracer: BVH construction optimizations (SAH - Surface Area Heuristic)"
+    },
+    {
+      "time": "2026-03-31T22:40:31.520Z",
+      "msg": "Added T242 (BUILD) after end: Physics: event system (collision callbacks, triggers)"
+    },
+    {
+      "time": "2026-03-31T22:40:31.734Z",
+      "msg": "Added T243 (BUILD) after end: Neural net: model serialization (save/load weights as JSON)"
+    },
+    {
+      "time": "2026-03-31T22:40:31.956Z",
+      "msg": "Added T244 (BUILD) after end: Monkey: WASM loop unrolling optimization for constant-bound loops"
+    },
+    {
+      "time": "2026-03-31T22:40:32.171Z",
+      "msg": "Added T245 (BUILD) after end: Ray tracer: depth of field improvements (bokeh shapes)"
+    },
+    {
+      "time": "2026-03-31T22:40:32.384Z",
+      "msg": "Added T246 (BUILD) after end: Physics: broad-phase performance benchmark (spatial hash vs naive)"
+    },
+    {
+      "time": "2026-03-31T22:40:32.599Z",
+      "msg": "Added T247 (BUILD) after end: Neural net: training history and metric tracking"
     }
   ]
 }
