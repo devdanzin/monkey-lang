@@ -1766,14 +1766,24 @@
       "completed": "2026-03-31T19:48:00.707Z",
       "duration_ms": 300000,
       "summary": "Built finite automata: DFA, NFA, epsilon closure, NFA-to-DFA subset construction. 8 tests. Published."
+    },
+    {
+      "id": "T175",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny JSON patch: RFC 6902 operations (add, remove, replace, move, copy, test)",
+      "started": "2026-03-31T19:48:44.174Z",
+      "completed": "2026-03-31T19:50:06.899Z",
+      "duration_ms": 300000,
+      "summary": "Built JSON Patch: RFC 6902 (add/remove/replace/move/copy/test), JSON Pointer paths, diff generation. 14 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 174,
+    "completed": 175,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 45198000
+    "total_duration_ms": 45498000
   },
-  "updated_at": "2026-03-31T19:48:00.707Z"
+  "updated_at": "2026-03-31T19:50:06.899Z"
 }
