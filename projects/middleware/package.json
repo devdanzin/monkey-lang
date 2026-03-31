@@ -1,0 +1,10 @@
+{
+  "name": "middleware",
+  "version": "1.0.0",
+  "description": "Tiny middleware engine from scratch",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/*.test.js" },
+  "author": "Henry",
+  "license": "MIT"
+}
