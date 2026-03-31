@@ -716,14 +716,24 @@
       "completed": "2026-03-31T16:37:04.985Z",
       "duration_ms": 240000,
       "summary": "Built bloom filter: FNV-1a double hashing, optimal params, merge, FP rate estimation. 9 tests. Published."
+    },
+    {
+      "id": "T70",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build sorting algorithms collection: bubble, insertion, selection, merge, quick, radix, counting, tim sort",
+      "started": "2026-03-31T16:37:14.020Z",
+      "completed": "2026-03-31T16:38:18.928Z",
+      "duration_ms": 300000,
+      "summary": "Built sorting algorithms: bubble, insertion, selection, merge, quick, counting, radix. Custom comparators. 47 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 69,
+    "completed": 70,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 19323000
+    "total_duration_ms": 19623000
   },
-  "updated_at": "2026-03-31T16:37:04.985Z"
+  "updated_at": "2026-03-31T16:38:18.928Z"
 }
