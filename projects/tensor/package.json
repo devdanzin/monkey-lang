@@ -1,0 +1,7 @@
+{
+  "name": "tiny-tensor",
+  "version": "1.0.0",
+  "description": "N-dimensional tensor with NumPy-like operations",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/index.test.js" }
+}
