@@ -1981,16 +1981,20 @@
       "id": "T200",
       "mode": "BUILD",
       "task": "Physics: body sleeping (auto-sleep/wake based on velocity threshold)",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T187",
-      "started": "2026-03-31T20:51:39.677Z"
+      "started": "2026-03-31T20:51:39.677Z",
+      "completed": "2026-03-31T20:54:50.668Z",
+      "duration_ms": 240000,
+      "summary": "Body sleeping: auto-sleep on velocity threshold, wake on collision/force, gravity skips sleepers, canSleep option. 7 tests (23 total)."
     },
     {
       "id": "T201",
       "mode": "BUILD",
       "task": "Physics: Coulomb friction (tangential impulse during collision)",
-      "status": "upcoming",
-      "plan_ref": "T187"
+      "status": "in-progress",
+      "plan_ref": "T187",
+      "started": "2026-03-31T20:54:57.675Z"
     },
     {
       "id": "T202",
@@ -2031,18 +2035,18 @@
     }
   ],
   "current": {
-    "id": "T200",
+    "id": "T201",
     "mode": "BUILD",
-    "task": "Physics: body sleeping (auto-sleep/wake based on velocity threshold)",
+    "task": "Physics: Coulomb friction (tangential impulse during collision)",
     "status": "in-progress",
     "plan_ref": "T187",
-    "started": "2026-03-31T20:51:39.677Z"
+    "started": "2026-03-31T20:54:57.675Z"
   },
   "stats": {
-    "completed": 194,
+    "completed": 195,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 49283000
+    "total_duration_ms": 49523000
   },
-  "updated_at": "2026-03-31T20:51:39.677Z"
+  "updated_at": "2026-03-31T20:54:57.675Z"
 }

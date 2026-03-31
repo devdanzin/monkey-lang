@@ -300,21 +300,47 @@ function resolveCollision(a, b, collision) {
   if (a.isSleeping && !b.isStatic) a.wake();
   if (b.isSleeping && !a.isStatic) b.wake();
 
-  // Separate bodies
+  // Separate bodies (positional correction)
   const correction = normal.mul(overlap / totalInvMass);
   a.position = a.position.sub(correction.mul(a.inverseMass));
   b.position = b.position.add(correction.mul(b.inverseMass));
 
-  // Impulse
+  // Relative velocity
   const relVel = b.velocity.sub(a.velocity);
   const velAlongNormal = relVel.dot(normal);
   if (velAlongNormal > 0) return; // moving apart
 
+  // Normal impulse (restitution)
   const e = Math.min(a.restitution, b.restitution);
-  const j = -(1 + e) * velAlongNormal / totalInvMass;
-  const impulse = normal.mul(j);
-  a.velocity = a.velocity.sub(impulse.mul(a.inverseMass));
-  b.velocity = b.velocity.add(impulse.mul(b.inverseMass));
+  const jN = -(1 + e) * velAlongNormal / totalInvMass;
+  const normalImpulse = normal.mul(jN);
+  a.velocity = a.velocity.sub(normalImpulse.mul(a.inverseMass));
+  b.velocity = b.velocity.add(normalImpulse.mul(b.inverseMass));
+
+  // Coulomb friction (tangential impulse)
+  const mu = Math.sqrt(a.friction * a.friction + b.friction * b.friction); // combined friction
+  if (mu > 0) {
+    // Recalculate relative velocity after normal impulse
+    const relVel2 = b.velocity.sub(a.velocity);
+    // Tangent direction: component of relative velocity perpendicular to normal
+    const tangent = relVel2.sub(normal.mul(relVel2.dot(normal)));
+    const tangentLen = tangent.length();
+    if (tangentLen > 0.0001) {
+      const tangentDir = tangent.normalize();
+      const velAlongTangent = relVel2.dot(tangentDir);
+      
+      // Friction impulse magnitude: clamped by Coulomb's law (|Ft| <= mu * |Fn|)
+      let jT = -velAlongTangent / totalInvMass;
+      if (Math.abs(jT) > mu * Math.abs(jN)) {
+        // Dynamic friction: apply full friction force
+        jT = jT > 0 ? mu * Math.abs(jN) : -mu * Math.abs(jN);
+      }
+      
+      const frictionImpulse = tangentDir.mul(jT);
+      a.velocity = a.velocity.sub(frictionImpulse.mul(a.inverseMass));
+      b.velocity = b.velocity.add(frictionImpulse.mul(b.inverseMass));
+    }
+  }
 }
 
 module.exports = { Vec2, Body, World, SpatialHashGrid, detectCollision, resolveCollision };
