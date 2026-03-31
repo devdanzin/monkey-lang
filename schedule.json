@@ -436,9 +436,19 @@
       "completed": "2026-03-31T15:36:23.424Z",
       "duration_ms": 480000,
       "summary": "Built Markdown parser: block + inline parsing. Headings, paragraphs, emphasis, links, images, code blocks, lists, blockquotes, HR. 27 tests. Published to GitHub."
+    },
+    {
+      "id": "T42",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build an ECS (Entity Component System) for game development: entities, components, systems, queries",
+      "started": "2026-03-31T15:36:51.529Z",
+      "completed": "2026-03-31T15:38:54.107Z",
+      "duration_ms": 480000,
+      "summary": "Built ECS: entities, components, queries, systems, events, resources. Builder pattern, game-like scenario test. 20 tests. Published."
     }
   ],
-  "updated_at": "2026-03-31T15:36:23.424Z",
+  "updated_at": "2026-03-31T15:38:54.107Z",
   "adjustments": [
     {
       "time": "2026-03-31T15:25:10.585Z",
@@ -447,6 +457,10 @@
     {
       "time": "2026-03-31T15:32:05.571Z",
       "msg": "Added T41 (BUILD) after end: Build a Markdown parser: headings, paragraphs, emphasis, links, code blocks, lists → HTML"
+    },
+    {
+      "time": "2026-03-31T15:36:51.040Z",
+      "msg": "Added T42 (BUILD) after end: Build an ECS (Entity Component System) for game development: entities, components, systems, queries"
     }
   ]
 }
