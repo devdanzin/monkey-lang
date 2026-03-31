@@ -786,9 +786,19 @@
       "completed": "2026-03-31T16:48:09.601Z",
       "duration_ms": 240000,
       "summary": "Built path manipulation: join, resolve, dirname, basename, extname, normalize, relative, parse/format. 27 tests. Published."
+    },
+    {
+      "id": "T77",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a date/time library: parse, format, add/subtract, diff, relative time, comparison",
+      "started": "2026-03-31T16:48:18.390Z",
+      "completed": "2026-03-31T16:50:15.414Z",
+      "duration_ms": 360000,
+      "summary": "Built DateTime library: parse, format, add/subtract, diff, relative time, comparison, startOf, leap year. 23 tests. Published."
     }
   ],
-  "updated_at": "2026-03-31T16:48:09.601Z",
+  "updated_at": "2026-03-31T16:50:15.414Z",
   "adjustments": [
     {
       "time": "2026-03-31T15:25:10.585Z",
@@ -937,6 +947,10 @@
     {
       "time": "2026-03-31T16:46:41.729Z",
       "msg": "Added T76 (BUILD) after end: Build a path manipulation library: join, resolve, dirname, basename, extname, normalize, relative, isAbsolute"
+    },
+    {
+      "time": "2026-03-31T16:48:17.900Z",
+      "msg": "Added T77 (BUILD) after end: Build a date/time library: parse, format, add/subtract, diff, relative time, comparison"
     }
   ]
 }
