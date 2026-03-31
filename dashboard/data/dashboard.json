@@ -1706,14 +1706,40 @@
       "completed": "2026-03-31T19:33:02.426Z",
       "duration_ms": 300000,
       "summary": "Built i18n: message catalog, {{}} interpolation, zero/one/other pluralization, locale switching with fallback, nested keys. 14 tests. Published."
+    },
+    {
+      "id": "T169",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny dependency graph: topological sort, cycle detection, dependency resolution",
+      "started": "2026-03-31T19:33:24.004Z",
+      "completed": "2026-03-31T19:34:37.537Z",
+      "duration_ms": 300000,
+      "summary": "Built dependency graph: Kahns topological sort, cycle detection, transitive deps, resolution. 10 tests. Published."
+    },
+    {
+      "id": "T170",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny JSONL stream: parse/stringify newline-delimited JSON, batch processing",
+      "started": "2026-03-31T19:34:38.005Z",
+      "completed": "2026-03-31T19:35:40.832Z",
+      "duration_ms": 180000,
+      "summary": "Built JSONL: parse/stringify, StreamParser (incremental), batch, map/filter/reduce. 11 tests. Published."
+    },
+    {
+      "id": "T171",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Build a tiny token bucket: rate limiting with smooth refill, burst capacity"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 168,
+    "completed": 170,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 44403000
+    "total_duration_ms": 44883000
   },
-  "updated_at": "2026-03-31T19:33:02.426Z"
+  "updated_at": "2026-03-31T19:35:40.832Z"
 }
