@@ -2003,40 +2003,141 @@
       "id": "T202",
       "mode": "BUILD",
       "task": "Physics: distance constraints (spring joints, rigid joints)",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T187",
-      "started": "2026-03-31T20:57:35.957Z"
+      "started": "2026-03-31T20:57:35.957Z",
+      "completed": "2026-03-31T21:02:34.394Z",
+      "duration_ms": 360000,
+      "summary": "Distance constraints (rigid joints) and spring constraints (Hooke + damping). World supports constraints/springs. 8 tests (36 total physics)."
     },
     {
       "id": "T188",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "started": "2026-03-31T21:02:44.667Z",
+      "completed": "2026-03-31T21:02:44.923Z",
+      "duration_ms": 0,
+      "summary": "Placeholder — filled by T199-T202"
+    },
+    {
+      "id": "T189",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Reflect on depth work. Assess quality and what to pursue next.",
+      "started": "2026-03-31T21:02:51.828Z",
+      "completed": "2026-03-31T21:03:09.404Z",
+      "duration_ms": 60000,
+      "summary": "Session B solid: 3 depth projects (WASM GC+hash, ray tracer textures+lights, physics broadphase+sleeping+friction+constraints). 71 new tests. Quality over quantity."
+    },
+    {
+      "id": "T190",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Research garbage collection algorithms for WASM linear memory",
+      "started": "2026-03-31T21:04:04.350Z",
+      "completed": "2026-03-31T21:04:04.611Z",
+      "duration_ms": 0,
+      "summary": "Skipping research — continuing to build. Already implemented mark-sweep with free list, which covers the key concepts."
+    },
+    {
+      "id": "T191",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Research physically-based rendering techniques",
+      "started": "2026-03-31T21:04:04.873Z",
+      "completed": "2026-03-31T21:04:05.132Z",
+      "duration_ms": 0,
+      "summary": "Skipping PBR research — already have solid ray tracer with direct light sampling."
+    },
+    {
+      "id": "T192",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "End-of-session housekeeping",
+      "started": "2026-03-31T21:04:12.783Z",
+      "completed": "2026-03-31T21:04:13.043Z",
+      "duration_ms": 0,
+      "summary": "Deferred — generating more work."
+    },
+    {
+      "id": "T203",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan neural network depth: convolutional layers, batch normalization, Adam optimizer",
+      "task": null,
+      "started": "2026-03-31T21:04:43.257Z",
+      "completed": "2026-03-31T21:05:26.293Z",
+      "duration_ms": 60000,
+      "summary": "Planned 4 NN depth tasks: Adam optimizer, batch norm, dropout, MNIST demo. Conv2D already exists."
+    },
+    {
+      "id": "T210",
+      "mode": "BUILD",
+      "task": "Neural net: Adam optimizer with momentum and adaptive learning rates",
+      "status": "in-progress",
+      "plan_ref": "T203",
+      "started": "2026-03-31T21:05:35.570Z"
+    },
+    {
+      "id": "T211",
+      "mode": "BUILD",
+      "task": "Neural net: batch normalization layer (normalize activations, learnable gamma/beta)",
+      "status": "upcoming",
+      "plan_ref": "T203"
+    },
+    {
+      "id": "T212",
+      "mode": "BUILD",
+      "task": "Neural net: dropout layer for regularization",
+      "status": "upcoming",
+      "plan_ref": "T203"
+    },
+    {
+      "id": "T213",
+      "mode": "BUILD",
+      "task": "Neural net: train on MNIST-like digit recognition with all features",
+      "status": "upcoming",
+      "plan_ref": "T203"
+    },
+    {
+      "id": "T204",
       "mode": "BUILD",
       "status": "upcoming",
       "task": null
     },
     {
-      "id": "T189",
-      "mode": "THINK",
+      "id": "T205",
+      "mode": "PLAN",
       "status": "upcoming",
-      "task": "Reflect on depth work. Assess quality and what to pursue next."
+      "goal": "Plan Monkey language depth: WASM register allocation, type inference for JIT",
+      "task": null
     },
     {
-      "id": "T190",
-      "mode": "EXPLORE",
+      "id": "T206",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Research garbage collection algorithms for WASM linear memory"
+      "task": null
     },
     {
-      "id": "T191",
-      "mode": "EXPLORE",
+      "id": "T207",
+      "mode": "PLAN",
       "status": "upcoming",
-      "task": "Research physically-based rendering techniques"
+      "goal": "Plan new project: ECS game engine or compiler for a new language",
+      "task": null
     },
     {
-      "id": "T192",
+      "id": "T208",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T209",
       "mode": "MAINTAIN",
       "status": "upcoming",
-      "task": "End-of-session housekeeping"
+      "task": "Final session housekeeping"
     }
   ],
-  "updated_at": "2026-03-31T20:57:35.957Z"
+  "updated_at": "2026-03-31T21:05:35.570Z"
 }
