@@ -216,8 +216,12 @@
     {
       "id": "T17",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Research: GAN architectures or diffusion models — what's the minimal pure-JS implementation?"
+      "status": "done",
+      "task": "Research: GAN architectures or diffusion models — what's the minimal pure-JS implementation?",
+      "started": "2026-03-31T14:47:31.509Z",
+      "completed": "2026-03-31T14:48:22.404Z",
+      "duration_ms": 180000,
+      "summary": "Researched GAN architectures. Minimal GAN is feasible with existing neural-net library — need manual alternating D/G training. Key insight: D.backward() returns gradient that flows into G. Target: 2D data distribution. Wrote scratch note."
     },
     {
       "id": "T18",
@@ -228,10 +232,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 20,
+    "completed": 21,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 4620000
+    "total_duration_ms": 4800000
   },
-  "updated_at": "2026-03-31T14:47:21.033Z"
+  "updated_at": "2026-03-31T14:48:22.405Z"
 }
