@@ -3111,14 +3111,24 @@
       "completed": "2026-03-31T00:00:40.091Z",
       "duration_ms": 400000,
       "summary": "PROJECT #40! Signals: createSignal ([get, set] tuple), createEffect (auto-tracking dependency detection), createComputed (derived signals), createMemo (cached computation), batch (group updates, single re-run), watch (onChange handler). Fine-grained reactivity — effects automatically subscribe to signals they read. 12 tests."
+    },
+    {
+      "id": "T303",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Iterator/Generator utilities (map, filter, take, zip, range, chunk)",
+      "started": "2026-03-31T00:01:18.109Z",
+      "completed": "2026-03-31T00:03:09.951Z",
+      "duration_ms": 400000,
+      "summary": "PROJECT #41! Itertools: 35+ lazy iterator utilities. Creation (range, repeat, cycle, generate), Transform (map, filter, flatMap, scan, enumerate), Combination (zip, zipLongest, chain, interleave), Slicing (take, skip, takeWhile, skipWhile, slice), Grouping (chunk, window, unique), Reduction (reduce, count, some, every, find, first, last, sum, min, max), pipe. All lazy (generator-based). Laziness verified in test — processing only evaluates needed elements. 32 tests."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 302,
+    "completed": 303,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 50370000
+    "total_duration_ms": 50770000
   },
-  "updated_at": "2026-03-31T00:00:40.091Z"
+  "updated_at": "2026-03-31T00:03:09.951Z"
 }
