@@ -142,9 +142,13 @@
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Implement RNN and LSTM layers with BPTT for neural-net. Add Adam optimizer.",
-      "plan_ref": "T10"
+      "plan_ref": "T10",
+      "started": "2026-03-31T14:39:10.141Z",
+      "completed": "2026-03-31T14:42:40.459Z",
+      "duration_ms": 900000,
+      "summary": "Implemented RNN and LSTM layers with full BPTT for neural-net. RNN: tanh hidden state, sequence/final output. LSTM: 4 gates (forget/input/output/candidate), cell state, forget bias=1. Both support Adam optimizer and gradient clipping. 23 new tests (70 total). Pushed."
     },
     {
       "id": "T22",
@@ -200,10 +204,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 13,
+    "completed": 14,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 2880000
+    "total_duration_ms": 3780000
   },
-  "updated_at": "2026-03-31T14:38:59.791Z"
+  "updated_at": "2026-03-31T14:42:40.459Z"
 }
