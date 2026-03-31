@@ -1,0 +1,7 @@
+{
+  "name": "tiny-pipe",
+  "version": "1.0.0",
+  "description": "Pipe operator and functional pipeline utilities",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/index.test.js" }
+}
