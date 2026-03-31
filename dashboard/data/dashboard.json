@@ -2456,15 +2456,19 @@
     {
       "id": "T241",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Ray tracer: BVH construction optimizations (SAH - Surface Area Heuristic)",
-      "started": "2026-03-31T22:41:28.549Z"
+      "started": "2026-03-31T22:41:28.549Z",
+      "completed": "2026-03-31T22:43:49.341Z",
+      "duration_ms": 300000,
+      "summary": "SAH BVH: optimal split via surface area heuristic, bucket-based, hybrid strategy. 5 tests."
     },
     {
       "id": "T242",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Physics: event system (collision callbacks, triggers)"
+      "status": "in-progress",
+      "task": "Physics: event system (collision callbacks, triggers)",
+      "started": "2026-03-31T22:43:57.246Z"
     },
     {
       "id": "T243",
@@ -2498,17 +2502,17 @@
     }
   ],
   "current": {
-    "id": "T241",
+    "id": "T242",
     "mode": "BUILD",
     "status": "in-progress",
-    "task": "Ray tracer: BVH construction optimizations (SAH - Surface Area Heuristic)",
-    "started": "2026-03-31T22:41:28.549Z"
+    "task": "Physics: event system (collision callbacks, triggers)",
+    "started": "2026-03-31T22:43:57.246Z"
   },
   "stats": {
-    "completed": 240,
+    "completed": 241,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 57623000
+    "total_duration_ms": 57923000
   },
-  "updated_at": "2026-03-31T22:41:28.549Z"
+  "updated_at": "2026-03-31T22:43:57.246Z"
 }
