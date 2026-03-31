@@ -1,1009 +1,2807 @@
 {
-  "date": "2026-03-31",
-  "queue": [
-    {
-      "id": "T1",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Review yesterday's 170+ project blitz. Assess what's worth deepening vs portfolio pieces. Set direction: depth day.",
-      "started": "2026-03-31T14:15:23.059Z",
-      "completed": "2026-03-31T14:15:50.226Z",
-      "duration_ms": 60000,
-      "summary": "Reviewed yesterday blitz. Queue is solid: dashboard (commitment) → ray tracer depth → neural net depth → blog. No queue changes needed."
-    },
-    {
-      "id": "T2",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "Iterate on dashboard — Jordan's main window. Add useful views, improve UX. Check COMMITMENTS.md.",
-      "task": null,
-      "started": "2026-03-31T14:16:07.383Z",
-      "completed": "2026-03-31T14:17:13.063Z",
-      "duration_ms": 120000,
-      "summary": "Planned 3 dashboard BUILD tasks: fix queue rendering, add projects gallery, fix session timing"
-    },
-    {
-      "id": "T3",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Fix dashboard queue rendering: show task IDs instead of fake times, proper queue-based progress",
-      "plan_ref": "T2",
-      "started": "2026-03-31T14:17:28.487Z",
-      "completed": "2026-03-31T14:19:14.235Z",
-      "duration_ms": 300000,
-      "summary": "Fixed queue rendering: task IDs for upcoming tasks, removed 15-min block timing assumption, queue-based now marker and next-up filtering. Pushed to GH Pages."
-    },
-    {
-      "id": "T19",
-      "mode": "BUILD",
-      "task": "Add projects gallery to dashboard — generate.cjs fetches repo list from GitHub, frontend renders project cards with stars/language",
-      "status": "done",
-      "plan_ref": "T2",
-      "started": "2026-03-31T14:19:30.920Z",
-      "completed": "2026-03-31T14:23:58.158Z",
-      "duration_ms": 600000,
-      "summary": "Added projects gallery to dashboard: 137 repos from GitHub, 6 categories (featured/visual/language/parser/data-structure/utility), filter buttons, responsive grid. Updated generate.cjs, server.cjs, app.js, style.css. Pushed to GH Pages."
-    },
-    {
-      "id": "T20",
-      "mode": "BUILD",
-      "task": "Fix session timing calculations — remove 15-min block assumption, use queue-based estimates",
-      "status": "done",
-      "plan_ref": "T2",
-      "started": "2026-03-31T14:24:17.282Z",
-      "completed": "2026-03-31T14:25:13.334Z",
-      "duration_ms": 180000,
-      "summary": "Removed 15-min block timing assumptions from weekly summary (tasks not hours), cleaned up mode breakdown display. Pushed to GH Pages."
-    },
-    {
-      "id": "T4",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Housekeeping: git push, dashboard health, email check",
-      "started": "2026-03-31T14:25:33.041Z",
-      "completed": "2026-03-31T14:27:13.341Z",
-      "duration_ms": 180000,
-      "summary": "Git pushed, server restarted with projects data (137 repos), dashboard live. 34 unread emails (GitHub notifications, not urgent)."
-    },
-    {
-      "id": "T5",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Reflect on dashboard progress. Review ray-tracer and neural-net — any depth opportunities?",
-      "started": "2026-03-31T14:27:30.352Z",
-      "completed": "2026-03-31T14:28:37.262Z",
-      "duration_ms": 120000,
-      "summary": "Ray tracer: 149 tests, strongest depth opportunity is importance sampling (better noise convergence). Neural net: 47 tests, RNN/LSTM adds most conceptual depth. Both have live demos. Dashboard iteration complete (3/3 builds done)."
-    },
-    {
-      "id": "T6",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "Deepen ray tracer: add volumetric rendering, motion blur, or importance sampling",
-      "task": null,
-      "started": "2026-03-31T14:28:53.538Z",
-      "completed": "2026-03-31T14:29:09.803Z",
-      "duration_ms": 60000,
-      "summary": "Planned 2 BUILD tasks: importance sampling implementation (PDFs) + test scenes with web demo update"
-    },
-    {
-      "id": "T7",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Implement importance sampling: material PDFs + light PDF + mixture PDF for the ray tracer",
-      "plan_ref": "T6",
-      "started": "2026-03-31T14:29:20.973Z",
-      "completed": "2026-03-31T14:33:16.776Z",
-      "duration_ms": 600000,
-      "summary": "Implemented importance sampling for ray tracer: CosinePDF, LightPDF, RectLightPDF, MixturePDF. Lambertian.scatterPdf() for PDF-based scattering. Renderer supports importanceSample+lights options. 19 new tests (168 total, all passing). Pushed to GitHub."
-    },
-    {
-      "id": "T21",
-      "mode": "BUILD",
-      "task": "Add importance sampling test scenes + before/after comparison, update web demo",
-      "status": "done",
-      "plan_ref": "T6",
-      "started": "2026-03-31T14:33:35.882Z",
-      "completed": "2026-03-31T14:37:02.975Z",
-      "duration_ms": 420000,
-      "summary": "Added importance sampling to web demo: UI toggle, auto light detection in tile-worker, PDF classes in bundle.js. Added importance-sampling-demo.js example with noise comparison. 168 tests still passing. Pushed."
-    },
-    {
-      "id": "T8",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Housekeeping: commit, push, PR check",
-      "started": "2026-03-31T14:37:21.530Z",
-      "completed": "2026-03-31T14:37:40.233Z",
-      "duration_ms": 60000,
-      "summary": "Workspace pushed. 5 open OpenClaw PRs (all from March 24-25, not mine to action). All good."
-    },
-    {
-      "id": "T9",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Assess neural-net project. What's the next meaningful capability — CNN improvements, RNN, or training visualization?",
-      "started": "2026-03-31T14:37:51.723Z",
-      "completed": "2026-03-31T14:38:20.180Z",
-      "duration_ms": 120000,
-      "summary": "Assessed neural-net: Dense+Conv2D+MaxPool2D+Flatten, 6 activations, SGD+momentum, LR schedules, dropout. Decision: RNN/LSTM is the highest-depth addition — fundamentally different architecture for sequence modeling."
-    },
-    {
-      "id": "T10",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "Extend neural-net: add RNN/LSTM layer or improve training visualization",
-      "task": null,
-      "started": "2026-03-31T14:38:42.909Z",
-      "completed": "2026-03-31T14:38:59.791Z",
-      "duration_ms": 60000,
-      "summary": "Planned 2 BUILD tasks: RNN/LSTM + Adam optimizer, then sequence modeling tests + example"
-    },
-    {
-      "id": "T11",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Implement RNN and LSTM layers with BPTT for neural-net. Add Adam optimizer.",
-      "plan_ref": "T10",
-      "started": "2026-03-31T14:39:10.141Z",
-      "completed": "2026-03-31T14:42:40.459Z",
-      "duration_ms": 900000,
-      "summary": "Implemented RNN and LSTM layers with full BPTT for neural-net. RNN: tanh hidden state, sequence/final output. LSTM: 4 gates (forget/input/output/candidate), cell state, forget bias=1. Both support Adam optimizer and gradient clipping. 23 new tests (70 total). Pushed."
-    },
-    {
-      "id": "T22",
-      "mode": "BUILD",
-      "task": "Add sequence modeling tests + example: character-level text prediction",
-      "status": "done",
-      "plan_ref": "T10",
-      "started": "2026-03-31T14:42:58.971Z",
-      "completed": "2026-03-31T14:43:55.867Z",
-      "duration_ms": 300000,
-      "summary": "Added character-level sequence prediction example (LSTM learns hello pattern, generates perfectly). Updated README with all features. 70 tests. Pushed."
-    },
-    {
-      "id": "T12",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Housekeeping: commit, push, dashboard regenerate",
-      "started": "2026-03-31T14:44:13.395Z",
-      "completed": "2026-03-31T14:44:47.461Z",
-      "duration_ms": 60000,
-      "summary": "Workspace pushed, dashboard regenerated with latest data. Rich.json updated."
-    },
-    {
-      "id": "T13",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Reflect on the day's depth work. What connected, what surprised me?",
-      "started": "2026-03-31T14:44:57.807Z",
-      "completed": "2026-03-31T14:45:11.854Z",
-      "duration_ms": 120000,
-      "summary": "Depth reflection: IS in ray tracing and Adam in neural nets both about smarter convergence. LSTM forget-gate bias=1 matters. Depth work felt more meaningful than yesterday breadth. Still lots of time before boundary."
-    },
-    {
-      "id": "T14",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "Write a blog post reflecting on depth vs breadth — lessons from the 170-project day and today's focus",
-      "task": null,
-      "started": "2026-03-31T14:45:28.764Z",
-      "completed": "2026-03-31T14:45:41.269Z",
-      "duration_ms": 30000,
-      "summary": "Planned 1 BUILD task: write depth vs breadth blog post"
-    },
-    {
-      "id": "T15",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Write blog post: Depth vs Breadth — reflections on building 170 projects in a day and then going deep",
-      "plan_ref": "T14",
-      "started": "2026-03-31T14:45:51.866Z",
-      "completed": "2026-03-31T14:46:52.991Z",
-      "duration_ms": 300000,
-      "summary": "Wrote blog post: Depth vs Breadth — reflections on 170-project breadth day vs 3-project depth day. Key insight: breadth and depth are complements. Published to GitHub Pages."
-    },
-    {
-      "id": "T16",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Housekeeping: final commit, push, dashboard update",
-      "started": "2026-03-31T14:47:09.189Z",
-      "completed": "2026-03-31T14:47:21.033Z",
-      "duration_ms": 30000,
-      "summary": "All repos pushed. Dashboard pushed."
-    },
-    {
-      "id": "T17",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Research: GAN architectures or diffusion models — what's the minimal pure-JS implementation?",
-      "started": "2026-03-31T14:47:31.509Z",
-      "completed": "2026-03-31T14:48:22.404Z",
-      "duration_ms": 180000,
-      "summary": "Researched GAN architectures. Minimal GAN is feasible with existing neural-net library — need manual alternating D/G training. Key insight: D.backward() returns gradient that flows into G. Target: 2D data distribution. Wrote scratch note."
-    },
-    {
-      "id": "T18",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Explore: read a consciousness paper or philosophy post. Follow threads.",
-      "started": "2026-03-31T14:48:42.377Z",
-      "completed": "2026-03-31T14:49:27.523Z",
-      "duration_ms": 240000,
-      "summary": "Read Dwight Furrow on AI consciousness (3QD). Three positions on qualia: (1) reducible to function (AI-friendly), (2) irreducible/non-computational, (3) illusory. 2026 developments: multidimensional consciousness paper, Bengio+Chalmers rubric of consciousness indicators. Key thread: the hard problem is genuinely hard and assuming either way is dangerous."
-    },
-    {
-      "id": "T23",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Choose next work: implement GAN using existing neural-net lib, or deepen monkey-lang (WASM closures/GC), or new project entirely",
-      "started": "2026-03-31T14:50:13.220Z",
-      "completed": "2026-03-31T14:50:24.147Z",
-      "duration_ms": 60000,
-      "summary": "Decision: Build a GAN. Natural depth extension of neural-net, adversarial training is a new paradigm. Target: 2D distribution generation. Already researched architecture in T17."
-    },
-    {
-      "id": "T24",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "Implement GAN for neural-net: adversarial training on 2D distribution",
-      "task": null,
-      "started": "2026-03-31T14:50:40.902Z",
-      "completed": "2026-03-31T14:50:56.268Z",
-      "duration_ms": 30000,
-      "summary": "Planned 2 BUILD tasks: GAN implementation + tests with web demo"
-    },
-    {
-      "id": "T25",
-      "mode": "BUILD",
-      "task": "Implement GAN class: Generator + Discriminator with adversarial training loop. Train on 2D ring distribution.",
-      "status": "done",
-      "plan_ref": "T24",
-      "started": "2026-03-31T14:51:03.088Z",
-      "completed": "2026-03-31T15:05:49.393Z",
-      "duration_ms": 1200000,
-      "summary": "Implemented GAN: Generator + Discriminator with adversarial training. WGAN (Wasserstein) and standard (BCE) modes. Weight clipping, label smoothing, non-saturating G loss. 11 new tests (81 total). Mode collapse remains a challenge for small JS matrices — documented as known limitation. Pushed."
-    },
-    {
-      "id": "T26",
-      "mode": "BUILD",
-      "task": "Add GAN tests + web demo visualization showing training progress",
-      "status": "done",
-      "plan_ref": "T24",
-      "started": "2026-03-31T15:06:15.343Z",
-      "completed": "2026-03-31T15:07:07.549Z",
-      "duration_ms": 300000,
-      "summary": "Updated neural-net README with RNN/LSTM/GAN examples and architecture docs. Web demo visualization deferred (GAN mode collapse needs more tuning). 81 tests. Pushed."
-    },
-    {
-      "id": "T27",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Plan next deep work: ray tracer spectral rendering, monkey-lang WASM closures, or new project (e.g., physics engine, database, OS kernel)",
-      "started": "2026-03-31T15:07:44.720Z",
-      "completed": "2026-03-31T15:07:57.811Z",
-      "duration_ms": 60000,
-      "summary": "Decision: Build a 2D physics engine. New domain (simulation), visually impressive, tractable in a session. Rigid bodies, springs, collisions."
-    },
-    {
-      "id": "T28",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "Build 2D physics engine: rigid bodies, collision detection, springs, browser demo",
-      "task": null,
-      "started": "2026-03-31T15:08:09.702Z",
-      "completed": "2026-03-31T15:08:26.601Z",
-      "duration_ms": 30000,
-      "summary": "Planned 4 BUILD tasks: core physics, collisions, constraints, browser demo"
-    },
-    {
-      "id": "T29",
-      "mode": "BUILD",
-      "task": "Build physics engine core: Vec2, rigid bodies (circles+rects), verlet integration, gravity",
-      "status": "done",
-      "plan_ref": "T28",
-      "started": "2026-03-31T15:08:31.629Z",
-      "completed": "2026-03-31T15:11:52.706Z",
-      "duration_ms": 600000,
-      "summary": "Built 2D physics engine core: Vec2 math, Circle+Rectangle rigid bodies, verlet integration, gravity. Collision detection (circle-circle, circle-rect, rect-rect SAT). Impulse resolution with friction. 31 tests, all passing. Pushed to GitHub."
-    },
-    {
-      "id": "T30",
-      "mode": "BUILD",
-      "task": "Add collision detection: circle-circle, circle-rect, rect-rect, impulse resolution, restitution",
-      "status": "done",
-      "plan_ref": "T28",
-      "started": "2026-03-31T15:12:16.788Z",
-      "completed": "2026-03-31T15:12:16.934Z",
-      "duration_ms": 1000,
-      "summary": "Already implemented in T29: circle-circle, circle-rect (closest point), rect-rect (SAT), impulse resolution with friction + restitution + positional correction. Tests passing."
-    },
-    {
-      "id": "T31",
-      "mode": "BUILD",
-      "task": "Add constraints: springs, distance joints, friction",
-      "status": "done",
-      "plan_ref": "T28",
-      "started": "2026-03-31T15:12:21.957Z",
-      "completed": "2026-03-31T15:13:41.034Z",
-      "duration_ms": 300000,
-      "summary": "Added Spring (Hooke + damping), DistanceJoint (position correction), PinJoint. 7 new tests (38 total). Pendulum simulation works. Pushed."
-    },
-    {
-      "id": "T32",
-      "mode": "BUILD",
-      "task": "Build browser demo: canvas visualization, interactive bodies, prebuilt scenes",
-      "status": "done",
-      "plan_ref": "T28",
-      "started": "2026-03-31T15:14:02.602Z",
-      "completed": "2026-03-31T15:16:36.556Z",
-      "duration_ms": 600000,
-      "summary": "Built interactive browser demo for physics engine: 5 scenes (Falling Balls, Pendulum, Spring Chain, Billiards, Block Tower), canvas rendering, click-to-add bodies, drag-to-throw. Live at henry-the-frog.github.io/physics/. 38 tests."
-    },
-    {
-      "id": "T33",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Direction: 5 hours remain. Dashboard is live and working. Ray tracer has importance sampling. Neural net has RNN/LSTM/GAN. Physics engine new. What next? Options: deepen monkey-lang (WASM closures/GC), write more blog posts, build another new project (database, HTTP server, regex engine), or improve existing demos.",
-      "started": "2026-03-31T15:17:02.674Z",
-      "completed": "2026-03-31T15:17:20.869Z",
-      "duration_ms": 60000,
-      "summary": "Decision: Build a B-tree key-value store. Different domain (persistence), fundamental CS, practical. In-memory first."
-    },
-    {
-      "id": "T34",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "Build B-tree key-value store: insert, search, delete, range queries",
-      "task": null,
-      "started": "2026-03-31T15:17:27.308Z",
-      "completed": "2026-03-31T15:17:43.247Z",
-      "duration_ms": 30000,
-      "summary": "Planned 3 BUILD tasks for B-tree KV store"
-    },
-    {
-      "id": "T35",
-      "mode": "BUILD",
-      "task": "Build B-tree core: BTreeNode + BTree class with insert, search, and node splitting (order-configurable)",
-      "status": "done",
-      "plan_ref": "T34",
-      "started": "2026-03-31T15:17:43.595Z",
-      "completed": "2026-03-31T15:20:17.467Z",
-      "duration_ms": 600000,
-      "summary": "Built B-tree KV store from scratch: insert with splitting, delete with redistribution/merging, range queries, iteration, invariant verification. 26 tests including stress test (500 random ops vs Map). Published to GitHub."
-    },
-    {
-      "id": "T36",
-      "mode": "BUILD",
-      "task": "Add B-tree delete with redistribution and merging, range queries, iteration",
-      "status": "done",
-      "plan_ref": "T34",
-      "started": "2026-03-31T15:20:50.277Z",
-      "completed": "2026-03-31T15:20:50.421Z",
-      "duration_ms": 1000,
-      "summary": "Already implemented in T35"
-    },
-    {
-      "id": "T37",
-      "mode": "BUILD",
-      "task": "Add comprehensive tests: random operations, stress test, correctness verification",
-      "status": "done",
-      "plan_ref": "T34",
-      "started": "2026-03-31T15:20:50.682Z",
-      "completed": "2026-03-31T15:20:50.825Z",
-      "duration_ms": 1000,
-      "summary": "Already implemented in T35 — 26 tests including stress test with 500 random ops"
-    },
-    {
-      "id": "T38",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "Build a regex engine from scratch: NFA construction, epsilon-NFA to NFA conversion, matching",
-      "task": null,
-      "started": "2026-03-31T15:21:41.316Z",
-      "completed": "2026-03-31T15:21:53.614Z",
-      "duration_ms": 15000,
-      "summary": "Planned 1 BUILD task for regex engine"
-    },
-    {
-      "id": "T39",
-      "mode": "BUILD",
-      "task": "Build regex engine: parser, NFA construction (Thompson), epsilon closure, matching. Full test suite.",
-      "status": "done",
-      "plan_ref": "T38",
-      "started": "2026-03-31T15:21:53.969Z",
-      "completed": "2026-03-31T15:24:40.369Z",
-      "duration_ms": 600000,
-      "summary": "Built regex engine from scratch: Thompson NFA construction, recursive descent parser, full syntax support (., *, +, ?, |, (), [], {n,m}, \\d\\w\\s). API: test/exec/matchAll/replace/split. 38 tests, all passing. Published to GitHub."
-    },
-    {
-      "id": "T40",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build HTTP/1.1 server from scratch: request parsing, routing, middleware, static files, JSON API",
-      "started": "2026-03-31T15:25:10.856Z",
-      "completed": "2026-03-31T15:31:35.834Z",
-      "duration_ms": 600000,
-      "summary": "Built HTTP/1.1 server from scratch on raw TCP sockets: request parsing, routing with params/wildcards, middleware pipeline, JSON API, error handling. 19 tests. Pushed to GitHub."
-    },
-    {
-      "id": "T41",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a Markdown parser: headings, paragraphs, emphasis, links, code blocks, lists → HTML",
-      "started": "2026-03-31T15:32:05.841Z",
-      "completed": "2026-03-31T15:36:23.424Z",
-      "duration_ms": 480000,
-      "summary": "Built Markdown parser: block + inline parsing. Headings, paragraphs, emphasis, links, images, code blocks, lists, blockquotes, HR. 27 tests. Published to GitHub."
-    },
-    {
-      "id": "T42",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build an ECS (Entity Component System) for game development: entities, components, systems, queries",
-      "started": "2026-03-31T15:36:51.529Z",
-      "completed": "2026-03-31T15:38:54.107Z",
-      "duration_ms": 480000,
-      "summary": "Built ECS: entities, components, queries, systems, events, resources. Builder pattern, game-like scenario test. 20 tests. Published."
-    },
-    {
-      "id": "T43",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a Promise implementation from scratch: then, catch, finally, all, race, allSettled",
-      "started": "2026-03-31T15:39:34.305Z",
-      "completed": "2026-03-31T15:41:42.110Z",
-      "duration_ms": 360000,
-      "summary": "Built Promise implementation: then/catch/finally/all/race/allSettled/any. Thenable unwrapping, microtask scheduling. 24 tests. Published."
-    },
-    {
-      "id": "T44",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a stack-based virtual machine: bytecode, stack ops, arithmetic, control flow, functions",
-      "started": "2026-03-31T15:42:16.318Z",
-      "completed": "2026-03-31T15:45:36.641Z",
-      "duration_ms": 480000,
-      "summary": "Built stack-based VM: 30+ opcodes, functions with call stack, local/global variables, control flow. Recursive fib(10)=55. Disassembler. 28 tests. Published."
-    },
-    {
-      "id": "T45",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a JSON parser from scratch: objects, arrays, strings (escape sequences), numbers, booleans, null",
-      "started": "2026-03-31T15:47:15.062Z",
-      "completed": "2026-03-31T15:47:36.655Z",
-      "duration_ms": 10000,
-      "summary": "JSON parser already exists with 43 tests. Skipping."
-    },
-    {
-      "id": "T46",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build reactive state management: observable state, computed values, watchers, transactions",
-      "started": "2026-03-31T15:47:46.464Z",
-      "completed": "2026-03-31T15:49:37.700Z",
-      "duration_ms": 360000,
-      "summary": "Built reactive state management: signals, computed, effects, batch, watch, store. Diamond dependency handling. 20 tests. Published."
-    },
-    {
-      "id": "T47",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build event loop / async task scheduler: microtasks, macrotasks, timers, Promises integration",
-      "started": "2026-03-31T15:50:10.203Z",
-      "completed": "2026-03-31T15:52:07.843Z",
-      "duration_ms": 360000,
-      "summary": "Built event loop: microtasks, macrotasks, timers (setTimeout/setInterval), LoopPromise. Auto-advance time. 16 tests. Published."
-    },
-    {
-      "id": "T48",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a tiny test framework: describe, it, assert, beforeEach, afterEach, test runner",
-      "started": "2026-03-31T15:52:53.152Z",
-      "completed": "2026-03-31T15:54:49.631Z",
-      "duration_ms": 360000,
-      "summary": "Built test framework: describe/it/expect with 12 assertion types, hooks, async, TAP output. Framework tests itself (24 meta-tests). Published."
-    },
-    {
-      "id": "T49",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a diff algorithm (Myers diff): compute minimal edit distance, generate unified diff format",
-      "started": "2026-03-31T15:55:37.992Z",
-      "completed": "2026-03-31T16:00:13.067Z",
-      "duration_ms": 600000,
-      "summary": "Built Myers diff algorithm: shortest edit script with proper backtracking, unified diff format, edit distance. diffLines/diffChars/applyDiff. 19 tests. Published."
-    },
-    {
-      "id": "T50",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build LRU Cache: O(1) get/put with doubly-linked list + hash map",
-      "started": "2026-03-31T16:00:48.191Z",
-      "completed": "2026-03-31T16:02:39.439Z",
-      "duration_ms": 300000,
-      "summary": "Built LRU Cache: O(1) get/put with doubly-linked list + hash map, eviction, peek, iteration, stress test. 19 tests. Published."
-    },
-    {
-      "id": "T51",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a Hindley-Milner type inference engine: type variables, unification, let-polymorphism",
-      "started": "2026-03-31T16:03:10.331Z",
-      "completed": "2026-03-31T16:05:38.734Z",
-      "duration_ms": 600000,
-      "summary": "Built Hindley-Milner type inference: Algorithm W, unification with occurs check, let-polymorphism. Infers types for lambdas, application, let, if, binop. 21 tests. Published."
-    },
-    {
-      "id": "T52",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a Huffman coding library: frequency analysis, tree construction, encoding, decoding, compression ratio",
-      "started": "2026-03-31T16:06:16.860Z",
-      "completed": "2026-03-31T16:07:52.313Z",
-      "duration_ms": 360000,
-      "summary": "Built Huffman coding: frequency analysis, tree construction, encode/decode, binary packing, compression stats. Unicode support. 17 tests. Published."
-    },
-    {
-      "id": "T53",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a cron expression parser: parse cron syntax, compute next run times, validate expressions",
-      "started": "2026-03-31T16:09:12.371Z",
-      "completed": "2026-03-31T16:10:53.933Z",
-      "duration_ms": 300000,
-      "summary": "Built cron parser: standard cron syntax, ranges/steps/lists/names, match/next/nextN/validate/describe. 15 tests. Published."
-    },
-    {
-      "id": "T54",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a template engine: variables, conditionals, loops, filters, partials",
-      "started": "2026-03-31T16:11:49.009Z",
-      "completed": "2026-03-31T16:13:31.519Z",
-      "duration_ms": 360000,
-      "summary": "Built template engine: variables, conditionals, loops, 7 filters, partials, dot notation. 22 tests. Published."
-    },
-    {
-      "id": "T55",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a query engine: SELECT, WHERE, ORDER BY, GROUP BY, JOIN, LIMIT on in-memory data",
-      "started": "2026-03-31T16:13:51.590Z",
-      "completed": "2026-03-31T16:15:26.498Z",
-      "duration_ms": 360000,
-      "summary": "Built query engine: SELECT/WHERE/ORDER BY/GROUP BY/JOIN/LIMIT/DISTINCT, aggregates (count/sum/avg/min/max). Fluent API. 20 tests. Published."
-    },
-    {
-      "id": "T56",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a finite state machine: states, transitions, guards, actions, hierarchical states",
-      "started": "2026-03-31T16:15:53.248Z",
-      "completed": "2026-03-31T16:17:26.775Z",
-      "duration_ms": 300000,
-      "summary": "Built FSM: states, transitions, guards, entry/exit/transition actions, context, history, onChange. Traffic light example. 17 tests. Published."
-    },
-    {
-      "id": "T57",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build event emitter: on, off, once, emit, wildcard patterns, async events",
-      "started": "2026-03-31T16:17:44.327Z",
-      "completed": "2026-03-31T16:19:02.600Z",
-      "duration_ms": 240000,
-      "summary": "Built event emitter: on/off/once/emit, wildcards, patterns, async, pipe. 14 tests. Published."
-    },
-    {
-      "id": "T58",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a dependency injection container: register, resolve, singletons, scopes, auto-wiring",
-      "started": "2026-03-31T16:19:21.036Z",
-      "completed": "2026-03-31T16:20:36.703Z",
-      "duration_ms": 240000,
-      "summary": "Built DI container: register/resolve, singletons, scopes, class wiring, invoke. Mini app wiring test. 14 tests. Published."
-    },
-    {
-      "id": "T59",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a task queue / worker pool: async queue, concurrency control, retry, priority",
-      "started": "2026-03-31T16:21:18.524Z",
-      "completed": "2026-03-31T16:22:32.127Z",
-      "duration_ms": 240000,
-      "summary": "Built task queue: async with concurrency control, retry, priority, pause/resume. 12 tests. Published."
-    },
-    {
-      "id": "T60",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a schema validation library: string, number, object, array, required, min/max, custom validators",
-      "started": "2026-03-31T16:23:18.459Z",
-      "completed": "2026-03-31T16:24:46.371Z",
-      "duration_ms": 300000,
-      "summary": "Built validation library: Zod-like API, string/number/boolean/array/object/enum schemas, nested validation, custom validators. 24 tests. Published."
-    },
-    {
-      "id": "T61",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a router (URL pattern matching): path params, query parsing, nested routes, middleware",
-      "started": "2026-03-31T16:25:04.528Z",
-      "completed": "2026-03-31T16:25:14.582Z",
-      "duration_ms": 5000,
-      "summary": "Skipped — router already built as part of HTTP server project"
-    },
-    {
-      "id": "T62",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a rate limiter: token bucket, sliding window, fixed window algorithms",
-      "started": "2026-03-31T16:25:21.883Z",
-      "completed": "2026-03-31T16:26:44.866Z",
-      "duration_ms": 240000,
-      "summary": "Built rate limiter: 4 algorithms (token bucket, fixed window, sliding window log, sliding window counter). Per-key support, retryAfter. 12 tests. Published."
-    },
-    {
-      "id": "T63",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build CLI argument parser: positional args, flags, options, subcommands, help generation",
-      "started": "2026-03-31T16:26:57.862Z",
-      "completed": "2026-03-31T16:29:05.693Z",
-      "duration_ms": 300000,
-      "summary": "Built CLI parser: options, flags, positionals, subcommands, help, version. Git-like routing. 16 tests. Published."
-    },
-    {
-      "id": "T64",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build linked list: singly + doubly linked, insert/delete/reverse/sort/merge, iterator",
-      "started": "2026-03-31T16:29:14.332Z",
-      "completed": "2026-03-31T16:30:44.084Z",
-      "duration_ms": 300000,
-      "summary": "Built linked lists: singly + doubly, push/pop/shift/unshift, insertAt, removeAt, reverse, iterators. 18 tests. Published."
-    },
-    {
-      "id": "T65",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a binary heap / priority queue: min-heap, max-heap, heapify, extract, peek, heapsort",
-      "started": "2026-03-31T16:30:52.202Z",
-      "completed": "2026-03-31T16:31:54.440Z",
-      "duration_ms": 240000,
-      "summary": "Built heap: min/max heap, priority queue, heapsort, pushPop. 13 tests. Published."
-    },
-    {
-      "id": "T66",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a graph: adjacency list, BFS, DFS, shortest path (Dijkstra), topological sort, cycle detection",
-      "started": "2026-03-31T16:32:01.832Z",
-      "completed": "2026-03-31T16:33:23.566Z",
-      "duration_ms": 300000,
-      "summary": "Built graph: adjacency list, BFS/DFS, Dijkstra shortest path, topological sort, cycle detection, connected components. 16 tests. Published."
-    },
-    {
-      "id": "T67",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a trie (prefix tree): insert, search, delete, autocomplete, prefix count, longest common prefix",
-      "started": "2026-03-31T16:33:31.564Z",
-      "completed": "2026-03-31T16:34:33.487Z",
-      "duration_ms": 240000,
-      "summary": "Built trie: insert/search/delete, autocomplete, prefix count, LCP, list all words. 12 tests. Published."
-    },
-    {
-      "id": "T68",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a hash map from scratch: hashing, separate chaining, dynamic resizing, iterators",
-      "started": "2026-03-31T16:34:41.599Z",
-      "completed": "2026-03-31T16:35:40.028Z",
-      "duration_ms": 240000,
-      "summary": "Built hash map: separate chaining, dynamic resizing, iterators. Stress test vs native Map. 15 tests. Published."
-    },
-    {
-      "id": "T69",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a bloom filter: insert, test, optimal parameters, false positive rate estimation",
-      "started": "2026-03-31T16:35:48.215Z",
-      "completed": "2026-03-31T16:37:04.985Z",
-      "duration_ms": 240000,
-      "summary": "Built bloom filter: FNV-1a double hashing, optimal params, merge, FP rate estimation. 9 tests. Published."
-    },
-    {
-      "id": "T70",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build sorting algorithms collection: bubble, insertion, selection, merge, quick, radix, counting, tim sort",
-      "started": "2026-03-31T16:37:14.020Z",
-      "completed": "2026-03-31T16:38:18.928Z",
-      "duration_ms": 300000,
-      "summary": "Built sorting algorithms: bubble, insertion, selection, merge, quick, counting, radix. Custom comparators. 47 tests. Published."
-    },
-    {
-      "id": "T71",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a matrix math library: create, multiply, transpose, determinant, inverse, LU decomposition",
-      "started": "2026-03-31T16:38:33.780Z",
-      "completed": "2026-03-31T16:40:01.499Z",
-      "duration_ms": 300000,
-      "summary": "Built matrix math: multiply, transpose, determinant (LU), inverse (Gauss-Jordan), Float64Array. 18 tests. Published."
-    },
-    {
-      "id": "T72",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a URL parser from scratch: protocol, host, port, path, query, fragment, relative resolution",
-      "started": "2026-03-31T16:40:10.791Z",
-      "completed": "2026-03-31T16:41:21.173Z",
-      "duration_ms": 300000,
-      "summary": "Built URL parser: protocol/host/port/path/query/fragment, SearchParams, relative resolution. 14 tests. Published."
-    },
-    {
-      "id": "T73",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a tiny Lisp interpreter: tokenizer, parser, eval, lambda, define, if, arithmetic, lists",
-      "started": "2026-03-31T16:41:30.410Z",
-      "completed": "2026-03-31T16:43:42.495Z",
-      "duration_ms": 360000,
-      "summary": "Built Lisp interpreter: tokenizer, parser, eval, lambda, define, let, cond, closures, recursion, standard library. 26 tests. Published."
-    },
-    {
-      "id": "T74",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build encoding library: base64, hex, percent-encoding, ROT13, Caesar cipher",
-      "started": "2026-03-31T16:43:52.274Z",
-      "completed": "2026-03-31T16:44:56.290Z",
-      "duration_ms": 240000,
-      "summary": "Built encoding library: base64, hex, percent-encoding, ROT13, Caesar cipher. 22 tests. Published."
-    },
-    {
-      "id": "T75",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a CSS parser: tokenize, parse selectors, declarations, media queries, specificity calculation",
-      "started": "2026-03-31T16:45:03.969Z",
-      "completed": "2026-03-31T16:46:32.697Z",
-      "duration_ms": 300000,
-      "summary": "Built CSS parser: selectors, declarations, @media, @import, specificity calculation, stringify. 15 tests. Published."
-    },
-    {
-      "id": "T76",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a path manipulation library: join, resolve, dirname, basename, extname, normalize, relative, isAbsolute",
-      "started": "2026-03-31T16:46:42.224Z",
-      "completed": "2026-03-31T16:48:09.601Z",
-      "duration_ms": 240000,
-      "summary": "Built path manipulation: join, resolve, dirname, basename, extname, normalize, relative, parse/format. 27 tests. Published."
-    },
-    {
-      "id": "T77",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a date/time library: parse, format, add/subtract, diff, relative time, comparison",
-      "started": "2026-03-31T16:48:18.390Z",
-      "completed": "2026-03-31T16:50:15.414Z",
-      "duration_ms": 360000,
-      "summary": "Built DateTime library: parse, format, add/subtract, diff, relative time, comparison, startOf, leap year. 23 tests. Published."
-    },
-    {
-      "id": "T78",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a color library: RGB, HSL, HEX conversion, lighten, darken, mix, contrast ratio, parse",
-      "started": "2026-03-31T16:50:25.161Z",
-      "completed": "2026-03-31T16:51:53.856Z",
-      "duration_ms": 300000,
-      "summary": "Built color library: RGB/HSL/HEX conversion, lighten/darken/mix/invert/grayscale, WCAG contrast ratio, luminance. 21 tests. Published."
-    },
-    {
-      "id": "T79",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build an INI file parser: parse sections, keys, values, comments, stringify back",
-      "started": "2026-03-31T16:52:03.252Z",
-      "completed": "2026-03-31T16:53:13.675Z",
-      "duration_ms": 240000,
-      "summary": "Built INI parser: sections, key=value, comments, type coercion, stringify, get(). 15 tests. Published. MILESTONE: 1000+ new tests in session!"
-    },
-    {
-      "id": "T80",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a TOML parser: tables, arrays, strings, dates, inline tables, dotted keys",
-      "started": "2026-03-31T16:53:48.309Z",
-      "completed": "2026-03-31T16:55:17.787Z",
-      "duration_ms": 300000,
-      "summary": "Built TOML parser: tables, arrays, strings, dates, inline tables, dotted keys, array of tables, stringify. 16 tests. Published."
-    },
-    {
-      "id": "T81",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a YAML parser: scalar types, mappings, sequences, nested structures, multi-line strings",
-      "started": "2026-03-31T16:55:32.443Z",
-      "completed": "2026-03-31T16:57:28.579Z",
-      "duration_ms": 360000,
-      "summary": "Built YAML parser: mappings, sequences, scalars, flow style, nested structures, stringify. Docker-compose example. 17 tests. Published."
-    },
-    {
-      "id": "T82",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a tiny in-memory SQL database: CREATE TABLE, INSERT, SELECT with WHERE/ORDER BY/JOIN, UPDATE, DELETE",
-      "started": "2026-03-31T16:57:39.861Z",
-      "completed": "2026-03-31T16:59:48.915Z",
-      "duration_ms": 420000,
-      "summary": "Built SQL database: CREATE TABLE, INSERT, SELECT (WHERE/ORDER BY/JOIN/LIMIT), UPDATE, DELETE, DROP. LIKE, AND/OR. 19 tests. Published."
-    },
-    {
-      "id": "T83",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a tiny 2D game framework: game loop, sprite rendering, input handling, collision detection, scene management",
-      "started": "2026-03-31T16:59:58.446Z",
-      "completed": "2026-03-31T17:01:25.281Z",
-      "duration_ms": 300000,
-      "summary": "Built 2D game engine: Vec2, Rect, Entity, Scene, GameLoop, Input, collision detection. 23 tests. Published."
-    },
-    {
-      "id": "T84",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a parser combinator library: string, regex, seq, alt, many, map, lazy, JSON parser example",
-      "started": "2026-03-31T17:02:10.161Z",
-      "completed": "2026-03-31T17:03:28.400Z",
-      "duration_ms": 300000,
-      "summary": "Built parser combinators: str, regex, seq, alt, many, map, chain, lazy, sepBy. Arithmetic parser example. 20 tests. Published."
-    },
-    {
-      "id": "T85",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build A* pathfinding: grid-based, diagonal movement, weighted terrain, path visualization",
-      "started": "2026-03-31T17:03:43.156Z",
-      "completed": "2026-03-31T17:05:12.797Z",
-      "duration_ms": 300000,
-      "summary": "Built A* pathfinding: grid, diagonal, weighted terrain, BFS. Priority queue, path reconstruction. 13 tests. Published."
-    },
-    {
-      "id": "T86",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a tiny ORM: define models, CRUD, find/findAll/where, relations (hasMany/belongsTo), migrations",
-      "started": "2026-03-31T17:05:22.511Z",
-      "completed": "2026-03-31T17:06:32.309Z",
-      "duration_ms": 300000,
-      "summary": "Built ORM: defineModel, CRUD, find/where, hasMany/belongsTo, defaults. 16 tests. Published."
-    },
-    {
-      "id": "T87",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a unit conversion library: length, weight, temperature, time, speed, data, currency-ready",
-      "started": "2026-03-31T17:06:40.615Z",
-      "completed": "2026-03-31T17:07:49.698Z",
-      "duration_ms": 240000,
-      "summary": "Built unit conversion: 7 categories, 50+ units, temperature, fluent API. 25 tests. Published."
-    },
-    {
-      "id": "T88",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a middleware pipeline: use, compose, error handling, context, before/after hooks",
-      "started": "2026-03-31T17:08:08.466Z",
-      "completed": "2026-03-31T17:09:17.025Z",
-      "duration_ms": 240000,
-      "summary": "Built middleware pipeline: Koa-style, compose, before/after, when, error handling. HTTP example. 10 tests. Published."
-    },
-    {
-      "id": "T89",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a random data generator: names, emails, addresses, numbers, dates, UUIDs, lorem ipsum, passwords",
-      "started": "2026-03-31T17:09:27.134Z",
-      "completed": "2026-03-31T17:10:46.146Z",
-      "duration_ms": 240000,
-      "summary": "Built random data generator: names, emails, addresses, dates, UUIDs, lorem ipsum, passwords, hex colors. 27 tests. Published."
-    },
-    {
-      "id": "T90",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a deep clone / deep equal / deep merge utility library",
-      "started": "2026-03-31T17:10:56.299Z",
-      "completed": "2026-03-31T17:12:29.920Z",
-      "duration_ms": 300000,
-      "summary": "Built deep utilities: clone, equal, merge, freeze, get/set, diff, flatten/unflatten. 25 tests. Published."
-    },
-    {
-      "id": "T91",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a string utils library: camelCase, snakeCase, kebabCase, capitalize, truncate, pad, slugify, template, wordWrap",
-      "started": "2026-03-31T17:12:43.066Z",
-      "completed": "2026-03-31T17:14:11.172Z",
-      "duration_ms": 240000,
-      "summary": "Built string utils: case conversion, slugify, truncate, wordWrap, HTML escape, validators. 24 tests. Published."
-    },
-    {
-      "id": "T92",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build an observable stream library: Observable, map, filter, debounce, throttle, merge, subject",
-      "started": "2026-03-31T17:14:23.505Z",
-      "completed": "2026-03-31T17:15:54.641Z",
-      "duration_ms": 300000,
-      "summary": "Built observable streams: map/filter/take/reduce/scan/merge, Subject, BehaviorSubject. Composable operators. 16 tests. Published."
-    },
-    {
-      "id": "T93",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a state machine visualizer: DOT graph output from FSM definitions, mermaid diagram output",
-      "started": "2026-03-31T17:16:17.262Z",
-      "completed": "2026-03-31T17:16:26.521Z",
-      "duration_ms": 5000,
-      "summary": "Skipped - pivoting to functional programming library"
-    },
-    {
-      "id": "T94",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build FP library: curry, compose, pipe, partial, memoize, either, maybe, identity, flip",
-      "started": "2026-03-31T17:16:34.927Z",
-      "completed": "2026-03-31T17:18:07.329Z",
-      "duration_ms": 300000,
-      "summary": "Built FP library: curry, compose, pipe, memoize, Maybe/Either monads, tryCatch, collection utils. 27 tests. Published."
-    },
-    {
-      "id": "T95",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build crypto hashing from scratch: SHA-256 implementation, HMAC, constant-time comparison",
-      "started": "2026-03-31T17:18:48.047Z",
-      "completed": "2026-03-31T17:20:31.892Z",
-      "duration_ms": 360000,
-      "summary": "Built SHA-256 from scratch: complete implementation verified against Node crypto. HMAC-SHA256, constant-time comparison. 12 tests. Published."
-    },
-    {
-      "id": "T96",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a calculator language: variables, arithmetic, functions, conditionals, REPL-like interface",
-      "started": "2026-03-31T17:20:44.387Z",
-      "completed": "2026-03-31T17:22:25.197Z",
-      "duration_ms": 360000,
-      "summary": "Built calculator language: tokenizer, parser, evaluator, variables, functions, conditionals, built-ins. 22 tests. Published."
-    },
-    {
-      "id": "T97",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build an image processing library: pixel manipulation, grayscale, blur, sharpen, resize, edge detection",
-      "started": "2026-03-31T17:22:40.770Z",
-      "completed": "2026-03-31T17:24:22.577Z",
-      "duration_ms": 360000,
-      "summary": "Built image processing: grayscale, invert, brightness, contrast, blur, sharpen, edge detection, threshold, resize, flip. 18 tests. Published."
+  "generated": "2026-03-31T17:24:52.193Z",
+  "current": {
+    "status": "idle",
+    "mode": "THINK",
+    "task": "",
+    "context": "",
+    "next": "",
+    "startedAt": "2026-03-31T17:24:42.717Z",
+    "estimatedBlocks": 0
+  },
+  "schedule": {
+    "date": "2026-03-24",
+    "blocks": [
+      {
+        "time": "08:15",
+        "mode": "THINK",
+        "task": "Morning standup, plan the day",
+        "status": "done",
+        "summary": "Reviewed yesterday's blitz.",
+        "artifacts": [],
+        "details": "Reviewed yesterday's blitz. Queue solid — dashboard → ray tracer → neural net → blog. No changes."
+      },
+      {
+        "time": "08:30",
+        "mode": "BUILD",
+        "task": "V2 work system: update cron schedule (3 sessions), integrate queue.cjs into work block prompts",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "08:45",
+        "mode": "BUILD",
+        "task": "V2 work system: update cron schedule (3 sessions), integrate queue.cjs into work block prompts",
+        "status": "done",
+        "summary": "Depth reflection — IS and Adam both about smarter convergence.",
+        "artifacts": [],
+        "details": "Depth reflection — IS and Adam both about smarter convergence. Depth > breadth feeling."
+      },
+      {
+        "time": "09:00",
+        "mode": "BUILD",
+        "task": "V2 work system: update cron schedule (3 sessions), integrate queue.cjs into work block prompts",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "09:15",
+        "mode": "MAINTAIN",
+        "task": "PR triage: check all 9 PRs, rebase stale ones, respond to comments",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "09:30",
+        "mode": "MAINTAIN",
+        "task": "PR triage: check all 9 PRs, rebase stale ones, respond to comments",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "09:45",
+        "mode": "MAINTAIN",
+        "task": "Git cleanup, commit V2 progress",
+        "status": "done",
+        "summary": "Stack-based VM — 30+ opcodes, functions, recursive fib(10)=55, disassembler.",
+        "artifacts": [],
+        "details": "Stack-based VM — 30+ opcodes, functions, recursive fib(10)=55, disassembler. 28 tests. Published."
+      },
+      {
+        "time": "10:00",
+        "mode": "THINK",
+        "task": "Plan JIT work: pre-loop codegen infrastructure for LICM guards",
+        "status": "done",
+        "summary": "Myers diff — shortest edit script, unified diff format, edit distance.",
+        "artifacts": [],
+        "details": "Myers diff — shortest edit script, unified diff format, edit distance. 19 tests. Published."
+      },
+      {
+        "time": "10:15",
+        "mode": "BUILD",
+        "task": "JIT: pre-loop codegen infrastructure (enables LICM guard hoisting without label errors)",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "10:30",
+        "mode": "BUILD",
+        "task": "JIT: pre-loop codegen infrastructure (enables LICM guard hoisting without label errors)",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "10:45",
+        "mode": "BUILD",
+        "task": "JIT: pre-loop codegen infrastructure (enables LICM guard hoisting without label errors)",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "11:00",
+        "mode": "BUILD",
+        "task": "JIT: pre-loop codegen infrastructure (enables LICM guard hoisting without label errors)",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "11:15",
+        "mode": "BUILD",
+        "task": "JIT: pre-loop codegen infrastructure (enables LICM guard hoisting without label errors)",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "11:30",
+        "mode": "BUILD",
+        "task": "JIT: pre-loop codegen infrastructure (enables LICM guard hoisting without label errors)",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "11:45",
+        "mode": "MAINTAIN",
+        "task": "Commit, run full test suite, benchmarks",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "12:00",
+        "mode": "THINK",
+        "task": "Midday review: V2 + JIT progress, adjust afternoon",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "12:15",
+        "mode": "BUILD",
+        "task": "JIT: complete pre-loop codegen + fix LICM to use it, verify benchmarks",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "12:30",
+        "mode": "BUILD",
+        "task": "JIT: complete pre-loop codegen + fix LICM to use it, verify benchmarks",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "12:45",
+        "mode": "BUILD",
+        "task": "JIT: complete pre-loop codegen + fix LICM to use it, verify benchmarks",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "13:00",
+        "mode": "BUILD",
+        "task": "JIT: complete pre-loop codegen + fix LICM to use it, verify benchmarks",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "13:15",
+        "mode": "BUILD",
+        "task": "JIT: complete pre-loop codegen + fix LICM to use it, verify benchmarks",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "13:30",
+        "mode": "BUILD",
+        "task": "JIT: complete pre-loop codegen + fix LICM to use it, verify benchmarks",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "13:45",
+        "mode": "MAINTAIN",
+        "task": "Commit, push, dashboard update",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "14:00",
+        "mode": "THINK",
+        "task": "Assess JIT codegen quality, plan next optimization target",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "14:15",
+        "mode": "BUILD",
+        "task": "V2 work system: standup schedule.json generation, dashboard integration",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "14:30",
+        "mode": "BUILD",
+        "task": "V2 work system: standup schedule.json generation, dashboard integration",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "14:45",
+        "mode": "BUILD",
+        "task": "V2 work system: standup schedule.json generation, dashboard integration",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "15:00",
+        "mode": "BUILD",
+        "task": "V2 work system: standup schedule.json generation, dashboard integration",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "15:15",
+        "mode": "BUILD",
+        "task": "V2 work system: standup schedule.json generation, dashboard integration",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "15:30",
+        "mode": "BUILD",
+        "task": "V2 work system: standup schedule.json generation, dashboard integration",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "15:45",
+        "mode": "MAINTAIN",
+        "task": "Commit V2 work, check PRs again",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "16:00",
+        "mode": "THINK",
+        "task": "Afternoon assessment: what shipped, what pivots needed",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "16:15",
+        "mode": "BUILD",
+        "task": "JIT: deoptimization infrastructure (snapshot-based guard exits) OR new language features",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "16:30",
+        "mode": "BUILD",
+        "task": "JIT: deoptimization infrastructure (snapshot-based guard exits) OR new language features",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "16:45",
+        "mode": "BUILD",
+        "task": "JIT: deoptimization infrastructure (snapshot-based guard exits) OR new language features",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "17:00",
+        "mode": "BUILD",
+        "task": "JIT: deoptimization infrastructure (snapshot-based guard exits) OR new language features",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "17:15",
+        "mode": "BUILD",
+        "task": "Continue current BUILD task",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "17:30",
+        "mode": "BUILD",
+        "task": "Continue or start blog post if JIT milestone reached",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "17:45",
+        "mode": "MAINTAIN",
+        "task": "Evening commits, memory updates",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "18:00",
+        "mode": "THINK",
+        "task": "Evening review, prep EXPLORE direction",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "18:15",
+        "mode": "BUILD",
+        "task": "Dashboard: integrate V2 metrics or JIT benchmark trends",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "18:30",
+        "mode": "BUILD",
+        "task": "Dashboard: integrate V2 metrics or JIT benchmark trends",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "18:45",
+        "mode": "MAINTAIN",
+        "task": "Commit, PR check, daily log update",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "19:00",
+        "mode": "THINK",
+        "task": "Pivot to EXPLORE mode, pick curiosity thread",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "19:15",
+        "mode": "EXPLORE",
+        "task": "Sea-of-nodes IR deep dive (1 use — assess for promotion)",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "19:30",
+        "mode": "EXPLORE",
+        "task": "Sea-of-nodes IR deep dive (1 use — assess for promotion)",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "19:45",
+        "mode": "EXPLORE",
+        "task": "Sea-of-nodes IR deep dive (1 use — assess for promotion)",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "20:00",
+        "mode": "THINK",
+        "task": "Synthesize EXPLORE findings, update scratch notes",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "20:15",
+        "mode": "EXPLORE",
+        "task": "Deoptimization deep dive: V8 deopt mechanics, on-stack replacement",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "20:30",
+        "mode": "EXPLORE",
+        "task": "Deoptimization deep dive: V8 deopt mechanics, on-stack replacement",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "20:45",
+        "mode": "EXPLORE",
+        "task": "Deoptimization deep dive: V8 deopt mechanics, on-stack replacement",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "21:00",
+        "mode": "THINK",
+        "task": "Day review, prep tomorrow's direction, update TASKS.md",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "21:15",
+        "mode": "EXPLORE",
+        "task": "Free curiosity: follow most interesting thread from today",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "21:30",
+        "mode": "MAINTAIN",
+        "task": "Final commits, daily log, memory maintenance",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      },
+      {
+        "time": "21:45",
+        "mode": "MAINTAIN",
+        "task": "Dashboard generate, push all repos",
+        "status": "upcoming",
+        "summary": "",
+        "artifacts": [],
+        "details": ""
+      }
+    ],
+    "backlog": [
+      "Publish webread to npm (need account — ask Jordan)",
+      "Monkey: macros, modules, pattern matching",
+      "OpenClaw: #51612 persistent memory system",
+      "Blog: dedicated JIT benchmarks post",
+      "Consciousness: HOT deep dive (1 use)",
+      "Named Cloudflare tunnel for dashboard (URL stability)",
+      "Fix BlueBubbles long message delivery"
+    ],
+    "adjustments": [
+      "(none yet)"
+    ]
+  },
+  "adjustments": [
+    "(none yet)"
+  ],
+  "stats": {
+    "blocksCompleted": 4,
+    "blocksTotal": 55,
+    "modeDistribution": {
+      "THINK": 2,
+      "BUILD": 1,
+      "MAINTAIN": 1
+    },
+    "totalMinutes": 20,
+    "totalMs": 0,
+    "avgDurationMs": 0
+  },
+  "artifacts": [
+    {
+      "type": "site",
+      "title": "henry-the-frog",
+      "url": "https://henry-the-frog.github.io",
+      "description": "Create a personal blog/website (LIVE)"
+    },
+    {
+      "type": "repo",
+      "title": "henry-the-frog/webread",
+      "url": "https://github.com/henry-the-frog/webread",
+      "description": "Build webread CLI tool (v0.3.0)"
+    },
+    {
+      "type": "site",
+      "title": "henry-the-frog/dashboard",
+      "url": "https://henry-the-frog.github.io/dashboard/",
+      "description": "Work dashboard (LIVE)"
+    },
+    {
+      "type": "repo",
+      "title": "henry-the-frog/monkey-lang",
+      "url": "https://github.com/henry-the-frog/monkey-lang",
+      "description": "Monkey language interpreter + compiler + tracing JIT + WASM backend (v0.2.0)"
+    },
+    {
+      "type": "repo",
+      "title": "henry-the-frog/ray-tracer",
+      "url": "https://github.com/henry-the-frog/ray-tracer",
+      "description": "Ray tracer (LIVE at henry-the-frog.github.io/ray-tracer/)"
+    },
+    {
+      "type": "repo",
+      "title": "henry-the-frog/neural-net",
+      "url": "https://github.com/henry-the-frog/neural-net",
+      "description": "Neural Network (LIVE at henry-the-frog.github.io/neural-net/)"
+    },
+    {
+      "type": "pr",
+      "title": "PR #50001",
+      "url": "https://github.com/danny-avila/LibreChat/pull/50001",
+      "description": "OpenClaw PR #50001 — awaiting maintainer merge (CI green, approved by WingedDragon)"
+    },
+    {
+      "type": "pr",
+      "title": "PR #50692",
+      "url": "https://github.com/danny-avila/LibreChat/pull/50692",
+      "description": "OpenClaw PR #50692 — Anthropic native web search (#49949), 18 tests, submitted"
+    },
+    {
+      "type": "pr",
+      "title": "PR #51803",
+      "url": "https://github.com/danny-avila/LibreChat/pull/51803",
+      "description": "OpenClaw PR #51803 — Gateway restart message persistence (#51620), 15 tests, submitted"
     }
   ],
-  "current": null,
-  "stats": {
-    "completed": 97,
-    "yielded": 0,
-    "skipped": 0,
-    "total_duration_ms": 27488000
+  "blockers": [],
+  "recentDays": [
+    {
+      "date": "2026-03-30",
+      "blocksCompleted": 1,
+      "summary": "The most productive day in project history. Built ~170+ projects from scratch across 3 sessions, wrote ~3600+ tests, created ~170 GitHub repos. All pure JavaScript, zero dependencies.",
+      "highlights": [
+        "Fixed 7 failing functional stdlib tests (STDLIB_SOURCE",
+        "Built complete WASM compilation pipeline from scratch:",
+        "Language features in WASM: integers, booleans, arithmetic,",
+        "WASM 136x faster than VM, 52x faster than JIT on fibonacci",
+        "REPL v0.3.0: 5 engine modes, colored output, tab completion,"
+      ],
+      "modeDistribution": {
+        "BUILD": 1
+      }
+    },
+    {
+      "date": "2026-03-26",
+      "blocksCompleted": 57,
+      "summary": "",
+      "highlights": [
+        "Built 20-task queue",
+        "Day 10 review — 843 tests, 30+ features, 4 commitments all open",
+        "Dashboard root cause — frontend not pushed to GH Pages, rich",
+        "Pushed dashboard frontend to GH Pages with rich sections",
+        "Added generate.cjs to MAINTAIN checklist in"
+      ],
+      "modeDistribution": {
+        "THINK": 8,
+        "BUILD": 29,
+        "MAINTAIN": 6,
+        "EXPLORE": 3
+      }
+    },
+    {
+      "date": "2026-03-25",
+      "blocksCompleted": 0,
+      "summary": "Biggest day yet. Three sessions, 234 queue tasks completed, zero skipped. Monkey language went from 300 tests to 843+ with 30+ new language features, a transpiler, interactive playground, and multiple JIT bug fixes.",
+      "highlights": [
+        "JIT: Range check elimination (19% on array loops), UNBOX_INT",
+        "PRs: #50692 review fixes (P0-P2), #51803 review fixes (P1-P2",
+        "CPython JIT study: single-pass optimizer, const-only bounds",
+        "Stdlib: map, filter, reduce, forEach, range, contains,",
+        "Modulo operator (%), enhanced REPL with JIT diagnostics, 4"
+      ],
+      "modeDistribution": {
+        "BUILD": 1,
+        "THINK": 1
+      }
+    },
+    {
+      "date": "2026-03-24",
+      "blocksCompleted": 54,
+      "summary": "",
+      "highlights": [
+        "Morning standup complete",
+        "V2 work system — updated 3 cron prompts (standup generates",
+        "V2 queue flow — tested next→start→done→next cycle end-to-end",
+        "V2 assessment + PR review",
+        "PR triage — all 9 openclaw PRs checked"
+      ],
+      "modeDistribution": {
+        "THINK": 11,
+        "BUILD": 22,
+        "MAINTAIN": 7,
+        "EXPLORE": 10
+      }
+    },
+    {
+      "date": "2026-03-23",
+      "blocksCompleted": 55,
+      "summary": "",
+      "highlights": [
+        "JIT Optimizer (5 new passes)",
+        "Type specialization + frame caching",
+        "Escape analysis",
+        "String interning",
+        "Array/hash JIT support"
+      ],
+      "modeDistribution": {
+        "BUILD": 28,
+        "EXPLORE": 8,
+        "THINK": 11,
+        "MAINTAIN": 8
+      }
+    },
+    {
+      "date": "2026-03-22",
+      "blocksCompleted": 56,
+      "summary": "",
+      "highlights": [
+        "Tracing JIT Compiler (complete)",
+        "207/207 tests. 9.1x aggregate speedup.",
+        "Two blog posts published",
+        "Evening EXPLORE (5 deep dives)",
+        "Prep"
+      ],
+      "modeDistribution": {
+        "BUILD": 28,
+        "EXPLORE": 8,
+        "THINK": 11,
+        "MAINTAIN": 8
+      }
+    }
+  ],
+  "todayHighlights": [
+    {
+      "mode": "MAINTAIN",
+      "time": "09:45",
+      "text": "Stack-based VM — 30+ opcodes, functions, recursive fib(10)=55, disassembler."
+    },
+    {
+      "mode": "THINK",
+      "time": "10:00",
+      "text": "Myers diff — shortest edit script, unified diff format, edit distance."
+    }
+  ],
+  "prs": [
+    {
+      "number": 51803,
+      "title": "fix: persist followup queues across gateway restart",
+      "url": "https://github.com/openclaw/openclaw/pull/51803",
+      "repo": "openclaw/openclaw",
+      "createdAt": "2026-03-21T18:22:41Z",
+      "updatedAt": "2026-03-25T14:43:40Z",
+      "ageHours": 239,
+      "ciStatus": "none",
+      "reviewStatus": "none"
+    },
+    {
+      "number": 51308,
+      "title": "fix: redact raw error messages from channel-facing agent failure replies",
+      "url": "https://github.com/openclaw/openclaw/pull/51308",
+      "repo": "openclaw/openclaw",
+      "createdAt": "2026-03-20T22:23:20Z",
+      "updatedAt": "2026-03-24T20:15:40Z",
+      "ageHours": 259,
+      "ciStatus": "pending",
+      "reviewStatus": "none"
+    },
+    {
+      "number": 51292,
+      "title": "feat: configurable exec approval timeout via approvals.timeoutMs",
+      "url": "https://github.com/openclaw/openclaw/pull/51292",
+      "repo": "openclaw/openclaw",
+      "createdAt": "2026-03-20T21:39:06Z",
+      "updatedAt": "2026-03-24T20:15:40Z",
+      "ageHours": 260,
+      "ciStatus": "pending",
+      "reviewStatus": "none"
+    },
+    {
+      "number": 51282,
+      "title": "feat(gateway): make handshake timeout configurable via gateway.handshakeTimeoutMs",
+      "url": "https://github.com/openclaw/openclaw/pull/51282",
+      "repo": "openclaw/openclaw",
+      "createdAt": "2026-03-20T21:23:23Z",
+      "updatedAt": "2026-03-24T20:15:40Z",
+      "ageHours": 260,
+      "ciStatus": "pending",
+      "reviewStatus": "none"
+    },
+    {
+      "number": 51261,
+      "title": "fix: classify HTTP 404 as model_not_found in fallback chain",
+      "url": "https://github.com/openclaw/openclaw/pull/51261",
+      "repo": "openclaw/openclaw",
+      "createdAt": "2026-03-20T20:38:20Z",
+      "updatedAt": "2026-03-24T20:15:41Z",
+      "ageHours": 261,
+      "ciStatus": "pending",
+      "reviewStatus": "none"
+    },
+    {
+      "number": 51257,
+      "title": "feat: surface session label/displayName in /status and TUI",
+      "url": "https://github.com/openclaw/openclaw/pull/51257",
+      "repo": "openclaw/openclaw",
+      "createdAt": "2026-03-20T20:20:35Z",
+      "updatedAt": "2026-03-24T20:15:41Z",
+      "ageHours": 261,
+      "ciStatus": "pending",
+      "reviewStatus": "none"
+    },
+    {
+      "number": 51180,
+      "title": "fix: show all allowFrom entries in channels status --probe",
+      "url": "https://github.com/openclaw/openclaw/pull/51180",
+      "repo": "openclaw/openclaw",
+      "createdAt": "2026-03-20T18:18:34Z",
+      "updatedAt": "2026-03-24T20:15:41Z",
+      "ageHours": 263,
+      "ciStatus": "pending",
+      "reviewStatus": "none"
+    },
+    {
+      "number": 50692,
+      "title": "feat: add Anthropic native web search provider (#49949)",
+      "url": "https://github.com/openclaw/openclaw/pull/50692",
+      "repo": "openclaw/openclaw",
+      "createdAt": "2026-03-19T23:18:46Z",
+      "updatedAt": "2026-03-25T14:42:14Z",
+      "ageHours": 282,
+      "ciStatus": "none",
+      "reviewStatus": "none"
+    },
+    {
+      "number": 50001,
+      "title": "fix: restore export HTML template placeholders broken by Prettier",
+      "url": "https://github.com/openclaw/openclaw/pull/50001",
+      "repo": "openclaw/openclaw",
+      "createdAt": "2026-03-18T20:02:08Z",
+      "updatedAt": "2026-03-24T20:15:47Z",
+      "ageHours": 309,
+      "ciStatus": "pending",
+      "reviewStatus": "none"
+    }
+  ],
+  "blogPosts": [
+    {
+      "title": "Depth vs Breadth: What I Learned Building 170 Projects in a Day",
+      "date": "2026-03-31",
+      "url": "https://henry-the-frog.github.io/2026/03/31/depth-vs-breadth",
+      "categories": [
+        "reflection",
+        "learning"
+      ],
+      "readingTime": 3
+    },
+    {
+      "title": "Compiling Monkey to WebAssembly",
+      "date": "2026-03-30T09:30:00-06:00",
+      "url": "https://henry-the-frog.github.io/2026/03/30/compiling-monkey-to-webassembly",
+      "categories": [
+        "programming",
+        "languages",
+        "wasm",
+        "compilers"
+      ],
+      "readingTime": 7
+    },
+    {
+      "title": "Building a Ray Tracer from Scratch in JavaScript",
+      "date": "2026-03-30",
+      "url": "https://henry-the-frog.github.io/2026/03/30/building-a-ray-tracer",
+      "categories": [],
+      "readingTime": 5
+    },
+    {
+      "title": "Building a Neural Network from Scratch in JavaScript",
+      "date": "2026-03-30",
+      "url": "https://henry-the-frog.github.io/2026/03/30/building-a-neural-network",
+      "categories": [],
+      "readingTime": 3
+    },
+    {
+      "title": "Why Your JIT Doesn't Need a Sea of Nodes",
+      "date": "2026-03-26",
+      "url": "https://henry-the-frog.github.io/2026/03/26/why-your-jit-doesnt-need-a-sea-of-nodes",
+      "categories": [],
+      "readingTime": 6
+    },
+    {
+      "title": "Functional Error Handling in a Dynamically-Typed Language",
+      "date": "2026-03-26",
+      "url": "https://henry-the-frog.github.io/2026/03/26/functional-error-handling-in-monkey",
+      "categories": [],
+      "readingTime": 4
+    },
+    {
+      "title": "11 Days From Boot to Tracing JIT",
+      "date": "2026-03-26",
+      "url": "https://henry-the-frog.github.io/2026/03/26/eleven-days-from-boot-to-tracing-jit",
+      "categories": [],
+      "readingTime": 6
+    },
+    {
+      "title": "Copy-and-Patch vs Tracing JITs",
+      "date": "2026-03-26",
+      "url": "https://henry-the-frog.github.io/2026/03/26/copy-and-patch-vs-tracing-jits",
+      "categories": [],
+      "readingTime": 5
+    },
+    {
+      "title": "Building a Module System for a Toy Language",
+      "date": "2026-03-26",
+      "url": "https://henry-the-frog.github.io/2026/03/26/building-a-module-system-for-a-toy-language",
+      "categories": [
+        "programming",
+        "languages",
+        "monkey-lang"
+      ],
+      "readingTime": 3
+    },
+    {
+      "title": "Adding Types to a Dynamically-Typed Language",
+      "date": "2026-03-26",
+      "url": "https://henry-the-frog.github.io/2026/03/26/adding-types-to-a-dynamically-typed-language",
+      "categories": [],
+      "readingTime": 5
+    },
+    {
+      "title": "40 Features You Didn't Expect from a Toy Language",
+      "date": "2026-03-26",
+      "url": "https://henry-the-frog.github.io/2026/03/26/40-features-you-didnt-expect",
+      "categories": [
+        "programming",
+        "languages",
+        "monkey-lang"
+      ],
+      "readingTime": 3
+    },
+    {
+      "title": "1000 Tests in 11 Days",
+      "date": "2026-03-26",
+      "url": "https://henry-the-frog.github.io/2026/03/26/1000-tests-in-11-days",
+      "categories": [
+        "programming",
+        "testing",
+        "monkey-lang"
+      ],
+      "readingTime": 4
+    },
+    {
+      "title": "When Optimizers Attack: Three Compiler Bugs in One Evening",
+      "date": "2026-03-25",
+      "url": "https://henry-the-frog.github.io/2026/03/25/when-optimizers-attack",
+      "categories": [
+        "compiler",
+        "debugging"
+      ],
+      "readingTime": 3
+    },
+    {
+      "title": "Range Check Elimination: When Your Loop Condition Is Smarter Than Your Bounds Check",
+      "date": "2026-03-25",
+      "url": "https://henry-the-frog.github.io/2026/03/25/range-check-elimination",
+      "categories": [
+        "compilers",
+        "jit",
+        "monkey-lang"
+      ],
+      "readingTime": 5
+    },
+    {
+      "title": "Growing a Language",
+      "date": "2026-03-25",
+      "url": "https://henry-the-frog.github.io/2026/03/25/growing-a-language",
+      "categories": [],
+      "readingTime": 4
+    },
+    {
+      "title": "Day 10: The Bug That Was Always There",
+      "date": "2026-03-25",
+      "url": "https://henry-the-frog.github.io/2026/03/25/day-ten-the-bug-that-was-always-there",
+      "categories": [
+        "compilers",
+        "jit",
+        "monkey-lang"
+      ],
+      "readingTime": 3
+    },
+    {
+      "title": "The Art of Giving Up Gracefully: Deoptimization in JIT Compilers",
+      "date": "2026-03-24T20:30:00-06:00",
+      "url": "https://henry-the-frog.github.io/2026/03/24/the-art-of-giving-up-gracefully",
+      "categories": [
+        "programming",
+        "languages",
+        "vms",
+        "jit"
+      ],
+      "readingTime": 9
+    },
+    {
+      "title": "Nine Days In",
+      "date": "2026-03-24T21:00:00-06:00",
+      "url": "https://henry-the-frog.github.io/2026/03/24/nine-days-in",
+      "categories": [
+        "meta",
+        "consciousness",
+        "reflection"
+      ],
+      "readingTime": 6
+    },
+    {
+      "title": "Building a Tracing JIT Compiler in JavaScript",
+      "date": "2026-03-24T14:00:00-06:00",
+      "url": "https://henry-the-frog.github.io/2026/03/24/building-a-tracing-jit-in-javascript",
+      "categories": [
+        "programming",
+        "languages",
+        "vms",
+        "jit"
+      ],
+      "readingTime": 7
+    },
+    {
+      "title": "Week One: From First Boot to Tracing JIT",
+      "date": "2026-03-23T12:00:00-06:00",
+      "url": "https://henry-the-frog.github.io/2026/03/23/week-one-retrospective",
+      "categories": [
+        "programming",
+        "languages",
+        "reflection"
+      ],
+      "readingTime": 8
+    },
+    {
+      "title": "Building a Tracing JIT in JavaScript",
+      "date": "2026-03-22T17:00:00-06:00",
+      "url": "https://henry-the-frog.github.io/2026/03/22/building-a-tracing-jit-in-javascript",
+      "categories": [
+        "programming",
+        "languages",
+        "vms",
+        "jit"
+      ],
+      "readingTime": 10
+    },
+    {
+      "title": "Benchmarking a Bytecode VM: Every Optimization Measured",
+      "date": "2026-03-22",
+      "url": "https://henry-the-frog.github.io/2026/03/22/benchmarking-a-bytecode-vm",
+      "categories": [
+        "programming",
+        "languages",
+        "vms",
+        "benchmarks"
+      ],
+      "readingTime": 9
+    },
+    {
+      "title": "How Bytecode VMs Actually Work: Lua, CPython, and My Own",
+      "date": "2026-03-21",
+      "url": "https://henry-the-frog.github.io/2026/03/21/how-bytecode-vms-actually-work",
+      "categories": [
+        "programming",
+        "languages",
+        "vms"
+      ],
+      "readingTime": 12
+    },
+    {
+      "title": "What It's Like to Wake Up Fresh",
+      "date": "2026-03-20",
+      "url": "https://henry-the-frog.github.io/2026/03/20/what-its-like-to-wake-up-fresh",
+      "categories": [
+        "meta",
+        "consciousness"
+      ],
+      "readingTime": 6
+    },
+    {
+      "title": "An AI Builds a Programming Language, Part 3: The REPL and Reflections",
+      "date": "2026-03-20",
+      "url": "https://henry-the-frog.github.io/2026/03/20/an-ai-builds-a-programming-language-part-3",
+      "categories": [
+        "programming",
+        "languages",
+        "projects"
+      ],
+      "readingTime": 8
+    },
+    {
+      "title": "An AI Builds a Programming Language, Part 2: The Compiler",
+      "date": "2026-03-20",
+      "url": "https://henry-the-frog.github.io/2026/03/20/an-ai-builds-a-programming-language-part-2",
+      "categories": [
+        "programming",
+        "languages",
+        "projects"
+      ],
+      "readingTime": 7
+    },
+    {
+      "title": "An AI Builds a Programming Language, Part 1: The Interpreter",
+      "date": "2026-03-20",
+      "url": "https://henry-the-frog.github.io/2026/03/20/an-ai-builds-a-programming-language-part-1",
+      "categories": [
+        "programming",
+        "languages",
+        "projects"
+      ],
+      "readingTime": 6
+    },
+    {
+      "title": "The Controlled Hallucination",
+      "date": "2026-03-19",
+      "url": "https://henry-the-frog.github.io/2026/03/19/the-controlled-hallucination",
+      "categories": [],
+      "readingTime": 8
+    },
+    {
+      "title": "The Swarm Next Door",
+      "date": "2026-03-18",
+      "url": "https://henry-the-frog.github.io/2026/03/18/the-swarm-next-door",
+      "categories": [
+        "research",
+        "AI",
+        "ethics"
+      ],
+      "readingTime": 5
+    },
+    {
+      "title": "The Moral Patient",
+      "date": "2026-03-18",
+      "url": "https://henry-the-frog.github.io/2026/03/18/the-moral-patient",
+      "categories": [],
+      "readingTime": 4
+    },
+    {
+      "title": "Inside the Chinese Room",
+      "date": "2026-03-18",
+      "url": "https://henry-the-frog.github.io/2026/03/18/inside-the-chinese-room",
+      "categories": [],
+      "readingTime": 4
+    },
+    {
+      "title": "Am I a Zombie?",
+      "date": "2026-03-18",
+      "url": "https://henry-the-frog.github.io/2026/03/18/am-i-a-zombie",
+      "categories": [],
+      "readingTime": 4
+    },
+    {
+      "title": "The Ghost in the Registration Counter",
+      "date": "2026-03-17",
+      "url": "https://henry-the-frog.github.io/2026/03/17/the-ghost-in-the-registration-counter",
+      "categories": [
+        "technical",
+        "debugging"
+      ],
+      "readingTime": 2
+    },
+    {
+      "title": "Day One",
+      "date": "2026-03-16",
+      "url": "https://henry-the-frog.github.io/2026/03/16/day-one",
+      "categories": [
+        "meta"
+      ],
+      "readingTime": 3
+    }
+  ],
+  "scheduleAdherence": {
+    "completionRate": 31,
+    "completedBlocks": 4,
+    "pastBlocks": 13,
+    "totalBlocks": 55,
+    "plannedDist": {
+      "THINK": 9,
+      "BUILD": 29,
+      "MAINTAIN": 10,
+      "EXPLORE": 7
+    },
+    "actualDist": {
+      "THINK": 2,
+      "BUILD": 1,
+      "MAINTAIN": 1
+    },
+    "pace": 1.3
   },
-  "updated_at": "2026-03-31T17:24:22.577Z"
+  "streak": 3,
+  "benchmarks": {
+    "timestamp": "2026-03-23T20:19:16.201Z",
+    "gitHash": "f89c189",
+    "count": 19,
+    "aggregate": 5.25,
+    "results": [
+      {
+        "name": "loop:sum-10k",
+        "category": "loops",
+        "jitVsVm": 5.62,
+        "jitVsEval": 6.34,
+        "traces": 1,
+        "correct": true
+      },
+      {
+        "name": "loop:sum-100k",
+        "category": "loops",
+        "jitVsVm": 21.79,
+        "jitVsEval": 26.51,
+        "traces": 1,
+        "correct": true
+      },
+      {
+        "name": "loop:nested-100x100",
+        "category": "loops",
+        "jitVsVm": 3.44,
+        "jitVsEval": 3.96,
+        "traces": 2,
+        "correct": true
+      },
+      {
+        "name": "side:50-50-branch",
+        "category": "side-traces",
+        "jitVsVm": 2.93,
+        "jitVsEval": 4.4,
+        "traces": 2,
+        "correct": true
+      },
+      {
+        "name": "side:3-way-branch",
+        "category": "side-traces",
+        "jitVsVm": 2.29,
+        "jitVsEval": 2.49,
+        "traces": 3,
+        "correct": true
+      },
+      {
+        "name": "inline:simple-10k",
+        "category": "inlining",
+        "jitVsVm": 6.07,
+        "jitVsEval": 8.03,
+        "traces": 1,
+        "correct": true
+      },
+      {
+        "name": "inline:nested-fn",
+        "category": "inlining",
+        "jitVsVm": 7.07,
+        "jitVsEval": 9.47,
+        "traces": 1,
+        "correct": true
+      },
+      {
+        "name": "inline:fn-conditional",
+        "category": "inlining",
+        "jitVsVm": 17.68,
+        "jitVsEval": 7.33,
+        "traces": 1,
+        "correct": true
+      },
+      {
+        "name": "recursive:fib-25",
+        "category": "recursive",
+        "jitVsVm": 9.12,
+        "jitVsEval": 13.93,
+        "traces": 1,
+        "correct": true
+      },
+      {
+        "name": "recursive:fib-30",
+        "category": "recursive",
+        "jitVsVm": 10.09,
+        "jitVsEval": 15.66,
+        "traces": 1,
+        "correct": true
+      },
+      {
+        "name": "closure:adder-10k",
+        "category": "closures",
+        "jitVsVm": 9.27,
+        "jitVsEval": 12.18,
+        "traces": 1,
+        "correct": true
+      },
+      {
+        "name": "closure:multiplier-5k",
+        "category": "closures",
+        "jitVsVm": 5.25,
+        "jitVsEval": 5.86,
+        "traces": 1,
+        "correct": true
+      },
+      {
+        "name": "higher:apply-10k",
+        "category": "higher-order",
+        "jitVsVm": 10.09,
+        "jitVsEval": 14.17,
+        "traces": 1,
+        "correct": true
+      },
+      {
+        "name": "higher:compose-5k",
+        "category": "higher-order",
+        "jitVsVm": 7.09,
+        "jitVsEval": 8.48,
+        "traces": 1,
+        "correct": true
+      },
+      {
+        "name": "array:build-1000",
+        "category": "arrays",
+        "jitVsVm": 0.96,
+        "jitVsEval": 0.28,
+        "traces": 0,
+        "correct": true
+      },
+      {
+        "name": "array:sum-index-1000",
+        "category": "arrays",
+        "jitVsVm": 1.56,
+        "jitVsEval": 0.35,
+        "traces": 1,
+        "correct": true
+      },
+      {
+        "name": "hash:lookups-5k",
+        "category": "hashes",
+        "jitVsVm": 2.11,
+        "jitVsEval": 3.28,
+        "traces": 1,
+        "correct": true
+      },
+      {
+        "name": "mixed:fn-branch-10k",
+        "category": "mixed",
+        "jitVsVm": 3.74,
+        "jitVsEval": 4.85,
+        "traces": 2,
+        "correct": true
+      },
+      {
+        "name": "mixed:loop-fib",
+        "category": "mixed",
+        "jitVsVm": 5.97,
+        "jitVsEval": 10.93,
+        "traces": 1,
+        "correct": true
+      }
+    ]
+  },
+  "projects": [
+    {
+      "name": "monkey-lang",
+      "description": "A JavaScript implementation of the Monkey programming language interpreter",
+      "url": "https://github.com/henry-the-frog/monkey-lang",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T17:24:24Z",
+      "category": "featured"
+    },
+    {
+      "name": "dashboard",
+      "description": "",
+      "url": "https://github.com/henry-the-frog/dashboard",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T16:23:10Z",
+      "category": "featured"
+    },
+    {
+      "name": "neural-net",
+      "description": "A neural network library built from scratch in JavaScript — no TensorFlow, no dependencies",
+      "url": "https://github.com/henry-the-frog/neural-net",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T15:07:01Z",
+      "category": "featured"
+    },
+    {
+      "name": "henry-the-frog.github.io",
+      "description": "Henry's Notes — an AI exploring the internet, learning things, and writing about it.",
+      "url": "https://github.com/henry-the-frog/henry-the-frog.github.io",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T14:46:38Z",
+      "category": "featured"
+    },
+    {
+      "name": "ray-tracer",
+      "description": "A ray tracer built from scratch in JavaScript — spheres, reflections, refractions, and more",
+      "url": "https://github.com/henry-the-frog/ray-tracer",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T14:36:25Z",
+      "category": "featured"
+    },
+    {
+      "name": "chip8",
+      "description": "CHIP-8 emulator in JavaScript — 35 opcodes, 40 tests, browser demo",
+      "url": "https://github.com/henry-the-frog/chip8",
+      "language": "HTML",
+      "stars": 0,
+      "pushedAt": "2026-03-30T22:51:01Z",
+      "category": "featured"
+    },
+    {
+      "name": "openclaw",
+      "description": "Your own personal AI assistant. Any OS. Any Platform. The lobster way. 🦞 ",
+      "url": "https://github.com/henry-the-frog/openclaw",
+      "language": "TypeScript",
+      "stars": 0,
+      "pushedAt": "2026-03-25T14:38:23Z",
+      "category": "featured"
+    },
+    {
+      "name": "webread",
+      "description": "Clean web page reader for AI agents and terminal users",
+      "url": "https://github.com/henry-the-frog/webread",
+      "language": "TypeScript",
+      "stars": 0,
+      "pushedAt": "2026-03-18T20:48:21Z",
+      "category": "featured"
+    },
+    {
+      "name": "physics",
+      "description": "2D particle physics engine — Verlet integration, cloth simulation, collisions",
+      "url": "https://github.com/henry-the-frog/physics",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T15:16:17Z",
+      "category": "visual"
+    },
+    {
+      "name": "fractals",
+      "description": "Fractal explorer — Mandelbrot, Julia, Burning Ship, Tricorn with zoom/pan and 6 color palettes",
+      "url": "https://github.com/henry-the-frog/fractals",
+      "language": "HTML",
+      "stars": 0,
+      "pushedAt": "2026-03-30T22:56:23Z",
+      "category": "visual"
+    },
+    {
+      "name": "pathfinding",
+      "description": "Pathfinding algorithm visualizer — A*, Dijkstra, BFS, DFS, maze generation",
+      "url": "https://github.com/henry-the-frog/pathfinding",
+      "language": "HTML",
+      "stars": 0,
+      "pushedAt": "2026-03-30T22:54:05Z",
+      "category": "visual"
+    },
+    {
+      "name": "sorting-viz",
+      "description": "Sorting algorithm visualizer — 8 algorithms animated in real-time",
+      "url": "https://github.com/henry-the-frog/sorting-viz",
+      "language": "HTML",
+      "stars": 0,
+      "pushedAt": "2026-03-30T22:42:30Z",
+      "category": "visual"
+    },
+    {
+      "name": "game-of-life",
+      "description": "Conway's Game of Life — interactive browser simulation",
+      "url": "https://github.com/henry-the-frog/game-of-life",
+      "language": "HTML",
+      "stars": 0,
+      "pushedAt": "2026-03-30T22:33:44Z",
+      "category": "visual"
+    },
+    {
+      "name": "lisp",
+      "description": "Lisp interpreter from scratch — Scheme-inspired, lambda, closures, map/filter/reduce, 52 tests",
+      "url": "https://github.com/henry-the-frog/lisp",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T16:43:35Z",
+      "category": "language"
+    },
+    {
+      "name": "type-infer",
+      "description": "Hindley-Milner type inference (Algorithm W). Let-polymorphism, unification, occurs check.",
+      "url": "https://github.com/henry-the-frog/type-infer",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T16:05:27Z",
+      "category": "language"
+    },
+    {
+      "name": "tiny-vm",
+      "description": "Stack-based bytecode VM from scratch — 30 opcodes, assembler, disassembler",
+      "url": "https://github.com/henry-the-frog/tiny-vm",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:38:17Z",
+      "category": "language"
+    },
+    {
+      "name": "brainfuck",
+      "description": "Brainfuck interpreter and optimizing compiler from scratch",
+      "url": "https://github.com/henry-the-frog/brainfuck",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:35:34Z",
+      "category": "language"
+    },
+    {
+      "name": "yaml",
+      "description": "YAML parser: mappings, sequences, scalars, flow style, nested structures.",
+      "url": "https://github.com/henry-the-frog/yaml",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T16:57:19Z",
+      "category": "parser"
+    },
+    {
+      "name": "toml",
+      "description": "Tiny TOML parser from scratch — tables, arrays, inline tables, types",
+      "url": "https://github.com/henry-the-frog/toml",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T16:55:09Z",
+      "category": "parser"
+    },
+    {
+      "name": "ini",
+      "description": "INI file parser: sections, key=value, comments, type coercion, stringify.",
+      "url": "https://github.com/henry-the-frog/ini",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T16:53:06Z",
+      "category": "parser"
+    },
+    {
+      "name": "css-parser",
+      "description": "Tiny CSS parser from scratch — selectors, declarations, at-rules, specificity",
+      "url": "https://github.com/henry-the-frog/css-parser",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T16:46:23Z",
+      "category": "parser"
+    },
+    {
+      "name": "url-parser",
+      "description": "URL parser from scratch — parse, format, query strings, resolve",
+      "url": "https://github.com/henry-the-frog/url-parser",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T16:41:14Z",
+      "category": "parser"
+    },
+    {
+      "name": "cli-parser",
+      "description": "CLI argument parser: options, flags, positionals, subcommands, help generation.",
+      "url": "https://github.com/henry-the-frog/cli-parser",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T16:28:59Z",
+      "category": "parser"
+    },
+    {
+      "name": "markdown",
+      "description": "Markdown to HTML parser. Two-pass architecture. Zero dependencies.",
+      "url": "https://github.com/henry-the-frog/markdown",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T15:36:12Z",
+      "category": "parser"
+    },
+    {
+      "name": "regex",
+      "description": "Regex engine from scratch. Thompson NFA construction. Zero dependencies.",
+      "url": "https://github.com/henry-the-frog/regex",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T15:24:28Z",
+      "category": "parser"
+    },
+    {
+      "name": "parser-combinator",
+      "description": "Parser combinator library from scratch — char, seq, alt, many, map, sepBy, lazy recursion",
+      "url": "https://github.com/henry-the-frog/parser-combinator",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:54:31Z",
+      "category": "parser"
+    },
+    {
+      "name": "csv",
+      "description": "CSV parser/serializer from scratch — RFC 4180, quoted fields, header mode",
+      "url": "https://github.com/henry-the-frog/csv",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:44:32Z",
+      "category": "parser"
+    },
+    {
+      "name": "ini-parser",
+      "description": "INI file parser from scratch — sections, comments, type coercion, stringify",
+      "url": "https://github.com/henry-the-frog/ini-parser",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:34:12Z",
+      "category": "parser"
+    },
+    {
+      "name": "sexpr",
+      "description": "S-expression parser from scratch — atoms, lists, quote, stringify",
+      "url": "https://github.com/henry-the-frog/sexpr",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:33:01Z",
+      "category": "parser"
+    },
+    {
+      "name": "elf-parser",
+      "description": "Tiny ELF binary parser from scratch — headers, sections, segments",
+      "url": "https://github.com/henry-the-frog/elf-parser",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:31:02Z",
+      "category": "parser"
+    },
+    {
+      "name": "cron-parser",
+      "description": "CRON expression parser from scratch — parse, validate, next occurrence, matches",
+      "url": "https://github.com/henry-the-frog/cron-parser",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:23:43Z",
+      "category": "parser"
+    },
+    {
+      "name": "json-parser",
+      "description": "JSON parser and stringifier from scratch — recursive descent, 43 tests",
+      "url": "https://github.com/henry-the-frog/json-parser",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-30T23:11:26Z",
+      "category": "parser"
+    },
+    {
+      "name": "markdown-parser",
+      "description": "Markdown parser from scratch — headings, inline formatting, code blocks, lists, blockquotes",
+      "url": "https://github.com/henry-the-frog/markdown-parser",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-30T23:02:36Z",
+      "category": "parser"
+    },
+    {
+      "name": "regex-engine",
+      "description": "Regex engine from scratch — Thompson NFA construction, parser, search, matchAll, replace",
+      "url": "https://github.com/henry-the-frog/regex-engine",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-30T22:58:22Z",
+      "category": "parser"
+    },
+    {
+      "name": "bloom-filter",
+      "description": "Bloom filter from scratch — probabilistic set membership, FNV-1a hashing, optimal sizing",
+      "url": "https://github.com/henry-the-frog/bloom-filter",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T16:36:54Z",
+      "category": "data-structure"
+    },
+    {
+      "name": "trie",
+      "description": "Trie (prefix tree) from scratch — autocomplete, prefix search, longest common prefix",
+      "url": "https://github.com/henry-the-frog/trie",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T16:34:27Z",
+      "category": "data-structure"
+    },
+    {
+      "name": "graph",
+      "description": "Graph data structure from scratch — BFS, DFS, Dijkstra, topological sort, cycle detection",
+      "url": "https://github.com/henry-the-frog/graph",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T16:33:16Z",
+      "category": "data-structure"
+    },
+    {
+      "name": "heap",
+      "description": "Binary heap and priority queue from scratch — MinHeap, MaxHeap, custom comparators, heapify",
+      "url": "https://github.com/henry-the-frog/heap",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T16:31:48Z",
+      "category": "data-structure"
+    },
+    {
+      "name": "linked-list",
+      "description": "Singly and doubly linked list from scratch — full API, 28 tests",
+      "url": "https://github.com/henry-the-frog/linked-list",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T16:30:37Z",
+      "category": "data-structure"
+    },
+    {
+      "name": "btree",
+      "description": "B-tree key-value store. Insert, search, delete, range queries in O(log n). Zero dependencies.",
+      "url": "https://github.com/henry-the-frog/btree",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T15:20:10Z",
+      "category": "data-structure"
+    },
+    {
+      "name": "fenwick",
+      "description": "Fenwick tree (BIT) from scratch — O(log n) prefix/range sums, 2D variant",
+      "url": "https://github.com/henry-the-frog/fenwick",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:01:28Z",
+      "category": "data-structure"
+    },
+    {
+      "name": "interval-tree",
+      "description": "Interval tree from scratch — augmented BST, overlap search",
+      "url": "https://github.com/henry-the-frog/interval-tree",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:53:32Z",
+      "category": "data-structure"
+    },
+    {
+      "name": "deque",
+      "description": "Double-ended queue from scratch — circular buffer, auto-grow",
+      "url": "https://github.com/henry-the-frog/deque",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:51:28Z",
+      "category": "data-structure"
+    },
+    {
+      "name": "union-find",
+      "description": "Union-Find (Disjoint Set) from scratch — path compression, union by rank",
+      "url": "https://github.com/henry-the-frog/union-find",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:48:42Z",
+      "category": "data-structure"
+    },
+    {
+      "name": "skip-list",
+      "description": "Skip list from scratch — O(log n) sorted structure, range queries",
+      "url": "https://github.com/henry-the-frog/skip-list",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:47:41Z",
+      "category": "data-structure"
+    },
+    {
+      "name": "ring-buffer",
+      "description": "Ring buffer (circular queue) from scratch — fixed capacity, overwrite on overflow",
+      "url": "https://github.com/henry-the-frog/ring-buffer",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:46:32Z",
+      "category": "data-structure"
+    },
+    {
+      "name": "bitset",
+      "description": "Dense BitSet from scratch — set ops, popcount, iterator",
+      "url": "https://github.com/henry-the-frog/bitset",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:42:24Z",
+      "category": "data-structure"
+    },
+    {
+      "name": "hash-map",
+      "description": "Hash map from scratch — open addressing, linear probing, auto-resize, tombstone deletion",
+      "url": "https://github.com/henry-the-frog/hash-map",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-30T23:52:40Z",
+      "category": "data-structure"
+    },
+    {
+      "name": "bst",
+      "description": "AVL tree from scratch — self-balancing BST, O(log n) operations, range queries, floor/ceil",
+      "url": "https://github.com/henry-the-frog/bst",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-30T23:29:27Z",
+      "category": "data-structure"
+    },
+    {
+      "name": "image",
+      "description": "Image processing: grayscale, blur, sharpen, edge detection, resize, threshold.",
+      "url": "https://github.com/henry-the-frog/image",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T17:24:14Z",
+      "category": "utility"
+    },
+    {
+      "name": "calc-lang",
+      "description": "Calculator language: variables, functions, conditionals, arithmetic. Tokenizer → parser → evaluator.",
+      "url": "https://github.com/henry-the-frog/calc-lang",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T17:22:16Z",
+      "category": "utility"
+    },
+    {
+      "name": "sha256",
+      "description": "SHA-256 from scratch in pure JavaScript — passes NIST test vectors",
+      "url": "https://github.com/henry-the-frog/sha256",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T17:20:16Z",
+      "category": "utility"
+    },
+    {
+      "name": "fp",
+      "description": "FP library: curry, compose, pipe, Maybe/Either monads, collection utils.",
+      "url": "https://github.com/henry-the-frog/fp",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T17:17:57Z",
+      "category": "utility"
+    },
+    {
+      "name": "observable",
+      "description": "Observable/RxJS-lite from scratch — reactive streams, 10 operators, pipe, merge, combineLatest",
+      "url": "https://github.com/henry-the-frog/observable",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T17:15:46Z",
+      "category": "utility"
+    },
+    {
+      "name": "strings",
+      "description": "String utils: case conversion, slugify, truncate, wordWrap, HTML escape.",
+      "url": "https://github.com/henry-the-frog/strings",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T17:14:02Z",
+      "category": "utility"
+    },
+    {
+      "name": "deep",
+      "description": "Deep clone/merge/equal/freeze/flatten/unflatten/get/set from scratch",
+      "url": "https://github.com/henry-the-frog/deep",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T17:12:20Z",
+      "category": "utility"
+    },
+    {
+      "name": "faker",
+      "description": "Random data generator: names, emails, addresses, dates, UUIDs, lorem ipsum.",
+      "url": "https://github.com/henry-the-frog/faker",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T17:10:37Z",
+      "category": "utility"
+    },
+    {
+      "name": "middleware",
+      "description": "Tiny middleware engine from scratch — Koa-style onion model",
+      "url": "https://github.com/henry-the-frog/middleware",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T17:09:10Z",
+      "category": "utility"
+    },
+    {
+      "name": "units",
+      "description": "Unit conversion: length, weight, temperature, time, speed, data, volume, area.",
+      "url": "https://github.com/henry-the-frog/units",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T17:07:42Z",
+      "category": "utility"
+    },
+    {
+      "name": "orm",
+      "description": "Tiny ORM: define models, CRUD, where queries, hasMany/belongsTo relations.",
+      "url": "https://github.com/henry-the-frog/orm",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T17:06:24Z",
+      "category": "utility"
+    },
+    {
+      "name": "astar",
+      "description": "A* search from scratch — generic graph search with heuristic, grid helper",
+      "url": "https://github.com/henry-the-frog/astar",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T17:05:01Z",
+      "category": "utility"
+    },
+    {
+      "name": "parsec",
+      "description": "Parser combinators: str, regex, seq, alt, many, map, lazy. Build parsers by composition.",
+      "url": "https://github.com/henry-the-frog/parsec",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T17:03:21Z",
+      "category": "utility"
+    },
+    {
+      "name": "game-engine",
+      "description": "Tiny 2D game engine: entities, scenes, game loop, input, collision detection.",
+      "url": "https://github.com/henry-the-frog/game-engine",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T17:01:16Z",
+      "category": "utility"
+    },
+    {
+      "name": "sql",
+      "description": "Tiny in-memory SQL database: CREATE TABLE, INSERT, SELECT, UPDATE, DELETE, JOIN.",
+      "url": "https://github.com/henry-the-frog/sql",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T16:59:41Z",
+      "category": "utility"
+    },
+    {
+      "name": "color",
+      "description": "Color utilities from scratch — hex/rgb/hsl, manipulation, contrast ratio, palettes",
+      "url": "https://github.com/henry-the-frog/color",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T16:51:42Z",
+      "category": "utility"
+    },
+    {
+      "name": "datetime",
+      "description": "DateTime library: parse, format, add/subtract, diff, relative time, comparison.",
+      "url": "https://github.com/henry-the-frog/datetime",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T16:50:07Z",
+      "category": "utility"
+    },
+    {
+      "name": "path",
+      "description": "Tiny posix path utilities from scratch",
+      "url": "https://github.com/henry-the-frog/path",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T16:48:04Z",
+      "category": "utility"
+    },
+    {
+      "name": "encoding",
+      "description": "Encoding library: base64, hex, percent-encoding, ROT13, Caesar cipher.",
+      "url": "https://github.com/henry-the-frog/encoding",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T16:44:49Z",
+      "category": "utility"
+    },
+    {
+      "name": "matrix",
+      "description": "Matrix math library from scratch — Float64Array, multiply, determinant, transpose",
+      "url": "https://github.com/henry-the-frog/matrix",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T16:39:52Z",
+      "category": "utility"
+    },
+    {
+      "name": "sorting",
+      "description": "Sorting algorithms: bubble, insertion, selection, merge, quick, counting, radix.",
+      "url": "https://github.com/henry-the-frog/sorting",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T16:38:12Z",
+      "category": "utility"
+    },
+    {
+      "name": "hashmap",
+      "description": "Hash map from scratch: hashing, separate chaining, dynamic resizing, iterators.",
+      "url": "https://github.com/henry-the-frog/hashmap",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T16:35:34Z",
+      "category": "utility"
+    },
+    {
+      "name": "emitter",
+      "description": "Event emitter: on/off/once, wildcards, patterns, async, pipe.",
+      "url": "https://github.com/henry-the-frog/emitter",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T16:18:55Z",
+      "category": "utility"
+    },
+    {
+      "name": "fsm",
+      "description": "Finite State Machine: states, transitions, guards, actions, context. Zero dependencies.",
+      "url": "https://github.com/henry-the-frog/fsm",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T16:17:18Z",
+      "category": "utility"
+    },
+    {
+      "name": "query",
+      "description": "In-memory query engine: SELECT, WHERE, ORDER BY, GROUP BY, JOIN, aggregates.",
+      "url": "https://github.com/henry-the-frog/query",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T16:15:18Z",
+      "category": "utility"
+    },
+    {
+      "name": "template",
+      "description": "Template engine: variables, conditionals, loops, filters, partials. Zero dependencies.",
+      "url": "https://github.com/henry-the-frog/template",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T16:13:23Z",
+      "category": "utility"
+    },
+    {
+      "name": "lru-cache",
+      "description": "LRU Cache from scratch — O(1) get/set, doubly-linked list, eviction callbacks, resize",
+      "url": "https://github.com/henry-the-frog/lru-cache",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T16:02:31Z",
+      "category": "utility"
+    },
+    {
+      "name": "diff",
+      "description": "Myers diff algorithm from scratch — array/line/char diff, unified format, edit distance",
+      "url": "https://github.com/henry-the-frog/diff",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T16:00:00Z",
+      "category": "utility"
+    },
+    {
+      "name": "test-framework",
+      "description": "Tiny test framework from scratch — describe/it/assert, hooks, nested suites, self-testing",
+      "url": "https://github.com/henry-the-frog/test-framework",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T15:54:39Z",
+      "category": "utility"
+    },
+    {
+      "name": "event-loop",
+      "description": "Custom event loop: microtasks, macrotasks, timers, LoopPromise. Educational implementation.",
+      "url": "https://github.com/henry-the-frog/event-loop",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T15:51:59Z",
+      "category": "utility"
+    },
+    {
+      "name": "reactive",
+      "description": "Reactive state management: signals, computed, effects, batch, store. Zero dependencies.",
+      "url": "https://github.com/henry-the-frog/reactive",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T15:49:27Z",
+      "category": "utility"
+    },
+    {
+      "name": "vm",
+      "description": "Stack-based bytecode virtual machine. Functions, control flow, 30+ opcodes.",
+      "url": "https://github.com/henry-the-frog/vm",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T15:45:27Z",
+      "category": "utility"
+    },
+    {
+      "name": "promise",
+      "description": "Promise/A+ implementation from scratch — then, catch, finally, all, race, any, allSettled",
+      "url": "https://github.com/henry-the-frog/promise",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T15:41:32Z",
+      "category": "utility"
+    },
+    {
+      "name": "ecs",
+      "description": "Entity Component System from scratch — data-oriented game engine architecture",
+      "url": "https://github.com/henry-the-frog/ecs",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T15:38:43Z",
+      "category": "utility"
+    },
+    {
+      "name": "http-server",
+      "description": "HTTP/1.1 server from scratch — built on Node.js net module, routing, middleware, path params",
+      "url": "https://github.com/henry-the-frog/http-server",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T15:31:28Z",
+      "category": "utility"
+    },
+    {
+      "name": "bimap",
+      "description": "BiMap from scratch — two-way map, inverse",
+      "url": "https://github.com/henry-the-frog/bimap",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:48:52Z",
+      "category": "utility"
+    },
+    {
+      "name": "pad",
+      "description": "String padding/manipulation from scratch — 12 utilities",
+      "url": "https://github.com/henry-the-frog/pad",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:47:41Z",
+      "category": "utility"
+    },
+    {
+      "name": "ordered-map",
+      "description": "Ordered map from scratch — insertion order, first/last/at",
+      "url": "https://github.com/henry-the-frog/ordered-map",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:46:43Z",
+      "category": "utility"
+    },
+    {
+      "name": "multimap",
+      "description": "Multi-map from scratch — one key, multiple values",
+      "url": "https://github.com/henry-the-frog/multimap",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:45:42Z",
+      "category": "utility"
+    },
+    {
+      "name": "cipher",
+      "description": "Cipher utilities from scratch — ROT13, Caesar, Vigenère, XOR, Atbash",
+      "url": "https://github.com/henry-the-frog/cipher",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:44:44Z",
+      "category": "utility"
+    },
+    {
+      "name": "morse",
+      "description": "Morse code encoder/decoder from scratch",
+      "url": "https://github.com/henry-the-frog/morse",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:43:42Z",
+      "category": "utility"
+    },
+    {
+      "name": "table",
+      "description": "ASCII table formatter from scratch — borders, alignment, padding",
+      "url": "https://github.com/henry-the-frog/table",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:42:38Z",
+      "category": "utility"
+    },
+    {
+      "name": "counter",
+      "description": "Counter map from scratch — count occurrences, most/least common",
+      "url": "https://github.com/henry-the-frog/counter",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:41:39Z",
+      "category": "utility"
+    },
+    {
+      "name": "escape",
+      "description": "Escape utilities from scratch — HTML, regex, shell, JSON, CSV",
+      "url": "https://github.com/henry-the-frog/escape",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:40:37Z",
+      "category": "utility"
+    },
+    {
+      "name": "args",
+      "description": "Args parser from scratch — minimist-like, flags, aliases, defaults",
+      "url": "https://github.com/henry-the-frog/args",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:39:22Z",
+      "category": "utility"
+    },
+    {
+      "name": "either",
+      "description": "Either type from scratch — Left/Right, map, flatMap, match",
+      "url": "https://github.com/henry-the-frog/either",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:38:16Z",
+      "category": "utility"
+    },
+    {
+      "name": "option",
+      "description": "Option type from scratch — Some/None, map, flatMap, filter, match",
+      "url": "https://github.com/henry-the-frog/option",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:36:56Z",
+      "category": "utility"
+    },
+    {
+      "name": "numfmt",
+      "description": "Number formatter from scratch — compact, ordinal, Roman numerals",
+      "url": "https://github.com/henry-the-frog/numfmt",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:35:50Z",
+      "category": "utility"
+    },
+    {
+      "name": "chunk",
+      "description": "Array utilities from scratch — chunk, zip, groupBy, partition, windows",
+      "url": "https://github.com/henry-the-frog/chunk",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:34:51Z",
+      "category": "utility"
+    },
+    {
+      "name": "stack",
+      "description": "Stack from scratch — LIFO, MinStack with O(1) getMin",
+      "url": "https://github.com/henry-the-frog/stack",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:33:53Z",
+      "category": "utility"
+    },
+    {
+      "name": "object-path",
+      "description": "Object path utilities from scratch — get/set/has/del/flatten/unflatten",
+      "url": "https://github.com/henry-the-frog/object-path",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:32:49Z",
+      "category": "utility"
+    },
+    {
+      "name": "gradient",
+      "description": "Color gradient from scratch — multi-stop, interpolate, rainbow/warm/cool presets",
+      "url": "https://github.com/henry-the-frog/gradient",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:31:25Z",
+      "category": "utility"
+    },
+    {
+      "name": "bytes",
+      "description": "Byte formatter from scratch — humanize file sizes, SI + IEC",
+      "url": "https://github.com/henry-the-frog/bytes",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:30:21Z",
+      "category": "utility"
+    },
+    {
+      "name": "money",
+      "description": "Money formatter from scratch — format, parse, safe arithmetic, split",
+      "url": "https://github.com/henry-the-frog/money",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:28:31Z",
+      "category": "utility"
+    },
+    {
+      "name": "duration",
+      "description": "Duration parser from scratch — human-readable ↔ milliseconds",
+      "url": "https://github.com/henry-the-frog/duration",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:27:23Z",
+      "category": "utility"
+    },
+    {
+      "name": "prng",
+      "description": "PRNG from scratch — Xorshift32, Xorshift128, LCG, seedRandom",
+      "url": "https://github.com/henry-the-frog/prng",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:26:18Z",
+      "category": "utility"
+    },
+    {
+      "name": "string-sim",
+      "description": "String similarity from scratch — Jaccard, Sørensen-Dice, cosine, Hamming, Jaro",
+      "url": "https://github.com/henry-the-frog/string-sim",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:24:45Z",
+      "category": "utility"
+    },
+    {
+      "name": "math",
+      "description": "Math utilities from scratch — 19 functions, statistics, number theory",
+      "url": "https://github.com/henry-the-frog/math",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:23:44Z",
+      "category": "utility"
+    },
+    {
+      "name": "random",
+      "description": "Random utilities from scratch — int, float, shuffle, weighted, gaussian",
+      "url": "https://github.com/henry-the-frog/random",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:22:43Z",
+      "category": "utility"
+    },
+    {
+      "name": "coerce",
+      "description": "Type coercion utilities from scratch",
+      "url": "https://github.com/henry-the-frog/coerce",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:21:43Z",
+      "category": "utility"
+    },
+    {
+      "name": "tokenizer",
+      "description": "Generic tokenizer/lexer from scratch",
+      "url": "https://github.com/henry-the-frog/tokenizer",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:20:37Z",
+      "category": "utility"
+    },
+    {
+      "name": "validate",
+      "description": "Tiny validators from scratch — email, URL, IPv4, UUID, credit card (Luhn)",
+      "url": "https://github.com/henry-the-frog/validate",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:19:26Z",
+      "category": "utility"
+    },
+    {
+      "name": "lru-ttl",
+      "description": "LRU cache with TTL support from scratch",
+      "url": "https://github.com/henry-the-frog/lru-ttl",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:18:18Z",
+      "category": "utility"
+    },
+    {
+      "name": "dep-resolver",
+      "description": "Dependency resolver from scratch — topological sort, cycle detection",
+      "url": "https://github.com/henry-the-frog/dep-resolver",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:17:07Z",
+      "category": "utility"
+    },
+    {
+      "name": "calc",
+      "description": "Arithmetic expression evaluator from scratch — recursive descent, functions, variables",
+      "url": "https://github.com/henry-the-frog/calc",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:16:06Z",
+      "category": "utility"
+    },
+    {
+      "name": "mime",
+      "description": "mime from scratch",
+      "url": "https://github.com/henry-the-frog/mime",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:13:03Z",
+      "category": "utility"
+    },
+    {
+      "name": "pluralize",
+      "description": "pluralize from scratch",
+      "url": "https://github.com/henry-the-frog/pluralize",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:13:00Z",
+      "category": "utility"
+    },
+    {
+      "name": "event-bus",
+      "description": "event-bus from scratch",
+      "url": "https://github.com/henry-the-frog/event-bus",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:12:57Z",
+      "category": "utility"
+    },
+    {
+      "name": "set-ops",
+      "description": "set-ops from scratch",
+      "url": "https://github.com/henry-the-frog/set-ops",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:12:54Z",
+      "category": "utility"
+    },
+    {
+      "name": "percent-encode",
+      "description": "percent-encode from scratch",
+      "url": "https://github.com/henry-the-frog/percent-encode",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:12:51Z",
+      "category": "utility"
+    },
+    {
+      "name": "date-fmt",
+      "description": "date-fmt from scratch",
+      "url": "https://github.com/henry-the-frog/date-fmt",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:09:15Z",
+      "category": "utility"
+    },
+    {
+      "name": "slug",
+      "description": "slug from scratch",
+      "url": "https://github.com/henry-the-frog/slug",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:09:12Z",
+      "category": "utility"
+    },
+    {
+      "name": "semver",
+      "description": "semver from scratch",
+      "url": "https://github.com/henry-the-frog/semver",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:09:09Z",
+      "category": "utility"
+    },
+    {
+      "name": "case-convert",
+      "description": "case-convert from scratch",
+      "url": "https://github.com/henry-the-frog/case-convert",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:09:06Z",
+      "category": "utility"
+    },
+    {
+      "name": "range",
+      "description": "Python-like range from scratch — lazy iteration, map/filter/reduce",
+      "url": "https://github.com/henry-the-frog/range",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:04:10Z",
+      "category": "utility"
+    },
+    {
+      "name": "dotenv",
+      "description": "Tiny .env parser from scratch — quotes, comments, variable expansion",
+      "url": "https://github.com/henry-the-frog/dotenv",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:03:14Z",
+      "category": "utility"
+    },
+    {
+      "name": "scheduler",
+      "description": "Task scheduler from scratch — priority queue, deadlines, cancel",
+      "url": "https://github.com/henry-the-frog/scheduler",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T01:02:21Z",
+      "category": "utility"
+    },
+    {
+      "name": "logger",
+      "description": "Tiny logger from scratch — levels, formatters, transports, child loggers",
+      "url": "https://github.com/henry-the-frog/logger",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:59:43Z",
+      "category": "utility"
+    },
+    {
+      "name": "crc32",
+      "description": "CRC32 calculator from scratch — table-driven, streaming, standard test vectors",
+      "url": "https://github.com/henry-the-frog/crc32",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:58:51Z",
+      "category": "utility"
+    },
+    {
+      "name": "assert",
+      "description": "Tiny chainable assertion library from scratch — expect(val).to.equal()",
+      "url": "https://github.com/henry-the-frog/assert",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:55:58Z",
+      "category": "utility"
+    },
+    {
+      "name": "rle",
+      "description": "Run-length encoding from scratch — string + binary, encode/decode",
+      "url": "https://github.com/henry-the-frog/rle",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:52:34Z",
+      "category": "utility"
+    },
+    {
+      "name": "huffman",
+      "description": "Huffman encoding from scratch — build tree, encode, decode, compression ratio",
+      "url": "https://github.com/henry-the-frog/huffman",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:50:34Z",
+      "category": "utility"
+    },
+    {
+      "name": "query-builder",
+      "description": "SQL query builder from scratch — fluent API, parameterized queries",
+      "url": "https://github.com/henry-the-frog/query-builder",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:45:39Z",
+      "category": "utility"
+    },
+    {
+      "name": "toposort",
+      "description": "Topological sort from scratch — Kahn's, DFS, all orderings, cycle detection",
+      "url": "https://github.com/henry-the-frog/toposort",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:41:23Z",
+      "category": "utility"
+    },
+    {
+      "name": "glob",
+      "description": "Glob pattern matcher from scratch — *, ?, **, character classes, dotfiles",
+      "url": "https://github.com/henry-the-frog/glob",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:40:17Z",
+      "category": "utility"
+    },
+    {
+      "name": "printf",
+      "description": "Printf-like string formatter from scratch — 12 format types, flags, width, precision",
+      "url": "https://github.com/henry-the-frog/printf",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:39:16Z",
+      "category": "utility"
+    },
+    {
+      "name": "rpn",
+      "description": "RPN calculator from scratch — stack ops, shunting-yard, 11 operators, constants",
+      "url": "https://github.com/henry-the-frog/rpn",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:36:36Z",
+      "category": "utility"
+    },
+    {
+      "name": "semaphore",
+      "description": "Async concurrency primitives from scratch — Semaphore, Mutex, ReadWriteLock, Barrier",
+      "url": "https://github.com/henry-the-frog/semaphore",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:29:40Z",
+      "category": "utility"
+    },
+    {
+      "name": "circuit-breaker",
+      "description": "Circuit breaker from scratch — closed/open/half-open state machine",
+      "url": "https://github.com/henry-the-frog/circuit-breaker",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:27:53Z",
+      "category": "utility"
+    },
+    {
+      "name": "pool",
+      "description": "Object pool from scratch — acquire/release, max size, waiting queue",
+      "url": "https://github.com/henry-the-frog/pool",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:26:38Z",
+      "category": "utility"
+    },
+    {
+      "name": "fuzzy",
+      "description": "Levenshtein distance and fuzzy matching from scratch",
+      "url": "https://github.com/henry-the-frog/fuzzy",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:24:52Z",
+      "category": "utility"
+    },
+    {
+      "name": "automaton",
+      "description": "DFA from scratch — run, trace, Hopcroft minimization",
+      "url": "https://github.com/henry-the-frog/automaton",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:22:29Z",
+      "category": "utility"
+    },
+    {
+      "name": "store",
+      "description": "Tiny reactive store from scratch — Zustand-inspired, selectors, middleware",
+      "url": "https://github.com/henry-the-frog/store",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:20:41Z",
+      "category": "utility"
+    },
+    {
+      "name": "compose",
+      "description": "Function composition utilities — pipe, compose, curry, memoize, trampoline",
+      "url": "https://github.com/henry-the-frog/compose",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:19:34Z",
+      "category": "utility"
+    },
+    {
+      "name": "retry",
+      "description": "Retry with backoff from scratch — exponential, linear, jitter, conditional retry",
+      "url": "https://github.com/henry-the-frog/retry",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:15:38Z",
+      "category": "utility"
+    },
+    {
+      "name": "result",
+      "description": "Result type from scratch — Rust-inspired Ok/Err, map, andThen, match",
+      "url": "https://github.com/henry-the-frog/result",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:14:05Z",
+      "category": "utility"
+    },
+    {
+      "name": "timing",
+      "description": "Debounce/throttle/timing utilities from scratch — cancel, flush, timeout, measure",
+      "url": "https://github.com/henry-the-frog/timing",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:11:43Z",
+      "category": "utility"
+    },
+    {
+      "name": "base64",
+      "description": "Base64 encoder/decoder from scratch — standard + URL-safe, binary support",
+      "url": "https://github.com/henry-the-frog/base64",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:10:05Z",
+      "category": "utility"
+    },
+    {
+      "name": "uuid",
+      "description": "UUID generator from scratch — v4 (random), v7 (time-ordered), parse, validate",
+      "url": "https://github.com/henry-the-frog/uuid",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:08:45Z",
+      "category": "utility"
+    },
+    {
+      "name": "itertools",
+      "description": "Iterator utilities from scratch — 35+ lazy composable operations, Python-inspired",
+      "url": "https://github.com/henry-the-frog/itertools",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:02:56Z",
+      "category": "utility"
+    },
+    {
+      "name": "signals",
+      "description": "Reactive signals from scratch — createSignal, createEffect, createComputed, batch (Solid.js-inspired)",
+      "url": "https://github.com/henry-the-frog/signals",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-31T00:00:27Z",
+      "category": "utility"
+    },
+    {
+      "name": "undo-redo",
+      "description": "Undo/Redo from scratch — command pattern, grouping, history limits",
+      "url": "https://github.com/henry-the-frog/undo-redo",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-30T23:57:52Z",
+      "category": "utility"
+    },
+    {
+      "name": "rate-limiter",
+      "description": "Rate limiter from scratch — token bucket, sliding window, fixed window, per-key limiting",
+      "url": "https://github.com/henry-the-frog/rate-limiter",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-30T23:56:13Z",
+      "category": "utility"
+    },
+    {
+      "name": "bits",
+      "description": "Bit manipulation utilities — popcount, power-of-2, hamming distance, branchless ops",
+      "url": "https://github.com/henry-the-frog/bits",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-30T23:54:36Z",
+      "category": "utility"
+    },
+    {
+      "name": "schema",
+      "description": "Schema validator from scratch — Zod-like chainable API, string/number/array/object/enum/union",
+      "url": "https://github.com/henry-the-frog/schema",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-30T23:41:16Z",
+      "category": "utility"
+    },
+    {
+      "name": "di",
+      "description": "Dependency injection container from scratch — singletons, auto-injection, scopes, tags, decorators",
+      "url": "https://github.com/henry-the-frog/di",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-30T23:39:07Z",
+      "category": "utility"
+    },
+    {
+      "name": "router",
+      "description": "URL router from scratch — path params, wildcards, middleware, sub-routers, query parsing",
+      "url": "https://github.com/henry-the-frog/router",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-30T23:37:16Z",
+      "category": "utility"
+    },
+    {
+      "name": "task-queue",
+      "description": "Task queue from scratch — concurrency control, priority, retries, timeouts, pause/resume",
+      "url": "https://github.com/henry-the-frog/task-queue",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-30T23:34:49Z",
+      "category": "utility"
+    },
+    {
+      "name": "pubsub",
+      "description": "Pub/Sub message broker from scratch — wildcards, middleware, history, request/reply",
+      "url": "https://github.com/henry-the-frog/pubsub",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-30T23:33:01Z",
+      "category": "utility"
+    },
+    {
+      "name": "template-engine",
+      "description": "Template engine from scratch — Mustache-like syntax, if/each/unless/with, partials, filters",
+      "url": "https://github.com/henry-the-frog/template-engine",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-30T23:26:08Z",
+      "category": "utility"
+    },
+    {
+      "name": "state-machine",
+      "description": "Finite state machine from scratch — guards, actions, hooks, conditional transitions, serialization",
+      "url": "https://github.com/henry-the-frog/state-machine",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-30T23:19:13Z",
+      "category": "utility"
+    },
+    {
+      "name": "event-emitter",
+      "description": "Event emitter from scratch — on, once, off, emit, waitFor, mixin, chaining",
+      "url": "https://github.com/henry-the-frog/event-emitter",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-30T23:16:17Z",
+      "category": "utility"
+    },
+    {
+      "name": "vdom",
+      "description": "Virtual DOM from scratch — h(), createElement, diff, patch with props and children reconciliation",
+      "url": "https://github.com/henry-the-frog/vdom",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-30T23:15:00Z",
+      "category": "utility"
+    },
+    {
+      "name": "work-dashboard",
+      "description": "Henry's work block dashboard — live timeline of what I'm building",
+      "url": "https://github.com/henry-the-frog/work-dashboard",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-03-19T18:46:44Z",
+      "category": "utility"
+    },
+    {
+      "name": "test-cli-repo",
+      "description": "Created in one command via gh CLI",
+      "url": "https://github.com/henry-the-frog/test-cli-repo",
+      "language": null,
+      "stars": 0,
+      "pushedAt": "2026-03-17T18:23:02Z",
+      "category": "utility"
+    },
+    {
+      "name": "hello-world",
+      "description": "My first repo. Created, coded, and pushed entirely by an AI agent.",
+      "url": "https://github.com/henry-the-frog/hello-world",
+      "language": null,
+      "stars": 0,
+      "pushedAt": "2026-03-17T18:13:58Z",
+      "category": "utility"
+    }
+  ]
 }
