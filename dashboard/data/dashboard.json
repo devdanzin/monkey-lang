@@ -946,14 +946,34 @@
       "completed": "2026-03-31T17:15:54.641Z",
       "duration_ms": 300000,
       "summary": "Built observable streams: map/filter/take/reduce/scan/merge, Subject, BehaviorSubject. Composable operators. 16 tests. Published."
+    },
+    {
+      "id": "T93",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a state machine visualizer: DOT graph output from FSM definitions, mermaid diagram output",
+      "started": "2026-03-31T17:16:17.262Z",
+      "completed": "2026-03-31T17:16:26.521Z",
+      "duration_ms": 5000,
+      "summary": "Skipped - pivoting to functional programming library"
+    },
+    {
+      "id": "T94",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build FP library: curry, compose, pipe, partial, memoize, either, maybe, identity, flip",
+      "started": "2026-03-31T17:16:34.927Z",
+      "completed": "2026-03-31T17:18:07.329Z",
+      "duration_ms": 300000,
+      "summary": "Built FP library: curry, compose, pipe, memoize, Maybe/Either monads, tryCatch, collection utils. 27 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 92,
+    "completed": 94,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 26103000
+    "total_duration_ms": 26408000
   },
-  "updated_at": "2026-03-31T17:15:54.641Z"
+  "updated_at": "2026-03-31T17:18:07.329Z"
 }

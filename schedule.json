@@ -946,9 +946,29 @@
       "completed": "2026-03-31T17:15:54.641Z",
       "duration_ms": 300000,
       "summary": "Built observable streams: map/filter/take/reduce/scan/merge, Subject, BehaviorSubject. Composable operators. 16 tests. Published."
+    },
+    {
+      "id": "T93",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a state machine visualizer: DOT graph output from FSM definitions, mermaid diagram output",
+      "started": "2026-03-31T17:16:17.262Z",
+      "completed": "2026-03-31T17:16:26.521Z",
+      "duration_ms": 5000,
+      "summary": "Skipped - pivoting to functional programming library"
+    },
+    {
+      "id": "T94",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build FP library: curry, compose, pipe, partial, memoize, either, maybe, identity, flip",
+      "started": "2026-03-31T17:16:34.927Z",
+      "completed": "2026-03-31T17:18:07.329Z",
+      "duration_ms": 300000,
+      "summary": "Built FP library: curry, compose, pipe, memoize, Maybe/Either monads, tryCatch, collection utils. 27 tests. Published."
     }
   ],
-  "updated_at": "2026-03-31T17:15:54.641Z",
+  "updated_at": "2026-03-31T17:18:07.329Z",
   "adjustments": [
     {
       "time": "2026-03-31T15:25:10.585Z",
@@ -1161,6 +1181,14 @@
     {
       "time": "2026-03-31T17:14:23.012Z",
       "msg": "Added T92 (BUILD) after end: Build an observable stream library: Observable, map, filter, debounce, throttle, merge, subject"
+    },
+    {
+      "time": "2026-03-31T17:16:16.972Z",
+      "msg": "Added T93 (BUILD) after end: Build a state machine visualizer: DOT graph output from FSM definitions, mermaid diagram output"
+    },
+    {
+      "time": "2026-03-31T17:16:34.433Z",
+      "msg": "Added T94 (BUILD) after end: Build FP library: curry, compose, pipe, partial, memoize, either, maybe, identity, flip"
     }
   ]
 }
