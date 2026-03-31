@@ -48,8 +48,12 @@
       "id": "T20",
       "mode": "BUILD",
       "task": "Fix session timing calculations — remove 15-min block assumption, use queue-based estimates",
-      "status": "upcoming",
-      "plan_ref": "T2"
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-03-31T14:24:17.282Z",
+      "completed": "2026-03-31T14:25:13.334Z",
+      "duration_ms": 180000,
+      "summary": "Removed 15-min block timing assumptions from weekly summary (tasks not hours), cleaned up mode breakdown display. Pushed to GH Pages."
     },
     {
       "id": "T4",
@@ -150,10 +154,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 4,
+    "completed": 5,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 1080000
+    "total_duration_ms": 1260000
   },
-  "updated_at": "2026-03-31T14:23:58.158Z"
+  "updated_at": "2026-03-31T14:25:13.334Z"
 }

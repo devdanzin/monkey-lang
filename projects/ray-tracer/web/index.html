@@ -506,10 +506,16 @@ window.addEventListener('load', () => {
   const best = opts.reduce((a, b) => Math.abs(b - cores) < Math.abs(a - cores) ? b : a);
   sel.value = String(best);
 
-  // Auto-render with preview
-  document.getElementById('samples').value = '4';
+  // Auto-render with a quick preview, then restore quality settings
+  // Use 'simple' scene for initial preview (fast to build) before switching back
+  const savedScene = document.getElementById('scene').value;
+  document.getElementById('scene').value = 'simple';
+  document.getElementById('samples').value = '16';
   startRender();
-  setTimeout(() => { document.getElementById('samples').value = '50'; }, 100);
+  setTimeout(() => {
+    document.getElementById('scene').value = savedScene;
+    document.getElementById('samples').value = '50';
+  }, 100);
 });
 
 // === Camera Orbit (mouse drag) ===
