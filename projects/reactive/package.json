@@ -1,0 +1,7 @@
+{
+  "name": "tiny-reactive",
+  "version": "1.0.0",
+  "description": "Reactive streams (Rx-like) with operators and combinators",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/index.test.js" }
+}
