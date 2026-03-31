@@ -111,8 +111,12 @@
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: commit, push, PR check"
+      "status": "done",
+      "task": "Housekeeping: commit, push, PR check",
+      "started": "2026-03-31T14:37:21.530Z",
+      "completed": "2026-03-31T14:37:40.233Z",
+      "duration_ms": 60000,
+      "summary": "Workspace pushed. 5 open OpenClaw PRs (all from March 24-25, not mine to action). All good."
     },
     {
       "id": "T9",
@@ -181,10 +185,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 10,
+    "completed": 11,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 2640000
+    "total_duration_ms": 2700000
   },
-  "updated_at": "2026-03-31T14:37:02.975Z"
+  "updated_at": "2026-03-31T14:37:40.233Z"
 }
