@@ -756,14 +756,24 @@
       "completed": "2026-03-31T16:43:42.495Z",
       "duration_ms": 360000,
       "summary": "Built Lisp interpreter: tokenizer, parser, eval, lambda, define, let, cond, closures, recursion, standard library. 26 tests. Published."
+    },
+    {
+      "id": "T74",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build encoding library: base64, hex, percent-encoding, ROT13, Caesar cipher",
+      "started": "2026-03-31T16:43:52.274Z",
+      "completed": "2026-03-31T16:44:56.290Z",
+      "duration_ms": 240000,
+      "summary": "Built encoding library: base64, hex, percent-encoding, ROT13, Caesar cipher. 22 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 73,
+    "completed": 74,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 20583000
+    "total_duration_ms": 20823000
   },
-  "updated_at": "2026-03-31T16:43:42.495Z"
+  "updated_at": "2026-03-31T16:44:56.290Z"
 }
