@@ -1,15 +1,27 @@
 # CURRENT.md
 
-## Status: session-ended
+## Status: done
 
 ## Last Task
-T179 BUILD: checksum (CRC32, Adler32, Fletcher16) — 11 tests
+T180 THINK: Session B direction — depth on existing projects
 
 ## Session Stats
-- Tasks: 179
-- New projects: ~135
-- New tests: ~2142
-- Time: 8:15am–2:00pm MDT (5h45m)
+- Tasks: 180
+- Session B start: 2:15pm MDT
 
 ## Session Boundary
-2:15pm MDT — reached
+8:15pm MDT
+
+## Queue
+T181 PLAN: WASM depth (closures, hash maps, GC)
+T182 BUILD: (placeholder)
+T183 MAINTAIN
+T184 PLAN: Ray tracer depth (motion blur, volumetrics, image textures)
+T185 BUILD: (placeholder)
+T186 MAINTAIN
+T187 PLAN: Physics engine depth (broadphase, sleeping, friction)
+T188 BUILD: (placeholder)
+T189 THINK: Reflect
+T190 EXPLORE: GC algorithms for WASM
+T191 EXPLORE: PBR techniques
+T192 MAINTAIN

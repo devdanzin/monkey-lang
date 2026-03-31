@@ -19,7 +19,7 @@ Inspired by Thorsten Ball's *Writing An Interpreter In Go* and *Writing A Compil
 - **Stack VM** — executes bytecode with call frames, closures, and free variable capture
 - **Tracing JIT compiler** — records hot execution traces, optimizes IR, compiles to JavaScript via `new Function()`
 - **JavaScript transpiler** — compiles Monkey → JavaScript for Node.js or browser execution
-- **WebAssembly compiler** — compiles Monkey → WASM binary format with bump allocator, string/array support, and JS host imports
+- **WebAssembly compiler** — compiles Monkey → WASM binary format with mark-sweep GC, native hash maps (open addressing), closures, and JS host imports
 - **Optional type annotations** — `fn(x: int, y: int) -> int` with runtime validation and JIT guard elimination
 - **Result type** — `Ok(value)` / `Err(error)` with pattern matching, match guards, and or-patterns
 - **Module system** — `import "math"`, `import "string"` with namespace access (`math.sqrt(16)`)
@@ -438,7 +438,11 @@ node src/repl.js --dis examples/fib.wasm           # Human-readable WebAssembly 
 
 **Supported features:** integers, booleans, arithmetic, comparisons, let/assign, compound assignment (`+=`, `-=`, `++`, `--`), if/else, while, for, for-in, do-while, ranges (`0..10`), break/continue, functions (including recursion), closures, higher-order functions, arrow functions, pipe operator (`|>`), null coalescing (`??`), optional chaining (`?.`), match expressions, enums, array destructuring, arrays (with mutation), array slicing, hash maps (string/int keys), strings (concat, ordering, comparison, iteration, indexing), template literals, `puts`, `str`, `len`, `push`, `first`, `last`, `rest`, `type`, `int`. Constant folding, source maps, binary analysis.
 
-**Architecture:** Binary encoder (wasm.js) → AST compiler (wasm-compiler.js, 2000+ lines) → Disassembler (wasm-dis.js) → Source maps. 175+ WASM-specific tests.
+**Memory management:** Mark-sweep garbage collector with free list allocation, block coalescing, and automatic threshold-based collection. Objects tracked via `__gc_register` import, roots traced transitively through arrays and closures.
+
+**Native hash maps:** Integer-keyed hash maps use open addressing with linear probing in WASM linear memory (FNV-1a hash, `TAG_HASH=4`). String-keyed hashes fall back to JS-hosted `Map` for correct content comparison.
+
+**Architecture:** Binary encoder (wasm.js) → AST compiler (wasm-compiler.js, 2500+ lines) → GC (wasm-gc.js) → Disassembler (wasm-dis.js) → Source maps. 210+ WASM-specific tests.
 
 ## Blog Series
 
