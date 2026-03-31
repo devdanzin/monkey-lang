@@ -446,14 +446,24 @@
       "completed": "2026-03-31T15:38:54.107Z",
       "duration_ms": 480000,
       "summary": "Built ECS: entities, components, queries, systems, events, resources. Builder pattern, game-like scenario test. 20 tests. Published."
+    },
+    {
+      "id": "T43",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a Promise implementation from scratch: then, catch, finally, all, race, allSettled",
+      "started": "2026-03-31T15:39:34.305Z",
+      "completed": "2026-03-31T15:41:42.110Z",
+      "duration_ms": 360000,
+      "summary": "Built Promise implementation: then/catch/finally/all/race/allSettled/any. Thenable unwrapping, microtask scheduling. 24 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 42,
+    "completed": 43,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 11088000
+    "total_duration_ms": 11448000
   },
-  "updated_at": "2026-03-31T15:38:54.107Z"
+  "updated_at": "2026-03-31T15:41:42.110Z"
 }
