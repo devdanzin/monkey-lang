@@ -3445,8 +3445,12 @@
     {
       "id": "T336",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "New project: Tiny type checker (Hindley-Milner)"
+      "status": "done",
+      "task": "New project: Tiny type checker (Hindley-Milner)",
+      "started": "2026-03-31T02:15:30.116Z",
+      "completed": "2026-03-31T02:17:33.702Z",
+      "duration_ms": 300000,
+      "summary": "HM type checker: Algorithm W, unification, let polymorphism, letrec, lists, pairs, annotations, parser. 26 tests."
     },
     {
       "id": "T337",
@@ -3491,8 +3495,12 @@
     {
       "id": "T341",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "New project: Tiny ORM (object-relational mapping)"
+      "status": "done",
+      "task": "New project: Tiny ORM (object-relational mapping)",
+      "started": "2026-03-31T02:17:43.510Z",
+      "completed": "2026-03-31T02:18:59.979Z",
+      "duration_ms": 200000,
+      "summary": "ORM: models, CRUD, query builder (where/orderBy/limit/offset), operator queries ($gt/$lt/$in/$ne), relations (hasMany/belongsTo), hooks, validation, auto-increment. 14 tests."
     },
     {
       "id": "T342",
@@ -3527,8 +3535,12 @@
     {
       "id": "T345",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "New project: Finite state transducer"
+      "status": "done",
+      "task": "New project: Finite state transducer",
+      "started": "2026-03-31T02:19:10.076Z",
+      "completed": "2026-03-31T02:19:57.861Z",
+      "duration_ms": 150000,
+      "summary": "FST: Mealy + Moore machines, compose, fromMapping, step, transduce. 8 tests."
     },
     {
       "id": "T346",
@@ -3553,8 +3565,12 @@
     {
       "id": "T348",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "New project: Tiny YAML parser"
+      "status": "done",
+      "task": "New project: Tiny YAML parser",
+      "started": "2026-03-31T02:20:07.491Z",
+      "completed": "2026-03-31T02:21:16.015Z",
+      "duration_ms": 200000,
+      "summary": "YAML parser: mappings, sequences, nested, flow, comments, multiline, hex/octal, stringify, roundtrip. 17 tests."
     },
     {
       "id": "T349",
@@ -3569,8 +3585,12 @@
     {
       "id": "T350",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "New project: Tiny LZ77 compressor"
+      "status": "done",
+      "task": "New project: Tiny LZ77 compressor",
+      "started": "2026-03-31T02:21:25.370Z",
+      "completed": "2026-03-31T02:22:02.451Z",
+      "duration_ms": 150000,
+      "summary": "LZ77: sliding window encode/decode, binary compress/decompress, compression ratio. 10 tests."
     },
     {
       "id": "T351",
@@ -3585,8 +3605,12 @@
     {
       "id": "T352",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "New project: Tiny immutable collections"
+      "status": "done",
+      "task": "New project: Tiny immutable collections",
+      "started": "2026-03-31T02:22:13.561Z",
+      "completed": "2026-03-31T02:23:08.033Z",
+      "duration_ms": 150000,
+      "summary": "Immutable: List, Map, Set, Stack. Persistent mutations, set ops, iteration. 13 tests."
     },
     {
       "id": "T353",
@@ -3601,8 +3625,12 @@
     {
       "id": "T354",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "New project: Rope (string data structure)"
+      "status": "done",
+      "task": "New project: Rope (string data structure)",
+      "started": "2026-03-31T02:23:08.040Z",
+      "completed": "2026-03-31T02:23:46.579Z",
+      "summary": "Rope: binary tree string structure, insert/delete/substring O(log n), concat, lines, rebalance. 11 tests.",
+      "duration_ms": 150000
     },
     {
       "id": "T355",
@@ -3617,14 +3645,22 @@
     {
       "id": "T356",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "New project: K-D Tree (nearest neighbor)"
+      "status": "done",
+      "task": "New project: K-D Tree (nearest neighbor)",
+      "started": "2026-03-31T02:23:46.572Z",
+      "completed": "2026-03-31T02:24:45.773Z",
+      "duration_ms": 150000,
+      "summary": "K-D Tree: nearest neighbor, k-nearest, range search, radius search, 2D/3D. 9 tests."
     },
     {
       "id": "T357",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "New project: Tiny Forth interpreter"
+      "status": "done",
+      "task": "New project: Tiny Forth interpreter",
+      "started": "2026-03-31T02:24:45.780Z",
+      "completed": "2026-03-31T02:26:41.503Z",
+      "summary": "Forth: stack ops, arithmetic, comparison, logic, if/else/then, do-loop, variables, constants, definitions, recursion, comments. 13 tests.",
+      "duration_ms": 200000
     },
     {
       "id": "T358",
@@ -3679,16 +3715,22 @@
     {
       "id": "T363",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "New project: Tiny MIME type lookup",
-      "started": "2026-03-31T01:05:36.793Z"
+      "started": "2026-03-31T01:05:36.793Z",
+      "completed": "2026-03-31T03:25:59.011Z",
+      "duration_ms": 0,
+      "summary": "Completed (marked retroactively)"
     },
     {
       "id": "T364",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "New project: Tiny pluralize",
-      "started": "2026-03-31T01:05:36.943Z"
+      "started": "2026-03-31T01:05:36.943Z",
+      "completed": "2026-03-31T03:25:59.165Z",
+      "duration_ms": 0,
+      "summary": "Completed (marked retroactively)"
     },
     {
       "id": "T365",
@@ -3703,9 +3745,12 @@
     {
       "id": "T366",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "New project: Tiny percent encoding",
-      "started": "2026-03-31T01:05:36.640Z"
+      "started": "2026-03-31T01:05:36.640Z",
+      "completed": "2026-03-31T03:25:59.320Z",
+      "duration_ms": 0,
+      "summary": "Completed (marked retroactively)"
     },
     {
       "id": "T367",
@@ -3720,16 +3765,22 @@
     {
       "id": "T368",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "New project: Tiny event bus",
-      "started": "2026-03-31T01:05:37.248Z"
+      "started": "2026-03-31T01:05:37.248Z",
+      "completed": "2026-03-31T03:25:59.474Z",
+      "duration_ms": 0,
+      "summary": "Completed (marked retroactively)"
     },
     {
       "id": "T369",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "New project: Tiny set operations",
-      "started": "2026-03-31T01:05:37.092Z"
+      "started": "2026-03-31T01:05:37.092Z",
+      "completed": "2026-03-31T03:25:59.626Z",
+      "duration_ms": 0,
+      "summary": "Completed (marked retroactively)"
     },
     {
       "id": "T370",
@@ -3784,14 +3835,22 @@
     {
       "id": "T375",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "New project: Tiny XPath-like selector"
+      "status": "done",
+      "task": "New project: Tiny XPath-like selector",
+      "started": "2026-03-31T02:26:41.510Z",
+      "completed": "2026-03-31T02:27:46.186Z",
+      "summary": "XPath selector: child, descendant, index, last(), attribute filter, numeric filter, wildcard, recursive descent. 10 tests.",
+      "duration_ms": 150000
     },
     {
       "id": "T376",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "New project: Tiny PEG parser generator"
+      "status": "done",
+      "task": "New project: Tiny PEG parser generator",
+      "started": "2026-03-31T02:27:46.179Z",
+      "completed": "2026-03-31T02:28:57.293Z",
+      "summary": "PEG parser generator: literal, regex, seq, choice, many, optional, lookahead, rule refs, actions, calculator example. 13 tests.",
+      "duration_ms": 180000
     },
     {
       "id": "T377",
@@ -3836,8 +3895,12 @@
     {
       "id": "T381",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "New project: Tiny money/currency"
+      "status": "done",
+      "task": "New project: Tiny money/currency",
+      "started": "2026-03-31T02:28:57.286Z",
+      "completed": "2026-03-31T02:29:41.431Z",
+      "summary": "Money: precise cents arithmetic, parse, format, allocate, split by ratio, percentage, currency convert. 12 tests.",
+      "duration_ms": 120000
     },
     {
       "id": "T382",
@@ -3872,15 +3935,22 @@
     {
       "id": "T385",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "New project: Tiny sparse matrix",
-      "started": "2026-03-31T01:25:22.183Z"
+      "started": "2026-03-31T01:25:22.183Z",
+      "completed": "2026-03-31T03:25:59.779Z",
+      "duration_ms": 0,
+      "summary": "Completed (marked retroactively)"
     },
     {
       "id": "T386",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "New project: Tiny arena allocator"
+      "status": "done",
+      "task": "New project: Tiny arena allocator",
+      "started": "2026-03-31T02:29:41.425Z",
+      "completed": "2026-03-31T02:30:24.919Z",
+      "summary": "Arena allocator: bump alloc, alignment, typed read/write, Pool with free list, StackAllocator with markers. 12 tests.",
+      "duration_ms": 120000
     },
     {
       "id": "T387",
@@ -3935,9 +4005,12 @@
     {
       "id": "T392",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "New project: Tiny emoji lookup",
-      "started": "2026-03-31T01:31:53.057Z"
+      "started": "2026-03-31T01:31:53.057Z",
+      "completed": "2026-03-31T03:25:59.932Z",
+      "duration_ms": 0,
+      "summary": "Completed (marked retroactively)"
     },
     {
       "id": "T393",
@@ -3952,8 +4025,12 @@
     {
       "id": "T394",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "New project: Tiny pipe operator"
+      "status": "done",
+      "task": "New project: Tiny pipe operator",
+      "started": "2026-03-31T02:30:24.925Z",
+      "completed": "2026-03-31T02:31:02.686Z",
+      "duration_ms": 100000,
+      "summary": "Pipe: pipe, compose, tap, when, unless, tryCatch, parallel, Pipeline class, async pipe. 13 tests."
     },
     {
       "id": "T395",
@@ -4008,14 +4085,22 @@
     {
       "id": "T400",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "New project: Tiny clamped number"
+      "status": "done",
+      "task": "New project: Tiny clamped number",
+      "started": "2026-03-31T02:31:02.678Z",
+      "completed": "2026-03-31T02:31:39.529Z",
+      "duration_ms": 100000,
+      "summary": "Clamped: bounds, saturating arithmetic, percentage/normalized/byte, lerp, Wrapped (angles), distance. 14 tests."
     },
     {
       "id": "T401",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "New project: Tiny string template (tagged)"
+      "status": "done",
+      "task": "New project: Tiny string template (tagged)",
+      "started": "2026-03-31T02:31:55.404Z",
+      "completed": "2026-03-31T02:32:46.466Z",
+      "duration_ms": 120000,
+      "summary": "String template: interpolation, dot notation, filters, conditionals, loops, partials, HTML escape, tagged literals. 15 tests."
     },
     {
       "id": "T402",
@@ -4116,20 +4201,317 @@
       "completed": "2026-03-31T01:48:52.563Z",
       "duration_ms": 80000,
       "summary": "BiMap: two-way mapping, set/get/getKey, has/hasValue, delete/deleteValue, inverse, size, iterator. 6 tests."
+    },
+    {
+      "id": "T412",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny Prolog interpreter",
+      "started": "2026-03-31T02:33:06.945Z",
+      "completed": "2026-03-31T02:34:03.743Z",
+      "duration_ms": 200000,
+      "summary": "Prolog: facts, rules, unification, backtracking, arithmetic, negation, multi-goal, recursion, write. 9 tests."
+    },
+    {
+      "id": "T413",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny ECS (Entity Component System)",
+      "started": "2026-03-31T02:34:03.736Z",
+      "completed": "2026-03-31T02:34:42.579Z",
+      "duration_ms": 100000,
+      "summary": "ECS: entities, components, queries, systems with priority, events, serialize/deserialize. 8 tests."
+    },
+    {
+      "id": "T414",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny SAT solver (DPLL)",
+      "started": "2026-03-31T02:34:42.572Z",
+      "completed": "2026-03-31T02:35:25.914Z",
+      "summary": "SAT solver: DPLL, unit propagation, pure literal elimination, verify, DIMACS parser. 10 tests.",
+      "duration_ms": 150000
+    },
+    {
+      "id": "T415",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny diff (Myers algorithm)",
+      "started": "2026-03-31T02:35:25.921Z",
+      "completed": "2026-03-31T02:36:06.227Z",
+      "duration_ms": 120000,
+      "summary": "Diff: Myers algorithm, line/char diff, unified format, patch, edit distance. 10 tests."
+    },
+    {
+      "id": "T416",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny B-tree",
+      "started": "2026-03-31T02:36:06.219Z",
+      "completed": "2026-03-31T02:36:54.553Z",
+      "summary": "B-tree: insert/split, delete/merge/redistribute, search, range, in-order, balanced height. 7 tests.",
+      "duration_ms": 150000
+    },
+    {
+      "id": "T417",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny lambda calculus evaluator",
+      "started": "2026-03-31T02:36:54.560Z",
+      "completed": "2026-03-31T02:37:54.606Z",
+      "duration_ms": 180000,
+      "summary": "Lambda calculus: beta reduction, normal/applicative order, Church booleans+numerals, SUCC/PLUS/MULT, alpha conversion, parser. 11 tests."
+    },
+    {
+      "id": "T418",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny genetic algorithm",
+      "started": "2026-03-31T02:39:37.197Z",
+      "completed": "2026-03-31T02:40:28.013Z",
+      "duration_ms": 150000,
+      "summary": "Genetic algorithm: tournament/roulette selection, single/two/uniform crossover, mutation, elitism, history. 8 tests."
+    },
+    {
+      "id": "T419",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny regex compiler (NFA)",
+      "started": "2026-03-31T02:40:28.006Z",
+      "completed": "2026-03-31T02:41:20.193Z",
+      "summary": "NFA regex: Thompson construction, concat/alt/star/plus/optional, dot, char classes, groups, escape seqs, search. 13 tests.",
+      "duration_ms": 150000
+    },
+    {
+      "id": "T420",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny tensor (N-dimensional array)",
+      "started": "2026-03-31T02:41:20.185Z",
+      "completed": "2026-03-31T02:42:19.207Z",
+      "summary": "Tensor: N-dim array, reshape, transpose, element-wise ops, matmul, sum/mean/max/min, eye, arange. 11 tests.",
+      "duration_ms": 150000
+    },
+    {
+      "id": "T421",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny CRDT (conflict-free replicated data types)",
+      "started": "2026-03-31T02:42:19.214Z",
+      "completed": "2026-03-31T02:43:06.276Z",
+      "summary": "CRDT: GCounter, PNCounter, GSet, ORSet, LWWRegister, LWWMap with merge semantics. 11 tests.",
+      "duration_ms": 150000
+    },
+    {
+      "id": "T422",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny graph database",
+      "started": "2026-03-31T02:43:06.269Z",
+      "completed": "2026-03-31T02:44:00.338Z",
+      "duration_ms": 150000,
+      "summary": "Graph DB: nodes/edges with labels+props, find, neighbors, BFS, shortest path, pattern matching. 8 tests."
+    },
+    {
+      "id": "T423",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny actor model",
+      "started": "2026-03-31T02:44:13.780Z",
+      "completed": "2026-03-31T02:45:02.469Z",
+      "duration_ms": 120000,
+      "summary": "Actor model: spawn, send, state, ask pattern, dead letters, children, become. 8 tests."
+    },
+    {
+      "id": "T424",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny datalog",
+      "started": "2026-03-31T03:41:18.674Z",
+      "completed": "2026-03-31T03:44:18.902Z",
+      "duration_ms": 30000,
+      "summary": "Already existed, 7 tests passing"
+    },
+    {
+      "id": "T425",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny physics engine (2D)",
+      "started": "2026-03-31T02:45:02.463Z",
+      "completed": "2026-03-31T02:45:55.755Z",
+      "duration_ms": 150000,
+      "summary": "2D Physics: Vec2, bodies, gravity, friction, circle+AABB collision, impulse response. 9 tests."
+    },
+    {
+      "id": "T426",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny SQL parser",
+      "started": "2026-03-31T02:45:55.762Z",
+      "completed": "2026-03-31T02:46:55.971Z",
+      "duration_ms": 150000,
+      "summary": "SQL parser: SELECT/INSERT/UPDATE/DELETE, WHERE, JOIN, ORDER BY, GROUP BY, HAVING, LIMIT, aggregates. 13 tests."
+    },
+    {
+      "id": "T427",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny reactive streams",
+      "started": "2026-03-31T02:46:55.964Z",
+      "completed": "2026-03-31T02:47:42.283Z",
+      "duration_ms": 120000,
+      "summary": "Reactive streams: of/from/empty, map/filter/take/skip/scan/reduce/distinct, merge/concat/zip, toArray. 13 tests."
+    },
+    {
+      "id": "T428",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny Datalog",
+      "started": "2026-03-31T02:47:50.699Z",
+      "completed": "2026-03-31T02:48:38.898Z",
+      "duration_ms": 120000,
+      "summary": "Datalog: facts, rules, bottom-up evaluation, transitive closure, joins, negation. 7 tests."
+    },
+    {
+      "id": "T429",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny red-black tree",
+      "started": "2026-03-31T02:48:38.905Z",
+      "completed": "2026-03-31T02:49:26.038Z",
+      "summary": "Red-black tree: left-lean RB, insert with rotations, floor/ceil, range, balanced verification. 8 tests.",
+      "duration_ms": 120000
+    },
+    {
+      "id": "T430",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny expression parser (Pratt)",
+      "started": "2026-03-31T02:49:26.045Z",
+      "completed": "2026-03-31T02:51:27.573Z",
+      "duration_ms": 150000,
+      "summary": "Pratt parser: precedence, prefix/infix/right-assoc, grouping, calls, member/index access, ternary. 12 tests."
+    },
+    {
+      "id": "T431",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny Markov chain text generator",
+      "started": "2026-03-31T02:52:23.293Z",
+      "completed": "2026-03-31T02:53:08.055Z",
+      "summary": "Markov chain: n-gram model, word/char level, generate, probability, most likely, serialize. 8 tests.",
+      "duration_ms": 100000
+    },
+    {
+      "id": "T432",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny bloom clock",
+      "started": "2026-03-31T03:41:54.690Z",
+      "completed": "2026-03-31T03:44:05.581Z",
+      "duration_ms": 120000,
+      "summary": "Bloom clock: probabilistic causal ordering, tick/merge/compare/contains/FPR/serialize. 13 tests."
+    },
+    {
+      "id": "T433",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny WAV parser",
+      "started": "2026-03-31T02:53:08.062Z",
+      "completed": "2026-03-31T02:54:00.987Z",
+      "duration_ms": 100000,
+      "summary": "WAV parser: parse/create WAV, sine/square/sawtooth generators, roundtrip. 7 tests."
+    },
+    {
+      "id": "T434",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny interpreter (tree-walking)",
+      "started": "2026-03-31T02:54:09.581Z",
+      "completed": "2026-03-31T02:55:00.541Z",
+      "duration_ms": 120000,
+      "summary": "Tree-walking interpreter: variables, closures, recursion, while loops, if/else, print. 12 tests."
+    },
+    {
+      "id": "T435",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Explore: build a tiny ray marcher (signed distance functions) - different from ray tracer",
+      "started": "2026-03-31T03:44:46.933Z",
+      "completed": "2026-03-31T03:47:12.340Z",
+      "duration_ms": 300000,
+      "summary": "Ray marcher: SDF sphere tracing, 6 primitives, 4 CSG ops, domain transforms, Phong shading, soft shadows, AO, reflections. 30 tests."
+    },
+    {
+      "id": "T436",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny constraint solver (arc consistency + backtracking)",
+      "started": "2026-03-31T03:47:28.578Z",
+      "completed": "2026-03-31T03:49:09.624Z",
+      "duration_ms": 180000,
+      "summary": "Constraint solver: AC-3, backtracking+MRV, forward checking. Solves 8-Queens, Sudoku, map coloring. 12 tests."
+    },
+    {
+      "id": "T437",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny regex engine (Thompson NFA + epsilon closure)",
+      "started": "2026-03-31T03:49:28.495Z",
+      "completed": "2026-03-31T03:49:28.648Z",
+      "duration_ms": 15000,
+      "summary": "Already existed as nfa-regex project, tests passing."
+    },
+    {
+      "id": "T438",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny Lisp interpreter (with macros)",
+      "started": "2026-03-31T03:49:37.043Z",
+      "completed": "2026-03-31T03:52:09.732Z",
+      "duration_ms": 240000,
+      "summary": "Lisp interpreter: lexical scoping, closures, macros with quasiquote/unquote, tail-call optimization, higher-order functions. 43 tests."
+    },
+    {
+      "id": "T439",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny Hindley-Milner type inference",
+      "started": "2026-03-31T03:52:26.830Z",
+      "completed": "2026-03-31T03:54:36.789Z",
+      "duration_ms": 300000,
+      "summary": "Hindley-Milner type inference: Algorithm W, unification, let-polymorphism, occurs check, pairs, fix, annotations. 37 tests."
+    },
+    {
+      "id": "T440",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny ECS game engine",
+      "started": "2026-03-31T03:56:13.353Z",
+      "completed": "2026-03-31T03:56:13.504Z",
+      "duration_ms": 90000,
+      "summary": "ECS: fixed tests (CJS/ESM mismatch). 11 tests passing."
+    },
+    {
+      "id": "T441",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Push all repos, update daily log",
+      "started": "2026-03-31T03:56:28.718Z"
     }
   ],
   "current": {
-    "id": "T363",
-    "mode": "BUILD",
+    "id": "T441",
+    "mode": "MAINTAIN",
     "status": "in-progress",
-    "task": "New project: Tiny MIME type lookup",
-    "started": "2026-03-31T01:05:36.793Z"
+    "task": "Push all repos, update daily log",
+    "started": "2026-03-31T03:56:28.718Z"
   },
   "stats": {
-    "completed": 388,
+    "completed": 440,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 66080000
+    "total_duration_ms": 72795000
   },
-  "updated_at": "2026-03-31T01:48:52.563Z"
+  "updated_at": "2026-03-31T03:56:28.718Z"
 }

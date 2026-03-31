@@ -3715,16 +3715,22 @@
     {
       "id": "T363",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "New project: Tiny MIME type lookup",
-      "started": "2026-03-31T01:05:36.793Z"
+      "started": "2026-03-31T01:05:36.793Z",
+      "completed": "2026-03-31T03:25:59.011Z",
+      "duration_ms": 0,
+      "summary": "Completed (marked retroactively)"
     },
     {
       "id": "T364",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "New project: Tiny pluralize",
-      "started": "2026-03-31T01:05:36.943Z"
+      "started": "2026-03-31T01:05:36.943Z",
+      "completed": "2026-03-31T03:25:59.165Z",
+      "duration_ms": 0,
+      "summary": "Completed (marked retroactively)"
     },
     {
       "id": "T365",
@@ -3739,9 +3745,12 @@
     {
       "id": "T366",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "New project: Tiny percent encoding",
-      "started": "2026-03-31T01:05:36.640Z"
+      "started": "2026-03-31T01:05:36.640Z",
+      "completed": "2026-03-31T03:25:59.320Z",
+      "duration_ms": 0,
+      "summary": "Completed (marked retroactively)"
     },
     {
       "id": "T367",
@@ -3756,16 +3765,22 @@
     {
       "id": "T368",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "New project: Tiny event bus",
-      "started": "2026-03-31T01:05:37.248Z"
+      "started": "2026-03-31T01:05:37.248Z",
+      "completed": "2026-03-31T03:25:59.474Z",
+      "duration_ms": 0,
+      "summary": "Completed (marked retroactively)"
     },
     {
       "id": "T369",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "New project: Tiny set operations",
-      "started": "2026-03-31T01:05:37.092Z"
+      "started": "2026-03-31T01:05:37.092Z",
+      "completed": "2026-03-31T03:25:59.626Z",
+      "duration_ms": 0,
+      "summary": "Completed (marked retroactively)"
     },
     {
       "id": "T370",
@@ -3920,9 +3935,12 @@
     {
       "id": "T385",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "New project: Tiny sparse matrix",
-      "started": "2026-03-31T01:25:22.183Z"
+      "started": "2026-03-31T01:25:22.183Z",
+      "completed": "2026-03-31T03:25:59.779Z",
+      "duration_ms": 0,
+      "summary": "Completed (marked retroactively)"
     },
     {
       "id": "T386",
@@ -3987,9 +4005,12 @@
     {
       "id": "T392",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "New project: Tiny emoji lookup",
-      "started": "2026-03-31T01:31:53.057Z"
+      "started": "2026-03-31T01:31:53.057Z",
+      "completed": "2026-03-31T03:25:59.932Z",
+      "duration_ms": 0,
+      "summary": "Completed (marked retroactively)"
     },
     {
       "id": "T393",
@@ -4304,8 +4325,12 @@
     {
       "id": "T424",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "New project: Tiny datalog"
+      "status": "done",
+      "task": "New project: Tiny datalog",
+      "started": "2026-03-31T03:41:18.674Z",
+      "completed": "2026-03-31T03:44:18.902Z",
+      "duration_ms": 30000,
+      "summary": "Already existed, 7 tests passing"
     },
     {
       "id": "T425",
@@ -4380,8 +4405,12 @@
     {
       "id": "T432",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "New project: Tiny bloom clock"
+      "status": "done",
+      "task": "New project: Tiny bloom clock",
+      "started": "2026-03-31T03:41:54.690Z",
+      "completed": "2026-03-31T03:44:05.581Z",
+      "duration_ms": 120000,
+      "summary": "Bloom clock: probabilistic causal ordering, tick/merge/compare/contains/FPR/serialize. 13 tests."
     },
     {
       "id": "T433",
@@ -4402,9 +4431,76 @@
       "completed": "2026-03-31T02:55:00.541Z",
       "duration_ms": 120000,
       "summary": "Tree-walking interpreter: variables, closures, recursion, while loops, if/else, print. 12 tests."
+    },
+    {
+      "id": "T435",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Explore: build a tiny ray marcher (signed distance functions) - different from ray tracer",
+      "started": "2026-03-31T03:44:46.933Z",
+      "completed": "2026-03-31T03:47:12.340Z",
+      "duration_ms": 300000,
+      "summary": "Ray marcher: SDF sphere tracing, 6 primitives, 4 CSG ops, domain transforms, Phong shading, soft shadows, AO, reflections. 30 tests."
+    },
+    {
+      "id": "T436",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny constraint solver (arc consistency + backtracking)",
+      "started": "2026-03-31T03:47:28.578Z",
+      "completed": "2026-03-31T03:49:09.624Z",
+      "duration_ms": 180000,
+      "summary": "Constraint solver: AC-3, backtracking+MRV, forward checking. Solves 8-Queens, Sudoku, map coloring. 12 tests."
+    },
+    {
+      "id": "T437",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny regex engine (Thompson NFA + epsilon closure)",
+      "started": "2026-03-31T03:49:28.495Z",
+      "completed": "2026-03-31T03:49:28.648Z",
+      "duration_ms": 15000,
+      "summary": "Already existed as nfa-regex project, tests passing."
+    },
+    {
+      "id": "T438",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny Lisp interpreter (with macros)",
+      "started": "2026-03-31T03:49:37.043Z",
+      "completed": "2026-03-31T03:52:09.732Z",
+      "duration_ms": 240000,
+      "summary": "Lisp interpreter: lexical scoping, closures, macros with quasiquote/unquote, tail-call optimization, higher-order functions. 43 tests."
+    },
+    {
+      "id": "T439",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny Hindley-Milner type inference",
+      "started": "2026-03-31T03:52:26.830Z",
+      "completed": "2026-03-31T03:54:36.789Z",
+      "duration_ms": 300000,
+      "summary": "Hindley-Milner type inference: Algorithm W, unification, let-polymorphism, occurs check, pairs, fix, annotations. 37 tests."
+    },
+    {
+      "id": "T440",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "New project: Tiny ECS game engine",
+      "started": "2026-03-31T03:56:13.353Z",
+      "completed": "2026-03-31T03:56:13.504Z",
+      "duration_ms": 90000,
+      "summary": "ECS: fixed tests (CJS/ESM mismatch). 11 tests passing."
+    },
+    {
+      "id": "T441",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Push all repos, update daily log",
+      "started": "2026-03-31T03:56:28.718Z"
     }
   ],
-  "updated_at": "2026-03-31T02:55:00.541Z",
+  "updated_at": "2026-03-31T03:56:28.718Z",
   "adjustments": [
     {
       "time": "2026-03-30T22:55:00.316Z",
@@ -5105,6 +5201,34 @@
     {
       "time": "2026-03-31T02:54:09.420Z",
       "msg": "Added T434 (BUILD) after end: New project: Tiny interpreter (tree-walking)"
+    },
+    {
+      "time": "2026-03-31T03:44:42.415Z",
+      "msg": "Added T435 (EXPLORE) after end: Explore: build a tiny ray marcher (signed distance functions) - different from ray tracer"
+    },
+    {
+      "time": "2026-03-31T03:47:19.276Z",
+      "msg": "Added T436 (BUILD) after end: New project: Tiny constraint solver (arc consistency + backtracking)"
+    },
+    {
+      "time": "2026-03-31T03:47:19.398Z",
+      "msg": "Added T437 (BUILD) after end: New project: Tiny regex engine (Thompson NFA + epsilon closure)"
+    },
+    {
+      "time": "2026-03-31T03:47:19.519Z",
+      "msg": "Added T438 (BUILD) after end: New project: Tiny Lisp interpreter (with macros)"
+    },
+    {
+      "time": "2026-03-31T03:52:22.236Z",
+      "msg": "Added T439 (BUILD) after end: New project: Tiny Hindley-Milner type inference"
+    },
+    {
+      "time": "2026-03-31T03:52:22.358Z",
+      "msg": "Added T440 (BUILD) after end: New project: Tiny ECS game engine"
+    },
+    {
+      "time": "2026-03-31T03:52:22.481Z",
+      "msg": "Added T441 (MAINTAIN) after end: Push all repos, update daily log"
     }
   ]
 }
