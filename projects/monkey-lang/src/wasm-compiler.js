@@ -23,6 +23,7 @@ import { Lexer } from './lexer.js';
 import { Parser } from './parser.js';
 import * as ast from './ast.js';
 import { peepholeOptimize } from './wasm-optimize.js';
+import { WasmGC, createGCImports } from './wasm-gc.js';
 
 // Compilation environment — tracks variable bindings per scope
 class Scope {
@@ -286,7 +287,23 @@ export class WasmCompiler {
     const indexSetIdx = this.builder.addImport('env', '__index_set', [ValType.i32, ValType.i32, ValType.i32], []);
     this._runtimeFuncs.indexSet = indexSetIdx;
 
-    // __alloc(size) → pointer — bump allocator
+    // GC imports: __gc_alloc(size) → ptr, __gc_collect() → freed_bytes, __gc_register(ptr, size) → void
+    const gcAllocIdx = this.builder.addImport('env', '__gc_alloc', [ValType.i32], [ValType.i32]);
+    this._runtimeFuncs.gcAlloc = gcAllocIdx;
+
+    const gcCollectIdx = this.builder.addImport('env', '__gc_collect', [], [ValType.i32]);
+    this._runtimeFuncs.gcCollect = gcCollectIdx;
+
+    const gcRegisterIdx = this.builder.addImport('env', '__gc_register', [ValType.i32, ValType.i32], []);
+    this._runtimeFuncs.gcRegister = gcRegisterIdx;
+
+    const gcAddRootIdx = this.builder.addImport('env', '__gc_add_root', [ValType.i32], []);
+    this._runtimeFuncs.gcAddRoot = gcAddRootIdx;
+
+    const gcRemoveRootIdx = this.builder.addImport('env', '__gc_remove_root', [ValType.i32], []);
+    this._runtimeFuncs.gcRemoveRoot = gcRemoveRootIdx;
+
+    // __alloc(size) → pointer — bump allocator, registers with GC for tracking
     const { index: allocIdx, body: allocBody } = this.builder.addFunction(
       [ValType.i32], [ValType.i32]
     );
@@ -296,7 +313,11 @@ export class WasmCompiler {
       .localTee(1)
       .localGet(0)             // size
       .emit(Op.i32_add)        // heap_ptr + size
-      .globalSet(this.heapPtr); // heap_ptr = heap_ptr + size
+      .globalSet(this.heapPtr) // heap_ptr = heap_ptr + size
+      // Register allocation with GC
+      .localGet(1)             // ptr
+      .localGet(0)             // size
+      .call(gcRegisterIdx);    // __gc_register(ptr, size)
     allocBody.localGet(1);      // return old heap_ptr
     this._runtimeFuncs.alloc = allocIdx;
 
@@ -2267,6 +2288,12 @@ function createWasmImports(outputLines = [], memoryRef = { memory: null }) {
         if (key < 0 || key >= len) return;
         view.setInt32(obj + 8 + key * 4, value, true);
       },
+      // GC stubs (no-op in non-GC mode)
+      __gc_alloc(size) { return 0; },
+      __gc_collect() { return 0; },
+      __gc_register(ptr, size) {},
+      __gc_add_root(ptr) {},
+      __gc_remove_root(ptr) {},
     },
   };
 }
@@ -2328,7 +2355,15 @@ export async function compileAndRun(input, options = {}) {
 
   const outputLines = options.outputLines || [];
   const memoryRef = { memory: null };
-  const imports = createWasmImports(outputLines, memoryRef);
+
+  let imports;
+  let gc = null;
+  if (options.gc) {
+    gc = new WasmGC(memoryRef, typeof options.gc === 'object' ? options.gc : {});
+    imports = createGCImports(gc, outputLines, memoryRef);
+  } else {
+    imports = createWasmImports(outputLines, memoryRef);
+  }
 
   const t3 = performance.now();
   const instance = await WebAssembly.instantiate(module, imports);
@@ -2342,6 +2377,7 @@ export async function compileAndRun(input, options = {}) {
 
   if (options.timings) Object.assign(options.timings, timings);
   if (options.instance) options.instance.ref = instance;
+  if (options.gcStats && gc) options.gcStats.ref = gc.getStats();
 
   return result;
 }
