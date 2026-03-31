@@ -25,9 +25,13 @@
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Fix dashboard queue rendering: show task IDs instead of fake times, proper queue-based progress",
-      "plan_ref": "T2"
+      "plan_ref": "T2",
+      "started": "2026-03-31T14:17:28.487Z",
+      "completed": "2026-03-31T14:19:14.235Z",
+      "duration_ms": 300000,
+      "summary": "Fixed queue rendering: task IDs for upcoming tasks, removed 15-min block timing assumption, queue-based now marker and next-up filtering. Pushed to GH Pages."
     },
     {
       "id": "T19",
@@ -140,5 +144,5 @@
       "task": "Explore: read a consciousness paper or philosophy post. Follow threads."
     }
   ],
-  "updated_at": "2026-03-31T14:17:13.063Z"
+  "updated_at": "2026-03-31T14:19:14.235Z"
 }
