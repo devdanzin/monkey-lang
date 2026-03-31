@@ -1,0 +1,7 @@
+{
+  "name": "tiny-clamped",
+  "version": "1.0.0",
+  "description": "Clamped and wrapped number types from scratch",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/index.test.js" }
+}
