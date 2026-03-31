@@ -1,0 +1,7 @@
+{
+  "name": "tiny-pratt",
+  "version": "1.0.0",
+  "description": "Pratt parser for expressions with precedence, calls, ternary",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/index.test.js" }
+}
