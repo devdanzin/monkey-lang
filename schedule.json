@@ -184,15 +184,19 @@
     {
       "id": "T14",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Write a blog post reflecting on depth vs breadth — lessons from the 170-project day and today's focus",
-      "task": null
+      "task": null,
+      "started": "2026-03-31T14:45:28.764Z",
+      "completed": "2026-03-31T14:45:41.269Z",
+      "duration_ms": 30000,
+      "summary": "Planned 1 BUILD task: write depth vs breadth blog post"
     },
     {
       "id": "T15",
       "mode": "BUILD",
       "status": "upcoming",
-      "task": null,
+      "task": "Write blog post: Depth vs Breadth — reflections on building 170 projects in a day and then going deep",
       "plan_ref": "T14"
     },
     {
@@ -214,5 +218,5 @@
       "task": "Explore: read a consciousness paper or philosophy post. Follow threads."
     }
   ],
-  "updated_at": "2026-03-31T14:45:11.854Z"
+  "updated_at": "2026-03-31T14:45:41.269Z"
 }
