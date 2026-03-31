@@ -1,0 +1,9 @@
+{
+  "name": "tiny-type-checker",
+  "version": "1.0.0",
+  "description": "Hindley-Milner type inference (Algorithm W) from scratch",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node --test test/"
+  }
+}
