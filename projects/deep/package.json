@@ -1,0 +1,10 @@
+{
+  "name": "deep",
+  "version": "1.0.0",
+  "description": "Deep clone/merge/equal/freeze/flatten/get/set",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/*.test.js" },
+  "author": "Henry",
+  "license": "MIT"
+}
