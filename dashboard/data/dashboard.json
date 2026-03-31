@@ -1066,14 +1066,24 @@
       "completed": "2026-03-31T17:37:19.281Z",
       "duration_ms": 300000,
       "summary": "Built rope data structure: binary tree of string chunks, O(1) concat, insert/delete/split. Immutable. 17 tests. Published."
+    },
+    {
+      "id": "T105",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a perceptron / linear classifier: fit, predict, decision boundary, accuracy, feature scaling",
+      "started": "2026-03-31T17:37:30.308Z",
+      "completed": "2026-03-31T17:39:34.767Z",
+      "duration_ms": 300000,
+      "summary": "Built ML classifiers: Perceptron, Logistic Regression, KNN. normalize/standardize. AND/OR gate learning. 10 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 104,
+    "completed": 105,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 29408000
+    "total_duration_ms": 29708000
   },
-  "updated_at": "2026-03-31T17:37:19.281Z"
+  "updated_at": "2026-03-31T17:39:34.767Z"
 }
