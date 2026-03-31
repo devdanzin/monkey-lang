@@ -1,0 +1,7 @@
+{
+  "name": "tiny-graph-db",
+  "version": "1.0.0",
+  "description": "Property graph database with traversals and pattern matching",
+  "main": "src/index.js",
+  "scripts": { "test": "node --test test/index.test.js" }
+}
