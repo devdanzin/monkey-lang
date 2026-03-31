@@ -10,6 +10,9 @@ self.onmessage = function(e) {
   const { width, height, samplesPerPixel, maxDepth, scene, cameraConfig, background, renderMode, bgMode } = config;
   const { x0, y0, x1, y1, tileId } = tile;
 
+  // Notify main thread that we're building the scene
+  self.postMessage({ building: true, tileId: tile.tileId });
+
   // Build scene (each worker builds its own — no shared state needed)
   let world;
   if (scene === 'random') world = createRandomScene();

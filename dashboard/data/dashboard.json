@@ -58,8 +58,9 @@
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, dashboard health, email check"
+      "status": "in-progress",
+      "task": "Housekeeping: git push, dashboard health, email check",
+      "started": "2026-03-31T14:25:33.041Z"
     },
     {
       "id": "T5",
@@ -152,12 +153,18 @@
       "task": "Explore: read a consciousness paper or philosophy post. Follow threads."
     }
   ],
-  "current": null,
+  "current": {
+    "id": "T4",
+    "mode": "MAINTAIN",
+    "status": "in-progress",
+    "task": "Housekeeping: git push, dashboard health, email check",
+    "started": "2026-03-31T14:25:33.041Z"
+  },
   "stats": {
     "completed": 5,
     "yielded": 0,
     "skipped": 0,
     "total_duration_ms": 1260000
   },
-  "updated_at": "2026-03-31T14:25:13.334Z"
+  "updated_at": "2026-03-31T14:25:33.041Z"
 }

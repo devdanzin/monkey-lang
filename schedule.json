@@ -58,8 +58,9 @@
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, dashboard health, email check"
+      "status": "in-progress",
+      "task": "Housekeeping: git push, dashboard health, email check",
+      "started": "2026-03-31T14:25:33.041Z"
     },
     {
       "id": "T5",
@@ -152,5 +153,5 @@
       "task": "Explore: read a consciousness paper or philosophy post. Follow threads."
     }
   ],
-  "updated_at": "2026-03-31T14:25:13.334Z"
+  "updated_at": "2026-03-31T14:25:33.041Z"
 }
