@@ -133,6 +133,58 @@ export class StripeTexture {
   }
 }
 
+// Image texture — maps a 2D image onto a surface using UV coordinates
+// Data format: flat array of [r, g, b, r, g, b, ...] values in [0, 255]
+export class ImageTexture {
+  constructor(data, width, height) {
+    this.data = data;     // Uint8Array or Array of [r,g,b,...] bytes
+    this.width = width;
+    this.height = height;
+  }
+
+  value(u, v, p) {
+    // Clamp UV coordinates
+    u = Math.max(0, Math.min(1, u));
+    v = 1.0 - Math.max(0, Math.min(1, v)); // Flip v (image y=0 is top)
+
+    let i = u * (this.width - 1);
+    let j = v * (this.height - 1);
+
+    // Bilinear interpolation
+    const i0 = Math.floor(i);
+    const j0 = Math.floor(j);
+    const i1 = Math.min(i0 + 1, this.width - 1);
+    const j1 = Math.min(j0 + 1, this.height - 1);
+    const u_frac = i - i0;
+    const v_frac = j - j0;
+
+    const c00 = this._pixel(i0, j0);
+    const c10 = this._pixel(i1, j0);
+    const c01 = this._pixel(i0, j1);
+    const c11 = this._pixel(i1, j1);
+
+    // Bilinear blend
+    const scale = 1.0 / 255.0;
+    const r = ((c00[0] * (1 - u_frac) + c10[0] * u_frac) * (1 - v_frac) +
+               (c01[0] * (1 - u_frac) + c11[0] * u_frac) * v_frac) * scale;
+    const g = ((c00[1] * (1 - u_frac) + c10[1] * u_frac) * (1 - v_frac) +
+               (c01[1] * (1 - u_frac) + c11[1] * u_frac) * v_frac) * scale;
+    const b = ((c00[2] * (1 - u_frac) + c10[2] * u_frac) * (1 - v_frac) +
+               (c01[2] * (1 - u_frac) + c11[2] * u_frac) * v_frac) * scale;
+
+    return new Color(r, g, b);
+  }
+
+  _pixel(i, j) {
+    const idx = (j * this.width + i) * 3;
+    return [
+      this.data[idx] || 0,
+      this.data[idx + 1] || 0,
+      this.data[idx + 2] || 0
+    ];
+  }
+}
+
 // Procedural planet texture — continents and oceans
 export class PlanetTexture {
   constructor(landColor, oceanColor, cloudColor = null, scale = 3) {
