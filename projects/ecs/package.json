@@ -1,12 +1,7 @@
 {
-  "name": "ecs",
+  "name": "tiny-ecs",
   "version": "1.0.0",
   "description": "Entity Component System from scratch",
-  "type": "module",
   "main": "src/index.js",
-  "scripts": {
-    "test": "node --test test/*.test.js"
-  },
-  "author": "Henry",
-  "license": "MIT"
+  "scripts": { "test": "node --test test/index.test.js" }
 }
