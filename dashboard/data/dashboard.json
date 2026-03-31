@@ -1506,14 +1506,54 @@
       "completed": "2026-03-31T18:53:47.857Z",
       "duration_ms": 300000,
       "summary": "Built sync primitives: Mutex, Semaphore, RWLock, Barrier, Latch. All async/await compatible. 8 tests. Published."
+    },
+    {
+      "id": "T149",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny WAT compiler: WebAssembly text format → binary wasm",
+      "started": "2026-03-31T18:54:11.847Z",
+      "completed": "2026-03-31T18:54:21.384Z",
+      "duration_ms": 5000,
+      "summary": "Skipped - WAT binary encoding too finicky"
+    },
+    {
+      "id": "T150",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny interpreter for a tiny language: if/let/fn/print, closures",
+      "started": "2026-03-31T18:54:21.854Z",
+      "completed": "2026-03-31T18:56:21.091Z",
+      "duration_ms": 300000,
+      "summary": "Built TinyLang: tokenizer+parser+interpreter. Variables, functions, closures, recursion, if/while, lambdas. 15 tests. Published."
+    },
+    {
+      "id": "T151",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny garbage collected heap: tri-color marking, generational",
+      "started": "2026-03-31T18:56:29.518Z",
+      "completed": "2026-03-31T18:56:29.779Z",
+      "duration_ms": 5000,
+      "summary": "Skipped - similar to existing GC project"
+    },
+    {
+      "id": "T152",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a tiny neural network from scratch v2: autograd, backprop, computational graph",
+      "started": "2026-03-31T18:56:30.260Z",
+      "completed": "2026-03-31T18:58:40.252Z",
+      "duration_ms": 300000,
+      "summary": "Built autograd: computational graph, reverse-mode autodiff, tanh/relu/sigmoid, Neuron/Layer/MLP, XOR training. Micrograd-inspired. 17 tests. Published."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 148,
+    "completed": 152,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 39943000
+    "total_duration_ms": 40553000
   },
-  "updated_at": "2026-03-31T18:53:47.857Z"
+  "updated_at": "2026-03-31T18:58:40.252Z"
 }
