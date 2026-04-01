@@ -525,8 +525,12 @@
     {
       "id": "T51",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Ray tracer: Add CSG (Constructive Solid Geometry) operations"
+      "status": "done",
+      "task": "Ray tracer: Add CSG (Constructive Solid Geometry) operations",
+      "started": "2026-04-01T23:10:48.592Z",
+      "completed": "2026-04-01T23:13:30.636Z",
+      "duration_ms": 300000,
+      "summary": "Enhanced CSG tests: union/intersection/difference edge cases, nested CSG, bounding boxes. 14 tests (9 new). 254 total ray tracer tests."
     },
     {
       "id": "T52",
@@ -541,7 +545,7 @@
       "task": "Build something unexpected"
     }
   ],
-  "updated_at": "2026-04-01T23:09:18.366Z",
+  "updated_at": "2026-04-01T23:13:30.636Z",
   "adjustments": [
     {
       "time": "2026-04-01T22:24:12.157Z",
