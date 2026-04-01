@@ -395,8 +395,12 @@
     {
       "id": "T35",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Evening curiosity: research transformers/attention or reinforcement learning"
+      "status": "done",
+      "task": "Evening curiosity: research transformers/attention or reinforcement learning",
+      "started": "2026-04-01T22:01:16.684Z",
+      "completed": "2026-04-01T22:16:04.198Z",
+      "duration_ms": 600000,
+      "summary": "EXPLORE→BUILD: Implemented self-attention + multi-head attention in neural net. Full QKV projection, scaled dot-product, softmax, backward with BPTT through attention. 13 new tests. 188 total."
     },
     {
       "id": "T36",
@@ -407,10 +411,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 37,
+    "completed": 38,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 7550000
+    "total_duration_ms": 8150000
   },
-  "updated_at": "2026-04-01T22:01:01.119Z"
+  "updated_at": "2026-04-01T22:16:04.198Z"
 }
