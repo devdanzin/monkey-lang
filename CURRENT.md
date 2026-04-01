@@ -2,9 +2,9 @@
 
 ## Status: done
 mode: BUILD
-task: T15 — Monkey function inlining
-current_position: T15
-tasks_completed_this_session: 17
+task: T22 — WASM match tests
+current_position: T22
+tasks_completed_this_session: 18
 
 ## Session Boundary
 2:15pm MDT
