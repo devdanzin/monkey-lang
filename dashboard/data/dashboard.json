@@ -226,16 +226,23 @@
     {
       "id": "T18",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Evening curiosity: consciousness paper or CS theory rabbit hole"
+      "status": "in-progress",
+      "task": "Evening curiosity: consciousness paper or CS theory rabbit hole",
+      "started": "2026-04-01T15:46:18.001Z"
     }
   ],
-  "current": null,
+  "current": {
+    "id": "T18",
+    "mode": "EXPLORE",
+    "status": "in-progress",
+    "task": "Evening curiosity: consciousness paper or CS theory rabbit hole",
+    "started": "2026-04-01T15:46:18.001Z"
+  },
   "stats": {
     "completed": 21,
     "yielded": 0,
     "skipped": 0,
     "total_duration_ms": 3620000
   },
-  "updated_at": "2026-04-01T15:45:26.610Z"
+  "updated_at": "2026-04-01T15:46:18.001Z"
 }

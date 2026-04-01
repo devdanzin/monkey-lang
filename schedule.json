@@ -226,9 +226,10 @@
     {
       "id": "T18",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Evening curiosity: consciousness paper or CS theory rabbit hole"
+      "status": "in-progress",
+      "task": "Evening curiosity: consciousness paper or CS theory rabbit hole",
+      "started": "2026-04-01T15:46:18.001Z"
     }
   ],
-  "updated_at": "2026-04-01T15:45:26.610Z"
+  "updated_at": "2026-04-01T15:46:18.001Z"
 }
