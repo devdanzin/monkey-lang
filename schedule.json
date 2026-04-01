@@ -196,21 +196,32 @@
       "id": "T22",
       "mode": "BUILD",
       "task": "Monkey: Pattern matching in WASM compiler + tests",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T14",
-      "started": "2026-04-01T15:37:33.517Z"
+      "started": "2026-04-01T15:37:33.517Z",
+      "completed": "2026-04-01T15:40:42.402Z",
+      "duration_ms": 240000,
+      "summary": "WASM match already existed. Added 17 comprehensive match tests covering edge cases, nested matches, function bodies. 1540 total. Pushed."
     },
     {
       "id": "T16",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, knowledge capture, dashboard update"
+      "status": "done",
+      "task": "Housekeeping: git push, knowledge capture, dashboard update",
+      "started": "2026-04-01T15:42:11.125Z",
+      "completed": "2026-04-01T15:42:48.778Z",
+      "duration_ms": 30000,
+      "summary": "Git push, dashboard regenerated (now 1982 tests, 35 posts)."
     },
     {
       "id": "T17",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Research generative models or diffusion math"
+      "status": "done",
+      "task": "Research generative models or diffusion math",
+      "started": "2026-04-01T15:43:31.044Z",
+      "completed": "2026-04-01T15:45:26.610Z",
+      "duration_ms": 120000,
+      "summary": "Explored diffusion model math: forward/reverse processes, score matching, SDE formulation, probability flow ODE. Wrote detailed scratch note with key equations."
     },
     {
       "id": "T18",
@@ -219,5 +230,5 @@
       "task": "Evening curiosity: consciousness paper or CS theory rabbit hole"
     }
   ],
-  "updated_at": "2026-04-01T15:37:33.517Z"
+  "updated_at": "2026-04-01T15:45:26.610Z"
 }

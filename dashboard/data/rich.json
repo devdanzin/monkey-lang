@@ -661,9 +661,9 @@
   ],
   "streak": 4,
   "scheduleAdherence": {
-    "completionRate": 40,
+    "completionRate": 33,
     "completedBlocks": 2,
-    "pastBlocks": 5,
+    "pastBlocks": 6,
     "totalBlocks": 55,
     "plannedDist": {
       "THINK": 9,
@@ -675,7 +675,7 @@
       "THINK": 1,
       "MAINTAIN": 1
     },
-    "pace": 1.9
+    "pace": 1.4
   },
   "todayHighlights": [],
   "adjustments": [
@@ -683,5 +683,5 @@
   ],
   "blockers": [],
   "projects": [],
-  "generated": "2026-04-01T15:18:48.805Z"
+  "generated": "2026-04-01T15:42:34.735Z"
 }
