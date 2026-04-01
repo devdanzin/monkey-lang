@@ -332,27 +332,50 @@
     {
       "id": "T30",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, dashboard regen, knowledge capture"
+      "status": "done",
+      "task": "Housekeeping: git push, dashboard regen, knowledge capture",
+      "started": "2026-04-01T21:09:08.206Z",
+      "completed": "2026-04-01T21:10:54.296Z",
+      "duration_ms": 120000,
+      "summary": "Git push done. Dashboard API live. Knowledge: neural net now has Conv2D (proper backward), RNN, LSTM, Autoencoder, VAE - real depth."
     },
     {
       "id": "T31",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Reflect on neural net work. Plan next depth push."
+      "status": "done",
+      "task": "Reflect on neural net work. Plan next depth push.",
+      "started": "2026-04-01T21:11:13.757Z",
+      "completed": "2026-04-01T21:11:57.060Z",
+      "duration_ms": 30000,
+      "summary": "Neural net is deep: 175 tests, 7 layer types, 4 optimizers, VAE, DDPM. Next: physics web demo for visual impact, then attention/transformer EXPLORE."
     },
     {
       "id": "T32",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Physics engine web demo or ray tracer new feature",
-      "task": null
+      "task": null,
+      "started": "2026-04-01T21:12:09.579Z",
+      "completed": "2026-04-01T21:12:37.815Z",
+      "duration_ms": 30000,
+      "summary": "Planned physics web demo: 2 BUILD tasks — interactive canvas demo + GitHub Pages deploy."
     },
     {
       "id": "T33",
       "mode": "BUILD",
+      "status": "done",
+      "task": "Physics: Interactive web demo (Canvas2D, drag bodies, real-time simulation, multiple scenes)",
+      "plan_ref": "T32",
+      "started": "2026-04-01T21:12:52.273Z",
+      "completed": "2026-04-01T21:54:34.635Z",
+      "duration_ms": 600000,
+      "summary": "Built interactive physics web demo: 6 scenes (box rain, polygon mix, stacking, springs, Newton cradle, funnel), drag-to-throw, SAT collision, spring+distance constraints, Canvas2D rendering at 60fps. 500+ lines."
+    },
+    {
+      "id": "T39",
+      "mode": "BUILD",
+      "task": "Physics: Push web demo to GitHub Pages at henry-the-frog.github.io/physics-engine/",
       "status": "upcoming",
-      "task": null,
       "plan_ref": "T32"
     },
     {
@@ -374,5 +397,5 @@
       "task": "Follow up on interesting discoveries"
     }
   ],
-  "updated_at": "2026-04-01T21:08:10.022Z"
+  "updated_at": "2026-04-01T21:54:34.635Z"
 }
