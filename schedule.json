@@ -274,7 +274,97 @@
       "completed": "2026-04-01T20:36:05.055Z",
       "duration_ms": 180000,
       "summary": "Enhanced broadphase tests: polygon grid support, rotated polygon cells, multi-cell spanning, mixed shape types, deduplication. 12 broadphase tests (5 new). 103 total physics tests."
+    },
+    {
+      "id": "T27",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Session B: queue empty at T26. Decide next work direction for ~5.5 remaining hours.",
+      "started": "2026-04-01T20:38:36.004Z",
+      "completed": "2026-04-01T20:40:21.921Z",
+      "duration_ms": 60000,
+      "summary": "Queue empty. Built 10-task queue: neural net Conv2D depth push (main), physics/ray-tracer feature, 2 EXPLORE. ~5.5hr remaining."
+    },
+    {
+      "id": "T28",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Neural net depth: Conv2D layers, pooling, Adam optimizer, proper MNIST-style training",
+      "task": null,
+      "started": "2026-04-01T20:40:48.328Z",
+      "completed": "2026-04-01T20:43:53.025Z",
+      "duration_ms": 120000,
+      "summary": "Planned neural net depth: 3 BUILD tasks - fix Conv2D backward+optimizer integration, add RNN/LSTM, add autoencoder. Loaded existing code (135 tests, 1 failing serialization)."
+    },
+    {
+      "id": "T29",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: Fix Conv2D backward (proper col2im gradient), integrate optimizer classes into Network.train()",
+      "plan_ref": "T28",
+      "started": "2026-04-01T20:44:07.720Z",
+      "completed": "2026-04-01T20:54:04.490Z",
+      "duration_ms": 600000,
+      "summary": "Fixed Conv2D backward (proper col2im), Matrix.toArray/fromArray TypedArray fix, Network optimizer integration (Adam/RMSProp), Network.add() for any layer, toJSON/fromJSON, summary(). 147 tests (12 new), all passing."
+    },
+    {
+      "id": "T37",
+      "mode": "BUILD",
+      "task": "Neural net: Add RNN/LSTM layer with sequence training",
+      "status": "upcoming",
+      "plan_ref": "T28"
+    },
+    {
+      "id": "T38",
+      "mode": "BUILD",
+      "task": "Neural net: Add autoencoder architecture + denoising demo",
+      "status": "upcoming",
+      "plan_ref": "T28"
+    },
+    {
+      "id": "T30",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Housekeeping: git push, dashboard regen, knowledge capture"
+    },
+    {
+      "id": "T31",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Reflect on neural net work. Plan next depth push."
+    },
+    {
+      "id": "T32",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Physics engine web demo or ray tracer new feature",
+      "task": null
+    },
+    {
+      "id": "T33",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T32"
+    },
+    {
+      "id": "T34",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Housekeeping"
+    },
+    {
+      "id": "T35",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Evening curiosity: research transformers/attention or reinforcement learning"
+    },
+    {
+      "id": "T36",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Follow up on interesting discoveries"
     }
   ],
-  "updated_at": "2026-04-01T20:36:05.055Z"
+  "updated_at": "2026-04-01T20:54:04.490Z"
 }

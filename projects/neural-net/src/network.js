@@ -1,24 +1,45 @@
-// network.js — Neural network: stack of layers
+// network.js — Neural network: stack of layers with optimizer support
 
 import { Dense } from './layer.js';
 import { getLoss } from './loss.js';
 import { Matrix } from './matrix.js';
+import { createOptimizer } from './optimizer.js';
 
 export class Network {
   constructor() {
     this.layers = [];
     this.lossFunction = null;
+    this._optimizer = null;
+    this._optimizerName = 'sgd';
   }
 
-  // Add a dense layer
+  // Add a dense layer (convenience)
   dense(inputSize, outputSize, activation = 'relu') {
     this.layers.push(new Dense(inputSize, outputSize, activation));
-    return this; // Chainable
+    return this;
+  }
+
+  // Add any layer (Conv2D, MaxPool2D, Flatten, BatchNorm, Dropout, Dense, etc.)
+  add(layer) {
+    this.layers.push(layer);
+    return this;
   }
 
   // Set loss function
   loss(name) {
     this.lossFunction = getLoss(name);
+    return this;
+  }
+
+  // Set optimizer
+  optimizer(nameOrObj, options = {}) {
+    if (typeof nameOrObj === 'string') {
+      this._optimizerName = nameOrObj;
+      this._optimizer = createOptimizer(nameOrObj, options);
+    } else {
+      this._optimizer = nameOrObj;
+      this._optimizerName = nameOrObj.name || 'custom';
+    }
     return this;
   }
 
@@ -35,11 +56,16 @@ export class Network {
   predict(input) {
     if (Array.isArray(input)) input = Matrix.fromArray(input);
     if (input.cols === undefined) input = Matrix.fromArray([input]);
-    return this.forward(input);
+    // Set eval mode temporarily
+    const modes = this.layers.map(l => l.training);
+    for (const l of this.layers) l.training = false;
+    const result = this.forward(input);
+    this.layers.forEach((l, i) => l.training = modes[i]);
+    return result;
   }
 
   // Train on a batch
-  trainBatch(input, target, learningRate = 0.01, momentum = 0, optimizer = 'sgd') {
+  trainBatch(input, target, learningRate = 0.01, momentum = 0, optimizerName = 'sgd') {
     if (Array.isArray(input)) input = Matrix.fromArray(input);
     if (Array.isArray(target)) target = Matrix.fromArray(target);
 
@@ -55,9 +81,25 @@ export class Network {
       grad = this.layers[i].backward(grad);
     }
 
-    // Update weights
-    for (const layer of this.layers) {
-      layer.update(learningRate, momentum, optimizer);
+    // Update weights — use optimizer object if available
+    if (this._optimizer && this._optimizer.step) this._optimizer.step();
+    
+    for (let idx = 0; idx < this.layers.length; idx++) {
+      const layer = this.layers[idx];
+      if (this._optimizer && layer.dWeights) {
+        // Use optimizer classes for Dense layers
+        const batchSize = input.rows;
+        const gradW = layer.dWeights.mul(1.0 / batchSize);
+        const gradB = layer.dBiases.mul(1.0 / batchSize);
+        layer.weights = this._optimizer.update(layer.weights, gradW, `L${idx}_w`);
+        layer.biases = this._optimizer.update(layer.biases, gradB, `L${idx}_b`);
+      } else if (this._optimizer && layer.dFilters) {
+        // Conv2D layer — optimizer for filters and biases
+        layer.filters = this._optimizer.update(layer.filters, layer.dFilters, `L${idx}_f`);
+        layer.biases = this._optimizer.update(layer.biases, layer.dBiases, `L${idx}_b`);
+      } else if (layer.update) {
+        layer.update(learningRate, momentum, optimizerName);
+      }
     }
 
     return loss;
@@ -68,6 +110,11 @@ export class Network {
     const { inputs, targets } = data;
     const n = inputs.rows;
     const history = [];
+
+    // Auto-create optimizer if not set and string provided
+    if (!this._optimizer && optimizer !== 'sgd') {
+      this.optimizer(optimizer, { lr: learningRate });
+    }
 
     // Set training mode
     for (const l of this.layers) l.training = true;
@@ -146,19 +193,72 @@ export class Network {
     };
   }
 
+  // Serialize to JSON
+  toJSON() {
+    return {
+      layers: this.layers.map((l, i) => {
+        const obj = { type: l.constructor.name, index: i };
+        if (l.weights) obj.weights = l.weights.toArray();
+        if (l.biases) obj.biases = l.biases.toArray();
+        if (l.filters) obj.filters = l.filters.toArray();
+        // Store config
+        if (l.inputSize !== undefined) obj.inputSize = l.inputSize;
+        if (l.outputSize !== undefined) obj.outputSize = l.outputSize;
+        if (l.activation) obj.activation = l.activation.name;
+        if (l.inputH !== undefined) {
+          obj.inputH = l.inputH; obj.inputW = l.inputW; obj.inputC = l.inputC;
+          obj.numFilters = l.numFilters; obj.filterSize = l.filterSize;
+          obj.stride = l.stride; obj.padding = l.padding;
+        }
+        if (l.poolSize !== undefined) {
+          obj.inputH = l.inputH; obj.inputW = l.inputW; obj.inputC = l.inputC;
+          obj.poolSize = l.poolSize;
+        }
+        return obj;
+      }),
+      loss: this.lossFunction ? 'mse' : null
+    };
+  }
+
+  // Deserialize from JSON
+  static fromJSON(jsonStr) {
+    const data = typeof jsonStr === 'string' ? JSON.parse(jsonStr) : jsonStr;
+    const net = new Network();
+
+    for (const layerData of data.layers) {
+      if (layerData.type === 'Dense') {
+        const layer = new Dense(layerData.inputSize, layerData.outputSize, layerData.activation);
+        if (layerData.weights) layer.weights = Matrix.fromArray(layerData.weights);
+        if (layerData.biases) {
+          const b = Matrix.fromArray(layerData.biases);
+          // Ensure biases are row vector [1, outputSize]
+          layer.biases = b.rows === 1 ? b : new Matrix(1, b.rows).map((_, i, j) => b.get(j, 0));
+        }
+        net.layers.push(layer);
+      }
+      // Other layer types can be added here
+    }
+
+    if (data.loss) net.loss(data.loss);
+    return net;
+  }
+
   // Summary
   summary() {
     let totalParams = 0;
     const lines = ['Network Summary:'];
     lines.push('─'.repeat(60));
-    lines.push(`${'Layer'.padEnd(20)} ${'Output'.padEnd(15)} ${'Params'.padEnd(10)} Activation`);
+    lines.push(`${'Layer'.padEnd(20)} ${'Output'.padEnd(15)} ${'Params'.padEnd(10)} Info`);
     lines.push('─'.repeat(60));
 
     for (let i = 0; i < this.layers.length; i++) {
       const l = this.layers[i];
-      const params = l.paramCount();
+      const params = l.paramCount ? l.paramCount() : 0;
       totalParams += params;
-      lines.push(`Dense ${i + 1}`.padEnd(20) + `${l.outputSize}`.padEnd(15) + `${params}`.padEnd(10) + l.activation.name);
+      const name = l.constructor.name;
+      const output = l.outputSize || '?';
+      const info = l.activation ? l.activation.name : '';
+      lines.push(`${name} ${i + 1}`.padEnd(20) + `${output}`.padEnd(15) + `${params}`.padEnd(10) + info);
     }
 
     lines.push('─'.repeat(60));

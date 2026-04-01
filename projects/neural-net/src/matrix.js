@@ -191,8 +191,8 @@ export class Matrix {
   static random(rows, cols, scale) { return new Matrix(rows, cols).randomize(scale); }
 
   static fromArray(arr) {
-    if (Array.isArray(arr[0])) {
-      // 2D array
+    if (Array.isArray(arr[0]) || ArrayBuffer.isView(arr[0])) {
+      // 2D array (or array of typed arrays)
       const rows = arr.length, cols = arr[0].length;
       const m = new Matrix(rows, cols);
       for (let i = 0; i < rows; i++) for (let j = 0; j < cols; j++) m.set(i, j, arr[i][j]);
@@ -202,6 +202,17 @@ export class Matrix {
     const m = new Matrix(arr.length, 1);
     for (let i = 0; i < arr.length; i++) m.data[i] = arr[i];
     return m;
+  }
+
+  // Convert to 2D array
+  toArray() {
+    const result = [];
+    for (let i = 0; i < this.rows; i++) {
+      const row = [];
+      for (let j = 0; j < this.cols; j++) row.push(this.get(i, j));
+      result.push(row);
+    }
+    return result;
   }
 
   // One-hot encoding

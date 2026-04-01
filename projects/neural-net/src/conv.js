@@ -76,9 +76,11 @@ export class Conv2D {
     this.input = input;
     const batchSize = input.rows;
     const output = new Matrix(batchSize, this.outputSize);
+    this.colsCache = []; // Cache im2col for backward
 
     for (let b = 0; b < batchSize; b++) {
       const cols = this._im2col(input, b);
+      this.colsCache.push(cols);
       // Convolution = cols · filters^T + bias
       const conv = cols.dot(this.filters.T());
       // Add bias and apply activation
@@ -96,18 +98,73 @@ export class Conv2D {
     return this.a;
   }
 
+  // col2im: distribute gradients back to input space
+  _col2im(dCols, batchIdx, dInput) {
+    const { inputH: H, inputW: W, inputC: C, filterSize: F, stride: S, padding: P, outputH: OH, outputW: OW } = this;
+
+    for (let oh = 0; oh < OH; oh++) {
+      for (let ow = 0; ow < OW; ow++) {
+        const rowIdx = oh * OW + ow;
+        let colIdx = 0;
+        for (let c = 0; c < C; c++) {
+          for (let fh = 0; fh < F; fh++) {
+            for (let fw = 0; fw < F; fw++) {
+              const ih = oh * S - P + fh;
+              const iw = ow * S - P + fw;
+              if (ih >= 0 && ih < H && iw >= 0 && iw < W) {
+                const inputIdx = (c * H + ih) * W + iw;
+                const prev = dInput.get(batchIdx, inputIdx);
+                dInput.set(batchIdx, inputIdx, prev + dCols.get(rowIdx, colIdx));
+              }
+              colIdx++;
+            }
+          }
+        }
+      }
+    }
+  }
+
   backward(dOutput) {
-    // Simplified: treat as dense layer with im2col weights
     const activGrad = this.activation.backward(this.a);
     const dz = dOutput.mul(activGrad);
+    const batchSize = this.input.rows;
 
-    // Gradient computation would require col2im (reverse of im2col)
-    // For now, we'll use a simplified approach
+    // Initialize gradient accumulators
     this.dFilters = Matrix.zeros(this.numFilters, this.filterSize * this.filterSize * this.inputC);
-    this.dBiases = dz.sumAxis(0);
+    this.dBiases = Matrix.zeros(1, this.numFilters);
+    const dInput = new Matrix(batchSize, this.inputSize);
 
-    // Pass gradient through (simplified)
-    return new Matrix(dOutput.rows, this.inputSize);
+    for (let b = 0; b < batchSize; b++) {
+      // Reshape dz for this sample: [outputH*outputW, numFilters]
+      const dzSample = new Matrix(this.outputH * this.outputW, this.numFilters);
+      for (let f = 0; f < this.numFilters; f++) {
+        for (let i = 0; i < this.outputH * this.outputW; i++) {
+          dzSample.set(i, f, dz.get(b, f * this.outputH * this.outputW + i));
+        }
+      }
+
+      // dFilters += dzSample^T · cols  (each filter grad is sum over spatial positions)
+      const cols = this.colsCache[b];
+      const dF = dzSample.T().dot(cols);
+      this.dFilters = this.dFilters.add(dF);
+
+      // dBiases += sum over spatial positions
+      for (let f = 0; f < this.numFilters; f++) {
+        let sum = 0;
+        for (let i = 0; i < dzSample.rows; i++) sum += dzSample.get(i, f);
+        this.dBiases.set(0, f, this.dBiases.get(0, f) + sum);
+      }
+
+      // dCols = dzSample · filters, then col2im to get dInput
+      const dCols = dzSample.dot(this.filters);
+      this._col2im(dCols, b, dInput);
+    }
+
+    // Average over batch
+    this.dFilters = this.dFilters.mul(1 / batchSize);
+    this.dBiases = this.dBiases.mul(1 / batchSize);
+
+    return dInput;
   }
 
   update(learningRate, momentum = 0, optimizer = 'sgd') {
