@@ -505,8 +505,12 @@
     {
       "id": "T49",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Physics: Add friction improvements + angular velocity collision response"
+      "status": "done",
+      "task": "Physics: Add friction improvements + angular velocity collision response",
+      "started": "2026-04-01T22:57:12.303Z",
+      "completed": "2026-04-01T23:00:24.501Z",
+      "duration_ms": 300000,
+      "summary": "Added angular friction to collision response (friction torque at contact point). 3 new tests (rolling, angular momentum transfer, polygon angular). 106 physics tests."
     },
     {
       "id": "T50",
@@ -533,7 +537,7 @@
       "task": "Build something unexpected"
     }
   ],
-  "updated_at": "2026-04-01T22:56:44.772Z",
+  "updated_at": "2026-04-01T23:00:24.502Z",
   "adjustments": [
     {
       "time": "2026-04-01T22:24:12.157Z",
