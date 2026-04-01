@@ -311,8 +311,12 @@
       "id": "T37",
       "mode": "BUILD",
       "task": "Neural net: Add RNN/LSTM layer with sequence training",
-      "status": "upcoming",
-      "plan_ref": "T28"
+      "status": "done",
+      "plan_ref": "T28",
+      "started": "2026-04-01T20:55:06.579Z",
+      "completed": "2026-04-01T20:59:03.007Z",
+      "duration_ms": 600000,
+      "summary": "Added RNN + LSTM layers with full BPTT backward passes. RNN: Elman network with tanh, return_sequences. LSTM: 4 gates (input/forget/cell/output), forget bias init=1, cell state + hidden state. 14 new tests. 161 total."
     },
     {
       "id": "T38",
@@ -366,5 +370,5 @@
       "task": "Follow up on interesting discoveries"
     }
   ],
-  "updated_at": "2026-04-01T20:54:04.490Z"
+  "updated_at": "2026-04-01T20:59:03.007Z"
 }
