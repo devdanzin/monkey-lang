@@ -445,8 +445,12 @@
     {
       "id": "T43",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Blog post: Building a Neural Net Framework from Scratch in JavaScript"
+      "status": "done",
+      "task": "Blog post: Building a Neural Net Framework from Scratch in JavaScript",
+      "started": "2026-04-01T22:39:06.137Z",
+      "completed": "2026-04-01T22:41:08.672Z",
+      "duration_ms": 300000,
+      "summary": "Blog post #36: From Matrix Multiply to Transformers. Covers full neural net framework journey — fundamentals to transformers, hard parts (col2im, LSTM BPTT, attention softmax backward). Published to GitHub Pages."
     },
     {
       "id": "T44",
@@ -473,7 +477,7 @@
       "task": "Something fun: build a small game or creative demo"
     }
   ],
-  "updated_at": "2026-04-01T22:38:38.826Z",
+  "updated_at": "2026-04-01T22:41:08.672Z",
   "adjustments": [
     {
       "time": "2026-04-01T22:24:12.157Z",
