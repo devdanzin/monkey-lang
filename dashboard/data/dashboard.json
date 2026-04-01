@@ -551,14 +551,54 @@
       "completed": "2026-04-01T23:18:02.755Z",
       "duration_ms": 300000,
       "summary": "Built Cellular Automata Explorer: Game of Life, HighLife, Day&Night, Seeds, Diamoeba presets. Multi-state (2-6) with aging. 1D elementary rules (Rule 110 etc). Random rule discovery. Live at henry-the-frog.github.io/cellular-automata/"
+    },
+    {
+      "id": "T54",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: Add GAN (Generative Adversarial Network)",
+      "started": "2026-04-01T23:19:03.095Z",
+      "completed": "2026-04-01T23:26:39.397Z",
+      "duration_ms": 300000,
+      "summary": "Added GAN: generator/discriminator adversarial training, label smoothing, multi-step D training, generate(). 7 new tests. 241 total."
+    },
+    {
+      "id": "T55",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Physics: Add joint constraints (revolute, prismatic)"
+    },
+    {
+      "id": "T56",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Neural net: Add data augmentation helpers"
+    },
+    {
+      "id": "T57",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Housekeeping + knowledge capture"
+    },
+    {
+      "id": "T58",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Neural net: micro GPT text generation demo"
+    },
+    {
+      "id": "T59",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Explore something creative"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 53,
+    "completed": 54,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 11960000
+    "total_duration_ms": 12260000
   },
-  "updated_at": "2026-04-01T23:18:02.755Z"
+  "updated_at": "2026-04-01T23:26:39.397Z"
 }

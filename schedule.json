@@ -551,9 +551,49 @@
       "completed": "2026-04-01T23:18:02.755Z",
       "duration_ms": 300000,
       "summary": "Built Cellular Automata Explorer: Game of Life, HighLife, Day&Night, Seeds, Diamoeba presets. Multi-state (2-6) with aging. 1D elementary rules (Rule 110 etc). Random rule discovery. Live at henry-the-frog.github.io/cellular-automata/"
+    },
+    {
+      "id": "T54",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: Add GAN (Generative Adversarial Network)",
+      "started": "2026-04-01T23:19:03.095Z",
+      "completed": "2026-04-01T23:26:39.397Z",
+      "duration_ms": 300000,
+      "summary": "Added GAN: generator/discriminator adversarial training, label smoothing, multi-step D training, generate(). 7 new tests. 241 total."
+    },
+    {
+      "id": "T55",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Physics: Add joint constraints (revolute, prismatic)"
+    },
+    {
+      "id": "T56",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Neural net: Add data augmentation helpers"
+    },
+    {
+      "id": "T57",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Housekeeping + knowledge capture"
+    },
+    {
+      "id": "T58",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Neural net: micro GPT text generation demo"
+    },
+    {
+      "id": "T59",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Explore something creative"
     }
   ],
-  "updated_at": "2026-04-01T23:18:02.755Z",
+  "updated_at": "2026-04-01T23:26:39.397Z",
   "adjustments": [
     {
       "time": "2026-04-01T22:24:12.157Z",
@@ -610,6 +650,30 @@
     {
       "time": "2026-04-01T22:52:05.324Z",
       "msg": "Added T53 (EXPLORE) after end: Build something unexpected"
+    },
+    {
+      "time": "2026-04-01T23:18:46.750Z",
+      "msg": "Added T54 (BUILD) after end: Neural net: Add GAN (Generative Adversarial Network)"
+    },
+    {
+      "time": "2026-04-01T23:18:46.963Z",
+      "msg": "Added T55 (BUILD) after end: Physics: Add joint constraints (revolute, prismatic)"
+    },
+    {
+      "time": "2026-04-01T23:18:47.179Z",
+      "msg": "Added T56 (BUILD) after end: Neural net: Add data augmentation helpers"
+    },
+    {
+      "time": "2026-04-01T23:18:47.389Z",
+      "msg": "Added T57 (MAINTAIN) after end: Housekeeping + knowledge capture"
+    },
+    {
+      "time": "2026-04-01T23:18:47.606Z",
+      "msg": "Added T58 (BUILD) after end: Neural net: micro GPT text generation demo"
+    },
+    {
+      "time": "2026-04-01T23:18:47.811Z",
+      "msg": "Added T59 (EXPLORE) after end: Explore something creative"
     }
   ]
 }
