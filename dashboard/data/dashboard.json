@@ -491,14 +491,54 @@
       "completed": "2026-04-01T22:51:17.291Z",
       "duration_ms": 300000,
       "summary": "Built Particle Life simulation: 6 species, random attraction/repulsion rules, emergent flocking/orbiting/chasing. Toroidal wrapping, trail effects. Live at henry-the-frog.github.io/particle-life/"
+    },
+    {
+      "id": "T48",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: Add Residual/Skip connection layer + training demo",
+      "started": "2026-04-01T22:52:14.153Z",
+      "completed": "2026-04-01T22:56:44.772Z",
+      "duration_ms": 300000,
+      "summary": "Added Residual + Sequential layers. Skip connections (He et al. 2015), ResNet-style stacking. 9 new tests. 228 total."
+    },
+    {
+      "id": "T49",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Physics: Add friction improvements + angular velocity collision response"
+    },
+    {
+      "id": "T50",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Neural net: Add weight decay (L2 regularization) to optimizers"
+    },
+    {
+      "id": "T51",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Ray tracer: Add CSG (Constructive Solid Geometry) operations"
+    },
+    {
+      "id": "T52",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Housekeeping: push all repos, dashboard regen"
+    },
+    {
+      "id": "T53",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Build something unexpected"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 47,
+    "completed": 48,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 10340000
+    "total_duration_ms": 10640000
   },
-  "updated_at": "2026-04-01T22:51:17.291Z"
+  "updated_at": "2026-04-01T22:56:44.772Z"
 }
