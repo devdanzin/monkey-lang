@@ -13,6 +13,7 @@ export class Renderer {
     camera,
     world,
     background = null,  // null = sky gradient
+    backgroundFn = null, // Function(ray) → Color — dynamic background
     lights = []          // Array of area light objects (rectangles/spheres with DiffuseLight)
   } = {}) {
     this.width = width;
@@ -22,6 +23,7 @@ export class Renderer {
     this.camera = camera;
     this.world = world;
     this.background = background;
+    this.backgroundFn = backgroundFn;
     this.lights = lights; // For importance sampling
     this.environment = null;
 
@@ -45,7 +47,9 @@ export class Renderer {
       if (!rec) {
         // Sky/background
         let bg;
-        if (this.environment) {
+        if (this.backgroundFn) {
+          bg = this.backgroundFn(currentRay);
+        } else if (this.environment) {
           bg = this.environment.sample(currentRay.direction);
         } else if (this.background) {
           bg = this.background;

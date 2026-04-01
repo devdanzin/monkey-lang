@@ -6,7 +6,9 @@ import {
   Lambertian, Metal, Dielectric, DiffuseLight,
   ImageTexture, CheckerTexture, NoiseTexture, MarbleTexture,
   MovingSphere, ConstantMedium,
+  PreethamSky, skyFromTime,
 } from '../src/index.js';
+import { Triangle } from '../src/triangle.js';
 
 describe('Showcase scene integration', () => {
   it('renders without errors', () => {
@@ -97,5 +99,84 @@ describe('Showcase scene integration', () => {
 
     const pixels = renderer.render();
     assert.ok(pixels.length > 0);
+  });
+
+  it('Preetham sky scene renders correctly', () => {
+    const world = new HittableList();
+
+    // Reflective ground plane
+    world.add(new XZRect(-10, 10, -10, 10, 0,
+      new Metal(new Color(0.5, 0.5, 0.5), 0.3)));
+
+    // Glass sphere reflecting the sky
+    world.add(new Sphere(new Vec3(0, 1.5, 0), 1.5, new Dielectric(1.5)));
+
+    // Metal spheres
+    world.add(new Sphere(new Vec3(-3, 1, 2), 1, new Metal(new Color(0.8, 0.2, 0.2), 0.05)));
+    world.add(new Sphere(new Vec3(3, 1, 2), 1, new Metal(new Color(0.2, 0.2, 0.8), 0.05)));
+
+    // Marble sphere
+    world.add(new Sphere(new Vec3(0, 0.7, 3), 0.7, new Lambertian(new MarbleTexture())));
+
+    const sky = skyFromTime(10, 2.5); // 10 AM, clear sky
+
+    const camera = new Camera({
+      lookFrom: new Vec3(0, 3, 8),
+      lookAt: new Vec3(0, 1, 0),
+      vUp: new Vec3(0, 1, 0),
+      vfov: 50, aspectRatio: 2,
+    });
+
+    const renderer = new Renderer({
+      width: 8, height: 4, samplesPerPixel: 2, maxDepth: 5,
+      camera, world, lights: [],
+      backgroundFn: (ray) => sky.sampleWithSun(ray.direction),
+    });
+
+    const pixels = renderer.render();
+    assert.ok(pixels instanceof Uint8ClampedArray);
+    assert.equal(pixels.length, 8 * 4 * 4);
+
+    // Sky scene should have color variety
+    let hasBlue = false, hasNonBlack = 0;
+    for (let i = 0; i < pixels.length; i += 4) {
+      if (pixels[i + 2] > 50) hasBlue = true;
+      if (pixels[i] > 5 || pixels[i + 1] > 5 || pixels[i + 2] > 5) hasNonBlack++;
+    }
+    assert.ok(hasNonBlack > 0, 'Sky scene should have non-black pixels');
+  });
+
+  it('sunset scene with smooth-normal triangle', () => {
+    const world = new HittableList();
+
+    // Ground
+    world.add(new XZRect(-5, 5, -5, 5, 0,
+      new Lambertian(new CheckerTexture(new Color(0.1, 0.1, 0.1), new Color(0.3, 0.3, 0.3)))));
+
+    // Triangle with smooth normals
+    const triMat = new Lambertian(new Color(0.8, 0.6, 0.3));
+    world.add(new Triangle(
+      new Vec3(-1, 0, 0), new Vec3(1, 0, 0), new Vec3(0, 2, 0),
+      triMat,
+      { normals: [new Vec3(-0.3, 0, 1).unit(), new Vec3(0.3, 0, 1).unit(), new Vec3(0, 0.3, 1).unit()] }
+    ));
+
+    const sky = skyFromTime(18.5, 3); // Sunset, slightly hazy
+
+    const camera = new Camera({
+      lookFrom: new Vec3(0, 2, 5),
+      lookAt: new Vec3(0, 1, 0),
+      vUp: new Vec3(0, 1, 0),
+      vfov: 40, aspectRatio: 2,
+    });
+
+    const renderer = new Renderer({
+      width: 4, height: 2, samplesPerPixel: 2, maxDepth: 4,
+      camera, world, lights: [],
+      backgroundFn: (ray) => sky.sample(ray.direction),
+    });
+
+    const pixels = renderer.render();
+    assert.ok(pixels.length > 0, 'Sunset scene should render');
   });
 });

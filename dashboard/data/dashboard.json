@@ -90,16 +90,20 @@
       "id": "T20",
       "mode": "BUILD",
       "task": "Ray tracer: Normal mapping for triangles + tangent space",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T6",
-      "started": "2026-04-01T14:50:47.290Z"
+      "started": "2026-04-01T14:50:47.290Z",
+      "completed": "2026-04-01T14:55:39.484Z",
+      "duration_ms": 360000,
+      "summary": "Normal mapping for triangles: TBN computation, smooth shading, normal map application, OBJ parser with vn/vt. 16 new tests (243 total). Pushed."
     },
     {
       "id": "T21",
       "mode": "BUILD",
       "task": "Ray tracer: New showcase scene + update web demo with sky model",
-      "status": "upcoming",
-      "plan_ref": "T6"
+      "status": "in-progress",
+      "plan_ref": "T6",
+      "started": "2026-04-01T14:56:30.826Z"
     },
     {
       "id": "T8",
@@ -173,18 +177,18 @@
     }
   ],
   "current": {
-    "id": "T20",
+    "id": "T21",
     "mode": "BUILD",
-    "task": "Ray tracer: Normal mapping for triangles + tangent space",
+    "task": "Ray tracer: New showcase scene + update web demo with sky model",
     "status": "in-progress",
     "plan_ref": "T6",
-    "started": "2026-04-01T14:50:47.290Z"
+    "started": "2026-04-01T14:56:30.826Z"
   },
   "stats": {
-    "completed": 8,
+    "completed": 9,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 1395000
+    "total_duration_ms": 1755000
   },
-  "updated_at": "2026-04-01T14:50:47.290Z"
+  "updated_at": "2026-04-01T14:56:30.826Z"
 }
