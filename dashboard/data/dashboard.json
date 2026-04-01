@@ -565,8 +565,12 @@
     {
       "id": "T55",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Physics: Add joint constraints (revolute, prismatic)"
+      "status": "done",
+      "task": "Physics: Add joint constraints (revolute, prismatic)",
+      "started": "2026-04-01T23:27:07.683Z",
+      "completed": "2026-04-01T23:40:20.828Z",
+      "duration_ms": 300000,
+      "summary": "Added RevoluteJoint (hinge: anchor locking, angle limits, motor) + PrismaticJoint (slider: axis constraint, translation limits, rotation lock). 9 new tests. 115 total physics."
     },
     {
       "id": "T56",
@@ -595,10 +599,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 54,
+    "completed": 55,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 12260000
+    "total_duration_ms": 12560000
   },
-  "updated_at": "2026-04-01T23:26:39.397Z"
+  "updated_at": "2026-04-01T23:40:20.828Z"
 }

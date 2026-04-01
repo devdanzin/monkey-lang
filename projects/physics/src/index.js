@@ -715,7 +715,141 @@ class SpringConstraint {
   }
 }
 
-module.exports = { Vec2, Body, World, SpatialHashGrid, DistanceConstraint, SpringConstraint, raycast, sweepTest, detectCollision, resolveCollision };
+/**
+ * Revolute Joint (Hinge/Pin) — constrains two bodies to share a common point
+ * Bodies can rotate freely around the anchor point
+ */
+class RevoluteJoint {
+  constructor(bodyA, bodyB, anchor, options = {}) {
+    this.bodyA = bodyA;
+    this.bodyB = bodyB;
+    // Local anchors: transform world anchor to body-local coordinates
+    this.localAnchorA = this._toLocal(bodyA, anchor);
+    this.localAnchorB = this._toLocal(bodyB, anchor);
+    this.stiffness = options.stiffness || 1.0;
+    this.enableLimit = options.enableLimit || false;
+    this.lowerAngle = options.lowerAngle || -Math.PI;
+    this.upperAngle = options.upperAngle || Math.PI;
+    this.enableMotor = options.enableMotor || false;
+    this.motorSpeed = options.motorSpeed || 0;
+    this.maxMotorTorque = options.maxMotorTorque || 0;
+  }
+
+  _toLocal(body, worldPoint) {
+    const d = worldPoint.sub(body.position);
+    const cos = Math.cos(-body.angle), sin = Math.sin(-body.angle);
+    return new Vec2(d.x * cos - d.y * sin, d.x * sin + d.y * cos);
+  }
+
+  _toWorld(body, localPoint) {
+    const cos = Math.cos(body.angle), sin = Math.sin(body.angle);
+    return body.position.add(new Vec2(
+      localPoint.x * cos - localPoint.y * sin,
+      localPoint.x * sin + localPoint.y * cos
+    ));
+  }
+
+  solve() {
+    // Position constraint: anchor points must coincide
+    const worldA = this._toWorld(this.bodyA, this.localAnchorA);
+    const worldB = this._toWorld(this.bodyB, this.localAnchorB);
+    
+    const error = worldB.sub(worldA);
+    const correction = error.mul(this.stiffness * 0.5);
+    
+    const totalInvMass = this.bodyA.inverseMass + this.bodyB.inverseMass;
+    if (totalInvMass === 0) return;
+    
+    if (!this.bodyA.isStatic) {
+      this.bodyA.position = this.bodyA.position.add(correction.mul(this.bodyA.inverseMass / totalInvMass));
+    }
+    if (!this.bodyB.isStatic) {
+      this.bodyB.position = this.bodyB.position.sub(correction.mul(this.bodyB.inverseMass / totalInvMass));
+    }
+    
+    // Angle limits
+    if (this.enableLimit) {
+      const relAngle = this.bodyB.angle - this.bodyA.angle;
+      if (relAngle < this.lowerAngle) {
+        const diff = this.lowerAngle - relAngle;
+        if (!this.bodyA.isStatic) this.bodyA.angle -= diff * 0.5;
+        if (!this.bodyB.isStatic) this.bodyB.angle += diff * 0.5;
+      } else if (relAngle > this.upperAngle) {
+        const diff = relAngle - this.upperAngle;
+        if (!this.bodyA.isStatic) this.bodyA.angle += diff * 0.5;
+        if (!this.bodyB.isStatic) this.bodyB.angle -= diff * 0.5;
+      }
+    }
+    
+    // Motor
+    if (this.enableMotor) {
+      const relAngVel = this.bodyB.angularVelocity - this.bodyA.angularVelocity;
+      const torque = Math.max(-this.maxMotorTorque, Math.min(this.maxMotorTorque, 
+        (this.motorSpeed - relAngVel) * 0.5));
+      if (!this.bodyA.isStatic) this.bodyA.angularVelocity -= torque * this.bodyA.inverseInertia;
+      if (!this.bodyB.isStatic) this.bodyB.angularVelocity += torque * this.bodyB.inverseInertia;
+    }
+  }
+}
+
+/**
+ * Prismatic Joint (Slider) — constrains two bodies to move along a fixed axis
+ * Bodies can only translate along the axis, rotation is constrained
+ */
+class PrismaticJoint {
+  constructor(bodyA, bodyB, axis, options = {}) {
+    this.bodyA = bodyA;
+    this.bodyB = bodyB;
+    this.axis = axis.normalize(); // Movement axis (world space)
+    this.stiffness = options.stiffness || 1.0;
+    this.enableLimit = options.enableLimit || false;
+    this.lowerLimit = options.lowerLimit || -Infinity;
+    this.upperLimit = options.upperLimit || Infinity;
+    // Store initial relative position projected onto axis
+    this.initialOffset = bodyB.position.sub(bodyA.position).dot(this.axis);
+  }
+
+  solve() {
+    const d = this.bodyB.position.sub(this.bodyA.position);
+    const axisProjection = d.dot(this.axis);
+    const perpendicular = d.sub(this.axis.mul(axisProjection));
+    
+    // Constrain perpendicular movement (keep on axis)
+    const correction = perpendicular.mul(this.stiffness * 0.5);
+    const totalInvMass = this.bodyA.inverseMass + this.bodyB.inverseMass;
+    if (totalInvMass > 0) {
+      if (!this.bodyA.isStatic) {
+        this.bodyA.position = this.bodyA.position.add(correction.mul(this.bodyA.inverseMass / totalInvMass));
+      }
+      if (!this.bodyB.isStatic) {
+        this.bodyB.position = this.bodyB.position.sub(correction.mul(this.bodyB.inverseMass / totalInvMass));
+      }
+    }
+    
+    // Translation limits along axis
+    if (this.enableLimit) {
+      const translation = axisProjection - this.initialOffset;
+      if (translation < this.lowerLimit) {
+        const fix = this.axis.mul((this.lowerLimit - translation) * 0.5);
+        if (!this.bodyA.isStatic) this.bodyA.position = this.bodyA.position.sub(fix);
+        if (!this.bodyB.isStatic) this.bodyB.position = this.bodyB.position.add(fix);
+      } else if (translation > this.upperLimit) {
+        const fix = this.axis.mul((translation - this.upperLimit) * 0.5);
+        if (!this.bodyA.isStatic) this.bodyA.position = this.bodyA.position.add(fix);
+        if (!this.bodyB.isStatic) this.bodyB.position = this.bodyB.position.sub(fix);
+      }
+    }
+    
+    // Constrain relative rotation (keep angles aligned)
+    const angleDiff = this.bodyB.angle - this.bodyA.angle;
+    if (Math.abs(angleDiff) > 0.001) {
+      if (!this.bodyA.isStatic) this.bodyA.angle += angleDiff * 0.25;
+      if (!this.bodyB.isStatic) this.bodyB.angle -= angleDiff * 0.25;
+    }
+  }
+}
+
+module.exports = { Vec2, Body, World, SpatialHashGrid, DistanceConstraint, SpringConstraint, RevoluteJoint, PrismaticJoint, raycast, sweepTest, detectCollision, resolveCollision };
 
 // === Continuous Collision Detection (CCD) ===
 
