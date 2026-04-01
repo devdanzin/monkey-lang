@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cellular Automata Explorer — Henry</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #000; color: #ccc; font-family: system-ui, sans-serif; display: flex; flex-direction: column; align-items: center; }
+  canvas { image-rendering: pixelated; image-rendering: crisp-edges; cursor: crosshair; }
+  .controls { display: flex; gap: 0.4rem; padding: 0.5rem; flex-wrap: wrap; justify-content: center; align-items: center; }
+  button, select { background: #222; color: #ccc; border: 1px solid #444; padding: 0.25rem 0.6rem; border-radius: 4px; cursor: pointer; font-size: 0.75rem; }
+  button:hover, select:hover { border-color: #58a6ff; }
+  .rule-display { font-size: 0.65rem; color: #666; text-align: center; padding: 0.2rem; font-family: monospace; max-width: 800px; word-break: break-all; }
+  .info { font-size: 0.65rem; color: #555; text-align: center; padding: 0.3rem; }
+  .info a { color: #58a6ff; text-decoration: none; }
+  label { font-size: 0.7rem; color: #888; }
+  input[type=range] { width: 60px; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="controls">
+  <select id="preset">
+    <option value="life">🧬 Game of Life</option>
+    <option value="highlife">🔮 HighLife</option>
+    <option value="daynight">🌗 Day & Night</option>
+    <option value="seeds">🌱 Seeds</option>
+    <option value="diamoeba">💎 Diamoeba</option>
+    <option value="random2">🎲 Random (2-state)</option>
+    <option value="random3" selected>🎨 Random (3-state)</option>
+    <option value="random4">🌈 Random (4-state)</option>
+    <option value="1d">📏 1D Elementary</option>
+  </select>
+  <button onclick="loadPreset()">Load</button>
+  <button onclick="randomizeRule()">🎲 Random Rule</button>
+  <button onclick="clearGrid()">🗑 Clear</button>
+  <button onclick="randomFill()">🎰 Random Fill</button>
+  <button id="pauseBtn" onclick="togglePause()">⏸</button>
+  <label>Speed</label>
+  <input type="range" id="speed" min="1" max="60" value="15">
+  <label>States</label>
+  <select id="states" onchange="changeStates()">
+    <option value="2">2</option>
+    <option value="3" selected>3</option>
+    <option value="4">4</option>
+    <option value="6">6</option>
+  </select>
+</div>
+<p class="rule-display" id="ruleText"></p>
+<p class="info">
+  Click to draw. Explore emergent behavior from simple rules. <a href="https://github.com/henry-the-frog">Henry</a>
+</p>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const CELL = 4;
+let COLS, ROWS;
+let grid, nextGrid;
+let paused = false;
+let numStates = 3;
+let rule = {}; // birth/survive sets for 2-state, transition table for multi-state
+let is1D = false;
+let row1D = 0;
+let rule1D = 110;
+
+const palette = [
+  '#0d1117', '#58a6ff', '#f778ba', '#7ee787', '#d2a8ff', '#ffa657', '#ff7b72', '#56d4dd'
+];
+
+function resize() {
+  canvas.width = Math.min(800, window.innerWidth);
+  canvas.height = Math.min(600, window.innerHeight - 80);
+  COLS = Math.floor(canvas.width / CELL);
+  ROWS = Math.floor(canvas.height / CELL);
+  initGrid();
+}
+
+function initGrid() {
+  grid = Array.from({ length: ROWS }, () => new Uint8Array(COLS));
+  nextGrid = Array.from({ length: ROWS }, () => new Uint8Array(COLS));
+}
+
+function randomFill() {
+  for (let y = 0; y < ROWS; y++)
+    for (let x = 0; x < COLS; x++)
+      grid[y][x] = Math.random() < 0.3 ? (1 + Math.floor(Math.random() * (numStates - 1))) : 0;
+  if (is1D) { row1D = 1; initGrid(); grid[0][Math.floor(COLS/2)] = 1; }
+}
+
+function clearGrid() {
+  initGrid();
+  if (is1D) { row1D = 1; grid[0][Math.floor(COLS/2)] = 1; }
+}
+
+function randomizeRule() {
+  const preset = document.getElementById('preset').value;
+  if (preset === '1d') {
+    rule1D = Math.floor(Math.random() * 256);
+    document.getElementById('ruleText').textContent = `Rule ${rule1D}`;
+    clearGrid();
+    return;
+  }
+  
+  numStates = parseInt(document.getElementById('states').value);
+  if (numStates === 2) {
+    // Random birth/survive rule
+    const birth = new Set();
+    const survive = new Set();
+    for (let i = 0; i <= 8; i++) {
+      if (Math.random() < 0.3) birth.add(i);
+      if (Math.random() < 0.4) survive.add(i);
+    }
+    rule = { birth, survive };
+    document.getElementById('ruleText').textContent = 
+      `B${[...birth].join('')}/S${[...survive].join('')}`;
+  } else {
+    // Multi-state: each state has transition rules
+    // State 0 = dead, states 1..n-1 = alive (with aging)
+    // Birth: count of alive neighbors to birth
+    // Survive: count to stay alive
+    // Aging: non-surviving alive cells go to next state, wrapping to 0 (dead)
+    const birth = new Set();
+    const survive = new Set();
+    for (let i = 0; i <= 8; i++) {
+      if (Math.random() < 0.25) birth.add(i);
+      if (Math.random() < 0.35) survive.add(i);
+    }
+    rule = { birth, survive, aging: true };
+    document.getElementById('ruleText').textContent = 
+      `${numStates}-state: B${[...birth].join('')}/S${[...survive].join('')} (aging)`;
+  }
+  randomFill();
+}
+
+function loadPreset() {
+  const p = document.getElementById('preset').value;
+  is1D = p === '1d';
+  
+  const presets = {
+    life: { birth: new Set([3]), survive: new Set([2,3]) },
+    highlife: { birth: new Set([3,6]), survive: new Set([2,3]) },
+    daynight: { birth: new Set([3,6,7,8]), survive: new Set([3,4,6,7,8]) },
+    seeds: { birth: new Set([2]), survive: new Set() },
+    diamoeba: { birth: new Set([3,5,6,7,8]), survive: new Set([5,6,7,8]) },
+  };
+  
+  if (presets[p]) {
+    numStates = 2;
+    document.getElementById('states').value = '2';
+    rule = presets[p];
+    const b = [...rule.birth].join('');
+    const s = [...rule.survive].join('');
+    document.getElementById('ruleText').textContent = `B${b}/S${s}`;
+  } else if (p === '1d') {
+    numStates = 2;
+    rule1D = 110;
+    document.getElementById('ruleText').textContent = `Rule 110`;
+    clearGrid();
+    return;
+  } else {
+    numStates = parseInt(p.replace('random', ''));
+    document.getElementById('states').value = numStates;
+    randomizeRule();
+    return;
+  }
+  randomFill();
+}
+
+function changeStates() {
+  numStates = parseInt(document.getElementById('states').value);
+  randomizeRule();
+}
+
+function step2D() {
+  for (let y = 0; y < ROWS; y++) {
+    for (let x = 0; x < COLS; x++) {
+      // Count alive neighbors
+      let count = 0;
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          if (dy === 0 && dx === 0) continue;
+          const ny = (y + dy + ROWS) % ROWS;
+          const nx = (x + dx + COLS) % COLS;
+          if (grid[ny][nx] > 0) count++;
+        }
+      }
+      
+      const current = grid[y][x];
+      if (current === 0) {
+        // Dead cell: birth?
+        nextGrid[y][x] = rule.birth.has(count) ? 1 : 0;
+      } else {
+        // Alive cell: survive?
+        if (rule.survive.has(count)) {
+          nextGrid[y][x] = current; // Stay alive (same state)
+        } else if (rule.aging && numStates > 2) {
+          // Age: move to next state, die if past max
+          nextGrid[y][x] = (current + 1) % numStates;
+        } else {
+          nextGrid[y][x] = 0;
+        }
+      }
+    }
+  }
+  [grid, nextGrid] = [nextGrid, grid];
+}
+
+function step1D() {
+  if (row1D >= ROWS) return;
+  for (let x = 0; x < COLS; x++) {
+    const l = grid[row1D - 1][(x - 1 + COLS) % COLS];
+    const c = grid[row1D - 1][x];
+    const r = grid[row1D - 1][(x + 1) % COLS];
+    const idx = (l << 2) | (c << 1) | r;
+    grid[row1D][x] = (rule1D >> idx) & 1;
+  }
+  row1D++;
+}
+
+function render() {
+  ctx.fillStyle = '#0d1117';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  for (let y = 0; y < ROWS; y++) {
+    for (let x = 0; x < COLS; x++) {
+      if (grid[y][x] > 0) {
+        ctx.fillStyle = palette[grid[y][x] % palette.length];
+        ctx.fillRect(x * CELL, y * CELL, CELL, CELL);
+      }
+    }
+  }
+}
+
+// Drawing
+let drawing = false;
+canvas.addEventListener('mousedown', (e) => { drawing = true; draw(e); });
+canvas.addEventListener('mousemove', (e) => { if (drawing) draw(e); });
+canvas.addEventListener('mouseup', () => { drawing = false; });
+
+function draw(e) {
+  const rect = canvas.getBoundingClientRect();
+  const x = Math.floor((e.clientX - rect.left) / CELL);
+  const y = Math.floor((e.clientY - rect.top) / CELL);
+  if (x >= 0 && x < COLS && y >= 0 && y < ROWS) {
+    grid[y][x] = grid[y][x] > 0 ? 0 : 1;
+  }
+}
+
+function togglePause() {
+  paused = !paused;
+  document.getElementById('pauseBtn').textContent = paused ? '▶' : '⏸';
+}
+
+let frame = 0;
+function loop() {
+  const speed = parseInt(document.getElementById('speed').value);
+  if (!paused && frame % Math.max(1, Math.floor(60 / speed)) === 0) {
+    if (is1D) step1D(); else step2D();
+  }
+  render();
+  frame++;
+  requestAnimationFrame(loop);
+}
+
+resize();
+window.addEventListener('resize', resize);
+loadPreset();
+loop();
+</script>
+</body>
+</html>

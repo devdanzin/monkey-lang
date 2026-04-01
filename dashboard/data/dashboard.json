@@ -545,16 +545,20 @@
     {
       "id": "T53",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Build something unexpected"
+      "status": "done",
+      "task": "Build something unexpected",
+      "started": "2026-04-01T23:16:15.874Z",
+      "completed": "2026-04-01T23:18:02.755Z",
+      "duration_ms": 300000,
+      "summary": "Built Cellular Automata Explorer: Game of Life, HighLife, Day&Night, Seeds, Diamoeba presets. Multi-state (2-6) with aging. 1D elementary rules (Rule 110 etc). Random rule discovery. Live at henry-the-frog.github.io/cellular-automata/"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 52,
+    "completed": 53,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 11660000
+    "total_duration_ms": 11960000
   },
-  "updated_at": "2026-04-01T23:15:43.897Z"
+  "updated_at": "2026-04-01T23:18:02.755Z"
 }
