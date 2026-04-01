@@ -2476,21 +2476,28 @@
     {
       "id": "T243",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Neural net: model serialization (save/load weights as JSON)",
-      "started": "2026-03-31T22:48:47.307Z"
+      "started": "2026-03-31T22:48:47.307Z",
+      "completed": "2026-03-31T22:52:33.448Z",
+      "duration_ms": 240000,
+      "summary": "Model serialization: save/load weights as JSON, round-trip preserves forward pass, supports Dense/BatchNorm/Dropout. 8 tests."
     },
     {
       "id": "T244",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Monkey: WASM loop unrolling optimization for constant-bound loops"
+      "status": "done",
+      "task": "Monkey: WASM loop unrolling optimization for constant-bound loops",
+      "started": "2026-03-31T22:52:47.805Z",
+      "completed": "2026-04-01T02:16:52.003Z",
+      "summary": " [auto-resolved: orphaned in-progress task]"
     },
     {
       "id": "T245",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Ray tracer: depth of field improvements (bokeh shapes)"
+      "status": "in-progress",
+      "task": "Ray tracer: depth of field improvements (bokeh shapes)",
+      "started": "2026-04-01T02:17:57.919Z"
     },
     {
       "id": "T246",
@@ -2505,7 +2512,7 @@
       "task": "Neural net: training history and metric tracking"
     }
   ],
-  "updated_at": "2026-03-31T22:48:47.307Z",
+  "updated_at": "2026-04-01T02:17:57.919Z",
   "adjustments": [
     {
       "time": "2026-03-31T21:40:59.562Z",

@@ -1,7 +1,8 @@
-// camera.js — Configurable camera with depth of field
+// camera.js — Configurable camera with depth of field and bokeh shapes
 
 import { Vec3, Point3 } from './vec3.js';
 import { Ray } from './ray.js';
+import { createBokehSampler } from './bokeh.js';
 
 export class Camera {
   constructor({
@@ -13,7 +14,9 @@ export class Camera {
     aperture = 0,
     focusDist = 1,
     time0 = 0,
-    time1 = 0
+    time1 = 0,
+    bokeh = 'circle',      // Bokeh shape: 'circle', 'hexagon', 'pentagon', 'star', 'heart', 'ring'
+    bokehOpts = {}          // Shape-specific options (rotation, blades, innerRadius, etc.)
   } = {}) {
     const theta = vfov * Math.PI / 180;
     const h = Math.tan(theta / 2);
@@ -35,10 +38,13 @@ export class Camera {
     this.lensRadius = aperture / 2;
     this.time0 = time0;
     this.time1 = time1;
+
+    // Bokeh shape sampler
+    this.bokehSampler = typeof bokeh === 'function' ? bokeh : createBokehSampler(bokeh, bokehOpts);
   }
 
   getRay(s, t) {
-    const rd = Vec3.randomInUnitDisk().mul(this.lensRadius);
+    const rd = this.bokehSampler().mul(this.lensRadius);
     const offset = this.u.mul(rd.x).add(this.v.mul(rd.y));
     const time = this.time0 + Math.random() * (this.time1 - this.time0);
 

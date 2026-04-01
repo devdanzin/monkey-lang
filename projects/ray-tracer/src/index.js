@@ -22,4 +22,5 @@ export { Lambertian, Metal, Dielectric, DiffuseLight, ColoredGlass } from './mat
 export { MicrofacetMaterial, beckmannNDF, ggxNDF, schlickFresnel, smithGeometry } from './microfacet.js';
 export { SolidColor, CheckerTexture, GradientTexture, NoiseTexture, MarbleTexture, WoodTexture, TurbulenceTexture, StripeTexture, PlanetTexture, ImageTexture } from './texture.js';
 export { Camera } from './camera.js';
+export { createBokehSampler, sampleCircle, sampleHexagon, samplePentagon, samplePolygon, sampleStar, sampleHeart, sampleRing, BOKEH_SHAPES } from './bokeh.js';
 export { Renderer } from './renderer.js';
