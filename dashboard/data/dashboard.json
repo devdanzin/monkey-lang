@@ -411,14 +411,70 @@
       "completed": "2026-04-01T22:23:17.823Z",
       "duration_ms": 600000,
       "summary": "Built transformer building blocks: Positional Encoding (sinusoidal), Layer Normalization, Transformer Encoder Block (attention + FF + residual + norm). Stackable. 16 new tests. 204 total neural net tests."
+    },
+    {
+      "id": "T40",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Queue empty again. Plan next ~4 hours: neural net GitHub repo + demo update, more depth, blog?",
+      "started": "2026-04-01T22:24:26.345Z",
+      "completed": "2026-04-01T22:26:03.776Z",
+      "duration_ms": 30000,
+      "summary": "Built 7-task queue: GRU layer, neural net repo push, blog post, embedding layer, ray tracer push, creative demo."
+    },
+    {
+      "id": "T41",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: Add GRU layer (simpler LSTM alternative)",
+      "started": "2026-04-01T22:26:19.485Z",
+      "completed": "2026-04-01T22:35:57.199Z",
+      "duration_ms": 300000,
+      "summary": "Added GRU layer with full BPTT backward. 3 gates (update, reset, candidate), 25% fewer params than LSTM. 7 new tests. 211 total."
+    },
+    {
+      "id": "T42",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Neural net: Push updated source + demo to henry-the-frog/neural-net repo"
+    },
+    {
+      "id": "T43",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Blog post: Building a Neural Net Framework from Scratch in JavaScript"
+    },
+    {
+      "id": "T44",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final housekeeping: dashboard regen, git push, stats capture"
+    },
+    {
+      "id": "T45",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Neural net: Add Embedding layer for token sequences"
+    },
+    {
+      "id": "T46",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Ray tracer: push latest to henry-the-frog/ray-tracer repo"
+    },
+    {
+      "id": "T47",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Something fun: build a small game or creative demo"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 39,
+    "completed": 41,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 8750000
+    "total_duration_ms": 9080000
   },
-  "updated_at": "2026-04-01T22:23:17.823Z"
+  "updated_at": "2026-04-01T22:35:57.199Z"
 }

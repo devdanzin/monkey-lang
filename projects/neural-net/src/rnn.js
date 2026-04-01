@@ -407,3 +407,245 @@ export class LSTM {
     return 4 * (combined * this.hiddenSize + this.hiddenSize); // 4 gates × (weights + biases)
   }
 }
+
+/**
+ * GRU (Gated Recurrent Unit) — Cho et al. 2014
+ * Simpler than LSTM: 2 gates (reset, update) vs 4 gates
+ * z_t = σ(W_z · [h_{t-1}, x_t] + b_z)     — update gate
+ * r_t = σ(W_r · [h_{t-1}, x_t] + b_r)     — reset gate
+ * h̃_t = tanh(W_h · [r_t ⊙ h_{t-1}, x_t] + b_h)  — candidate
+ * h_t = (1 - z_t) ⊙ h_{t-1} + z_t ⊙ h̃_t  — output
+ */
+export class GRU {
+  constructor(inputSize, hiddenSize, { returnSequences = false } = {}) {
+    this.inputSize = inputSize;
+    this.hiddenSize = hiddenSize;
+    this.returnSequences = returnSequences;
+    this.outputSize = hiddenSize;
+
+    const combinedSize = inputSize + hiddenSize;
+    const scale = Math.sqrt(2.0 / (inputSize + hiddenSize));
+
+    // Weight matrices for update (z), reset (r), and candidate (h) gates
+    this.Wz = Matrix.random(combinedSize, hiddenSize).mul(scale);
+    this.Wr = Matrix.random(combinedSize, hiddenSize).mul(scale);
+    this.Wh = Matrix.random(combinedSize, hiddenSize).mul(scale);
+
+    this.bz = Matrix.zeros(1, hiddenSize);
+    this.br = Matrix.zeros(1, hiddenSize);
+    this.bh = Matrix.zeros(1, hiddenSize);
+
+    this.seqLength = 0;
+    this.training = true;
+    this._cache = null;
+    this.dWeights = null;
+    this.dBiases = null;
+  }
+
+  _sigmoid(m) { return m.map(x => 1 / (1 + Math.exp(-Math.max(-500, Math.min(500, x))))); }
+  _tanhM(m) { return m.map(x => Math.tanh(x)); }
+  _sigmoidGrad(s) { return s.mul(s.map(x => 1 - x)); }
+  _tanhGrad(t) { return t.map(x => 1 - x * x); }
+
+  forward(input) {
+    const batchSize = input.rows;
+    this.seqLength = Math.floor(input.cols / this.inputSize);
+
+    const cache = {
+      inputs: [],
+      combined: [],
+      combinedReset: [],
+      gates_z: [], gates_r: [], candidates: [],
+      hiddens: [Matrix.zeros(batchSize, this.hiddenSize)]
+    };
+
+    for (let t = 0; t < this.seqLength; t++) {
+      const xt = new Matrix(batchSize, this.inputSize);
+      for (let b = 0; b < batchSize; b++)
+        for (let j = 0; j < this.inputSize; j++)
+          xt.set(b, j, input.get(b, t * this.inputSize + j));
+      cache.inputs.push(xt);
+
+      const hPrev = cache.hiddens[t];
+
+      // Combined [h_{t-1}, x_t]
+      const combined = new Matrix(batchSize, this.inputSize + this.hiddenSize);
+      for (let b = 0; b < batchSize; b++) {
+        for (let j = 0; j < this.inputSize; j++) combined.set(b, j, xt.get(b, j));
+        for (let j = 0; j < this.hiddenSize; j++) combined.set(b, this.inputSize + j, hPrev.get(b, j));
+      }
+      cache.combined.push(combined);
+
+      // Gates
+      const zt = this._sigmoid(combined.dot(this.Wz).add(this.bz)); // Update gate
+      const rt = this._sigmoid(combined.dot(this.Wr).add(this.br)); // Reset gate
+
+      // Combined with reset: [r_t ⊙ h_{t-1}, x_t]
+      const combinedReset = new Matrix(batchSize, this.inputSize + this.hiddenSize);
+      for (let b = 0; b < batchSize; b++) {
+        for (let j = 0; j < this.inputSize; j++) combinedReset.set(b, j, xt.get(b, j));
+        for (let j = 0; j < this.hiddenSize; j++)
+          combinedReset.set(b, this.inputSize + j, rt.get(b, j) * hPrev.get(b, j));
+      }
+      cache.combinedReset.push(combinedReset);
+
+      // Candidate hidden state
+      const hCandidate = this._tanhM(combinedReset.dot(this.Wh).add(this.bh));
+
+      // New hidden state: h_t = (1 - z_t) ⊙ h_{t-1} + z_t ⊙ h̃_t
+      const ht = new Matrix(batchSize, this.hiddenSize);
+      for (let b = 0; b < batchSize; b++) {
+        for (let j = 0; j < this.hiddenSize; j++) {
+          const z = zt.get(b, j);
+          ht.set(b, j, (1 - z) * hPrev.get(b, j) + z * hCandidate.get(b, j));
+        }
+      }
+
+      cache.gates_z.push(zt);
+      cache.gates_r.push(rt);
+      cache.candidates.push(hCandidate);
+      cache.hiddens.push(ht);
+    }
+
+    this._cache = cache;
+
+    if (this.returnSequences) {
+      const output = new Matrix(batchSize, this.seqLength * this.hiddenSize);
+      for (let t = 0; t < this.seqLength; t++) {
+        const ht = cache.hiddens[t + 1];
+        for (let b = 0; b < batchSize; b++)
+          for (let j = 0; j < this.hiddenSize; j++)
+            output.set(b, t * this.hiddenSize + j, ht.get(b, j));
+      }
+      this.outputSize = this.seqLength * this.hiddenSize;
+      return output;
+    } else {
+      this.outputSize = this.hiddenSize;
+      return cache.hiddens[this.seqLength];
+    }
+  }
+
+  backward(dOutput) {
+    const batchSize = dOutput.rows;
+    const cache = this._cache;
+
+    let dWz = Matrix.zeros(this.inputSize + this.hiddenSize, this.hiddenSize);
+    let dWr = Matrix.zeros(this.inputSize + this.hiddenSize, this.hiddenSize);
+    let dWh = Matrix.zeros(this.inputSize + this.hiddenSize, this.hiddenSize);
+    let dbz = Matrix.zeros(1, this.hiddenSize);
+    let dbr = Matrix.zeros(1, this.hiddenSize);
+    let dbh = Matrix.zeros(1, this.hiddenSize);
+
+    const dInput = new Matrix(batchSize, this.seqLength * this.inputSize);
+    let dhNext = Matrix.zeros(batchSize, this.hiddenSize);
+
+    for (let t = this.seqLength - 1; t >= 0; t--) {
+      let dh;
+      if (this.returnSequences) {
+        const dhFromOutput = new Matrix(batchSize, this.hiddenSize);
+        for (let b = 0; b < batchSize; b++)
+          for (let j = 0; j < this.hiddenSize; j++)
+            dhFromOutput.set(b, j, dOutput.get(b, t * this.hiddenSize + j));
+        dh = dhFromOutput.add(dhNext);
+      } else {
+        dh = t === this.seqLength - 1 ? dOutput.add(dhNext) : dhNext;
+      }
+
+      const zt = cache.gates_z[t];
+      const rt = cache.gates_r[t];
+      const hCandidate = cache.candidates[t];
+      const hPrev = cache.hiddens[t];
+      const combined = cache.combined[t];
+      const combinedReset = cache.combinedReset[t];
+
+      // dh_t = (1-z_t) ⊙ dh → dh_prev, z_t ⊙ dh → dh_candidate
+      // dz = (h_candidate - h_prev) ⊙ dh ⊙ σ'(z)
+      const dzRaw = new Matrix(batchSize, this.hiddenSize);
+      const dhCandidate = new Matrix(batchSize, this.hiddenSize);
+      for (let b = 0; b < batchSize; b++) {
+        for (let j = 0; j < this.hiddenSize; j++) {
+          const z = zt.get(b, j);
+          dhCandidate.set(b, j, dh.get(b, j) * z);
+          dzRaw.set(b, j, dh.get(b, j) * (hCandidate.get(b, j) - hPrev.get(b, j)));
+        }
+      }
+
+      const dzt = dzRaw.mul(this._sigmoidGrad(zt));
+      const dhCandRaw = dhCandidate.mul(this._tanhGrad(hCandidate));
+
+      // Gradients for Wh through combinedReset
+      dWh = dWh.add(combinedReset.T().dot(dhCandRaw));
+      for (let j = 0; j < this.hiddenSize; j++) {
+        let s = 0;
+        for (let b = 0; b < batchSize; b++) s += dhCandRaw.get(b, j);
+        dbh.set(0, j, dbh.get(0, j) + s);
+      }
+
+      // dCombinedReset
+      const dCombinedReset = dhCandRaw.dot(this.Wh.T());
+
+      // dr from combinedReset: r affects only the h_prev part
+      const drt = new Matrix(batchSize, this.hiddenSize);
+      for (let b = 0; b < batchSize; b++) {
+        for (let j = 0; j < this.hiddenSize; j++) {
+          drt.set(b, j, dCombinedReset.get(b, this.inputSize + j) * hPrev.get(b, j));
+        }
+      }
+      const drtGated = drt.mul(this._sigmoidGrad(rt));
+
+      // Gradients for Wz, Wr
+      dWz = dWz.add(combined.T().dot(dzt));
+      dWr = dWr.add(combined.T().dot(drtGated));
+      for (let j = 0; j < this.hiddenSize; j++) {
+        let sz = 0, sr = 0;
+        for (let b = 0; b < batchSize; b++) { sz += dzt.get(b, j); sr += drtGated.get(b, j); }
+        dbz.set(0, j, dbz.get(0, j) + sz);
+        dbr.set(0, j, dbr.get(0, j) + sr);
+      }
+
+      // dCombined from z and r gates
+      const dCombined = dzt.dot(this.Wz.T()).add(drtGated.dot(this.Wr.T()));
+
+      // Input gradient
+      for (let b = 0; b < batchSize; b++) {
+        for (let j = 0; j < this.inputSize; j++) {
+          dInput.set(b, t * this.inputSize + j,
+            dCombined.get(b, j) + dCombinedReset.get(b, j));
+        }
+      }
+
+      // dhNext = (1-z) ⊙ dh + gradient from combined + reset contributions
+      dhNext = new Matrix(batchSize, this.hiddenSize);
+      for (let b = 0; b < batchSize; b++) {
+        for (let j = 0; j < this.hiddenSize; j++) {
+          dhNext.set(b, j,
+            dh.get(b, j) * (1 - zt.get(b, j)) +
+            dCombined.get(b, this.inputSize + j) +
+            dCombinedReset.get(b, this.inputSize + j) * rt.get(b, j));
+        }
+      }
+    }
+
+    this._dWz = dWz; this._dWr = dWr; this._dWh = dWh;
+    this._dbz = dbz; this._dbr = dbr; this._dbh = dbh;
+    this.dWeights = dWz;
+    this.dBiases = dbz;
+
+    return dInput;
+  }
+
+  update(learningRate) {
+    const scale = learningRate / (this._cache ? this._cache.inputs[0].rows : 1);
+    this.Wz = this.Wz.sub(this._dWz.mul(scale));
+    this.Wr = this.Wr.sub(this._dWr.mul(scale));
+    this.Wh = this.Wh.sub(this._dWh.mul(scale));
+    this.bz = this.bz.sub(this._dbz.mul(scale));
+    this.br = this.br.sub(this._dbr.mul(scale));
+    this.bh = this.bh.sub(this._dbh.mul(scale));
+  }
+
+  paramCount() {
+    const combined = this.inputSize + this.hiddenSize;
+    return 3 * (combined * this.hiddenSize + this.hiddenSize); // 3 gates
+  }
+}

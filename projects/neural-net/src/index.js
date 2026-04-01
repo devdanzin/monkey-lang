@@ -2,7 +2,7 @@ export { Matrix } from './matrix.js';
 export { sigmoid, relu, leakyRelu, tanh, softmax, linear, getActivation } from './activation.js';
 export { Dense } from './layer.js';
 export { Conv2D, MaxPool2D, Flatten } from './conv.js';
-export { RNN, LSTM } from './rnn.js';
+export { RNN, LSTM, GRU } from './rnn.js';
 export { Autoencoder, VAE } from './autoencoder.js';
 export { SelfAttention, MultiHeadAttention } from './attention.js';
 export { PositionalEncoding, LayerNorm, TransformerEncoderBlock } from './transformer.js';
