@@ -25,3 +25,4 @@ export { Camera } from './camera.js';
 export { createBokehSampler, sampleCircle, sampleHexagon, samplePentagon, samplePolygon, sampleStar, sampleHeart, sampleRing, BOKEH_SHAPES } from './bokeh.js';
 export { Renderer } from './renderer.js';
 export { PreethamSky, skyFromTime } from './sky.js';
+export { computeTBN, applyNormalMap, interpolateNormal, interpolateUV } from './normal-map.js';

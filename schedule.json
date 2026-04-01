@@ -78,17 +78,21 @@
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Ray tracer: Preetham sky model (physically-based atmospheric scattering)",
       "plan_ref": "T6",
-      "started": "2026-04-01T14:39:13.385Z"
+      "started": "2026-04-01T14:39:13.385Z",
+      "completed": "2026-04-01T14:49:53.068Z",
+      "duration_ms": 300000,
+      "summary": "Implemented Preetham sky model — Perez distribution, Yxy→sRGB, sun disk with limb darkening, skyFromTime() helper. 15 new tests (227 total). Pushed."
     },
     {
       "id": "T20",
       "mode": "BUILD",
       "task": "Ray tracer: Normal mapping for triangles + tangent space",
-      "status": "upcoming",
-      "plan_ref": "T6"
+      "status": "in-progress",
+      "plan_ref": "T6",
+      "started": "2026-04-01T14:50:47.290Z"
     },
     {
       "id": "T21",
@@ -168,5 +172,5 @@
       "task": "Evening curiosity: consciousness paper or CS theory rabbit hole"
     }
   ],
-  "updated_at": "2026-04-01T14:39:13.385Z"
+  "updated_at": "2026-04-01T14:50:47.290Z"
 }
