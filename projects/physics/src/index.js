@@ -162,6 +162,24 @@ class SpatialHashGrid {
           cells.push(`${x},${y}`);
         }
       }
+    } else if (body.shape.type === 'polygon') {
+      // Compute AABB of rotated polygon for broadphase cells
+      const cos = Math.cos(body.angle || 0);
+      const sin = Math.sin(body.angle || 0);
+      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      for (const v of body.shape.vertices) {
+        const wx = body.position.x + v.x * cos - v.y * sin;
+        const wy = body.position.y + v.x * sin + v.y * cos;
+        if (wx < minX) minX = wx;
+        if (wx > maxX) maxX = wx;
+        if (wy < minY) minY = wy;
+        if (wy > maxY) maxY = wy;
+      }
+      for (let x = Math.floor(minX / this.cellSize); x <= Math.floor(maxX / this.cellSize); x++) {
+        for (let y = Math.floor(minY / this.cellSize); y <= Math.floor(maxY / this.cellSize); y++) {
+          cells.push(`${x},${y}`);
+        }
+      }
     }
     return cells;
   }
@@ -389,6 +407,16 @@ function detectCollision(a, b) {
     if (result) result.normal = result.normal.mul(-1);
     return result;
   }
+  // AABB-polygon: convert AABB to polygon and use SAT
+  if (a.shape.type === 'aabb' && b.shape.type === 'polygon') {
+    const polyA = aabbToPolyBody(a);
+    return polygonPolygon(polyA, b);
+  }
+  if (a.shape.type === 'polygon' && b.shape.type === 'aabb') {
+    const polyB = aabbToPolyBody(b);
+    return polygonPolygon(a, polyB);
+  }
+  // circle-aabb: existing fallback (already handled above if both aabb)
   return null;
 }
 
@@ -412,6 +440,22 @@ function aabbAABB(a, b) {
     return { normal: new Vec2(dx > 0 ? 1 : -1, 0), overlap: overlapX };
   }
   return { normal: new Vec2(0, dy > 0 ? 1 : -1), overlap: overlapY };
+}
+
+// Convert AABB body to a polygon body (for mixed collision detection)
+function aabbToPolyBody(body) {
+  const hw = body.shape.width / 2, hh = body.shape.height / 2;
+  return {
+    position: body.position,
+    angle: body.angle || 0,
+    shape: {
+      type: 'polygon',
+      vertices: [
+        new Vec2(-hw, -hh), new Vec2(hw, -hh),
+        new Vec2(hw, hh), new Vec2(-hw, hh)
+      ]
+    }
+  };
 }
 
 // Get world-space vertices of a polygon body

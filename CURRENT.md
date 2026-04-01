@@ -2,9 +2,9 @@
 
 ## Status: done
 mode: BUILD
-task: T18 — Diffusion model (DDPM)
-current_position: T18
-tasks_completed_this_session: 20
+task: T25 — Physics: Enhanced SAT polygon collision
+current_position: T25
+tasks_completed_this_session: 1
 
 ## Session Boundary
-2:15pm MDT
+8:15pm MDT

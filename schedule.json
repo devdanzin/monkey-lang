@@ -226,10 +226,51 @@
     {
       "id": "T18",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Evening curiosity: consciousness paper or CS theory rabbit hole",
-      "started": "2026-04-01T15:46:18.001Z"
+      "started": "2026-04-01T15:46:18.001Z",
+      "completed": "2026-04-01T15:56:12.209Z",
+      "duration_ms": 600000,
+      "summary": "Built simple DDPM diffusion model: noise schedules (linear + cosine), MLP denoiser with time embeddings, ε-prediction training, full reverse sampling. Bridges diffusion math theory to practice. 18 new tests (135 total). Pushed."
+    },
+    {
+      "id": "T23",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Decide next work block: physics engine depth, or neural net training viz, or ray tracer CSG improvements",
+      "started": "2026-04-01T15:58:13.868Z",
+      "completed": "2026-04-01T15:59:02.966Z",
+      "duration_ms": 30000,
+      "summary": "Physics engine needs depth most (80 tests, single file). Planned 3 BUILD tasks: constraints, polygon SAT, spatial hash."
+    },
+    {
+      "id": "T24",
+      "mode": "BUILD",
+      "task": "Physics: Add constraint solver (distance, pin, spring constraints)",
+      "status": "done",
+      "plan_ref": "T23",
+      "started": "2026-04-01T16:00:02.615Z",
+      "completed": "2026-04-01T20:16:45.154Z",
+      "summary": " [auto-resolved: orphaned in-progress task]"
+    },
+    {
+      "id": "T25",
+      "mode": "BUILD",
+      "task": "Physics: Add polygon collision detection (SAT algorithm)",
+      "status": "done",
+      "plan_ref": "T23",
+      "started": "2026-04-01T20:18:35.508Z",
+      "completed": "2026-04-01T20:29:17.491Z",
+      "duration_ms": 300000,
+      "summary": "Enhanced SAT polygon collision: broadphase support for polygons, AABB-polygon cross detection, 28 polygon tests (18 new). 98 total physics tests."
+    },
+    {
+      "id": "T26",
+      "mode": "BUILD",
+      "task": "Physics: Add spatial hash grid for broadphase",
+      "status": "upcoming",
+      "plan_ref": "T23"
     }
   ],
-  "updated_at": "2026-04-01T15:46:18.001Z"
+  "updated_at": "2026-04-01T20:29:17.491Z"
 }
