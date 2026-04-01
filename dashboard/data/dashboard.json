@@ -465,8 +465,12 @@
     {
       "id": "T45",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Neural net: Add Embedding layer for token sequences"
+      "status": "done",
+      "task": "Neural net: Add Embedding layer for token sequences",
+      "started": "2026-04-01T22:43:30.993Z",
+      "completed": "2026-04-01T22:47:40.495Z",
+      "duration_ms": 300000,
+      "summary": "Added Embedding layer for token sequences. Lookup table, sparse gradient updates, clamped OOV. Full pipeline test: Embedding→PE→Transformer→Dense. 8 new tests. 219 total."
     },
     {
       "id": "T46",
@@ -483,10 +487,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 44,
+    "completed": 45,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 9620000
+    "total_duration_ms": 9920000
   },
-  "updated_at": "2026-04-01T22:43:12.845Z"
+  "updated_at": "2026-04-01T22:47:40.495Z"
 }
