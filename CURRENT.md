@@ -2,9 +2,9 @@
 
 ## Status: done
 mode: BUILD
-task: T11 — Blog post: 200 projects
-current_position: T11
-tasks_completed_this_session: 13
+task: T15 — Monkey function inlining
+current_position: T15
+tasks_completed_this_session: 17
 
 ## Session Boundary
 2:15pm MDT
