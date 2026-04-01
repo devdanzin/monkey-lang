@@ -5,6 +5,7 @@ export { Conv2D, MaxPool2D, Flatten } from './conv.js';
 export { RNN, LSTM, GRU } from './rnn.js';
 export { Autoencoder, VAE } from './autoencoder.js';
 export { GAN } from './gan.js';
+export { addNoise, randomFlipH, randomCrop, mixup, cutout, randomBrightnessContrast, compose } from './augmentation.js';
 export { SelfAttention, MultiHeadAttention } from './attention.js';
 export { PositionalEncoding, LayerNorm, TransformerEncoderBlock } from './transformer.js';
 export { Embedding } from './embedding.js';
