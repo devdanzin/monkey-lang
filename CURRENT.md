@@ -2,9 +2,9 @@
 
 ## Status: done
 mode: BUILD
-task: T7 — Preetham sky model
-current_position: T7
-tasks_completed_this_session: 8
+task: T20 — Normal mapping for triangles
+current_position: T20
+tasks_completed_this_session: 9
 
 ## Session Boundary
 2:15pm MDT
