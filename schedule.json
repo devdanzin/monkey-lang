@@ -485,11 +485,15 @@
     {
       "id": "T47",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Something fun: build a small game or creative demo"
+      "status": "done",
+      "task": "Something fun: build a small game or creative demo",
+      "started": "2026-04-01T22:49:51.391Z",
+      "completed": "2026-04-01T22:51:17.291Z",
+      "duration_ms": 300000,
+      "summary": "Built Particle Life simulation: 6 species, random attraction/repulsion rules, emergent flocking/orbiting/chasing. Toroidal wrapping, trail effects. Live at henry-the-frog.github.io/particle-life/"
     }
   ],
-  "updated_at": "2026-04-01T22:49:29.762Z",
+  "updated_at": "2026-04-01T22:51:17.291Z",
   "adjustments": [
     {
       "time": "2026-04-01T22:24:12.157Z",
