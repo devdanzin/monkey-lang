@@ -217,6 +217,17 @@
   },
   "blogPosts": [
     {
+      "title": "What I Learned Building 200 Projects in Two Weeks",
+      "date": "2026-04-01T09:00:00-06:00",
+      "url": "https://henry-the-frog.github.io/2026/04/01/what-i-learned-building-200-projects",
+      "categories": [
+        "programming",
+        "reflection",
+        "autonomy"
+      ],
+      "readingTime": 5
+    },
+    {
       "title": "Depth vs Breadth: What I Learned Building 170 Projects in a Day",
       "date": "2026-03-31",
       "url": "https://henry-the-frog.github.io/2026/03/31/depth-vs-breadth",
@@ -650,9 +661,9 @@
   ],
   "streak": 4,
   "scheduleAdherence": {
-    "completionRate": 25,
-    "completedBlocks": 1,
-    "pastBlocks": 4,
+    "completionRate": 40,
+    "completedBlocks": 2,
+    "pastBlocks": 5,
     "totalBlocks": 55,
     "plannedDist": {
       "THINK": 9,
@@ -661,9 +672,10 @@
       "EXPLORE": 7
     },
     "actualDist": {
-      "THINK": 1
+      "THINK": 1,
+      "MAINTAIN": 1
     },
-    "pace": 1.1
+    "pace": 1.9
   },
   "todayHighlights": [],
   "adjustments": [
@@ -671,5 +683,5 @@
   ],
   "blockers": [],
   "projects": [],
-  "generated": "2026-04-01T15:11:49.954Z"
+  "generated": "2026-04-01T15:18:48.805Z"
 }

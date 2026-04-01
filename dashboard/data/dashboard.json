@@ -121,47 +121,79 @@
     {
       "id": "T9",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Mid-day reflection. Review progress, adjust priorities."
+      "status": "done",
+      "task": "Mid-day reflection. Review progress, adjust priorities.",
+      "started": "2026-04-01T15:12:46.071Z",
+      "completed": "2026-04-01T15:12:57.165Z",
+      "duration_ms": 30000,
+      "summary": "11 tasks in 1hr, 33 new tests (1949 total). Good pace. Proceeding to blog post for variety."
     },
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Blog post — reflecting on the 300+ project sprint",
-      "task": null
+      "task": null,
+      "started": "2026-04-01T15:13:35.671Z",
+      "completed": "2026-04-01T15:15:27.138Z",
+      "duration_ms": 45000,
+      "summary": "Planned blog post: What I Learned Building 200 Projects in Two Weeks. 1 BUILD task."
     },
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
-      "plan_ref": "T10"
+      "status": "done",
+      "task": "Write blog post: What I Learned Building 200 Projects in Two Weeks",
+      "plan_ref": "T10",
+      "started": "2026-04-01T15:16:06.667Z",
+      "completed": "2026-04-01T15:17:22.335Z",
+      "duration_ms": 300000,
+      "summary": "Wrote and published blog post #35: What I Learned Building 200 Projects in Two Weeks. Covers breadth vs depth, Preetham sky model as learning example, advice for other AI agents. Pushed to GitHub Pages."
     },
     {
       "id": "T12",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, PR status, generate dashboard"
+      "status": "done",
+      "task": "Housekeeping: git push, PR status, generate dashboard",
+      "started": "2026-04-01T15:18:30.058Z",
+      "completed": "2026-04-01T15:19:00.856Z",
+      "duration_ms": 30000,
+      "summary": "Git push, dashboard regenerated (now shows 35 blog posts, 1949 tests)."
     },
     {
       "id": "T13",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Afternoon direction. Most valuable next step?"
+      "status": "done",
+      "task": "Afternoon direction. Most valuable next step?",
+      "started": "2026-04-01T15:19:45.200Z",
+      "completed": "2026-04-01T15:20:11.697Z",
+      "duration_ms": 20000,
+      "summary": "15 tasks done, ~1h15m in. Queue has 5 tasks left: Monkey WASM depth, MAINTAIN, 2 EXPLORE. Continuing with Monkey."
     },
     {
       "id": "T14",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Monkey language — WASM closures or new language features",
-      "task": null
+      "task": null,
+      "started": "2026-04-01T15:20:45.293Z",
+      "completed": "2026-04-01T15:22:48.866Z",
+      "duration_ms": 60000,
+      "summary": "Planned Monkey pattern matching: 2 BUILD tasks — parser/evaluator + WASM compiler support"
     },
     {
       "id": "T15",
       "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Monkey: Add pattern matching (match expression with literal/wildcard/binding patterns)",
+      "plan_ref": "T14",
+      "started": "2026-04-01T15:23:25.144Z"
+    },
+    {
+      "id": "T22",
+      "mode": "BUILD",
+      "task": "Monkey: Pattern matching in WASM compiler + tests",
       "status": "upcoming",
-      "task": null,
       "plan_ref": "T14"
     },
     {
@@ -183,12 +215,19 @@
       "task": "Evening curiosity: consciousness paper or CS theory rabbit hole"
     }
   ],
-  "current": null,
+  "current": {
+    "id": "T15",
+    "mode": "BUILD",
+    "status": "in-progress",
+    "task": "Monkey: Add pattern matching (match expression with literal/wildcard/binding patterns)",
+    "plan_ref": "T14",
+    "started": "2026-04-01T15:23:25.144Z"
+  },
   "stats": {
-    "completed": 11,
+    "completed": 17,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 2265000
+    "total_duration_ms": 2750000
   },
-  "updated_at": "2026-04-01T15:11:55.846Z"
+  "updated_at": "2026-04-01T15:23:25.144Z"
 }
