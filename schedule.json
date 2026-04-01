@@ -515,8 +515,12 @@
     {
       "id": "T50",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Neural net: Add weight decay (L2 regularization) to optimizers"
+      "status": "done",
+      "task": "Neural net: Add weight decay (L2 regularization) to optimizers",
+      "started": "2026-04-01T23:00:53.634Z",
+      "completed": "2026-04-01T23:09:18.366Z",
+      "duration_ms": 300000,
+      "summary": "Added weight decay (L2 reg) to SGD + Adam, plus AdamW (decoupled weight decay). createOptimizer supports adamw. 6 new tests. 234 total."
     },
     {
       "id": "T51",
@@ -537,7 +541,7 @@
       "task": "Build something unexpected"
     }
   ],
-  "updated_at": "2026-04-01T23:00:24.502Z",
+  "updated_at": "2026-04-01T23:09:18.366Z",
   "adjustments": [
     {
       "time": "2026-04-01T22:24:12.157Z",

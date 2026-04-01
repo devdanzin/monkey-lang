@@ -6,15 +6,18 @@ import { Matrix } from './matrix.js';
  * SGD optimizer (vanilla stochastic gradient descent)
  */
 export class SGD {
-  constructor(lr = 0.01) {
+  constructor(lr = 0.01, { weightDecay = 0 } = {}) {
     this.lr = lr;
+    this.weightDecay = weightDecay;
     this.name = 'sgd';
   }
 
-  init(layer) {} // No state needed
+  init(layer) {}
 
   update(param, grad) {
-    return param.sub(grad.mul(this.lr));
+    // L2 regularization: grad += wd * param
+    const effGrad = this.weightDecay > 0 ? grad.add(param.mul(this.weightDecay)) : grad;
+    return param.sub(effGrad.mul(this.lr));
   }
 }
 
@@ -51,11 +54,12 @@ export class MomentumSGD {
  * Kingma & Ba, 2014
  */
 export class Adam {
-  constructor(lr = 0.001, beta1 = 0.9, beta2 = 0.999, epsilon = 1e-8) {
+  constructor(lr = 0.001, beta1 = 0.9, beta2 = 0.999, epsilon = 1e-8, { weightDecay = 0 } = {}) {
     this.lr = lr;
     this.beta1 = beta1;
     this.beta2 = beta2;
     this.epsilon = epsilon;
+    this.weightDecay = weightDecay;
     this.name = 'adam';
     this.t = 0;
     this._m = new Map(); // First moment (mean)
@@ -93,9 +97,11 @@ export class Adam {
     const mHat = newM.mul(1.0 / bc1);
     const vHat = newV.mul(1.0 / bc2);
 
-    // Update parameters
+    // Update parameters (with optional L2 weight decay)
     const eps = this.epsilon;
-    return param.sub(mHat.mul(this.lr).mul(vHat.map(x => 1.0 / (Math.sqrt(x) + eps))));
+    let result = param.sub(mHat.mul(this.lr).mul(vHat.map(x => 1.0 / (Math.sqrt(x) + eps))));
+    if (this.weightDecay > 0) result = result.sub(param.mul(this.weightDecay * this.lr));
+    return result;
   }
 }
 
@@ -133,13 +139,68 @@ export class RMSProp {
 }
 
 /**
+ * AdamW optimizer (Decoupled Weight Decay)
+ * Loshchilov & Hutter, 2017
+ * Key difference from Adam: weight decay is applied directly to parameters,
+ * not through gradient (decoupled from adaptive learning rate)
+ */
+export class AdamW {
+  constructor(lr = 0.001, beta1 = 0.9, beta2 = 0.999, epsilon = 1e-8, weightDecay = 0.01) {
+    this.lr = lr;
+    this.beta1 = beta1;
+    this.beta2 = beta2;
+    this.epsilon = epsilon;
+    this.weightDecay = weightDecay;
+    this.name = 'adamw';
+    this.t = 0;
+    this._m = new Map();
+    this._v = new Map();
+  }
+
+  init(layer) {}
+
+  _getState(key, grad) {
+    if (!this._m.has(key)) {
+      this._m.set(key, Matrix.zeros(grad.rows, grad.cols));
+      this._v.set(key, Matrix.zeros(grad.rows, grad.cols));
+    }
+    return { m: this._m.get(key), v: this._v.get(key) };
+  }
+
+  step() { this.t++; }
+
+  update(param, grad, key = '') {
+    const { m, v } = this._getState(key, grad);
+
+    const newM = m.mul(this.beta1).add(grad.mul(1 - this.beta1));
+    const newV = v.mul(this.beta2).add(grad.mul(grad).mul(1 - this.beta2));
+    this._m.set(key, newM);
+    this._v.set(key, newV);
+
+    const bc1 = 1 - Math.pow(this.beta1, this.t);
+    const bc2 = 1 - Math.pow(this.beta2, this.t);
+    const mHat = newM.mul(1.0 / bc1);
+    const vHat = newV.mul(1.0 / bc2);
+
+    const eps = this.epsilon;
+    // Adam update
+    let result = param.sub(mHat.mul(this.lr).mul(vHat.map(x => 1.0 / (Math.sqrt(x) + eps))));
+    // Decoupled weight decay: applied to param directly, not through grad
+    result = result.sub(param.mul(this.weightDecay * this.lr));
+    return result;
+  }
+}
+
+/**
  * Create an optimizer by name
  */
 export function createOptimizer(name, options = {}) {
+  const wd = { weightDecay: options.weightDecay || 0 };
   switch (name) {
-    case 'sgd': return new SGD(options.lr || 0.01);
+    case 'sgd': return new SGD(options.lr || 0.01, wd);
     case 'momentum': return new MomentumSGD(options.lr || 0.01, options.momentum || 0.9);
-    case 'adam': return new Adam(options.lr || 0.001, options.beta1, options.beta2, options.epsilon);
+    case 'adam': return new Adam(options.lr || 0.001, options.beta1, options.beta2, options.epsilon, wd);
+    case 'adamw': return new AdamW(options.lr || 0.001, options.beta1, options.beta2, options.epsilon, options.weightDecay || 0.01);
     case 'rmsprop': return new RMSProp(options.lr || 0.001, options.decay, options.epsilon);
     default: throw new Error(`Unknown optimizer: ${name}`);
   }
