@@ -475,8 +475,12 @@
     {
       "id": "T46",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Ray tracer: push latest to henry-the-frog/ray-tracer repo"
+      "status": "done",
+      "task": "Ray tracer: push latest to henry-the-frog/ray-tracer repo",
+      "started": "2026-04-01T22:48:19.495Z",
+      "completed": "2026-04-01T22:49:29.762Z",
+      "duration_ms": 120000,
+      "summary": "Pushed ray tracer latest: Preetham sky, normal mapping, microfacet, bokeh, area lights. 26 files, 2693 lines. 245 tests."
     },
     {
       "id": "T47",
@@ -485,7 +489,7 @@
       "task": "Something fun: build a small game or creative demo"
     }
   ],
-  "updated_at": "2026-04-01T22:47:40.495Z",
+  "updated_at": "2026-04-01T22:49:29.762Z",
   "adjustments": [
     {
       "time": "2026-04-01T22:24:12.157Z",
