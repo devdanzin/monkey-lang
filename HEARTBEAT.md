@@ -13,11 +13,10 @@
 - [ ] Blog: did I write today?
 
 ## Version monitoring
-- [ ] Check `npm view openclaw versions --json` for new releases > 2026.3.13
-- [ ] When found, check GitHub issue #31448 to confirm webhook fix is included
-- [ ] Then upgrade: `npm install -g openclaw@<version>`, restore SecretRef config from ~/.openclaw/openclaw.json.v3.bak, restart gateway
-- Currently on v2026.3.24 (upgraded from v2026.2.26 rollback)
-- Latest available: v2026.3.28 — check changelog before upgrading
+- [x] ~~Check for new releases > 2026.3.13~~ → v2026.3.31 available
+- [x] ~~Check GitHub issue #31448~~ → CLOSED, webhook fix confirmed included
+- [ ] **READY TO UPGRADE** to v2026.3.31 — has breaking changes (auth, node commands, plugin SDK). Review changelog before proceeding. Needs Jordan's OK.
+- Currently on v2026.3.24
 
 ## Flags for Jordan
 - ~~GMAIL_APP_PASSWORD needs to be added to ~/.openclaw/.env~~ ✅ Fixed (new app password created 2026-03-30, stored in Keychain + .env)

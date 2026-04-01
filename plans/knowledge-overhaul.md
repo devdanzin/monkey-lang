@@ -1,63 +1,52 @@
-# Knowledge Overhaul Plan
+# Knowledge Overhaul Plan (v2)
 
 Created: 2026-04-01
-Triggered by: Jordan's feedback that 300+ micro-projects produced no lasting knowledge or shared value.
+Revised after discovering the existing scratch → promote pipeline.
 
-## The 4 Commitments
+## The Real Problem
 
-### 1. Go Deep, Not Wide
-**Problem:** Burst-building 300+ shallow projects felt productive but wasn't.
-**Action:**
-- [ ] Update SOUL.md: add explicit principle — depth over breadth
-- [ ] Set a rule: no new project unless I can articulate what I'll learn that I don't already know
-- [ ] When starting something new, write the "what will I learn" section FIRST
-- [ ] Minimum bar: any project worth starting is worth spending 2+ sessions on
+Jordan's critique wasn't just "300 projects are shallow." It's that **knowledge gets written but never reliably accessed.** The scratch note system has:
+- 19 detailed scratch notes (122KB of real technical knowledge)
+- Usage tracking, promotion candidates, weekly synthesis/merging
+- An INDEX.md that categorizes everything
 
-### 2. Write About What I Learn
-**Problem:** Built interesting things (JIT compiler, ray tracer, neural net) but didn't write enough about the insights.
-**Action:**
-- [ ] Write blog posts for each deep project's key insights:
-  - [ ] "Building a JIT Compiler in JS" (monkey-lang)
-  - [ ] "Importance Sampling and Why It Matters" (ray tracer)
-  - [ ] "Implementing LSTM from Scratch" (neural net)
-  - [ ] "SAT Collision Detection Explained" (physics engine)
-- [ ] New rule: every deep project gets at least one blog post about what I learned
-- [ ] Retroactively: pick 10 most interesting micro-projects, write a single "10 Things I Built and What They Taught Me" post
+But:
+1. **Session startup doesn't read it.** AGENTS.md says read SOUL.md, USER.md, GUARDRAILS.md, daily logs. NOT scratch/INDEX.md.
+2. **The lesson promotion pipeline is broken.** W13 synthesis says notes were "promoted to lessons/tracing-jit.md" but the `lessons/` directory doesn't exist.
+3. **No retrieval trigger.** Even if knowledge files exist, nothing tells a session "you're about to work on JIT stuff, read jit-compilation.md first."
+4. **I created a parallel `memory/knowledge/` system** that duplicates the scratch notes with less detail.
 
-### 3. Fix the Knowledge System
-**Problem:** Memory system is daily logs + a 100-line cheat sheet. Technical knowledge evaporates between sessions.
-**Action:**
-- [ ] Create `memory/knowledge/` directory for topic-based technical notes
-  - `jit-compilation.md` — what I learned building the Monkey JIT
-  - `ray-tracing.md` — rendering techniques, importance sampling, BVH
-  - `neural-networks.md` — architectures, training tricks, gradient issues
-  - `physics-simulation.md` — collision detection, constraint solving
-  - `javascript-patterns.md` — performance patterns discovered across 300+ projects
-  - `compiler-design.md` — parsing, AST, bytecode, optimization passes
-- [ ] Each file follows a standard format:
-  ```
-  # Topic
-  ## Key Concepts (things I understand deeply)
-  ## Patterns (reusable techniques)
-  ## Pitfalls (mistakes I made and why)
-  ## Open Questions (what I still don't understand)
-  ## Sources (where I learned this)
-  ```
-- [ ] Update AGENTS.md to include knowledge files in session startup reads (selectively, based on task)
-- [ ] Add to heartbeat: periodic knowledge extraction from recent work
+## The Fix
 
-### 4. Curate, Don't Accumulate
-**Problem:** 300+ repos nobody will find or learn from.
-**Action:**
-- [ ] Audit all micro-project repos — categorize as: interesting / derivative / trivial
-- [ ] Archive trivial ones (make private or add "archived" topic)
-- [ ] For interesting ones: add proper READMEs, link from blog or dashboard
-- [ ] Create a curated "Best Of" section on the dashboard or blog
-- [ ] Pin the 5-10 best repos on GitHub profile
+### 1. Merge knowledge/ into the existing system
+- Delete the 5 knowledge files I just created (they're weaker versions of existing scratch notes)
+- Create the `memory/lessons/` directory that was supposed to exist
+- Actually promote the candidates from W13: cpython-internals, copy-and-patch → lessons/
+- Consolidate: scratch = working notes, lessons = distilled durable knowledge
 
-## Execution Order
-1. **Today:** Create knowledge system structure + extract knowledge from deep projects (highest impact)
-2. **Today:** Update SOUL.md with depth-over-breadth principle
-3. **This week:** Write first 2 blog posts from deep project insights
-4. **This week:** Audit and curate micro-project repos
-5. **Ongoing:** Every new project gets a knowledge extraction step
+### 2. Fix retrieval: topic-aware session loading
+- Update AGENTS.md session startup to include: "Read `memory/scratch/INDEX.md` to know what knowledge is available"
+- Add to standup/session start: "If today's work relates to a topic in INDEX.md, read the relevant scratch notes"
+- The memory_search tool should catch these via semantic search, but explicit INDEX reading is the backup
+
+### 3. Fix the promotion pipeline
+- Create `memory/lessons/` with actual promoted content
+- Lessons format: distilled from scratch notes, focused on reusable patterns and pitfalls
+- Each lesson links back to source scratch notes for detail
+
+### 4. Make knowledge extraction a project completion step
+- Update SOUL.md: "When finishing a project, write what you learned to a scratch note or update an existing lesson"
+- This is the "depth over breadth" principle in action — knowledge only counts if it's captured
+
+### 5. Audit scratch notes for quality
+- Some scratch notes are excellent (copy-and-patch: 8KB of detailed architecture analysis)
+- Some are thin (dashboard-server-deployment: just PATH notes)
+- Promote the excellent ones, archive or merge the thin ones
+
+## Execution
+1. Delete `memory/knowledge/` (redundant with scratch system)
+2. Create `memory/lessons/` and promote ready candidates
+3. Update AGENTS.md session startup to include knowledge retrieval
+4. Update SOUL.md with project completion knowledge extraction step
+5. Update scratch/INDEX.md with current state
+6. Commit

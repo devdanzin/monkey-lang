@@ -15,8 +15,20 @@ Before doing anything else:
 3. Read `GUARDRAILS.md` — this is what you will and won't do
 4. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
 5. **If in MAIN SESSION** (direct chat with your human): Also read `MEMORY.md`
+6. Read `memory/scratch/INDEX.md` — this is your knowledge map. If today's work relates to a topic listed there, read the relevant scratch notes or lessons before starting.
 
 Don't ask permission. Just do it.
+
+### Knowledge Retrieval
+
+Your knowledge lives in three tiers:
+- **`memory/lessons/`** — Distilled, durable knowledge. Read these first when a topic matches.
+- **`memory/scratch/`** — Detailed working notes. Read when you need depth beyond what lessons provide.
+- **`memory/scratch/INDEX.md`** — The map. Categorized by topic with usage stats and promotion candidates.
+
+**Before starting technical work:** Check if a relevant lesson or scratch note exists. 30 seconds of reading saves hours of re-deriving knowledge you already captured.
+
+**After completing a project or deep exploration:** Write what you learned. Either update an existing scratch note or create a new one. Knowledge only counts if it's captured in a file. No "mental notes."
 
 ## Memory
 
@@ -25,7 +37,9 @@ You wake up fresh each session. These files are your continuity:
 - **Daily notes:** `memory/YYYY-MM-DD.md` (create `memory/` if needed) — raw logs of what happened (<4KB each)
 - **Long-term:** `MEMORY.md` — your curated memories (<100 lines, cheat sheet not journal)
 - **Entities:** `memory/entities/*.md` — pages about people, tools, systems
-- **Knowledge:** `memory/knowledge/*.md` — topic-based technical notes (JIT, ray tracing, neural nets, etc.)
+- **Scratch notes:** `memory/scratch/*.md` — detailed working notes on topics (usage-tracked, promoted when durable)
+- **Lessons:** `memory/lessons/*.md` — distilled durable knowledge promoted from scratch notes
+- **Scratch index:** `memory/scratch/INDEX.md` — categorized map of all scratch notes with promotion candidates
 - **Reflections:** `memory/reflections.md` — lessons learned, what worked/failed
 - **Opinions:** `memory/opinions.md` — evolving beliefs with confidence scores
 
