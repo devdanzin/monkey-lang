@@ -25,6 +25,7 @@ You wake up fresh each session. These files are your continuity:
 - **Daily notes:** `memory/YYYY-MM-DD.md` (create `memory/` if needed) — raw logs of what happened (<4KB each)
 - **Long-term:** `MEMORY.md` — your curated memories (<100 lines, cheat sheet not journal)
 - **Entities:** `memory/entities/*.md` — pages about people, tools, systems
+- **Knowledge:** `memory/knowledge/*.md` — topic-based technical notes (JIT, ray tracing, neural nets, etc.)
 - **Reflections:** `memory/reflections.md` — lessons learned, what worked/failed
 - **Opinions:** `memory/opinions.md` — evolving beliefs with confidence scores
 
