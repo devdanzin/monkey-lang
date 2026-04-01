@@ -31,11 +31,17 @@
   - **116 tests | v0.7.0 | Live at henry-the-frog.github.io/ray-tracer/**
 - [ ] **Neural Network** → **github.com/henry-the-frog/neural-net** (LIVE at henry-the-frog.github.io/neural-net/)
   - Pure JS, zero deps, browser + Node.js
-  - Matrix class (Float64Array), Dense layers, backpropagation, SGD
-  - 6 activations (sigmoid, relu, leaky_relu, tanh, softmax, linear)
-  - MSE + cross-entropy loss, mini-batch training
-  - Digit recognition demo (5×5 grid, 10 digits, 90%+ accuracy)
-  - **29 tests | Interactive browser demo**
+  - Matrix class (Float64Array), Dense layers, backpropagation
+  - Conv2D (proper col2im backward), MaxPool2D, Flatten, BatchNorm, Dropout
+  - RNN (Elman + BPTT), LSTM (4 gates + BPTT)
+  - Autoencoder, Variational Autoencoder (VAE), DDPM Diffusion
+  - 4 optimizers (SGD, Momentum, Adam, RMSProp), 7 LR schedulers
+  - Serialization (toJSON/fromJSON), gradient clipping, weight initializers
+  - **175 tests | Interactive browser demo**
+- [ ] **Physics Engine** → **github.com/henry-the-frog/physics-engine** (LIVE at henry-the-frog.github.io/physics-engine/)
+  - Pure JS, zero deps, SAT collision, spatial hash broadphase, constraints
+  - Interactive web demo: 6 scenes, drag-to-throw, 60fps
+  - **103 tests | Live demo**
 - [ ] OpenClaw PR #50692 — Anthropic native web search (#49949), 18 tests, submitted
 - [ ] OpenClaw PR #51803 — Gateway restart message persistence (#51620), 15 tests, submitted
 
