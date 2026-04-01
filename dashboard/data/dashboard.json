@@ -101,15 +101,22 @@
       "id": "T21",
       "mode": "BUILD",
       "task": "Ray tracer: New showcase scene + update web demo with sky model",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T6",
-      "started": "2026-04-01T14:56:30.826Z"
+      "started": "2026-04-01T14:56:30.826Z",
+      "completed": "2026-04-01T15:09:22.256Z",
+      "duration_ms": 420000,
+      "summary": "Added Preetham sky scene to web demo — inline sky model in both worker.js and tile-worker.js, new scene option, backgroundFn in Renderer. 2 new showcase tests (245 total). Pushed."
     },
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, knowledge capture"
+      "status": "done",
+      "task": "Housekeeping: git push, knowledge capture",
+      "started": "2026-04-01T15:10:20.155Z",
+      "completed": "2026-04-01T15:11:55.846Z",
+      "duration_ms": 90000,
+      "summary": "Git push, dashboard regenerated, wrote preetham-sky-model scratch note, updated INDEX.md"
     },
     {
       "id": "T9",
@@ -176,19 +183,12 @@
       "task": "Evening curiosity: consciousness paper or CS theory rabbit hole"
     }
   ],
-  "current": {
-    "id": "T21",
-    "mode": "BUILD",
-    "task": "Ray tracer: New showcase scene + update web demo with sky model",
-    "status": "in-progress",
-    "plan_ref": "T6",
-    "started": "2026-04-01T14:56:30.826Z"
-  },
+  "current": null,
   "stats": {
-    "completed": 9,
+    "completed": 11,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 1755000
+    "total_duration_ms": 2265000
   },
-  "updated_at": "2026-04-01T14:56:30.826Z"
+  "updated_at": "2026-04-01T15:11:55.846Z"
 }
