@@ -5,6 +5,7 @@ export { Conv2D, MaxPool2D, Flatten } from './conv.js';
 export { RNN, LSTM } from './rnn.js';
 export { Autoencoder, VAE } from './autoencoder.js';
 export { SelfAttention, MultiHeadAttention } from './attention.js';
+export { PositionalEncoding, LayerNorm, TransformerEncoderBlock } from './transformer.js';
 export { BatchNorm } from './batchnorm.js';
 export { Dropout } from './dropout.js';
 export { mse, crossEntropy, getLoss } from './loss.js';

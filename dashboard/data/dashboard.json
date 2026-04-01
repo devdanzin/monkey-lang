@@ -405,16 +405,20 @@
     {
       "id": "T36",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Follow up on interesting discoveries"
+      "status": "done",
+      "task": "Follow up on interesting discoveries",
+      "started": "2026-04-01T22:17:06.636Z",
+      "completed": "2026-04-01T22:23:17.823Z",
+      "duration_ms": 600000,
+      "summary": "Built transformer building blocks: Positional Encoding (sinusoidal), Layer Normalization, Transformer Encoder Block (attention + FF + residual + norm). Stackable. 16 new tests. 204 total neural net tests."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 38,
+    "completed": 39,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 8150000
+    "total_duration_ms": 8750000
   },
-  "updated_at": "2026-04-01T22:16:04.198Z"
+  "updated_at": "2026-04-01T22:23:17.823Z"
 }
