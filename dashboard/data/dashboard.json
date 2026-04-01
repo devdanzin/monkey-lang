@@ -184,17 +184,21 @@
     {
       "id": "T15",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Monkey: Add pattern matching (match expression with literal/wildcard/binding patterns)",
       "plan_ref": "T14",
-      "started": "2026-04-01T15:23:25.144Z"
+      "started": "2026-04-01T15:23:25.144Z",
+      "completed": "2026-04-01T15:36:11.288Z",
+      "duration_ms": 480000,
+      "summary": "Added function inlining optimization pass: detects small non-recursive functions, substitutes calls with inlined body. Handles recursion/side-effect detection, AST cloning. 16 new tests (1523 total). Pushed."
     },
     {
       "id": "T22",
       "mode": "BUILD",
       "task": "Monkey: Pattern matching in WASM compiler + tests",
-      "status": "upcoming",
-      "plan_ref": "T14"
+      "status": "in-progress",
+      "plan_ref": "T14",
+      "started": "2026-04-01T15:37:33.517Z"
     },
     {
       "id": "T16",
@@ -216,18 +220,18 @@
     }
   ],
   "current": {
-    "id": "T15",
+    "id": "T22",
     "mode": "BUILD",
+    "task": "Monkey: Pattern matching in WASM compiler + tests",
     "status": "in-progress",
-    "task": "Monkey: Add pattern matching (match expression with literal/wildcard/binding patterns)",
     "plan_ref": "T14",
-    "started": "2026-04-01T15:23:25.144Z"
+    "started": "2026-04-01T15:37:33.517Z"
   },
   "stats": {
-    "completed": 17,
+    "completed": 18,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 2750000
+    "total_duration_ms": 3230000
   },
-  "updated_at": "2026-04-01T15:23:25.144Z"
+  "updated_at": "2026-04-01T15:37:33.517Z"
 }
