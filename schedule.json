@@ -401,9 +401,29 @@
       "id": "T38",
       "mode": "BUILD",
       "task": "RBM tests: reconstruction, generative sampling, feature learning on digits",
-      "status": "upcoming",
-      "plan_ref": "T36"
+      "status": "done",
+      "plan_ref": "T36",
+      "started": "2026-04-02T15:40:26.942Z",
+      "completed": "2026-04-02T15:40:27.192Z",
+      "duration_ms": 10000,
+      "summary": "RBM tests already comprehensive in T37: 13 tests covering construction, forward/backward, training, free energy, features, generation."
+    },
+    {
+      "id": "T39",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "VAE: Variational Autoencoder with reparameterization trick",
+      "started": "2026-04-02T15:40:41.825Z",
+      "completed": "2026-04-02T15:44:14.132Z",
+      "duration_ms": 600000,
+      "summary": "VAE: Variational Autoencoder — reparameterization trick, encoder/decoder, KL divergence, β-VAE, generation, interpolation. 11 new tests, 359 total."
     }
   ],
-  "updated_at": "2026-04-02T15:40:02.404Z"
+  "updated_at": "2026-04-02T15:44:14.132Z",
+  "adjustments": [
+    {
+      "time": "2026-04-02T15:40:36.483Z",
+      "msg": "Added T39 (BUILD) after end: VAE: Variational Autoencoder with reparameterization trick"
+    }
+  ]
 }
