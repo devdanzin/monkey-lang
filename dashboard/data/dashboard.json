@@ -238,8 +238,12 @@
     {
       "id": "T17",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Research: information geometry and natural gradient descent"
+      "status": "done",
+      "task": "Research: information geometry and natural gradient descent",
+      "started": "2026-04-02T15:07:35.462Z",
+      "completed": "2026-04-02T15:08:36.751Z",
+      "duration_ms": 300000,
+      "summary": "Researched information geometry + natural gradient descent. Key insight: FIM as Riemannian metric on parameter manifold, K-FAC approximation for practical use. Wrote scratch note. Could implement as optimizer for neural-net project."
     },
     {
       "id": "T18",
@@ -250,10 +254,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 22,
+    "completed": 23,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 5730000
+    "total_duration_ms": 6030000
   },
-  "updated_at": "2026-04-02T15:07:18.365Z"
+  "updated_at": "2026-04-02T15:08:36.751Z"
 }
