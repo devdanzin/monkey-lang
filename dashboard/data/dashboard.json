@@ -14,15 +14,26 @@
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "CI verification + dashboard iteration (COMMITMENT: Jordan main window)",
-      "task": null
+      "task": null,
+      "started": "2026-04-02T14:16:21.481Z",
+      "completed": "2026-04-02T14:18:16.580Z",
+      "duration_ms": 120000,
+      "summary": "CI verified green. Planned 2 dashboard BUILD tasks: vital stats fix + test breakdown, project depth + push."
     },
     {
       "id": "T3",
       "mode": "BUILD",
       "status": "upcoming",
-      "task": null,
+      "task": "Dashboard: fix vital stats rendering + add test count breakdown per project",
+      "plan_ref": "T2"
+    },
+    {
+      "id": "T19",
+      "mode": "BUILD",
+      "task": "Dashboard: add genetic-art to project depth cards + push to GH Pages",
+      "status": "upcoming",
       "plan_ref": "T2"
     },
     {
@@ -124,10 +135,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 1,
+    "completed": 2,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 90000
+    "total_duration_ms": 210000
   },
-  "updated_at": "2026-04-02T14:15:58.319Z"
+  "updated_at": "2026-04-02T14:18:16.580Z"
 }
