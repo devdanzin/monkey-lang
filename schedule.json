@@ -218,8 +218,9 @@
       "id": "T24",
       "mode": "BUILD",
       "task": "Ray tracer: render benchmarks + performance regression tests",
-      "status": "upcoming",
-      "plan_ref": "T14"
+      "status": "in-progress",
+      "plan_ref": "T14",
+      "started": "2026-04-02T15:04:09.454Z"
     },
     {
       "id": "T16",
@@ -240,5 +241,5 @@
       "task": "Research: consciousness — predictive coding implementations"
     }
   ],
-  "updated_at": "2026-04-02T15:03:46.390Z"
+  "updated_at": "2026-04-02T15:04:09.454Z"
 }
