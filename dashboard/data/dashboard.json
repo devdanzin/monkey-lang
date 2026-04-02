@@ -218,9 +218,12 @@
       "id": "T24",
       "mode": "BUILD",
       "task": "Ray tracer: render benchmarks + performance regression tests",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T14",
-      "started": "2026-04-02T15:04:09.454Z"
+      "started": "2026-04-02T15:04:09.454Z",
+      "completed": "2026-04-02T15:05:35.099Z",
+      "duration_ms": 300000,
+      "summary": "Render benchmarks: Cornell box, sphere scene, BVH vs brute force, ray throughput baseline, light sampling validation. 5 new tests, 274 total. All passing."
     },
     {
       "id": "T16",
@@ -241,19 +244,12 @@
       "task": "Research: consciousness — predictive coding implementations"
     }
   ],
-  "current": {
-    "id": "T24",
-    "mode": "BUILD",
-    "task": "Ray tracer: render benchmarks + performance regression tests",
-    "status": "in-progress",
-    "plan_ref": "T14",
-    "started": "2026-04-02T15:04:09.454Z"
-  },
+  "current": null,
   "stats": {
-    "completed": 20,
+    "completed": 21,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 5250000
+    "total_duration_ms": 5550000
   },
-  "updated_at": "2026-04-02T15:04:09.454Z"
+  "updated_at": "2026-04-02T15:05:35.099Z"
 }
