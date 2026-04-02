@@ -131,15 +131,33 @@
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Genetic art: NEAT (neuroevolution of augmenting topologies)",
-      "task": null
+      "task": null,
+      "started": "2026-04-02T14:45:09.975Z",
+      "completed": "2026-04-02T14:45:30.556Z",
+      "duration_ms": 120000,
+      "summary": "Planned 3 BUILD tasks for NEAT: genome+innovation, speciation+crossover, population+mutations+tests. Building on existing neuroevolution module."
     },
     {
       "id": "T11",
       "mode": "BUILD",
       "status": "upcoming",
-      "task": null,
+      "task": "NEAT core: Genome (connection genes, innovation), forward pass",
+      "plan_ref": "T10"
+    },
+    {
+      "id": "T22",
+      "mode": "BUILD",
+      "task": "NEAT: speciation + crossover by innovation alignment",
+      "status": "upcoming",
+      "plan_ref": "T10"
+    },
+    {
+      "id": "T23",
+      "mode": "BUILD",
+      "task": "NEAT: Population with structural mutations, species fitness, XOR/cart-pole tests",
+      "status": "upcoming",
       "plan_ref": "T10"
     },
     {
@@ -189,10 +207,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 12,
+    "completed": 13,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 2760000
+    "total_duration_ms": 2880000
   },
-  "updated_at": "2026-04-02T14:44:54.994Z"
+  "updated_at": "2026-04-02T14:45:30.556Z"
 }
