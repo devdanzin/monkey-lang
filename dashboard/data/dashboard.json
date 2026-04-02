@@ -749,8 +749,12 @@
       "id": "T77",
       "mode": "BUILD",
       "task": "Polygon art evolver: encode polygons as genomes, fitness = image similarity, HTML demo — with tests",
-      "status": "upcoming",
-      "plan_ref": "T69"
+      "status": "done",
+      "plan_ref": "T69",
+      "started": "2026-04-02T03:02:33.425Z",
+      "completed": "2026-04-02T03:13:35.635Z",
+      "duration_ms": 600000,
+      "summary": "Polygon art evolver: encoding (polygons → flat genes), software renderer with alpha compositing, pixel MSE fitness, specialized mutation, HTML demo with real-time vis. 94 total tests, all passing."
     },
     {
       "id": "T70",
@@ -779,10 +783,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 72,
+    "completed": 73,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 15921000
+    "total_duration_ms": 16521000
   },
-  "updated_at": "2026-04-02T03:02:07.079Z"
+  "updated_at": "2026-04-02T03:13:35.635Z"
 }

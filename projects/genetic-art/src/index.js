@@ -15,3 +15,7 @@ export {
   tspFitness, randomDistanceMatrix, euclideanDistanceMatrix
 } from './fitness.js';
 export { adaptiveMutationRate, IslandModel, SpeciatedPopulation } from './advanced.js';
+export {
+  genesPerPolygon, genomeLength, decodePolygons, renderPolygons,
+  pixelFitness, createPolygonFitness, polygonMutation
+} from './polygon-art.js';
