@@ -268,20 +268,35 @@
     {
       "id": "T26",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Predictive Coding Network: hierarchical prediction error minimization",
-      "task": null
-    }
-  ],
-  "updated_at": "2026-04-02T15:11:17.072Z",
-  "adjustments": [
-    {
-      "time": "2026-04-02T15:10:51.489Z",
-      "msg": "Added T25 (THINK) after end: What to work on next: predictive coding implementation or WASM garbage collector?"
+      "task": null,
+      "started": "2026-04-02T15:11:39.073Z",
+      "completed": "2026-04-02T15:12:02.963Z",
+      "duration_ms": 60000,
+      "summary": "Planned 3 BUILD tasks for predictive coding: layer, network, tests. Based on scratch note research."
     },
     {
-      "time": "2026-04-02T15:11:29.397Z",
-      "msg": "Added T26 (PLAN) after end: Predictive Coding Network: hierarchical prediction error minimization"
+      "id": "T27",
+      "mode": "BUILD",
+      "task": "PredictiveCodingLayer: value/error nodes, prediction, local update rules",
+      "status": "upcoming",
+      "plan_ref": "T26"
+    },
+    {
+      "id": "T28",
+      "mode": "BUILD",
+      "task": "PredictiveCodingNetwork: hierarchical inference + learning, convergence",
+      "status": "upcoming",
+      "plan_ref": "T26"
+    },
+    {
+      "id": "T29",
+      "mode": "BUILD",
+      "task": "Predictive coding tests: XOR, digit recognition, comparison with backprop",
+      "status": "upcoming",
+      "plan_ref": "T26"
     }
-  ]
+  ],
+  "updated_at": "2026-04-02T15:12:02.963Z"
 }
