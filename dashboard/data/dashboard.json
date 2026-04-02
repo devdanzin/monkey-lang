@@ -37,8 +37,12 @@
       "id": "T19",
       "mode": "BUILD",
       "task": "Dashboard: add genetic-art to project depth cards + push to GH Pages",
-      "status": "upcoming",
-      "plan_ref": "T2"
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-04-02T14:28:31.454Z",
+      "completed": "2026-04-02T14:28:49.678Z",
+      "summary": "Genetic-art already added in T3. Verified: 5 projects showing in depth cards + vital stats.",
+      "duration_ms": 60000
     },
     {
       "id": "T4",
@@ -139,10 +143,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 3,
+    "completed": 4,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 690000
+    "total_duration_ms": 750000
   },
-  "updated_at": "2026-04-02T14:27:55.277Z"
+  "updated_at": "2026-04-02T14:28:49.678Z"
 }
