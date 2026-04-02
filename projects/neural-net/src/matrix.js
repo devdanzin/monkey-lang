@@ -40,6 +40,17 @@ export class Matrix {
     return result;
   }
 
+  // Transpose
+  transpose() {
+    const result = new Matrix(this.cols, this.rows);
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.cols; j++) {
+        result.data[j * this.rows + i] = this.data[i * this.cols + j];
+      }
+    }
+    return result;
+  }
+
   // Element-wise addition
   add(other) {
     if (other instanceof Matrix) {

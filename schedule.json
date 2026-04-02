@@ -280,8 +280,12 @@
       "id": "T27",
       "mode": "BUILD",
       "task": "PredictiveCodingLayer: value/error nodes, prediction, local update rules",
-      "status": "upcoming",
-      "plan_ref": "T26"
+      "status": "done",
+      "plan_ref": "T26",
+      "started": "2026-04-02T15:12:18.646Z",
+      "completed": "2026-04-02T15:16:21.948Z",
+      "duration_ms": 480000,
+      "summary": "PredictiveCodingLayer: value/error nodes, prediction, inference (value update), learning (weight update). Matrix.transpose() added. 10 new tests, 300 total!"
     },
     {
       "id": "T28",
@@ -298,5 +302,5 @@
       "plan_ref": "T26"
     }
   ],
-  "updated_at": "2026-04-02T15:12:02.963Z"
+  "updated_at": "2026-04-02T15:16:21.948Z"
 }
