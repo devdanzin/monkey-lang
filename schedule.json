@@ -25,9 +25,13 @@
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Dashboard: fix vital stats rendering + add test count breakdown per project",
-      "plan_ref": "T2"
+      "plan_ref": "T2",
+      "started": "2026-04-02T14:18:41.160Z",
+      "completed": "2026-04-02T14:27:55.276Z",
+      "duration_ms": 480000,
+      "summary": "Fixed vital stats + project depth not showing: generate.cjs now writes rich.json directly, server restarted to pick up updated RICH_KEYS. Added genetic-art to all stats. Added test count breakdown card. 2303 total tests across 5 projects."
     },
     {
       "id": "T19",
@@ -133,5 +137,5 @@
       "task": "Research: consciousness — predictive coding implementations"
     }
   ],
-  "updated_at": "2026-04-02T14:18:16.580Z"
+  "updated_at": "2026-04-02T14:27:55.277Z"
 }
