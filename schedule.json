@@ -417,13 +417,27 @@
       "completed": "2026-04-02T15:44:14.132Z",
       "duration_ms": 600000,
       "summary": "VAE: Variational Autoencoder — reparameterization trick, encoder/decoder, KL divergence, β-VAE, generation, interpolation. 11 new tests, 359 total."
+    },
+    {
+      "id": "T40",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Physics: soft body / cloth simulation using spring networks + tests",
+      "started": "2026-04-02T15:50:14.435Z",
+      "completed": "2026-04-02T15:55:12.490Z",
+      "duration_ms": 480000,
+      "summary": "Physics: SoftBody (ring, circle, pressure, area) + ClothGrid (structural/shear/bend springs, pin, drape simulation). 15 new tests, 141 total."
     }
   ],
-  "updated_at": "2026-04-02T15:44:14.132Z",
+  "updated_at": "2026-04-02T15:55:12.490Z",
   "adjustments": [
     {
       "time": "2026-04-02T15:40:36.483Z",
       "msg": "Added T39 (BUILD) after end: VAE: Variational Autoencoder with reparameterization trick"
+    },
+    {
+      "time": "2026-04-02T15:50:03.092Z",
+      "msg": "Added T40 (BUILD) after end: Physics: soft body / cloth simulation using spring networks + tests"
     }
   ]
 }

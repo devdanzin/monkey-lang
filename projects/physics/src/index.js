@@ -932,7 +932,204 @@ class RopeConstraint {
   }
 }
 
-module.exports = { Vec2, Body, World, SpatialHashGrid, DistanceConstraint, SpringConstraint, RevoluteJoint, PrismaticJoint, RopeConstraint, raycast, sweepTest, detectCollision, resolveCollision };
+// SoftBody and ClothGrid defined below the export line comment
+// (they reference existing classes like SpringConstraint, Body, Vec2)
+
+/**
+ * Soft Body — a deformable body made of particles connected by springs.
+ */
+class SoftBody {
+  constructor(world, positions, opts = {}) {
+    const {
+      radius = 2,
+      mass = 1,
+      stiffness = 100,
+      damping = 2,
+      connections,
+      pressure = 0,
+    } = opts;
+
+    this.world = world;
+    this.particles = [];
+    this.springs = [];
+    this.pressure = pressure;
+
+    for (const pos of positions) {
+      const body = new Body({
+        position: pos,
+        shape: { type: 'circle', radius },
+        mass,
+      });
+      world.addBody(body);
+      this.particles.push(body);
+    }
+
+    if (connections) {
+      for (const [i, j] of connections) {
+        this._addSpring(i, j, stiffness, damping);
+      }
+    } else {
+      for (let i = 0; i < this.particles.length; i++) {
+        const j = (i + 1) % this.particles.length;
+        this._addSpring(i, j, stiffness, damping);
+      }
+    }
+  }
+
+  _addSpring(i, j, stiffness, damping) {
+    const spring = new SpringConstraint(this.particles[i], this.particles[j], {
+      stiffness, damping,
+    });
+    this.world.addSpring(spring);
+    this.springs.push(spring);
+  }
+
+  static circle(world, center, circleRadius, numParticles = 12, opts = {}) {
+    const positions = [];
+    for (let i = 0; i < numParticles; i++) {
+      const angle = (2 * Math.PI * i) / numParticles;
+      positions.push(new Vec2(
+        center.x + circleRadius * Math.cos(angle),
+        center.y + circleRadius * Math.sin(angle),
+      ));
+    }
+    const connections = [];
+    for (let i = 0; i < numParticles; i++) {
+      connections.push([i, (i + 1) % numParticles]);
+      if (numParticles > 4) {
+        connections.push([i, (i + 2) % numParticles]);
+      }
+    }
+    return new SoftBody(world, positions, { ...opts, connections });
+  }
+
+  get centroid() {
+    let x = 0, y = 0;
+    for (const p of this.particles) {
+      x += p.position.x;
+      y += p.position.y;
+    }
+    const n = this.particles.length;
+    return new Vec2(x / n, y / n);
+  }
+
+  applyPressure() {
+    if (this.pressure <= 0) return;
+    const c = this.centroid;
+    for (const p of this.particles) {
+      const dir = p.position.sub(c);
+      const len = dir.length();
+      if (len > 0.001) {
+        const force = dir.normalize().mul(this.pressure);
+        p.applyForce(force);
+      }
+    }
+  }
+
+  get area() {
+    let a = 0;
+    const n = this.particles.length;
+    for (let i = 0; i < n; i++) {
+      const curr = this.particles[i].position;
+      const next = this.particles[(i + 1) % n].position;
+      a += curr.x * next.y - next.x * curr.y;
+    }
+    return Math.abs(a) / 2;
+  }
+}
+
+/**
+ * Cloth Grid — a 2D grid of particles connected by springs.
+ */
+class ClothGrid {
+  constructor(world, topLeft, cols, rows, spacing, opts = {}) {
+    const {
+      mass = 0.5,
+      radius = 1,
+      stiffness = 200,
+      damping = 3,
+      shear = true,
+      bend = true,
+    } = opts;
+
+    this.world = world;
+    this.cols = cols;
+    this.rows = rows;
+    this.spacing = spacing;
+    this.particles = [];
+    this.springs = [];
+
+    for (let r = 0; r < rows; r++) {
+      const row = [];
+      for (let c = 0; c < cols; c++) {
+        const pos = new Vec2(topLeft.x + c * spacing, topLeft.y + r * spacing);
+        const body = new Body({
+          position: pos,
+          shape: { type: 'circle', radius },
+          mass,
+        });
+        world.addBody(body);
+        row.push(body);
+      }
+      this.particles.push(row);
+    }
+
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        if (c < cols - 1) this._addSpring(r, c, r, c + 1, stiffness, damping);
+        if (r < rows - 1) this._addSpring(r, c, r + 1, c, stiffness, damping);
+      }
+    }
+
+    if (shear) {
+      for (let r = 0; r < rows - 1; r++) {
+        for (let c = 0; c < cols - 1; c++) {
+          this._addSpring(r, c, r + 1, c + 1, stiffness * 0.7, damping);
+          this._addSpring(r, c + 1, r + 1, c, stiffness * 0.7, damping);
+        }
+      }
+    }
+
+    if (bend) {
+      const bendStiffness = stiffness * 0.3;
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols - 2; c++) {
+          this._addSpring(r, c, r, c + 2, bendStiffness, damping);
+        }
+      }
+      for (let r = 0; r < rows - 2; r++) {
+        for (let c = 0; c < cols; c++) {
+          this._addSpring(r, c, r + 2, c, bendStiffness, damping);
+        }
+      }
+    }
+  }
+
+  _addSpring(r1, c1, r2, c2, stiffness, damping) {
+    const spring = new SpringConstraint(
+      this.particles[r1][c1], this.particles[r2][c2],
+      { stiffness, damping },
+    );
+    this.world.addSpring(spring);
+    this.springs.push(spring);
+  }
+
+  at(row, col) { return this.particles[row]?.[col] || null; }
+
+  pin(row, col) {
+    const p = this.at(row, col);
+    if (p) { p.isStatic = true; p.mass = Infinity; }
+  }
+
+  pinTop() { for (let c = 0; c < this.cols; c++) this.pin(0, c); }
+
+  pinCorners() { this.pin(0, 0); this.pin(0, this.cols - 1); }
+
+  get allParticles() { return this.particles.flat(); }
+  get springCount() { return this.springs.length; }
+}
+
+module.exports = { Vec2, Body, World, SpatialHashGrid, DistanceConstraint, SpringConstraint, RevoluteJoint, PrismaticJoint, RopeConstraint, SoftBody, ClothGrid, raycast, sweepTest, detectCollision, resolveCollision };
 
 // === Continuous Collision Detection (CCD) ===
 
