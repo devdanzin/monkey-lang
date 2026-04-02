@@ -101,9 +101,12 @@
       "id": "T21",
       "mode": "BUILD",
       "task": "MNIST browser demo: canvas drawing, live prediction, training visualization",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T6",
-      "started": "2026-04-02T14:39:35.390Z"
+      "started": "2026-04-02T14:39:35.390Z",
+      "completed": "2026-04-02T14:43:58.505Z",
+      "duration_ms": 600000,
+      "summary": "MNIST browser demo: canvas drawing with 8x8 downsampling, real-time prediction with confidence bars, training visualization with loss chart, Dense and CNN model options. Pushed to GitHub."
     },
     {
       "id": "T8",
@@ -176,5 +179,5 @@
       "task": "Research: consciousness — predictive coding implementations"
     }
   ],
-  "updated_at": "2026-04-02T14:39:35.390Z"
+  "updated_at": "2026-04-02T14:43:58.505Z"
 }
