@@ -374,7 +374,32 @@
       "completed": "2026-04-02T15:33:23.097Z",
       "duration_ms": 300000,
       "summary": "Optimizer comparison: SGD, Adam, NaturalGradient on mini-digits, Rosenbrock, Fisher adaptation. createOptimizer supports all 6 optimizers. 6 new tests, 335 total."
+    },
+    {
+      "id": "T36",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Boltzmann Machine: energy-based learning in neural-net project",
+      "task": null,
+      "started": "2026-04-02T15:36:31.853Z",
+      "completed": "2026-04-02T15:36:51.195Z",
+      "duration_ms": 30000,
+      "summary": "Planned RBM: 2 tasks — core implementation and tests."
+    },
+    {
+      "id": "T37",
+      "mode": "BUILD",
+      "task": "RBM: Restricted Boltzmann Machine with CD-1 learning",
+      "status": "upcoming",
+      "plan_ref": "T36"
+    },
+    {
+      "id": "T38",
+      "mode": "BUILD",
+      "task": "RBM tests: reconstruction, generative sampling, feature learning on digits",
+      "status": "upcoming",
+      "plan_ref": "T36"
     }
   ],
-  "updated_at": "2026-04-02T15:33:23.097Z"
+  "updated_at": "2026-04-02T15:36:51.195Z"
 }
