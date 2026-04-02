@@ -111,14 +111,22 @@
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping"
+      "status": "done",
+      "task": "Housekeeping",
+      "started": "2026-04-02T14:44:19.130Z",
+      "completed": "2026-04-02T14:44:30.972Z",
+      "duration_ms": 30000,
+      "summary": "Git pushed workspace."
     },
     {
       "id": "T9",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Mid-day reflection — assess depth vs breadth balance"
+      "status": "done",
+      "task": "Mid-day reflection — assess depth vs breadth balance",
+      "started": "2026-04-02T14:44:42.583Z",
+      "completed": "2026-04-02T14:44:54.994Z",
+      "duration_ms": 60000,
+      "summary": "Good depth day so far. MNIST complete (data, CNN, demo). Next: NEAT for genetic-art = strong depth work. 11 tasks, 290 neural-net tests."
     },
     {
       "id": "T10",
@@ -181,10 +189,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 10,
+    "completed": 12,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 2670000
+    "total_duration_ms": 2760000
   },
-  "updated_at": "2026-04-02T14:43:58.505Z"
+  "updated_at": "2026-04-02T14:44:54.994Z"
 }
