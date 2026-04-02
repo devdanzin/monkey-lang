@@ -19,3 +19,6 @@ export {
   genesPerPolygon, genomeLength, decodePolygons, renderPolygons,
   pixelFitness, createPolygonFitness, polygonMutation
 } from './polygon-art.js';
+export {
+  NeuralNet, neuroFitness, paramCount, xorEvaluator, cartPoleEvaluator
+} from './neuroevolution.js';
