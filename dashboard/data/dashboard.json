@@ -206,9 +206,13 @@
     {
       "id": "T15",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Ray tracer: importance sampling for lights (PDF-based direct light sampling)",
-      "plan_ref": "T14"
+      "plan_ref": "T14",
+      "started": "2026-04-02T14:58:50.073Z",
+      "completed": "2026-04-02T15:03:46.390Z",
+      "duration_ms": 600000,
+      "summary": "PDF-based importance sampling: CosinePDF, HittablePDF, MixturePDF, MultiLightPDF. Added pdfValue() to Sphere, XYRect, XZRect, YZRect. Added randomPoint/area to Sphere. 15 new tests, 269 total."
     },
     {
       "id": "T24",
@@ -238,10 +242,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 19,
+    "completed": 20,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 4650000
+    "total_duration_ms": 5250000
   },
-  "updated_at": "2026-04-02T14:58:24.631Z"
+  "updated_at": "2026-04-02T15:03:46.390Z"
 }

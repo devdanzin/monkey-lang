@@ -3,6 +3,7 @@
 import { HitRecord } from './hittable.js';
 import { Vec3 } from './vec3.js';
 import { AABB } from './aabb.js';
+import { Ray } from './ray.js';
 
 export class Plane {
   constructor(point, normal, material) {
@@ -54,6 +55,15 @@ export class XYRect {
   area() { return (this.x1 - this.x0) * (this.y1 - this.y0); }
   get normal() { return new Vec3(0, 0, 1); }
 
+  pdfValue(origin, direction) {
+    const rec = this.hit(new Ray(origin, direction), 0.001, Infinity);
+    if (!rec) return 0;
+    const distSq = rec.t * rec.t * direction.lengthSquared();
+    const cosAlpha = Math.abs(direction.unit().dot(new Vec3(0, 0, 1)));
+    if (cosAlpha < 1e-8) return 0;
+    return distSq / (cosAlpha * this.area());
+  }
+
   hit(ray, tMin, tMax) {
     const t = (this.k - ray.origin.z) / ray.direction.z;
     if (t < tMin || t > tMax) return null;
@@ -103,6 +113,16 @@ export class XZRect {
     return new Vec3(0, 1, 0);
   }
 
+  // PDF value for sampling a direction from origin toward this rectangle
+  pdfValue(origin, direction) {
+    const rec = this.hit(new Ray(origin, direction), 0.001, Infinity);
+    if (!rec) return 0;
+    const distSq = rec.t * rec.t * direction.lengthSquared();
+    const cosAlpha = Math.abs(direction.unit().dot(new Vec3(0, 1, 0)));
+    if (cosAlpha < 1e-8) return 0;
+    return distSq / (cosAlpha * this.area());
+  }
+
   hit(ray, tMin, tMax) {
     const t = (this.k - ray.origin.y) / ray.direction.y;
     if (t < tMin || t > tMax) return null;
@@ -145,6 +165,15 @@ export class YZRect {
 
   area() { return (this.y1 - this.y0) * (this.z1 - this.z0); }
   get normal() { return new Vec3(1, 0, 0); }
+
+  pdfValue(origin, direction) {
+    const rec = this.hit(new Ray(origin, direction), 0.001, Infinity);
+    if (!rec) return 0;
+    const distSq = rec.t * rec.t * direction.lengthSquared();
+    const cosAlpha = Math.abs(direction.unit().dot(new Vec3(1, 0, 0)));
+    if (cosAlpha < 1e-8) return 0;
+    return distSq / (cosAlpha * this.area());
+  }
 
   hit(ray, tMin, tMax) {
     const t = (this.k - ray.origin.x) / ray.direction.x;

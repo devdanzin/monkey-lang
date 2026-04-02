@@ -26,3 +26,5 @@ export { createBokehSampler, sampleCircle, sampleHexagon, samplePentagon, sample
 export { Renderer } from './renderer.js';
 export { PreethamSky, skyFromTime } from './sky.js';
 export { computeTBN, applyNormalMap, interpolateNormal, interpolateUV } from './normal-map.js';
+export { CosinePDF, HittablePDF, MixturePDF, MultiLightPDF } from './pdf.js';
+export { cosineWeightedHemisphere, cosineWeightedPDF, uniformHemisphere, uniformHemispherePDF, buildONB, powerHeuristic } from './sampling.js';

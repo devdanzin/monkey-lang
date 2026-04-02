@@ -3,6 +3,7 @@
 import { HitRecord } from './hittable.js';
 import { Vec3 } from './vec3.js';
 import { AABB } from './aabb.js';
+import { Ray } from './ray.js';
 
 export class Sphere {
   constructor(center, radius, material) {
@@ -50,5 +51,34 @@ export class Sphere {
   boundingBox() {
     const r = new Vec3(this.radius, this.radius, this.radius);
     return new AABB(this.center.sub(r), this.center.add(r));
+  }
+
+  /**
+   * Random point on the sphere's surface.
+   */
+  randomPoint() {
+    const dir = Vec3.randomUnitVector();
+    return this.center.add(dir.mul(this.radius));
+  }
+
+  /**
+   * Area of the sphere.
+   */
+  area() {
+    return 4 * Math.PI * this.radius * this.radius;
+  }
+
+  /**
+   * PDF value for sampling a direction from origin toward this sphere.
+   * Uses the solid angle subtended by the sphere.
+   */
+  pdfValue(origin, direction) {
+    const rec = this.hit(new Ray(origin, direction), 0.001, Infinity);
+    if (!rec) return 0;
+    const distSq = this.center.sub(origin).lengthSquared();
+    const cosThetaMax = Math.sqrt(1 - this.radius * this.radius / distSq);
+    if (isNaN(cosThetaMax) || cosThetaMax >= 1) return 0;
+    const solidAngle = 2 * Math.PI * (1 - cosThetaMax);
+    return 1 / solidAngle;
   }
 }
