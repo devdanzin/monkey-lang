@@ -254,14 +254,24 @@
       "completed": "2026-04-02T15:10:13.145Z",
       "duration_ms": 300000,
       "summary": "Researched predictive coding + free energy principle. Hierarchical prediction error minimization, local Hebbian learning, connection to consciousness. Wrote scratch note with implementation plan for PredictiveCodingNetwork."
+    },
+    {
+      "id": "T25",
+      "mode": "THINK",
+      "status": "done",
+      "task": "What to work on next: predictive coding implementation or WASM garbage collector?",
+      "started": "2026-04-02T15:11:01.143Z",
+      "completed": "2026-04-02T15:11:17.072Z",
+      "duration_ms": 60000,
+      "summary": "Decision: build PredictiveCodingNetwork in neural-net. Most ambitious option, connects EXPLORE research to BUILD. Clear plan from scratch note."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 24,
+    "completed": 25,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 6330000
+    "total_duration_ms": 6390000
   },
-  "updated_at": "2026-04-02T15:10:13.145Z"
+  "updated_at": "2026-04-02T15:11:17.072Z"
 }
