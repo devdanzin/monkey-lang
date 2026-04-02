@@ -175,14 +175,22 @@
     {
       "id": "T12",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping"
+      "status": "done",
+      "task": "Housekeeping",
+      "started": "2026-04-02T14:55:17.049Z",
+      "completed": "2026-04-02T14:55:25.899Z",
+      "duration_ms": 30000,
+      "summary": "Git pushed. All repos up to date."
     },
     {
       "id": "T13",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Afternoon direction check — what needs depth?"
+      "status": "done",
+      "task": "Afternoon direction check — what needs depth?",
+      "started": "2026-04-02T14:55:37.802Z",
+      "completed": "2026-04-02T14:55:55.276Z",
+      "duration_ms": 60000,
+      "summary": "5 hours remain. MNIST + NEAT complete. Proceeding with ray tracer motion blur from queue."
     },
     {
       "id": "T14",
@@ -219,10 +227,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 16,
+    "completed": 18,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 4440000
+    "total_duration_ms": 4530000
   },
-  "updated_at": "2026-04-02T14:54:52.018Z"
+  "updated_at": "2026-04-02T14:55:55.276Z"
 }
