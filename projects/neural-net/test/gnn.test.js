@@ -139,3 +139,21 @@ describe('Graph Neural Network', () => {
     });
   });
 });
+
+describe('GNN Edge Cases', () => {
+  it('should handle disconnected graph', () => {
+    const gnn = new GNN([2, 3, 2]);
+    const g = new Graph(4, [[0,1]], [[1,0],[0,1],[1,1],[0,0]]);
+    const embeddings = gnn.forward(g);
+    assert.equal(embeddings.length, 4);
+    assert.ok(!embeddings.flat().some(isNaN));
+  });
+
+  it('should handle single-node graph', () => {
+    const gnn = new GNN([1, 2]);
+    const g = new Graph(1, [], [[5]]);
+    const embeddings = gnn.forward(g);
+    assert.equal(embeddings.length, 1);
+    assert.equal(embeddings[0].length, 2);
+  });
+});
