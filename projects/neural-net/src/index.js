@@ -23,3 +23,4 @@ export { serializeWeights, deserializeWeights, saveToJSON, loadFromJSON, weights
 export { EarlyStopping, LossHistory } from './callbacks.js';
 export { parseIDX, loadMNIST, createMiniDigits, trainTestSplit, accuracy, predict, evaluate, confusionMatrix, packBatch } from './mnist.js';
 export { PredictiveCodingLayer, PredictiveCodingNetwork } from './predictive-coding.js';
+export { RBM } from './rbm.js';

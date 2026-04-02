@@ -390,8 +390,12 @@
       "id": "T37",
       "mode": "BUILD",
       "task": "RBM: Restricted Boltzmann Machine with CD-1 learning",
-      "status": "upcoming",
-      "plan_ref": "T36"
+      "status": "done",
+      "plan_ref": "T36",
+      "started": "2026-04-02T15:36:58.931Z",
+      "completed": "2026-04-02T15:40:02.404Z",
+      "duration_ms": 600000,
+      "summary": "RBM: Restricted Boltzmann Machine — CD-k learning, reconstruction, free energy, encode/decode, generative sampling. Digit feature learning. 13 new tests, 348 total."
     },
     {
       "id": "T38",
@@ -403,10 +407,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 36,
+    "completed": 37,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 9520000
+    "total_duration_ms": 10120000
   },
-  "updated_at": "2026-04-02T15:36:51.195Z"
+  "updated_at": "2026-04-02T15:40:02.404Z"
 }
