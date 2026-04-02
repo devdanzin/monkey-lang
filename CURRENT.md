@@ -1,8 +1,8 @@
 # CURRENT.md
 
-## Status: done
+## Status: in-progress
 mode: BUILD
-task: Dashboard: fix vital stats rendering + add test count breakdown per project
-current_position: T3
-tasks_completed_this_session: 3
-context-files: dashboard/js/app.js, dashboard/css/style.css, dashboard/generate.cjs
+task: Generative models for neural-net (VAE, RBM, Predictive Coding complete)
+current_position: T39
+tasks_completed_this_session: 39
+context-files: projects/neural-net/src/vae.js, projects/neural-net/src/rbm.js, projects/neural-net/src/predictive-coding.js
