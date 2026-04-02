@@ -67,15 +67,33 @@
     {
       "id": "T6",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Neural net: MNIST end-to-end demo (real dataset, real training)",
-      "task": null
+      "task": null,
+      "started": "2026-04-02T14:30:13.828Z",
+      "completed": "2026-04-02T14:30:49.890Z",
+      "duration_ms": 120000,
+      "summary": "Planned 3 BUILD tasks for MNIST: data loader, CNN architecture+training, browser demo. Will use embedded subset for browser feasibility."
     },
     {
       "id": "T7",
       "mode": "BUILD",
       "status": "upcoming",
-      "task": null,
+      "task": "MNIST data loader + embedded subset (IDX parser or embedded JSON)",
+      "plan_ref": "T6"
+    },
+    {
+      "id": "T20",
+      "mode": "BUILD",
+      "task": "MNIST CNN architecture + training pipeline with tests",
+      "status": "upcoming",
+      "plan_ref": "T6"
+    },
+    {
+      "id": "T21",
+      "mode": "BUILD",
+      "task": "MNIST browser demo: canvas drawing, live prediction, training visualization",
+      "status": "upcoming",
       "plan_ref": "T6"
     },
     {
@@ -151,10 +169,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 6,
+    "completed": 7,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 870000
+    "total_duration_ms": 990000
   },
-  "updated_at": "2026-04-02T14:29:56.448Z"
+  "updated_at": "2026-04-02T14:30:49.890Z"
 }
