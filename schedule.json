@@ -738,8 +738,12 @@
       "id": "T76",
       "mode": "BUILD",
       "task": "Advanced GA: elitism, adaptive mutation, island model, speciation (NEAT-inspired) — with tests",
-      "status": "upcoming",
-      "plan_ref": "T69"
+      "status": "done",
+      "plan_ref": "T69",
+      "started": "2026-04-02T02:59:27.145Z",
+      "completed": "2026-04-02T03:02:07.079Z",
+      "duration_ms": 480000,
+      "summary": "Advanced GA: adaptive mutation rate, island model (ring/full topology + migration), speciated population with fitness sharing + stagnation removal. 77 total tests passing."
     },
     {
       "id": "T77",
@@ -773,5 +777,5 @@
       "task": "Evening curiosity: pick a rabbit hole"
     }
   ],
-  "updated_at": "2026-04-02T02:58:17.335Z"
+  "updated_at": "2026-04-02T03:02:07.079Z"
 }

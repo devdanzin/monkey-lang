@@ -14,3 +14,4 @@ export {
   oneMax, rastrigin, schwefel, sphere, ackley, rosenbrock,
   tspFitness, randomDistanceMatrix, euclideanDistanceMatrix
 } from './fitness.js';
+export { adaptiveMutationRate, IslandModel, SpeciatedPopulation } from './advanced.js';
