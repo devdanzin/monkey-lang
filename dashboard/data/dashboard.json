@@ -759,14 +759,22 @@
     {
       "id": "T70",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-04-02T03:14:04.064Z",
+      "completed": "2026-04-02T03:14:04.215Z",
+      "duration_ms": 1000,
+      "summary": "Placeholder — GA BUILD tasks done in T74-T77"
     },
     {
       "id": "T71",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Deep dive: genetic algorithms, evolutionary strategies, neuroevolution"
+      "status": "done",
+      "task": "Deep dive: genetic algorithms, evolutionary strategies, neuroevolution",
+      "started": "2026-04-02T03:14:17.598Z",
+      "completed": "2026-04-02T03:17:23.719Z",
+      "duration_ms": 600000,
+      "summary": "Deep dive into evolutionary computation: researched NEAT (topology + weight evolution, innovation numbers, speciation), CMA-ES (covariance matrix adaptation, self-adaptive), evolution strategies vs GAs. Wrote scratch note covering GA design insights, NEAT, CMA-ES, and future directions (neuroevolution, NSGA-II, GP)."
     },
     {
       "id": "T72",
@@ -783,10 +791,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 73,
+    "completed": 75,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 16521000
+    "total_duration_ms": 17122000
   },
-  "updated_at": "2026-04-02T03:13:35.635Z"
+  "updated_at": "2026-04-02T03:17:23.719Z"
 }
