@@ -330,7 +330,39 @@
       "completed": "2026-04-02T15:27:56.674Z",
       "duration_ms": 600000,
       "summary": "Blog post: Predictive Coding — how the brain might learn without backpropagation. Covers architecture, inference, learning, results, comparison with backprop, free energy principle. ~1500 words."
+    },
+    {
+      "id": "T32",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Natural Gradient optimizer (K-FAC) for neural-net library",
+      "task": null,
+      "started": "2026-04-02T15:28:39.475Z",
+      "completed": "2026-04-02T15:28:57.101Z",
+      "duration_ms": 60000,
+      "summary": "Planned 3 tasks: diagonal Fisher, K-FAC, comparison benchmarks."
+    },
+    {
+      "id": "T33",
+      "mode": "BUILD",
+      "task": "NaturalGradient optimizer: diagonal Fisher approximation",
+      "status": "upcoming",
+      "plan_ref": "T32"
+    },
+    {
+      "id": "T34",
+      "mode": "BUILD",
+      "task": "K-FAC optimizer: Kronecker-factored curvature with running averages",
+      "status": "upcoming",
+      "plan_ref": "T32"
+    },
+    {
+      "id": "T35",
+      "mode": "BUILD",
+      "task": "Natural gradient tests + comparison benchmark with Adam and SGD",
+      "status": "upcoming",
+      "plan_ref": "T32"
     }
   ],
-  "updated_at": "2026-04-02T15:27:56.675Z"
+  "updated_at": "2026-04-02T15:28:57.101Z"
 }
