@@ -106,7 +106,7 @@ export class Network {
   }
 
   // Train for multiple epochs
-  train(data, { epochs = 100, learningRate = 0.01, batchSize = 32, momentum = 0, optimizer = 'sgd', verbose = false, onEpoch = null, lrSchedule = null } = {}) {
+  train(data, { epochs = 100, learningRate = 0.01, batchSize = 32, momentum = 0, optimizer = 'sgd', verbose = false, onEpoch = null, lrSchedule = null, callbacks = [] } = {}) {
     const { inputs, targets } = data;
     const n = inputs.rows;
     const history = [];
@@ -167,6 +167,15 @@ export class Network {
       }
 
       if (onEpoch) onEpoch(epoch, epochLoss);
+
+      // Run callbacks (e.g., EarlyStopping)
+      let shouldStop = false;
+      for (const cb of callbacks) {
+        if (cb.onEpochEnd && cb.onEpochEnd(epoch, epochLoss, this)) {
+          shouldStop = true;
+        }
+      }
+      if (shouldStop) break;
     }
 
     // Set eval mode (disable dropout)
@@ -184,7 +193,8 @@ export class Network {
     optimizer = 'adam',
     verbose = false,
     onEpoch = null,
-    lrSchedule = null
+    lrSchedule = null,
+    callbacks = []
   } = {}) {
     const { inputs, targets } = data;
     const n = inputs.rows;
@@ -326,6 +336,15 @@ export class Network {
       }
 
       if (onEpoch) onEpoch(epoch, epochLoss);
+
+      // Run callbacks
+      let shouldStop = false;
+      for (const cb of callbacks) {
+        if (cb.onEpochEnd && cb.onEpochEnd(epoch, epochLoss, this)) {
+          shouldStop = true;
+        }
+      }
+      if (shouldStop) break;
     }
 
     // Set eval mode

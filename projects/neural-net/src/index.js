@@ -20,3 +20,4 @@ export { ConstantLR, LinearWarmup, CosineAnnealing, StepDecay, WarmupCosine, Exp
 export { xavierUniform, xavierNormal, heUniform, heNormal, lecunNormal, zeros, ones, createInitializer } from './initializers.js';
 export { clipByValue, clipByNorm, clipByGlobalNorm, l2Norm, gradientStats } from './gradient-clip.js';
 export { serializeWeights, deserializeWeights, saveToJSON, loadFromJSON, weightsChecksum } from './serialize.js';
+export { EarlyStopping, LossHistory } from './callbacks.js';
