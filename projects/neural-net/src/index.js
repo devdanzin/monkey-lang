@@ -28,3 +28,4 @@ export { VAE as FullVAE } from './vae.js';
 export { DQN, ReplayBuffer, CartPoleEnv, GridWorldEnv } from './dqn.js';
 export { REINFORCE } from './reinforce.js';
 export { Graph, GCNLayer, GNN, createKarateClub } from './gnn.js';
+export { cosineSimilarity, ntXentLoss, augment, ContrastiveLearner } from './contrastive.js';

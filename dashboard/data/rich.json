@@ -773,9 +773,9 @@
   ],
   "streak": 5,
   "scheduleAdherence": {
-    "completionRate": 56,
+    "completionRate": 50,
     "completedBlocks": 5,
-    "pastBlocks": 9,
+    "pastBlocks": 10,
     "totalBlocks": 55,
     "plannedDist": {
       "THINK": 9,
@@ -787,7 +787,7 @@
       "THINK": 2,
       "BUILD": 3
     },
-    "pace": 2.4
+    "pace": 2.2
   },
   "todayHighlights": [],
   "adjustments": [
@@ -796,21 +796,21 @@
   "blockers": [],
   "projects": [
     {
-      "name": "monkey-lang",
-      "description": "A JavaScript implementation of the Monkey programming language interpreter",
-      "url": "https://github.com/henry-the-frog/monkey-lang",
-      "language": "JavaScript",
-      "stars": 0,
-      "pushedAt": "2026-04-02T16:15:15Z",
-      "category": "featured"
-    },
-    {
       "name": "neural-net",
       "description": "A neural network library built from scratch in JavaScript — no TensorFlow, no dependencies",
       "url": "https://github.com/henry-the-frog/neural-net",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-02T16:07:21Z",
+      "pushedAt": "2026-04-02T16:30:03Z",
+      "category": "featured"
+    },
+    {
+      "name": "monkey-lang",
+      "description": "A JavaScript implementation of the Monkey programming language interpreter",
+      "url": "https://github.com/henry-the-frog/monkey-lang",
+      "language": "JavaScript",
+      "stars": 0,
+      "pushedAt": "2026-04-02T16:28:56Z",
       "category": "featured"
     },
     {
@@ -2597,11 +2597,11 @@
     }
   ],
   "vitalStats": {
-    "totalTests": 2499,
+    "totalTests": 2517,
     "testCounts": {
       "monkey-lang": 1540,
       "ray-tracer": 274,
-      "neural-net": 382,
+      "neural-net": 400,
       "physics": 151,
       "genetic-art": 152
     },
@@ -2621,7 +2621,7 @@
       "srcFiles": 57,
       "srcLines": 31415,
       "featureCount": 18,
-      "lastCommit": "2026-04-02 10:15:10 -0600",
+      "lastCommit": "2026-04-02 10:28:50 -0600",
       "url": "https://github.com/henry-the-frog/monkey-lang",
       "demoUrl": "https://henry-the-frog.github.io/monkey-lang/"
     },
@@ -2634,7 +2634,7 @@
       "srcFiles": 63,
       "srcLines": 8666,
       "featureCount": 0,
-      "lastCommit": "2026-04-02 10:15:10 -0600",
+      "lastCommit": "2026-04-02 10:28:50 -0600",
       "url": "https://github.com/henry-the-frog/ray-tracer",
       "demoUrl": "https://henry-the-frog.github.io/ray-tracer/"
     },
@@ -2643,11 +2643,11 @@
       "dir": "projects/neural-net",
       "icon": "🧠",
       "description": "Neural network library with RNN/LSTM/GAN",
-      "tests": 382,
-      "srcFiles": 70,
-      "srcLines": 12553,
+      "tests": 400,
+      "srcFiles": 72,
+      "srcLines": 13043,
       "featureCount": 0,
-      "lastCommit": "2026-04-02 10:15:10 -0600",
+      "lastCommit": "2026-04-02 10:28:50 -0600",
       "url": "https://github.com/henry-the-frog/neural-net",
       "demoUrl": "https://henry-the-frog.github.io/neural-net/"
     },
@@ -2660,7 +2660,7 @@
       "srcFiles": 16,
       "srcLines": 3796,
       "featureCount": 0,
-      "lastCommit": "2026-04-02 10:15:10 -0600",
+      "lastCommit": "2026-04-02 10:28:50 -0600",
       "url": "https://github.com/henry-the-frog/physics",
       "demoUrl": "https://henry-the-frog.github.io/physics/"
     },
@@ -2673,10 +2673,10 @@
       "srcFiles": 22,
       "srcLines": 4563,
       "featureCount": 21,
-      "lastCommit": "2026-04-02 10:15:10 -0600",
+      "lastCommit": "2026-04-02 10:28:50 -0600",
       "url": "https://github.com/henry-the-frog/genetic-art",
       "demoUrl": "https://henry-the-frog.github.io/genetic-art/"
     }
   ],
-  "generated": "2026-04-02T16:18:53.931Z"
+  "generated": "2026-04-02T16:31:14.648Z"
 }

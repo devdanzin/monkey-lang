@@ -507,14 +507,24 @@
       "completed": "2026-04-02T16:27:42.923Z",
       "duration_ms": 480000,
       "summary": "GNN: Graph Neural Network with GCN layers, message passing, node classification, graph pooling. Karate Club benchmark. 15 new tests, neural-net now 398. Total: 2515."
+    },
+    {
+      "id": "T49",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: Contrastive Learning (SimCLR-style self-supervised)",
+      "started": "2026-04-02T16:32:06.027Z",
+      "completed": "2026-04-02T16:34:04.192Z",
+      "duration_ms": 480000,
+      "summary": "Contrastive Learning: NT-Xent loss, cosine similarity, augmentation, ContrastiveLearner for self-supervised learning. 12 new tests, neural-net now 412. Total: 2529."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 48,
+    "completed": 49,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 13970000
+    "total_duration_ms": 14450000
   },
-  "updated_at": "2026-04-02T16:27:42.923Z"
+  "updated_at": "2026-04-02T16:34:04.192Z"
 }
