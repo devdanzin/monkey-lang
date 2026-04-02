@@ -15,7 +15,7 @@ export { BatchNorm } from './batchnorm.js';
 export { Dropout } from './dropout.js';
 export { mse, crossEntropy, getLoss } from './loss.js';
 export { Network } from './network.js';
-export { SGD, MomentumSGD, Adam, AdamW, RMSProp, createOptimizer } from './optimizer.js';
+export { SGD, MomentumSGD, Adam, AdamW, RMSProp, NaturalGradient, KFAC, createOptimizer } from './optimizer.js';
 export { ConstantLR, LinearWarmup, CosineAnnealing, StepDecay, WarmupCosine, ExponentialDecay, CyclicLR, createScheduler } from './scheduler.js';
 export { xavierUniform, xavierNormal, heUniform, heNormal, lecunNormal, zeros, ones, createInitializer } from './initializers.js';
 export { clipByValue, clipByNorm, clipByGlobalNorm, l2Norm, gradientStats } from './gradient-clip.js';

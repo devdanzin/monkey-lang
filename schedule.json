@@ -346,8 +346,12 @@
       "id": "T33",
       "mode": "BUILD",
       "task": "NaturalGradient optimizer: diagonal Fisher approximation",
-      "status": "upcoming",
-      "plan_ref": "T32"
+      "status": "done",
+      "plan_ref": "T32",
+      "started": "2026-04-02T15:29:05.450Z",
+      "completed": "2026-04-02T15:31:44.728Z",
+      "duration_ms": 600000,
+      "summary": "NaturalGradient + KFAC optimizers: diagonal Fisher approximation, Kronecker-factored curvature, matrix inversion, running factor averages. 11 new tests, 329 total."
     },
     {
       "id": "T34",
@@ -364,5 +368,5 @@
       "plan_ref": "T32"
     }
   ],
-  "updated_at": "2026-04-02T15:28:57.101Z"
+  "updated_at": "2026-04-02T15:31:44.728Z"
 }
