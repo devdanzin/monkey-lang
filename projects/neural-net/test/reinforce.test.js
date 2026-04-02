@@ -98,3 +98,13 @@ describe('REINFORCE', () => {
     assert.equal(calls[0].episode, 0);
   });
 });
+
+describe('Policy Gradient Edge Cases', () => {
+  it('should handle zero-reward episodes gracefully', () => {
+    const agent = new REINFORCE(2, 2, { hiddenSize: 4 });
+    agent.recordStep([0, 1], 0, 0);
+    agent.recordStep([1, 0], 1, 0);
+    const { avgReturn } = agent.finishEpisode();
+    assert.equal(avgReturn, 0);
+  });
+});
