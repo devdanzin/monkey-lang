@@ -22,3 +22,8 @@ export {
 export {
   NeuralNet, neuroFitness, paramCount, xorEvaluator, cartPoleEvaluator
 } from './neuroevolution.js';
+export {
+  Genome, NodeGene, ConnectionGene, NodeType,
+  getInnovation, resetInnovations, resetNEAT,
+  compatibilityDistance, crossover
+} from './neat.js';

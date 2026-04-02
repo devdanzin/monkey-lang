@@ -142,9 +142,13 @@
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "NEAT core: Genome (connection genes, innovation), forward pass",
-      "plan_ref": "T10"
+      "plan_ref": "T10",
+      "started": "2026-04-02T14:45:54.045Z",
+      "completed": "2026-04-02T14:49:14.260Z",
+      "duration_ms": 480000,
+      "summary": "NEAT core: Genome with connection genes + innovation tracking, forward pass with modified sigmoid, addNode/addConnection mutations, weight mutation, compatibility distance, crossover by innovation alignment. 21 new tests, 128 total."
     },
     {
       "id": "T22",
@@ -205,5 +209,5 @@
       "task": "Research: consciousness — predictive coding implementations"
     }
   ],
-  "updated_at": "2026-04-02T14:45:30.556Z"
+  "updated_at": "2026-04-02T14:49:14.260Z"
 }
