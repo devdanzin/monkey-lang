@@ -154,8 +154,12 @@
       "id": "T22",
       "mode": "BUILD",
       "task": "NEAT: speciation + crossover by innovation alignment",
-      "status": "upcoming",
-      "plan_ref": "T10"
+      "status": "done",
+      "plan_ref": "T10",
+      "started": "2026-04-02T14:49:37.578Z",
+      "completed": "2026-04-02T14:51:46.080Z",
+      "duration_ms": 480000,
+      "summary": "NEAT speciation: Species class with compatibility, adjusted fitness, tournament selection, reproduce with elitism. speciate() groups by distance. nextGeneration() manages staleness, offspring allocation, culling. XOR evolution test shows improvement over 30 gens. 11 new tests, 139 total."
     },
     {
       "id": "T23",
@@ -209,5 +213,5 @@
       "task": "Research: consciousness — predictive coding implementations"
     }
   ],
-  "updated_at": "2026-04-02T14:49:14.260Z"
+  "updated_at": "2026-04-02T14:51:46.080Z"
 }

@@ -27,3 +27,6 @@ export {
   getInnovation, resetInnovations, resetNEAT,
   compatibilityDistance, crossover
 } from './neat.js';
+export {
+  Species, speciate, nextGeneration, resetSpeciesCounter
+} from './neat-species.js';
