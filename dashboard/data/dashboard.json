@@ -302,24 +302,20 @@
       "id": "T29",
       "mode": "BUILD",
       "task": "Predictive coding tests: XOR, digit recognition, comparison with backprop",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T26",
-      "started": "2026-04-02T15:19:16.327Z"
+      "started": "2026-04-02T15:19:16.327Z",
+      "completed": "2026-04-02T15:22:36.325Z",
+      "duration_ms": 480000,
+      "summary": "Predictive coding integration tests: pattern auto-encoding, anomaly detection, digit recognition, deep networks, local learning verification. 7 new tests, 318 total. All passing."
     }
   ],
-  "current": {
-    "id": "T29",
-    "mode": "BUILD",
-    "task": "Predictive coding tests: XOR, digit recognition, comparison with backprop",
-    "status": "in-progress",
-    "plan_ref": "T26",
-    "started": "2026-04-02T15:19:16.327Z"
-  },
+  "current": null,
   "stats": {
-    "completed": 28,
+    "completed": 29,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 7410000
+    "total_duration_ms": 7890000
   },
-  "updated_at": "2026-04-02T15:19:16.327Z"
+  "updated_at": "2026-04-02T15:22:36.325Z"
 }
