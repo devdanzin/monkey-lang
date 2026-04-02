@@ -195,15 +195,26 @@
     {
       "id": "T14",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Ray tracer: motion blur + image textures",
-      "task": null
+      "task": null,
+      "started": "2026-04-02T14:56:08.611Z",
+      "completed": "2026-04-02T14:58:24.631Z",
+      "duration_ms": 120000,
+      "summary": "Motion blur + image textures already implemented (MovingSphere, ImageTexture). Pivoted to importance sampling + benchmarks for real depth."
     },
     {
       "id": "T15",
       "mode": "BUILD",
       "status": "upcoming",
-      "task": null,
+      "task": "Ray tracer: importance sampling for lights (PDF-based direct light sampling)",
+      "plan_ref": "T14"
+    },
+    {
+      "id": "T24",
+      "mode": "BUILD",
+      "task": "Ray tracer: render benchmarks + performance regression tests",
+      "status": "upcoming",
       "plan_ref": "T14"
     },
     {
@@ -225,5 +236,5 @@
       "task": "Research: consciousness — predictive coding implementations"
     }
   ],
-  "updated_at": "2026-04-02T14:55:55.276Z"
+  "updated_at": "2026-04-02T14:58:24.631Z"
 }
