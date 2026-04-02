@@ -302,16 +302,24 @@
       "id": "T29",
       "mode": "BUILD",
       "task": "Predictive coding tests: XOR, digit recognition, comparison with backprop",
-      "status": "upcoming",
-      "plan_ref": "T26"
+      "status": "in-progress",
+      "plan_ref": "T26",
+      "started": "2026-04-02T15:19:16.327Z"
     }
   ],
-  "current": null,
+  "current": {
+    "id": "T29",
+    "mode": "BUILD",
+    "task": "Predictive coding tests: XOR, digit recognition, comparison with backprop",
+    "status": "in-progress",
+    "plan_ref": "T26",
+    "started": "2026-04-02T15:19:16.327Z"
+  },
   "stats": {
     "completed": 28,
     "yielded": 0,
     "skipped": 0,
     "total_duration_ms": 7410000
   },
-  "updated_at": "2026-04-02T15:18:58.387Z"
+  "updated_at": "2026-04-02T15:19:16.327Z"
 }
