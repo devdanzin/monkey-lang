@@ -175,6 +175,165 @@ export class Network {
     return history;
   }
 
+  // Train with gradient accumulation (simulate large batches with small micro-batches)
+  trainWithGradientAccumulation(data, {
+    epochs = 100,
+    microBatchSize = 8,
+    accumSteps = 4,
+    learningRate = 0.01,
+    optimizer = 'adam',
+    verbose = false,
+    onEpoch = null,
+    lrSchedule = null
+  } = {}) {
+    const { inputs, targets } = data;
+    const n = inputs.rows;
+    const effectiveBatch = microBatchSize * accumSteps;
+    const history = [];
+
+    // Auto-create optimizer
+    if (!this._optimizer || this._optimizerName !== optimizer) {
+      this.optimizer(optimizer, { lr: learningRate });
+    }
+
+    // Set training mode
+    for (const l of this.layers) l.training = true;
+
+    for (let epoch = 0; epoch < epochs; epoch++) {
+      let epochLoss = 0;
+      let totalBatches = 0;
+
+      // Learning rate scheduling
+      let lr = learningRate;
+      if (lrSchedule === 'cosine') {
+        lr = learningRate * 0.5 * (1 + Math.cos(Math.PI * epoch / epochs));
+      } else if (lrSchedule === 'step') {
+        if (epoch > epochs * 0.5) lr *= 0.1;
+        if (epoch > epochs * 0.75) lr *= 0.1;
+      } else if (lrSchedule === 'linear') {
+        lr = learningRate * (1 - epoch / epochs);
+      }
+
+      // Shuffle indices
+      const indices = Array.from({ length: n }, (_, i) => i);
+      for (let i = n - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [indices[i], indices[j]] = [indices[j], indices[i]];
+      }
+
+      // Process in effective batches, each split into micro-batches
+      for (let start = 0; start < n; start += effectiveBatch) {
+        // Accumulated gradients storage: key → {grad, count}
+        const accumGrads = new Map();
+        let accumLoss = 0;
+        let microCount = 0;
+
+        for (let step = 0; step < accumSteps; step++) {
+          const mStart = start + step * microBatchSize;
+          const mEnd = Math.min(mStart + microBatchSize, n);
+          if (mStart >= n) break;
+
+          const batchIndices = indices.slice(mStart, mEnd);
+          const batchInput = new Matrix(batchIndices.length, inputs.cols);
+          const batchTarget = new Matrix(batchIndices.length, targets.cols);
+          for (let i = 0; i < batchIndices.length; i++) {
+            const idx = batchIndices[i];
+            for (let j = 0; j < inputs.cols; j++) batchInput.set(i, j, inputs.get(idx, j));
+            for (let j = 0; j < targets.cols; j++) batchTarget.set(i, j, targets.get(idx, j));
+          }
+
+          // Forward
+          const output = this.forward(batchInput);
+          const loss = this.lossFunction.compute(output, batchTarget);
+          accumLoss += loss;
+
+          // Backward (computes gradients on each layer)
+          let grad = this.lossFunction.gradient(output, batchTarget);
+          for (let i = this.layers.length - 1; i >= 0; i--) {
+            grad = this.layers[i].backward(grad);
+          }
+
+          // Accumulate gradients from each layer
+          for (let idx = 0; idx < this.layers.length; idx++) {
+            const layer = this.layers[idx];
+            if (layer.dWeights) {
+              const bs = batchIndices.length;
+              const gW = layer.dWeights.mul(1.0 / bs);
+              const gB = layer.dBiases.mul(1.0 / bs);
+              const keyW = `L${idx}_w`;
+              const keyB = `L${idx}_b`;
+              if (accumGrads.has(keyW)) {
+                accumGrads.set(keyW, accumGrads.get(keyW).add(gW));
+                accumGrads.set(keyB, accumGrads.get(keyB).add(gB));
+              } else {
+                accumGrads.set(keyW, gW);
+                accumGrads.set(keyB, gB);
+              }
+            } else if (layer.dFilters) {
+              const keyF = `L${idx}_f`;
+              const keyB = `L${idx}_b`;
+              if (accumGrads.has(keyF)) {
+                accumGrads.set(keyF, accumGrads.get(keyF).add(layer.dFilters));
+                accumGrads.set(keyB, accumGrads.get(keyB).add(layer.dBiases));
+              } else {
+                accumGrads.set(keyF, layer.dFilters);
+                accumGrads.set(keyB, layer.dBiases);
+              }
+            }
+          }
+          microCount++;
+        }
+
+        if (microCount === 0) continue;
+
+        // Average accumulated gradients and apply optimizer
+        if (this._optimizer && this._optimizer.step) this._optimizer.step();
+
+        for (let idx = 0; idx < this.layers.length; idx++) {
+          const layer = this.layers[idx];
+          if (layer.dWeights) {
+            const keyW = `L${idx}_w`;
+            const keyB = `L${idx}_b`;
+            if (accumGrads.has(keyW)) {
+              const avgGradW = accumGrads.get(keyW).mul(1.0 / microCount);
+              const avgGradB = accumGrads.get(keyB).mul(1.0 / microCount);
+              layer.weights = this._optimizer.update(layer.weights, avgGradW, keyW);
+              layer.biases = this._optimizer.update(layer.biases, avgGradB, keyB);
+            }
+          } else if (layer.dFilters) {
+            const keyF = `L${idx}_f`;
+            const keyB = `L${idx}_b`;
+            if (accumGrads.has(keyF)) {
+              const avgGradF = accumGrads.get(keyF).mul(1.0 / microCount);
+              const avgGradB = accumGrads.get(keyB).mul(1.0 / microCount);
+              layer.filters = this._optimizer.update(layer.filters, avgGradF, keyF);
+              layer.biases = this._optimizer.update(layer.biases, avgGradB, keyB);
+            }
+          } else if (layer.update) {
+            layer.update(lr, 0, optimizer);
+          }
+        }
+
+        epochLoss += accumLoss / microCount;
+        totalBatches++;
+      }
+
+      epochLoss /= Math.max(totalBatches, 1);
+      history.push(epochLoss);
+
+      if (verbose && (epoch % Math.max(1, Math.floor(epochs / 20)) === 0 || epoch === epochs - 1)) {
+        console.log(`Epoch ${epoch + 1}/${epochs} — Loss: ${epochLoss.toFixed(6)} (effective batch: ${effectiveBatch})`);
+      }
+
+      if (onEpoch) onEpoch(epoch, epochLoss);
+    }
+
+    // Set eval mode
+    for (const l of this.layers) l.training = false;
+
+    return history;
+  }
+
   // Evaluate accuracy on test data
   evaluate(inputs, targets) {
     const output = this.forward(inputs);
