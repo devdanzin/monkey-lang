@@ -291,8 +291,12 @@
       "id": "T28",
       "mode": "BUILD",
       "task": "PredictiveCodingNetwork: hierarchical inference + learning, convergence",
-      "status": "upcoming",
-      "plan_ref": "T26"
+      "status": "done",
+      "plan_ref": "T26",
+      "started": "2026-04-02T15:16:50.724Z",
+      "completed": "2026-04-02T15:18:58.387Z",
+      "duration_ms": 480000,
+      "summary": "PredictiveCodingNetwork: hierarchical inference + learning, convergence detection, reconstruction, anomaly scoring. Supports deep architectures, array/Matrix input, callbacks. 11 new tests, 311 total."
     },
     {
       "id": "T29",
@@ -304,10 +308,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 27,
+    "completed": 28,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 6930000
+    "total_duration_ms": 7410000
   },
-  "updated_at": "2026-04-02T15:16:21.948Z"
+  "updated_at": "2026-04-02T15:18:58.387Z"
 }

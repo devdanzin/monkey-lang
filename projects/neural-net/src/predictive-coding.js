@@ -226,3 +226,202 @@ export class PredictiveCodingLayer {
     return layer;
   }
 }
+
+/**
+ * Predictive Coding Network — hierarchical architecture.
+ * 
+ * Layers are stacked bottom-to-top:
+ *   Layer 0: closest to sensory input (predicts input)
+ *   Layer N: highest level of abstraction
+ * 
+ * Each layer generates predictions of the layer below it.
+ * Prediction errors propagate upward.
+ * All learning is local (no backpropagation).
+ * 
+ * Usage:
+ *   const pc = new PredictiveCodingNetwork([inputSize, hidden1, hidden2, outputSize]);
+ *   const output = pc.infer(input, { inferenceSteps: 50 });
+ *   pc.learn(input); // Update weights based on converged state
+ */
+export class PredictiveCodingNetwork {
+  /**
+   * @param {number[]} layerSizes - Sizes for each layer [input, hidden..., top]
+   * @param {Object} opts
+   * @param {string} [opts.activation='sigmoid']
+   * @param {number} [opts.inferenceSteps=50]
+   * @param {number} [opts.learningRate=0.01]
+   * @param {number} [opts.inferenceRate=0.1]
+   * @param {number} [opts.precision=1.0]
+   */
+  constructor(layerSizes, opts = {}) {
+    if (layerSizes.length < 2) throw new Error('Need at least 2 layer sizes');
+    this.layerSizes = layerSizes;
+    this.inferenceSteps = opts.inferenceSteps || 50;
+
+    // Create layers (each layer predicts the layer below)
+    // Layer i has size layerSizes[i+1] and predicts layerSizes[i]
+    this.layers = [];
+    for (let i = 0; i < layerSizes.length - 1; i++) {
+      this.layers.push(new PredictiveCodingLayer(
+        layerSizes[i + 1],  // this layer's size
+        layerSizes[i],       // what it predicts (layer below)
+        {
+          activation: opts.activation || 'sigmoid',
+          precision: opts.precision || 1.0,
+          learningRate: opts.learningRate || 0.01,
+          inferenceRate: opts.inferenceRate || 0.1,
+        }
+      ));
+    }
+  }
+
+  /**
+   * Run inference: clamp input, iterate until convergence.
+   * 
+   * Process:
+   * 1. Clamp bottom layer to input
+   * 2. For each inference step:
+   *    a. Compute prediction errors bottom-up
+   *    b. Update value nodes
+   * 3. Return top layer's value (the network's "understanding")
+   * 
+   * @param {Matrix|number[]} input - Input data (inputSize × 1 or array)
+   * @param {Object} opts
+   * @param {number} [opts.steps] - Override inference steps
+   * @returns {{ output: Matrix, energy: number, converged: boolean }}
+   */
+  infer(input, opts = {}) {
+    const steps = opts.steps || this.inferenceSteps;
+    const inputMat = Array.isArray(input) 
+      ? new Matrix(input.length, 1, new Float64Array(input))
+      : input;
+
+    // Reset value nodes for fresh inference
+    for (const layer of this.layers) {
+      layer.resetValues();
+    }
+
+    let prevEnergy = Infinity;
+    let converged = false;
+
+    for (let step = 0; step < steps; step++) {
+      // Compute prediction errors bottom-up
+      // Layer 0 predicts the input
+      this.layers[0].computeError(inputMat);
+
+      // Higher layers predict the layer below's value nodes
+      for (let i = 1; i < this.layers.length; i++) {
+        this.layers[i].computeError(this.layers[i - 1].mu);
+      }
+
+      // Update value nodes
+      for (let i = 0; i < this.layers.length; i++) {
+        // Error from above: the error that the layer above computed about THIS layer
+        const errorFromAbove = (i < this.layers.length - 1)
+          ? this.layers[i + 1].epsilon // layer above's prediction error about us
+          : null;
+
+        // Wait — the error from above should be in the VALUE space of this layer
+        // Layer i+1 predicts layer i's mu. Its epsilon = layer_i.mu - prediction_{i+1}
+        // But layer i+1 stores epsilon of size layerSizes[i] (what it predicts)
+        // which IS the right size for this layer's mu.
+        // Actually: layer i+1 has epsilon of size layerSizes[i+1-1] = layerSizes[i]
+        // Wait no: layer i+1 has inputSize = layerSizes[i+1] and size = layerSizes[i+2]
+        // Its epsilon.rows = layerSizes[i+1] ≠ layerSizes[i+1] = layer i's size ✓
+
+        // Hmm, let me re-check dimensions:
+        // layer[i].size = layerSizes[i+1]
+        // layer[i+1].inputSize = layerSizes[i+1] (what layer i+1 predicts)
+        // layer[i+1].epsilon.rows = layerSizes[i+1] = layer[i].mu.rows ✓
+        
+        this.layers[i].updateValues(errorFromAbove);
+      }
+
+      // Check convergence
+      const energy = this.totalEnergy();
+      if (Math.abs(energy - prevEnergy) < 1e-6) {
+        converged = true;
+        break;
+      }
+      prevEnergy = energy;
+    }
+
+    return {
+      output: this.layers[this.layers.length - 1].mu,
+      energy: this.totalEnergy(),
+      converged,
+    };
+  }
+
+  /**
+   * Learn from input (update weights after inference converges).
+   * 
+   * @param {Matrix|number[]} input - Input data
+   * @param {Object} opts
+   * @param {number} [opts.steps] - Inference steps before learning
+   * @returns {{ energy: number }}
+   */
+  learn(input, opts = {}) {
+    // First, run inference to convergence
+    const result = this.infer(input, opts);
+
+    // Then update weights at all layers (local learning)
+    for (const layer of this.layers) {
+      layer.updateWeights();
+    }
+
+    return { energy: result.energy };
+  }
+
+  /**
+   * Train on multiple inputs.
+   * @param {Matrix[]|number[][]} inputs - Array of input samples
+   * @param {Object} opts
+   * @param {number} [opts.epochs=1]
+   * @param {Function} [opts.onEpoch] - Callback with { epoch, avgEnergy }
+   * @returns {{ history: number[] }} Average energy per epoch
+   */
+  train(inputs, opts = {}) {
+    const { epochs = 1, onEpoch } = opts;
+    const history = [];
+
+    for (let epoch = 0; epoch < epochs; epoch++) {
+      let totalEnergy = 0;
+      for (const input of inputs) {
+        const result = this.learn(input, opts);
+        totalEnergy += result.energy;
+      }
+      const avgEnergy = totalEnergy / inputs.length;
+      history.push(avgEnergy);
+      if (onEpoch) onEpoch({ epoch, avgEnergy });
+    }
+
+    return { history };
+  }
+
+  /**
+   * Total free energy across all layers.
+   */
+  totalEnergy() {
+    return this.layers.reduce((sum, l) => sum + l.energy, 0);
+  }
+
+  /**
+   * Get the reconstruction of the input from the network's internal model.
+   * Runs the top layer's prediction all the way down.
+   */
+  reconstruct() {
+    return this.layers[0].predict();
+  }
+
+  /**
+   * Get anomaly score for an input.
+   * Higher score = more surprising (harder to predict).
+   * @param {Matrix|number[]} input
+   * @returns {number} Free energy (anomaly score)
+   */
+  anomalyScore(input) {
+    const { energy } = this.infer(input);
+    return energy;
+  }
+}

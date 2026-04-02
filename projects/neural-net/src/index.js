@@ -22,4 +22,4 @@ export { clipByValue, clipByNorm, clipByGlobalNorm, l2Norm, gradientStats } from
 export { serializeWeights, deserializeWeights, saveToJSON, loadFromJSON, weightsChecksum } from './serialize.js';
 export { EarlyStopping, LossHistory } from './callbacks.js';
 export { parseIDX, loadMNIST, createMiniDigits, trainTestSplit, accuracy, predict, evaluate, confusionMatrix, packBatch } from './mnist.js';
-export { PredictiveCodingLayer } from './predictive-coding.js';
+export { PredictiveCodingLayer, PredictiveCodingNetwork } from './predictive-coding.js';
