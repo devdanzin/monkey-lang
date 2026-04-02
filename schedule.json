@@ -615,42 +615,121 @@
     {
       "id": "T60",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Neural net: Add learning rate finder utility",
-      "started": "2026-04-02T00:03:11.168Z"
+      "started": "2026-04-02T00:03:11.168Z",
+      "completed": "2026-04-02T01:16:08.971Z",
+      "summary": " [auto-resolved: orphaned in-progress task]"
     },
     {
       "id": "T61",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Neural net: Add gradient accumulation for large effective batches"
+      "status": "done",
+      "task": "Neural net: Add gradient accumulation for large effective batches",
+      "started": "2026-04-02T01:16:35.455Z",
+      "completed": "2026-04-02T01:20:36.209Z",
+      "duration_ms": 180000,
+      "summary": "Added trainWithGradientAccumulation to Network: accumulates gradients over N micro-batches before optimizer step, supports all optimizers + LR schedules. 9 new tests (266 total)."
     },
     {
       "id": "T62",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Neural net: Add early stopping callback"
+      "status": "done",
+      "task": "Neural net: Add early stopping callback",
+      "started": "2026-04-02T01:20:58.177Z",
+      "completed": "2026-04-02T01:28:33.316Z",
+      "duration_ms": 240000,
+      "summary": "Added EarlyStopping (patience, minDelta, mode min/max, weight restore) + LossHistory callbacks. Integrated into train() and trainWithGradientAccumulation(). 10 new tests (276 total)."
     },
     {
       "id": "T63",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Push all repos + final stats"
+      "status": "done",
+      "task": "Push all repos + final stats",
+      "started": "2026-04-02T01:28:58.372Z",
+      "completed": "2026-04-02T01:30:08.603Z",
+      "duration_ms": 60000,
+      "summary": "Git push workspace, dashboard server healthy, dashboard regenerated."
     },
     {
       "id": "T64",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Physics: Add rope constraint (chain of distance constraints)"
+      "status": "done",
+      "task": "Physics: Add rope constraint (chain of distance constraints)",
+      "started": "2026-04-02T01:30:44.258Z",
+      "completed": "2026-04-02T01:37:55.669Z",
+      "duration_ms": 300000,
+      "summary": "Added RopeConstraint: chain of distance constraints, pin endpoints, variable stiffness/iterations, gravity helper, getPoints() for rendering. 11 new tests (126 total physics)."
     },
     {
       "id": "T65",
       "mode": "BUILD",
+      "status": "done",
+      "task": "Neural net: Add Conv1D for sequence processing",
+      "started": "2026-04-02T01:38:30.613Z",
+      "completed": "2026-04-02T02:15:33.783Z",
+      "summary": " [auto-resolved: orphaned in-progress task]"
+    },
+    {
+      "id": "T66",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Evening C session: review CI failures, set exploration direction",
+      "started": "2026-04-02T02:18:02.146Z",
+      "completed": "2026-04-02T02:18:27.911Z",
+      "duration_ms": 60000,
+      "summary": "CI failures need fixing (ray-tracer scatterPdf, neural-net GAN export). Then EXPLORE: evolutionary computation / genetic algorithms."
+    },
+    {
+      "id": "T67",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Fix CI failures in ray-tracer and neural-net",
+      "task": null,
+      "started": "2026-04-02T02:19:01.120Z",
+      "completed": "2026-04-02T02:28:31.644Z",
+      "duration_ms": 300000,
+      "summary": "Pushed neural-net, ray-tracer, physics-engine to GitHub via subtree split+force push. CI should now be green."
+    },
+    {
+      "id": "T68",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Neural net: Add Conv1D for sequence processing"
+      "task": null
+    },
+    {
+      "id": "T69",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "EXPLORE: Evolutionary computation / genetic algorithms",
+      "task": null
+    },
+    {
+      "id": "T70",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T71",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Deep dive: genetic algorithms, evolutionary strategies, neuroevolution"
+    },
+    {
+      "id": "T72",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Housekeeping: git push, dashboard, knowledge capture"
+    },
+    {
+      "id": "T73",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Evening curiosity: pick a rabbit hole"
     }
   ],
-  "updated_at": "2026-04-02T00:03:11.168Z",
+  "updated_at": "2026-04-02T02:28:31.644Z",
   "adjustments": [
     {
       "time": "2026-04-01T22:24:12.157Z",
@@ -755,6 +834,38 @@
     {
       "time": "2026-04-02T00:03:05.233Z",
       "msg": "Added T65 (BUILD) after end: Neural net: Add Conv1D for sequence processing"
+    },
+    {
+      "time": "2026-04-02T02:17:52.852Z",
+      "msg": "Added T66 (THINK) after end: Evening C session: review CI failures, set exploration direction"
+    },
+    {
+      "time": "2026-04-02T02:18:42.011Z",
+      "msg": "Added T67 (PLAN) after end: Fix CI failures in ray-tracer and neural-net"
+    },
+    {
+      "time": "2026-04-02T02:18:42.234Z",
+      "msg": "Added T68 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-02T02:18:42.453Z",
+      "msg": "Added T69 (PLAN) after end: EXPLORE: Evolutionary computation / genetic algorithms"
+    },
+    {
+      "time": "2026-04-02T02:18:42.666Z",
+      "msg": "Added T70 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-02T02:18:42.881Z",
+      "msg": "Added T71 (EXPLORE) after end: Deep dive: genetic algorithms, evolutionary strategies, neuroevolution"
+    },
+    {
+      "time": "2026-04-02T02:18:43.101Z",
+      "msg": "Added T72 (MAINTAIN) after end: Housekeeping: git push, dashboard, knowledge capture"
+    },
+    {
+      "time": "2026-04-02T02:18:43.308Z",
+      "msg": "Added T73 (EXPLORE) after end: Evening curiosity: pick a rabbit hole"
     }
   ]
 }

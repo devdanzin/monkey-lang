@@ -15,8 +15,8 @@
 ## Version monitoring
 - [x] ~~Check for new releases > 2026.3.13~~ → v2026.3.31 available
 - [x] ~~Check GitHub issue #31448~~ → CLOSED, webhook fix confirmed included
-- [ ] **READY TO UPGRADE** to v2026.3.31 — has breaking changes (auth, node commands, plugin SDK). Review changelog before proceeding. Needs Jordan's OK.
-- Currently on v2026.3.24
+- [ ] **v2026.4.1 released today** — currently on v2026.3.28. Review changelog before upgrading.
+- Previously tracked v2026.3.31 (breaking changes in auth, node commands, plugin SDK)
 
 ## Flags for Jordan
 - ~~GMAIL_APP_PASSWORD needs to be added to ~/.openclaw/.env~~ ✅ Fixed (new app password created 2026-03-30, stored in Keychain + .env)
