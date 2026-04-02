@@ -165,8 +165,9 @@
       "id": "T23",
       "mode": "BUILD",
       "task": "NEAT: Population with structural mutations, species fitness, XOR/cart-pole tests",
-      "status": "upcoming",
-      "plan_ref": "T10"
+      "status": "in-progress",
+      "plan_ref": "T10",
+      "started": "2026-04-02T14:52:14.648Z"
     },
     {
       "id": "T12",
@@ -213,12 +214,19 @@
       "task": "Research: consciousness — predictive coding implementations"
     }
   ],
-  "current": null,
+  "current": {
+    "id": "T23",
+    "mode": "BUILD",
+    "task": "NEAT: Population with structural mutations, species fitness, XOR/cart-pole tests",
+    "status": "in-progress",
+    "plan_ref": "T10",
+    "started": "2026-04-02T14:52:14.648Z"
+  },
   "stats": {
     "completed": 15,
     "yielded": 0,
     "skipped": 0,
     "total_duration_ms": 3840000
   },
-  "updated_at": "2026-04-02T14:51:46.080Z"
+  "updated_at": "2026-04-02T14:52:14.648Z"
 }

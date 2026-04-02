@@ -30,3 +30,6 @@ export {
 export {
   Species, speciate, nextGeneration, resetSpeciesCounter
 } from './neat-species.js';
+export {
+  NEATPopulation, xorFitness, cartPoleFitness
+} from './neat-population.js';
