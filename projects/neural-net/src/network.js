@@ -6,11 +6,15 @@ import { Matrix } from './matrix.js';
 import { createOptimizer } from './optimizer.js';
 
 export class Network {
-  constructor() {
+  constructor(layers) {
     this.layers = [];
     this.lossFunction = null;
     this._optimizer = null;
     this._optimizerName = 'sgd';
+    // Accept optional initial layers array
+    if (Array.isArray(layers)) {
+      for (const layer of layers) this.add(layer);
+    }
   }
 
   // Add a dense layer (convenience)

@@ -78,9 +78,13 @@
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "MNIST data loader + embedded subset (IDX parser or embedded JSON)",
-      "plan_ref": "T6"
+      "plan_ref": "T6",
+      "started": "2026-04-02T14:31:05.497Z",
+      "completed": "2026-04-02T14:37:24.536Z",
+      "duration_ms": 600000,
+      "summary": "MNIST data loader: IDX parser, createMiniDigits (8x8 patterns, 10 digits, noise augmentation), train/test split, accuracy/predict/evaluate/confusionMatrix. Network constructor now accepts optional layers array. 285 tests all passing (9 new)."
     },
     {
       "id": "T20",
@@ -169,10 +173,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 7,
+    "completed": 8,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 990000
+    "total_duration_ms": 1590000
   },
-  "updated_at": "2026-04-02T14:30:49.890Z"
+  "updated_at": "2026-04-02T14:37:24.536Z"
 }

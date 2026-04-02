@@ -21,3 +21,4 @@ export { xavierUniform, xavierNormal, heUniform, heNormal, lecunNormal, zeros, o
 export { clipByValue, clipByNorm, clipByGlobalNorm, l2Norm, gradientStats } from './gradient-clip.js';
 export { serializeWeights, deserializeWeights, saveToJSON, loadFromJSON, weightsChecksum } from './serialize.js';
 export { EarlyStopping, LossHistory } from './callbacks.js';
+export { parseIDX, loadMNIST, createMiniDigits, trainTestSplit, accuracy, predict, evaluate, confusionMatrix } from './mnist.js';
