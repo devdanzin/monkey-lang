@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEAT XOR Evolution — Live Demo</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: #0d1117; color: #c9d1d9; min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; padding: 1.5rem;
+  }
+  h1 { font-size: 1.6rem; font-weight: 600; color: #f0f6fc; margin-bottom: 0.2rem; }
+  h1 span { color: #58a6ff; }
+  .subtitle { color: #8b949e; font-size: 0.85rem; margin-bottom: 1rem; }
+  a { color: #58a6ff; text-decoration: none; }
+
+  .main { display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center; max-width: 1000px; width: 100%; }
+  .panel { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 1.2rem; }
+
+  button {
+    padding: 0.4rem 1rem; border: 1px solid #30363d; background: #21262d;
+    color: #c9d1d9; border-radius: 6px; cursor: pointer; font-size: 0.85rem;
+  }
+  button:hover { background: #30363d; border-color: #58a6ff; }
+  button.primary { background: #238636; border-color: #238636; color: #fff; }
+  button.primary:hover { background: #2ea043; }
+
+  /* Network visualization */
+  #networkCanvas {
+    background: #0d1117; border: 1px solid #21262d; border-radius: 8px;
+  }
+
+  /* Stats */
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 1rem; }
+  .stat { text-align: center; background: #0d1117; border: 1px solid #21262d; border-radius: 6px; padding: 0.5rem; }
+  .stat-value { font-size: 1.3rem; font-weight: 700; color: #58a6ff; }
+  .stat-label { font-size: 0.7rem; color: #8b949e; }
+
+  /* XOR truth table */
+  .truth-table { width: 100%; border-collapse: collapse; margin-top: 0.8rem; font-size: 0.85rem; }
+  .truth-table th, .truth-table td { padding: 4px 8px; text-align: center; border: 1px solid #21262d; }
+  .truth-table th { background: #21262d; color: #8b949e; }
+  .correct { color: #3fb950; }
+  .wrong { color: #f85149; }
+
+  /* Fitness chart */
+  #fitnessChart { width: 100%; height: 100px; background: #0d1117; border: 1px solid #21262d; border-radius: 6px; }
+
+  .controls { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.8rem; }
+  .controls label { font-size: 0.8rem; color: #8b949e; }
+  .controls select {
+    background: #21262d; border: 1px solid #30363d; color: #c9d1d9;
+    border-radius: 4px; padding: 0.2rem 0.4rem; font-size: 0.8rem;
+  }
+</style>
+</head>
+<body>
+<h1>🧬 NEAT <span>XOR Evolution</span></h1>
+<p class="subtitle">Watch neural network topology evolve to solve XOR</p>
+
+<div class="main">
+  <div class="panel" style="min-width:280px">
+    <h3 style="font-size:0.9rem;color:#f0f6fc;margin-bottom:0.5rem">🧠 Best Network</h3>
+    <canvas id="networkCanvas" width="280" height="200"></canvas>
+
+    <table class="truth-table" id="truthTable">
+      <tr><th>A</th><th>B</th><th>Expected</th><th>Output</th></tr>
+      <tr><td>0</td><td>0</td><td>0</td><td id="out00">—</td></tr>
+      <tr><td>0</td><td>1</td><td>1</td><td id="out01">—</td></tr>
+      <tr><td>1</td><td>0</td><td>1</td><td id="out10">—</td></tr>
+      <tr><td>1</td><td>1</td><td>0</td><td id="out11">—</td></tr>
+    </table>
+  </div>
+
+  <div class="panel" style="flex:1;min-width:300px">
+    <div class="controls">
+      <button onclick="startEvolution()" id="startBtn" class="primary">▶ Start</button>
+      <button onclick="stopEvolution()" id="stopBtn" disabled>⏸ Stop</button>
+      <button onclick="resetEvolution()">🔄 Reset</button>
+      <label>Speed:
+        <select id="speedSelect">
+          <option value="1">1x</option>
+          <option value="5">5x</option>
+          <option value="20" selected>20x</option>
+          <option value="100">100x</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="stat-value" id="genNum">0</div><div class="stat-label">generation</div></div>
+      <div class="stat"><div class="stat-value" id="bestFit">0</div><div class="stat-label">best fitness</div></div>
+      <div class="stat"><div class="stat-value" id="speciesCount">0</div><div class="stat-label">species</div></div>
+      <div class="stat"><div class="stat-value" id="nodesCount">0</div><div class="stat-label">nodes</div></div>
+      <div class="stat"><div class="stat-value" id="connsCount">0</div><div class="stat-label">connections</div></div>
+      <div class="stat"><div class="stat-value" id="solvedGen">—</div><div class="stat-label">solved at</div></div>
+    </div>
+
+    <canvas id="fitnessChart" width="400" height="100"></canvas>
+    <p id="statusText" style="font-size:0.8rem;color:#8b949e;margin-top:0.5rem">Click Start to begin evolution</p>
+  </div>
+</div>
+
+<p style="margin-top:1rem;font-size:0.75rem;color:#484f58">
+  Pure JavaScript · <a href="https://github.com/henry-the-frog/genetic-art" target="_blank">Source</a>
+</p>
+
+<script type="module">
+import { Genome, resetNEAT } from '../src/neat.js';
+import { Species, speciate, nextGeneration, resetSpeciesCounter } from '../src/neat-species.js';
+
+let running = false;
+let generation = 0;
+let population = [];
+let species = [];
+let bestGenome = null;
+let bestFitnessEver = 0;
+let fitnessHistory = [];
+let solved = false;
+let solvedAt = -1;
+const POP_SIZE = 150;
+
+function xorFitness(genome) {
+  const cases = [[0,0,0],[0,1,1],[1,0,1],[1,1,0]];
+  let error = 0;
+  for (const [a,b,expected] of cases) {
+    const out = genome.forward([a,b])[0];
+    error += (out - expected) ** 2;
+  }
+  return 4 - error;
+}
+
+function initPopulation() {
+  resetNEAT();
+  resetSpeciesCounter();
+  generation = 0;
+  fitnessHistory = [];
+  bestFitnessEver = 0;
+  bestGenome = null;
+  solved = false;
+  solvedAt = -1;
+
+  population = [];
+  for (let i = 0; i < POP_SIZE; i++) {
+    const g = new Genome(2, 1);
+    g.initFullConnect(Math.random);
+    population.push(g);
+  }
+  species = speciate(population, [], { compatibilityThreshold: 3.0 });
+  updateUI();
+}
+
+function evolveOneGeneration() {
+  for (const g of population) {
+    g.fitness = xorFitness(g);
+  }
+
+  let best = population[0];
+  for (const g of population) {
+    if (g.fitness > best.fitness) best = g;
+  }
+
+  if (best.fitness > bestFitnessEver) {
+    bestFitnessEver = best.fitness;
+    bestGenome = best;
+  }
+
+  if (bestFitnessEver > 3.9 && !solved) {
+    solved = true;
+    solvedAt = generation;
+  }
+
+  fitnessHistory.push({ best: best.fitness, avg: population.reduce((s,g)=>s+g.fitness,0)/population.length });
+
+  const result = nextGeneration(species, POP_SIZE, {
+    addNodeRate: 0.03,
+    addConnectionRate: 0.05,
+    weightMutationRate: 0.8,
+    crossoverRate: 0.75,
+    compatibilityThreshold: 3.0,
+  }, Math.random);
+
+  population = result.population;
+  species = result.species;
+  generation++;
+}
+
+function updateUI() {
+  document.getElementById('genNum').textContent = generation;
+  document.getElementById('bestFit').textContent = bestFitnessEver.toFixed(2);
+  document.getElementById('speciesCount').textContent = species.length;
+  document.getElementById('solvedGen').textContent = solvedAt >= 0 ? solvedAt : '—';
+
+  if (bestGenome) {
+    document.getElementById('nodesCount').textContent = bestGenome.nodes.length;
+    document.getElementById('connsCount').textContent = bestGenome.connections.filter(c=>c.enabled).length;
+    drawNetwork(bestGenome);
+    updateTruthTable(bestGenome);
+  }
+
+  drawFitnessChart();
+
+  if (solved) {
+    document.getElementById('statusText').textContent = `✅ XOR solved at generation ${solvedAt}!`;
+    document.getElementById('statusText').style.color = '#3fb950';
+  } else {
+    document.getElementById('statusText').textContent = `Generation ${generation} — evolving...`;
+  }
+}
+
+function drawNetwork(genome) {
+  const canvas = document.getElementById('networkCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // Group nodes by layer
+  const layers = {};
+  for (const node of genome.nodes) {
+    const layer = Math.round(node.layer * 10) / 10;
+    if (!layers[layer]) layers[layer] = [];
+    layers[layer].push(node);
+  }
+
+  const sortedLayers = Object.keys(layers).sort((a,b) => a - b);
+  const nodePositions = {};
+  const padX = 40, padY = 30;
+
+  for (let li = 0; li < sortedLayers.length; li++) {
+    const layer = layers[sortedLayers[li]];
+    const x = padX + (li / Math.max(1, sortedLayers.length - 1)) * (W - 2 * padX);
+    for (let ni = 0; ni < layer.length; ni++) {
+      const y = padY + ((ni + 0.5) / layer.length) * (H - 2 * padY);
+      nodePositions[layer[ni].id] = { x, y, type: layer[ni].type };
+    }
+  }
+
+  // Draw connections
+  for (const conn of genome.connections) {
+    if (!conn.enabled) continue;
+    const src = nodePositions[conn.srcNode];
+    const dst = nodePositions[conn.dstNode];
+    if (!src || !dst) continue;
+
+    ctx.beginPath();
+    ctx.moveTo(src.x, src.y);
+    ctx.lineTo(dst.x, dst.y);
+    const absW = Math.abs(conn.weight);
+    ctx.lineWidth = Math.min(3, absW);
+    ctx.strokeStyle = conn.weight > 0 ? `rgba(88,166,255,${Math.min(1, absW/2)})` : `rgba(248,81,73,${Math.min(1, absW/2)})`;
+    ctx.stroke();
+  }
+
+  // Draw nodes
+  for (const [id, pos] of Object.entries(nodePositions)) {
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, 8, 0, Math.PI * 2);
+    const colors = { input: '#3fb950', output: '#f0883e', hidden: '#58a6ff', bias: '#8b949e' };
+    ctx.fillStyle = colors[pos.type] || '#58a6ff';
+    ctx.fill();
+    ctx.strokeStyle = '#30363d';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+}
+
+function updateTruthTable(genome) {
+  const cases = [[0,0,'out00'],[0,1,'out01'],[1,0,'out10'],[1,1,'out11']];
+  const expected = [0, 1, 1, 0];
+  for (let i = 0; i < cases.length; i++) {
+    const [a, b, id] = cases[i];
+    const out = genome.forward([a, b])[0];
+    const el = document.getElementById(id);
+    el.textContent = out.toFixed(3);
+    const correct = Math.abs(out - expected[i]) < 0.3;
+    el.className = correct ? 'correct' : 'wrong';
+  }
+}
+
+function drawFitnessChart() {
+  const canvas = document.getElementById('fitnessChart');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  if (fitnessHistory.length < 2) return;
+
+  const padX = 5, padY = 5;
+  const plotW = W - 2 * padX, plotH = H - 2 * padY;
+
+  // Best fitness line
+  ctx.strokeStyle = '#58a6ff';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  for (let i = 0; i < fitnessHistory.length; i++) {
+    const x = padX + (i / (fitnessHistory.length - 1)) * plotW;
+    const y = padY + (1 - fitnessHistory[i].best / 4) * plotH;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  // Average fitness
+  ctx.strokeStyle = '#484f58';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (let i = 0; i < fitnessHistory.length; i++) {
+    const x = padX + (i / (fitnessHistory.length - 1)) * plotW;
+    const y = padY + (1 - fitnessHistory[i].avg / 4) * plotH;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  // Solved line
+  if (solved) {
+    ctx.strokeStyle = '#3fb950';
+    ctx.setLineDash([3, 3]);
+    const sx = padX + (solvedAt / (fitnessHistory.length - 1)) * plotW;
+    ctx.beginPath(); ctx.moveTo(sx, padY); ctx.lineTo(sx, H - padY); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+}
+
+let intervalId = null;
+
+window.startEvolution = function() {
+  if (running) return;
+  if (generation === 0) initPopulation();
+  running = true;
+  document.getElementById('startBtn').disabled = true;
+  document.getElementById('stopBtn').disabled = false;
+
+  const run = () => {
+    if (!running) return;
+    const speed = parseInt(document.getElementById('speedSelect').value);
+    for (let i = 0; i < speed; i++) {
+      evolveOneGeneration();
+    }
+    updateUI();
+    intervalId = requestAnimationFrame(run);
+  };
+  run();
+};
+
+window.stopEvolution = function() {
+  running = false;
+  if (intervalId) cancelAnimationFrame(intervalId);
+  document.getElementById('startBtn').disabled = false;
+  document.getElementById('stopBtn').disabled = true;
+};
+
+window.resetEvolution = function() {
+  window.stopEvolution();
+  initPopulation();
+};
+
+initPopulation();
+</script>
+</body>
+</html>

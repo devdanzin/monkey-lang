@@ -447,14 +447,27 @@
       "completed": "2026-04-02T16:05:42.507Z",
       "duration_ms": 300000,
       "summary": "REINFORCE policy gradient: softmax policy, discounted returns, baseline subtraction. Trains on CartPole and GridWorld. 8 new tests, 382 total."
+    },
+    {
+      "id": "T43",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Genetic-art: NEAT XOR evolution browser demo with network visualization",
+      "started": "2026-04-02T16:07:36.727Z"
     }
   ],
-  "current": null,
+  "current": {
+    "id": "T43",
+    "mode": "BUILD",
+    "status": "in-progress",
+    "task": "Genetic-art: NEAT XOR evolution browser demo with network visualization",
+    "started": "2026-04-02T16:07:36.727Z"
+  },
   "stats": {
     "completed": 42,
     "yielded": 0,
     "skipped": 0,
     "total_duration_ms": 11990000
   },
-  "updated_at": "2026-04-02T16:05:42.507Z"
+  "updated_at": "2026-04-02T16:07:36.727Z"
 }
