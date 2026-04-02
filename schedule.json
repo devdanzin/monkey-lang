@@ -457,9 +457,19 @@
       "completed": "2026-04-02T16:09:27.387Z",
       "duration_ms": 480000,
       "summary": "NEAT XOR browser demo: real-time network topology visualization, fitness chart, truth table with color coding, speed control. Shows evolution solving XOR."
+    },
+    {
+      "id": "T44",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Physics: basic SPH fluid simulation (density, pressure, viscosity)",
+      "started": "2026-04-02T16:10:18.039Z",
+      "completed": "2026-04-02T16:14:52.389Z",
+      "duration_ms": 480000,
+      "summary": "SPH Fluid: Smoothed Particle Hydrodynamics — poly6/spiky/viscosity kernels, density estimation, pressure forces, boundary enforcement. 10 new tests, physics now 151."
     }
   ],
-  "updated_at": "2026-04-02T16:09:27.387Z",
+  "updated_at": "2026-04-02T16:14:52.389Z",
   "adjustments": [
     {
       "time": "2026-04-02T15:40:36.483Z",
@@ -480,6 +490,10 @@
     {
       "time": "2026-04-02T16:07:28.343Z",
       "msg": "Added T43 (BUILD) after end: Genetic-art: NEAT XOR evolution browser demo with network visualization"
+    },
+    {
+      "time": "2026-04-02T16:10:11.180Z",
+      "msg": "Added T44 (BUILD) after end: Physics: basic SPH fluid simulation (density, pressure, viscosity)"
     }
   ]
 }

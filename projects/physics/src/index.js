@@ -1129,7 +1129,239 @@ class ClothGrid {
   get springCount() { return this.springs.length; }
 }
 
-module.exports = { Vec2, Body, World, SpatialHashGrid, DistanceConstraint, SpringConstraint, RevoluteJoint, PrismaticJoint, RopeConstraint, SoftBody, ClothGrid, raycast, sweepTest, detectCollision, resolveCollision };
+// module.exports at end of file after all class definitions
+
+/**
+ * SPH Fluid Simulation — Smoothed Particle Hydrodynamics
+ * 
+ * A particle-based fluid simulation where each particle carries:
+ * - position, velocity
+ * - density (computed from neighbors)
+ * - pressure (from equation of state)
+ * 
+ * Forces: pressure gradient + viscosity + gravity
+ * 
+ * Based on: Müller et al. (2003), "Particle-Based Fluid Simulation for Interactive Applications"
+ */
+class SPHFluid {
+  /**
+   * @param {Object} opts
+   * @param {number} [opts.smoothingRadius=16] - Kernel radius h
+   * @param {number} [opts.restDensity=1] - Rest density ρ₀
+   * @param {number} [opts.stiffness=200] - Gas constant k
+   * @param {number} [opts.viscosity=10] - Viscosity coefficient μ
+   * @param {number} [opts.particleMass=1]
+   * @param {Vec2} [opts.gravity] - Gravity vector
+   * @param {number[]} [opts.bounds] - [xMin, yMin, xMax, yMax]
+   */
+  constructor(opts = {}) {
+    this.h = opts.smoothingRadius || 16;
+    this.restDensity = opts.restDensity || 1;
+    this.stiffness = opts.stiffness || 200;
+    this.viscosity = opts.viscosity || 10;
+    this.particleMass = opts.particleMass || 1;
+    this.gravity = opts.gravity || new Vec2(0, 9.8);
+    this.bounds = opts.bounds || null;
+
+    this.particles = []; // { pos: Vec2, vel: Vec2, density: number, pressure: number, force: Vec2 }
+
+    // Precompute kernel coefficients
+    const h = this.h;
+    this._poly6Coeff = 315 / (64 * Math.PI * Math.pow(h, 9));
+    this._spikyGradCoeff = -45 / (Math.PI * Math.pow(h, 6));
+    this._viscLaplCoeff = 45 / (Math.PI * Math.pow(h, 6));
+  }
+
+  /**
+   * Add a particle.
+   * @param {Vec2} pos
+   * @param {Vec2} [vel]
+   */
+  addParticle(pos, vel) {
+    this.particles.push({
+      pos: new Vec2(pos.x, pos.y),
+      vel: vel ? new Vec2(vel.x, vel.y) : new Vec2(0, 0),
+      density: 0,
+      pressure: 0,
+      force: new Vec2(0, 0),
+    });
+  }
+
+  /**
+   * Add a block of particles.
+   * @param {Vec2} topLeft
+   * @param {number} cols
+   * @param {number} rows
+   * @param {number} spacing
+   */
+  addBlock(topLeft, cols, rows, spacing) {
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        this.addParticle(new Vec2(
+          topLeft.x + c * spacing,
+          topLeft.y + r * spacing,
+        ));
+      }
+    }
+  }
+
+  /**
+   * Poly6 kernel — used for density estimation.
+   * W(r, h) = (315 / 64πh⁹) · (h² - r²)³ for r ≤ h
+   */
+  _poly6(rSq) {
+    const h2 = this.h * this.h;
+    if (rSq >= h2) return 0;
+    const diff = h2 - rSq;
+    return this._poly6Coeff * diff * diff * diff;
+  }
+
+  /**
+   * Spiky kernel gradient — used for pressure force.
+   * ∇W(r, h) = -(45 / πh⁶) · (h - |r|)² · r̂ for r ≤ h
+   */
+  _spikyGrad(r, rLen) {
+    if (rLen >= this.h || rLen < 1e-6) return new Vec2(0, 0);
+    const diff = this.h - rLen;
+    const coeff = this._spikyGradCoeff * diff * diff / rLen;
+    return new Vec2(r.x * coeff, r.y * coeff);
+  }
+
+  /**
+   * Viscosity kernel Laplacian — used for viscosity force.
+   * ∇²W(r, h) = (45 / πh⁶) · (h - |r|) for r ≤ h
+   */
+  _viscLaplacian(rLen) {
+    if (rLen >= this.h) return 0;
+    return this._viscLaplCoeff * (this.h - rLen);
+  }
+
+  /**
+   * Step 1: Compute density and pressure for each particle.
+   */
+  _computeDensityPressure() {
+    const h2 = this.h * this.h;
+    const n = this.particles.length;
+
+    for (let i = 0; i < n; i++) {
+      let density = 0;
+      for (let j = 0; j < n; j++) {
+        const dx = this.particles[j].pos.x - this.particles[i].pos.x;
+        const dy = this.particles[j].pos.y - this.particles[i].pos.y;
+        const rSq = dx * dx + dy * dy;
+        density += this.particleMass * this._poly6(rSq);
+      }
+      this.particles[i].density = Math.max(density, 1e-6);
+      // Equation of state: P = k · (ρ - ρ₀)
+      this.particles[i].pressure = this.stiffness * (this.particles[i].density - this.restDensity);
+    }
+  }
+
+  /**
+   * Step 2: Compute forces (pressure + viscosity + gravity).
+   */
+  _computeForces() {
+    const n = this.particles.length;
+
+    for (let i = 0; i < n; i++) {
+      let fx = 0, fy = 0;
+
+      for (let j = 0; j < n; j++) {
+        if (i === j) continue;
+        const pi = this.particles[i];
+        const pj = this.particles[j];
+
+        const rx = pj.pos.x - pi.pos.x;
+        const ry = pj.pos.y - pi.pos.y;
+        const rLen = Math.sqrt(rx * rx + ry * ry);
+
+        if (rLen >= this.h || rLen < 1e-6) continue;
+
+        const r = new Vec2(rx, ry);
+
+        // Pressure force: -m · (Pi + Pj) / (2·ρj) · ∇W_spiky
+        const pressGrad = this._spikyGrad(r, rLen);
+        const pressMag = -this.particleMass * (pi.pressure + pj.pressure) / (2 * pj.density);
+        fx += pressMag * pressGrad.x;
+        fy += pressMag * pressGrad.y;
+
+        // Viscosity force: μ · m · (vj - vi) / ρj · ∇²W_visc
+        const viscLapl = this._viscLaplacian(rLen);
+        const viscMag = this.viscosity * this.particleMass * viscLapl / pj.density;
+        fx += viscMag * (pj.vel.x - pi.vel.x);
+        fy += viscMag * (pj.vel.y - pi.vel.y);
+      }
+
+      // Gravity
+      fx += this.gravity.x * this.particles[i].density;
+      fy += this.gravity.y * this.particles[i].density;
+
+      this.particles[i].force = new Vec2(fx, fy);
+    }
+  }
+
+  /**
+   * Step 3: Integrate (update positions and velocities).
+   * @param {number} dt - Time step
+   */
+  _integrate(dt) {
+    for (const p of this.particles) {
+      // a = F / ρ
+      const ax = p.force.x / p.density;
+      const ay = p.force.y / p.density;
+
+      // Symplectic Euler
+      p.vel.x += ax * dt;
+      p.vel.y += ay * dt;
+      p.pos.x += p.vel.x * dt;
+      p.pos.y += p.vel.y * dt;
+
+      // Boundary enforcement
+      if (this.bounds) {
+        const [xMin, yMin, xMax, yMax] = this.bounds;
+        const damping = 0.5;
+        if (p.pos.x < xMin) { p.pos.x = xMin; p.vel.x *= -damping; }
+        if (p.pos.x > xMax) { p.pos.x = xMax; p.vel.x *= -damping; }
+        if (p.pos.y < yMin) { p.pos.y = yMin; p.vel.y *= -damping; }
+        if (p.pos.y > yMax) { p.pos.y = yMax; p.vel.y *= -damping; }
+      }
+    }
+  }
+
+  /**
+   * Advance the simulation by one time step.
+   * @param {number} [dt=0.01]
+   */
+  step(dt = 0.01) {
+    this._computeDensityPressure();
+    this._computeForces();
+    this._integrate(dt);
+  }
+
+  /**
+   * Get average density (for diagnostics).
+   */
+  get avgDensity() {
+    if (this.particles.length === 0) return 0;
+    return this.particles.reduce((s, p) => s + p.density, 0) / this.particles.length;
+  }
+
+  /**
+   * Get total kinetic energy.
+   */
+  get kineticEnergy() {
+    return this.particles.reduce((s, p) => {
+      return s + 0.5 * this.particleMass * (p.vel.x ** 2 + p.vel.y ** 2);
+    }, 0);
+  }
+
+  /**
+   * Get particle count.
+   */
+  get count() {
+    return this.particles.length;
+  }
+}
 
 // === Continuous Collision Detection (CCD) ===
 
@@ -1320,3 +1552,5 @@ function raycastPolygon(origin, dir, body, maxDist) {
   
   return { point: origin.add(dir.mul(closestT)), normal: hitNormal, distance: closestT };
 }
+
+module.exports = { Vec2, Body, World, SpatialHashGrid, DistanceConstraint, SpringConstraint, RevoluteJoint, PrismaticJoint, RopeConstraint, SoftBody, ClothGrid, SPHFluid, raycast, sweepTest, detectCollision, resolveCollision };
