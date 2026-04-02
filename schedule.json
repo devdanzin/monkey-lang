@@ -561,15 +561,22 @@
     {
       "id": "T53",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Mid-session housekeeping",
-      "started": "2026-04-02T17:07:47.093Z"
+      "started": "2026-04-02T17:07:47.093Z",
+      "completed": "2026-04-02T17:09:20.053Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed, dashboard server healthy, generate.cjs updated. Queue updated for Session B direction."
     },
     {
       "id": "T62",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Decide deep project: (a) Prolog expansion (logic programming), (b) database engine from scratch, (c) something else entirely"
+      "status": "done",
+      "task": "Decide deep project: (a) Prolog expansion (logic programming), (b) database engine from scratch, (c) something else entirely",
+      "started": "2026-04-02T17:09:29.065Z",
+      "completed": "2026-04-02T17:09:56.515Z",
+      "duration_ms": 120000,
+      "summary": "Decision: expand Prolog to full logic programming language. Different paradigm, unification algorithm, backtracking search, historically important. From 9 tests to comprehensive implementation with cut, arithmetic, lists, DCG."
     },
     {
       "id": "T54",
@@ -586,12 +593,6 @@
       "task": null,
       "plan_ref": "T55",
       "skip_reason": "Transformer already done, pivoting"
-    },
-    {
-      "id": "T56",
-      "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final housekeeping + push"
     },
     {
       "id": "T58",
@@ -620,131 +621,73 @@
     {
       "id": "T61",
       "mode": "EXPLORE",
+      "status": "skipped",
+      "task": "Research: interesting new project idea — something different from graphics/ML",
+      "skip_reason": "Already decided on Prolog via THINK T62"
+    },
+    {
+      "id": "T63",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Expand Prolog: unification, backtracking, cut, arithmetic, lists, built-ins, DCG, REPL",
+      "task": null,
+      "started": "2026-04-02T17:10:33.288Z",
+      "completed": "2026-04-02T17:11:02.367Z",
+      "duration_ms": 120000,
+      "summary": "Planned 4 BUILD tasks for Prolog expansion: parser+lists+cut, built-ins, DCG+operators, comprehensive tests. Target: 50+ tests, full logic programming language."
+    },
+    {
+      "id": "T64",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Prolog: text parser (tokenizer + recursive descent for standard Prolog syntax), proper lists [H|T], cut (!), comparison ops, if-then-else",
+      "plan_ref": "T63",
+      "started": "2026-04-02T17:11:12.525Z",
+      "completed": "2026-04-02T20:21:25.601Z",
+      "summary": " [auto-resolved: orphaned in-progress task]"
+    },
+    {
+      "id": "T67",
+      "mode": "BUILD",
+      "task": "Prolog: built-ins (assert/retract, findall, append, member, length, reverse, between, msort, number_chars, atom_chars, copy_term)",
+      "status": "in-progress",
+      "plan_ref": "T63",
+      "started": "2026-04-02T20:25:10.986Z"
+    },
+    {
+      "id": "T68",
+      "mode": "BUILD",
+      "task": "Prolog: DCG (Definite Clause Grammars), operator definitions, catch/throw, occurs check",
       "status": "upcoming",
-      "task": "Research: interesting new project idea — something different from graphics/ML"
+      "plan_ref": "T63"
+    },
+    {
+      "id": "T69",
+      "mode": "BUILD",
+      "task": "Prolog: comprehensive tests — 8 queens, zebra puzzle, Towers of Hanoi, family trees, list ops, DCG parsing, 50+ tests",
+      "status": "upcoming",
+      "plan_ref": "T63"
+    },
+    {
+      "id": "T65",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Blog post: Building a Prolog Interpreter — Logic Programming from Scratch",
+      "task": null
+    },
+    {
+      "id": "T66",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T65"
+    },
+    {
+      "id": "T56",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final housekeeping + push"
     }
   ],
-  "updated_at": "2026-04-02T17:07:47.093Z",
-  "adjustments": [
-    {
-      "time": "2026-04-02T15:40:36.483Z",
-      "msg": "Added T39 (BUILD) after end: VAE: Variational Autoencoder with reparameterization trick"
-    },
-    {
-      "time": "2026-04-02T15:50:03.092Z",
-      "msg": "Added T40 (BUILD) after end: Physics: soft body / cloth simulation using spring networks + tests"
-    },
-    {
-      "time": "2026-04-02T15:57:38.657Z",
-      "msg": "Added T41 (BUILD) after end: Neural-net: DQN (Deep Q-Network) for reinforcement learning"
-    },
-    {
-      "time": "2026-04-02T16:00:53.666Z",
-      "msg": "Added T42 (BUILD) after end: Neural-net: REINFORCE policy gradient algorithm"
-    },
-    {
-      "time": "2026-04-02T16:07:28.343Z",
-      "msg": "Added T43 (BUILD) after end: Genetic-art: NEAT XOR evolution browser demo with network visualization"
-    },
-    {
-      "time": "2026-04-02T16:10:11.180Z",
-      "msg": "Added T44 (BUILD) after end: Physics: basic SPH fluid simulation (density, pressure, viscosity)"
-    },
-    {
-      "time": "2026-04-02T16:15:19.789Z",
-      "msg": "Added T45 (BUILD) after end: Push physics + genetic-art repos to GitHub + dashboard regenerate"
-    },
-    {
-      "time": "2026-04-02T16:19:37.787Z",
-      "msg": "Added T46 (BUILD) after end: Hit 2500 tests + continue deep work on neural-net"
-    },
-    {
-      "time": "2026-04-02T16:22:32.269Z",
-      "msg": "Added T47 (BUILD) after end: Ray tracer: edge case tests for CSG, volumes, and microfacet materials"
-    },
-    {
-      "time": "2026-04-02T16:24:03.388Z",
-      "msg": "Added T48 (BUILD) after end: Neural-net: Graph Neural Network (message passing, node classification)"
-    },
-    {
-      "time": "2026-04-02T16:31:50.471Z",
-      "msg": "Added T49 (BUILD) after end: Neural-net: Contrastive Learning (SimCLR-style self-supervised)"
-    },
-    {
-      "time": "2026-04-02T17:01:07.734Z",
-      "msg": "Added T50 (THINK) after end: Session B direction: queue empty, 3h remaining. Review projects, pick high-value goals."
-    },
-    {
-      "time": "2026-04-02T17:02:59.704Z",
-      "msg": "Added T51 (PLAN) after end: WASM closures + function table + GC for monkey-lang"
-    },
-    {
-      "time": "2026-04-02T17:02:59.916Z",
-      "msg": "Added T52 (BUILD) after end: null"
-    },
-    {
-      "time": "2026-04-02T17:03:00.132Z",
-      "msg": "Added T53 (MAINTAIN) after end: Mid-session housekeeping"
-    },
-    {
-      "time": "2026-04-02T17:03:00.346Z",
-      "msg": "Added T54 (PLAN) after end: Transformer architecture for neural-net (self-attention, multi-head, positional encoding)"
-    },
-    {
-      "time": "2026-04-02T17:03:00.558Z",
-      "msg": "Added T55 (BUILD) after end: null"
-    },
-    {
-      "time": "2026-04-02T17:03:00.776Z",
-      "msg": "Added T56 (MAINTAIN) after end: Final housekeeping + push"
-    },
-    {
-      "time": "2026-04-02T17:05:30.751Z",
-      "msg": "Removed T52: WASM already done, pivoting"
-    },
-    {
-      "time": "2026-04-02T17:05:30.965Z",
-      "msg": "Removed T54: Transformer already done, pivoting"
-    },
-    {
-      "time": "2026-04-02T17:05:31.179Z",
-      "msg": "Removed T55: Transformer already done, pivoting"
-    },
-    {
-      "time": "2026-04-02T17:05:38.388Z",
-      "msg": "Added T57 (PLAN) after T51: Ray tracer: volumetric rendering (fog, smoke, subsurface scattering) + motion blur"
-    },
-    {
-      "time": "2026-04-02T17:05:38.600Z",
-      "msg": "Added T58 (BUILD) after end: null"
-    },
-    {
-      "time": "2026-04-02T17:05:38.815Z",
-      "msg": "Added T59 (PLAN) after end: Physics engine: constraints, joints, rope/chain, stacking stability"
-    },
-    {
-      "time": "2026-04-02T17:05:39.029Z",
-      "msg": "Added T60 (BUILD) after end: null"
-    },
-    {
-      "time": "2026-04-02T17:05:39.283Z",
-      "msg": "Added T61 (EXPLORE) after end: Research: interesting new project idea — something different from graphics/ML"
-    },
-    {
-      "time": "2026-04-02T17:06:54.412Z",
-      "msg": "Removed T58: ray tracer already complete"
-    },
-    {
-      "time": "2026-04-02T17:06:54.625Z",
-      "msg": "Removed T59: physics already complete"
-    },
-    {
-      "time": "2026-04-02T17:06:54.845Z",
-      "msg": "Removed T60: physics already complete"
-    },
-    {
-      "time": "2026-04-02T17:07:35.026Z",
-      "msg": "Added T62 (THINK) after T53: Decide deep project: (a) Prolog expansion (logic programming), (b) database engine from scratch, (c) something else entirely"
-    }
-  ]
+  "updated_at": "2026-04-02T20:25:10.986Z"
 }
