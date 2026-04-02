@@ -308,14 +308,32 @@
       "completed": "2026-04-02T15:22:36.325Z",
       "duration_ms": 480000,
       "summary": "Predictive coding integration tests: pattern auto-encoding, anomaly detection, digit recognition, deep networks, local learning verification. 7 new tests, 318 total. All passing."
+    },
+    {
+      "id": "T30",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Blog post: Predictive Coding — how the brain might learn without backpropagation",
+      "task": null,
+      "started": "2026-04-02T15:25:59.100Z",
+      "completed": "2026-04-02T15:26:11.784Z",
+      "duration_ms": 30000,
+      "summary": "Planned blog post on predictive coding."
+    },
+    {
+      "id": "T31",
+      "mode": "BUILD",
+      "task": "Write blog post: Predictive Coding — brain-inspired learning without backprop",
+      "status": "upcoming",
+      "plan_ref": "T30"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 29,
+    "completed": 30,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 7890000
+    "total_duration_ms": 7920000
   },
-  "updated_at": "2026-04-02T15:22:36.325Z"
+  "updated_at": "2026-04-02T15:26:11.784Z"
 }
