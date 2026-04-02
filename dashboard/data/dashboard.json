@@ -437,14 +437,24 @@
       "completed": "2026-04-02T16:00:13.838Z",
       "duration_ms": 480000,
       "summary": "DQN: Deep Q-Network with experience replay, target network, ε-greedy. CartPoleEnv + GridWorldEnv. 15 new tests, 374 total."
+    },
+    {
+      "id": "T42",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: REINFORCE policy gradient algorithm",
+      "started": "2026-04-02T16:01:00.542Z",
+      "completed": "2026-04-02T16:05:42.507Z",
+      "duration_ms": 300000,
+      "summary": "REINFORCE policy gradient: softmax policy, discounted returns, baseline subtraction. Trains on CartPole and GridWorld. 8 new tests, 382 total."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 41,
+    "completed": 42,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 11690000
+    "total_duration_ms": 11990000
   },
-  "updated_at": "2026-04-02T16:00:13.838Z"
+  "updated_at": "2026-04-02T16:05:42.507Z"
 }
