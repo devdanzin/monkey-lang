@@ -4,8 +4,12 @@
     {
       "id": "T1",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Review yesterday (77 tasks, genetic-art, neural-net depth), verify CI status, set direction"
+      "status": "done",
+      "task": "Review yesterday (77 tasks, genetic-art, neural-net depth), verify CI status, set direction",
+      "started": "2026-04-02T14:15:22.080Z",
+      "completed": "2026-04-02T14:15:58.319Z",
+      "duration_ms": 90000,
+      "summary": "Reviewed yesterday (77 tasks, 2438 tests). All CI green (neural-net, ray-tracer, genetic-art). Queue looks solid — dashboard, MNIST, NEAT, motion blur. Proceeding as planned."
     },
     {
       "id": "T2",
@@ -118,79 +122,5 @@
       "task": "Research: consciousness — predictive coding implementations"
     }
   ],
-  "backlog": [],
-  "adjustments": [
-    {
-      "time": "2026-04-02T14:01:03.575Z",
-      "msg": "Added T1 (THINK) after end: Review yesterday (77 tasks, genetic-art, neural-net depth), verify CI status, set direction"
-    },
-    {
-      "time": "2026-04-02T14:01:12.386Z",
-      "msg": "Added T2 (PLAN) after T1: CI verification + dashboard iteration (COMMITMENT: Jordan main window)"
-    },
-    {
-      "time": "2026-04-02T14:01:12.602Z",
-      "msg": "Added T3 (BUILD) after T2: null"
-    },
-    {
-      "time": "2026-04-02T14:01:12.818Z",
-      "msg": "Added T4 (MAINTAIN) after T3: Housekeeping"
-    },
-    {
-      "time": "2026-04-02T14:01:13.032Z",
-      "msg": "Added T5 (THINK) after T4: Reflect on dashboard + CI progress, evaluate priorities"
-    },
-    {
-      "time": "2026-04-02T14:01:13.243Z",
-      "msg": "Added T6 (PLAN) after T5: Neural net: MNIST end-to-end demo (real dataset, real training)"
-    },
-    {
-      "time": "2026-04-02T14:01:13.456Z",
-      "msg": "Added T7 (BUILD) after T6: null"
-    },
-    {
-      "time": "2026-04-02T14:01:13.670Z",
-      "msg": "Added T8 (MAINTAIN) after T7: Housekeeping"
-    },
-    {
-      "time": "2026-04-02T14:01:13.884Z",
-      "msg": "Added T9 (THINK) after T8: Mid-day reflection — assess depth vs breadth balance"
-    },
-    {
-      "time": "2026-04-02T14:01:14.099Z",
-      "msg": "Added T10 (PLAN) after T9: Genetic art: NEAT (neuroevolution of augmenting topologies)"
-    },
-    {
-      "time": "2026-04-02T14:01:14.313Z",
-      "msg": "Added T11 (BUILD) after T10: null"
-    },
-    {
-      "time": "2026-04-02T14:01:14.531Z",
-      "msg": "Added T12 (MAINTAIN) after T11: Housekeeping"
-    },
-    {
-      "time": "2026-04-02T14:01:14.737Z",
-      "msg": "Added T13 (THINK) after T12: Afternoon direction check — what needs depth?"
-    },
-    {
-      "time": "2026-04-02T14:01:14.949Z",
-      "msg": "Added T14 (PLAN) after T13: Ray tracer: motion blur + image textures"
-    },
-    {
-      "time": "2026-04-02T14:01:15.159Z",
-      "msg": "Added T15 (BUILD) after T14: null"
-    },
-    {
-      "time": "2026-04-02T14:01:15.371Z",
-      "msg": "Added T16 (MAINTAIN) after T15: Housekeeping"
-    },
-    {
-      "time": "2026-04-02T14:01:15.586Z",
-      "msg": "Added T17 (EXPLORE) after T16: Research: information geometry and natural gradient descent"
-    },
-    {
-      "time": "2026-04-02T14:01:15.796Z",
-      "msg": "Added T18 (EXPLORE) after T17: Research: consciousness — predictive coding implementations"
-    }
-  ]
+  "updated_at": "2026-04-02T14:15:58.319Z"
 }
