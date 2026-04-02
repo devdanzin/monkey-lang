@@ -357,23 +357,31 @@
       "id": "T34",
       "mode": "BUILD",
       "task": "K-FAC optimizer: Kronecker-factored curvature with running averages",
-      "status": "upcoming",
-      "plan_ref": "T32"
+      "status": "done",
+      "plan_ref": "T32",
+      "started": "2026-04-02T15:32:08.033Z",
+      "completed": "2026-04-02T15:32:08.293Z",
+      "duration_ms": 10000,
+      "summary": "K-FAC already implemented in T33 — Kronecker factors, damped inverse, Gauss-Jordan elimination, running averages."
     },
     {
       "id": "T35",
       "mode": "BUILD",
       "task": "Natural gradient tests + comparison benchmark with Adam and SGD",
-      "status": "upcoming",
-      "plan_ref": "T32"
+      "status": "done",
+      "plan_ref": "T32",
+      "started": "2026-04-02T15:32:23.390Z",
+      "completed": "2026-04-02T15:33:23.097Z",
+      "duration_ms": 300000,
+      "summary": "Optimizer comparison: SGD, Adam, NaturalGradient on mini-digits, Rosenbrock, Fisher adaptation. createOptimizer supports all 6 optimizers. 6 new tests, 335 total."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 33,
+    "completed": 35,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 9180000
+    "total_duration_ms": 9490000
   },
-  "updated_at": "2026-04-02T15:31:44.728Z"
+  "updated_at": "2026-04-02T15:33:23.097Z"
 }
