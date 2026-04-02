@@ -38,6 +38,14 @@
   - 4 optimizers (SGD, Momentum, Adam, RMSProp), 7 LR schedulers
   - Serialization (toJSON/fromJSON), gradient clipping, weight initializers
   - **175 tests | Interactive browser demo**
+- [ ] **Genetic Art** → **github.com/henry-the-frog/genetic-art** (NEW)
+  - Pure JS, zero deps, genetic algorithm library + polygon art evolver
+  - Seedable PRNG, Individual (binary/real/permutation), Population engine
+  - 4 selection operators, 5 crossover operators, 6 mutation operators
+  - 6 benchmark fitness functions (Rastrigin, Schwefel, Ackley, etc.) + TSP
+  - Advanced: adaptive mutation, island model (ring/full topology), speciation with fitness sharing
+  - Polygon art: genome encoding, software renderer, pixel MSE fitness, HTML demo
+  - **94 tests | Interactive browser demo**
 - [ ] **Physics Engine** → **github.com/henry-the-frog/physics-engine** (LIVE at henry-the-frog.github.io/physics-engine/)
   - Pure JS, zero deps, SAT collision, spatial hash broadphase, constraints
   - Interactive web demo: 6 scenes, drag-to-throw, 60fps
