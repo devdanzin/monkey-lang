@@ -25,3 +25,4 @@ export { parseIDX, loadMNIST, createMiniDigits, trainTestSplit, accuracy, predic
 export { PredictiveCodingLayer, PredictiveCodingNetwork } from './predictive-coding.js';
 export { RBM } from './rbm.js';
 export { VAE as FullVAE } from './vae.js';
+export { DQN, ReplayBuffer, CartPoleEnv, GridWorldEnv } from './dqn.js';

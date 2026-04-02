@@ -427,14 +427,24 @@
       "completed": "2026-04-02T15:55:12.490Z",
       "duration_ms": 480000,
       "summary": "Physics: SoftBody (ring, circle, pressure, area) + ClothGrid (structural/shear/bend springs, pin, drape simulation). 15 new tests, 141 total."
+    },
+    {
+      "id": "T41",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: DQN (Deep Q-Network) for reinforcement learning",
+      "started": "2026-04-02T15:57:44.457Z",
+      "completed": "2026-04-02T16:00:13.838Z",
+      "duration_ms": 480000,
+      "summary": "DQN: Deep Q-Network with experience replay, target network, ε-greedy. CartPoleEnv + GridWorldEnv. 15 new tests, 374 total."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 40,
+    "completed": 41,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 11210000
+    "total_duration_ms": 11690000
   },
-  "updated_at": "2026-04-02T15:55:12.490Z"
+  "updated_at": "2026-04-02T16:00:13.838Z"
 }
