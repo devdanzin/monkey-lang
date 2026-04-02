@@ -727,8 +727,12 @@
       "id": "T75",
       "mode": "BUILD",
       "task": "Build fitness functions + classic problems: OneMax, Rastrigin, Schwefel, TSP encoding — with tests",
-      "status": "upcoming",
-      "plan_ref": "T69"
+      "status": "done",
+      "plan_ref": "T69",
+      "started": "2026-04-02T02:49:13.688Z",
+      "completed": "2026-04-02T02:58:17.335Z",
+      "duration_ms": 300000,
+      "summary": "Fitness functions: OneMax, Rastrigin, Schwefel, Sphere, Ackley, Rosenbrock, TSP. Integration tests: GA solving OneMax, Sphere, Rastrigin, TSP, Ackley. 64 total tests passing."
     },
     {
       "id": "T76",
@@ -771,10 +775,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 70,
+    "completed": 71,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 15141000
+    "total_duration_ms": 15441000
   },
-  "updated_at": "2026-04-02T02:48:54.136Z"
+  "updated_at": "2026-04-02T02:58:17.335Z"
 }

@@ -10,3 +10,7 @@ export {
   bitFlipMutation, gaussianMutation, uniformMutation,
   swapMutation, inversionMutation, scrambleMutation
 } from './mutation.js';
+export {
+  oneMax, rastrigin, schwefel, sphere, ackley, rosenbrock,
+  tspFitness, randomDistanceMatrix, euclideanDistanceMatrix
+} from './fitness.js';
