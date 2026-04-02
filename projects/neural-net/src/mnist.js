@@ -305,3 +305,25 @@ export function confusionMatrix(predictions, trueLabels, numClasses = 10) {
   }
   return matrix;
 }
+
+/**
+ * Pack arrays of column-vector Matrices into batch Matrices for Network.train()
+ * @param {Matrix[]} images - Array of (features × 1) column vectors
+ * @param {Matrix[]} labels - Array of (classes × 1) column vectors
+ * @returns {{ inputs: Matrix, targets: Matrix }} Row-major batch matrices
+ */
+export function packBatch(images, labels) {
+  const n = images.length;
+  const features = images[0].data.length;
+  const classes = labels[0].data.length;
+  const inputData = new Float64Array(n * features);
+  const targetData = new Float64Array(n * classes);
+  for (let i = 0; i < n; i++) {
+    inputData.set(images[i].data, i * features);
+    targetData.set(labels[i].data, i * classes);
+  }
+  return {
+    inputs: new Matrix(n, features, inputData),
+    targets: new Matrix(n, classes, targetData),
+  };
+}
