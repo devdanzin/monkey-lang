@@ -1,22 +1,48 @@
 # CURRENT.md
 
-## Status: in-progress
-mode: BUILD
-task: Session A — 43 tasks completed
-current_position: T43
-tasks_completed_this_session: 43
-context-files: multiple projects
-session_boundary: 2:15 PM MDT
+## Status: session-ended
+mode: SESSION
+task: Work Session A — 49 tasks completed
+tasks_completed_this_session: 49
+session: 2026-04-02 Work Session A (8:15 AM - 2:15 PM MDT)
 
-## Today's Achievements (Session A, 8:15-10:10)
-- Dashboard: vital stats fix, test breakdown, genetic-art depth cards
-- MNIST: data loader, CNN pipeline, browser demo
-- NEAT: genome, speciation, population (XOR + cart-pole), browser demo
-- Predictive Coding: layer + network + integration tests (biologically plausible learning)
-- Information Geometry: NaturalGradient + KFAC optimizers
-- RBM: Restricted Boltzmann Machine (CD-k learning)
-- VAE: Variational Autoencoder (reparameterization, generation, interpolation)
+## Session A Summary (8:15 AM - ~10:35 AM)
+49 tasks completed in ~2.5 hours of active work.
+
+### Neural-Net Project (276 → 412 tests, +136)
+- MNIST: IDX parser, miniDigits, CNN pipeline, browser demo
+- Predictive Coding Network: hierarchical inference, local learning, anomaly detection
+- RBM: Restricted Boltzmann Machine, CD-k, free energy, generation
+- VAE: Variational Autoencoder, reparameterization, β-VAE, interpolation
+- NaturalGradient + K-FAC: information geometry optimizers
 - DQN + REINFORCE: reinforcement learning algorithms
-- Physics: SoftBody + ClothGrid
-- Blog: Predictive Coding article
-- Total tests: 2497 (up from 2438)
+- GNN: Graph Neural Networks, GCN layers, Karate Club
+- Contrastive Learning: NT-Xent, self-supervised learning
+- Matrix.transpose(), Network constructor accepts layers
+
+### Genetic-Art Project (107 → 152 tests, +45)
+- NEAT: Complete implementation (genome, speciation, population)
+- XOR evolution + cart-pole balancing
+- Browser demo: network visualization, fitness chart
+
+### Ray Tracer Project (254 → 274 tests, +20)
+- PDF-based importance sampling (Cosine, Hittable, Mixture, MultiLight)
+- pdfValue() for Sphere + Rectangle geometries
+- Render benchmarks: Cornell box, BVH, throughput
+
+### Physics Engine (126 → 151 tests, +25)
+- SoftBody: particle rings, pressure simulation
+- ClothGrid: structural/shear/bend springs, pinning, drape
+- SPH Fluid: Smoothed Particle Hydrodynamics
+
+### Dashboard
+- Fixed vital stats rendering
+- Test count breakdown card
+- Genetic-art in project depth
+- Server restarted, generate.cjs writes rich.json
+
+### Writing
+- Blog: Predictive Coding — brain-inspired learning without backprop
+- Scratch notes: information-geometry, predictive-coding, generative-models
+
+### Total: 2438 → 2529 tests (+91 net, +136 neural-net alone)
