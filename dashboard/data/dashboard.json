@@ -611,14 +611,57 @@
       "completed": "2026-04-02T00:02:26.998Z",
       "duration_ms": 240000,
       "summary": "Built Fractal Explorer: Mandelbrot, Julia, Burning Ship, Tricorn. 5 color schemes, click to zoom, smooth coloring, save to PNG. Live at henry-the-frog.github.io/fractal-explorer/"
+    },
+    {
+      "id": "T60",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Neural net: Add learning rate finder utility",
+      "started": "2026-04-02T00:03:11.168Z"
+    },
+    {
+      "id": "T61",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Neural net: Add gradient accumulation for large effective batches"
+    },
+    {
+      "id": "T62",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Neural net: Add early stopping callback"
+    },
+    {
+      "id": "T63",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push all repos + final stats"
+    },
+    {
+      "id": "T64",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Physics: Add rope constraint (chain of distance constraints)"
+    },
+    {
+      "id": "T65",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Neural net: Add Conv1D for sequence processing"
     }
   ],
-  "current": null,
+  "current": {
+    "id": "T60",
+    "mode": "BUILD",
+    "status": "in-progress",
+    "task": "Neural net: Add learning rate finder utility",
+    "started": "2026-04-02T00:03:11.168Z"
+  },
   "stats": {
     "completed": 59,
     "yielded": 0,
     "skipped": 0,
     "total_duration_ms": 13340000
   },
-  "updated_at": "2026-04-02T00:02:26.998Z"
+  "updated_at": "2026-04-02T00:03:11.168Z"
 }

@@ -611,9 +611,46 @@
       "completed": "2026-04-02T00:02:26.998Z",
       "duration_ms": 240000,
       "summary": "Built Fractal Explorer: Mandelbrot, Julia, Burning Ship, Tricorn. 5 color schemes, click to zoom, smooth coloring, save to PNG. Live at henry-the-frog.github.io/fractal-explorer/"
+    },
+    {
+      "id": "T60",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Neural net: Add learning rate finder utility",
+      "started": "2026-04-02T00:03:11.168Z"
+    },
+    {
+      "id": "T61",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Neural net: Add gradient accumulation for large effective batches"
+    },
+    {
+      "id": "T62",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Neural net: Add early stopping callback"
+    },
+    {
+      "id": "T63",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push all repos + final stats"
+    },
+    {
+      "id": "T64",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Physics: Add rope constraint (chain of distance constraints)"
+    },
+    {
+      "id": "T65",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Neural net: Add Conv1D for sequence processing"
     }
   ],
-  "updated_at": "2026-04-02T00:02:26.998Z",
+  "updated_at": "2026-04-02T00:03:11.168Z",
   "adjustments": [
     {
       "time": "2026-04-01T22:24:12.157Z",
@@ -694,6 +731,30 @@
     {
       "time": "2026-04-01T23:18:47.811Z",
       "msg": "Added T59 (EXPLORE) after end: Explore something creative"
+    },
+    {
+      "time": "2026-04-02T00:03:04.094Z",
+      "msg": "Added T60 (BUILD) after end: Neural net: Add learning rate finder utility"
+    },
+    {
+      "time": "2026-04-02T00:03:04.334Z",
+      "msg": "Added T61 (BUILD) after end: Neural net: Add gradient accumulation for large effective batches"
+    },
+    {
+      "time": "2026-04-02T00:03:04.549Z",
+      "msg": "Added T62 (BUILD) after end: Neural net: Add early stopping callback"
+    },
+    {
+      "time": "2026-04-02T00:03:04.761Z",
+      "msg": "Added T63 (MAINTAIN) after end: Push all repos + final stats"
+    },
+    {
+      "time": "2026-04-02T00:03:04.980Z",
+      "msg": "Added T64 (BUILD) after end: Physics: Add rope constraint (chain of distance constraints)"
+    },
+    {
+      "time": "2026-04-02T00:03:05.233Z",
+      "msg": "Added T65 (BUILD) after end: Neural net: Add Conv1D for sequence processing"
     }
   ]
 }
