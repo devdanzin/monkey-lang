@@ -1,0 +1,12 @@
+{
+  "name": "genetic-art",
+  "version": "0.1.0",
+  "description": "Genetic algorithm library + polygon art evolver, built from scratch in JavaScript",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "keywords": ["genetic-algorithm", "evolutionary-computation", "optimization"],
+  "license": "MIT"
+}

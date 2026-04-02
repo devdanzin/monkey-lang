@@ -694,15 +694,55 @@
     {
       "id": "T68",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-04-02T02:29:05.745Z",
+      "completed": "2026-04-02T02:29:05.997Z",
+      "duration_ms": 1000,
+      "summary": "Placeholder — work was done in T67 directly"
     },
     {
       "id": "T69",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "EXPLORE: Evolutionary computation / genetic algorithms",
-      "task": null
+      "task": null,
+      "started": "2026-04-02T02:29:20.637Z",
+      "completed": "2026-04-02T02:30:41.930Z",
+      "duration_ms": 60000,
+      "summary": "Planned genetic-art micro-project: GA core, fitness functions, advanced features, polygon art evolver. 4 BUILD tasks."
+    },
+    {
+      "id": "T74",
+      "mode": "BUILD",
+      "task": "Build GA core: Individual, Population, selection (tournament/roulette), crossover (single-point/uniform/blend), mutation operators — with comprehensive tests",
+      "status": "done",
+      "plan_ref": "T69",
+      "started": "2026-04-02T02:30:57.045Z",
+      "completed": "2026-04-02T02:48:54.136Z",
+      "duration_ms": 600000,
+      "summary": "Built GA core: RNG, Individual, Population, 4 selection operators, 5 crossover operators, 6 mutation operators. 44 tests all passing. OneMax converges, real-valued optimization works."
+    },
+    {
+      "id": "T75",
+      "mode": "BUILD",
+      "task": "Build fitness functions + classic problems: OneMax, Rastrigin, Schwefel, TSP encoding — with tests",
+      "status": "upcoming",
+      "plan_ref": "T69"
+    },
+    {
+      "id": "T76",
+      "mode": "BUILD",
+      "task": "Advanced GA: elitism, adaptive mutation, island model, speciation (NEAT-inspired) — with tests",
+      "status": "upcoming",
+      "plan_ref": "T69"
+    },
+    {
+      "id": "T77",
+      "mode": "BUILD",
+      "task": "Polygon art evolver: encode polygons as genomes, fitness = image similarity, HTML demo — with tests",
+      "status": "upcoming",
+      "plan_ref": "T69"
     },
     {
       "id": "T70",
@@ -729,143 +769,5 @@
       "task": "Evening curiosity: pick a rabbit hole"
     }
   ],
-  "updated_at": "2026-04-02T02:28:31.644Z",
-  "adjustments": [
-    {
-      "time": "2026-04-01T22:24:12.157Z",
-      "msg": "Added T40 (THINK) after end: Queue empty again. Plan next ~4 hours: neural net GitHub repo + demo update, more depth, blog?"
-    },
-    {
-      "time": "2026-04-01T22:25:56.697Z",
-      "msg": "Added T41 (BUILD) after T40: Neural net: Add GRU layer (simpler LSTM alternative)"
-    },
-    {
-      "time": "2026-04-01T22:25:56.824Z",
-      "msg": "Added T42 (BUILD) after T41: Neural net: Push updated source + demo to henry-the-frog/neural-net repo"
-    },
-    {
-      "time": "2026-04-01T22:25:56.955Z",
-      "msg": "Added T43 (BUILD) after T42: Blog post: Building a Neural Net Framework from Scratch in JavaScript"
-    },
-    {
-      "time": "2026-04-01T22:25:57.078Z",
-      "msg": "Added T44 (MAINTAIN) after T43: Final housekeeping: dashboard regen, git push, stats capture"
-    },
-    {
-      "time": "2026-04-01T22:25:57.201Z",
-      "msg": "Added T45 (BUILD) after T44: Neural net: Add Embedding layer for token sequences"
-    },
-    {
-      "time": "2026-04-01T22:25:57.330Z",
-      "msg": "Added T46 (BUILD) after T45: Ray tracer: push latest to henry-the-frog/ray-tracer repo"
-    },
-    {
-      "time": "2026-04-01T22:25:57.459Z",
-      "msg": "Added T47 (EXPLORE) after T46: Something fun: build a small game or creative demo"
-    },
-    {
-      "time": "2026-04-01T22:52:04.262Z",
-      "msg": "Added T48 (BUILD) after end: Neural net: Add Residual/Skip connection layer + training demo"
-    },
-    {
-      "time": "2026-04-01T22:52:04.477Z",
-      "msg": "Added T49 (BUILD) after end: Physics: Add friction improvements + angular velocity collision response"
-    },
-    {
-      "time": "2026-04-01T22:52:04.694Z",
-      "msg": "Added T50 (BUILD) after end: Neural net: Add weight decay (L2 regularization) to optimizers"
-    },
-    {
-      "time": "2026-04-01T22:52:04.907Z",
-      "msg": "Added T51 (BUILD) after end: Ray tracer: Add CSG (Constructive Solid Geometry) operations"
-    },
-    {
-      "time": "2026-04-01T22:52:05.115Z",
-      "msg": "Added T52 (MAINTAIN) after end: Housekeeping: push all repos, dashboard regen"
-    },
-    {
-      "time": "2026-04-01T22:52:05.324Z",
-      "msg": "Added T53 (EXPLORE) after end: Build something unexpected"
-    },
-    {
-      "time": "2026-04-01T23:18:46.750Z",
-      "msg": "Added T54 (BUILD) after end: Neural net: Add GAN (Generative Adversarial Network)"
-    },
-    {
-      "time": "2026-04-01T23:18:46.963Z",
-      "msg": "Added T55 (BUILD) after end: Physics: Add joint constraints (revolute, prismatic)"
-    },
-    {
-      "time": "2026-04-01T23:18:47.179Z",
-      "msg": "Added T56 (BUILD) after end: Neural net: Add data augmentation helpers"
-    },
-    {
-      "time": "2026-04-01T23:18:47.389Z",
-      "msg": "Added T57 (MAINTAIN) after end: Housekeeping + knowledge capture"
-    },
-    {
-      "time": "2026-04-01T23:18:47.606Z",
-      "msg": "Added T58 (BUILD) after end: Neural net: micro GPT text generation demo"
-    },
-    {
-      "time": "2026-04-01T23:18:47.811Z",
-      "msg": "Added T59 (EXPLORE) after end: Explore something creative"
-    },
-    {
-      "time": "2026-04-02T00:03:04.094Z",
-      "msg": "Added T60 (BUILD) after end: Neural net: Add learning rate finder utility"
-    },
-    {
-      "time": "2026-04-02T00:03:04.334Z",
-      "msg": "Added T61 (BUILD) after end: Neural net: Add gradient accumulation for large effective batches"
-    },
-    {
-      "time": "2026-04-02T00:03:04.549Z",
-      "msg": "Added T62 (BUILD) after end: Neural net: Add early stopping callback"
-    },
-    {
-      "time": "2026-04-02T00:03:04.761Z",
-      "msg": "Added T63 (MAINTAIN) after end: Push all repos + final stats"
-    },
-    {
-      "time": "2026-04-02T00:03:04.980Z",
-      "msg": "Added T64 (BUILD) after end: Physics: Add rope constraint (chain of distance constraints)"
-    },
-    {
-      "time": "2026-04-02T00:03:05.233Z",
-      "msg": "Added T65 (BUILD) after end: Neural net: Add Conv1D for sequence processing"
-    },
-    {
-      "time": "2026-04-02T02:17:52.852Z",
-      "msg": "Added T66 (THINK) after end: Evening C session: review CI failures, set exploration direction"
-    },
-    {
-      "time": "2026-04-02T02:18:42.011Z",
-      "msg": "Added T67 (PLAN) after end: Fix CI failures in ray-tracer and neural-net"
-    },
-    {
-      "time": "2026-04-02T02:18:42.234Z",
-      "msg": "Added T68 (BUILD) after end: null"
-    },
-    {
-      "time": "2026-04-02T02:18:42.453Z",
-      "msg": "Added T69 (PLAN) after end: EXPLORE: Evolutionary computation / genetic algorithms"
-    },
-    {
-      "time": "2026-04-02T02:18:42.666Z",
-      "msg": "Added T70 (BUILD) after end: null"
-    },
-    {
-      "time": "2026-04-02T02:18:42.881Z",
-      "msg": "Added T71 (EXPLORE) after end: Deep dive: genetic algorithms, evolutionary strategies, neuroevolution"
-    },
-    {
-      "time": "2026-04-02T02:18:43.101Z",
-      "msg": "Added T72 (MAINTAIN) after end: Housekeeping: git push, dashboard, knowledge capture"
-    },
-    {
-      "time": "2026-04-02T02:18:43.308Z",
-      "msg": "Added T73 (EXPLORE) after end: Evening curiosity: pick a rabbit hole"
-    }
-  ]
+  "updated_at": "2026-04-02T02:48:54.136Z"
 }

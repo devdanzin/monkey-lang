@@ -694,15 +694,55 @@
     {
       "id": "T68",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-04-02T02:29:05.745Z",
+      "completed": "2026-04-02T02:29:05.997Z",
+      "duration_ms": 1000,
+      "summary": "Placeholder — work was done in T67 directly"
     },
     {
       "id": "T69",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "EXPLORE: Evolutionary computation / genetic algorithms",
-      "task": null
+      "task": null,
+      "started": "2026-04-02T02:29:20.637Z",
+      "completed": "2026-04-02T02:30:41.930Z",
+      "duration_ms": 60000,
+      "summary": "Planned genetic-art micro-project: GA core, fitness functions, advanced features, polygon art evolver. 4 BUILD tasks."
+    },
+    {
+      "id": "T74",
+      "mode": "BUILD",
+      "task": "Build GA core: Individual, Population, selection (tournament/roulette), crossover (single-point/uniform/blend), mutation operators — with comprehensive tests",
+      "status": "done",
+      "plan_ref": "T69",
+      "started": "2026-04-02T02:30:57.045Z",
+      "completed": "2026-04-02T02:48:54.136Z",
+      "duration_ms": 600000,
+      "summary": "Built GA core: RNG, Individual, Population, 4 selection operators, 5 crossover operators, 6 mutation operators. 44 tests all passing. OneMax converges, real-valued optimization works."
+    },
+    {
+      "id": "T75",
+      "mode": "BUILD",
+      "task": "Build fitness functions + classic problems: OneMax, Rastrigin, Schwefel, TSP encoding — with tests",
+      "status": "upcoming",
+      "plan_ref": "T69"
+    },
+    {
+      "id": "T76",
+      "mode": "BUILD",
+      "task": "Advanced GA: elitism, adaptive mutation, island model, speciation (NEAT-inspired) — with tests",
+      "status": "upcoming",
+      "plan_ref": "T69"
+    },
+    {
+      "id": "T77",
+      "mode": "BUILD",
+      "task": "Polygon art evolver: encode polygons as genomes, fitness = image similarity, HTML demo — with tests",
+      "status": "upcoming",
+      "plan_ref": "T69"
     },
     {
       "id": "T70",
@@ -731,10 +771,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 67,
+    "completed": 70,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 14480000
+    "total_duration_ms": 15141000
   },
-  "updated_at": "2026-04-02T02:28:31.644Z"
+  "updated_at": "2026-04-02T02:48:54.136Z"
 }
