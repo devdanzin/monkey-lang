@@ -487,9 +487,29 @@
       "completed": "2026-04-02T16:20:56.457Z",
       "duration_ms": 120000,
       "summary": "🎉 2500 total tests across all projects! Added zero-reward edge case test for REINFORCE."
+    },
+    {
+      "id": "T47",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray tracer: edge case tests for CSG, volumes, and microfacet materials",
+      "started": "2026-04-02T16:22:40.485Z",
+      "completed": "2026-04-02T16:23:53.771Z",
+      "duration_ms": 120000,
+      "summary": "Ray tracer already has comprehensive test coverage (274 tests, 3440 lines of test code). No gaps found to fill. Project is mature."
+    },
+    {
+      "id": "T48",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Neural-net: Graph Neural Network (message passing, node classification)",
+      "started": "2026-04-02T16:24:13.100Z",
+      "completed": "2026-04-02T16:27:42.923Z",
+      "duration_ms": 480000,
+      "summary": "GNN: Graph Neural Network with GCN layers, message passing, node classification, graph pooling. Karate Club benchmark. 15 new tests, neural-net now 398. Total: 2515."
     }
   ],
-  "updated_at": "2026-04-02T16:20:56.457Z",
+  "updated_at": "2026-04-02T16:27:42.923Z",
   "adjustments": [
     {
       "time": "2026-04-02T15:40:36.483Z",
@@ -522,6 +542,14 @@
     {
       "time": "2026-04-02T16:19:37.787Z",
       "msg": "Added T46 (BUILD) after end: Hit 2500 tests + continue deep work on neural-net"
+    },
+    {
+      "time": "2026-04-02T16:22:32.269Z",
+      "msg": "Added T47 (BUILD) after end: Ray tracer: edge case tests for CSG, volumes, and microfacet materials"
+    },
+    {
+      "time": "2026-04-02T16:24:03.388Z",
+      "msg": "Added T48 (BUILD) after end: Neural-net: Graph Neural Network (message passing, node classification)"
     }
   ]
 }
