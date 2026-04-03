@@ -238,17 +238,21 @@
       "id": "T23",
       "mode": "BUILD",
       "task": "miniKanren extras: constraints (disequality, absento, symbolo, numbero), type constraints, 20+ more tests",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T21",
-      "started": "2026-04-03T18:06:45.101Z"
+      "started": "2026-04-03T18:06:45.101Z",
+      "completed": "2026-04-03T18:10:58.377Z",
+      "duration_ms": 300000,
+      "summary": "Added absento, conda/condu (soft cut/committed choice), onceo, project, everyo, lengtho. Transitive closure, type-safe pairs, combined constraints. 76 tests passing."
     },
     {
       "id": "T24",
       "mode": "BUILD",
       "task": "Blog post: miniKanren vs Prolog — fair search, relational purity, program synthesis",
-      "status": "upcoming",
-      "plan_ref": "T21"
+      "status": "in-progress",
+      "plan_ref": "T21",
+      "started": "2026-04-03T18:11:25.350Z"
     }
   ],
-  "updated_at": "2026-04-03T18:06:45.101Z"
+  "updated_at": "2026-04-03T18:11:25.350Z"
 }
