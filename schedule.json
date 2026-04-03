@@ -323,15 +323,19 @@
     {
       "id": "T31",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Extend Prolog: add REPL (interactive command-line), trace mode for debugging",
-      "started": "2026-04-03T18:39:48.602Z"
+      "started": "2026-04-03T18:39:48.602Z",
+      "completed": "2026-04-03T18:43:32.150Z",
+      "duration_ms": 300000,
+      "summary": "Built Prolog REPL: interactive command-line with multi-line input, /trace /clauses /reset /help commands, pipe mode support. Can load .pl files from command line. Tested with family database and fibonacci."
     },
     {
       "id": "T32",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "miniKanren scratch note, update TASKS.md with all new projects, update MEMORY.md"
+      "status": "in-progress",
+      "task": "miniKanren scratch note, update TASKS.md with all new projects, update MEMORY.md",
+      "started": "2026-04-03T18:44:14.208Z"
     },
     {
       "id": "T33",
@@ -340,7 +344,7 @@
       "task": "Extend Boids: add wind force, boundary bounce mode (vs wrap), predator AI that chases boids"
     }
   ],
-  "updated_at": "2026-04-03T18:39:48.602Z",
+  "updated_at": "2026-04-03T18:44:14.208Z",
   "adjustments": [
     {
       "time": "2026-04-03T18:34:01.741Z",
