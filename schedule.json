@@ -249,10 +249,37 @@
       "id": "T24",
       "mode": "BUILD",
       "task": "Blog post: miniKanren vs Prolog — fair search, relational purity, program synthesis",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T21",
-      "started": "2026-04-03T18:11:25.350Z"
+      "started": "2026-04-03T18:11:25.350Z",
+      "completed": "2026-04-03T18:12:51.910Z",
+      "duration_ms": 300000,
+      "summary": "Published blog post: miniKanren vs Prolog — Two Philosophies of Logic Programming (~1500 words). Covers search strategy, relational purity, when to use each, comparison table. Pushed to GitHub Pages."
+    },
+    {
+      "id": "T25",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Dashboard: add miniKanren to projectDepth + vitalStats, regenerate",
+      "started": "2026-04-03T18:13:33.898Z"
+    },
+    {
+      "id": "T26",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Boids: emergent flocking from simple rules, canvas rendering, interactive params",
+      "task": null
     }
   ],
-  "updated_at": "2026-04-03T18:11:25.350Z"
+  "updated_at": "2026-04-03T18:13:33.898Z",
+  "adjustments": [
+    {
+      "time": "2026-04-03T18:13:24.729Z",
+      "msg": "Added T25 (MAINTAIN) after end: Dashboard: add miniKanren to projectDepth + vitalStats, regenerate"
+    },
+    {
+      "time": "2026-04-03T18:13:24.863Z",
+      "msg": "Added T26 (PLAN) after end: Build Boids flocking simulation — separation/cohesion/alignment, interactive web demo, 30+ tests"
+    }
+  ]
 }
