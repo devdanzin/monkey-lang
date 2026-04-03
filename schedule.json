@@ -227,16 +227,20 @@
       "id": "T22",
       "mode": "BUILD",
       "task": "miniKanren core: unification, substitution, streams (interleaving), run/fresh/conde/==/=/= operators, 40+ tests",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T21",
-      "started": "2026-04-03T17:51:14.036Z"
+      "started": "2026-04-03T17:51:14.036Z",
+      "completed": "2026-04-03T18:06:07.710Z",
+      "duration_ms": 600000,
+      "summary": "Built miniKanren core: unification with occurs check, interleaving streams, run/fresh/conde/conj/disj/eq/neq, relational list operations (conso/firsto/resto/membero/appendo), zzz suspension for lazy recursion, symbolo/numbero constraints. 53 tests passing."
     },
     {
       "id": "T23",
       "mode": "BUILD",
       "task": "miniKanren extras: constraints (disequality, absento, symbolo, numbero), type constraints, 20+ more tests",
-      "status": "upcoming",
-      "plan_ref": "T21"
+      "status": "in-progress",
+      "plan_ref": "T21",
+      "started": "2026-04-03T18:06:45.101Z"
     },
     {
       "id": "T24",
@@ -246,5 +250,5 @@
       "plan_ref": "T21"
     }
   ],
-  "updated_at": "2026-04-03T17:51:14.036Z"
+  "updated_at": "2026-04-03T18:06:45.101Z"
 }

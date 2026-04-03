@@ -346,6 +346,116 @@ function numbero(x) {
   };
 }
 
+// absento(t, l) — t does not appear anywhere in l
+function absento(t, l) {
+  return (s) => {
+    const tVal = deepWalk(t, s);
+    const lVal = deepWalk(l, s);
+    if (containsTerm(tVal, lVal)) return EMPTY;
+    return [s, EMPTY];
+  };
+}
+
+function containsTerm(needle, haystack) {
+  if (deepEqual(needle, haystack)) return true;
+  if (Array.isArray(haystack)) return haystack.some(e => containsTerm(needle, e));
+  if (haystack && typeof haystack === 'object' && !isLvar(haystack)) {
+    return Object.values(haystack).some(v => containsTerm(needle, v));
+  }
+  return false;
+}
+
+// conda (soft cut) — like conde but commits to first matching clause
+function conda(...clauses) {
+  return (s) => {
+    for (const clause of clauses) {
+      const goals = Array.isArray(clause) ? clause : [clause];
+      if (goals.length === 0) continue;
+      const firstGoal = goals[0];
+      const testStream = pull(firstGoal(s));
+      if (testStream !== EMPTY) {
+        // First goal of this clause succeeds — commit to this clause
+        const restGoals = goals.slice(1);
+        if (restGoals.length === 0) return testStream;
+        let stream = EMPTY;
+        let cur = testStream;
+        while (cur !== EMPTY) {
+          const goal = conj(...restGoals);
+          stream = mplus(stream, goal(cur[0]));
+          cur = pull(cur[1]);
+        }
+        return stream;
+      }
+    }
+    return EMPTY;
+  };
+}
+
+// condu (committed choice) — like conda but takes only first result
+function condu(...clauses) {
+  return (s) => {
+    for (const clause of clauses) {
+      const goals = Array.isArray(clause) ? clause : [clause];
+      if (goals.length === 0) continue;
+      const firstGoal = goals[0];
+      const testStream = pull(firstGoal(s));
+      if (testStream !== EMPTY) {
+        // Commit to first result of first goal, then run rest
+        const restGoals = goals.slice(1);
+        if (restGoals.length === 0) return [testStream[0], EMPTY]; // only first
+        const goal = conj(...restGoals);
+        return goal(testStream[0]);
+      }
+    }
+    return EMPTY;
+  };
+}
+
+// project — get the value of a logic variable for non-relational computation
+function project(v, fn) {
+  return (s) => {
+    const val = deepWalk(v, s);
+    return fn(val)(s);
+  };
+}
+
+// onceo — like once in Prolog, return only first solution
+function onceo(goal) {
+  return (s) => {
+    const stream = pull(goal(s));
+    if (stream === EMPTY) return EMPTY;
+    return [stream[0], EMPTY];
+  };
+}
+
+// everyo — like forall: verify goal succeeds for every substitution in a stream
+// (checks that a condition holds for all elements)
+function everyo(pred, l) {
+  return conde(
+    [emptyo(l)],
+    [fresh((h, t) => conj(
+      conso(h, t, l),
+      pred(h),
+      zzz(() => everyo(pred, t))
+    ))]
+  );
+}
+
+// lengtho — relate a list to its length
+function lengtho(l, n) {
+  return conde(
+    [emptyo(l), eq(n, 0)],
+    [fresh((h, t, n1) => conj(
+      conso(h, t, l),
+      project(n, nVal => {
+        if (typeof nVal === 'number') return eq(n1, nVal - 1);
+        return succeed; // n is unbound, can't constrain
+      }),
+      zzz(() => lengtho(t, n1))
+    ))]
+  );
+}
+
 // ─── Export ─────────────────────────────────────────
 
 module.exports = {
@@ -363,5 +473,9 @@ module.exports = {
   // Helpers
   toList, fromList, zzz,
   // Constraints
-  symbolo, numbero,
+  symbolo, numbero, absento,
+  // Control
+  conda, condu, onceo, project,
+  // Extended relations
+  everyo, lengtho,
 };
