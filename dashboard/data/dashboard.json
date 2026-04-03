@@ -475,34 +475,57 @@
     {
       "id": "T45",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, dashboard",
-      "started": "2026-04-03T20:21:32.822Z"
+      "started": "2026-04-03T20:21:32.822Z",
+      "completed": "2026-04-03T20:22:35.445Z",
+      "duration_ms": 60000,
+      "summary": "Git pushed, dashboard server healthy, generate.cjs hung (gh timeout, known issue). CI all green."
     },
     {
       "id": "T46",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "WASM GC direction: mark-sweep vs copying, what data to collect, integration with existing WASM backend"
+      "status": "done",
+      "task": "WASM GC direction: mark-sweep vs copying, what data to collect, integration with existing WASM backend",
+      "started": "2026-04-03T20:22:50.849Z",
+      "completed": "2026-04-03T20:26:48.467Z",
+      "duration_ms": 180000,
+      "summary": "WASM GC already built (580 LOC, 19 tests). Closures and hash maps also done. 304 WASM tests, 3 failing (perf thresholds only). Pivoting: build regex engine from scratch (Thompson NFA + DFA subset construction). Deep CS, great blog material."
     },
     {
       "id": "T47",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "skipped",
       "goal": "Build WASM garbage collector for Monkey lang",
-      "task": null
+      "task": null,
+      "skip_reason": "WASM GC already done, pivoting to regex engine"
     },
     {
       "id": "T48",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "skipped",
+      "task": null,
+      "skip_reason": "Replaced"
     },
     {
       "id": "T49",
       "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Housekeeping + knowledge capture",
+      "started": "2026-04-03T20:27:35.200Z"
+    },
+    {
+      "id": "T56",
+      "mode": "PLAN",
       "status": "upcoming",
-      "task": "Housekeeping + knowledge capture"
+      "goal": "Build regex engine from scratch: Thompson NFA, DFA subset construction, matcher",
+      "task": null
+    },
+    {
+      "id": "T57",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
     },
     {
       "id": "T50",
@@ -519,15 +542,17 @@
     {
       "id": "T52",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "skipped",
       "goal": "WASM closures + hash maps (extending GC foundation)",
-      "task": null
+      "task": null,
+      "skip_reason": "WASM closures already done"
     },
     {
       "id": "T53",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "skipped",
+      "task": null,
+      "skip_reason": "Replaced"
     },
     {
       "id": "T54",
@@ -537,17 +562,17 @@
     }
   ],
   "current": {
-    "id": "T45",
+    "id": "T49",
     "mode": "MAINTAIN",
     "status": "in-progress",
-    "task": "Housekeeping: git push, dashboard",
-    "started": "2026-04-03T20:21:32.822Z"
+    "task": "Housekeeping + knowledge capture",
+    "started": "2026-04-03T20:27:35.200Z"
   },
   "stats": {
-    "completed": 45,
+    "completed": 47,
     "yielded": 0,
-    "skipped": 0,
-    "total_duration_ms": 8416000
+    "skipped": 4,
+    "total_duration_ms": 8656000
   },
-  "updated_at": "2026-04-03T20:21:32.822Z"
+  "updated_at": "2026-04-03T20:27:35.200Z"
 }
