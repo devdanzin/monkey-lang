@@ -14,15 +14,44 @@
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Complete Prolog interpreter expansion — investigate orphaned work, expand tests, add missing features",
-      "task": null
+      "task": null,
+      "started": "2026-04-03T14:20:43.142Z",
+      "completed": "2026-04-03T14:21:10.280Z",
+      "duration_ms": 60000,
+      "summary": "Planned 4 BUILD tasks: unify engine+parser, add builtins, expand tests to 50+, integration with classic programs"
     },
     {
       "id": "T3",
       "mode": "BUILD",
+      "status": "done",
+      "task": "Unify engine with terms.js + parser: consult() and queryString() methods, cut support, comparison operators",
+      "plan_ref": "T2",
+      "started": "2026-04-03T14:21:48.154Z",
+      "completed": "2026-04-03T17:05:13.013Z",
+      "duration_ms": 600000,
+      "summary": "Unified engine with terms.js+parser: consult/queryString, cut support, comparison operators, occurs check. 57 tests all passing."
+    },
+    {
+      "id": "T15",
+      "mode": "BUILD",
+      "task": "Add list builtins (append/member/length/reverse/nth/last/sort), assert/retract, findall/bagof, type checks, if-then-else",
       "status": "upcoming",
-      "task": null,
+      "plan_ref": "T2"
+    },
+    {
+      "id": "T16",
+      "mode": "BUILD",
+      "task": "Expand test suite to 50+ tests: parser tests, builtin tests, classic Prolog programs (hanoi, quicksort, eight queens)",
+      "status": "upcoming",
+      "plan_ref": "T2"
+    },
+    {
+      "id": "T17",
+      "mode": "BUILD",
+      "task": "Integration: run classic Prolog programs from text, end-to-end verification, git push",
+      "status": "upcoming",
       "plan_ref": "T2"
     },
     {
@@ -98,10 +127,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 1,
+    "completed": 3,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 120000
+    "total_duration_ms": 780000
   },
-  "updated_at": "2026-04-03T14:19:50.143Z"
+  "updated_at": "2026-04-03T17:05:13.013Z"
 }
