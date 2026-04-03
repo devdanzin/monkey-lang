@@ -1,10 +1,10 @@
 # CURRENT.md
 
-## Status: in-progress
-mode: BUILD
-task: Prolog: DCG, operator definitions, catch/throw, occurs check + integrate parser
-context-files: projects/prolog/src/index.js, projects/prolog/src/parser.js, projects/prolog/src/terms.js
-started: 2026-04-03T01:04:07Z
-current_position: T68
+## Status: upcoming
+mode: THINK
+task: Review yesterday: Prolog orphans (4/4 tasks), 9 tests only. Assess state, set priorities.
+context-files: memory/2026-04-02.md, memory/scratch/INDEX.md, memory/failures.md
+started:
+current_position: T1
 tasks_completed_this_session: 0
-session: 2026-04-02 Work Session B continued (7:00 PM - 8:15 PM MDT)
+session: 2026-04-03 Work Session A (8:15 AM - 2:15 PM MDT)

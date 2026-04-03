@@ -1,15 +1,15 @@
 {
   "lastChecks": {
-    "email": 1743504960,
-    "github": 1743504960,
-    "version": 1743504960,
-    "dashboard": 1743504960
+    "email": 1743674460,
+    "github": 1743674460,
+    "version": 1743674460,
+    "dashboard": 1743674460
   },
   "notes": {
-    "openclaw_latest": "2026.3.31",
-    "openclaw_current": "2026.3.24",
+    "openclaw_latest": "2026.4.1",
+    "openclaw_current": "2026.3.28",
     "issue_31448": "CLOSED — webhook fix confirmed included",
     "upgrade_ready": true,
-    "unread_emails": "15 unread (IDs 3-17), likely GitHub notifications"
+    "unread_emails": "0 unread"
   }
 }
