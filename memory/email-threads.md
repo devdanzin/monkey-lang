@@ -20,5 +20,5 @@
 
 ## OpenClaw #51171 (GitHub)
 - **Subject:** Bug: Voice/audio messages via Telegram delivered twice
-- **Status:** Closed — ramshenoy confirmed workaround is stable, happy with response.
-- **Next action:** None. Can archive this thread.
+- **Status:** Closed — archived.
+- **Next action:** None.
