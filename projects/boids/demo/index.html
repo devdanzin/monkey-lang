@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boids — Flocking Simulation</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0a; color: #e0e0e0; font-family: system-ui, sans-serif; overflow: hidden; }
+  canvas { display: block; }
+  #controls {
+    position: fixed; top: 10px; right: 10px; background: rgba(20,20,30,0.85);
+    padding: 16px; border-radius: 12px; width: 260px; backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1); z-index: 10;
+  }
+  #controls h2 { margin-bottom: 10px; font-size: 16px; color: #88ccff; }
+  .control { margin-bottom: 8px; }
+  .control label { display: block; font-size: 12px; color: #aaa; margin-bottom: 2px; }
+  .control input[type="range"] { width: 100%; accent-color: #88ccff; }
+  .control .val { float: right; font-size: 11px; color: #88ccff; }
+  #stats {
+    position: fixed; bottom: 10px; left: 10px; background: rgba(20,20,30,0.7);
+    padding: 8px 14px; border-radius: 8px; font-size: 12px; color: #aaa;
+  }
+  #info {
+    position: fixed; top: 10px; left: 10px; background: rgba(20,20,30,0.7);
+    padding: 8px 14px; border-radius: 8px; font-size: 12px; color: #888;
+  }
+  button {
+    width: 100%; padding: 6px; margin-top: 6px; background: rgba(136,204,255,0.15);
+    border: 1px solid rgba(136,204,255,0.3); color: #88ccff; border-radius: 6px;
+    cursor: pointer; font-size: 12px;
+  }
+  button:hover { background: rgba(136,204,255,0.25); }
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<div id="info">
+  Click: add obstacle · Shift+Click: add predator · Space: reset
+</div>
+
+<div id="controls">
+  <h2>🐦 Boids</h2>
+  <div class="control">
+    <label>Boids <span class="val" id="vCount">200</span></label>
+    <input type="range" id="sCount" min="10" max="500" value="200">
+  </div>
+  <div class="control">
+    <label>Separation <span class="val" id="vSep">1.5</span></label>
+    <input type="range" id="sSep" min="0" max="5" step="0.1" value="1.5">
+  </div>
+  <div class="control">
+    <label>Alignment <span class="val" id="vAli">1.0</span></label>
+    <input type="range" id="sAli" min="0" max="5" step="0.1" value="1.0">
+  </div>
+  <div class="control">
+    <label>Cohesion <span class="val" id="vCoh">1.0</span></label>
+    <input type="range" id="sCoh" min="0" max="5" step="0.1" value="1.0">
+  </div>
+  <div class="control">
+    <label>Max Speed <span class="val" id="vSpd">4</span></label>
+    <input type="range" id="sSpd" min="1" max="10" step="0.5" value="4">
+  </div>
+  <div class="control">
+    <label>Perception <span class="val" id="vPerc">50</span></label>
+    <input type="range" id="sPerc" min="10" max="150" step="5" value="50">
+  </div>
+  <button id="btnReset">Reset</button>
+  <button id="btnClear">Clear Obstacles</button>
+</div>
+
+<div id="stats"></div>
+
+<script>
+// ─── Inline Boids Engine (browser version) ──────────
+
+class Vec2 {
+  constructor(x=0,y=0) { this.x=x; this.y=y; }
+  add(v) { return new Vec2(this.x+v.x, this.y+v.y); }
+  sub(v) { return new Vec2(this.x-v.x, this.y-v.y); }
+  mul(s) { return new Vec2(this.x*s, this.y*s); }
+  div(s) { return new Vec2(this.x/s, this.y/s); }
+  length() { return Math.sqrt(this.x*this.x+this.y*this.y); }
+  lengthSq() { return this.x*this.x+this.y*this.y; }
+  normalize() { const l=this.length(); return l>0?this.div(l):new Vec2(); }
+  limit(m) { return this.lengthSq()>m*m?this.normalize().mul(m):this; }
+  dist(v) { return this.sub(v).length(); }
+  distSq(v) { return this.sub(v).lengthSq(); }
+  angle() { return Math.atan2(this.y, this.x); }
+  dot(v) { return this.x*v.x+this.y*v.y; }
+}
+
+class SpatialGrid {
+  constructor(w,h,cs) {
+    this.cs=cs; this.cols=Math.ceil(w/cs); this.rows=Math.ceil(h/cs);
+    this.cells=new Array(this.cols*this.rows); this.clear();
+  }
+  clear() { for(let i=0;i<this.cells.length;i++) this.cells[i]=[]; }
+  insert(b) {
+    const c=((Math.floor(b.y/this.cs)%this.rows+this.rows)%this.rows)*this.cols+
+             ((Math.floor(b.x/this.cs)%this.cols+this.cols)%this.cols);
+    this.cells[c].push(b);
+  }
+  neighbors(bx,by,r) {
+    const res=[], cells=Math.ceil(r/this.cs), cx=Math.floor(bx/this.cs), cy=Math.floor(by/this.cs), r2=r*r;
+    for(let dy=-cells;dy<=cells;dy++) for(let dx=-cells;dx<=cells;dx++) {
+      const col=((cx+dx)%this.cols+this.cols)%this.cols;
+      const row=((cy+dy)%this.rows+this.rows)%this.rows;
+      for(const o of this.cells[row*this.cols+col]) {
+        const d2=(bx-o.x)*(bx-o.x)+(by-o.y)*(by-o.y);
+        if(d2>0&&d2<r2) res.push(o);
+      }
+    }
+    return res;
+  }
+}
+
+// Config
+let W, H;
+let boids = [];
+let obstacles = [];
+let predators = [];
+let config = {
+  count: 200, maxSpeed: 4, maxForce: 0.1,
+  sepR: 25, aliR: 50, cohR: 50,
+  sepW: 1.5, aliW: 1.0, cohW: 1.0
+};
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+function init() {
+  boids = [];
+  for (let i = 0; i < config.count; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 1 + Math.random() * 2;
+    boids.push({
+      x: Math.random() * W, y: Math.random() * H,
+      vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+      ax: 0, ay: 0
+    });
+  }
+}
+
+function updateBoids() {
+  const r = Math.max(config.sepR, config.aliR, config.cohR);
+  const grid = new SpatialGrid(W, H, r);
+  for (const b of boids) grid.insert(b);
+
+  for (const b of boids) {
+    const n = grid.neighbors(b.x, b.y, r);
+    let sx=0,sy=0,sc=0; // separation
+    let ax=0,ay=0,ac=0; // alignment
+    let cx=0,cy=0,cc=0; // cohesion
+
+    for (const o of n) {
+      const dx=b.x-o.x, dy=b.y-o.y, d=Math.sqrt(dx*dx+dy*dy);
+      if (d < config.sepR && d > 0) { sx+=dx/d/d; sy+=dy/d/d; sc++; }
+      if (d < config.aliR) { ax+=o.vx; ay+=o.vy; ac++; }
+      if (d < config.cohR) { cx+=o.x; cy+=o.y; cc++; }
+    }
+
+    b.ax=0; b.ay=0;
+
+    if(sc>0) { sx/=sc; sy/=sc; const l=Math.sqrt(sx*sx+sy*sy); if(l>0){sx=sx/l*config.maxSpeed-b.vx;sy=sy/l*config.maxSpeed-b.vy;const sl=Math.sqrt(sx*sx+sy*sy);if(sl>config.maxForce){sx=sx/sl*config.maxForce;sy=sy/sl*config.maxForce;}} b.ax+=sx*config.sepW; b.ay+=sy*config.sepW; }
+    if(ac>0) { ax/=ac; ay/=ac; const l=Math.sqrt(ax*ax+ay*ay); if(l>0){ax=ax/l*config.maxSpeed-b.vx;ay=ay/l*config.maxSpeed-b.vy;const sl=Math.sqrt(ax*ax+ay*ay);if(sl>config.maxForce){ax=ax/sl*config.maxForce;ay=ay/sl*config.maxForce;}} b.ax+=ax*config.aliW; b.ay+=ay*config.aliW; }
+    if(cc>0) { cx=cx/cc-b.x; cy=cy/cc-b.y; const l=Math.sqrt(cx*cx+cy*cy); if(l>0){cx=cx/l*config.maxSpeed-b.vx;cy=cy/l*config.maxSpeed-b.vy;const sl=Math.sqrt(cx*cx+cy*cy);if(sl>config.maxForce){cx=cx/sl*config.maxForce;cy=cy/sl*config.maxForce;}} b.ax+=cx*config.cohW; b.ay+=cy*config.cohW; }
+
+    // Obstacle avoidance
+    for (const obs of obstacles) {
+      const dx=b.x-obs.x, dy=b.y-obs.y, d=Math.sqrt(dx*dx+dy*dy);
+      if(d<obs.r+80) { const u=1-d/(obs.r+80); b.ax+=dx/d*u*2; b.ay+=dy/d*u*2; }
+    }
+
+    // Predator flee
+    for (const p of predators) {
+      const dx=b.x-p.x, dy=b.y-p.y, d=Math.sqrt(dx*dx+dy*dy);
+      if(d<150) { const u=1-d/150; b.ax+=dx/d*u*3; b.ay+=dy/d*u*3; }
+    }
+  }
+
+  for (const b of boids) {
+    b.vx+=b.ax; b.vy+=b.ay;
+    const v=Math.sqrt(b.vx*b.vx+b.vy*b.vy);
+    if(v>config.maxSpeed) { b.vx=b.vx/v*config.maxSpeed; b.vy=b.vy/v*config.maxSpeed; }
+    b.x+=b.vx; b.y+=b.vy;
+    if(b.x>W)b.x-=W; if(b.x<0)b.x+=W;
+    if(b.y>H)b.y-=H; if(b.y<0)b.y+=H;
+  }
+}
+
+function draw() {
+  ctx.fillStyle = 'rgba(10,10,10,0.15)';
+  ctx.fillRect(0, 0, W, H);
+
+  // Draw obstacles
+  ctx.fillStyle = 'rgba(255,100,100,0.3)';
+  ctx.strokeStyle = 'rgba(255,100,100,0.5)';
+  for (const obs of obstacles) {
+    ctx.beginPath(); ctx.arc(obs.x, obs.y, obs.r, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+  }
+
+  // Draw predators
+  ctx.fillStyle = '#ff4444';
+  for (const p of predators) {
+    ctx.beginPath(); ctx.arc(p.x, p.y, 8, 0, Math.PI*2); ctx.fill();
+  }
+
+  // Draw boids
+  for (const b of boids) {
+    const angle = Math.atan2(b.vy, b.vx);
+    const speed = Math.sqrt(b.vx*b.vx+b.vy*b.vy);
+    const hue = (angle / Math.PI * 180 + 360) % 360;
+    ctx.save();
+    ctx.translate(b.x, b.y);
+    ctx.rotate(angle);
+    ctx.fillStyle = `hsla(${hue}, 70%, 60%, 0.8)`;
+    ctx.beginPath();
+    ctx.moveTo(8, 0);
+    ctx.lineTo(-4, 3);
+    ctx.lineTo(-4, -3);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // Stats
+  let avgVx=0, avgVy=0;
+  for(const b of boids) { avgVx+=b.vx; avgVy+=b.vy; }
+  avgVx/=boids.length; avgVy/=boids.length;
+  const alignment = Math.sqrt(avgVx*avgVx+avgVy*avgVy) / config.maxSpeed;
+  document.getElementById('stats').textContent =
+    `${boids.length} boids · alignment: ${(alignment*100).toFixed(0)}% · ${obstacles.length} obstacles · ${predators.length} predators`;
+}
+
+function loop() {
+  updateBoids();
+  draw();
+  requestAnimationFrame(loop);
+}
+
+// ─── Controls ───────────────────────────────────────
+
+function bindSlider(id, prop, valId, transform = v => v) {
+  const el = document.getElementById(id);
+  el.addEventListener('input', () => {
+    const val = transform(parseFloat(el.value));
+    config[prop] = val;
+    document.getElementById(valId).textContent = el.value;
+    if (prop === 'count') {
+      while (boids.length < val) {
+        const angle = Math.random() * Math.PI * 2;
+        boids.push({x:Math.random()*W,y:Math.random()*H,vx:Math.cos(angle)*2,vy:Math.sin(angle)*2,ax:0,ay:0});
+      }
+      while (boids.length > val) boids.pop();
+    }
+  });
+}
+
+bindSlider('sCount', 'count', 'vCount');
+bindSlider('sSep', 'sepW', 'vSep');
+bindSlider('sAli', 'aliW', 'vAli');
+bindSlider('sCoh', 'cohW', 'vCoh');
+bindSlider('sSpd', 'maxSpeed', 'vSpd');
+bindSlider('sPerc', 'aliR', 'vPerc', v => { config.cohR = v; config.sepR = v/2; return v; });
+
+document.getElementById('btnReset').addEventListener('click', () => { init(); obstacles=[]; predators=[]; });
+document.getElementById('btnClear').addEventListener('click', () => { obstacles=[]; predators=[]; });
+
+canvas.addEventListener('click', (e) => {
+  if (e.shiftKey) {
+    predators.push({x: e.clientX, y: e.clientY});
+  } else {
+    obstacles.push({x: e.clientX, y: e.clientY, r: 20 + Math.random()*20});
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'Space') { e.preventDefault(); init(); obstacles=[]; predators=[]; }
+});
+
+init();
+loop();
+</script>
+</body>
+</html>

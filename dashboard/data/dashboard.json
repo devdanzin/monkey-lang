@@ -281,16 +281,20 @@
       "id": "T27",
       "mode": "BUILD",
       "task": "Boids core: Vec2, Boid class (separation/cohesion/alignment), Flock simulation, spatial grid, 40+ tests",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T26",
-      "started": "2026-04-03T18:17:07.679Z"
+      "started": "2026-04-03T18:17:07.679Z",
+      "completed": "2026-04-03T18:26:03.932Z",
+      "duration_ms": 600000,
+      "summary": "Built Boids flocking simulation: Vec2 (18 methods), Boid (physics, edge wrapping), SpatialGrid (O(n) neighbor lookup), Flock (separation/alignment/cohesion, obstacles, predators, stats). 49 tests: vec2 math, boid physics, grid, emergent behavior, predator avoidance."
     },
     {
       "id": "T28",
       "mode": "BUILD",
       "task": "Boids web demo: canvas rendering, interactive sliders, predator/obstacle mode, deploy to GitHub Pages",
-      "status": "upcoming",
-      "plan_ref": "T26"
+      "status": "in-progress",
+      "plan_ref": "T26",
+      "started": "2026-04-03T18:26:37.111Z"
     },
     {
       "id": "T29",
@@ -301,18 +305,18 @@
     }
   ],
   "current": {
-    "id": "T27",
+    "id": "T28",
     "mode": "BUILD",
-    "task": "Boids core: Vec2, Boid class (separation/cohesion/alignment), Flock simulation, spatial grid, 40+ tests",
+    "task": "Boids web demo: canvas rendering, interactive sliders, predator/obstacle mode, deploy to GitHub Pages",
     "status": "in-progress",
     "plan_ref": "T26",
-    "started": "2026-04-03T18:17:07.679Z"
+    "started": "2026-04-03T18:26:37.111Z"
   },
   "stats": {
-    "completed": 26,
+    "completed": 27,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 4780000
+    "total_duration_ms": 5380000
   },
-  "updated_at": "2026-04-03T18:17:07.679Z"
+  "updated_at": "2026-04-03T18:26:37.111Z"
 }
