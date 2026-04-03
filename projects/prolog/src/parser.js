@@ -241,14 +241,14 @@ class Parser {
         const right = this.parseTerm(prec - 1);
         left = new Compound(op, [left, right]);
       } else if (tok.type === TokenType.SEMI) {
-        if (700 > maxPrec) break;
+        if (1100 > maxPrec) break;
         this.advance();
-        const right = this.parseTerm(699);
+        const right = this.parseTerm(1099);
         left = new Compound(';', [left, right]);
       } else if (tok.type === TokenType.ARROW) {
-        if (700 > maxPrec) break;
+        if (1050 > maxPrec) break;
         this.advance();
-        const then = this.parseTerm(699);
+        const then = this.parseTerm(1049);
         left = new Compound('->', [left, then]);
       } else {
         break;

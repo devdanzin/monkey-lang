@@ -37,15 +37,23 @@
       "id": "T15",
       "mode": "BUILD",
       "task": "Add list builtins (append/member/length/reverse/nth/last/sort), assert/retract, findall/bagof, type checks, if-then-else",
-      "status": "upcoming",
-      "plan_ref": "T2"
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-04-03T17:05:41.302Z",
+      "completed": "2026-04-03T17:05:41.568Z",
+      "duration_ms": 10000,
+      "summary": "Already implemented in T3: all list builtins, assert/retract, findall, type checks, if-then-else already in engine with 57 tests passing."
     },
     {
       "id": "T16",
       "mode": "BUILD",
       "task": "Expand test suite to 50+ tests: parser tests, builtin tests, classic Prolog programs (hanoi, quicksort, eight queens)",
-      "status": "upcoming",
-      "plan_ref": "T2"
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-04-03T17:05:50.650Z",
+      "completed": "2026-04-03T17:09:26.973Z",
+      "duration_ms": 300000,
+      "summary": "Expanded test suite to 83 tests: classic programs (hanoi, quicksort, 4-queens, permutations, GCD, fibonacci, factorial, Peano arithmetic, palindrome, map coloring, path finding, subsets), parser tests, list operations, higher-order patterns. Fixed parser precedence for ; and ->."
     },
     {
       "id": "T17",
@@ -125,5 +133,5 @@
       "task": "Research: emergent behavior in multi-agent systems or swarm intelligence"
     }
   ],
-  "updated_at": "2026-04-03T17:05:13.013Z"
+  "updated_at": "2026-04-03T17:09:26.973Z"
 }
