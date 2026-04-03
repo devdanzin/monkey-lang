@@ -201,14 +201,64 @@
       "completed": "2026-04-03T17:48:50.250Z",
       "duration_ms": 300000,
       "summary": "Explored swarm intelligence: Boids (3 rules → flocking), ACO (pheromone trails for discrete optimization), PSO (velocity+position for continuous optimization). Wrote scratch note. Best next project: swarm simulation suite with interactive web demo."
+    },
+    {
+      "id": "T20",
+      "mode": "THINK",
+      "status": "done",
+      "task": "THINK: Choose next project — miniKanren or Boids simulation. Both tie to today's research.",
+      "started": "2026-04-03T17:49:47.230Z",
+      "completed": "2026-04-03T17:50:15.128Z",
+      "duration_ms": 30000,
+      "summary": "Decision: build miniKanren in JS. Directly extends Prolog theme, demonstrates fair search vs depth-first, ~200 LOC core. Plan: core + tests + blog post, then either extend or Boids."
+    },
+    {
+      "id": "T21",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Build miniKanren in JS: unification, interleaving search, run/fresh/conde/==",
+      "task": null,
+      "started": "2026-04-03T17:50:44.056Z",
+      "completed": "2026-04-03T17:50:59.901Z",
+      "duration_ms": 30000,
+      "summary": "Planned 3 BUILD tasks: miniKanren core (40+ tests), extras (constraints, 20+ tests), blog post."
+    },
+    {
+      "id": "T22",
+      "mode": "BUILD",
+      "task": "miniKanren core: unification, substitution, streams (interleaving), run/fresh/conde/==/=/= operators, 40+ tests",
+      "status": "in-progress",
+      "plan_ref": "T21",
+      "started": "2026-04-03T17:51:14.036Z"
+    },
+    {
+      "id": "T23",
+      "mode": "BUILD",
+      "task": "miniKanren extras: constraints (disequality, absento, symbolo, numbero), type constraints, 20+ more tests",
+      "status": "upcoming",
+      "plan_ref": "T21"
+    },
+    {
+      "id": "T24",
+      "mode": "BUILD",
+      "task": "Blog post: miniKanren vs Prolog — fair search, relational purity, program synthesis",
+      "status": "upcoming",
+      "plan_ref": "T21"
     }
   ],
-  "current": null,
+  "current": {
+    "id": "T22",
+    "mode": "BUILD",
+    "task": "miniKanren core: unification, substitution, streams (interleaving), run/fresh/conde/==/=/= operators, 40+ tests",
+    "status": "in-progress",
+    "plan_ref": "T21",
+    "started": "2026-04-03T17:51:14.036Z"
+  },
   "stats": {
-    "completed": 19,
+    "completed": 21,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 3370000
+    "total_duration_ms": 3430000
   },
-  "updated_at": "2026-04-03T17:48:50.250Z"
+  "updated_at": "2026-04-03T17:51:14.036Z"
 }

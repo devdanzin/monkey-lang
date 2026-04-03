@@ -1,0 +1,6 @@
+{
+  "name": "minikanren",
+  "version": "0.1.0",
+  "description": "miniKanren relational programming in JavaScript",
+  "main": "src/index.js"
+}
