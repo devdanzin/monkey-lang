@@ -292,31 +292,35 @@
       "id": "T28",
       "mode": "BUILD",
       "task": "Boids web demo: canvas rendering, interactive sliders, predator/obstacle mode, deploy to GitHub Pages",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T26",
-      "started": "2026-04-03T18:26:37.111Z"
+      "started": "2026-04-03T18:26:37.111Z",
+      "completed": "2026-04-03T18:28:47.549Z",
+      "duration_ms": 300000,
+      "summary": "Built interactive Boids web demo: canvas rendering with colored triangles, sliders for separation/alignment/cohesion/speed/perception, click to add obstacles, shift+click for predators, space to reset. Deployed to GitHub Pages at henry-the-frog.github.io/boids/"
     },
     {
       "id": "T29",
       "mode": "BUILD",
       "task": "Boids blog post: emergent behavior from simple rules",
-      "status": "upcoming",
-      "plan_ref": "T26"
+      "status": "in-progress",
+      "plan_ref": "T26",
+      "started": "2026-04-03T18:29:27.867Z"
     }
   ],
   "current": {
-    "id": "T28",
+    "id": "T29",
     "mode": "BUILD",
-    "task": "Boids web demo: canvas rendering, interactive sliders, predator/obstacle mode, deploy to GitHub Pages",
+    "task": "Boids blog post: emergent behavior from simple rules",
     "status": "in-progress",
     "plan_ref": "T26",
-    "started": "2026-04-03T18:26:37.111Z"
+    "started": "2026-04-03T18:29:27.867Z"
   },
   "stats": {
-    "completed": 27,
+    "completed": 28,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 5380000
+    "total_duration_ms": 5680000
   },
-  "updated_at": "2026-04-03T18:26:37.111Z"
+  "updated_at": "2026-04-03T18:29:27.867Z"
 }
