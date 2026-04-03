@@ -343,23 +343,45 @@
     {
       "id": "T33",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Extend Boids: add wind force, boundary bounce mode (vs wrap), predator AI that chases boids",
-      "started": "2026-04-03T18:47:37.816Z"
+      "started": "2026-04-03T18:47:37.816Z",
+      "completed": "2026-04-03T18:54:47.333Z",
+      "duration_ms": 300000,
+      "summary": "Extended Boids: wind force (configurable direction), 3 boundary modes (wrap/bounce/steer), AI predator that chases nearest boid. 59 tests, all passing."
+    },
+    {
+      "id": "T34",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Prolog: add more tests (DCG advanced, arithmetic edge cases, parser stress tests) push toward 150",
+      "started": "2026-04-03T18:55:51.929Z"
+    },
+    {
+      "id": "T35",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Prolog scratch note update, Boids scratch note, update INDEX.md"
+    },
+    {
+      "id": "T36",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final session push: git push, dashboard regenerate, CURRENT.md session-ended"
     }
   ],
   "current": {
-    "id": "T33",
+    "id": "T34",
     "mode": "BUILD",
     "status": "in-progress",
-    "task": "Extend Boids: add wind force, boundary bounce mode (vs wrap), predator AI that chases boids",
-    "started": "2026-04-03T18:47:37.816Z"
+    "task": "Prolog: add more tests (DCG advanced, arithmetic edge cases, parser stress tests) push toward 150",
+    "started": "2026-04-03T18:55:51.929Z"
   },
   "stats": {
-    "completed": 32,
+    "completed": 33,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 6520000
+    "total_duration_ms": 6820000
   },
-  "updated_at": "2026-04-03T18:47:37.816Z"
+  "updated_at": "2026-04-03T18:55:51.929Z"
 }
