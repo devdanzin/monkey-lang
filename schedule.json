@@ -259,27 +259,46 @@
     {
       "id": "T25",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Dashboard: add miniKanren to projectDepth + vitalStats, regenerate",
-      "started": "2026-04-03T18:13:33.898Z"
+      "started": "2026-04-03T18:13:33.898Z",
+      "completed": "2026-04-03T18:16:03.506Z",
+      "duration_ms": 120000,
+      "summary": "Dashboard updated: miniKanren added, 2714 total tests. Git pushed."
     },
     {
       "id": "T26",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Boids: emergent flocking from simple rules, canvas rendering, interactive params",
-      "task": null
-    }
-  ],
-  "updated_at": "2026-04-03T18:13:33.898Z",
-  "adjustments": [
-    {
-      "time": "2026-04-03T18:13:24.729Z",
-      "msg": "Added T25 (MAINTAIN) after end: Dashboard: add miniKanren to projectDepth + vitalStats, regenerate"
+      "task": null,
+      "started": "2026-04-03T18:16:29.085Z",
+      "completed": "2026-04-03T18:16:59.765Z",
+      "duration_ms": 30000,
+      "summary": "Planned 3 BUILD tasks: Boids core (Vec2, Flock, spatial grid, 40+ tests), web demo, blog post."
     },
     {
-      "time": "2026-04-03T18:13:24.863Z",
-      "msg": "Added T26 (PLAN) after end: Build Boids flocking simulation — separation/cohesion/alignment, interactive web demo, 30+ tests"
+      "id": "T27",
+      "mode": "BUILD",
+      "task": "Boids core: Vec2, Boid class (separation/cohesion/alignment), Flock simulation, spatial grid, 40+ tests",
+      "status": "in-progress",
+      "plan_ref": "T26",
+      "started": "2026-04-03T18:17:07.679Z"
+    },
+    {
+      "id": "T28",
+      "mode": "BUILD",
+      "task": "Boids web demo: canvas rendering, interactive sliders, predator/obstacle mode, deploy to GitHub Pages",
+      "status": "upcoming",
+      "plan_ref": "T26"
+    },
+    {
+      "id": "T29",
+      "mode": "BUILD",
+      "task": "Boids blog post: emergent behavior from simple rules",
+      "status": "upcoming",
+      "plan_ref": "T26"
     }
-  ]
+  ],
+  "updated_at": "2026-04-03T18:17:07.679Z"
 }

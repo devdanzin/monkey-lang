@@ -1,0 +1,6 @@
+{
+  "name": "boids",
+  "version": "0.1.0",
+  "description": "Boids flocking simulation — emergent behavior from simple rules",
+  "main": "src/index.js"
+}
