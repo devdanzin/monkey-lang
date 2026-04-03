@@ -59,8 +59,9 @@
       "id": "T17",
       "mode": "BUILD",
       "task": "Integration: run classic Prolog programs from text, end-to-end verification, git push",
-      "status": "upcoming",
-      "plan_ref": "T2"
+      "status": "in-progress",
+      "plan_ref": "T2",
+      "started": "2026-04-03T17:10:04.669Z"
     },
     {
       "id": "T4",
@@ -133,12 +134,19 @@
       "task": "Research: emergent behavior in multi-agent systems or swarm intelligence"
     }
   ],
-  "current": null,
+  "current": {
+    "id": "T17",
+    "mode": "BUILD",
+    "task": "Integration: run classic Prolog programs from text, end-to-end verification, git push",
+    "status": "in-progress",
+    "plan_ref": "T2",
+    "started": "2026-04-03T17:10:04.669Z"
+  },
   "stats": {
     "completed": 5,
     "yielded": 0,
     "skipped": 0,
     "total_duration_ms": 1090000
   },
-  "updated_at": "2026-04-03T17:09:26.973Z"
+  "updated_at": "2026-04-03T17:10:04.669Z"
 }
