@@ -24,6 +24,12 @@ const DEFAULT_CONFIG = {
   cohesionWeight: 1.0,
   avoidanceRadius: 100,
   avoidanceWeight: 2.0,
+  boundaryMode: 'wrap', // 'wrap' | 'bounce' | 'steer'
+  boundaryMargin: 50,
+  windX: 0,
+  windY: 0,
+  predatorSpeed: 3,
+  predatorChase: true, // AI predator chases nearest boid
 };
 
 class Flock {
@@ -82,12 +88,37 @@ class Flock {
       boid.applyForce(coh.mul(this.config.cohesionWeight));
       boid.applyForce(avoid.mul(this.config.avoidanceWeight));
       boid.applyForce(flee.mul(3.0)); // strong flee
+
+      // Wind force
+      if (this.config.windX !== 0 || this.config.windY !== 0) {
+        boid.applyForce(new Vec2(this.config.windX, this.config.windY));
+      }
+
+      // Boundary steering (for 'steer' mode)
+      if (this.config.boundaryMode === 'steer') {
+        boid.applyForce(this._boundarySteer(boid));
+      }
+    }
+
+    // Update predator AI
+    if (this.config.predatorChase) {
+      this._updatePredators(dt);
     }
 
     // Update positions
     for (const boid of this.boids) {
       boid.update(this.config.maxSpeed, dt);
-      boid.wrapEdges(this.config.width, this.config.height);
+      if (this.config.boundaryMode === 'wrap') {
+        boid.wrapEdges(this.config.width, this.config.height);
+      } else if (this.config.boundaryMode === 'bounce') {
+        this._bounceEdges(boid);
+      }
+      // 'steer' mode: boids steer away from edges (handled in forces above)
+      // but still clamp as safety net
+      if (this.config.boundaryMode === 'steer') {
+        boid.position.x = Math.max(0, Math.min(this.config.width, boid.position.x));
+        boid.position.y = Math.max(0, Math.min(this.config.height, boid.position.y));
+      }
     }
   }
 
@@ -164,6 +195,48 @@ class Flock {
       }
     }
     return steer.limit(this.config.maxForce * 2);
+  }
+
+  _bounceEdges(boid) {
+    const w = this.config.width;
+    const h = this.config.height;
+    if (boid.position.x <= 0) { boid.position.x = 0; boid.velocity.x = Math.abs(boid.velocity.x); }
+    if (boid.position.x >= w) { boid.position.x = w; boid.velocity.x = -Math.abs(boid.velocity.x); }
+    if (boid.position.y <= 0) { boid.position.y = 0; boid.velocity.y = Math.abs(boid.velocity.y); }
+    if (boid.position.y >= h) { boid.position.y = h; boid.velocity.y = -Math.abs(boid.velocity.y); }
+  }
+
+  _boundarySteer(boid) {
+    const margin = this.config.boundaryMargin;
+    const w = this.config.width;
+    const h = this.config.height;
+    const force = this.config.maxForce * 2;
+    let steer = new Vec2(0, 0);
+    if (boid.position.x < margin) steer.x = force * (1 - boid.position.x / margin);
+    if (boid.position.x > w - margin) steer.x = -force * (1 - (w - boid.position.x) / margin);
+    if (boid.position.y < margin) steer.y = force * (1 - boid.position.y / margin);
+    if (boid.position.y > h - margin) steer.y = -force * (1 - (h - boid.position.y) / margin);
+    return steer;
+  }
+
+  _updatePredators(dt) {
+    for (const pred of this.predators) {
+      // Find nearest boid
+      let nearest = null;
+      let nearestDist = Infinity;
+      for (const boid of this.boids) {
+        const d = boid.position.dist(pred.position);
+        if (d < nearestDist) {
+          nearestDist = d;
+          nearest = boid;
+        }
+      }
+      if (nearest && nearestDist < 500) {
+        // Chase the nearest boid
+        const dir = nearest.position.sub(pred.position).normalize();
+        pred.position = pred.position.add(dir.mul(this.config.predatorSpeed * dt));
+      }
+    }
   }
 
   // ─── Analysis ────────────────────────────────────

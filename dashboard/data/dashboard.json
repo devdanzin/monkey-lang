@@ -333,29 +333,33 @@
     {
       "id": "T32",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "miniKanren scratch note, update TASKS.md with all new projects, update MEMORY.md",
-      "started": "2026-04-03T18:44:14.208Z"
+      "started": "2026-04-03T18:44:14.208Z",
+      "completed": "2026-04-03T18:47:14.342Z",
+      "duration_ms": 120000,
+      "summary": "Updated TASKS.md with 3 new projects (Prolog, miniKanren, Boids), MEMORY.md with latest stats, wrote miniKanren scratch note."
     },
     {
       "id": "T33",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Extend Boids: add wind force, boundary bounce mode (vs wrap), predator AI that chases boids"
+      "status": "in-progress",
+      "task": "Extend Boids: add wind force, boundary bounce mode (vs wrap), predator AI that chases boids",
+      "started": "2026-04-03T18:47:37.816Z"
     }
   ],
   "current": {
-    "id": "T32",
-    "mode": "MAINTAIN",
+    "id": "T33",
+    "mode": "BUILD",
     "status": "in-progress",
-    "task": "miniKanren scratch note, update TASKS.md with all new projects, update MEMORY.md",
-    "started": "2026-04-03T18:44:14.208Z"
+    "task": "Extend Boids: add wind force, boundary bounce mode (vs wrap), predator AI that chases boids",
+    "started": "2026-04-03T18:47:37.816Z"
   },
   "stats": {
-    "completed": 31,
+    "completed": 32,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 6400000
+    "total_duration_ms": 6520000
   },
-  "updated_at": "2026-04-03T18:44:14.208Z"
+  "updated_at": "2026-04-03T18:47:37.816Z"
 }
