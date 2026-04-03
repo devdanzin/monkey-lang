@@ -373,12 +373,28 @@
     {
       "id": "T36",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final session push: git push, dashboard regenerate, CURRENT.md session-ended",
-      "started": "2026-04-03T19:01:37.250Z"
+      "started": "2026-04-03T19:01:37.250Z",
+      "completed": "2026-04-03T19:03:51.538Z",
+      "duration_ms": 120000,
+      "summary": "Final maintenance: git pushed, dashboard regenerated (2804 total tests, +275 today). 3 new projects: Prolog (140 tests), miniKanren (76 tests), Boids (59 tests). 3 blog posts published."
+    },
+    {
+      "id": "T37",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "miniKanren: add type inference demo — infer types for simple lambda calculus expressions",
+      "started": "2026-04-03T19:04:22.694Z"
+    },
+    {
+      "id": "T38",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Prolog: add string_to_atom, atom_to_number, char_type, sub_atom builtins + tests"
     }
   ],
-  "updated_at": "2026-04-03T19:01:37.250Z",
+  "updated_at": "2026-04-03T19:04:22.694Z",
   "adjustments": [
     {
       "time": "2026-04-03T18:34:01.741Z",
@@ -407,6 +423,14 @@
     {
       "time": "2026-04-03T18:55:37.829Z",
       "msg": "Added T36 (MAINTAIN) after end: Final session push: git push, dashboard regenerate, CURRENT.md session-ended"
+    },
+    {
+      "time": "2026-04-03T19:04:08.542Z",
+      "msg": "Added T37 (BUILD) after end: miniKanren: add type inference demo — infer types for simple lambda calculus expressions"
+    },
+    {
+      "time": "2026-04-03T19:04:08.802Z",
+      "msg": "Added T38 (BUILD) after end: Prolog: add string_to_atom, atom_to_number, char_type, sub_atom builtins + tests"
     }
   ]
 }
