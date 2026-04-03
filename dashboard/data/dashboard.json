@@ -153,17 +153,21 @@
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Prolog: add DCG (Definite Clause Grammars) support — phrase/3, --> notation",
       "plan_ref": "T10",
-      "started": "2026-04-03T17:30:04.278Z"
+      "started": "2026-04-03T17:30:04.278Z",
+      "completed": "2026-04-03T17:35:07.552Z",
+      "duration_ms": 300000,
+      "summary": "Added DCG (Definite Clause Grammars): --> notation, phrase/2, phrase/3. Recursive grammars, terminals, nonterminals, extra arguments. 91 tests passing."
     },
     {
       "id": "T19",
       "mode": "BUILD",
       "task": "Prolog: add operator definitions (op/3), number_vars, numbervars, succ_clp, more tests to 100+",
-      "status": "upcoming",
-      "plan_ref": "T10"
+      "status": "in-progress",
+      "plan_ref": "T10",
+      "started": "2026-04-03T17:35:24.183Z"
     },
     {
       "id": "T12",
@@ -185,18 +189,18 @@
     }
   ],
   "current": {
-    "id": "T11",
+    "id": "T19",
     "mode": "BUILD",
+    "task": "Prolog: add operator definitions (op/3), number_vars, numbervars, succ_clp, more tests to 100+",
     "status": "in-progress",
-    "task": "Prolog: add DCG (Definite Clause Grammars) support — phrase/3, --> notation",
     "plan_ref": "T10",
-    "started": "2026-04-03T17:30:04.278Z"
+    "started": "2026-04-03T17:35:24.183Z"
   },
   "stats": {
-    "completed": 14,
+    "completed": 15,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 2140000
+    "total_duration_ms": 2440000
   },
-  "updated_at": "2026-04-03T17:30:04.278Z"
+  "updated_at": "2026-04-03T17:35:24.183Z"
 }

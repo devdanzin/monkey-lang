@@ -25,11 +25,12 @@ const TokenType = {
 };
 
 const OPERATORS = new Set([
-  '+', '-', '*', '/', 'mod',
+  '+', '-', '*', '/', '//', '**', '^', 'mod', 'rem',
   '>', '<', '>=', '=<', '=:=', '=\\=',
   '=', '\\=', '==', '\\==',
   'is', 'not',
   '=..', '@<', '@>', '@=<', '@>=',
+  '>>', '<<', '/\\', '\\/', 'xor',
 ]);
 
 function tokenize(input) {
@@ -124,6 +125,12 @@ function tokenize(input) {
     if (input.slice(i, i + 2) === '=<') { tokens.push({ type: TokenType.OP, value: '=<' }); i += 2; continue; }
     if (input.slice(i, i + 2) === '==') { tokens.push({ type: TokenType.OP, value: '==' }); i += 2; continue; }
     if (input.slice(i, i + 2) === '\\=') { tokens.push({ type: TokenType.OP, value: '\\=' }); i += 2; continue; }
+    if (input.slice(i, i + 2) === '**') { tokens.push({ type: TokenType.OP, value: '**' }); i += 2; continue; }
+    if (input.slice(i, i + 2) === '//') { tokens.push({ type: TokenType.OP, value: '//' }); i += 2; continue; }
+    if (input.slice(i, i + 2) === '>>') { tokens.push({ type: TokenType.OP, value: '>>' }); i += 2; continue; }
+    if (input.slice(i, i + 2) === '<<') { tokens.push({ type: TokenType.OP, value: '<<' }); i += 2; continue; }
+    if (input.slice(i, i + 2) === '/\\') { tokens.push({ type: TokenType.OP, value: '/\\' }); i += 2; continue; }
+    if (input.slice(i, i + 2) === '\\/') { tokens.push({ type: TokenType.OP, value: '\\/' }); i += 2; continue; }
     if (input.slice(i, i + 2) === '@<') { tokens.push({ type: TokenType.OP, value: '@<' }); i += 2; continue; }
     if (input.slice(i, i + 2) === '@>') { tokens.push({ type: TokenType.OP, value: '@>' }); i += 2; continue; }
 
@@ -383,8 +390,10 @@ function opPrec(op) {
     case '<': case '>': case '>=': case '=<': case '=:=': case '=\\=':
     case '@<': case '@>': case '@=<': case '@>=': case '=..':
       return 700;
-    case '+': case '-': return 500;
-    case '*': case '/': case 'mod': return 400;
+    case '+': case '-': case '/\\': case '\\/': case 'xor': return 500;
+    case '*': case '/': case '//': case 'mod': case 'rem':
+    case '>>': case '<<': return 400;
+    case '**': case '^': return 200;
     default: return 700;
   }
 }
