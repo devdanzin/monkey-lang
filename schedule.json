@@ -195,9 +195,13 @@
     {
       "id": "T14",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Research: emergent behavior in multi-agent systems or swarm intelligence"
+      "status": "done",
+      "task": "Research: emergent behavior in multi-agent systems or swarm intelligence",
+      "started": "2026-04-03T17:47:00.711Z",
+      "completed": "2026-04-03T17:48:50.250Z",
+      "duration_ms": 300000,
+      "summary": "Explored swarm intelligence: Boids (3 rules → flocking), ACO (pheromone trails for discrete optimization), PSO (velocity+position for continuous optimization). Wrote scratch note. Best next project: swarm simulation suite with interactive web demo."
     }
   ],
-  "updated_at": "2026-04-03T17:46:30.356Z"
+  "updated_at": "2026-04-03T17:48:50.250Z"
 }
