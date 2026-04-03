@@ -122,28 +122,47 @@
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, dashboard update, knowledge capture",
-      "started": "2026-04-03T17:27:04.681Z"
+      "started": "2026-04-03T17:27:04.681Z",
+      "completed": "2026-04-03T17:27:44.779Z",
+      "duration_ms": 120000,
+      "summary": "Git pushed, scratch note written (prolog-interpreter.md), dashboard data refreshed."
     },
     {
       "id": "T9",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Afternoon direction: depth work on existing projects vs new features"
+      "status": "done",
+      "task": "Afternoon direction: depth work on existing projects vs new features",
+      "started": "2026-04-03T17:28:05.498Z",
+      "completed": "2026-04-03T17:29:14.386Z",
+      "duration_ms": 60000,
+      "summary": "Direction: extend Prolog further (DCG, more tests toward 100+), then EXPLORE logic programming and swarm intelligence. Ray tracer and neural net are solid; Prolog is the newest and most expandable."
     },
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Depth work on ray tracer or neural net — pick highest-value backlog items",
-      "task": null
+      "task": null,
+      "started": "2026-04-03T17:29:23.751Z",
+      "completed": "2026-04-03T17:29:44.217Z",
+      "duration_ms": 30000,
+      "summary": "Planned Prolog depth: DCG support, operator definitions, push to 100+ tests."
     },
     {
       "id": "T11",
       "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Prolog: add DCG (Definite Clause Grammars) support — phrase/3, --> notation",
+      "plan_ref": "T10",
+      "started": "2026-04-03T17:30:04.278Z"
+    },
+    {
+      "id": "T19",
+      "mode": "BUILD",
+      "task": "Prolog: add operator definitions (op/3), number_vars, numbervars, succ_clp, more tests to 100+",
       "status": "upcoming",
-      "task": null,
       "plan_ref": "T10"
     },
     {
@@ -165,5 +184,5 @@
       "task": "Research: emergent behavior in multi-agent systems or swarm intelligence"
     }
   ],
-  "updated_at": "2026-04-03T17:27:04.681Z"
+  "updated_at": "2026-04-03T17:30:04.278Z"
 }

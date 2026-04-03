@@ -20,7 +20,7 @@ const TokenType = {
   ATOM: 'ATOM', VAR: 'VAR', NUM: 'NUM', STRING: 'STRING',
   LPAREN: '(', RPAREN: ')', LBRACKET: '[', RBRACKET: ']',
   COMMA: ',', DOT: '.', PIPE: '|', CUT: '!',
-  NECK: ':-', QUERY: '?-', ARROW: '->', SEMI: ';',
+  NECK: ':-', QUERY: '?-', ARROW: '->', SEMI: ';', DCG_ARROW: '-->',
   OP: 'OP', EOF: 'EOF',
 };
 
@@ -116,6 +116,7 @@ function tokenize(input) {
     if (input.slice(i, i + 3) === '\\==') { tokens.push({ type: TokenType.OP, value: '\\==' }); i += 3; continue; }
     if (input.slice(i, i + 3) === '@=<') { tokens.push({ type: TokenType.OP, value: '@=<' }); i += 3; continue; }
     if (input.slice(i, i + 3) === '@>=') { tokens.push({ type: TokenType.OP, value: '@>=' }); i += 3; continue; }
+    if (input.slice(i, i + 3) === '-->') { tokens.push({ type: TokenType.DCG_ARROW, value: '-->' }); i += 3; continue; }
     if (input.slice(i, i + 2) === ':-') { tokens.push({ type: TokenType.NECK, value: ':-' }); i += 2; continue; }
     if (input.slice(i, i + 2) === '?-') { tokens.push({ type: TokenType.QUERY, value: '?-' }); i += 2; continue; }
     if (input.slice(i, i + 2) === '->') { tokens.push({ type: TokenType.ARROW, value: '->' }); i += 2; continue; }
@@ -204,7 +205,7 @@ class Parser {
     return { clauses, queries };
   }
 
-  // Parse a single clause: head. OR head :- body.
+  // Parse a single clause: head. OR head :- body. OR head --> body. (DCG)
   parseClause() {
     const head = this.parseTerm(999);
     if (this.peek().type === TokenType.NECK) {
@@ -212,6 +213,12 @@ class Parser {
       const body = this.parseTermList();
       this.expect(TokenType.DOT);
       return { head, body };
+    }
+    if (this.peek().type === TokenType.DCG_ARROW) {
+      this.advance(); // consume -->
+      const body = this.parseTermList();
+      this.expect(TokenType.DOT);
+      return { head, body, dcg: true };
     }
     this.expect(TokenType.DOT);
     return { head, body: [] };

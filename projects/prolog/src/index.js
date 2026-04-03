@@ -91,7 +91,13 @@ class Prolog {
   consult(text) {
     const { clauses, queries } = parse(text);
     for (const c of clauses) {
-      this.clauses.push(c);
+      if (c.dcg) {
+        // Transform DCG rule into regular clause
+        const transformed = this._transformDCG(c);
+        this.clauses.push(transformed);
+      } else {
+        this.clauses.push(c);
+      }
     }
     const results = [];
     for (const goals of queries) {
@@ -421,6 +427,14 @@ class Prolog {
       return this._builtin_once(args, rest, subst, cutParent);
     }
 
+    // phrase/2 and phrase/3
+    if (functor === 'phrase' && args.length === 2) {
+      return this._builtin_phrase2(args, rest, subst, cutParent);
+    }
+    if (functor === 'phrase' && args.length === 3) {
+      return this._builtin_phrase3(args, rest, subst, cutParent);
+    }
+
     // aggregate_all/3 (alias for findall)
     if (functor === 'aggregate_all' && args.length === 3) {
       return this._builtin_findall(args, rest, subst, cutParent);
@@ -446,6 +460,38 @@ class Prolog {
 
   _emptyGen() { return [][Symbol.iterator](); }
   *_wrapGen(gen) { yield* gen; }
+
+  *_builtin_phrase2(args, rest, subst, cutParent) {
+    // phrase(RuleName, List) — parse List using DCG rule RuleName
+    const ruleName = deepWalk(args[0], subst);
+    const inputList = args[1];
+    // Construct: RuleName(List, [])
+    let goal;
+    if (ruleName.type === 'atom') {
+      goal = new Compound(ruleName.name, [inputList, NIL]);
+    } else if (ruleName.type === 'compound') {
+      goal = new Compound(ruleName.functor, [...ruleName.args, inputList, NIL]);
+    } else {
+      return;
+    }
+    yield* this._solve([goal, ...rest], subst, cutParent);
+  }
+
+  *_builtin_phrase3(args, rest, subst, cutParent) {
+    // phrase(RuleName, List, Rest) — parse List using DCG rule RuleName, Rest is unparsed
+    const ruleName = deepWalk(args[0], subst);
+    const inputList = args[1];
+    const restList = args[2];
+    let goal;
+    if (ruleName.type === 'atom') {
+      goal = new Compound(ruleName.name, [inputList, restList]);
+    } else if (ruleName.type === 'compound') {
+      goal = new Compound(ruleName.functor, [...ruleName.args, inputList, restList]);
+    } else {
+      return;
+    }
+    yield* this._solve([goal, ...rest], subst, cutParent);
+  }
 
   *_builtin_is(args, rest, subst, cutParent) {
     const val = this._evalArith(args[1], subst);
@@ -1108,6 +1154,73 @@ class Prolog {
       return [...this._conjunctionToList(term.args[0]), ...this._conjunctionToList(term.args[1])];
     }
     return [term];
+  }
+
+  // ─── DCG (Definite Clause Grammars) ───────────────────
+
+  _transformDCG(clause) {
+    // head --> body becomes head(S0, S) :- <transformed body>
+    const head = clause.head;
+    const body = clause.body;
+
+    let varCounter = 0;
+    const freshS = () => new Var(`_S${varCounter++}`);
+
+    const s0 = freshS();
+    const sN = freshS();
+
+    // Transform head: add two extra args for difference list
+    const newHead = head.type === 'compound'
+      ? new Compound(head.functor, [...head.args, s0, sN])
+      : head.type === 'atom'
+        ? new Compound(head.name, [s0, sN])
+        : head;
+
+    // Transform body goals
+    const newBody = [];
+    let currentS = s0;
+
+    for (const goal of body) {
+      if (goal.type === 'compound' && goal.functor === '.' && goal.args.length === 2) {
+        // Terminal list: [a, b, c] becomes S_i = [a, b, c | S_j]
+        const nextS = freshS();
+        const termList = this._buildDCGTerminalList(goal, nextS);
+        newBody.push(new Compound('=', [currentS, termList]));
+        currentS = nextS;
+      } else if (goal.type === 'atom' && goal.name === '[]') {
+        // Empty terminal list: [] does nothing (S_i = S_j... but just skip)
+        // Actually: S_i = S_j means no consumption
+        // We just don't advance
+      } else if (goal.type === 'compound' && goal.functor === '{}' && goal.args.length === 1) {
+        // Pushback notation {Goal}: inline Prolog goal, no list consumption
+        newBody.push(goal.args[0]);
+      } else {
+        // Nonterminal: nt becomes nt(S_i, S_j)
+        const nextS = freshS();
+        if (goal.type === 'compound') {
+          newBody.push(new Compound(goal.functor, [...goal.args, currentS, nextS]));
+        } else if (goal.type === 'atom') {
+          newBody.push(new Compound(goal.name, [currentS, nextS]));
+        }
+        currentS = nextS;
+      }
+    }
+
+    // Final state variable must unify with sN
+    if (currentS !== sN) {
+      newBody.push(new Compound('=', [currentS, sN]));
+    }
+
+    return { head: newHead, body: newBody };
+  }
+
+  _buildDCGTerminalList(listTerm, tail) {
+    // Convert a parsed list term to one with the given tail
+    if (listTerm.type === 'atom' && listTerm.name === '[]') return tail;
+    if (listTerm.type === 'compound' && listTerm.functor === '.' && listTerm.args.length === 2) {
+      return new Compound('.', [listTerm.args[0], this._buildDCGTerminalList(listTerm.args[1], tail)]);
+    }
+    return tail;
   }
 }
 
