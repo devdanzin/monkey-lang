@@ -353,15 +353,19 @@
     {
       "id": "T34",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Prolog: add more tests (DCG advanced, arithmetic edge cases, parser stress tests) push toward 150",
-      "started": "2026-04-03T18:55:51.929Z"
+      "started": "2026-04-03T18:55:51.929Z",
+      "completed": "2026-04-03T18:58:23.964Z",
+      "duration_ms": 300000,
+      "summary": "Prolog now at 140 tests: parser stress tests, arithmetic edge cases, DCG advanced (palindrome, sentence, patterns), backtracking (Pythagorean, N-queens variant), classic algorithms (insertion sort, bubble sort, BST operations, zip, take/drop, flatten)."
     },
     {
       "id": "T35",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Prolog scratch note update, Boids scratch note, update INDEX.md"
+      "status": "in-progress",
+      "task": "Prolog scratch note update, Boids scratch note, update INDEX.md",
+      "started": "2026-04-03T18:58:48.265Z"
     },
     {
       "id": "T36",
@@ -371,17 +375,17 @@
     }
   ],
   "current": {
-    "id": "T34",
-    "mode": "BUILD",
+    "id": "T35",
+    "mode": "MAINTAIN",
     "status": "in-progress",
-    "task": "Prolog: add more tests (DCG advanced, arithmetic edge cases, parser stress tests) push toward 150",
-    "started": "2026-04-03T18:55:51.929Z"
+    "task": "Prolog scratch note update, Boids scratch note, update INDEX.md",
+    "started": "2026-04-03T18:58:48.265Z"
   },
   "stats": {
-    "completed": 33,
+    "completed": 34,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 6820000
+    "total_duration_ms": 7120000
   },
-  "updated_at": "2026-04-03T18:55:51.929Z"
+  "updated_at": "2026-04-03T18:58:48.265Z"
 }
