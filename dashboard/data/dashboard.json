@@ -429,14 +429,125 @@
       "completed": "2026-04-03T19:51:02.308Z",
       "duration_ms": 120000,
       "summary": "Final push, session ended. 3 tasks in short session."
+    },
+    {
+      "id": "T42",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Session B direction: 6 hours available. Review backlog, CI failures, decide next project or depth work.",
+      "started": "2026-04-03T20:17:04.590Z",
+      "completed": "2026-04-03T20:19:36.820Z",
+      "duration_ms": 120000,
+      "summary": "Assessed: 6 hours available. Fix CI failures first, then WASM GC (most educational depth work). Built 12-task queue."
+    },
+    {
+      "id": "T43",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Fix GitHub Actions CI failures across repos (dashboard, neural-net, ray-tracer, physics)",
+      "task": null,
+      "started": "2026-04-03T20:20:00.322Z",
+      "completed": "2026-04-03T20:20:39.357Z",
+      "duration_ms": 30000,
+      "summary": "CI check: all repos green (dashboard, neural-net, ray-tracer, physics). Failures were transient. No fixes needed."
+    },
+    {
+      "id": "T55",
+      "mode": "BUILD",
+      "task": "CI already green — no fixes needed",
+      "status": "done",
+      "plan_ref": "T43",
+      "started": "2026-04-03T20:21:02.210Z",
+      "completed": "2026-04-03T20:21:02.499Z",
+      "duration_ms": 5000,
+      "summary": "CI already green, no action needed."
+    },
+    {
+      "id": "T44",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "started": "2026-04-03T20:21:17.134Z",
+      "completed": "2026-04-03T20:21:17.410Z",
+      "duration_ms": 1000,
+      "summary": "Unfilled placeholder, skipped (CI was already green)."
+    },
+    {
+      "id": "T45",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Housekeeping: git push, dashboard",
+      "started": "2026-04-03T20:21:32.822Z"
+    },
+    {
+      "id": "T46",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "WASM GC direction: mark-sweep vs copying, what data to collect, integration with existing WASM backend"
+    },
+    {
+      "id": "T47",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Build WASM garbage collector for Monkey lang",
+      "task": null
+    },
+    {
+      "id": "T48",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T49",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Housekeeping + knowledge capture"
+    },
+    {
+      "id": "T50",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Research GC algorithms: Immix, Cheney semi-space, Boehm conservative, WASM GC proposal"
+    },
+    {
+      "id": "T51",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Reflect on WASM GC progress, plan next depth stretch"
+    },
+    {
+      "id": "T52",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "WASM closures + hash maps (extending GC foundation)",
+      "task": null
+    },
+    {
+      "id": "T53",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T54",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final session push"
     }
   ],
-  "current": null,
+  "current": {
+    "id": "T45",
+    "mode": "MAINTAIN",
+    "status": "in-progress",
+    "task": "Housekeeping: git push, dashboard",
+    "started": "2026-04-03T20:21:32.822Z"
+  },
   "stats": {
-    "completed": 41,
+    "completed": 45,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 8260000
+    "total_duration_ms": 8416000
   },
-  "updated_at": "2026-04-03T19:51:02.308Z"
+  "updated_at": "2026-04-03T20:21:32.822Z"
 }
