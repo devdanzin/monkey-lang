@@ -383,18 +383,22 @@
     {
       "id": "T37",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "miniKanren: add type inference demo — infer types for simple lambda calculus expressions",
-      "started": "2026-04-03T19:04:22.694Z"
+      "started": "2026-04-03T19:04:22.694Z",
+      "completed": "2026-04-03T19:12:07.097Z",
+      "duration_ms": 300000,
+      "summary": "Built relational type inference for lambda calculus in miniKanren: typeo(env, expr, type) runs forward (check), backward (generate well-typed exprs), and with env lookup. Handles num, bool, var, lambda, application, if-then-else. 19 type inference tests, 95 total miniKanren tests."
     },
     {
       "id": "T38",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Prolog: add string_to_atom, atom_to_number, char_type, sub_atom builtins + tests"
+      "status": "in-progress",
+      "task": "Prolog: add string_to_atom, atom_to_number, char_type, sub_atom builtins + tests",
+      "started": "2026-04-03T19:12:35.945Z"
     }
   ],
-  "updated_at": "2026-04-03T19:04:22.694Z",
+  "updated_at": "2026-04-03T19:12:35.945Z",
   "adjustments": [
     {
       "time": "2026-04-03T18:34:01.741Z",

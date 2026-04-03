@@ -412,6 +412,36 @@ class Prolog {
       return this._builtin_charCode(args, rest, subst, cutParent);
     }
 
+    // sub_atom/5
+    if (functor === 'sub_atom' && args.length === 5) {
+      return this._builtin_subAtom(args, rest, subst, cutParent);
+    }
+
+    // atom_number/2
+    if (functor === 'atom_number' && args.length === 2) {
+      return this._builtin_atomNumber(args, rest, subst, cutParent);
+    }
+
+    // atom_string/2 (alias for atom_chars + joining)
+    if (functor === 'atom_string' && args.length === 2) {
+      return this._builtin_atomString(args, rest, subst, cutParent);
+    }
+
+    // char_type/2
+    if (functor === 'char_type' && args.length === 2) {
+      return this._builtin_charType(args, rest, subst, cutParent);
+    }
+
+    // upcase_atom/2
+    if (functor === 'upcase_atom' && args.length === 2) {
+      return this._builtin_upcaseAtom(args, rest, subst, cutParent);
+    }
+
+    // downcase_atom/2
+    if (functor === 'downcase_atom' && args.length === 2) {
+      return this._builtin_downcaseAtom(args, rest, subst, cutParent);
+    }
+
     // ground/1
     if (functor === 'ground' && args.length === 1) {
       return this._builtin_typeCheck(args[0], subst, rest, cutParent, t => this._isGround(t));
@@ -945,6 +975,126 @@ class Prolog {
       if (s) yield* this._solve(rest, s, cutParent);
     } else if (b.type === 'num') {
       const s = unify(args[0], atom(String.fromCharCode(b.value)), subst);
+      if (s) yield* this._solve(rest, s, cutParent);
+    }
+  }
+
+  *_builtin_subAtom(args, rest, subst, cutParent) {
+    // sub_atom(+Atom, ?Before, ?Length, ?After, ?SubAtom)
+    const a = deepWalk(args[0], subst);
+    if (a.type !== 'atom') return;
+    const str = a.name;
+    const before = deepWalk(args[1], subst);
+    const length = deepWalk(args[2], subst);
+    
+    if (before.type === 'num' && length.type === 'num') {
+      // Deterministic case
+      const b = before.value;
+      const l = length.value;
+      if (b >= 0 && l >= 0 && b + l <= str.length) {
+        const sub = str.substring(b, b + l);
+        const after = str.length - b - l;
+        let s = unify(args[3], num(after), subst);
+        if (s) s = unify(args[4], atom(sub), s);
+        if (s) yield* this._solve(rest, s, cutParent);
+      }
+    } else {
+      // Enumerate all substrings
+      for (let b = 0; b <= str.length; b++) {
+        for (let l = 0; l <= str.length - b; l++) {
+          const sub = str.substring(b, b + l);
+          const after = str.length - b - l;
+          let s = unify(args[1], num(b), subst);
+          if (s) s = unify(args[2], num(l), s);
+          if (s) s = unify(args[3], num(after), s);
+          if (s) s = unify(args[4], atom(sub), s);
+          if (s) yield* this._solve(rest, s, cutParent);
+        }
+      }
+    }
+  }
+
+  *_builtin_atomNumber(args, rest, subst, cutParent) {
+    const a = deepWalk(args[0], subst);
+    const n = deepWalk(args[1], subst);
+    if (a.type === 'atom') {
+      const val = Number(a.name);
+      if (!isNaN(val)) {
+        const s = unify(args[1], num(val), subst);
+        if (s) yield* this._solve(rest, s, cutParent);
+      }
+    } else if (n.type === 'num') {
+      const s = unify(args[0], atom(String(n.value)), subst);
+      if (s) yield* this._solve(rest, s, cutParent);
+    }
+  }
+
+  *_builtin_atomString(args, rest, subst, cutParent) {
+    // atom_string(Atom, String) — convert between atom and string
+    const a = deepWalk(args[0], subst);
+    const b = deepWalk(args[1], subst);
+    if (a.type === 'atom') {
+      const s = unify(args[1], atom(a.name), subst);
+      if (s) yield* this._solve(rest, s, cutParent);
+    } else if (a.type === 'num') {
+      const s = unify(args[1], atom(String(a.value)), subst);
+      if (s) yield* this._solve(rest, s, cutParent);
+    } else if (b.type === 'atom') {
+      const s = unify(args[0], atom(b.name), subst);
+      if (s) yield* this._solve(rest, s, cutParent);
+    }
+  }
+
+  *_builtin_charType(args, rest, subst, cutParent) {
+    const c = deepWalk(args[0], subst);
+    const type = deepWalk(args[1], subst);
+    if (c.type !== 'atom' || c.name.length !== 1) return;
+    const ch = c.name;
+    
+    if (type.type === 'var') {
+      // Enumerate all matching types
+      const types = [];
+      if (/[a-zA-Z]/.test(ch)) types.push('alpha');
+      if (/[a-z]/.test(ch)) types.push('lower');
+      if (/[A-Z]/.test(ch)) types.push('upper');
+      if (/[0-9]/.test(ch)) types.push('digit');
+      if (/[a-zA-Z0-9]/.test(ch)) types.push('alnum');
+      if (/\s/.test(ch)) types.push('space');
+      if (/[a-zA-Z0-9_]/.test(ch)) types.push('csym');
+      types.push('ascii');
+      
+      for (const t of types) {
+        const s = unify(args[1], atom(t), subst);
+        if (s) yield* this._solve(rest, s, cutParent);
+      }
+    } else if (type.type === 'atom') {
+      let matches = false;
+      switch (type.name) {
+        case 'alpha': matches = /[a-zA-Z]/.test(ch); break;
+        case 'lower': matches = /[a-z]/.test(ch); break;
+        case 'upper': matches = /[A-Z]/.test(ch); break;
+        case 'digit': matches = /[0-9]/.test(ch); break;
+        case 'alnum': matches = /[a-zA-Z0-9]/.test(ch); break;
+        case 'space': matches = /\s/.test(ch); break;
+        case 'csym': matches = /[a-zA-Z0-9_]/.test(ch); break;
+        case 'ascii': matches = ch.charCodeAt(0) < 128; break;
+      }
+      if (matches) yield* this._solve(rest, subst, cutParent);
+    }
+  }
+
+  *_builtin_upcaseAtom(args, rest, subst, cutParent) {
+    const a = deepWalk(args[0], subst);
+    if (a.type === 'atom') {
+      const s = unify(args[1], atom(a.name.toUpperCase()), subst);
+      if (s) yield* this._solve(rest, s, cutParent);
+    }
+  }
+
+  *_builtin_downcaseAtom(args, rest, subst, cutParent) {
+    const a = deepWalk(args[0], subst);
+    if (a.type === 'atom') {
+      const s = unify(args[1], atom(a.name.toLowerCase()), subst);
       if (s) yield* this._solve(rest, s, cutParent);
     }
   }
