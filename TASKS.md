@@ -58,20 +58,28 @@
   - 40+ builtins, DCG (Definite Clause Grammars), occurs check
   - REPL: interactive command-line with /trace /clauses /reset
   - Classic programs: fibonacci, quicksort, hanoi, N-queens, GCD, permutations
-  - **109 tests | Blog post published**
+  - **158 tests | Blog post published**
 - [ ] **miniKanren** → projects/minikanren
   - Pure JS, relational logic programming with interleaving search
   - Core: unification, streams, run/fresh/conde/conj/disj/eq/neq
   - Constraints: absento, symbolo, numbero, conda, condu, onceo, project
   - Relational builtins: conso, membero, appendo, everyo
-  - **76 tests | Blog post published**
+  - **95 tests | Blog post published**
 - [ ] **Boids Flocking Simulation** → projects/boids (LIVE at henry-the-frog.github.io/boids/)
   - Pure JS, emergent behavior from 3 rules (separation, alignment, cohesion)
   - Vec2, Boid, SpatialGrid, Flock with obstacles and predators
   - Interactive web demo with canvas, sliders, click-to-add obstacles/predators
-  - **49 tests | Live demo | Blog post published**
+  - **59 tests | Live demo | Blog post published**
 
-## Today (2026-03-30) — WASM Backend + Ray Tracer Day
+## Today (2026-04-03) — Prolog Completion + Logic Programming + Boids
+### Session A (Morning)
+- [x] Prolog: unified engine+parser, 40+ builtins, DCG, REPL — 9→158 tests
+- [x] miniKanren: new project, relational logic programming, type inference — 95 tests
+- [x] Boids: new project, flocking sim, web demo, wind/predators — 59 tests
+- [x] 3 blog posts published
+- [x] Total tests: 2529→2804+ (+275)
+
+## 2026-03-30 — WASM Backend + Ray Tracer Day
 ### Session A (Morning) — WASM Backend
 - [x] WASM binary encoder, compiler, disassembler — full pipeline from scratch
 - [x] 1351 tests, 5 backends, v0.4.0
