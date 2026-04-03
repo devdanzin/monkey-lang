@@ -393,12 +393,15 @@
     {
       "id": "T38",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Prolog: add string_to_atom, atom_to_number, char_type, sub_atom builtins + tests",
-      "started": "2026-04-03T19:12:35.945Z"
+      "started": "2026-04-03T19:12:35.945Z",
+      "completed": "2026-04-03T19:19:06.478Z",
+      "duration_ms": 300000,
+      "summary": "Added 6 new string builtins: sub_atom/5, atom_number/2, atom_string/2, char_type/2, upcase_atom/2, downcase_atom/2. Integration tests: all_alpha check, capitalize first letter. 158 total Prolog tests."
     }
   ],
-  "updated_at": "2026-04-03T19:12:35.945Z",
+  "updated_at": "2026-04-03T19:19:06.478Z",
   "adjustments": [
     {
       "time": "2026-04-03T18:34:01.741Z",

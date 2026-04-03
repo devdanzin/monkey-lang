@@ -1,11 +1,13 @@
 # CURRENT.md
 
-## Status: done
-mode: THINK
-task: Review yesterday: Prolog orphans (4/4 tasks), 9 tests only. Assess state, set priorities.
-context-files: memory/2026-04-02.md, memory/scratch/INDEX.md, memory/failures.md
-started: 2026-04-03T14:15:51.831Z
-completed: 2026-04-03T14:19:50.056Z
-current_position: T1
-tasks_completed_this_session: 1
+## Status: session-ended
 session: 2026-04-03 Work Session A (8:15 AM - 2:15 PM MDT)
+tasks_completed_this_session: 38
+final_push: 2026-04-03T19:50:00Z
+
+### Session Highlights
+- **3 new projects:** Prolog (158 tests), miniKanren (95 tests), Boids (59 tests)
+- **3 blog posts** published to GitHub Pages
+- **275 new tests** (2529 → 2804+)
+- **5 scratch notes** written
+- All pushed to GitHub
