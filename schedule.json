@@ -112,15 +112,19 @@
       "id": "T18",
       "mode": "BUILD",
       "task": "Blog post: Building a Prolog Interpreter — unification, backtracking, cut, classic programs",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T6",
-      "started": "2026-04-03T17:21:00.698Z"
+      "started": "2026-04-03T17:21:00.698Z",
+      "completed": "2026-04-03T17:26:35.877Z",
+      "duration_ms": 300000,
+      "summary": "Blog post published: Building a Prolog Interpreter from Scratch (~1800 words). Covers unification, backtracking, occurs check, generators, classic programs. Pushed to GitHub Pages."
     },
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, dashboard update, knowledge capture"
+      "status": "in-progress",
+      "task": "Housekeeping: git push, dashboard update, knowledge capture",
+      "started": "2026-04-03T17:27:04.681Z"
     },
     {
       "id": "T9",
@@ -161,5 +165,5 @@
       "task": "Research: emergent behavior in multi-agent systems or swarm intelligence"
     }
   ],
-  "updated_at": "2026-04-03T17:21:00.698Z"
+  "updated_at": "2026-04-03T17:27:04.681Z"
 }
