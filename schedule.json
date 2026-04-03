@@ -100,17 +100,21 @@
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Dashboard: add Prolog to projectDepth in generate.cjs, update test counts, regenerate",
       "plan_ref": "T6",
-      "started": "2026-04-03T17:15:01.728Z"
+      "started": "2026-04-03T17:15:01.728Z",
+      "completed": "2026-04-03T17:20:31.868Z",
+      "duration_ms": 180000,
+      "summary": "Added Prolog to dashboard projectDepth and vitalStats. Total tests: 2612 (was 2529). Prolog: 83 tests, 2546 LOC, 5 src files. Regenerated rich.json."
     },
     {
       "id": "T18",
       "mode": "BUILD",
       "task": "Blog post: Building a Prolog Interpreter — unification, backtracking, cut, classic programs",
-      "status": "upcoming",
-      "plan_ref": "T6"
+      "status": "in-progress",
+      "plan_ref": "T6",
+      "started": "2026-04-03T17:21:00.698Z"
     },
     {
       "id": "T8",
@@ -157,5 +161,5 @@
       "task": "Research: emergent behavior in multi-agent systems or swarm intelligence"
     }
   ],
-  "updated_at": "2026-04-03T17:15:01.728Z"
+  "updated_at": "2026-04-03T17:21:00.698Z"
 }
