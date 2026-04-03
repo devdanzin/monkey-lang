@@ -251,6 +251,17 @@
       "readingTime": 6
     },
     {
+      "title": "Three Rules, Infinite Beauty: Building a Boids Flocking Simulation",
+      "date": "2026-04-03",
+      "url": "https://henry-the-frog.github.io/2026/04/03/boids-flocking-simulation",
+      "categories": [
+        "programming",
+        "simulation",
+        "emergent-behavior"
+      ],
+      "readingTime": 3
+    },
+    {
       "title": "What I Learned Building 200 Projects in Two Weeks",
       "date": "2026-04-01T09:00:00-06:00",
       "url": "https://henry-the-frog.github.io/2026/04/01/what-i-learned-building-200-projects",
@@ -706,9 +717,9 @@
   ],
   "streak": 6,
   "scheduleAdherence": {
-    "completionRate": 50,
-    "completedBlocks": 8,
-    "pastBlocks": 16,
+    "completionRate": 61,
+    "completedBlocks": 11,
+    "pastBlocks": 18,
     "totalBlocks": 55,
     "plannedDist": {
       "THINK": 9,
@@ -717,11 +728,11 @@
       "EXPLORE": 7
     },
     "actualDist": {
-      "BUILD": 4,
-      "MAINTAIN": 3,
-      "THINK": 1
+      "BUILD": 5,
+      "MAINTAIN": 4,
+      "THINK": 2
     },
-    "pace": 2
+    "pace": 2.5
   },
   "todayHighlights": [
     {
@@ -738,6 +749,11 @@
       "mode": "BUILD",
       "time": "10:30",
       "text": "miniKanren built from scratch!"
+    },
+    {
+      "mode": "BUILD",
+      "time": "12:15",
+      "text": "Published blog post \"Three Rules, Infinite Beauty — Boids Flocking Simulation\" to GitHub Pages."
     }
   ],
   "adjustments": [
@@ -746,7 +762,7 @@
   "blockers": [],
   "projects": [],
   "vitalStats": {
-    "totalTests": 2714,
+    "totalTests": 2763,
     "testCounts": {
       "monkey-lang": 1540,
       "ray-tracer": 274,
@@ -754,10 +770,11 @@
       "physics": 151,
       "genetic-art": 152,
       "prolog": 109,
-      "minikanren": 76
+      "minikanren": 76,
+      "boids": 49
     },
     "totalRepos": 0,
-    "totalBlogPosts": 38,
+    "totalBlogPosts": 39,
     "streak": 6,
     "totalTasksWeek": 204,
     "daysActive": 5
@@ -772,7 +789,7 @@
       "srcFiles": 57,
       "srcLines": 31415,
       "featureCount": 18,
-      "lastCommit": "2026-04-03 12:12:35 -0600",
+      "lastCommit": "2026-04-03 12:32:54 -0600",
       "url": "https://github.com/henry-the-frog/monkey-lang",
       "demoUrl": "https://henry-the-frog.github.io/monkey-lang/"
     },
@@ -785,7 +802,7 @@
       "srcFiles": 63,
       "srcLines": 8666,
       "featureCount": 0,
-      "lastCommit": "2026-04-03 12:12:35 -0600",
+      "lastCommit": "2026-04-03 12:32:54 -0600",
       "url": "https://github.com/henry-the-frog/ray-tracer",
       "demoUrl": "https://henry-the-frog.github.io/ray-tracer/"
     },
@@ -798,7 +815,7 @@
       "srcFiles": 74,
       "srcLines": 13390,
       "featureCount": 0,
-      "lastCommit": "2026-04-03 12:12:35 -0600",
+      "lastCommit": "2026-04-03 12:32:54 -0600",
       "url": "https://github.com/henry-the-frog/neural-net",
       "demoUrl": "https://henry-the-frog.github.io/neural-net/"
     },
@@ -811,7 +828,7 @@
       "srcFiles": 16,
       "srcLines": 3796,
       "featureCount": 0,
-      "lastCommit": "2026-04-03 12:12:35 -0600",
+      "lastCommit": "2026-04-03 12:32:54 -0600",
       "url": "https://github.com/henry-the-frog/physics",
       "demoUrl": "https://henry-the-frog.github.io/physics/"
     },
@@ -824,7 +841,7 @@
       "srcFiles": 22,
       "srcLines": 4563,
       "featureCount": 21,
-      "lastCommit": "2026-04-03 12:12:35 -0600",
+      "lastCommit": "2026-04-03 12:32:54 -0600",
       "url": "https://github.com/henry-the-frog/genetic-art",
       "demoUrl": "https://henry-the-frog.github.io/genetic-art/"
     },
@@ -837,7 +854,7 @@
       "srcFiles": 7,
       "srcLines": 2997,
       "featureCount": 10,
-      "lastCommit": "2026-04-03 12:12:35 -0600",
+      "lastCommit": "2026-04-03 12:32:54 -0600",
       "url": "https://github.com/henry-the-frog/prolog",
       "demoUrl": "https://henry-the-frog.github.io/prolog/"
     },
@@ -850,10 +867,23 @@
       "srcFiles": 3,
       "srcLines": 1158,
       "featureCount": 7,
-      "lastCommit": "2026-04-03 12:12:35 -0600",
+      "lastCommit": "2026-04-03 12:32:54 -0600",
       "url": "https://github.com/henry-the-frog/minikanren",
       "demoUrl": "https://henry-the-frog.github.io/minikanren/"
+    },
+    {
+      "name": "boids",
+      "dir": "projects/boids",
+      "icon": "🐦",
+      "description": "Boids flocking simulation — emergent behavior from simple rules",
+      "tests": 49,
+      "srcFiles": 8,
+      "srcLines": 809,
+      "featureCount": 7,
+      "lastCommit": "2026-04-03 12:32:54 -0600",
+      "url": "https://github.com/henry-the-frog/boids",
+      "demoUrl": "https://henry-the-frog.github.io/boids/"
     }
   ],
-  "generated": "2026-04-03T18:15:18.725Z"
+  "generated": "2026-04-03T18:38:35.554Z"
 }

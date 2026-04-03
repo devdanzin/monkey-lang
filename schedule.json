@@ -303,10 +303,56 @@
       "id": "T29",
       "mode": "BUILD",
       "task": "Boids blog post: emergent behavior from simple rules",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T26",
-      "started": "2026-04-03T18:29:27.867Z"
+      "started": "2026-04-03T18:29:27.867Z",
+      "completed": "2026-04-03T18:33:14.071Z",
+      "duration_ms": 300000,
+      "summary": "Published blog post: Three Rules, Infinite Beauty — Boids Flocking Simulation (~1200 words). Covers the three rules, spatial grid optimization, obstacles/predators, emergence. Links to live demo. Pushed to GitHub Pages."
+    },
+    {
+      "id": "T30",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Dashboard: add Boids to projectDepth, regenerate, git push",
+      "started": "2026-04-03T18:34:09.627Z"
+    },
+    {
+      "id": "T31",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Extend Prolog: add REPL (interactive command-line), trace mode for debugging"
+    },
+    {
+      "id": "T32",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "miniKanren scratch note, update TASKS.md with all new projects, update MEMORY.md"
+    },
+    {
+      "id": "T33",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Extend Boids: add wind force, boundary bounce mode (vs wrap), predator AI that chases boids"
     }
   ],
-  "updated_at": "2026-04-03T18:29:27.867Z"
+  "updated_at": "2026-04-03T18:34:09.627Z",
+  "adjustments": [
+    {
+      "time": "2026-04-03T18:34:01.741Z",
+      "msg": "Added T30 (MAINTAIN) after end: Dashboard: add Boids to projectDepth, regenerate, git push"
+    },
+    {
+      "time": "2026-04-03T18:34:01.986Z",
+      "msg": "Added T31 (BUILD) after end: Extend Prolog: add REPL (interactive command-line), trace mode for debugging"
+    },
+    {
+      "time": "2026-04-03T18:34:02.227Z",
+      "msg": "Added T32 (MAINTAIN) after end: miniKanren scratch note, update TASKS.md with all new projects, update MEMORY.md"
+    },
+    {
+      "time": "2026-04-03T18:34:02.460Z",
+      "msg": "Added T33 (BUILD) after end: Extend Boids: add wind force, boundary bounce mode (vs wrap), predator AI that chases boids"
+    }
+  ]
 }
