@@ -2085,14 +2085,58 @@
       "completed": "2026-04-04T22:36:56.714Z",
       "duration_ms": 900000,
       "summary": "HenryDB Layer 5: WAL with LSN, TransactionManager with MVCC snapshot isolation, begin/commit/rollback, undo logging, crash recovery (detect + undo uncommitted), concurrent transactions. 20 new tests (126 total across all 5 layers). GitHub: henry-the-frog/henrydb"
+    },
+    {
+      "id": "T202",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Build a Raft consensus protocol implementation: leader election, log replication, safety, membership changes. Simulate a 5-node cluster with message passing.",
+      "task": null,
+      "started": "2026-04-04T22:37:27.375Z",
+      "completed": "2026-04-04T22:37:59.385Z",
+      "duration_ms": 120000,
+      "summary": "Planned 3 BUILD tasks for compiler backend: (1) IR + CFG + liveness, (2) register allocator + x86-64 codegen, (3) end-to-end integration."
+    },
+    {
+      "id": "T203",
+      "mode": "BUILD",
+      "task": "Compiler backend: IR definition (SSA-form), control flow graph, basic block construction, liveness analysis. 25+ tests.",
+      "status": "done",
+      "plan_ref": "T202",
+      "started": "2026-04-04T22:38:06.445Z",
+      "completed": "2026-04-04T22:39:37.885Z",
+      "duration_ms": 600000,
+      "summary": "Compiler backend Layer 1: SSA-form IR (const, arith, cmp, br, br_if, ret, phi, call, param), BasicBlock, IRFunction with CFG construction, reverse post-order, liveness analysis (fixed-point iteration), interference graph builder. 18 tests."
+    },
+    {
+      "id": "T204",
+      "mode": "BUILD",
+      "task": "Compiler backend: Register allocator (graph coloring / linear scan), instruction selection for x86-64 (mov, add, sub, mul, cmp, jmp, call), assembly output. 25+ tests.",
+      "status": "done",
+      "plan_ref": "T202",
+      "started": "2026-04-04T22:39:43.743Z",
+      "completed": "2026-04-04T22:41:22.524Z",
+      "duration_ms": 600000,
+      "summary": "Compiler backend Layer 2: Graph coloring register allocator (simplify/select/spill), linear scan allocator with live intervals, x86-64 codegen (mov/add/sub/mul/div/cmp/setcc/jmp/call/ret, prologue/epilogue, System V ABI). 15 new tests (33 total)."
+    },
+    {
+      "id": "T205",
+      "mode": "BUILD",
+      "task": "Compiler backend: Integration — compile a simple language (arithmetic + if/else + functions) to x86-64 assembly, verify output. GitHub push. 20+ tests.",
+      "status": "done",
+      "plan_ref": "T202",
+      "started": "2026-04-04T22:41:28.340Z",
+      "completed": "2026-04-04T22:43:11.666Z",
+      "duration_ms": 600000,
+      "summary": "Compiler backend complete: tokenizer, parser (functions, if/else, let, calls, arithmetic with precedence), IR lowering to SSA, end-to-end compilation to x86-64 assembly. Tested with constant return, arithmetic, if/else, function calls, modulo. 25 new tests (58 total). GitHub: henry-the-frog/compiler-backend"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 198,
+    "completed": 202,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 64830000
+    "total_duration_ms": 66750000
   },
-  "updated_at": "2026-04-04T22:36:56.714Z"
+  "updated_at": "2026-04-04T22:43:11.666Z"
 }
