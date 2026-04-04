@@ -1665,8 +1665,12 @@
       "id": "T162",
       "mode": "BUILD",
       "task": "Add GitHub Actions CI to wasm-interpreter and chess-engine repos",
-      "status": "upcoming",
-      "plan_ref": "T160"
+      "status": "done",
+      "plan_ref": "T160",
+      "started": "2026-04-04T21:13:59.065Z",
+      "completed": "2026-04-04T21:14:35.144Z",
+      "duration_ms": 120000,
+      "summary": "Added GitHub Actions CI (Node 20+22, ubuntu) to wasm-interpreter and chess-engine repos. Both pushed."
     },
     {
       "id": "T163",
@@ -1689,7 +1693,7 @@
       "task": "REAL final session B wrap — git push, daily log, scratch notes"
     }
   ],
-  "updated_at": "2026-04-04T21:13:36.853Z",
+  "updated_at": "2026-04-04T21:14:35.144Z",
   "adjustments": [
     {
       "time": "2026-04-04T21:06:30.312Z",
