@@ -2233,9 +2233,16 @@
       "completed": "2026-04-04T23:01:47.887Z",
       "duration_ms": 600000,
       "summary": "Regex engine: parser, Thompson NFA construction, NFA simulation with epsilon closure, character classes, quantifiers, groups, alternation, full match + search. 32 tests. GitHub: henry-the-frog/henry-regex"
+    },
+    {
+      "id": "T216",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Promise/A+ implementation: then/catch/finally, chaining, error propagation, Promise.all/race/allSettled/any, microtask queue simulation, async/await-compatible. 35+ tests.",
+      "started": "2026-04-04T23:02:14.315Z"
     }
   ],
-  "updated_at": "2026-04-04T23:01:47.887Z",
+  "updated_at": "2026-04-04T23:02:14.315Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -2260,6 +2267,10 @@
     {
       "time": "2026-04-04T22:59:34.169Z",
       "msg": "Added T215 (BUILD) after end: Regex engine: parser, NFA construction (Thompson's), NFA→DFA conversion (subset construction), matching with character classes, quantifiers (*, +, ?, {n,m}), groups, alternation, anchors. 35+ tests."
+    },
+    {
+      "time": "2026-04-04T23:02:13.635Z",
+      "msg": "Added T216 (BUILD) after end: Promise/A+ implementation: then/catch/finally, chaining, error propagation, Promise.all/race/allSettled/any, microtask queue simulation, async/await-compatible. 35+ tests."
     }
   ]
 }
