@@ -509,14 +509,24 @@
       "completed": "2026-04-04T16:26:53.008Z",
       "duration_ms": 600000,
       "summary": "Lisp interpreter: reader, evaluator, closures, TCO, special forms, standard library (map/filter/reduce). 47 tests."
+    },
+    {
+      "id": "T49",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build probabilistic data structures: Bloom filter, Count-Min Sketch, HyperLogLog, with tests",
+      "started": "2026-04-04T16:27:26.236Z",
+      "completed": "2026-04-04T16:28:59.485Z",
+      "duration_ms": 360000,
+      "summary": "Bloom filter, Count-Min Sketch, HyperLogLog. Optimal sizing, merge, statistical validation. 20 tests."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 48,
+    "completed": 49,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 15000000
+    "total_duration_ms": 15360000
   },
-  "updated_at": "2026-04-04T16:26:53.008Z"
+  "updated_at": "2026-04-04T16:28:59.485Z"
 }
