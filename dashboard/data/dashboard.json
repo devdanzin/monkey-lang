@@ -2213,14 +2213,24 @@
       "completed": "2026-04-04T22:56:39.697Z",
       "duration_ms": 900000,
       "summary": "HenryRedis: RESP protocol parser (encode/decode), string commands (GET/SET/DEL/EXISTS/INCR/DECR), TTL (EXPIRE/TTL/PERSIST), lists (LPUSH/RPUSH/LPOP/RPOP/LRANGE/LLEN), sets (SADD/SREM/SISMEMBER/SMEMBERS/SCARD), hashes (HSET/HGET/HDEL/HGETALL/HLEN), sorted sets (ZADD/ZSCORE/ZRANK/ZRANGE/ZCARD), pub/sub (subscribe/unsubscribe/publish), LRU eviction. 55 tests. GitHub: henry-the-frog/henry-redis"
+    },
+    {
+      "id": "T214",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Markdown parser + HTML renderer: headings, bold/italic/code, links, images, blockquotes, lists (ordered + unordered + nested), code blocks with syntax class, horizontal rules, paragraphs, tables (GFM). 35+ tests.",
+      "started": "2026-04-04T22:57:35.519Z",
+      "completed": "2026-04-04T22:59:11.093Z",
+      "duration_ms": 600000,
+      "summary": "Markdown parser + HTML renderer: headings (h1-h6), bold/italic/strikethrough/inline code, links, images, blockquotes, unordered + ordered lists, fenced code blocks with language class, horizontal rules, paragraphs, GFM tables with alignment. 49 tests. GitHub: henry-the-frog/henry-markdown"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 210,
+    "completed": 211,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 71310000
+    "total_duration_ms": 71910000
   },
-  "updated_at": "2026-04-04T22:56:39.697Z"
+  "updated_at": "2026-04-04T22:59:11.093Z"
 }

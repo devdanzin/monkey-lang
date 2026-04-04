@@ -1,6 +1,1 @@
-{
-  "name": "markdown",
-  "version": "0.1.0",
-  "type": "module",
-  "scripts": { "test": "node --test test/*.test.js" }
-}
+{"name":"markdown","version":"1.0.0","description":"Markdown parser and HTML renderer from scratch","type":"module","scripts":{"test":"node --test src/**/*.test.js"}}
