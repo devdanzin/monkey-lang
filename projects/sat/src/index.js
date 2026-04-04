@@ -44,10 +44,14 @@ export class CDCLSolver {
     // VSIDS
     this.activity = new Float64Array(numVars + 1);
     this.activityInc = 1.0;
+    this.activityDecay = 0.95; // Decay factor
+    this.phaseSaving = new Int8Array(numVars + 1); // 0=unset, 1=true, -1=false
     
     // Stats
     this.stats = { decisions: 0, propagations: 0, conflicts: 0, learned: 0, restarts: 0 };
     this.proofTrace = []; // Resolution proof trace for UNSAT proofs
+    this.restartBase = 100; // Base restart interval
+    this.restartIdx = 0;    // Luby sequence index
     
     // Init activity and watches
     for (const cl of this.clauses) {
@@ -105,12 +109,14 @@ export class CDCLSolver {
     const limit = level < this.trailLim.length ? this.trailLim[level] : this.trail.length;
     while (this.trail.length > limit) {
       const v = this.trail.pop();
+      // Save phase for phase-saving heuristic
+      this.phaseSaving[v] = this.assignment.get(v) ? 1 : -1;
       this.assignment.delete(v);
       this.level.delete(v);
       this.reason.delete(v);
     }
     this.trailLim.length = level;
-    this.qhead = this.trail.length; // reset propagation queue
+    this.qhead = this.trail.length;
   }
 
   // Two-watched literal unit propagation
@@ -270,7 +276,15 @@ export class CDCLSolver {
     for (const lit of learned) {
       this.activity[Math.abs(lit)] += this.activityInc;
     }
-    this.activityInc *= 1.05;
+    this.activityInc *= 1.0 / this.activityDecay; // Equivalent to decaying all activities
+
+    // Rescale if activity values get too large
+    if (this.activityInc > 1e100) {
+      for (let i = 1; i <= this.numVars; i++) {
+        this.activity[i] *= 1e-100;
+      }
+      this.activityInc *= 1e-100;
+    }
 
     // Record in proof trace
     this.proofTrace.push({
@@ -315,14 +329,16 @@ export class CDCLSolver {
     let conflict = this._propagate();
     if (conflict !== null) return { sat: false, stats: this.stats, proof: this.proofTrace };
     
-    let maxConflicts = 100;
+    let nextRestart = this.restartBase * luby(++this.restartIdx);
+    let conflictsAtRestart = this.stats.conflicts + nextRestart;
     
     while (true) {
-      // Restart check
-      if (this.stats.conflicts > maxConflicts) {
+      // Restart check (Luby schedule)
+      if (this.stats.conflicts >= conflictsAtRestart) {
         this.stats.restarts++;
         this._backtrackTo(0);
-        maxConflicts = Math.floor(maxConflicts * 1.5);
+        nextRestart = this.restartBase * luby(++this.restartIdx);
+        conflictsAtRestart = this.stats.conflicts + nextRestart;
       }
       
       const v = this._pickBranching();
@@ -338,7 +354,9 @@ export class CDCLSolver {
       // Decision
       this.stats.decisions++;
       this.trailLim.push(this.trail.length);
-      this._assign(v, true, this._currentLevel(), null);
+      // Phase saving: prefer the last assignment direction
+      const phase = this.phaseSaving[v] === -1 ? false : true;
+      this._assign(v, phase, this._currentLevel(), null);
       
       conflict = this._propagate();
       
@@ -513,6 +531,21 @@ export function toDIMACS(numVars, clauses) {
 }
 
 // High-level solve function (auto-detects format)
+// Luby sequence: 1, 1, 2, 1, 1, 2, 4, 1, 1, 2, 1, 1, 2, 4, 8, ...
+// Uses the Knuth iterative computation
+export function luby(i) {
+  let u = 1, v = 1;
+  for (let n = 0; n < i; n++) {
+    if ((u & -u) === v) {
+      u++;
+      v = 1;
+    } else {
+      v *= 2;
+    }
+  }
+  return v;
+}
+
 export function solve(clauses) {
   // Determine numVars
   let maxVar = 0;

@@ -1361,29 +1361,33 @@
     {
       "id": "T133",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add UNSAT proof generation to SAT solver: resolution proof traces",
-      "started": "2026-04-04T19:32:47.459Z"
+      "started": "2026-04-04T19:32:47.459Z",
+      "completed": "2026-04-04T19:36:19.504Z",
+      "duration_ms": 480000,
+      "summary": "SAT UNSAT proof: proofTrace records resolution steps during 1UIP conflict analysis. Each learn entry has learnedClause, resolutionSteps (start + resolve chain), UIP var, backtrack level. Tested on trivial UNSAT, all-clauses-refuted, pigeonhole(2). 8 new tests (77 total)."
     },
     {
       "id": "T134",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Add VSIDS decay and random restarts to SAT solver for harder instances"
+      "status": "in-progress",
+      "task": "Add VSIDS decay and random restarts to SAT solver for harder instances",
+      "started": "2026-04-04T19:36:36.623Z"
     }
   ],
   "current": {
-    "id": "T133",
+    "id": "T134",
     "mode": "BUILD",
     "status": "in-progress",
-    "task": "Add UNSAT proof generation to SAT solver: resolution proof traces",
-    "started": "2026-04-04T19:32:47.459Z"
+    "task": "Add VSIDS decay and random restarts to SAT solver for harder instances",
+    "started": "2026-04-04T19:36:36.623Z"
   },
   "stats": {
-    "completed": 131,
+    "completed": 132,
     "yielded": 0,
     "skipped": 1,
-    "total_duration_ms": 41820000
+    "total_duration_ms": 42300000
   },
-  "updated_at": "2026-04-04T19:32:47.459Z"
+  "updated_at": "2026-04-04T19:36:36.623Z"
 }
