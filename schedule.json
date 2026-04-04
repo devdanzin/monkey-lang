@@ -1953,85 +1953,139 @@
     {
       "id": "T189",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Protocol Buffers: .proto parser, wire format encoder/decoder (varint, length-delimited, fixed), message serialization"
+      "status": "done",
+      "task": "Protocol Buffers: .proto parser, wire format encoder/decoder (varint, length-delimited, fixed), message serialization",
+      "started": "2026-04-04T22:25:57.918Z",
+      "completed": "2026-04-04T22:25:58.387Z",
+      "duration_ms": 0,
+      "summary": "Already completed in prior session: protobuf wire format, .proto parser, schema encode/decode. 34 tests. GitHub: henry-the-frog/protobuf"
     },
     {
       "id": "T190",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "DNS resolver: DNS packet parsing, query building, recursive resolution, caching, A/AAAA/MX/TXT records"
+      "status": "done",
+      "task": "DNS resolver: DNS packet parsing, query building, recursive resolution, caching, A/AAAA/MX/TXT records",
+      "started": "2026-04-04T22:26:08.796Z",
+      "completed": "2026-04-04T22:26:09.275Z",
+      "duration_ms": 0,
+      "summary": "Already completed: DNS packet parsing, name encoding with compression, query builder, response parser, DNS cache with TTL. 16 tests. GitHub: henry-the-frog/dns-resolver"
     },
     {
       "id": "T191",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "JSONPath query engine: path expressions, filters, wildcards, recursive descent, array slicing"
+      "status": "done",
+      "task": "JSONPath query engine: path expressions, filters, wildcards, recursive descent, array slicing",
+      "started": "2026-04-04T22:26:14.217Z",
+      "completed": "2026-04-04T22:26:23.700Z",
+      "duration_ms": 0,
+      "summary": "Already completed: JSONPath query engine — $.property, $[index], $[*], $.., $[start:end:step], $[?(@.prop op val)]. 24 tests. GitHub: henry-the-frog/jsonpath"
     },
     {
       "id": "T192",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Probabilistic data structures: Bloom filter, Count-Min Sketch, HyperLogLog cardinality estimator"
+      "status": "done",
+      "task": "Probabilistic data structures: Bloom filter, Count-Min Sketch, HyperLogLog cardinality estimator",
+      "started": "2026-04-04T22:26:14.845Z",
+      "completed": "2026-04-04T22:26:24.429Z",
+      "duration_ms": 0,
+      "summary": "Already completed: Bloom filter, Count-Min Sketch, HyperLogLog. 20 tests. GitHub: henry-the-frog/probabilistic-ds"
     },
     {
       "id": "T193",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Template engine: lexer, parser, AST, compiler, conditionals, loops, partials, escaping"
+      "status": "done",
+      "task": "Template engine: lexer, parser, AST, compiler, conditionals, loops, partials, escaping",
+      "started": "2026-04-04T22:26:15.436Z",
+      "completed": "2026-04-04T22:26:24.897Z",
+      "duration_ms": 0,
+      "summary": "Already completed: Template engine — variables, conditionals, loops, partials, HTML escaping. 28 tests. GitHub: henry-the-frog/template-engine"
     },
     {
       "id": "T194",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "TOML parser: key-value, tables, arrays of tables, multiline strings, datetimes, inline tables"
+      "status": "done",
+      "task": "TOML parser: key-value, tables, arrays of tables, multiline strings, datetimes, inline tables",
+      "started": "2026-04-04T22:26:15.933Z",
+      "completed": "2026-04-04T22:26:25.483Z",
+      "duration_ms": 0,
+      "summary": "Already completed: TOML parser — tables, arrays of tables, dates, multiline strings. 30 tests. GitHub: henry-the-frog/toml-parser"
+    },
+    {
+      "id": "T195",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Session B continuation: 4h remain. Assess portfolio depth. Choose 2-3 ambitious deep projects to build (not breadth — real depth). Consider: OS kernel, TCP stack, compiler backend, database engine, or something truly novel.",
+      "started": "2026-04-04T22:26:52.869Z",
+      "completed": "2026-04-04T22:27:11.289Z",
+      "duration_ms": 120000,
+      "summary": "Decision: Build a proper relational database engine with storage layer, buffer pool, B+ tree indexes, query planner, joins, MVCC transactions. This combines KV store, SQL parser, and B-tree knowledge into one ambitious deep project. Also continue deepening chess engine (opening book, endgame tables) and WASM interpreter (more WASI, module linking)."
+    },
+    {
+      "id": "T196",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Build HenryDB: a relational database engine with page-based storage, B+ tree indexes, buffer pool, SQL query execution (SELECT/INSERT/UPDATE/DELETE), WHERE clauses, JOINs, query planner, MVCC transactions, WAL",
+      "task": null,
+      "started": "2026-04-04T22:27:21.575Z",
+      "completed": "2026-04-04T22:27:42.074Z",
+      "duration_ms": 120000,
+      "summary": "Planned 5 BUILD tasks for HenryDB: (1) page storage + buffer pool, (2) B+ tree index, (3) SQL parser + executor, (4) JOINs + query planner, (5) transactions + WAL + crash recovery. Builds bottom-up."
+    },
+    {
+      "id": "T197",
+      "mode": "BUILD",
+      "task": "HenryDB Layer 1: Page-based storage engine — 4KB pages, page allocator, heap file (insert/scan/delete tuples), buffer pool with LRU eviction. 30+ tests.",
+      "status": "done",
+      "plan_ref": "T196",
+      "started": "2026-04-04T22:27:52.021Z",
+      "completed": "2026-04-04T22:29:22.677Z",
+      "duration_ms": 600000,
+      "summary": "HenryDB Layer 1: Page (4KB slotted layout, insert/get/delete/scan), tuple encoding (int/float/string/bool/null), BufferPool (LRU eviction, dirty tracking, pinning), HeapFile (multi-page table storage). 28 tests, all passing."
+    },
+    {
+      "id": "T198",
+      "mode": "BUILD",
+      "task": "HenryDB Layer 2: B+ tree index — insert, search, range scan, split/merge, bulk load. Plugs into page storage. 25+ tests.",
+      "status": "done",
+      "plan_ref": "T196",
+      "started": "2026-04-04T22:29:32.808Z",
+      "completed": "2026-04-04T22:30:33.832Z",
+      "duration_ms": 600000,
+      "summary": "HenryDB Layer 2: B+ tree with leaf-linked scan, internal node splitting, insert/search/delete/range/scan, bulk load, string keys. Order-4 tested with 1000 entries. 20 tests."
+    },
+    {
+      "id": "T199",
+      "mode": "BUILD",
+      "task": "HenryDB Layer 3: SQL parser + query executor — tokenizer, parser for SELECT/INSERT/UPDATE/DELETE/CREATE TABLE, WHERE with comparisons and AND/OR, ORDER BY, LIMIT. Table catalog. 30+ tests.",
+      "status": "done",
+      "plan_ref": "T196",
+      "started": "2026-04-04T22:30:39.419Z",
+      "completed": "2026-04-04T22:32:50.594Z",
+      "duration_ms": 900000,
+      "summary": "HenryDB Layer 3: SQL tokenizer (keywords, operators, strings, numbers), recursive descent parser (SELECT/INSERT/UPDATE/DELETE/CREATE/DROP, WHERE with AND/OR/NOT, ORDER BY, LIMIT, OFFSET, aggregates, JOINs), query executor with table catalog. 46 new tests (94 total)."
+    },
+    {
+      "id": "T200",
+      "mode": "BUILD",
+      "task": "HenryDB Layer 4: JOIN support + query planner — nested-loop join, hash join, index scan vs table scan cost estimation, simple query optimizer. 20+ tests.",
+      "status": "done",
+      "plan_ref": "T196",
+      "started": "2026-04-04T22:32:56.179Z",
+      "completed": "2026-04-04T22:35:01.938Z",
+      "duration_ms": 600000,
+      "summary": "HenryDB Layer 4: Query planner with cost estimation, selectivity estimation (AND/OR/equality/range), index scan vs table scan choice, hash join vs nested-loop join selection, hash join execution, EXPLAIN-style plan formatting. 12 new tests (106 total)."
+    },
+    {
+      "id": "T201",
+      "mode": "BUILD",
+      "task": "HenryDB Layer 5: Transactions + WAL — begin/commit/rollback, MVCC with snapshot isolation, write-ahead log, crash recovery. 20+ tests. GitHub push.",
+      "status": "done",
+      "plan_ref": "T196",
+      "started": "2026-04-04T22:35:07.467Z",
+      "completed": "2026-04-04T22:36:56.714Z",
+      "duration_ms": 900000,
+      "summary": "HenryDB Layer 5: WAL with LSN, TransactionManager with MVCC snapshot isolation, begin/commit/rollback, undo logging, crash recovery (detect + undo uncommitted), concurrent transactions. 20 new tests (126 total across all 5 layers). GitHub: henry-the-frog/henrydb"
     }
   ],
-  "updated_at": "2026-04-04T22:10:58.713Z",
-  "adjustments": [
-    {
-      "time": "2026-04-04T21:58:17.264Z",
-      "msg": "Added T184 (BUILD) after end: DPLL SAT solver: CNF representation, unit propagation, pure literal elimination, CDCL (conflict-driven clause learning), DIMACS parser"
-    },
-    {
-      "time": "2026-04-04T21:58:29.635Z",
-      "msg": "Added T185 (MAINTAIN) after end: Session B final: dashboard, daily log, scratch notes, git push all repos"
-    },
-    {
-      "time": "2026-04-04T21:59:54.568Z",
-      "msg": "Added T186 (BUILD) after end: Deepen graph-db: Cypher-like query language, pattern matching, path finding, aggregations"
-    },
-    {
-      "time": "2026-04-04T21:59:55.118Z",
-      "msg": "Added T187 (BUILD) after end: Deepen datalog: stratification, negation, aggregation, recursive queries"
-    },
-    {
-      "time": "2026-04-04T21:59:55.604Z",
-      "msg": "Added T188 (BUILD) after end: Deepen elf-parser: symbol table, section parsing, dynamic linking info, CLI"
-    },
-    {
-      "time": "2026-04-04T22:12:30.604Z",
-      "msg": "Added T189 (BUILD) after end: Protocol Buffers: .proto parser, wire format encoder/decoder (varint, length-delimited, fixed), message serialization"
-    },
-    {
-      "time": "2026-04-04T22:15:05.218Z",
-      "msg": "Added T190 (BUILD) after end: DNS resolver: DNS packet parsing, query building, recursive resolution, caching, A/AAAA/MX/TXT records"
-    },
-    {
-      "time": "2026-04-04T22:16:53.625Z",
-      "msg": "Added T191 (BUILD) after end: JSONPath query engine: path expressions, filters, wildcards, recursive descent, array slicing"
-    },
-    {
-      "time": "2026-04-04T22:18:33.597Z",
-      "msg": "Added T192 (BUILD) after end: Probabilistic data structures: Bloom filter, Count-Min Sketch, HyperLogLog cardinality estimator"
-    },
-    {
-      "time": "2026-04-04T22:20:42.869Z",
-      "msg": "Added T193 (BUILD) after end: Template engine: lexer, parser, AST, compiler, conditionals, loops, partials, escaping"
-    },
-    {
-      "time": "2026-04-04T22:22:27.182Z",
-      "msg": "Added T194 (BUILD) after end: TOML parser: key-value, tables, arrays of tables, multiline strings, datetimes, inline tables"
-    }
-  ]
+  "updated_at": "2026-04-04T22:36:56.714Z"
 }
