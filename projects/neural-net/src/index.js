@@ -256,15 +256,27 @@ export class DenseLayer {
 export class NeuralNetwork {
   constructor(layers = []) {
     this.layers = layers;
-    this.loss = losses.mse;
+    this._lossObj = losses.mse;
+    // Make loss callable as setter: net.loss('mse')
+    // But also accessible as property: net._lossObj
+    this.loss = (name) => {
+      if (typeof name === 'string') this._lossObj = losses[name];
+      else this._lossObj = name;
+      return this;
+    };
   }
 
   addLayer(inputSize, outputSize, activation = 'sigmoid') {
     this.layers.push(new DenseLayer(inputSize, outputSize, activation));
   }
 
+  // Alias for addLayer
+  dense(inputSize, outputSize, activation = 'sigmoid') {
+    return this.addLayer(inputSize, outputSize, activation);
+  }
+
   setLoss(lossName) {
-    this.loss = losses[lossName];
+    this._lossObj = losses[lossName];
   }
 
   forward(input) {
@@ -276,7 +288,7 @@ export class NeuralNetwork {
   }
 
   backward(predicted, target, learningRate) {
-    let grad = this.loss.backward(predicted, target);
+    let grad = this._lossObj.backward(predicted, target);
     for (let i = this.layers.length - 1; i >= 0; i--) {
       grad = this.layers[i].backward(grad, learningRate);
     }
@@ -290,7 +302,7 @@ export class NeuralNetwork {
     
     for (let epoch = 0; epoch < epochs; epoch++) {
       const output = this.forward(inputMatrix);
-      const loss = this.loss.forward(output, targetMatrix);
+      const loss = this._lossObj.forward(output, targetMatrix);
       
       this.backward(output, targetMatrix, learningRate);
       
@@ -307,6 +319,31 @@ export class NeuralNetwork {
     const inputMatrix = input instanceof Matrix ? input : Matrix.fromArray(input);
     return this.forward(inputMatrix);
   }
+
+  toJSON() {
+    return {
+      layers: this.layers.map(l => ({
+        weights: Array.from(l.weights.data),
+        biases: Array.from(l.bias.data),
+        rows: l.weights.rows,
+        cols: l.weights.cols,
+        biasRows: l.bias.rows,
+        biasCols: l.bias.cols,
+        activation: l.activationName || 'sigmoid',
+      }))
+    };
+  }
+
+  static fromJSON(json) {
+    const net = new NeuralNetwork();
+    for (const ld of json.layers) {
+      const layer = new DenseLayer(ld.rows, ld.cols, ld.activation);
+      layer.weights.data = Float64Array.from(ld.weights);
+      layer.bias.data = Float64Array.from(ld.biases);
+      net.layers.push(layer);
+    }
+    return net;
+  }
 }
 
 // ===== Convenience builder =====
@@ -319,3 +356,29 @@ export function createNetwork(layerSizes, activationFn = 'sigmoid') {
   }
   return net;
 }
+
+// Alias for backward compatibility
+export const Network = NeuralNetwork;
+
+
+// Individual function exports for convenience
+export const sigmoid = activations.sigmoid;
+export const relu = activations.relu;
+export const tanh = activations.tanh;
+export const softmax = activations.softmax;
+export const mse = losses.mse;
+export const crossEntropy = losses.crossEntropy;
+
+// Add compute alias to loss functions
+for (const key of Object.keys(losses)) {
+  if (losses[key].forward) losses[key].compute = losses[key].forward;
+}
+
+// Add gradient alias to loss functions
+for (const key of Object.keys(losses)) {
+  if (losses[key].backward) losses[key].gradient = losses[key].backward;
+}
+
+// Add get/set methods to Matrix
+Matrix.prototype.get = function(row, col) { return this.data[row * this.cols + col]; };
+Matrix.prototype.set = function(row, col, val) { this.data[row * this.cols + col] = val; };
