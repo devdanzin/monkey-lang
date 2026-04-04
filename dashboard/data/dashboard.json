@@ -1676,8 +1676,12 @@
       "id": "T163",
       "mode": "BUILD",
       "task": "Deepen chess engine: add Zobrist hashing for faster TT, null move pruning, and late move reductions",
-      "status": "upcoming",
-      "plan_ref": "T160"
+      "status": "done",
+      "plan_ref": "T160",
+      "started": "2026-04-04T21:14:57.516Z",
+      "completed": "2026-04-04T21:19:23.720Z",
+      "duration_ms": 600000,
+      "summary": "Chess engine deepened: Zobrist hashing (O(1) TT lookup), null move pruning (depth reduction R=2-3), late move reductions (quiet moves searched at reduced depth). 14,912 NPS at depth 5. 5 new tests, 49 total."
     },
     {
       "id": "T164",
@@ -1695,10 +1699,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 159,
+    "completed": 160,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 50950000
+    "total_duration_ms": 51550000
   },
-  "updated_at": "2026-04-04T21:14:35.144Z"
+  "updated_at": "2026-04-04T21:19:23.720Z"
 }
