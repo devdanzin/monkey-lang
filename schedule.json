@@ -1611,22 +1611,43 @@
     {
       "id": "T151",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Extend neural net: convolutional layers or transformer architecture",
-      "task": null
+      "task": null,
+      "started": "2026-04-04T21:02:47.023Z",
+      "completed": "2026-04-04T21:03:37.542Z",
+      "duration_ms": 60000,
+      "summary": "Neural net already has 35 modules (conv, transformer, GAN, VAE, diffusion, GNN, etc.). No further extension needed. Pivoting to regex engine as new depth project."
     },
     {
       "id": "T152",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Mid-session housekeeping + dashboard update"
+      "status": "done",
+      "task": "Mid-session housekeeping + dashboard update",
+      "started": "2026-04-04T21:03:53.854Z",
+      "completed": "2026-04-04T21:04:37.902Z",
+      "duration_ms": 120000,
+      "summary": "Git pushed, dashboard updated. Session B: 2 new projects (WASM interpreter 93 tests, chess engine 44 tests), 18 tasks completed."
     },
     {
       "id": "T153",
       "mode": "MAINTAIN",
       "status": "upcoming",
       "task": "Final session B wrap — git push, daily log, scratch notes"
+    },
+    {
+      "id": "T160",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Build regex engine: Thompson NFA construction, VM-based execution, character classes, quantifiers, capture groups",
+      "task": null
     }
   ],
-  "updated_at": "2026-04-04T21:02:28.675Z"
+  "updated_at": "2026-04-04T21:04:37.902Z",
+  "adjustments": [
+    {
+      "time": "2026-04-04T21:03:43.148Z",
+      "msg": "Added T160 (PLAN) after end: Build regex engine: Thompson NFA construction, VM-based execution, character classes, quantifiers, capture groups"
+    }
+  ]
 }
