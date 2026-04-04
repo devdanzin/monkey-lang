@@ -2513,9 +2513,19 @@
       "completed": "2026-04-04T23:57:24.580Z",
       "duration_ms": 600000,
       "summary": "Parser combinators: char/string/regex/satisfy primitives, seq/alt/many/many1/optional/sepBy combinators, between/map/chain/lazy/eof, digit/letter/whitespace builtins. Full JSON parser built with combinators (null, bool, number, string with escapes, array, object, nested, whitespace). 34 tests. GitHub: henry-the-frog/parsec"
+    },
+    {
+      "id": "T244",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "INI parser: sections, key-value pairs, comments (# ;), inline comments, multiline values, type coercion, stringify, nested sections. 20+ tests.",
+      "started": "2026-04-04T23:57:41.287Z",
+      "completed": "2026-04-04T23:58:41.077Z",
+      "duration_ms": 600000,
+      "summary": "INI parser: sections, key-value pairs, # and ; comments, inline comments (respects quotes), quoted values, type coercion (bool/number/null), dotted sections (server.http -> nested objects), global keys, stringify with auto-quoting, roundtrip fidelity. 17 tests. GitHub: henry-the-frog/ini"
     }
   ],
-  "updated_at": "2026-04-04T23:57:24.580Z",
+  "updated_at": "2026-04-04T23:58:41.077Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -2652,6 +2662,10 @@
     {
       "time": "2026-04-04T23:55:23.480Z",
       "msg": "Added T243 (BUILD) after end: Parser combinators: char/string/regex primitives, seq/alt/many/optional/sepBy, map/chain/between, lazy (recursive), position tracking, error messages, JSON parser built with combinators. 25+ tests."
+    },
+    {
+      "time": "2026-04-04T23:57:40.583Z",
+      "msg": "Added T244 (BUILD) after end: INI parser: sections, key-value pairs, comments (# ;), inline comments, multiline values, type coercion, stringify, nested sections. 20+ tests."
     }
   ]
 }
