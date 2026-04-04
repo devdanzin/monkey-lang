@@ -2323,14 +2323,24 @@
       "completed": "2026-04-04T23:24:26.270Z",
       "duration_ms": 600000,
       "summary": "Graph algorithms: Dijkstra (shortest path + distances), A* search, Bellman-Ford (negative weights + cycle detection), Floyd-Warshall (all-pairs), topological sort, Tarjan SCC, Kruskal MST (union-find), Prim MST, Ford-Fulkerson max flow (BFS augmenting paths). 43 tests. GitHub: henry-the-frog/graph-algorithms"
+    },
+    {
+      "id": "T225",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Event sourcing + CQRS: event store (append-only), aggregate root, projection/materialized views, command handler, event bus, snapshot support, optimistic concurrency. 30+ tests.",
+      "started": "2026-04-04T23:24:57.863Z",
+      "completed": "2026-04-04T23:26:21.571Z",
+      "duration_ms": 600000,
+      "summary": "Event sourcing + CQRS: EventStore (append-only log, streams, global positions, optimistic concurrency, subscriptions, snapshots), AggregateRoot with event replay, BankAccount example (open/deposit/withdraw/close with business rules), Projection (materialized views, rebuild, catch-up), CommandHandler (command routing), EventBus (typed + wildcard). 30 tests. GitHub: henry-the-frog/event-sourcing"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 221,
+    "completed": 222,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 77910000
+    "total_duration_ms": 78510000
   },
-  "updated_at": "2026-04-04T23:24:26.270Z"
+  "updated_at": "2026-04-04T23:26:21.571Z"
 }
