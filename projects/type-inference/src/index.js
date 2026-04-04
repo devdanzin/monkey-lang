@@ -375,6 +375,137 @@ export function defaultClassEnv() {
 export const classMethodRef = (className, methodName) => ({ tag: 'classmethod', className, methodName });
 export const constrainedExpr = (constraints, expr) => ({ tag: 'constrained', constraints, expr });
 
+// ===== Kind System (Higher-Kinded Types) =====
+
+// Kinds: * (Star), * -> * (KArrow(Star, Star)), etc.
+export class Star {
+  toString() { return '*'; }
+  equals(other) { return other instanceof Star; }
+}
+
+export class KArrow {
+  constructor(from, to) { this.from = from; this.to = to; }
+  toString() {
+    const fromStr = this.from instanceof KArrow ? `(${this.from})` : `${this.from}`;
+    return `${fromStr} -> ${this.to}`;
+  }
+  equals(other) {
+    return other instanceof KArrow && this.from.equals(other.from) && this.to.equals(other.to);
+  }
+}
+
+export const star = new Star();
+export const kArrow = (from, to) => new KArrow(from, to);
+
+// Kind environment: maps type constructor names to their kinds
+export class KindEnv {
+  constructor(bindings = new Map()) {
+    this.bindings = new Map(bindings);
+  }
+
+  extend(name, kind) {
+    const newBindings = new Map(this.bindings);
+    newBindings.set(name, kind);
+    return new KindEnv(newBindings);
+  }
+
+  lookup(name) {
+    return this.bindings.get(name) || null;
+  }
+}
+
+// Default kind environment
+export function defaultKindEnv() {
+  return new KindEnv(new Map([
+    ['Int', star],
+    ['Bool', star],
+    ['String', star],
+    ['Unit', star],
+    // * -> * constructors
+    ['List', kArrow(star, star)],
+    ['Maybe', kArrow(star, star)],
+    // * -> * -> * constructors
+    ['Either', kArrow(star, kArrow(star, star))],
+    ['Pair', kArrow(star, kArrow(star, star))],
+  ]));
+}
+
+// Kind inference: given a type and a kind environment, infer its kind
+export function inferKind(type, kindEnv = defaultKindEnv()) {
+  if (type instanceof TConst) {
+    const kind = kindEnv.lookup(type.name);
+    if (!kind) return star; // assume * for unknown
+    return kind;
+  }
+
+  if (type instanceof TVar) {
+    const kind = kindEnv.lookup(type.name);
+    if (!kind) return star; // type variables default to *
+    return kind;
+  }
+
+  if (type instanceof TFun) {
+    // Function types: both sides must be *, result is *
+    const fromKind = inferKind(type.from, kindEnv);
+    const toKind = inferKind(type.to, kindEnv);
+    if (!fromKind.equals(star)) throw new Error(`Function argument must have kind *, got ${fromKind}`);
+    if (!toKind.equals(star)) throw new Error(`Function return must have kind *, got ${toKind}`);
+    return star;
+  }
+
+  if (type instanceof TApp) {
+    // Type application: f a — f must have kind (k1 -> k2), a must have kind k1
+    const conKind = kindEnv.lookup(type.name);
+    if (!conKind) throw new Error(`Unknown type constructor: ${type.name}`);
+
+    let currentKind = conKind;
+    for (const arg of type.args) {
+      if (!(currentKind instanceof KArrow)) {
+        throw new Error(`Type ${type.name} applied to too many arguments`);
+      }
+      const argKind = inferKind(arg, kindEnv);
+      if (!argKind.equals(currentKind.from)) {
+        throw new Error(`Kind mismatch: expected ${currentKind.from}, got ${argKind}`);
+      }
+      currentKind = currentKind.to;
+    }
+    return currentKind;
+  }
+
+  if (type instanceof TList) {
+    // List a: a must have kind *
+    const elemKind = inferKind(type.elem, kindEnv);
+    if (!elemKind.equals(star)) throw new Error(`List element must have kind *, got ${elemKind}`);
+    return star;
+  }
+
+  if (type instanceof TTuple) {
+    for (const t of type.types) {
+      const k = inferKind(t, kindEnv);
+      if (!k.equals(star)) throw new Error(`Tuple element must have kind *, got ${k}`);
+    }
+    return star;
+  }
+
+  if (type instanceof TRecord) return star;
+  if (type instanceof TRowExtend) return star;
+  if (type instanceof TRowEmpty) return star;
+
+  return star; // default
+}
+
+// Check that a type is well-kinded (has kind *)
+export function checkKind(type, kindEnv = defaultKindEnv()) {
+  const kind = inferKind(type, kindEnv);
+  if (!kind.equals(star)) {
+    throw new Error(`Expected kind *, got ${kind} for type ${type}`);
+  }
+  return true;
+}
+
+// Type constructor AST node — for partial application of type constructors
+export const typeCon = (name) => ({ tag: 'typecon', name });
+
 // ===== Substitution =====
 
 export function composeSubst(s1, s2) {

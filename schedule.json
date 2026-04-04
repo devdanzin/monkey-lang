@@ -1181,7 +1181,55 @@
       "completed": "2026-04-04T18:58:04.506Z",
       "duration_ms": 120000,
       "summary": "Final housekeeping: CURRENT.md updated, dashboard verified, git push."
+    },
+    {
+      "id": "T116",
+      "mode": "THINK",
+      "status": "done",
+      "task": "75 min left. Type inference now has 137 tests with type classes + row polymorphism. What else to add? Or switch to a different project depth?",
+      "started": "2026-04-04T18:58:29.696Z",
+      "completed": "2026-04-04T18:58:40.596Z",
+      "duration_ms": 60000,
+      "summary": "Add higher-kinded types to type inference, then maybe a new exploration project if time."
+    },
+    {
+      "id": "T117",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Add higher-kinded types: kind system, type constructors, Functor/Monad classes",
+      "task": null,
+      "started": "2026-04-04T18:58:58.327Z",
+      "completed": "2026-04-04T18:59:16.575Z",
+      "duration_ms": 60000,
+      "summary": "2 BUILD tasks: kind system + kind inference, then HKT type classes (Functor/Monad)"
+    },
+    {
+      "id": "T120",
+      "mode": "BUILD",
+      "task": "Add kind system: Kind type (Star, KArrow), kind inference, type constructor application with kind checking",
+      "status": "in-progress",
+      "plan_ref": "T117",
+      "started": "2026-04-04T18:59:26.728Z"
+    },
+    {
+      "id": "T121",
+      "mode": "BUILD",
+      "task": "Add HKT type classes: Functor/Applicative/Monad with higher-kinded constraints, fmap/pure/bind inference + tests",
+      "status": "upcoming",
+      "plan_ref": "T117"
+    },
+    {
+      "id": "T118",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T119",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
     }
   ],
-  "updated_at": "2026-04-04T18:58:04.506Z"
+  "updated_at": "2026-04-04T18:59:26.728Z"
 }
