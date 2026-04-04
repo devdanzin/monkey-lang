@@ -613,6 +613,120 @@ export function createGlobalEnv() {
     }
   });
 
+  // Functional programming primitives
+  env.set('fold-left', (fn, init, lst) => {
+    let acc = init;
+    const callFn = (a, b) => {
+      if (typeof fn === 'function') return fn(a, b);
+      if (fn instanceof LispLambda) {
+        const ce = new Environment(fn.env);
+        ce.set(fn.params[0], a);
+        ce.set(fn.params[1], b);
+        let r = NIL;
+        for (const b2 of fn.body) r = evaluate(b2, ce);
+        return r;
+      }
+    };
+    for (const item of lst.items) acc = callFn(acc, item);
+    return acc;
+  });
+
+  env.set('fold-right', (fn, init, lst) => {
+    let acc = init;
+    const callFn = (a, b) => {
+      if (typeof fn === 'function') return fn(a, b);
+      if (fn instanceof LispLambda) {
+        const ce = new Environment(fn.env);
+        ce.set(fn.params[0], a);
+        ce.set(fn.params[1], b);
+        let r = NIL;
+        for (const b2 of fn.body) r = evaluate(b2, ce);
+        return r;
+      }
+    };
+    for (let i = lst.items.length - 1; i >= 0; i--) acc = callFn(lst.items[i], acc);
+    return acc;
+  });
+
+  env.set('for-each', (fn, lst) => {
+    const callFn = (item) => {
+      if (typeof fn === 'function') return fn(item);
+      if (fn instanceof LispLambda) {
+        const ce = new Environment(fn.env);
+        ce.set(fn.params[0], item);
+        let r = NIL;
+        for (const b of fn.body) r = evaluate(b, ce);
+        return r;
+      }
+    };
+    for (const item of lst.items) callFn(item);
+    return NIL;
+  });
+
+  env.set('compose', (f, g) => {
+    return (...args) => {
+      const gResult = typeof g === 'function' ? g(...args) : (() => {
+        const ce = new Environment(g.env);
+        for (let i = 0; i < g.params.length; i++) ce.set(g.params[i], args[i] || NIL);
+        let r = NIL;
+        for (const b of g.body) r = evaluate(b, ce);
+        return r;
+      })();
+      return typeof f === 'function' ? f(gResult) : (() => {
+        const ce = new Environment(f.env);
+        ce.set(f.params[0], gResult);
+        let r = NIL;
+        for (const b of f.body) r = evaluate(b, ce);
+        return r;
+      })();
+    };
+  });
+
+  env.set('zip', (lst1, lst2) => {
+    const len = Math.min(lst1.items.length, lst2.items.length);
+    const result = [];
+    for (let i = 0; i < len; i++) {
+      result.push(new LispList([lst1.items[i], lst2.items[i]]));
+    }
+    return new LispList(result);
+  });
+
+  env.set('range', (start, end, step) => {
+    step = step || 1;
+    const result = [];
+    for (let i = start; i < end; i += step) result.push(i);
+    return new LispList(result);
+  });
+
+  env.set('take', (n, lst) => new LispList(lst.items.slice(0, n)));
+  env.set('drop', (n, lst) => new LispList(lst.items.slice(n)));
+  env.set('any?', (fn, lst) => {
+    for (const item of lst.items) {
+      const r = typeof fn === 'function' ? fn(item) : (() => {
+        const ce = new Environment(fn.env);
+        ce.set(fn.params[0], item);
+        let res = NIL;
+        for (const b of fn.body) res = evaluate(b, ce);
+        return res;
+      })();
+      if (r !== false && r !== NIL) return true;
+    }
+    return false;
+  });
+  env.set('every?', (fn, lst) => {
+    for (const item of lst.items) {
+      const r = typeof fn === 'function' ? fn(item) : (() => {
+        const ce = new Environment(fn.env);
+        ce.set(fn.params[0], item);
+        let res = NIL;
+        for (const b of fn.body) res = evaluate(b, ce);
+        return res;
+      })();
+      if (r === false || r === NIL) return false;
+    }
+    return true;
+  });
+
   return env;
 }
 

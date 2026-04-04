@@ -1371,12 +1371,22 @@
     {
       "id": "T134",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add VSIDS decay and random restarts to SAT solver for harder instances",
-      "started": "2026-04-04T19:36:36.623Z"
+      "started": "2026-04-04T19:36:36.623Z",
+      "completed": "2026-04-04T19:40:09.483Z",
+      "duration_ms": 480000,
+      "summary": "SAT improvements: VSIDS decay with rescaling (prevents overflow), phase saving (remember last assignment), Luby restart schedule (1,1,2,1,1,2,4...). Tested Luby sequence, finite activities after pigeonhole(3), 4-queens and 5-queens solving. 8 new tests (85 total)."
+    },
+    {
+      "id": "T135",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add tail call modulo cons optimization to Lisp",
+      "started": "2026-04-04T19:40:29.406Z"
     }
   ],
-  "updated_at": "2026-04-04T19:36:36.623Z",
+  "updated_at": "2026-04-04T19:40:29.406Z",
   "adjustments": [
     {
       "time": "2026-04-04T19:18:36.081Z",
@@ -1405,6 +1415,10 @@
     {
       "time": "2026-04-04T19:32:39.849Z",
       "msg": "Added T134 (BUILD) after end: Add VSIDS decay and random restarts to SAT solver for harder instances"
+    },
+    {
+      "time": "2026-04-04T19:40:28.256Z",
+      "msg": "Added T135 (BUILD) after end: Add tail call modulo cons optimization to Lisp"
     }
   ]
 }
