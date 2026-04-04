@@ -1,0 +1,9 @@
+{
+  "name": "parser-combinators",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Parser combinator library with JSON parser example",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  }
+}
