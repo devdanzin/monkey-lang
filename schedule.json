@@ -385,7 +385,43 @@
       "completed": "2026-04-04T15:50:03.240Z",
       "duration_ms": 600000,
       "summary": "Combined DPLL(T) with EUF + difference logic. Extended SMT-LIB parser for arithmetic. Task scheduling examples. 85 total tests."
+    },
+    {
+      "id": "T37",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Build Hindley-Milner type inference engine: Algorithm W, unification, let-polymorphism, type environments",
+      "task": null,
+      "started": "2026-04-04T15:51:26.231Z",
+      "completed": "2026-04-04T15:51:35.370Z",
+      "duration_ms": 60000,
+      "summary": "Planned 3 BUILD tasks: basic type inference + unification, let-polymorphism + ADTs, error messages + README."
+    },
+    {
+      "id": "T38",
+      "mode": "BUILD",
+      "task": "Build type representation, unification algorithm, and basic type inference (literals, arithmetic, booleans, if-then-else, functions, application) with tests",
+      "status": "done",
+      "plan_ref": "T37",
+      "started": "2026-04-04T15:51:44.852Z",
+      "completed": "2026-04-04T15:55:01.730Z",
+      "duration_ms": 600000,
+      "summary": "Hindley-Milner type inference: Algorithm W, unification, let-polymorphism, let-rec (factorial/fib), higher-order (compose, Church numerals). 45 tests."
+    },
+    {
+      "id": "T39",
+      "mode": "BUILD",
+      "task": "Add let-polymorphism (generalization + instantiation), recursive definitions, and algebraic data types with tests",
+      "status": "upcoming",
+      "plan_ref": "T37"
+    },
+    {
+      "id": "T40",
+      "mode": "BUILD",
+      "task": "Add error messages, type pretty-printing, and README with examples",
+      "status": "upcoming",
+      "plan_ref": "T37"
     }
   ],
-  "updated_at": "2026-04-04T15:50:03.240Z"
+  "updated_at": "2026-04-04T15:55:01.730Z"
 }
