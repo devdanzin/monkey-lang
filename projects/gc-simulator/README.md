@@ -1,73 +1,101 @@
-# GC Simulator — Cheney Semi-Space Garbage Collector
+# Garbage Collector Simulator
 
-A garbage collector built from scratch in JavaScript, implementing Cheney's semi-space copying algorithm.
+Three garbage collection algorithms implemented from scratch in JavaScript, sharing a common object/heap layout:
 
-## How It Works
+1. **Cheney Semi-Space** — copying collector with two semi-spaces
+2. **Mark-Compact** — in-place compaction with mark + slide phases
+3. **Generational** — nursery (semi-space) + tenured (mark-compact) with write barrier
 
-The heap is divided into two equal **semi-spaces**. Objects are allocated via bump pointer in the active space. When it fills up, live objects are copied to the other space using BFS (Cheney's scan/alloc pointer trick), dead objects are implicitly reclaimed, and the spaces flip.
+## Architecture
 
-## Features
+### Object Layout
 
-- **Cheney's copying collector** — BFS traversal, forwarding pointers, O(live) collection
-- **7 object types** — INT, PAIR, ARRAY, STRING, SYMBOL, NIL, FORWARDING
-- **Bump allocation** — Fast allocation, no fragmentation in to-space
-- **Root set management** — Push/release handles with auto-updating
-- **Cycle support** — Handles self-referential and mutually recursive structures
-- **Auto-GC** — Triggers collection automatically when space runs out
-- **Statistics** — Tracks allocations, collections, copies, utilization
+All three collectors share the same object representation:
+
+```
+[tag:1][size:1][field0][field1]...[fieldN-1]
+```
+
+Tags: INT, PAIR, ARRAY, STRING, NIL, SYMBOL, FORWARDING (used during GC)
+
+### Cheney Semi-Space (`Heap`)
+
+The classic copying collector:
+- Two equally-sized semi-spaces (from-space and to-space)
+- Allocation bumps a pointer in from-space
+- When full: BFS copy reachable objects to to-space, swap spaces
+- **O(live objects)** collection time — dead objects are free to skip
+
+### Mark-Compact (`MarkCompactHeap`)
+
+In-place compaction in three phases:
+1. **Mark**: DFS from roots, mark all reachable objects in a bitmap
+2. **Compute forwarding**: linear scan, assign new addresses to live objects
+3. **Update + Compact**: update all pointers to new addresses, slide objects to front
+
+Advantages over semi-space: no wasted half-space, better cache locality.
+
+### Generational (`GenerationalHeap`)
+
+The V8/HotSpot approach:
+- **Nursery**: small semi-space for young objects (fast Cheney collection)
+- **Tenured**: large space for long-lived objects (mark-compact collection)
+- **Promotion**: objects surviving `promotionAge` nursery collections move to tenured
+- **Write barrier**: tracks tenured→nursery pointers in a remembered set
+
+Based on the generational hypothesis: most objects die young.
 
 ## Usage
 
-```js
-import { Heap, NIL } from './src/index.js';
+```javascript
+import { Heap } from './src/heap.js';
+import { MarkCompactHeap } from './src/mark-compact.js';
+import { GenerationalHeap } from './src/generational.js';
 
-const heap = new Heap(1024); // 1024-word semi-space
-
-// Allocate
+// Cheney Semi-Space
+const heap = new Heap(1024);
 const a = heap.allocInt(42);
-const b = heap.allocInt(99);
-const pair = heap.allocPair(a, b);
+const b = heap.allocPair(a, -1); // -1 = NIL
+let root = b;
+heap.addRoot(() => root, (addr) => { root = addr; });
+heap.collect(); // Cheney collection
+console.log(heap.getInt(heap.getCar(root))); // 42
 
-// Root it (survives GC)
-const handle = heap.pushRoot(pair);
+// Mark-Compact
+const mc = new MarkCompactHeap(2048);
+// Same API as Heap
 
-// Trigger GC
-heap.collect();
-
-// Access (handle.value is updated)
-console.log(heap.inspect(handle.value)); // (42 . 99)
-
-handle.release();
-```
-
-## Demo
-
-```bash
-node demo.js
+// Generational
+const gen = new GenerationalHeap(256, 1024, 2);
+// Objects start in nursery, get promoted after 2 collections
 ```
 
 ## Tests
 
 ```bash
-npm test
-# 55 tests across 16 suites
+npm test    # 82 tests across 3 collectors
 ```
 
-## Architecture
+Covers:
+- Basic allocation: int, pair, array, string, nil, symbol
+- Collection: garbage reclamation, root preservation, chain preservation
+- Circular references
+- Compaction (objects slide to front)
+- Promotion (nursery → tenured after surviving N collections)
+- Write barrier (tenured → nursery pointer tracking)
+- Stress tests (many alloc/collect cycles)
+- Stats tracking
 
-```
-Heap (Cheney Semi-Space)
-├── space0 [========........] ← from-space (active)
-├── space1 [................] ← to-space (idle)
-├── allocPtr → bump allocation in from-space
-├── roots[] → get/set accessor pairs
-└── collect()
-    ├── copy roots to to-space
-    ├── BFS scan: copy referenced objects
-    ├── leave forwarding pointers
-    └── flip spaces
-```
+## Collector Comparison
 
-## License
+| Collector | Space Overhead | Collection Time | Fragmentation | Best For |
+|-----------|---------------|-----------------|---------------|----------|
+| Cheney Semi-Space | 2x (two semi-spaces) | O(live) | None (compacting) | Simple, predictable |
+| Mark-Compact | 1x (bitmap + forwarding) | O(heap) | None (compacting) | Memory-constrained |
+| Generational | ~1.5x | O(nursery) amortized | None | General purpose |
 
-MIT
+## References
+
+- Cheney, C.J. (1970). "A Nonrecursive List Compacting Algorithm"
+- Jones, Hosking, Moss. "The Garbage Collection Handbook" (2011)
+- V8 Blog: "Trash talk: the Orinoco garbage collector"
