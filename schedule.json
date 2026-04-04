@@ -1795,9 +1795,12 @@
       "id": "T175",
       "mode": "BUILD",
       "task": "Transactions: begin/commit/rollback, MVCC snapshot isolation, concurrent reads",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T171",
-      "started": "2026-04-04T21:37:38.496Z"
+      "started": "2026-04-04T21:37:38.496Z",
+      "completed": "2026-04-04T21:39:08.260Z",
+      "duration_ms": 600000,
+      "summary": "MVCC transactions with snapshot isolation. TransactionalKVStore: begin/commit/rollback, own-writes visibility, concurrent snapshot reads, write-write conflict detection, version history with GC. 18 new tests, 70 total in kv-store."
     },
     {
       "id": "T172",
@@ -1806,5 +1809,5 @@
       "task": "Session B final wrap — git push all repos, daily log, dashboard update, scratch notes"
     }
   ],
-  "updated_at": "2026-04-04T21:37:38.496Z"
+  "updated_at": "2026-04-04T21:39:08.260Z"
 }
