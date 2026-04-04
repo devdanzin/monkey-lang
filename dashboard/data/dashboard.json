@@ -2373,14 +2373,24 @@
       "completed": "2026-04-04T23:34:04.291Z",
       "duration_ms": 600000,
       "summary": "DI Container: register class/factory/value, lifetimes (singleton/transient/scoped), constructor injection, property injection, circular dependency detection, tagged bindings, child containers with inheritance and override, has() check, dispose(), deep dependency chains. 23 tests. GitHub: henry-the-frog/di-container"
+    },
+    {
+      "id": "T230",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Job queue: priority queue with O(log n) operations, task scheduling with delays, retries with exponential backoff, dead letter queue, concurrency limiting, rate limiting. 25+ tests.",
+      "started": "2026-04-04T23:34:23.315Z",
+      "completed": "2026-04-04T23:35:39.944Z",
+      "duration_ms": 600000,
+      "summary": "Job queue: MinHeap priority queue (O(log n)), Job with priority/delay/retry/backoff, RateLimiter (sliding window), JobQueue (processOne/processAll, concurrency limiting, rate limiting, retry with exponential backoff, dead letter queue, event emission, retryDead). 23 tests. GitHub: henry-the-frog/job-queue"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 226,
+    "completed": 227,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 80910000
+    "total_duration_ms": 81510000
   },
-  "updated_at": "2026-04-04T23:34:04.291Z"
+  "updated_at": "2026-04-04T23:35:39.944Z"
 }
