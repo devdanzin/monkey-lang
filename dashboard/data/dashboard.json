@@ -1855,14 +1855,50 @@
       "completed": "2026-04-04T21:48:48.527Z",
       "duration_ms": 600000,
       "summary": "Scene builder: Material system (color, specular, roughness, reflectivity), SceneObject, multi-object scenes with closest-object material lookup, recursive reflection (max bounces), multiple lights, pre-built materials (red, green, blue, metal, mirror, gold, floor). 8 new tests, 57 total."
+    },
+    {
+      "id": "T180",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Build Git plumbing from scratch: blob/tree/commit objects, SHA-1 content-addressable storage, refs, diff, basic log",
+      "task": null,
+      "started": "2026-04-04T21:49:45.629Z",
+      "completed": "2026-04-04T21:50:04.842Z",
+      "duration_ms": 60000,
+      "summary": "3 BUILD tasks: Git objects + store, index + refs, diff + merge-base"
+    },
+    {
+      "id": "T181",
+      "mode": "BUILD",
+      "task": "Git objects: SHA-1 content-addressable storage, blob/tree/commit objects, zlib compression, object database",
+      "status": "done",
+      "plan_ref": "T180",
+      "started": "2026-04-04T21:50:13.390Z",
+      "completed": "2026-04-04T21:52:55.962Z",
+      "duration_ms": 600000,
+      "summary": "Git object model: SHA-1 content-addressable storage with zlib compression, blob/tree/commit objects with serialize/deserialize, ObjectStore with write/read/has/listAll. End-to-end test: blob→tree→commit chain. 17 tests. GitHub: henry-the-frog/tiny-git"
+    },
+    {
+      "id": "T182",
+      "mode": "BUILD",
+      "task": "Git index + working tree: staging area, add files, commit, refs (HEAD, branches), log",
+      "status": "upcoming",
+      "plan_ref": "T180"
+    },
+    {
+      "id": "T183",
+      "mode": "BUILD",
+      "task": "Diff + merge-base: file diff (Myers algorithm), commit graph walking, merge-base finding",
+      "status": "upcoming",
+      "plan_ref": "T180"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 176,
+    "completed": 178,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 57630000
+    "total_duration_ms": 58290000
   },
-  "updated_at": "2026-04-04T21:48:48.527Z"
+  "updated_at": "2026-04-04T21:52:55.962Z"
 }
