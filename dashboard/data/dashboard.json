@@ -1773,9 +1773,12 @@
       "id": "T173",
       "mode": "BUILD",
       "task": "B-tree: in-memory B-tree with insert, search, delete, range queries, iteration. Configurable order.",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T171",
-      "started": "2026-04-04T21:32:50.553Z"
+      "started": "2026-04-04T21:32:50.553Z",
+      "completed": "2026-04-04T21:35:24.214Z",
+      "duration_ms": 600000,
+      "summary": "B-tree: configurable order, insert/search/delete with merge/borrow/split, range queries, in-order iteration, min/max, clear. Tested with 1000 random ops against Map reference. 27 new tests, 41 total in kv-store."
     },
     {
       "id": "T174",
@@ -1798,19 +1801,12 @@
       "task": "Session B final wrap — git push all repos, daily log, dashboard update, scratch notes"
     }
   ],
-  "current": {
-    "id": "T173",
-    "mode": "BUILD",
-    "task": "B-tree: in-memory B-tree with insert, search, delete, range queries, iteration. Configurable order.",
-    "status": "in-progress",
-    "plan_ref": "T171",
-    "started": "2026-04-04T21:32:50.553Z"
-  },
+  "current": null,
   "stats": {
-    "completed": 168,
+    "completed": 169,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 53790000
+    "total_duration_ms": 54390000
   },
-  "updated_at": "2026-04-04T21:32:50.553Z"
+  "updated_at": "2026-04-04T21:35:24.214Z"
 }
