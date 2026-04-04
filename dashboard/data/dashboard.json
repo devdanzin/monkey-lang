@@ -649,14 +649,44 @@
       "completed": "2026-04-04T16:59:18.653Z",
       "duration_ms": 360000,
       "summary": "Skip list: insert/search/delete O(log n), range queries, custom comparator, iterator. 18 tests."
+    },
+    {
+      "id": "T63",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a trie (prefix tree): insert, search, startsWith, autocomplete, delete, word count, with tests",
+      "started": "2026-04-04T16:59:53.017Z",
+      "completed": "2026-04-04T17:00:52.530Z",
+      "duration_ms": 300000,
+      "summary": "Trie: insert, search, autocomplete, delete, countPrefix, longestCommonPrefix. 17 tests."
+    },
+    {
+      "id": "T64",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a JSON parser from scratch: tokenizer, recursive descent parser, stringify, with tests",
+      "started": "2026-04-04T17:01:11.277Z",
+      "completed": "2026-04-04T17:02:30.595Z",
+      "duration_ms": 360000,
+      "summary": "JSON parser from scratch: tokenizer, recursive descent parser, stringify, round-trip verification. 40 tests."
+    },
+    {
+      "id": "T65",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a dependency injection container: register, resolve, singleton/transient, circular detection, with tests",
+      "started": "2026-04-04T17:02:48.284Z",
+      "completed": "2026-04-04T17:03:51.464Z",
+      "duration_ms": 360000,
+      "summary": "DI container: singleton/transient/scoped lifecycles, circular detection, class registration. 15 tests."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 62,
+    "completed": 65,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 21540000
+    "total_duration_ms": 22560000
   },
-  "updated_at": "2026-04-04T16:59:18.653Z"
+  "updated_at": "2026-04-04T17:03:51.464Z"
 }
