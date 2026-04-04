@@ -986,14 +986,24 @@
       "completed": "2026-04-04T17:58:56.466Z",
       "duration_ms": 300000,
       "summary": "ORM: models, CRUD, query builder with operators, hasMany/belongsTo relationships. 15 tests."
+    },
+    {
+      "id": "T97",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a simple key-value store: get, set, delete, TTL, persistence (JSON file), with tests",
+      "started": "2026-04-04T17:59:07.314Z",
+      "completed": "2026-04-04T18:00:03.843Z",
+      "duration_ms": 300000,
+      "summary": "KV store: TTL, persistence, batch, incr, iterator. 14 tests."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 95,
+    "completed": 96,
     "yielded": 0,
     "skipped": 1,
-    "total_duration_ms": 33120000
+    "total_duration_ms": 33420000
   },
-  "updated_at": "2026-04-04T17:58:56.466Z"
+  "updated_at": "2026-04-04T18:00:03.844Z"
 }
