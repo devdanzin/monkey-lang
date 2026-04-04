@@ -2237,23 +2237,20 @@
     {
       "id": "T216",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Promise/A+ implementation: then/catch/finally, chaining, error propagation, Promise.all/race/allSettled/any, microtask queue simulation, async/await-compatible. 35+ tests.",
-      "started": "2026-04-04T23:02:14.315Z"
+      "started": "2026-04-04T23:02:14.315Z",
+      "completed": "2026-04-04T23:03:48.495Z",
+      "duration_ms": 600000,
+      "summary": "Promise/A+ implementation: pending/fulfilled/rejected states, then/catch/finally, chaining with promise resolution, error propagation, recovery, Promise.all/race/allSettled/any, thenable interop, deferred helper. Event loop simulation with setTimeout/setInterval/clearTimeout, microtask queue. 77 tests total (35 new). GitHub pushed."
     }
   ],
-  "current": {
-    "id": "T216",
-    "mode": "BUILD",
-    "status": "in-progress",
-    "task": "Promise/A+ implementation: then/catch/finally, chaining, error propagation, Promise.all/race/allSettled/any, microtask queue simulation, async/await-compatible. 35+ tests.",
-    "started": "2026-04-04T23:02:14.315Z"
-  },
+  "current": null,
   "stats": {
-    "completed": 212,
+    "completed": 213,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 72510000
+    "total_duration_ms": 73110000
   },
-  "updated_at": "2026-04-04T23:02:14.315Z"
+  "updated_at": "2026-04-04T23:03:48.495Z"
 }
