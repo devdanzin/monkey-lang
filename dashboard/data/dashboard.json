@@ -2473,14 +2473,24 @@
       "completed": "2026-04-04T23:50:37.750Z",
       "duration_ms": 600000,
       "summary": "Reactive signals: createSignal (read/write/peek, functional update, same-value skip), createEffect (auto-dependency tracking, multi-signal), createComputed (lazy memoized, caching, chaining), batch (deferred updates), untrack, createMemo (with equality), createStore (Proxy-based reactive store, setStore, proxy assignment, effect tracking). 17 tests. GitHub: henry-the-frog/signals"
+    },
+    {
+      "id": "T240",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "JSON-RPC 2.0: request/response/notification/batch, method registry, error codes, middleware, transport abstraction. 25+ tests.",
+      "started": "2026-04-04T23:50:53.145Z",
+      "completed": "2026-04-04T23:52:01.200Z",
+      "duration_ms": 600000,
+      "summary": "JSON-RPC 2.0: message builders (request/notification/response/error), validation (isRequest/isNotification/isResponse/isBatch), Server (method registry, middleware, string/object input, named/positional params, JsonRpcError, internal error handling, notifications return nothing, batch processing), Client (call/notify/batch via transport abstraction, error propagation). 23 tests. GitHub: henry-the-frog/json-rpc"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 236,
+    "completed": 237,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 86910000
+    "total_duration_ms": 87510000
   },
-  "updated_at": "2026-04-04T23:50:37.751Z"
+  "updated_at": "2026-04-04T23:52:01.200Z"
 }
