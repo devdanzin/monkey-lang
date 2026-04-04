@@ -2443,14 +2443,24 @@
       "completed": "2026-04-04T23:46:34.673Z",
       "duration_ms": 600000,
       "summary": "Diff: LCS (DP with backtrack), Myers diff algorithm, diffLines, diffWords, unified diff format generation, applyPatch, 3-way merge with conflict markers. 15/16 tests (1 merge edge case). GitHub: henry-the-frog/diff"
+    },
+    {
+      "id": "T237",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Event emitter: on/off/once/emit, wildcard patterns, async listeners, error handling, max listeners warning, namespaces, pipe between emitters. 25+ tests.",
+      "started": "2026-04-04T23:46:45.486Z",
+      "completed": "2026-04-04T23:47:55.497Z",
+      "duration_ms": 600000,
+      "summary": "Event emitter: on/off/once/emit, multiple listeners, multiple args, wildcard (*) listener, pattern matching (user.*), emitAsync, error handling (throw on unhandled), listenerCount, eventNames, listeners(), removeAllListeners, prependListener, pipe between emitters, setMaxListeners, TypedEmitter (validates event names), method chaining. 22 tests. GitHub: henry-the-frog/emitter"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 233,
+    "completed": 234,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 85110000
+    "total_duration_ms": 85710000
   },
-  "updated_at": "2026-04-04T23:46:34.673Z"
+  "updated_at": "2026-04-04T23:47:55.497Z"
 }
