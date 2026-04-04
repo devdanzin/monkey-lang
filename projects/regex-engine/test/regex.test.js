@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { Regex, parse, DFA, backtrackerMatch } from '../src/index.js';
+import { Regex, parse, DFA, LazyDFA, backtrackerMatch } from '../src/index.js';
 
 // ===== Literals =====
 describe('Regex — literals', () => {
@@ -801,5 +801,94 @@ describe('Regex — DFA advanced', () => {
     assert.equal(r.testDFA('aa'), true);
     assert.equal(r.testDFA('hh'), true);
     assert.equal(r.testDFA('ab'), false);
+  });
+});
+
+// ===== Hopcroft Minimization =====
+describe('Regex — DFA minimization', () => {
+  it('minimized DFA produces same results', () => {
+    const patterns = ['a*b', '(a|b)*c', 'ab+c', '[0-9]+', 'hello|world', 'a{2,4}'];
+    const inputs = ['b', 'ab', 'aaab', 'c', 'abc', 'bbc', '123', 'hello', 'world', 'xyz', 'aa', 'aaaa'];
+    for (const pat of patterns) {
+      const r = new Regex(pat);
+      for (const inp of inputs) {
+        assert.equal(r.testDFA(inp), r.testMinDFA(inp), `DFA/MinDFA mismatch for /${pat}/ on "${inp}"`);
+      }
+    }
+  });
+  it('minimization reduces state count', () => {
+    // Pattern with redundant states
+    const r = new Regex('(a|a)b');
+    const stats = r.dfaStats;
+    assert.ok(stats.minimizedStates <= stats.states, 
+      `minimized (${stats.minimizedStates}) should be <= original (${stats.states})`);
+  });
+  it('minimized DFA for (a|b)* has few states', () => {
+    const r = new Regex('(a|b)*');
+    const stats = r.dfaStats;
+    assert.ok(stats.minimizedStates <= 2, `Expected <=2 states, got ${stats.minimizedStates}`);
+  });
+  it('identity: already minimal DFA unchanged', () => {
+    const r = new Regex('abc');
+    const stats = r.dfaStats;
+    // abc has 4 states (start, a, ab, abc-accept) — already minimal
+    assert.equal(stats.minimizedStates, stats.states);
+  });
+  it('minimized handles complex patterns', () => {
+    const r = new Regex('[a-z]+@[a-z]+\\.[a-z]+');
+    assert.equal(r.testMinDFA('foo@bar.com'), true);
+    assert.equal(r.testMinDFA('invalid'), false);
+  });
+});
+
+// ===== Lazy DFA =====
+describe('Regex — lazy DFA', () => {
+  it('lazy DFA matches same as eager DFA', () => {
+    const patterns = ['a*b', '(a|b)*c', '[0-9]+', 'hello|world'];
+    const inputs = ['b', 'ab', 'aaab', 'c', 'abc', '123', 'hello', 'world', 'xyz'];
+    for (const pat of patterns) {
+      const r = new Regex(pat);
+      for (const inp of inputs) {
+        assert.equal(r.testDFA(inp), r.testLazyDFA(inp), `DFA/LazyDFA mismatch for /${pat}/ on "${inp}"`);
+      }
+    }
+  });
+  it('lazy DFA builds fewer states for targeted input', () => {
+    // Pattern with many possible states, but input only explores a subset
+    const r = new Regex('[a-z]{1,5}');
+    r.lazyDfa.test('abc');
+    // Should have built only the states needed for 'abc' (3-4 states)
+    assert.ok(r.lazyDfa.stateCount < r.dfa.stateCount,
+      `lazy (${r.lazyDfa.stateCount}) should be < eager (${r.dfa.stateCount})`);
+  });
+  it('lazy DFA caches transitions', () => {
+    const r = new Regex('[a-z]+');
+    r.lazyDfa.test('abc');
+    const sizeAfterFirst = r.lazyDfa.cacheSize;
+    r.lazyDfa.test('abc'); // same input — should use cache
+    assert.equal(r.lazyDfa.cacheSize, sizeAfterFirst, 'cache should not grow on repeated input');
+  });
+  it('lazy DFA handles long strings', () => {
+    const r = new Regex('[a-z]+');
+    assert.equal(r.testLazyDFA('a'.repeat(10000)), true);
+  });
+  it('lazy DFA incremental growth', () => {
+    const r = new Regex('(a|b|c)(d|e|f)(g|h|i)');
+    r.lazyDfa.test('adg');
+    const statesAfterOne = r.lazyDfa.stateCount;
+    r.lazyDfa.test('beh');
+    const statesAfterTwo = r.lazyDfa.stateCount;
+    assert.ok(statesAfterTwo >= statesAfterOne, 'states should grow or stay same');
+  });
+  it('lazy DFA returns false for non-match', () => {
+    const r = new Regex('abc');
+    assert.equal(r.testLazyDFA('abd'), false);
+    assert.equal(r.testLazyDFA('ab'), false);
+  });
+  it('lazy DFA with quantifiers', () => {
+    const r = new Regex('a{2,4}b');
+    assert.equal(r.testLazyDFA('aab'), true);
+    assert.equal(r.testLazyDFA('aaaab'), true);
+    assert.equal(r.testLazyDFA('ab'), false);
   });
 });

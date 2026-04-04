@@ -560,6 +560,212 @@ class DFA {
   }
 
   get stateCount() { return this.states.size; }
+
+  // Hopcroft minimization: merge equivalent states
+  minimize() {
+    // Partition refinement algorithm
+    const stateKeys = [...this.states.keys()];
+    if (stateKeys.length <= 1) return this;
+    
+    // Get the alphabet (all unique char sets that appear in transitions)
+    const alphabet = new Set();
+    for (const [, state] of this.states) {
+      for (const { match, targetKey } of state.transitionFns) {
+        // Test all ASCII chars to find which chars this transition handles
+        for (let c = 0; c <= 127; c++) {
+          const ch = String.fromCharCode(c);
+          if (match(ch)) alphabet.add(ch);
+        }
+      }
+    }
+    
+    // Initial partition: accepting vs non-accepting
+    const accepting = stateKeys.filter(k => this.states.get(k).accept);
+    const nonAccepting = stateKeys.filter(k => !this.states.get(k).accept);
+    
+    let partitions = [];
+    if (accepting.length > 0) partitions.push(new Set(accepting));
+    if (nonAccepting.length > 0) partitions.push(new Set(nonAccepting));
+    
+    // Map: stateKey → partition index
+    function getPartition(key) {
+      for (let i = 0; i < partitions.length; i++) {
+        if (partitions[i].has(key)) return i;
+      }
+      return -1;
+    }
+    
+    // Get transition target for a state and character
+    const getTarget = (key, ch) => {
+      const state = this.states.get(key);
+      if (!state) return null;
+      for (const { match, targetKey } of state.transitionFns) {
+        if (match(ch)) return targetKey;
+      }
+      return null; // dead state
+    };
+    
+    // Refine until stable
+    let changed = true;
+    while (changed) {
+      changed = false;
+      const newPartitions = [];
+      
+      for (const partition of partitions) {
+        if (partition.size <= 1) {
+          newPartitions.push(partition);
+          continue;
+        }
+        
+        // Try to split this partition
+        let split = false;
+        for (const ch of alphabet) {
+          const groups = new Map(); // targetPartition → Set<stateKey>
+          for (const key of partition) {
+            const target = getTarget(key, ch);
+            const targetPart = target !== null ? getPartition(target) : -1;
+            if (!groups.has(targetPart)) groups.set(targetPart, new Set());
+            groups.get(targetPart).add(key);
+          }
+          
+          if (groups.size > 1) {
+            // Split
+            for (const [, group] of groups) {
+              newPartitions.push(group);
+            }
+            split = true;
+            changed = true;
+            break;
+          }
+        }
+        
+        if (!split) {
+          newPartitions.push(partition);
+        }
+      }
+      
+      partitions = newPartitions;
+    }
+    
+    // If no merging possible, return self
+    if (partitions.length === stateKeys.length) return this;
+    
+    // Build minimized DFA
+    const minimized = new DFA(this.nfa);
+    minimized.states = new Map();
+    
+    // Representative: first element of each partition
+    const repMap = new Map(); // old key → representative key
+    for (const partition of partitions) {
+      const rep = [...partition][0];
+      for (const key of partition) {
+        repMap.set(key, rep);
+      }
+    }
+    
+    minimized.startKey = repMap.get(this.startKey);
+    
+    for (const partition of partitions) {
+      const rep = [...partition][0];
+      const oldState = this.states.get(rep);
+      const newTransitions = [];
+      
+      for (const { match, targetKey } of oldState.transitionFns) {
+        const newTarget = repMap.get(targetKey);
+        // Deduplicate: only add if target not already covered
+        if (!newTransitions.some(t => t.targetKey === newTarget && t.match === match)) {
+          newTransitions.push({ match, targetKey: newTarget });
+        }
+      }
+      
+      minimized.states.set(rep, {
+        accept: oldState.accept,
+        transitionFns: newTransitions,
+      });
+    }
+    
+    return minimized;
+  }
+}
+
+// ===== Lazy DFA — builds states on demand =====
+class LazyDFA {
+  constructor(nfa) {
+    this.nfa = nfa;
+    this.states = new Map(); // stateKey → { nfaStates, accept, transitions: Map<char, stateKey> }
+    this.startKey = null;
+    this._init();
+  }
+
+  _stateKey(nfaStates) {
+    return [...nfaStates].map(s => s.id).sort((a, b) => a - b).join(',');
+  }
+
+  _init() {
+    const startSet = epsilonClosure(new Set([this.nfa.start]), '', 0, null, false);
+    this.startKey = this._stateKey(startSet);
+    this.states.set(this.startKey, {
+      nfaStates: startSet,
+      accept: hasAccept(startSet),
+      transitions: new Map(),
+    });
+  }
+
+  _getOrBuildTransition(stateKey, ch) {
+    const state = this.states.get(stateKey);
+    if (state.transitions.has(ch)) return state.transitions.get(ch);
+    
+    // Compute the next NFA state set
+    const nextNfa = new Set();
+    for (const nfaState of state.nfaStates) {
+      for (const { match, target, backref } of nfaState.transitions) {
+        if (backref !== undefined) continue;
+        if (match && match(ch)) nextNfa.add(target);
+      }
+    }
+    
+    if (nextNfa.size === 0) {
+      state.transitions.set(ch, null);
+      return null;
+    }
+    
+    const closure = epsilonClosure(nextNfa, '', 0, null, false);
+    if (closure.size === 0) {
+      state.transitions.set(ch, null);
+      return null;
+    }
+    
+    const nextKey = this._stateKey(closure);
+    if (!this.states.has(nextKey)) {
+      this.states.set(nextKey, {
+        nfaStates: closure,
+        accept: hasAccept(closure),
+        transitions: new Map(),
+      });
+    }
+    
+    state.transitions.set(ch, nextKey);
+    return nextKey;
+  }
+
+  test(input) {
+    let current = this.startKey;
+    for (const ch of input) {
+      const next = this._getOrBuildTransition(current, ch);
+      if (next === null) return false;
+      current = next;
+    }
+    return this.states.get(current).accept;
+  }
+
+  get stateCount() { return this.states.size; }
+  get cacheSize() {
+    let count = 0;
+    for (const [, state] of this.states) {
+      count += state.transitions.size;
+    }
+    return count;
+  }
 }
 
 // ===== Backtracking Matcher (for backreferences + lazy quantifiers) =====
@@ -810,6 +1016,16 @@ export class Regex {
     return this._dfa;
   }
 
+  get minimizedDfa() {
+    if (!this._minimizedDfa) this._minimizedDfa = this.dfa.minimize();
+    return this._minimizedDfa;
+  }
+
+  get lazyDfa() {
+    if (!this._lazyDfa) this._lazyDfa = new LazyDFA(this.nfa);
+    return this._lazyDfa;
+  }
+
   // Full match (entire string must match)
   test(input) {
     if (this.hasBackrefs || this.hasLazy) {
@@ -878,6 +1094,16 @@ export class Regex {
   // Full match using DFA (O(n), no backtracking)
   testDFA(input) {
     return this.dfa.test(input);
+  }
+
+  // Full match using minimized DFA
+  testMinDFA(input) {
+    return this.minimizedDfa.test(input);
+  }
+
+  // Full match using lazy DFA (builds states on demand)
+  testLazyDFA(input) {
+    return this.lazyDfa.test(input);
   }
 
   // Search (find first match anywhere in string)
@@ -1002,11 +1228,12 @@ export class Regex {
   // Get DFA stats
   get dfaStats() {
     const dfa = this.dfa;
-    return { states: dfa.stateCount };
+    const minDfa = this.minimizedDfa;
+    return { states: dfa.stateCount, minimizedStates: minDfa.stateCount };
   }
 
   toString() { return `/${this.pattern}/`; }
 }
 
 // For tests
-export { parse, compile, epsilonClosure, step, hasAccept, DFA, matchers, checkAnchor, backtrackerMatch };
+export { parse, compile, epsilonClosure, step, hasAccept, DFA, LazyDFA, matchers, checkAnchor, backtrackerMatch };
