@@ -1,0 +1,9 @@
+{
+  "name": "actor-model",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Actor model implementation with message passing, supervision, and state management",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  }
+}
