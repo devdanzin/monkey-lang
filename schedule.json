@@ -1967,6 +1967,12 @@
       "mode": "BUILD",
       "status": "upcoming",
       "task": "JSONPath query engine: path expressions, filters, wildcards, recursive descent, array slicing"
+    },
+    {
+      "id": "T192",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Probabilistic data structures: Bloom filter, Count-Min Sketch, HyperLogLog cardinality estimator"
     }
   ],
   "updated_at": "2026-04-04T22:10:58.713Z",
@@ -2002,6 +2008,10 @@
     {
       "time": "2026-04-04T22:16:53.625Z",
       "msg": "Added T191 (BUILD) after end: JSONPath query engine: path expressions, filters, wildcards, recursive descent, array slicing"
+    },
+    {
+      "time": "2026-04-04T22:18:33.597Z",
+      "msg": "Added T192 (BUILD) after end: Probabilistic data structures: Bloom filter, Count-Min Sketch, HyperLogLog cardinality estimator"
     }
   ]
 }

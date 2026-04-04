@@ -1,9 +1,1 @@
-{
-  "name": "probabilistic-ds",
-  "version": "0.1.0",
-  "type": "module",
-  "description": "Probabilistic data structures: Bloom filter, Count-Min Sketch, HyperLogLog",
-  "scripts": {
-    "test": "node --test test/*.test.js"
-  }
-}
+{"name":"probabilistic-ds","version":"1.0.0","description":"Probabilistic data structures: Bloom filter, Count-Min Sketch, HyperLogLog","type":"module","scripts":{"test":"node --test src/**/*.test.js"}}
