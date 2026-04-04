@@ -29,12 +29,17 @@ export class CDCLSolver {
     this.level = new Map();     // var → decision level
     this.reason = new Map();    // var → clause index or null (decision)
     
-    // Trail
+    // Trail (with propagation queue pointer)
     this.trail = [];
     this.trailLim = []; // trail.length at start of each decision level
+    this.qhead = 0;     // next trail position to propagate
     
     // All clauses (original + learned)
     this.clauses = clauses.map(c => [...c]);
+    
+    // Two-watched literal scheme: watches[lit] = list of clause indices
+    // Literal encoding: positive lit l → index 2*l, negative lit -l → index 2*l+1
+    this.watches = new Map(); // lit → [clause indices]
     
     // VSIDS
     this.activity = new Float64Array(numVars + 1);
@@ -43,9 +48,39 @@ export class CDCLSolver {
     // Stats
     this.stats = { decisions: 0, propagations: 0, conflicts: 0, learned: 0, restarts: 0 };
     
-    // Init activity
+    // Init activity and watches
     for (const cl of this.clauses) {
       for (const lit of cl) this.activity[Math.abs(lit)] += 1;
+    }
+    this._initWatches();
+  }
+
+  _initWatches() {
+    this.watches = new Map();
+    for (let ci = 0; ci < this.clauses.length; ci++) {
+      const cl = this.clauses[ci];
+      if (cl.length >= 2) {
+        this._addWatch(cl[0], ci);
+        this._addWatch(cl[1], ci);
+      } else if (cl.length === 1) {
+        // Unit clauses handled directly during initial propagation
+        this._addWatch(cl[0], ci);
+      }
+    }
+  }
+
+  _addWatch(lit, ci) {
+    if (!this.watches.has(lit)) this.watches.set(lit, []);
+    this.watches.get(lit).push(ci);
+  }
+
+  _watchClause(ci) {
+    const cl = this.clauses[ci];
+    if (cl.length >= 2) {
+      this._addWatch(cl[0], ci);
+      this._addWatch(cl[1], ci);
+    } else if (cl.length === 1) {
+      this._addWatch(cl[0], ci);
     }
   }
 
@@ -74,100 +109,152 @@ export class CDCLSolver {
       this.reason.delete(v);
     }
     this.trailLim.length = level;
+    this.qhead = this.trail.length; // reset propagation queue
   }
 
-  // Unit propagation — returns conflicting clause index or null
+  // Two-watched literal unit propagation
+  // Returns conflicting clause index or null
   _propagate() {
-    let changed = true;
-    while (changed) {
-      changed = false;
-      for (let ci = 0; ci < this.clauses.length; ci++) {
+    while (this.qhead < this.trail.length) {
+      const v = this.trail[this.qhead++];
+      // The falsified literal is the opposite of what was assigned
+      const falseLit = this.assignment.get(v) ? -v : v;
+      
+      const watchList = this.watches.get(falseLit);
+      if (!watchList) continue;
+      
+      const newWatchList = [];
+      
+      for (let wi = 0; wi < watchList.length; wi++) {
+        const ci = watchList[wi];
         const cl = this.clauses[ci];
-        let unsetCount = 0;
-        let lastUnsetLit = 0;
-        let satisfied = false;
         
-        for (const lit of cl) {
-          const val = this._litValue(lit);
-          if (val === 1) { satisfied = true; break; }
-          if (val === 0) { unsetCount++; lastUnsetLit = lit; }
+        // Handle unit clauses
+        if (cl.length === 1) {
+          if (this._litValue(cl[0]) === -1) {
+            // Conflict — keep remaining watches
+            for (let j = wi + 1; j < watchList.length; j++) newWatchList.push(watchList[j]);
+            this.watches.set(falseLit, newWatchList);
+            return ci;
+          }
+          newWatchList.push(ci);
+          continue;
         }
         
-        if (satisfied) continue;
-        if (unsetCount === 0) return ci; // conflict
-        if (unsetCount === 1) {
-          const v = Math.abs(lastUnsetLit);
-          this._assign(v, lastUnsetLit > 0, this._currentLevel(), ci);
+        // Make sure falseLit is at position 1 (swap if at 0)
+        if (cl[0] === falseLit) {
+          cl[0] = cl[1];
+          cl[1] = falseLit;
+        }
+        
+        // If the other watched literal (cl[0]) is true, clause is satisfied
+        if (this._litValue(cl[0]) === 1) {
+          newWatchList.push(ci);
+          continue;
+        }
+        
+        // Try to find a new literal to watch (not false, not cl[0])
+        let found = false;
+        for (let k = 2; k < cl.length; k++) {
+          if (this._litValue(cl[k]) !== -1) {
+            // Swap cl[k] with cl[1] and watch cl[k]
+            cl[1] = cl[k];
+            cl[k] = falseLit;
+            this._addWatch(cl[1], ci);
+            found = true;
+            break;
+          }
+        }
+        
+        if (found) continue; // Don't add back to falseLit's watch list
+        
+        // No replacement found — cl[0] is the only non-false literal
+        newWatchList.push(ci);
+        
+        if (this._litValue(cl[0]) === -1) {
+          // Conflict — keep remaining watches
+          for (let j = wi + 1; j < watchList.length; j++) newWatchList.push(watchList[j]);
+          this.watches.set(falseLit, newWatchList);
+          return ci;
+        }
+        
+        if (this._litValue(cl[0]) === 0) {
+          // Unit propagation
+          const uv = Math.abs(cl[0]);
+          this._assign(uv, cl[0] > 0, this._currentLevel(), ci);
           this.stats.propagations++;
-          changed = true;
         }
       }
+      
+      this.watches.set(falseLit, newWatchList);
     }
     return null;
   }
 
-  // 1UIP conflict analysis
+  // 1UIP conflict analysis (MiniSat-style single-pass)
   _analyze(conflictCI) {
     const dl = this._currentLevel();
     if (dl === 0) return null; // UNSAT
     
     const seen = new Set();
     const learned = [];
-    let numCurrentLevel = 0;
+    let counter = 0; // current-level literals in the frontier
     
-    // Start from conflict clause
-    const processClause = (clauseLits) => {
+    // Process a clause: add unseen literals to frontier or learned
+    const processLits = (clauseLits) => {
       for (const lit of clauseLits) {
         const v = Math.abs(lit);
         if (seen.has(v)) continue;
         seen.add(v);
         const vLevel = this.level.get(v) ?? 0;
         if (vLevel === dl) {
-          numCurrentLevel++;
+          counter++;
         } else if (vLevel > 0) {
           learned.push(lit);
         }
       }
     };
     
-    processClause(this.clauses[conflictCI]);
+    // Start from conflict clause
+    processLits(this.clauses[conflictCI]);
     
-    // Walk trail backwards resolving current-level literals
-    for (let i = this.trail.length - 1; i >= 0 && numCurrentLevel > 1; i--) {
-      const v = this.trail[i];
-      if (!seen.has(v)) continue;
-      const vLevel = this.level.get(v) ?? 0;
-      if (vLevel !== dl) continue;
+    // Walk trail backwards, resolving current-level literals until 1 remains (the UIP)
+    let trailIdx = this.trail.length - 1;
+    let uipVar = -1;
+    
+    while (counter > 0) {
+      // Find next seen current-level literal on trail
+      while (trailIdx >= 0) {
+        const v = this.trail[trailIdx];
+        if (seen.has(v) && (this.level.get(v) ?? 0) === dl) break;
+        trailIdx--;
+      }
       
-      numCurrentLevel--;
-      const reasonCI = this.reason.get(v);
+      uipVar = this.trail[trailIdx];
+      counter--;
+      
+      if (counter === 0) break; // This is the 1UIP — don't resolve it
+      
+      // Resolve: add reason clause literals to frontier
+      const reasonCI = this.reason.get(uipVar);
       if (reasonCI !== null && reasonCI !== undefined) {
-        processClause(this.clauses[reasonCI]);
+        processLits(this.clauses[reasonCI]);
       }
+      trailIdx--;
     }
     
-    // Find the 1UIP literal (last current-level literal on trail that's in seen)
-    let uipLit = null;
-    for (let i = this.trail.length - 1; i >= 0; i--) {
-      const v = this.trail[i];
-      if (seen.has(v) && (this.level.get(v) ?? 0) === dl) {
-        // Negate it for the learned clause
-        uipLit = this.assignment.get(v) ? -v : v;
-        break;
-      }
-    }
-    
-    if (uipLit !== null) learned.unshift(uipLit);
+    // Build learned clause: negated UIP first, then side literals
+    const uipLit = this.assignment.get(uipVar) ? -uipVar : uipVar;
+    learned.unshift(uipLit);
     
     // Determine backtrack level (second highest level in learned clause)
     let btLevel = 0;
-    for (const lit of learned) {
-      const v = Math.abs(lit);
-      const vl = this.level.get(v) ?? 0;
-      if (vl !== dl && vl > btLevel) btLevel = vl;
+    for (let i = 1; i < learned.length; i++) {
+      const vl = this.level.get(Math.abs(learned[i])) ?? 0;
+      if (vl > btLevel) btLevel = vl;
     }
     
-    // Bump activity
+    // Bump VSIDS activity for all variables in learned clause
     for (const lit of learned) {
       this.activity[Math.abs(lit)] += this.activityInc;
     }
@@ -189,7 +276,20 @@ export class CDCLSolver {
   }
 
   solve() {
-    // Initial propagation
+    // Initial unit clause propagation (level 0)
+    for (let ci = 0; ci < this.clauses.length; ci++) {
+      const cl = this.clauses[ci];
+      if (cl.length === 1) {
+        const v = Math.abs(cl[0]);
+        if (!this.assignment.has(v)) {
+          this._assign(v, cl[0] > 0, 0, ci);
+          this.stats.propagations++;
+        } else if (this._litValue(cl[0]) === -1) {
+          return { sat: false, stats: this.stats };
+        }
+      }
+    }
+    
     let conflict = this._propagate();
     if (conflict !== null) return { sat: false, stats: this.stats };
     
@@ -228,12 +328,31 @@ export class CDCLSolver {
         
         const { learned, btLevel } = analysis;
         
+        this._backtrackTo(btLevel);
+        
         if (learned.length > 0) {
+          const ci = this.clauses.length;
           this.clauses.push(learned);
+          this._watchClause(ci);
           this.stats.learned++;
+          
+          // Assert the UIP literal (first lit in learned clause)
+          // After backtracking, all other lits are false at btLevel, so learned[0] is unit
+          if (learned.length === 1) {
+            // Unit learned clause — assert at level 0
+            const v = Math.abs(learned[0]);
+            if (!this.assignment.has(v)) {
+              this._assign(v, learned[0] > 0, 0, ci);
+              this.stats.propagations++;
+            }
+          } else {
+            const uipLit = learned[0];
+            const v = Math.abs(uipLit);
+            this._assign(v, uipLit > 0, this._currentLevel(), ci);
+            this.stats.propagations++;
+          }
         }
         
-        this._backtrackTo(btLevel);
         conflict = this._propagate();
       }
     }
