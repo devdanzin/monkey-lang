@@ -1,15 +1,16 @@
 {
   "lastChecks": {
-    "email": 1743674460,
-    "github": 1743674460,
+    "email": 1743763320,
+    "github": 1743763320,
     "version": 1743674460,
-    "dashboard": 1743674460
+    "dashboard": 1743763320
   },
   "notes": {
     "openclaw_latest": "2026.4.1",
     "openclaw_current": "2026.3.28",
     "issue_31448": "CLOSED — webhook fix confirmed included",
     "upgrade_ready": true,
-    "unread_emails": "0 unread"
+    "unread_emails": "0 unread",
+    "dashboard_generate": "hanging as of 2026-04-04 — investigate generate.cjs"
   }
 }

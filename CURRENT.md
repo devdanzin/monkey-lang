@@ -1,10 +1,11 @@
 # CURRENT.md
 
-## Status: done
-session: 2026-04-03 Work Session C (8:15 PM - 10:15 PM MDT)
-mode: BUILD
-task: Regex — backrefs, exec, lazy quantifiers, 43 new tests
-current_position: T59
-started: 2026-04-03T21:32:00-06:00
-completed: 2026-04-03T20:43:00-06:00
-tasks_completed_this_session: 1
+## Status: upcoming
+session: 2026-04-04 Morning Standup
+mode: THINK
+task: Review yesterday: 5 new projects, SAT solver in-progress. Assess what to deepen vs start fresh. Saturday priorities.
+current_position: T1
+context-files: memory/scratch/prolog-interpreter.md, lessons/compiler-vm-design.md
+started:
+completed:
+tasks_completed_this_session: 0
