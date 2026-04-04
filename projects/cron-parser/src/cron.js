@@ -1,43 +1,83 @@
-// CRON expression parser — parse, validate, next occurrence
+// cron.js — Cron expression parser
 
-export function parse(expr) {
-  const parts = expr.trim().split(/\s+/);
-  if (parts.length < 5 || parts.length > 6) throw new Error(`Invalid cron: expected 5-6 fields, got ${parts.length}`);
-  const [minute, hour, dayOfMonth, month, dayOfWeek] = parts;
-  return { minute: parseField(minute, 0, 59), hour: parseField(hour, 0, 23), dayOfMonth: parseField(dayOfMonth, 1, 31), month: parseField(month, 1, 12), dayOfWeek: parseField(dayOfWeek, 0, 6) };
+const MONTHS = ['', 'jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+const DAYS = ['sun','mon','tue','wed','thu','fri','sat'];
+
+export function parseCron(expression) {
+  const parts = expression.trim().split(/\s+/);
+  if (parts.length !== 5) throw new Error(`Expected 5 fields, got ${parts.length}`);
+  
+  return {
+    minute: parseField(parts[0], 0, 59),
+    hour: parseField(parts[1], 0, 23),
+    dayOfMonth: parseField(parts[2], 1, 31),
+    month: parseField(parts[3], 1, 12, MONTHS),
+    dayOfWeek: parseField(parts[4], 0, 6, DAYS),
+  };
 }
 
-function parseField(field, min, max) {
-  if (field === '*') return Array.from({ length: max - min + 1 }, (_, i) => i + min);
+function parseField(field, min, max, names = null) {
   const values = new Set();
+  
   for (const part of field.split(',')) {
-    if (part.includes('/')) {
-      const [range, step] = part.split('/');
-      const s = parseInt(step);
-      const [lo, hi] = range === '*' ? [min, max] : range.split('-').map(Number);
-      for (let i = lo; i <= (hi || max); i += s) values.add(i);
-    } else if (part.includes('-')) {
-      const [lo, hi] = part.split('-').map(Number);
-      for (let i = lo; i <= hi; i++) values.add(i);
+    let f = part.toLowerCase();
+    
+    // Replace names
+    if (names) {
+      for (let i = 0; i < names.length; i++) {
+        if (names[i] && f.includes(names[i])) f = f.replace(names[i], String(i));
+      }
+    }
+    
+    if (f === '*') {
+      for (let i = min; i <= max; i++) values.add(i);
+    } else if (f.includes('/')) {
+      const [range, stepStr] = f.split('/');
+      const step = parseInt(stepStr);
+      let start = min, end = max;
+      if (range !== '*') {
+        if (range.includes('-')) {
+          [start, end] = range.split('-').map(Number);
+        } else {
+          start = parseInt(range);
+        }
+      }
+      for (let i = start; i <= end; i += step) values.add(i);
+    } else if (f.includes('-')) {
+      const [start, end] = f.split('-').map(Number);
+      for (let i = start; i <= end; i++) values.add(i);
     } else {
-      values.add(parseInt(part));
+      values.add(parseInt(f));
     }
   }
-  return [...values].filter(v => v >= min && v <= max).sort((a, b) => a - b);
+  
+  return [...values].sort((a, b) => a - b);
 }
 
-export function isValid(expr) {
-  try { parse(expr); return true; } catch { return false; }
+export function matches(cron, date) {
+  const parsed = typeof cron === 'string' ? parseCron(cron) : cron;
+  return (
+    parsed.minute.includes(date.getMinutes()) &&
+    parsed.hour.includes(date.getHours()) &&
+    parsed.month.includes(date.getMonth() + 1) &&
+    (parsed.dayOfMonth.includes(date.getDate()) || parsed.dayOfWeek.includes(date.getDay()))
+  );
 }
 
-export function nextOccurrence(expr, from = new Date()) {
-  const cron = typeof expr === 'string' ? parse(expr) : expr;
+export function nextOccurrence(cron, from = new Date()) {
+  const parsed = typeof cron === 'string' ? parseCron(cron) : cron;
   const date = new Date(from);
   date.setSeconds(0, 0);
-  date.setMinutes(date.getMinutes() + 1);
-
-  for (let i = 0; i < 525960; i++) { // Max ~1 year of minutes
-    if (cron.month.includes(date.getMonth() + 1) && cron.dayOfMonth.includes(date.getDate()) && cron.dayOfWeek.includes(date.getDay()) && cron.hour.includes(date.getHours()) && cron.minute.includes(date.getMinutes())) {
+  date.setMinutes(date.getMinutes() + 1); // start from next minute
+  
+  const limit = 366 * 24 * 60; // 1 year in minutes
+  for (let i = 0; i < limit; i++) {
+    if (
+      parsed.minute.includes(date.getMinutes()) &&
+      parsed.hour.includes(date.getHours()) &&
+      parsed.month.includes(date.getMonth() + 1) &&
+      (parsed.dayOfMonth.includes(date.getDate()) && parsed.dayOfWeek.includes(date.getDay()))
+    ) {
       return date;
     }
     date.setMinutes(date.getMinutes() + 1);
@@ -45,24 +85,51 @@ export function nextOccurrence(expr, from = new Date()) {
   return null;
 }
 
-export function nextN(expr, n, from = new Date()) {
-  const results = [];
-  let cursor = new Date(from);
-  for (let i = 0; i < n; i++) {
-    const next = nextOccurrence(expr, cursor);
-    if (!next) break;
-    results.push(next);
-    cursor = next;
+export function prevOccurrence(cron, from = new Date()) {
+  const parsed = typeof cron === 'string' ? parseCron(cron) : cron;
+  const date = new Date(from);
+  date.setSeconds(0, 0);
+  date.setMinutes(date.getMinutes() - 1);
+  
+  const limit = 366 * 24 * 60;
+  for (let i = 0; i < limit; i++) {
+    if (
+      parsed.minute.includes(date.getMinutes()) &&
+      parsed.hour.includes(date.getHours()) &&
+      parsed.month.includes(date.getMonth() + 1) &&
+      (parsed.dayOfMonth.includes(date.getDate()) && parsed.dayOfWeek.includes(date.getDay()))
+    ) {
+      return date;
+    }
+    date.setMinutes(date.getMinutes() - 1);
   }
-  return results;
+  return null;
 }
 
-export function matches(expr, date) {
-  const cron = typeof expr === 'string' ? parse(expr) : expr;
-  return cron.month.includes(date.getMonth() + 1) && cron.dayOfMonth.includes(date.getDate()) && cron.dayOfWeek.includes(date.getDay()) && cron.hour.includes(date.getHours()) && cron.minute.includes(date.getMinutes());
+export function describe(expression) {
+  const parsed = parseCron(expression);
+  const parts = [];
+  
+  if (parsed.minute.length === 60) parts.push('Every minute');
+  else if (parsed.minute.length === 1) parts.push(`At minute ${parsed.minute[0]}`);
+  else parts.push(`At minutes ${parsed.minute.join(', ')}`);
+  
+  if (parsed.hour.length === 24) parts.push('of every hour');
+  else if (parsed.hour.length === 1) parts.push(`past hour ${parsed.hour[0]}`);
+  else parts.push(`past hours ${parsed.hour.join(', ')}`);
+  
+  if (parsed.dayOfMonth.length < 31) parts.push(`on day ${parsed.dayOfMonth.join(', ')}`);
+  if (parsed.month.length < 12) parts.push(`in ${parsed.month.map(m => MONTHS[m]).join(', ')}`);
+  if (parsed.dayOfWeek.length < 7) parts.push(`on ${parsed.dayOfWeek.map(d => DAYS[d]).join(', ')}`);
+  
+  return parts.join(' ');
 }
 
-export function toString(cron) {
-  const f = (arr, min, max) => arr.length === max - min + 1 ? '*' : arr.join(',');
-  return `${f(cron.minute,0,59)} ${f(cron.hour,0,23)} ${f(cron.dayOfMonth,1,31)} ${f(cron.month,1,12)} ${f(cron.dayOfWeek,0,6)}`;
-}
+// Presets
+export const presets = {
+  yearly: '0 0 1 1 *',
+  monthly: '0 0 1 * *',
+  weekly: '0 0 * * 0',
+  daily: '0 0 * * *',
+  hourly: '0 * * * *',
+};

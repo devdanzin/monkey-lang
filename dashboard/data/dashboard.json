@@ -2413,14 +2413,24 @@
       "completed": "2026-04-04T23:41:53.990Z",
       "duration_ms": 600000,
       "summary": "CSV: RFC 4180 parser (quoted fields, escaped quotes, CRLF, custom delimiters), type inference (bool/null/number), header mapping, stringify (objects/arrays, escaping, custom columns), CsvStream (streaming parser with chunked input), roundtrip fidelity. 25 tests. GitHub: henry-the-frog/csv"
+    },
+    {
+      "id": "T234",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Cron expression parser: 5-field cron (min/hour/dom/month/dow), wildcards, ranges, steps, lists, named months/days, next/prev occurrence, human-readable description. 25+ tests.",
+      "started": "2026-04-04T23:42:04.735Z",
+      "completed": "2026-04-04T23:43:23.742Z",
+      "duration_ms": 600000,
+      "summary": "Cron parser: 5-field expression parsing (minute/hour/dom/month/dow), wildcards, ranges, steps, lists, named months and days, range+step combo, matches() time check, nextOccurrence/prevOccurrence (wraps days), describe() human-readable, presets. 22 tests. GitHub: henry-the-frog/cron-parser"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 230,
+    "completed": 231,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 83310000
+    "total_duration_ms": 83910000
   },
-  "updated_at": "2026-04-04T23:41:53.990Z"
+  "updated_at": "2026-04-04T23:43:23.742Z"
 }

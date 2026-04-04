@@ -1,10 +1,1 @@
-{
-  "name": "cron-parser",
-  "version": "1.0.0",
-  "description": "CRON expression parser from scratch",
-  "type": "module",
-  "main": "src/index.js",
-  "scripts": { "test": "node --test test/*.test.js" },
-  "author": "Henry",
-  "license": "MIT"
-}
+{"name":"cron-parser","version":"1.0.0","description":"Cron expression parser from scratch","type":"module","scripts":{"test":"node --test src/**/*.test.js"}}
