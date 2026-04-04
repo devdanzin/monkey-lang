@@ -25,6 +25,17 @@ export class LispLambda {
   toString() { return `<lambda (${this.params.join(' ')})>`; }
 }
 
+// Continuation for call/cc — uses throw to escape to the captured point
+export class LispContinuation {
+  constructor(tag) { this.tag = tag; }
+  toString() { return `<continuation>`; }
+}
+
+// Exception used to jump to a continuation
+class ContinuationJump {
+  constructor(tag, value) { this.tag = tag; this.value = value; }
+}
+
 export function lispToString(val) {
   if (val === NIL) return 'nil';
   if (val === true) return '#t';
@@ -291,6 +302,43 @@ export function evaluate(expr, env) {
             }
             for (const [name, val] of newVals) childEnv.set(name, val);
           }
+        }
+
+        case 'call/cc':
+        case 'call-with-current-continuation': {
+          // (call/cc (lambda (k) body...))
+          // k is an escape continuation — calling (k val) jumps back here with val
+          const proc = evaluate(expr.get(1), env);
+          const tag = Symbol('continuation');
+          const cont = new LispContinuation(tag);
+          
+          // When the continuation is invoked, throw to escape
+          const contFn = (value) => { throw new ContinuationJump(tag, value); };
+          
+          try {
+            // Call the procedure with the continuation function
+            if (proc instanceof LispLambda) {
+              const callEnv = new Environment(proc.env);
+              callEnv.set(proc.params[0], contFn);
+              let result = NIL;
+              for (const bodyExpr of proc.body) result = evaluate(bodyExpr, callEnv);
+              return result;
+            }
+            if (typeof proc === 'function') return proc(contFn);
+            throw new Error('call/cc requires a procedure');
+          } catch (e) {
+            if (e instanceof ContinuationJump && e.tag === tag) {
+              return e.value;
+            }
+            throw e; // Re-throw other exceptions
+          }
+        }
+
+        case 'values': {
+          // (values v1 v2 ...) — return multiple values as a list
+          const vals = [];
+          for (let i = 1; i < expr.length; i++) vals.push(evaluate(expr.get(i), env));
+          return new LispList(vals);
         }
       }
     }

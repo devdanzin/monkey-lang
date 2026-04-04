@@ -1281,22 +1281,46 @@
       "id": "T127",
       "mode": "BUILD",
       "task": "Add query planner: cost estimation, index selection, EXPLAIN output showing query plan",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T123",
-      "started": "2026-04-04T19:12:36.255Z"
+      "started": "2026-04-04T19:12:36.255Z",
+      "completed": "2026-04-04T19:14:47.714Z",
+      "duration_ms": 420000,
+      "summary": "Query planner: cost estimation (full scan vs index scan), step-by-step EXPLAIN with selectivity %, sort/limit/filter steps. Index proven cheaper in cost comparison test. 5 new tests (43 total)."
     },
     {
       "id": "T124",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-04-04T19:15:06.204Z",
+      "completed": "2026-04-04T19:15:06.709Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled placeholder"
     },
     {
       "id": "T125",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-04-04T19:15:19.254Z",
+      "completed": "2026-04-04T19:15:19.888Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled placeholder"
+    },
+    {
+      "id": "T128",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add call/cc (call-with-current-continuation) to Lisp interpreter",
+      "started": "2026-04-04T19:18:41.512Z"
     }
   ],
-  "updated_at": "2026-04-04T19:12:36.255Z"
+  "updated_at": "2026-04-04T19:18:41.512Z",
+  "adjustments": [
+    {
+      "time": "2026-04-04T19:18:36.081Z",
+      "msg": "Added T128 (BUILD) after end: Add call/cc (call-with-current-continuation) to Lisp interpreter"
+    }
+  ]
 }
