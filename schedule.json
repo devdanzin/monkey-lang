@@ -739,9 +739,39 @@
       "completed": "2026-04-04T17:13:11.545Z",
       "duration_ms": 360000,
       "summary": "A* pathfinding: grid, 4 heuristics, diagonal, weighted paths, BFS, maze solving, render. 20 tests."
+    },
+    {
+      "id": "T72",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a circuit breaker pattern: closed/open/half-open, failure threshold, timeout, with tests",
+      "started": "2026-04-04T17:15:19.992Z",
+      "completed": "2026-04-04T17:16:36.561Z",
+      "duration_ms": 360000,
+      "summary": "Circuit breaker: closed/open/half-open states, failure threshold, timeout, stats, async support. 11 tests."
+    },
+    {
+      "id": "T73",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a scheduler: priority queue, delayed tasks, recurring tasks, with tests",
+      "started": "2026-04-04T17:17:01.600Z",
+      "completed": "2026-04-04T17:18:22.561Z",
+      "duration_ms": 360000,
+      "summary": "Scheduler: MinHeap priority queue, delayed/recurring/at tasks, cancel, error handling. 14 tests."
+    },
+    {
+      "id": "T74",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a simple compiler: AST, constant folding, dead code elimination, register allocation, with tests",
+      "started": "2026-04-04T17:18:44.640Z",
+      "completed": "2026-04-04T17:20:31.693Z",
+      "duration_ms": 480000,
+      "summary": "Optimizing compiler: parser, constant folding, dead code elimination, algebraic simplifications, 3-address codegen. 26 tests."
     }
   ],
-  "updated_at": "2026-04-04T17:13:11.545Z",
+  "updated_at": "2026-04-04T17:20:31.693Z",
   "adjustments": [
     {
       "time": "2026-04-04T16:01:25.982Z",
@@ -866,6 +896,18 @@
     {
       "time": "2026-04-04T17:08:44.579Z",
       "msg": "Added T71 (BUILD) after end: Build an A* pathfinding algorithm: grid-based, with obstacles, heuristics, path visualization, with tests"
+    },
+    {
+      "time": "2026-04-04T17:15:11.122Z",
+      "msg": "Added T72 (BUILD) after end: Build a circuit breaker pattern: closed/open/half-open, failure threshold, timeout, with tests"
+    },
+    {
+      "time": "2026-04-04T17:15:11.631Z",
+      "msg": "Added T73 (BUILD) after end: Build a scheduler: priority queue, delayed tasks, recurring tasks, with tests"
+    },
+    {
+      "time": "2026-04-04T17:15:12.133Z",
+      "msg": "Added T74 (BUILD) after end: Build a simple compiler: AST, constant folding, dead code elimination, register allocation, with tests"
     }
   ]
 }
