@@ -1,12 +1,6 @@
 {
   "name": "lru-cache",
-  "version": "1.0.0",
-  "description": "LRU Cache from scratch — O(1) get/set",
+  "version": "0.1.0",
   "type": "module",
-  "main": "src/index.js",
-  "scripts": {
-    "test": "node --test test/*.test.js"
-  },
-  "author": "Henry",
-  "license": "MIT"
+  "scripts": { "test": "node --test test/*.test.js" }
 }
