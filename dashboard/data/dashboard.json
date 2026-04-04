@@ -1849,16 +1849,20 @@
       "id": "T179",
       "mode": "BUILD",
       "task": "Scene builder + advanced features: transforms (translate, rotate, scale), material system, reflection, domain repetition. Test scenes.",
-      "status": "upcoming",
-      "plan_ref": "T176"
+      "status": "done",
+      "plan_ref": "T176",
+      "started": "2026-04-04T21:47:17.159Z",
+      "completed": "2026-04-04T21:48:48.527Z",
+      "duration_ms": 600000,
+      "summary": "Scene builder: Material system (color, specular, roughness, reflectivity), SceneObject, multi-object scenes with closest-object material lookup, recursive reflection (max bounces), multiple lights, pre-built materials (red, green, blue, metal, mirror, gold, floor). 8 new tests, 57 total."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 175,
+    "completed": 176,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 57030000
+    "total_duration_ms": 57630000
   },
-  "updated_at": "2026-04-04T21:46:52.886Z"
+  "updated_at": "2026-04-04T21:48:48.527Z"
 }
