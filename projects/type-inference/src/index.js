@@ -1416,3 +1416,112 @@ export function defaultEnv() {
     ['not', new TFun(tBool, tBool)],
   ]));
 }
+
+// ===== Pattern Exhaustiveness & Redundancy Checking =====
+
+// ADT registry: maps type names to their constructors
+export class ADTRegistry {
+  constructor() {
+    this.types = new Map(); // typeName -> { constructors: Map<name, arity> }
+  }
+
+  registerType(name, constructors) {
+    // constructors: [{ name, arity }]
+    const conMap = new Map();
+    for (const c of constructors) {
+      conMap.set(c.name, c.arity);
+    }
+    this.types.set(name, { constructors: conMap });
+  }
+
+  getConstructors(typeName) {
+    const t = this.types.get(typeName);
+    return t ? t.constructors : null;
+  }
+
+  getTypeForConstructor(conName) {
+    for (const [typeName, { constructors }] of this.types) {
+      if (constructors.has(conName)) return typeName;
+    }
+    return null;
+  }
+}
+
+// Check exhaustiveness: are all constructors of the matched type covered?
+// Returns { exhaustive: bool, missing: string[] }
+export function checkExhaustiveness(patterns, registry) {
+  const covered = new Set();
+  let hasWildcard = false;
+  let hasVar = false;
+
+  for (const pat of patterns) {
+    if (pat.tag === 'pwild') { hasWildcard = true; continue; }
+    if (pat.tag === 'pvar') { hasVar = true; continue; }
+    if (pat.tag === 'pcon') { covered.add(pat.name); continue; }
+    if (pat.tag === 'plit') { continue; }
+  }
+
+  if (hasWildcard || hasVar) {
+    return { exhaustive: true, missing: [] };
+  }
+
+  if (covered.size === 0) {
+    return { exhaustive: false, missing: ['*'] };
+  }
+
+  const firstCon = [...covered][0];
+  const typeName = registry.getTypeForConstructor(firstCon);
+  if (!typeName) {
+    return { exhaustive: false, missing: ['?'] };
+  }
+
+  const allCons = registry.getConstructors(typeName);
+  const missing = [];
+  for (const [name] of allCons) {
+    if (!covered.has(name)) missing.push(name);
+  }
+
+  return { exhaustive: missing.length === 0, missing };
+}
+
+// Check redundancy: is any pattern unreachable?
+// Returns { redundant: number[] } (indices of redundant patterns)
+export function checkRedundancy(patterns, registry) {
+  const redundant = [];
+  const seen = new Set();
+  let wildcardSeen = false;
+
+  for (let i = 0; i < patterns.length; i++) {
+    const pat = patterns[i];
+
+    if (wildcardSeen) {
+      redundant.push(i);
+      continue;
+    }
+
+    if (pat.tag === 'pwild' || pat.tag === 'pvar') {
+      wildcardSeen = true;
+      continue;
+    }
+
+    if (pat.tag === 'pcon') {
+      if (seen.has(pat.name)) {
+        redundant.push(i);
+      } else {
+        seen.add(pat.name);
+      }
+      continue;
+    }
+
+    if (pat.tag === 'plit') {
+      const key = `${pat.type}:${pat.value}`;
+      if (seen.has(key)) {
+        redundant.push(i);
+      } else {
+        seen.add(key);
+      }
+    }
+  }
+
+  return { redundant };
+}

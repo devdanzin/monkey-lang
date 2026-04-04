@@ -1341,23 +1341,33 @@
     {
       "id": "T131",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final session housekeeping: update CURRENT.md, daily log, scratch note, git push",
-      "started": "2026-04-04T19:28:36.842Z"
+      "started": "2026-04-04T19:28:36.842Z",
+      "completed": "2026-04-04T19:30:05.233Z",
+      "duration_ms": 180000,
+      "summary": "Final housekeeping: scratch notes (type-inference-deep, lisp-implementation), INDEX.md updated, CURRENT.md, git push."
+    },
+    {
+      "id": "T132",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add pattern matching compiler to type inference: exhaustiveness checking and redundancy detection",
+      "started": "2026-04-04T19:30:20.984Z"
     }
   ],
   "current": {
-    "id": "T131",
-    "mode": "MAINTAIN",
+    "id": "T132",
+    "mode": "BUILD",
     "status": "in-progress",
-    "task": "Final session housekeeping: update CURRENT.md, daily log, scratch note, git push",
-    "started": "2026-04-04T19:28:36.842Z"
+    "task": "Add pattern matching compiler to type inference: exhaustiveness checking and redundancy detection",
+    "started": "2026-04-04T19:30:20.984Z"
   },
   "stats": {
-    "completed": 129,
+    "completed": 130,
     "yielded": 0,
     "skipped": 1,
-    "total_duration_ms": 41160000
+    "total_duration_ms": 41340000
   },
-  "updated_at": "2026-04-04T19:28:36.842Z"
+  "updated_at": "2026-04-04T19:30:20.984Z"
 }
