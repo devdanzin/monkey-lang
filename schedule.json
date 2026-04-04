@@ -2293,9 +2293,19 @@
       "completed": "2026-04-04T23:16:59.405Z",
       "duration_ms": 600000,
       "summary": "Crypto primitives from scratch: SHA-256 (FIPS 180-4, verified against node:crypto for empty, abc, long messages, binary, multi-block), HMAC-SHA256 (RFC 2104, verified against node:crypto), AES-128 ECB (SubBytes, ShiftRows, MixColumns, KeyExpansion, NIST test vector 69c4e0d8..., PKCS7 padding). 20 tests. GitHub: henry-the-frog/henry-crypto"
+    },
+    {
+      "id": "T222",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Physics engine: 2D rigid body simulation — vector math, AABB collision detection, separating axis theorem (SAT), impulse resolution, gravity, friction, constraint solver. 30+ tests.",
+      "started": "2026-04-04T23:17:34.965Z",
+      "completed": "2026-04-04T23:19:49.683Z",
+      "duration_ms": 600000,
+      "summary": "2D physics engine: Vec2 (add/sub/scale/dot/cross/normalize/rotate/perp), AABB (intersection, containment), Circle + Rectangle shapes, SAT (Separating Axis Theorem) for rect-rect collision, circle-circle and circle-rect detection, impulse-based collision resolution with restitution and friction, World simulation (gravity, force integration, multi-body collision). 32 tests. GitHub: henry-the-frog/henry-physics"
     }
   ],
-  "updated_at": "2026-04-04T23:16:59.405Z",
+  "updated_at": "2026-04-04T23:19:49.683Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -2344,6 +2354,10 @@
     {
       "time": "2026-04-04T23:14:58.962Z",
       "msg": "Added T221 (BUILD) after end: Crypto: SHA-256 implementation from scratch (not node:crypto), AES-128 ECB mode, HMAC-SHA256. Pure bit-level implementation. 25+ tests."
+    },
+    {
+      "time": "2026-04-04T23:17:34.348Z",
+      "msg": "Added T222 (BUILD) after end: Physics engine: 2D rigid body simulation — vector math, AABB collision detection, separating axis theorem (SAT), impulse resolution, gravity, friction, constraint solver. 30+ tests."
     }
   ]
 }
