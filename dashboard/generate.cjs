@@ -786,6 +786,9 @@ function computeVitalStats(projects, blogPosts, recentDays, streak) {
     { name: 'prolog', dir: 'projects/prolog' },
     { name: 'minikanren', dir: 'projects/minikanren' },
     { name: 'boids', dir: 'projects/boids' },
+    { name: 'sat', dir: 'projects/sat' },
+    { name: 'regex-engine', dir: 'projects/regex-engine' },
+    { name: 'gc-simulator', dir: 'projects/gc-simulator' },
   ];
   let totalTests = 0;
   for (const p of projectDirs) {
@@ -896,6 +899,24 @@ function computeProjectDepth() {
       dir: 'projects/boids',
       icon: '🐦',
       description: 'Boids flocking simulation — emergent behavior from simple rules',
+    },
+    {
+      name: 'sat',
+      dir: 'projects/sat',
+      icon: '🧮',
+      description: 'CDCL SAT solver — clause learning, VSIDS, watched literals',
+    },
+    {
+      name: 'regex-engine',
+      dir: 'projects/regex-engine',
+      icon: '🔍',
+      description: 'Regex engine — Thompson NFA construction, character classes',
+    },
+    {
+      name: 'gc-simulator',
+      dir: 'projects/gc-simulator',
+      icon: '♻️',
+      description: 'Garbage collector simulator — Cheney semi-space copying GC',
     },
   ];
 

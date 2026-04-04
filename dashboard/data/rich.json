@@ -617,7 +617,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-21T18:22:41Z",
       "updatedAt": "2026-03-25T14:43:40Z",
-      "ageHours": 331,
+      "ageHours": 333,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -628,7 +628,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T22:23:20Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 351,
+      "ageHours": 353,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -639,7 +639,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:39:06Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 352,
+      "ageHours": 353,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -650,7 +650,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:23:23Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 352,
+      "ageHours": 354,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -661,7 +661,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:38:20Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 353,
+      "ageHours": 354,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -672,7 +672,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 354,
+      "ageHours": 355,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -683,7 +683,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T18:18:34Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 356,
+      "ageHours": 357,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -694,7 +694,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-19T23:18:46Z",
       "updatedAt": "2026-03-25T14:42:14Z",
-      "ageHours": 375,
+      "ageHours": 376,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -705,7 +705,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-18T20:02:08Z",
       "updatedAt": "2026-03-24T20:15:47Z",
-      "ageHours": 402,
+      "ageHours": 403,
       "ciStatus": "pending",
       "reviewStatus": "none"
     }
@@ -817,11 +817,11 @@
       }
     }
   ],
-  "streak": 0,
+  "streak": 7,
   "scheduleAdherence": {
-    "completionRate": 0,
-    "completedBlocks": 0,
-    "pastBlocks": 0,
+    "completionRate": 33,
+    "completedBlocks": 1,
+    "pastBlocks": 3,
     "totalBlocks": 55,
     "plannedDist": {
       "THINK": 9,
@@ -829,8 +829,10 @@
       "MAINTAIN": 10,
       "EXPLORE": 7
     },
-    "actualDist": {},
-    "pace": 0
+    "actualDist": {
+      "THINK": 1
+    },
+    "pace": 1.4
   },
   "todayHighlights": [],
   "adjustments": [
@@ -844,7 +846,7 @@
       "url": "https://github.com/henry-the-frog/monkey-lang",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-04T04:18:29Z",
+      "pushedAt": "2026-04-04T14:55:31Z",
       "category": "featured"
     },
     {
@@ -2640,7 +2642,7 @@
     }
   ],
   "vitalStats": {
-    "totalTests": 2767,
+    "totalTests": 3234,
     "testCounts": {
       "monkey-lang": 1474,
       "ray-tracer": 262,
@@ -2649,11 +2651,14 @@
       "genetic-art": 152,
       "prolog": 162,
       "minikanren": 95,
-      "boids": 59
+      "boids": 59,
+      "sat": 56,
+      "regex-engine": 356,
+      "gc-simulator": 55
     },
     "totalRepos": 200,
     "totalBlogPosts": 39,
-    "streak": 0,
+    "streak": 7,
     "totalTasksWeek": 248,
     "daysActive": 6
   },
@@ -2667,7 +2672,7 @@
       "srcFiles": 57,
       "srcLines": 31415,
       "featureCount": 18,
-      "lastCommit": "2026-04-04 06:50:05 -0600",
+      "lastCommit": "2026-04-04 08:55:29 -0600",
       "url": "https://github.com/henry-the-frog/monkey-lang",
       "demoUrl": "https://henry-the-frog.github.io/monkey-lang/"
     },
@@ -2680,7 +2685,7 @@
       "srcFiles": 63,
       "srcLines": 8666,
       "featureCount": 0,
-      "lastCommit": "2026-04-04 06:50:05 -0600",
+      "lastCommit": "2026-04-04 08:55:29 -0600",
       "url": "https://github.com/henry-the-frog/ray-tracer",
       "demoUrl": "https://henry-the-frog.github.io/ray-tracer/"
     },
@@ -2693,7 +2698,7 @@
       "srcFiles": 74,
       "srcLines": 13390,
       "featureCount": 0,
-      "lastCommit": "2026-04-04 06:50:05 -0600",
+      "lastCommit": "2026-04-04 08:55:29 -0600",
       "url": "https://github.com/henry-the-frog/neural-net",
       "demoUrl": "https://henry-the-frog.github.io/neural-net/"
     },
@@ -2706,7 +2711,7 @@
       "srcFiles": 16,
       "srcLines": 3796,
       "featureCount": 0,
-      "lastCommit": "2026-04-04 06:50:05 -0600",
+      "lastCommit": "2026-04-04 08:55:29 -0600",
       "url": "https://github.com/henry-the-frog/physics",
       "demoUrl": "https://henry-the-frog.github.io/physics/"
     },
@@ -2719,7 +2724,7 @@
       "srcFiles": 22,
       "srcLines": 4563,
       "featureCount": 21,
-      "lastCommit": "2026-04-04 06:50:05 -0600",
+      "lastCommit": "2026-04-04 08:55:29 -0600",
       "url": "https://github.com/henry-the-frog/genetic-art",
       "demoUrl": "https://henry-the-frog.github.io/genetic-art/"
     },
@@ -2732,7 +2737,7 @@
       "srcFiles": 10,
       "srcLines": 3865,
       "featureCount": 10,
-      "lastCommit": "2026-04-04 06:50:05 -0600",
+      "lastCommit": "2026-04-04 08:55:29 -0600",
       "url": "https://github.com/henry-the-frog/prolog",
       "demoUrl": "https://henry-the-frog.github.io/prolog/"
     },
@@ -2745,7 +2750,7 @@
       "srcFiles": 5,
       "srcLines": 1378,
       "featureCount": 7,
-      "lastCommit": "2026-04-04 06:50:05 -0600",
+      "lastCommit": "2026-04-04 08:55:29 -0600",
       "url": "https://github.com/henry-the-frog/minikanren",
       "demoUrl": "https://henry-the-frog.github.io/minikanren/"
     },
@@ -2758,10 +2763,49 @@
       "srcFiles": 9,
       "srcLines": 1011,
       "featureCount": 7,
-      "lastCommit": "2026-04-04 06:50:05 -0600",
+      "lastCommit": "2026-04-04 08:55:29 -0600",
       "url": "https://github.com/henry-the-frog/boids",
       "demoUrl": "https://henry-the-frog.github.io/boids/"
+    },
+    {
+      "name": "sat",
+      "dir": "projects/sat",
+      "icon": "🧮",
+      "description": "CDCL SAT solver — clause learning, VSIDS, watched literals",
+      "tests": 56,
+      "srcFiles": 3,
+      "srcLines": 1342,
+      "featureCount": 11,
+      "lastCommit": "2026-04-04 08:55:29 -0600",
+      "url": "https://github.com/henry-the-frog/sat",
+      "demoUrl": "https://henry-the-frog.github.io/sat/"
+    },
+    {
+      "name": "regex-engine",
+      "dir": "projects/regex-engine",
+      "icon": "🔍",
+      "description": "Regex engine — Thompson NFA construction, character classes",
+      "tests": 356,
+      "srcFiles": 3,
+      "srcLines": 2219,
+      "featureCount": 6,
+      "lastCommit": "2026-04-04 08:55:29 -0600",
+      "url": "https://github.com/henry-the-frog/regex-engine",
+      "demoUrl": "https://henry-the-frog.github.io/regex-engine/"
+    },
+    {
+      "name": "gc-simulator",
+      "dir": "projects/gc-simulator",
+      "icon": "♻️",
+      "description": "Garbage collector simulator — Cheney semi-space copying GC",
+      "tests": 55,
+      "srcFiles": 5,
+      "srcLines": 1131,
+      "featureCount": 7,
+      "lastCommit": "2026-04-04 08:55:29 -0600",
+      "url": "https://github.com/henry-the-frog/gc-simulator",
+      "demoUrl": "https://henry-the-frog.github.io/gc-simulator/"
     }
   ],
-  "generated": "2026-04-04T13:50:55.253Z"
+  "generated": "2026-04-04T14:58:59.782Z"
 }
