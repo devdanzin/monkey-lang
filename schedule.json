@@ -1979,6 +1979,12 @@
       "mode": "BUILD",
       "status": "upcoming",
       "task": "Template engine: lexer, parser, AST, compiler, conditionals, loops, partials, escaping"
+    },
+    {
+      "id": "T194",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "TOML parser: key-value, tables, arrays of tables, multiline strings, datetimes, inline tables"
     }
   ],
   "updated_at": "2026-04-04T22:10:58.713Z",
@@ -2022,6 +2028,10 @@
     {
       "time": "2026-04-04T22:20:42.869Z",
       "msg": "Added T193 (BUILD) after end: Template engine: lexer, parser, AST, compiler, conditionals, loops, partials, escaping"
+    },
+    {
+      "time": "2026-04-04T22:22:27.182Z",
+      "msg": "Added T194 (BUILD) after end: TOML parser: key-value, tables, arrays of tables, multiline strings, datetimes, inline tables"
     }
   ]
 }
