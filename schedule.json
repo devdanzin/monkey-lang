@@ -1493,8 +1493,12 @@
       "id": "T148",
       "mode": "BUILD",
       "task": "Integration: import system, run Monkey-compiled WASM, comprehensive tests, README",
-      "status": "upcoming",
-      "plan_ref": "T143"
+      "status": "done",
+      "plan_ref": "T143",
+      "started": "2026-04-04T20:43:20.559Z",
+      "completed": "2026-04-04T20:45:46.648Z",
+      "duration_ms": 600000,
+      "summary": "Integration tests: fibonacci, bubble sort, mutual recursion, host I/O, power function, array sum. README. GitHub repo created. 78 total tests across decoder (30), runtime (40), integration (8)."
     },
     {
       "id": "T145",
@@ -1509,5 +1513,5 @@
       "task": "Research WebAssembly GC proposal (WasmGC) and component model for potential future integration"
     }
   ],
-  "updated_at": "2026-04-04T20:43:03.770Z"
+  "updated_at": "2026-04-04T20:45:46.648Z"
 }

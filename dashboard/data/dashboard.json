@@ -1493,8 +1493,12 @@
       "id": "T148",
       "mode": "BUILD",
       "task": "Integration: import system, run Monkey-compiled WASM, comprehensive tests, README",
-      "status": "upcoming",
-      "plan_ref": "T143"
+      "status": "done",
+      "plan_ref": "T143",
+      "started": "2026-04-04T20:43:20.559Z",
+      "completed": "2026-04-04T20:45:46.648Z",
+      "duration_ms": 600000,
+      "summary": "Integration tests: fibonacci, bubble sort, mutual recursion, host I/O, power function, array sum. README. GitHub repo created. 78 total tests across decoder (30), runtime (40), integration (8)."
     },
     {
       "id": "T145",
@@ -1511,10 +1515,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 142,
+    "completed": 143,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 45330000
+    "total_duration_ms": 45930000
   },
-  "updated_at": "2026-04-04T20:43:03.770Z"
+  "updated_at": "2026-04-04T20:45:46.648Z"
 }
