@@ -2463,9 +2463,19 @@
       "completed": "2026-04-04T23:49:22.108Z",
       "duration_ms": 600000,
       "summary": "Encoding: UTF-8 encode/decode (ASCII, multibyte, emoji, Chinese), Base64 (encode/decode, padding, binary), Base64URL (no padding, URL-safe), hex encode/decode, Base32, percent encoding (URL) with unicode support. 23 tests. GitHub: henry-the-frog/encoding"
+    },
+    {
+      "id": "T239",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Reactive signals: signal/computed/effect (like SolidJS), batch updates, dependency tracking, memo, untrack, dispose, reactive store. 25+ tests.",
+      "started": "2026-04-04T23:49:33.510Z",
+      "completed": "2026-04-04T23:50:37.750Z",
+      "duration_ms": 600000,
+      "summary": "Reactive signals: createSignal (read/write/peek, functional update, same-value skip), createEffect (auto-dependency tracking, multi-signal), createComputed (lazy memoized, caching, chaining), batch (deferred updates), untrack, createMemo (with equality), createStore (Proxy-based reactive store, setStore, proxy assignment, effect tracking). 17 tests. GitHub: henry-the-frog/signals"
     }
   ],
-  "updated_at": "2026-04-04T23:49:22.108Z",
+  "updated_at": "2026-04-04T23:50:37.751Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -2582,6 +2592,10 @@
     {
       "time": "2026-04-04T23:48:09.464Z",
       "msg": "Added T238 (BUILD) after end: Encoding library: Base64 encode/decode, URL-safe Base64, hex encode/decode, UTF-8 encode/decode, Base32, percent encoding (URL), ASCII85. 25+ tests."
+    },
+    {
+      "time": "2026-04-04T23:49:32.925Z",
+      "msg": "Added T239 (BUILD) after end: Reactive signals: signal/computed/effect (like SolidJS), batch updates, dependency tracking, memo, untrack, dispose, reactive store. 25+ tests."
     }
   ]
 }
