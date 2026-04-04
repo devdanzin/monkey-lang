@@ -184,6 +184,10 @@ export class BTreeIndex {
 
 // ===== Table =====
 
+function indexPlanUsed(steps) {
+  return steps.some(s => s.op === 'index_scan');
+}
+
 export class Table {
   constructor(name, columns) {
     this.name = name;
@@ -442,9 +446,111 @@ export class Database {
   }
 
   _executeExplain(query) {
-    // Execute the inner query to populate plan
+    const plan = this._buildQueryPlan(query.inner);
+    // Also execute to confirm results
     this.execute(query.inner);
-    return { type: 'plan', plan: this._lastQueryPlan || { type: 'unknown' } };
+    return { type: 'plan', plan };
+  }
+
+  // Build a detailed query plan with cost estimates
+  _buildQueryPlan(query) {
+    if (query.type !== 'select') {
+      return { type: 'execute', queryType: query.type, cost: 1 };
+    }
+
+    const steps = [];
+    let estimatedRows = 0;
+    let totalCost = 0;
+
+    // FROM
+    if (query.from) {
+      const table = this.tables.get(query.from);
+      if (table) {
+        estimatedRows = table.rows.length;
+        steps.push({ op: 'scan', table: query.from, rows: estimatedRows });
+        totalCost += estimatedRows; // Full scan cost = N
+      }
+    }
+
+    // JOIN
+    if (query.join) {
+      const joinTable = this.tables.get(query.join.table);
+      if (joinTable) {
+        const joinRows = joinTable.rows.length;
+        steps.push({ op: 'nested_loop_join', table: query.join.table, rows: joinRows });
+        totalCost += estimatedRows * joinRows; // Nested loop: N * M
+        estimatedRows = estimatedRows * joinRows; // Worst case
+      }
+    }
+
+    // WHERE
+    if (query.where && query.from) {
+      const table = this.tables.get(query.from);
+      if (table) {
+        const indexPlan = this._tryIndexScan(query.from, query.where);
+        if (indexPlan) {
+          const selectivity = indexPlan.rowIndices.length / (table.rows.length || 1);
+          steps.push({
+            op: 'index_scan',
+            index: indexPlan.indexName,
+            column: indexPlan.column,
+            estimatedSelectivity: Math.round(selectivity * 100) + '%',
+            estimatedRows: indexPlan.rowIndices.length,
+            hasResidual: !!indexPlan.residual,
+          });
+          // Index cost: B-tree lookup (log N) + scanning matching rows
+          // Much cheaper than full scan for selective queries
+          const lookupCost = Math.ceil(Math.log2(table.rows.length + 1));
+          totalCost = lookupCost + indexPlan.rowIndices.length;
+          estimatedRows = indexPlan.rowIndices.length;
+          if (indexPlan.residual) {
+            steps.push({ op: 'filter', condition: this._condToString(indexPlan.residual), estimatedRows });
+          }
+        } else {
+          steps.push({
+            op: 'full_scan_filter',
+            condition: this._condToString(query.where),
+            estimatedRows: Math.ceil(estimatedRows * 0.33), // Guess 33% selectivity
+          });
+          estimatedRows = Math.ceil(estimatedRows * 0.33);
+        }
+      }
+    }
+
+    // GROUP BY
+    if (query.groupBy) {
+      steps.push({ op: 'hash_aggregate', column: query.groupBy });
+      totalCost += estimatedRows; // Hashing cost
+    }
+
+    // ORDER BY
+    if (query.orderBy) {
+      steps.push({ op: 'sort', column: query.orderBy.column, direction: query.orderBy.direction });
+      totalCost += estimatedRows * Math.log2(estimatedRows + 1); // Sort cost: N log N
+    }
+
+    // LIMIT
+    if (query.limit !== undefined) {
+      steps.push({ op: 'limit', count: query.limit });
+      estimatedRows = Math.min(estimatedRows, query.limit);
+    }
+
+    return {
+      type: indexPlanUsed(steps) ? 'index_scan' : 'full_scan',
+      table: query.from,
+      steps,
+      estimatedCost: Math.round(totalCost),
+      estimatedRows,
+      index: indexPlanUsed(steps) ? steps.find(s => s.op === 'index_scan')?.index : undefined,
+      column: indexPlanUsed(steps) ? steps.find(s => s.op === 'index_scan')?.column : undefined,
+      residual: steps.some(s => s.hasResidual),
+    };
+  }
+
+  _condToString(cond) {
+    if (cond.op === 'AND') return `(${this._condToString(cond.left)} AND ${this._condToString(cond.right)})`;
+    if (cond.op === 'OR') return `(${this._condToString(cond.left)} OR ${this._condToString(cond.right)})`;
+    return `${cond.left} ${cond.op} ${cond.right}`;
   }
 
   // Try to use a B-tree index for a WHERE condition

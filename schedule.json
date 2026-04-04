@@ -1270,16 +1270,20 @@
       "id": "T126",
       "mode": "BUILD",
       "task": "Add B-tree indices to SQL engine: CREATE INDEX, automatic index usage in WHERE clauses with range scans",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T123",
-      "started": "2026-04-04T19:06:00.030Z"
+      "started": "2026-04-04T19:06:00.030Z",
+      "completed": "2026-04-04T19:12:17.364Z",
+      "duration_ms": 600000,
+      "summary": "SQL engine: B-tree index with insert/lookup/range/gt/lt scans, CREATE INDEX auto-populated on existing rows, index-accelerated WHERE (equality, range, AND with residual), EXPLAIN query plans. Fixed pre-existing string literal vs column ref bug. 16 new tests (38 total)."
     },
     {
       "id": "T127",
       "mode": "BUILD",
       "task": "Add query planner: cost estimation, index selection, EXPLAIN output showing query plan",
-      "status": "upcoming",
-      "plan_ref": "T123"
+      "status": "in-progress",
+      "plan_ref": "T123",
+      "started": "2026-04-04T19:12:36.255Z"
     },
     {
       "id": "T124",
@@ -1294,5 +1298,5 @@
       "task": null
     }
   ],
-  "updated_at": "2026-04-04T19:06:00.030Z"
+  "updated_at": "2026-04-04T19:12:36.255Z"
 }

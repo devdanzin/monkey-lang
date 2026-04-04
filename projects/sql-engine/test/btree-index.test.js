@@ -180,5 +180,45 @@ describe('B-Tree Index', () => {
       assert.equal(r.plan.type, 'index_scan');
       assert.equal(r.plan.residual, true);
     });
+
+    it('includes estimatedCost and estimatedRows', () => {
+      const db = seedDB();
+      db.execute(createIndex('idx_age', 'users', 'age'));
+      const r = db.execute(explain(select('*').FROM('users').WHERE(eq('age', 30))));
+      assert.ok(typeof r.plan.estimatedCost === 'number');
+      assert.ok(typeof r.plan.estimatedRows === 'number');
+      assert.ok(r.plan.estimatedCost > 0);
+    });
+
+    it('shows steps in plan', () => {
+      const db = seedDB();
+      db.execute(createIndex('idx_age', 'users', 'age'));
+      const r = db.execute(explain(select('*').FROM('users').WHERE(eq('age', 30))));
+      assert.ok(Array.isArray(r.plan.steps));
+      assert.ok(r.plan.steps.length >= 2); // scan + index_scan
+    });
+
+    it('shows sort step for ORDER BY', () => {
+      const db = seedDB();
+      const r = db.execute(explain(select('*').FROM('users').ORDER_BY('age')));
+      assert.ok(r.plan.steps.some(s => s.op === 'sort'));
+    });
+
+    it('shows limit step', () => {
+      const db = seedDB();
+      const r = db.execute(explain(select('*').FROM('users').LIMIT(2)));
+      assert.ok(r.plan.steps.some(s => s.op === 'limit' && s.count === 2));
+    });
+
+    it('index scan has lower cost than full scan', () => {
+      const db = seedDB();
+      // Without index
+      const r1 = db.execute(explain(select('*').FROM('users').WHERE(eq('age', 30))));
+      // Add index
+      db.execute(createIndex('idx_age', 'users', 'age'));
+      const r2 = db.execute(explain(select('*').FROM('users').WHERE(eq('age', 30))));
+      assert.ok(r2.plan.estimatedCost < r1.plan.estimatedCost, 
+        `Index cost ${r2.plan.estimatedCost} should be less than full scan ${r1.plan.estimatedCost}`);
+    });
   });
 });
