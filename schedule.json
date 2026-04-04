@@ -1579,8 +1579,12 @@
       "id": "T157",
       "mode": "BUILD",
       "task": "Chess search: alpha-beta with iterative deepening, quiescence search, transposition table, move ordering",
-      "status": "upcoming",
-      "plan_ref": "T150"
+      "status": "done",
+      "plan_ref": "T150",
+      "started": "2026-04-04T20:58:07.997Z",
+      "completed": "2026-04-04T21:00:37.764Z",
+      "duration_ms": 900000,
+      "summary": "Chess search: alpha-beta negamax with iterative deepening, quiescence search, transposition table (FEN-hashed), MVV-LVA move ordering. Evaluation: material + piece-square tables + bishop pair + endgame king table. Finds mate in 1, back-rank mate, avoids mate. 13 search tests, 44 total."
     },
     {
       "id": "T158",
@@ -1616,5 +1620,5 @@
       "task": "Final session B wrap — git push, daily log, scratch notes"
     }
   ],
-  "updated_at": "2026-04-04T20:57:51.041Z"
+  "updated_at": "2026-04-04T21:00:37.764Z"
 }
