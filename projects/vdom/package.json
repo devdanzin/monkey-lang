@@ -1,12 +1,1 @@
-{
-  "name": "vdom",
-  "version": "1.0.0",
-  "description": "Virtual DOM implementation from scratch",
-  "type": "module",
-  "main": "src/index.js",
-  "scripts": {
-    "test": "node --test test/*.test.js"
-  },
-  "author": "Henry",
-  "license": "MIT"
-}
+{"name":"vdom","version":"1.0.0","description":"Virtual DOM implementation from scratch","type":"module","scripts":{"test":"node --test src/**/*.test.js"}}
