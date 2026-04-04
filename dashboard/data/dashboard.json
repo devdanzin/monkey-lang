@@ -1046,14 +1046,24 @@
       "completed": "2026-04-04T18:06:06.809Z",
       "duration_ms": 180000,
       "summary": "Middleware pipeline: Koa-style compose, error handling, context passing. 6 tests."
+    },
+    {
+      "id": "T103",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a simple pool: object pool with acquire/release, max size, idle timeout, with tests",
+      "started": "2026-04-04T18:06:15.769Z",
+      "completed": "2026-04-04T18:07:15.565Z",
+      "duration_ms": 180000,
+      "summary": "Object pool: acquire/release, max size, wait queue, pre-allocation. 6 tests."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 101,
+    "completed": 102,
     "yielded": 0,
     "skipped": 1,
-    "total_duration_ms": 34560000
+    "total_duration_ms": 34740000
   },
-  "updated_at": "2026-04-04T18:06:06.809Z"
+  "updated_at": "2026-04-04T18:07:15.565Z"
 }
