@@ -1482,8 +1482,12 @@
       "id": "T147",
       "mode": "BUILD",
       "task": "Build WASM stack machine: operand stack, control flow (block/loop/if/br/br_if), function calls, locals/globals, i32 ops, memory",
-      "status": "upcoming",
-      "plan_ref": "T143"
+      "status": "done",
+      "plan_ref": "T143",
+      "started": "2026-04-04T20:25:50.869Z",
+      "completed": "2026-04-04T20:43:03.770Z",
+      "duration_ms": 900000,
+      "summary": "WASM stack machine: operand stack, block/loop/if/br/br_if/br_table, function calls (direct + indirect via table), locals/globals, all i32 ops, f64 ops, memory load/store/grow, data segments, imports, select, drop. 40 runtime tests + 30 decoder = 70 total, all passing."
     },
     {
       "id": "T148",
@@ -1507,10 +1511,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 141,
+    "completed": 142,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 44430000
+    "total_duration_ms": 45330000
   },
-  "updated_at": "2026-04-04T20:25:32.873Z"
+  "updated_at": "2026-04-04T20:43:03.770Z"
 }
