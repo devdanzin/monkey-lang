@@ -121,6 +121,14 @@ function parse(pattern) {
           expect(')');
           return { type: nextCh === '=' ? 'lookahead' : 'neg-lookahead', child: node };
         }
+        // Lookbehind (?<=...) and negative lookbehind (?<!...)
+        if (nextCh === '<' && (pattern[pos + 2] === '=' || pattern[pos + 2] === '!')) {
+          const kind = pattern[pos + 2];
+          advance(); advance(); advance(); // skip ?<=  or ?<!
+          const node = parseRegex();
+          expect(')');
+          return { type: kind === '=' ? 'lookbehind' : 'neg-lookbehind', child: node };
+        }
         // Named group (?<name>...)
         if (nextCh === '<') {
           advance(); advance(); // skip ?<
@@ -354,6 +362,13 @@ function compile(ast) {
         s.lookahead = { nfa: childNFA, negative: node.type === 'neg-lookahead' };
         return new Fragment(s, [s]);
       }
+      case 'lookbehind':
+      case 'neg-lookbehind': {
+        // Lookbehinds: store child AST for backtracking evaluation at match time
+        const s = newState();
+        s.lookbehind = { child: node.child, negative: node.type === 'neg-lookbehind' };
+        return new Fragment(s, [s]);
+      }
       case 'backref': {
         const s = newState();
         const end = newState();
@@ -398,6 +413,22 @@ function epsilonClosure(states, input, pos, groups, checkAnchors = true) {
       const remainder = input.slice(pos);
       const matches = nfaFullMatch(nfa, remainder);
       if (negative ? matches : !matches) continue;
+    }
+
+    // Handle lookbehinds
+    if (checkAnchors && s.lookbehind) {
+      const { child, negative } = s.lookbehind;
+      // Try all possible lengths behind current position
+      let found = false;
+      for (let len = 0; len <= pos; len++) {
+        const behind = input.slice(pos - len, pos);
+        const result = backtrackerMatch(child, behind, 0);
+        if (result && result.matched && result.end === len) {
+          found = true;
+          break;
+        }
+      }
+      if (negative ? found : !found) continue;
     }
 
     closure.add(s);
@@ -769,8 +800,9 @@ class LazyDFA {
 }
 
 // ===== Backtracking Matcher (for backreferences + lazy quantifiers) =====
-function backtrackerMatch(ast, input, groupCount) {
+function backtrackerMatch(ast, input, groupCount, startPos = 0) {
   // Returns { matched: bool, groups: Map<int, string>, end: int } or null
+  // startPos: where matching begins (for lookbehind context)
   
   function matchNode(node, pos, groups) {
     switch (node.type) {
@@ -859,6 +891,27 @@ function backtrackerMatch(ast, input, groupCount) {
         if (childResults.length === 0) return [{ end: pos, groups }];
         return [];
       }
+      case 'lookbehind': {
+        // Try all possible lengths behind current position in the full input
+        for (let len = 0; len <= pos; len++) {
+          const behind = input.slice(pos - len, pos);
+          const r = backtrackerMatch(node.child, behind, 0);
+          if (r && r.matched && r.end === len) {
+            return [{ end: pos, groups }];
+          }
+        }
+        return [];
+      }
+      case 'neg-lookbehind': {
+        for (let len = 0; len <= pos; len++) {
+          const behind = input.slice(pos - len, pos);
+          const r = backtrackerMatch(node.child, behind, 0);
+          if (r && r.matched && r.end === len) {
+            return []; // found a match behind — negative fails
+          }
+        }
+        return [{ end: pos, groups }];
+      }
       default:
         throw new Error(`Backtracker: unknown node type ${node.type}`);
     }
@@ -900,7 +953,7 @@ function backtrackerMatch(ast, input, groupCount) {
     return options.reverse();
   }
   
-  const results = matchNode(ast, 0, new Map());
+  const results = matchNode(ast, startPos, new Map());
   // Return first result that matches (results are ordered by preference)
   for (const r of results) {
     return { matched: true, end: r.end, groups: r.groups };
@@ -909,9 +962,9 @@ function backtrackerMatch(ast, input, groupCount) {
 }
 
 // Expose internal: return all match results for a pattern against input
-function _backtrackerInner(ast, input, groupCount) {
-  // Inline re-implementation is wasteful; just call backtrackerMatch's logic
-  // Actually, we need the full result list. Let's build it.
+function _backtrackerInner(ast, input, groupCount, startPos = 0) {
+  // Full backtracker returning all possible results
+  // startPos: where matching begins (for search from position)
   
   function matchNode(node, pos, groups) {
     switch (node.type) {
@@ -969,6 +1022,22 @@ function _backtrackerInner(ast, input, groupCount) {
         return matchNode(node.child, pos, groups).length > 0 ? [{ end: pos, groups }] : [];
       case 'neg-lookahead':
         return matchNode(node.child, pos, groups).length === 0 ? [{ end: pos, groups }] : [];
+      case 'lookbehind': {
+        for (let len = 0; len <= pos; len++) {
+          const behind = input.slice(pos - len, pos);
+          const r = backtrackerMatch(node.child, behind, 0);
+          if (r && r.matched && r.end === len) return [{ end: pos, groups }];
+        }
+        return [];
+      }
+      case 'neg-lookbehind': {
+        for (let len = 0; len <= pos; len++) {
+          const behind = input.slice(pos - len, pos);
+          const r = backtrackerMatch(node.child, behind, 0);
+          if (r && r.matched && r.end === len) return [];
+        }
+        return [{ end: pos, groups }];
+      }
       default:
         throw new Error(`Backtracker: unknown node type ${node.type}`);
     }
@@ -994,7 +1063,7 @@ function _backtrackerInner(ast, input, groupCount) {
     return lazy ? options : options.reverse();
   }
   
-  return matchNode(ast, 0, new Map());
+  return matchNode(ast, startPos, new Map());
 }
 
 // ===== Public API =====
@@ -1007,6 +1076,7 @@ export class Regex {
     this.groupCount = parsed.groupCount;
     this.hasBackrefs = pattern.includes('\\') && /\\[1-9]/.test(pattern);
     this.hasLazy = /[*+?]\?|\{\d+,?\d*\}\?/.test(pattern);
+    this.hasLookbehind = /\(\?<[=!]/.test(pattern);
     this.nfa = compile(this.ast);
     this._dfa = null; // lazily built
   }
@@ -1109,7 +1179,7 @@ export class Regex {
   // Search (find first match anywhere in string)
   search(input) {
     // Use backtracker for patterns with lazy quantifiers or backrefs (NFA can't handle laziness)
-    if (this.hasLazy || this.hasBackrefs) {
+    if (this.hasLazy || this.hasBackrefs || this.hasLookbehind) {
       return this._backtrackerSearch(input, false);
     }
     return this._nfaSearch(input);
@@ -1117,21 +1187,19 @@ export class Regex {
 
   _backtrackerSearch(input, shortest = false) {
     for (let i = 0; i <= input.length; i++) {
-      // Run backtracker at each position  
-      // We need to match against the suffix starting at i
-      const suffix = input.slice(i);
-      const results = _backtrackerInner(this.ast, suffix, this.groupCount);
+      // Run backtracker at each position using full input
+      const results = _backtrackerInner(this.ast, input, this.groupCount, i);
       
-      // Filter to non-empty matches, ordered by preference (lazy=shortest first, greedy=longest first)
+      // Filter to non-empty matches, ordered by preference
       let bestResult = null;
       for (const r of results) {
-        if (r.end > 0) {
+        if (r.end > i) {
           bestResult = r;
-          break; // first result is preferred (already ordered by backtracker)
+          break;
         }
       }
       if (bestResult) {
-        return { index: i, match: suffix.slice(0, bestResult.end) };
+        return { index: i, match: input.slice(i, bestResult.end) };
       }
     }
     return null;
@@ -1166,6 +1234,9 @@ export class Regex {
 
   // Find all non-overlapping matches
   matchAll(input) {
+    if (this.hasLazy || this.hasBackrefs || this.hasLookbehind) {
+      return this._backtrackerMatchAll(input);
+    }
     const results = [];
     let i = 0;
     while (i <= input.length) {
@@ -1185,6 +1256,25 @@ export class Regex {
       if (lastMatch && lastMatch.match.length > 0) {
         results.push(lastMatch);
         i += lastMatch.match.length;
+      } else {
+        i++;
+      }
+    }
+    return results;
+  }
+
+  _backtrackerMatchAll(input) {
+    const results = [];
+    let i = 0;
+    while (i <= input.length) {
+      const btResults = _backtrackerInner(this.ast, input, this.groupCount, i);
+      let best = null;
+      for (const r of btResults) {
+        if (r.end > i) { best = r; break; }
+      }
+      if (best) {
+        results.push({ index: i, match: input.slice(i, best.end) });
+        i = best.end;
       } else {
         i++;
       }

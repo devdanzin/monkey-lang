@@ -974,3 +974,105 @@ describe('Regex — performance', () => {
     assert.equal(matches.length, 100);
   });
 });
+
+// ===== Lookbehind =====
+describe('Regex — lookbehind', () => {
+  it('positive lookbehind: match digits after $', () => {
+    const r = new Regex('(?<=\\$)\\d+');
+    const m = r.search('Price: $100');
+    assert.ok(m);
+    assert.equal(m.match, '100');
+  });
+
+  it('positive lookbehind: single char', () => {
+    const r = new Regex('(?<=a)b');
+    const m1 = r.search('ab');
+    assert.ok(m1);
+    assert.equal(m1.match, 'b');
+    assert.equal(r.search('cb'), null);
+    assert.equal(r.search('b'), null);
+  });
+
+  it('positive lookbehind: multi-char', () => {
+    const r = new Regex('(?<=foo)bar');
+    const m1 = r.search('foobar');
+    assert.ok(m1);
+    assert.equal(m1.match, 'bar');
+    assert.equal(r.search('bazbar'), null);
+  });
+
+  it('negative lookbehind: match digits NOT after $', () => {
+    const r = new Regex('(?<!\\$)\\d+');
+    const m = r.search('price 42');
+    assert.ok(m);
+    assert.equal(m.match, '42');
+  });
+
+  it('negative lookbehind: single char', () => {
+    const r = new Regex('(?<!a)b');
+    const m1 = r.search('cb');
+    assert.ok(m1);
+    assert.equal(m1.match, 'b');
+    const m2 = r.search('b');
+    assert.ok(m2);
+    assert.equal(r.search('ab'), null);
+  });
+
+  it('negative lookbehind: multi-char', () => {
+    const r = new Regex('(?<!foo)bar');
+    const m1 = r.search('bazbar');
+    assert.ok(m1);
+    assert.equal(m1.match, 'bar');
+    assert.equal(r.search('foobar'), null);
+  });
+
+  it('lookbehind at start of string', () => {
+    const r = new Regex('(?<=x)a');
+    assert.equal(r.search('a'), null);
+    const m = r.search('xa');
+    assert.ok(m);
+    assert.equal(m.match, 'a');
+  });
+
+  it('negative lookbehind at start of string', () => {
+    const r = new Regex('(?<!x)a');
+    const m = r.search('a');
+    assert.ok(m);
+    assert.equal(m.match, 'a');
+    assert.equal(r.search('xa'), null);
+  });
+
+  it('lookbehind with character class', () => {
+    const r = new Regex('(?<=[a-z])\\d');
+    const m1 = r.search('a1');
+    assert.ok(m1);
+    assert.equal(m1.match, '1');
+    assert.equal(r.search('A1'), null);
+    assert.equal(r.search('1'), null);
+  });
+
+  it('combined lookahead and lookbehind', () => {
+    const r = new Regex('(?<=\\()\\d+(?=\\))');
+    const m = r.search('value is (42) here');
+    assert.ok(m);
+    assert.equal(m.match, '42');
+  });
+
+  it('lookbehind with alternation', () => {
+    const r = new Regex('(?<=cat|dog)fish');
+    const m1 = r.search('catfish');
+    assert.ok(m1);
+    assert.equal(m1.match, 'fish');
+    const m2 = r.search('dogfish');
+    assert.ok(m2);
+    assert.equal(r.search('ratfish'), null);
+  });
+
+  it('matchAll with lookbehind', () => {
+    const r = new Regex('(?<=@)\\w+');
+    const matches = r.matchAll('email @alice and @bob');
+    assert.equal(matches.length, 2);
+    assert.equal(matches[0].match, 'alice');
+    assert.equal(matches[1].match, 'bob');
+  });
+});
