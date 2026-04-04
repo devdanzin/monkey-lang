@@ -443,23 +443,30 @@
     {
       "id": "T42",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add CSP solver README and update dashboard with CSP + type inference projects",
-      "started": "2026-04-04T16:04:07.122Z"
+      "started": "2026-04-04T16:04:07.122Z",
+      "completed": "2026-04-04T16:05:24.871Z",
+      "duration_ms": 120000,
+      "summary": "CSP solver README, dashboard updated with CSP + type inference. Pushed to GH Pages."
+    },
+    {
+      "id": "T43",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add mini-ML parser to type inference engine: let, fn, if, match, operators, literals. Parse string to AST, then infer type.",
+      "started": "2026-04-04T16:06:23.584Z",
+      "completed": "2026-04-04T16:08:11.446Z",
+      "duration_ms": 420000,
+      "summary": "Mini-ML parser: let, fn, if, match, operators, application. 37 new tests, 91 total type inference tests. typeOf() convenience function."
     }
   ],
-  "current": {
-    "id": "T42",
-    "mode": "BUILD",
-    "status": "in-progress",
-    "task": "Add CSP solver README and update dashboard with CSP + type inference projects",
-    "started": "2026-04-04T16:04:07.122Z"
-  },
+  "current": null,
   "stats": {
-    "completed": 41,
+    "completed": 43,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 11940000
+    "total_duration_ms": 12480000
   },
-  "updated_at": "2026-04-04T16:04:07.122Z"
+  "updated_at": "2026-04-04T16:08:11.446Z"
 }

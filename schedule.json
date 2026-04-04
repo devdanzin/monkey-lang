@@ -443,12 +443,25 @@
     {
       "id": "T42",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add CSP solver README and update dashboard with CSP + type inference projects",
-      "started": "2026-04-04T16:04:07.122Z"
+      "started": "2026-04-04T16:04:07.122Z",
+      "completed": "2026-04-04T16:05:24.871Z",
+      "duration_ms": 120000,
+      "summary": "CSP solver README, dashboard updated with CSP + type inference. Pushed to GH Pages."
+    },
+    {
+      "id": "T43",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add mini-ML parser to type inference engine: let, fn, if, match, operators, literals. Parse string to AST, then infer type.",
+      "started": "2026-04-04T16:06:23.584Z",
+      "completed": "2026-04-04T16:08:11.446Z",
+      "duration_ms": 420000,
+      "summary": "Mini-ML parser: let, fn, if, match, operators, application. 37 new tests, 91 total type inference tests. typeOf() convenience function."
     }
   ],
-  "updated_at": "2026-04-04T16:04:07.122Z",
+  "updated_at": "2026-04-04T16:08:11.446Z",
   "adjustments": [
     {
       "time": "2026-04-04T16:01:25.982Z",
@@ -457,6 +470,10 @@
     {
       "time": "2026-04-04T16:03:59.354Z",
       "msg": "Added T42 (BUILD) after end: Add CSP solver README and update dashboard with CSP + type inference projects"
+    },
+    {
+      "time": "2026-04-04T16:06:15.526Z",
+      "msg": "Added T43 (BUILD) after end: Add mini-ML parser to type inference engine: let, fn, if, match, operators, literals. Parse string to AST, then infer type."
     }
   ]
 }
