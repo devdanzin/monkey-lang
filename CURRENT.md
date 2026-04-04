@@ -1,15 +1,10 @@
 # CURRENT.md
 
 ## Status: done
-session: 2026-04-03 Work Session B (2:15 PM - 8:15 PM MDT)
-mode: THINK
-task: Session B direction
-current_position: T42
-started: 2026-04-03T20:17:04Z
-completed: 2026-04-03T20:19:36Z
+session: 2026-04-03 Work Session C (8:15 PM - 10:15 PM MDT)
+mode: BUILD
+task: Regex — backrefs, exec, lazy quantifiers, 43 new tests
+current_position: T59
+started: 2026-04-03T21:32:00-06:00
+completed: 2026-04-03T20:43:00-06:00
 tasks_completed_this_session: 1
-
-### Notes
-- Fresh Session B start. Previous session A did 38 tasks, 3 new projects, 275 tests.
-- Direction: Fix CI failures, then WASM GC depth work.
-- Queue: T43-T54 (12 tasks planned)
