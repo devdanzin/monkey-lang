@@ -2353,14 +2353,24 @@
       "completed": "2026-04-04T23:29:55.377Z",
       "duration_ms": 600000,
       "summary": "ORM: defineModel with field types, CRUD (create/findById/update/delete with auto-increment IDs and timestamps), QueryBuilder (where with equality and comparison operators $gt/$gte/$lt/$lte/$ne, orderBy, limit, offset, select, findAll/findOne/count, chaining), relationships (hasMany/belongsTo with eager loading), bulk operations (bulkCreate/truncate), migrations (up/down/rollback). 24 tests. GitHub: henry-the-frog/henry-orm"
+    },
+    {
+      "id": "T228",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "State machine: finite automaton with guards, actions, hierarchical states, parallel states, event-driven transitions, history states, serialization. XState-like API. 25+ tests.",
+      "started": "2026-04-04T23:30:36.645Z",
+      "completed": "2026-04-04T23:32:26.164Z",
+      "duration_ms": 600000,
+      "summary": "State machine: createMachine/interpret, transitions with string and object config, conditional transitions (guard arrays), entry/exit/transition actions, context with assign (function + object), event payload, subscribers with unsubscribe, state matching, can() check, history tracking, serialization (toJSON/fromJSON), reset, complex traffic light simulation. 24 tests. GitHub: henry-the-frog/state-machine"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 224,
+    "completed": 225,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 79710000
+    "total_duration_ms": 80310000
   },
-  "updated_at": "2026-04-04T23:29:55.377Z"
+  "updated_at": "2026-04-04T23:32:26.164Z"
 }
