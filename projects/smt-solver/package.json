@@ -1,0 +1,9 @@
+{
+  "name": "smt-solver",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "SMT solver with DPLL(T) architecture — EUF theory solver + CDCL SAT engine",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  }
+}
