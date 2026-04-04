@@ -479,9 +479,19 @@
       "completed": "2026-04-04T16:16:03.834Z",
       "duration_ms": 480000,
       "summary": "Actor model: Erlang-inspired actors, mailboxes, supervision, ask/tell, dead letters, error recovery. 17 tests."
+    },
+    {
+      "id": "T46",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build parser combinator library: char, string, many, alt, seq, map, lazy, with JSON parser as example",
+      "started": "2026-04-04T16:16:50.257Z",
+      "completed": "2026-04-04T16:18:38.813Z",
+      "duration_ms": 360000,
+      "summary": "Parser combinator library: char, string, satisfy, regex, alt, seq, map, many, lazy, between, sepBy. JSON parser example. 36 tests."
     }
   ],
-  "updated_at": "2026-04-04T16:16:03.834Z",
+  "updated_at": "2026-04-04T16:18:38.813Z",
   "adjustments": [
     {
       "time": "2026-04-04T16:01:25.982Z",
@@ -502,6 +512,10 @@
     {
       "time": "2026-04-04T16:14:02.603Z",
       "msg": "Added T45 (BUILD) after end: Build an actor model: message passing, mailboxes, supervision trees, stateful actors, ask/tell patterns, with tests"
+    },
+    {
+      "time": "2026-04-04T16:16:40.073Z",
+      "msg": "Added T46 (BUILD) after end: Build parser combinator library: char, string, many, alt, seq, map, lazy, with JSON parser as example"
     }
   ]
 }

@@ -479,14 +479,24 @@
       "completed": "2026-04-04T16:16:03.834Z",
       "duration_ms": 480000,
       "summary": "Actor model: Erlang-inspired actors, mailboxes, supervision, ask/tell, dead letters, error recovery. 17 tests."
+    },
+    {
+      "id": "T46",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build parser combinator library: char, string, many, alt, seq, map, lazy, with JSON parser as example",
+      "started": "2026-04-04T16:16:50.257Z",
+      "completed": "2026-04-04T16:18:38.813Z",
+      "duration_ms": 360000,
+      "summary": "Parser combinator library: char, string, satisfy, regex, alt, seq, map, many, lazy, between, sepBy. JSON parser example. 36 tests."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 45,
+    "completed": 46,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 13560000
+    "total_duration_ms": 13920000
   },
-  "updated_at": "2026-04-04T16:16:03.834Z"
+  "updated_at": "2026-04-04T16:18:38.813Z"
 }
