@@ -506,6 +506,93 @@ export function checkKind(type, kindEnv = defaultKindEnv()) {
 // Type constructor AST node — for partial application of type constructors
 export const typeCon = (name) => ({ tag: 'typecon', name });
 
+// Higher-kinded type application: applies a type variable (or constructor) to args
+// e.g., f a where f : * -> * and a : *
+export class THKApp {
+  constructor(constructor, args) {
+    this.constructor = constructor; // TVar or TConst (the type constructor)
+    this.args = args;              // Type[] (the arguments)
+  }
+  toString() {
+    const conStr = `${this.constructor}`;
+    const argStrs = this.args.map(a =>
+      a instanceof TFun || a instanceof TApp || a instanceof THKApp ? `(${a})` : `${a}`
+    );
+    return `${conStr} ${argStrs.join(' ')}`;
+  }
+  equals(other) {
+    return other instanceof THKApp && this.constructor.equals(other.constructor)
+      && this.args.length === other.args.length
+      && this.args.every((a, i) => a.equals(other.args[i]));
+  }
+  freeVars() {
+    const s = this.constructor.freeVars();
+    for (const a of this.args) for (const v of a.freeVars()) s.add(v);
+    return s;
+  }
+  apply(subst) {
+    const newCon = this.constructor.apply(subst);
+    const newArgs = this.args.map(a => a.apply(subst));
+    // If the constructor was substituted with a concrete constructor name, convert to TApp
+    if (newCon instanceof TConst) {
+      return new TApp(newCon.name, newArgs);
+    }
+    return new THKApp(newCon, newArgs);
+  }
+}
+
+// HKT-aware type class registration
+// Functor f: fmap :: (a -> b) -> f a -> f b
+// The key is that 'f' has kind * -> *, and method types use THKApp(TVar('f'), [TVar('a')])
+export function registerFunctorClass(classEnv) {
+  const f = new TVar('_f');
+  const a = new TVar('_a');
+  const b = new TVar('_b');
+  classEnv.addClass(new TypeClass('Functor', '_f', new Map([
+    ['fmap', new TFun(new TFun(a, b), new TFun(new THKApp(f, [a]), new THKApp(f, [b])))],
+  ])));
+  return classEnv;
+}
+
+export function registerApplicativeClass(classEnv) {
+  const f = new TVar('_f');
+  const a = new TVar('_a');
+  const b = new TVar('_b');
+  classEnv.addClass(new TypeClass('Applicative', '_f', new Map([
+    ['pure', new TFun(a, new THKApp(f, [a]))],
+    ['ap', new TFun(new THKApp(f, [new TFun(a, b)]), new TFun(new THKApp(f, [a]), new THKApp(f, [b])))],
+  ]), ['Functor']));
+  return classEnv;
+}
+
+export function registerMonadClass(classEnv) {
+  const m = new TVar('_f');  // reuse _f as the parameter
+  const a = new TVar('_a');
+  const b = new TVar('_b');
+  classEnv.addClass(new TypeClass('Monad', '_f', new Map([
+    ['bind', new TFun(new THKApp(m, [a]), new TFun(new TFun(a, new THKApp(m, [b])), new THKApp(m, [b])))],
+    ['return_', new TFun(a, new THKApp(m, [a]))],
+  ]), ['Applicative']));
+  return classEnv;
+}
+
+// Register HKT instances for concrete constructors
+export function registerMaybeInstances(classEnv) {
+  const maybeCon = new TConst('Maybe');
+  classEnv.addInstance(new TypeClassInstance('Functor', maybeCon));
+  classEnv.addInstance(new TypeClassInstance('Applicative', maybeCon));
+  classEnv.addInstance(new TypeClassInstance('Monad', maybeCon));
+  return classEnv;
+}
+
+export function registerListInstances(classEnv) {
+  const listCon = new TConst('List');
+  classEnv.addInstance(new TypeClassInstance('Functor', listCon));
+  classEnv.addInstance(new TypeClassInstance('Applicative', listCon));
+  classEnv.addInstance(new TypeClassInstance('Monad', listCon));
+  return classEnv;
+}
+
 // ===== Substitution =====
 
 export function composeSubst(s1, s2) {
@@ -585,6 +672,51 @@ export function unify(t1, t2) {
       subst = composeSubst(s, subst);
     }
     return subst;
+  }
+
+  // Higher-kinded type application
+  if (t1 instanceof THKApp && t2 instanceof THKApp) {
+    if (t1.args.length !== t2.args.length) {
+      throw new UnificationError(`HKT arity mismatch: ${t1} vs ${t2}`, t1, t2);
+    }
+    let subst = unify(t1.constructor, t2.constructor);
+    for (let i = 0; i < t1.args.length; i++) {
+      const s = unify(t1.args[i].apply(subst), t2.args[i].apply(subst));
+      subst = composeSubst(s, subst);
+    }
+    return subst;
+  }
+
+  // THKApp vs TApp: if THKApp constructor resolves to a TConst, treat as TApp
+  if (t1 instanceof THKApp && t2 instanceof TApp) {
+    if (t1.constructor instanceof TConst && t1.constructor.name === t2.name) {
+      if (t1.args.length !== t2.args.length) {
+        throw new UnificationError(`Arity mismatch: ${t1} vs ${t2}`, t1, t2);
+      }
+      let subst = new Map();
+      for (let i = 0; i < t1.args.length; i++) {
+        const s = unify(t1.args[i].apply(subst), t2.args[i].apply(subst));
+        subst = composeSubst(s, subst);
+      }
+      return subst;
+    }
+    // Constructor is a variable — unify it with TConst(t2.name), then unify args
+    if (t1.constructor instanceof TVar) {
+      const s1 = new Map([[t1.constructor.name, new TConst(t2.name)]]);
+      if (t1.args.length !== t2.args.length) {
+        throw new UnificationError(`Arity mismatch: ${t1} vs ${t2}`, t1, t2);
+      }
+      let subst = s1;
+      for (let i = 0; i < t1.args.length; i++) {
+        const s = unify(t1.args[i].apply(subst), t2.args[i].apply(subst));
+        subst = composeSubst(s, subst);
+      }
+      return subst;
+    }
+  }
+
+  if (t2 instanceof THKApp && t1 instanceof TApp) {
+    return unify(t2, t1);
   }
 
   // Row types

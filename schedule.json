@@ -1207,16 +1207,20 @@
       "id": "T120",
       "mode": "BUILD",
       "task": "Add kind system: Kind type (Star, KArrow), kind inference, type constructor application with kind checking",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T117",
-      "started": "2026-04-04T18:59:26.728Z"
+      "started": "2026-04-04T18:59:26.728Z",
+      "completed": "2026-04-04T19:00:45.223Z",
+      "duration_ms": 480000,
+      "summary": "Kind system: Star/KArrow kinds, KindEnv, inferKind, checkKind. Handles * -> *, partially applied constructors, over-application rejection, HKT variables. 28 new tests (165 total)."
     },
     {
       "id": "T121",
       "mode": "BUILD",
       "task": "Add HKT type classes: Functor/Applicative/Monad with higher-kinded constraints, fmap/pure/bind inference + tests",
-      "status": "upcoming",
-      "plan_ref": "T117"
+      "status": "in-progress",
+      "plan_ref": "T117",
+      "started": "2026-04-04T19:01:01.576Z"
     },
     {
       "id": "T118",
@@ -1231,5 +1235,5 @@
       "task": null
     }
   ],
-  "updated_at": "2026-04-04T18:59:26.728Z"
+  "updated_at": "2026-04-04T19:01:01.576Z"
 }
