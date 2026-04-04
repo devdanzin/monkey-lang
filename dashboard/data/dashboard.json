@@ -1056,14 +1056,24 @@
       "completed": "2026-04-04T18:07:15.565Z",
       "duration_ms": 180000,
       "summary": "Object pool: acquire/release, max size, wait queue, pre-allocation. 6 tests."
+    },
+    {
+      "id": "T104",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a simple retry utility: exponential backoff, max retries, jitter, with tests",
+      "started": "2026-04-04T18:07:27.476Z",
+      "completed": "2026-04-04T18:08:10.891Z",
+      "duration_ms": 180000,
+      "summary": "Retry: exponential backoff, jitter, max retries, onRetry, sync variant. 8 tests."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 102,
+    "completed": 103,
     "yielded": 0,
     "skipped": 1,
-    "total_duration_ms": 34740000
+    "total_duration_ms": 34920000
   },
-  "updated_at": "2026-04-04T18:07:15.565Z"
+  "updated_at": "2026-04-04T18:08:10.891Z"
 }
