@@ -1,7 +1,9 @@
 {
-  "name": "tiny-btree",
-  "version": "1.0.0",
-  "description": "B-tree with insert, delete, search, range queries",
-  "main": "src/index.js",
-  "scripts": { "test": "node --test test/index.test.js" }
+  "name": "btree",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "B-Tree implementation with insert, search, delete, and range queries",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  }
 }
