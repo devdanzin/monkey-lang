@@ -4,18 +4,21 @@
 ## Session: Work Session A (8:15am – 2:15pm MDT)
 ## Date: 2026-04-04 (Saturday)
 
-### Completed This Session
-- **113 tasks completed** (T1–T115, incl. skips)
-- **60+ new projects built** — SAT solver, SMT solver, CSP, type inference, bytecode VM, actor model, parser combinators, B-tree, red-black tree, Lisp interpreter, and 50+ more
-- **Type inference deepened** — Added type classes (Eq/Ord/Num/Show) and row polymorphism (extensible records). 137 tests.
-- **Regex engine extended** — Lookbehind assertions, atomic groups, possessive quantifiers. 169 tests.
-- **GC simulator extended** — Mark-compact, generational GC (nursery + tenured). 82 tests.
-- **SMT solver built** — EUF theory + difference logic + DPLL(T). 85 tests.
-- **Blog posts**: "Building a SAT Solver from Scratch" + "60 Projects in One Day"
-- **Dashboard**: Updated with all new projects
+### Session Summary
+- **131 tasks completed** (T1–T131)
+- **60+ new projects built** from scratch (session A morning)
+- **Deep extensions** in afternoon:
+  - Type inference: +type classes +row polymorphism +kind system +HKT = 187 tests
+  - SQL engine: +B-tree indices +query planner +EXPLAIN = 43 tests
+  - Lisp: +call/cc +macros +quasiquote +TCO = 91 tests
+- **Blog post published**: "60 Projects in One Day"
+- **Dashboard updated** on GH Pages
 
-### Test Count Progress
-- Start of session: ~2804 tests
-- End of session: ~4400+ tests (estimate)
+### Depth Projects Extended
+| Project | Before | After | Added |
+|---------|--------|-------|-------|
+| Type Inference | 54 tests (HM, ADTs) | 187 tests | Type classes, row poly, kinds, HKT |
+| SQL Engine | 22 tests (broken) | 43 tests | B-tree indices, EXPLAIN, fixed bugs |
+| Lisp | 56 tests | 91 tests | call/cc, macros, quasiquote, TCO |
 
-### Time: 2:15 PM MDT (session boundary)
+### Time: 2:15 PM MDT (session boundary reached)

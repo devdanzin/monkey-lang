@@ -1331,29 +1331,33 @@
     {
       "id": "T130",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add tail call optimization (TCO) to Lisp interpreter — trampoline-based",
-      "started": "2026-04-04T19:25:16.975Z"
+      "started": "2026-04-04T19:25:16.975Z",
+      "completed": "2026-04-04T19:28:19.009Z",
+      "duration_ms": 600000,
+      "summary": "Lisp TCO: trampoline-based tail call optimization. TailCall class wraps tail-position expressions. Works in if/begin/let/cond/lambda-call. Tests: 200K countdown, mutual recursion, factorial(20), fib(50). 8 new tests (91 total)."
     },
     {
       "id": "T131",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final session housekeeping: update CURRENT.md, daily log, scratch note, git push"
+      "status": "in-progress",
+      "task": "Final session housekeeping: update CURRENT.md, daily log, scratch note, git push",
+      "started": "2026-04-04T19:28:36.842Z"
     }
   ],
   "current": {
-    "id": "T130",
-    "mode": "BUILD",
+    "id": "T131",
+    "mode": "MAINTAIN",
     "status": "in-progress",
-    "task": "Add tail call optimization (TCO) to Lisp interpreter — trampoline-based",
-    "started": "2026-04-04T19:25:16.975Z"
+    "task": "Final session housekeeping: update CURRENT.md, daily log, scratch note, git push",
+    "started": "2026-04-04T19:28:36.842Z"
   },
   "stats": {
-    "completed": 128,
+    "completed": 129,
     "yielded": 0,
     "skipped": 1,
-    "total_duration_ms": 40560000
+    "total_duration_ms": 41160000
   },
-  "updated_at": "2026-04-04T19:25:16.975Z"
+  "updated_at": "2026-04-04T19:28:36.842Z"
 }
