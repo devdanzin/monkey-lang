@@ -58,35 +58,62 @@
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping — git push, dashboard health, email check",
-      "started": "2026-04-04T14:55:20.442Z"
+      "started": "2026-04-04T14:55:20.442Z",
+      "completed": "2026-04-04T14:56:10.135Z",
+      "duration_ms": 120000,
+      "summary": "Git push (7 commits), dashboard healthy, generate.cjs refreshed, no unread email, 0 new PR reviews."
     },
     {
       "id": "T5",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Reflect on SAT solver. Dashboard iteration ideas (COMMITMENT). What depth work next?"
+      "status": "done",
+      "task": "Reflect on SAT solver. Dashboard iteration ideas (COMMITMENT). What depth work next?",
+      "started": "2026-04-04T14:56:26.990Z",
+      "completed": "2026-04-04T14:56:48.217Z",
+      "duration_ms": 60000,
+      "summary": "SAT solver complete and solid. Dashboard iteration next. Depth work: extend regex engine with backreferences/lookahead. Queue unchanged."
     },
     {
       "id": "T6",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Dashboard iteration — Jordan's main window. Add SAT/regex/GC/boids stats, improve UX",
-      "task": null
+      "task": null,
+      "started": "2026-04-04T14:56:56.979Z",
+      "completed": "2026-04-04T14:58:05.650Z",
+      "duration_ms": 120000,
+      "summary": "Planned 2 BUILD tasks: add 3 new projects to dashboard depth cards, push to GH Pages."
     },
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
-      "plan_ref": "T6"
+      "status": "done",
+      "task": "Add sat, regex-engine, gc-simulator to dashboard project depth + vital stats; update generate.cjs hardcoded project list and icon/description metadata",
+      "plan_ref": "T6",
+      "started": "2026-04-04T14:58:10.451Z",
+      "completed": "2026-04-04T14:59:27.851Z",
+      "duration_ms": 300000,
+      "summary": "Added SAT, regex-engine, gc-simulator to dashboard. Total tests: 3234 across 11 projects. generate.cjs updated."
+    },
+    {
+      "id": "T21",
+      "mode": "BUILD",
+      "task": "Push dashboard changes to GH Pages repo and verify live",
+      "status": "done",
+      "plan_ref": "T6",
+      "started": "2026-04-04T14:59:45.372Z",
+      "completed": "2026-04-04T15:00:12.158Z",
+      "duration_ms": 120000,
+      "summary": "Pushed dashboard to GH Pages with new project depth cards. Live at henry-the-frog.github.io/dashboard/"
     },
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping — git push, dashboard, knowledge capture"
+      "status": "in-progress",
+      "task": "Housekeeping — git push, dashboard, knowledge capture",
+      "started": "2026-04-04T15:00:27.013Z"
     },
     {
       "id": "T9",
@@ -153,5 +180,5 @@
       "task": "Research: consciousness or AI safety reading — evening exploration"
     }
   ],
-  "updated_at": "2026-04-04T14:55:20.442Z"
+  "updated_at": "2026-04-04T15:00:27.013Z"
 }
