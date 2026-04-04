@@ -906,9 +906,29 @@
       "completed": "2026-04-04T17:45:57.910Z",
       "duration_ms": 360000,
       "summary": "Blockchain: proof of work mining, chain validation, tamper detection, transactions, balances. 12 tests."
+    },
+    {
+      "id": "T89",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a simple event loop: task queue, microtask queue, timer heap, with tests",
+      "started": "2026-04-04T17:46:35.848Z",
+      "completed": "2026-04-04T17:47:55.737Z",
+      "duration_ms": 300000,
+      "summary": "Event loop simulation: macrotasks, microtasks, timers, intervals. Classic JS puzzle verified. 11 tests."
+    },
+    {
+      "id": "T90",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a binary search library: standard, lower/upper bound, search insert position, rotated array, with tests",
+      "started": "2026-04-04T17:48:16.846Z",
+      "completed": "2026-04-04T17:49:28.926Z",
+      "duration_ms": 300000,
+      "summary": "Binary search: 10+ variants — standard, lower/upper bound, rotated array, peak, bisect. 27 tests."
     }
   ],
-  "updated_at": "2026-04-04T17:45:57.910Z",
+  "updated_at": "2026-04-04T17:49:28.926Z",
   "adjustments": [
     {
       "time": "2026-04-04T16:01:25.982Z",
@@ -1105,6 +1125,14 @@
     {
       "time": "2026-04-04T17:42:10.038Z",
       "msg": "Added T88 (BUILD) after end: Build a simple blockchain: blocks, chain, proof of work, validation, with tests"
+    },
+    {
+      "time": "2026-04-04T17:46:27.210Z",
+      "msg": "Added T89 (BUILD) after end: Build a simple event loop: task queue, microtask queue, timer heap, with tests"
+    },
+    {
+      "time": "2026-04-04T17:46:27.639Z",
+      "msg": "Added T90 (BUILD) after end: Build a binary search library: standard, lower/upper bound, search insert position, rotated array, with tests"
     }
   ]
 }
