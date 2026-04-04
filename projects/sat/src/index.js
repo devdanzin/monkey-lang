@@ -47,6 +47,7 @@ export class CDCLSolver {
     
     // Stats
     this.stats = { decisions: 0, propagations: 0, conflicts: 0, learned: 0, restarts: 0 };
+    this.proofTrace = []; // Resolution proof trace for UNSAT proofs
     
     // Init activity and watches
     for (const cl of this.clauses) {
@@ -194,13 +195,21 @@ export class CDCLSolver {
   // 1UIP conflict analysis (MiniSat-style single-pass)
   _analyze(conflictCI) {
     const dl = this._currentLevel();
-    if (dl === 0) return null; // UNSAT
+    if (dl === 0) {
+      // UNSAT at decision level 0 — record empty clause derivation
+      this.proofTrace.push({
+        type: 'unsat',
+        conflictClause: conflictCI,
+        derivedEmpty: true,
+      });
+      return null;
+    }
     
     const seen = new Set();
     const learned = [];
-    let counter = 0; // current-level literals in the frontier
-    
-    // Process a clause: add unseen literals to frontier or learned
+    let counter = 0;
+    const resolutionSteps = []; // Track resolution chain
+
     const processLits = (clauseLits) => {
       for (const lit of clauseLits) {
         const v = Math.abs(lit);
@@ -214,31 +223,34 @@ export class CDCLSolver {
         }
       }
     };
-    
-    // Start from conflict clause
+
     processLits(this.clauses[conflictCI]);
-    
-    // Walk trail backwards, resolving current-level literals until 1 remains (the UIP)
+    resolutionSteps.push({ step: 'start', clauseIdx: conflictCI, clause: [...this.clauses[conflictCI]] });
+
     let trailIdx = this.trail.length - 1;
     let uipVar = -1;
-    
+
     while (counter > 0) {
-      // Find next seen current-level literal on trail
       while (trailIdx >= 0) {
         const v = this.trail[trailIdx];
         if (seen.has(v) && (this.level.get(v) ?? 0) === dl) break;
         trailIdx--;
       }
-      
+
       uipVar = this.trail[trailIdx];
       counter--;
-      
-      if (counter === 0) break; // This is the 1UIP — don't resolve it
-      
-      // Resolve: add reason clause literals to frontier
+
+      if (counter === 0) break;
+
       const reasonCI = this.reason.get(uipVar);
       if (reasonCI !== null && reasonCI !== undefined) {
         processLits(this.clauses[reasonCI]);
+        resolutionSteps.push({
+          step: 'resolve',
+          variable: uipVar,
+          reasonClauseIdx: reasonCI,
+          reasonClause: [...this.clauses[reasonCI]],
+        });
       }
       trailIdx--;
     }
@@ -259,7 +271,17 @@ export class CDCLSolver {
       this.activity[Math.abs(lit)] += this.activityInc;
     }
     this.activityInc *= 1.05;
-    
+
+    // Record in proof trace
+    this.proofTrace.push({
+      type: 'learn',
+      learnedClause: [...learned],
+      clauseIdx: this.clauses.length, // Will be added as this index
+      uip: uipVar,
+      btLevel,
+      resolutionSteps,
+    });
+
     return { learned, btLevel };
   }
 
@@ -285,13 +307,13 @@ export class CDCLSolver {
           this._assign(v, cl[0] > 0, 0, ci);
           this.stats.propagations++;
         } else if (this._litValue(cl[0]) === -1) {
-          return { sat: false, stats: this.stats };
+          return { sat: false, stats: this.stats, proof: this.proofTrace };
         }
       }
     }
     
     let conflict = this._propagate();
-    if (conflict !== null) return { sat: false, stats: this.stats };
+    if (conflict !== null) return { sat: false, stats: this.stats, proof: this.proofTrace };
     
     let maxConflicts = 100;
     
@@ -324,7 +346,7 @@ export class CDCLSolver {
         this.stats.conflicts++;
         
         const analysis = this._analyze(conflict);
-        if (!analysis) return { sat: false, stats: this.stats };
+        if (!analysis) return { sat: false, stats: this.stats, proof: this.proofTrace };
         
         const { learned, btLevel } = analysis;
         

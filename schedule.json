@@ -1351,12 +1351,28 @@
     {
       "id": "T132",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add pattern matching compiler to type inference: exhaustiveness checking and redundancy detection",
-      "started": "2026-04-04T19:30:20.984Z"
+      "started": "2026-04-04T19:30:20.984Z",
+      "completed": "2026-04-04T19:32:17.484Z",
+      "duration_ms": 480000,
+      "summary": "Pattern exhaustiveness + redundancy checking: ADTRegistry for Option/Bool/List/Either types, checkExhaustiveness reports missing constructors, checkRedundancy detects unreachable patterns (after wildcard, duplicate constructors, duplicate literals). 20 new tests (207 total)."
+    },
+    {
+      "id": "T133",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add UNSAT proof generation to SAT solver: resolution proof traces",
+      "started": "2026-04-04T19:32:47.459Z"
+    },
+    {
+      "id": "T134",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Add VSIDS decay and random restarts to SAT solver for harder instances"
     }
   ],
-  "updated_at": "2026-04-04T19:30:20.984Z",
+  "updated_at": "2026-04-04T19:32:47.459Z",
   "adjustments": [
     {
       "time": "2026-04-04T19:18:36.081Z",
@@ -1377,6 +1393,14 @@
     {
       "time": "2026-04-04T19:30:14.048Z",
       "msg": "Added T132 (BUILD) after end: Add pattern matching compiler to type inference: exhaustiveness checking and redundancy detection"
+    },
+    {
+      "time": "2026-04-04T19:32:39.380Z",
+      "msg": "Added T133 (BUILD) after end: Add UNSAT proof generation to SAT solver: resolution proof traces"
+    },
+    {
+      "time": "2026-04-04T19:32:39.849Z",
+      "msg": "Added T134 (BUILD) after end: Add VSIDS decay and random restarts to SAT solver for harder instances"
     }
   ]
 }
