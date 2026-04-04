@@ -996,9 +996,19 @@
       "completed": "2026-04-04T18:00:03.843Z",
       "duration_ms": 300000,
       "summary": "KV store: TTL, persistence, batch, incr, iterator. 14 tests."
+    },
+    {
+      "id": "T98",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a simple router (URL pattern matching): path params, wildcards, nested, with tests",
+      "started": "2026-04-04T18:00:13.687Z",
+      "completed": "2026-04-04T18:01:08.514Z",
+      "duration_ms": 240000,
+      "summary": "URL Router: path params, wildcards, method matching, nested mounting. 9 tests."
     }
   ],
-  "updated_at": "2026-04-04T18:00:03.844Z",
+  "updated_at": "2026-04-04T18:01:08.514Z",
   "adjustments": [
     {
       "time": "2026-04-04T16:01:25.982Z",
@@ -1231,6 +1241,10 @@
     {
       "time": "2026-04-04T17:59:06.639Z",
       "msg": "Added T97 (BUILD) after end: Build a simple key-value store: get, set, delete, TTL, persistence (JSON file), with tests"
+    },
+    {
+      "time": "2026-04-04T18:00:13.069Z",
+      "msg": "Added T98 (BUILD) after end: Build a simple router (URL pattern matching): path params, wildcards, nested, with tests"
     }
   ]
 }
