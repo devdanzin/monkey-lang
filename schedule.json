@@ -769,9 +769,39 @@
       "completed": "2026-04-04T17:20:31.693Z",
       "duration_ms": 480000,
       "summary": "Optimizing compiler: parser, constant folding, dead code elimination, algebraic simplifications, 3-address codegen. 26 tests."
+    },
+    {
+      "id": "T75",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a rope data structure for efficient string editing: concat, split, insert, delete, charAt, with tests",
+      "started": "2026-04-04T17:21:09.656Z",
+      "completed": "2026-04-04T17:22:25.080Z",
+      "duration_ms": 360000,
+      "summary": "Rope data structure: charAt, concat, split, insert, delete O(log n). Line operations. 20 tests."
+    },
+    {
+      "id": "T76",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build an observable/RxJS-like library: Observable, map, filter, merge, debounce, switchMap, with tests",
+      "started": "2026-04-04T17:22:50.570Z",
+      "completed": "2026-04-04T17:24:19.311Z",
+      "duration_ms": 360000,
+      "summary": "Observable: map, filter, take, skip, scan, reduce, merge, toPromise, toArray. 21 tests."
+    },
+    {
+      "id": "T77",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a merkle tree: hash, verify, proof generation, proof verification, with tests",
+      "started": "2026-04-04T17:24:45.131Z",
+      "completed": "2026-04-04T17:25:58.113Z",
+      "duration_ms": 360000,
+      "summary": "Merkle tree: SHA-256, proof generation, proof verification, integrity check, tree diff. 14 tests."
     }
   ],
-  "updated_at": "2026-04-04T17:20:31.693Z",
+  "updated_at": "2026-04-04T17:25:58.113Z",
   "adjustments": [
     {
       "time": "2026-04-04T16:01:25.982Z",
@@ -908,6 +938,18 @@
     {
       "time": "2026-04-04T17:15:12.133Z",
       "msg": "Added T74 (BUILD) after end: Build a simple compiler: AST, constant folding, dead code elimination, register allocation, with tests"
+    },
+    {
+      "time": "2026-04-04T17:21:00.167Z",
+      "msg": "Added T75 (BUILD) after end: Build a rope data structure for efficient string editing: concat, split, insert, delete, charAt, with tests"
+    },
+    {
+      "time": "2026-04-04T17:21:00.678Z",
+      "msg": "Added T76 (BUILD) after end: Build an observable/RxJS-like library: Observable, map, filter, merge, debounce, switchMap, with tests"
+    },
+    {
+      "time": "2026-04-04T17:21:01.175Z",
+      "msg": "Added T77 (BUILD) after end: Build a merkle tree: hash, verify, proof generation, proof verification, with tests"
     }
   ]
 }
