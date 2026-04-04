@@ -99,6 +99,103 @@ export const tBool = new TConst('Bool');
 export const tString = new TConst('String');
 export const tUnit = new TConst('Unit');
 
+// ===== Row Polymorphism =====
+
+// Row type: a collection of label:type pairs with an optional tail
+// TRowEmpty: {} (empty row)
+// TRowExtend: {label: type | rest} where rest is another row
+export class TRowEmpty {
+  toString() { return '{}'; }
+  equals(other) { return other instanceof TRowEmpty; }
+  freeVars() { return new Set(); }
+  apply(_subst) { return this; }
+}
+
+export class TRowExtend {
+  constructor(label, fieldType, rest) {
+    this.label = label;
+    this.fieldType = fieldType;
+    this.rest = rest; // another row (TRowEmpty, TRowExtend, or TVar)
+  }
+  toString() {
+    const fields = [];
+    let current = this;
+    while (current instanceof TRowExtend) {
+      fields.push(`${current.label}: ${current.fieldType}`);
+      current = current.rest;
+    }
+    if (current instanceof TRowEmpty) {
+      return `{${fields.join(', ')}}`;
+    }
+    return `{${fields.join(', ')} | ${current}}`;
+  }
+  equals(other) {
+    return other instanceof TRowExtend && this.label === other.label
+      && this.fieldType.equals(other.fieldType) && this.rest.equals(other.rest);
+  }
+  freeVars() {
+    const s = this.fieldType.freeVars();
+    for (const v of this.rest.freeVars()) s.add(v);
+    return s;
+  }
+  apply(subst) {
+    return new TRowExtend(this.label, this.fieldType.apply(subst), this.rest.apply(subst));
+  }
+}
+
+// TRecord wraps a row type
+export class TRecord {
+  constructor(row) { this.row = row; }
+  toString() { return this.row.toString(); }
+  equals(other) { return other instanceof TRecord && this.row.equals(other.row); }
+  freeVars() { return this.row.freeVars(); }
+  apply(subst) { return new TRecord(this.row.apply(subst)); }
+}
+
+// Helper to build record types
+export function record(fields, rest = null) {
+  let row = rest || new TRowEmpty();
+  // Build from right to left
+  const entries = Object.entries(fields).reverse();
+  for (const [label, type] of entries) {
+    row = new TRowExtend(label, type, row);
+  }
+  return new TRecord(row);
+}
+
+// Rewrite a row to extract a specific label (for unification)
+// Returns { fieldType, rest } where rest is the row without the label
+function rewriteRow(row, label) {
+  if (row instanceof TRowEmpty) {
+    throw new UnificationError(`Label "${label}" not found in row`, row, row);
+  }
+  if (row instanceof TVar) {
+    // Open row: create fresh vars for field type and rest
+    const fieldType = freshTypeVar();
+    const restRow = freshTypeVar();
+    return { fieldType, rest: restRow, subst: new Map([[row.name, new TRowExtend(label, fieldType, restRow)]]) };
+  }
+  if (row instanceof TRowExtend) {
+    if (row.label === label) {
+      return { fieldType: row.fieldType, rest: row.rest, subst: new Map() };
+    }
+    // Search deeper
+    const result = rewriteRow(row.rest, label);
+    return {
+      fieldType: result.fieldType,
+      rest: new TRowExtend(row.label, row.fieldType, result.rest),
+      subst: result.subst,
+    };
+  }
+  throw new UnificationError(`Invalid row type: ${row}`, row, row);
+}
+
+// AST nodes for records
+export const recordLit = (fields) => ({ tag: 'record', fields }); // { name: expr, ... }
+export const recordAccess = (record, label) => ({ tag: 'recordAccess', record, label });
+export const recordExtend = (record, label, value) => ({ tag: 'recordExtend', record, label, value });
+export const recordRestrict = (record, label) => ({ tag: 'recordRestrict', record, label });
+
 // ===== Type Classes =====
 
 // A constraint like "Eq a" or "Num a"
@@ -146,7 +243,7 @@ export class TypeClass {
     this.name = name;
     this.typeParam = typeParam;      // e.g., "a"
     this.methods = methods;          // Map<string, type> (using typeParam)
-    this.superclasses = superclasses; // string[] — superclass names
+    this.superclasses = superclasses; // string[] - superclass names
   }
 }
 
@@ -197,7 +294,7 @@ export class ClassEnv {
         const allSatisfied = inst.constraints.every(c => this.entails(c.apply(subst)));
         if (allSatisfied) return true;
       } catch (e) {
-        // Unification failed — this instance doesn't match
+        // Unification failed - this instance doesn't match
         continue;
       }
     }
@@ -315,26 +412,26 @@ export function unify(t1, t2) {
     }
     return new Map([[t1.name, t2]]);
   }
-  
+
   if (t2 instanceof TVar) {
     return unify(t2, t1);
   }
-  
+
   if (t1 instanceof TConst && t2 instanceof TConst) {
     if (t1.name === t2.name) return new Map();
     throw new UnificationError(`Cannot unify ${t1} with ${t2}`, t1, t2);
   }
-  
+
   if (t1 instanceof TFun && t2 instanceof TFun) {
     const s1 = unify(t1.from, t2.from);
     const s2 = unify(t1.to.apply(s1), t2.to.apply(s1));
     return composeSubst(s2, s1);
   }
-  
+
   if (t1 instanceof TList && t2 instanceof TList) {
     return unify(t1.elem, t2.elem);
   }
-  
+
   if (t1 instanceof TTuple && t2 instanceof TTuple) {
     if (t1.types.length !== t2.types.length) {
       throw new UnificationError(`Tuple size mismatch: ${t1} vs ${t2}`, t1, t2);
@@ -346,7 +443,7 @@ export function unify(t1, t2) {
     }
     return subst;
   }
-  
+
   if (t1 instanceof TApp && t2 instanceof TApp) {
     if (t1.name !== t2.name || t1.args.length !== t2.args.length) {
       throw new UnificationError(`Cannot unify ${t1} with ${t2}`, t1, t2);
@@ -358,8 +455,61 @@ export function unify(t1, t2) {
     }
     return subst;
   }
-  
+
+  // Row types
+  if (t1 instanceof TRecord && t2 instanceof TRecord) {
+    return unifyRows(t1.row, t2.row);
+  }
+
+  if (t1 instanceof TRowEmpty && t2 instanceof TRowEmpty) {
+    return new Map();
+  }
+
+  if (t1 instanceof TRowExtend && t2 instanceof TRowExtend) {
+    return unifyRows(t1, t2);
+  }
+
   throw new UnificationError(`Cannot unify ${t1} with ${t2}`, t1, t2);
+}
+
+// Unify two rows
+function unifyRows(r1, r2) {
+  // Both empty
+  if (r1 instanceof TRowEmpty && r2 instanceof TRowEmpty) {
+    return new Map();
+  }
+
+  // One is a type variable (open row)
+  if (r1 instanceof TVar) {
+    if (occursCheck(r1.name, r2)) {
+      throw new UnificationError(`Occurs check in row: ${r1} in ${r2}`, r1, r2);
+    }
+    return new Map([[r1.name, r2]]);
+  }
+  if (r2 instanceof TVar) {
+    return unifyRows(r2, r1);
+  }
+
+  // Both are row extensions
+  if (r1 instanceof TRowExtend && r2 instanceof TRowExtend) {
+    // Find the same label in r2
+    try {
+      const { fieldType, rest, subst: rewriteSubst } = rewriteRow(r2, r1.label);
+      const s1 = composeSubst(unify(r1.fieldType, fieldType.apply(rewriteSubst)), rewriteSubst);
+      const s2 = unifyRows(r1.rest.apply(s1), rest.apply(s1));
+      return composeSubst(s2, s1);
+    } catch (e) {
+      throw new UnificationError(`Cannot unify rows: ${r1} vs ${r2}`, r1, r2);
+    }
+  }
+
+  // Empty vs extend: fail
+  if ((r1 instanceof TRowEmpty && r2 instanceof TRowExtend) ||
+      (r1 instanceof TRowExtend && r2 instanceof TRowEmpty)) {
+    throw new UnificationError(`Row mismatch: ${r1} vs ${r2}`, r1, r2);
+  }
+
+  throw new UnificationError(`Cannot unify rows: ${r1} vs ${r2}`, r1, r2);
 }
 
 // ===== Type Environment =====
@@ -368,17 +518,17 @@ export class TypeEnv {
   constructor(bindings = new Map()) {
     this.bindings = bindings;
   }
-  
+
   extend(name, scheme) {
     const newBindings = new Map(this.bindings);
     newBindings.set(name, scheme);
     return new TypeEnv(newBindings);
   }
-  
+
   lookup(name) {
     return this.bindings.get(name) ?? null;
   }
-  
+
   freeVars() {
     const s = new Set();
     for (const scheme of this.bindings.values()) {
@@ -386,7 +536,7 @@ export class TypeEnv {
     }
     return s;
   }
-  
+
   apply(subst) {
     const newBindings = new Map();
     for (const [k, v] of this.bindings) {
@@ -478,22 +628,22 @@ export class DataType {
     this.typeParams = typeParams; // e.g., ["a"]
     this.constructors = constructors; // e.g., [{ name: "Nothing", fields: [] }, { name: "Just", fields: [TVar("a")] }]
   }
-  
+
   // Get the type of a constructor as a function type
   constructorType(conName) {
     const con = this.constructors.find(c => c.name === conName);
     if (!con) return null;
-    
+
     // Instantiate type params with fresh vars
     const subst = new Map();
     for (const p of this.typeParams) {
       subst.set(p, freshTypeVar());
     }
-    
+
     const resultType = new TApp(this.name, this.typeParams.map(p => subst.get(p)));
-    
+
     if (con.fields.length === 0) return resultType;
-    
+
     // Build function type: field1 -> field2 -> ... -> ResultType
     let t = resultType;
     for (let i = con.fields.length - 1; i >= 0; i--) {
@@ -531,9 +681,9 @@ function reduceConstraints(constraints, classEnv) {
       if (!classEnv.entails(c)) {
         throw new Error(`No instance for ${c}`);
       }
-      // Constraint is satisfied — drop it
+      // Constraint is satisfied - drop it
     } else {
-      // Type still has free vars — constraint remains
+      // Type still has free vars - constraint remains
       // Deduplicate
       if (!remaining.some(r => r.equals(c))) {
         remaining.push(c);
@@ -543,7 +693,7 @@ function reduceConstraints(constraints, classEnv) {
   return remaining;
 }
 
-// Constrained Algorithm W — returns [subst, type, constraints[]]
+// Constrained Algorithm W - returns [subst, type, constraints[]]
 function algorithmWConstrained(env, expr, classEnv) {
   switch (expr.tag) {
     case 'classmethod': {
@@ -729,6 +879,48 @@ function algorithmWConstrainedDispatch(env, expr, classEnv) {
       return [subst, resultType.apply(subst), allConstraints];
     }
 
+    case 'record': {
+      let subst = new Map();
+      let row = new TRowEmpty();
+      let allCs = [];
+      const labels = Object.keys(expr.fields).reverse();
+      for (const label of labels) {
+        const [s, fieldType, cs] = algorithmWConstrained(env.apply(subst), expr.fields[label], classEnv);
+        subst = composeSubst(s, subst);
+        row = new TRowExtend(label, fieldType, row);
+        allCs.push(...cs);
+      }
+      return [subst, new TRecord(row), allCs];
+    }
+
+    case 'recordAccess': {
+      const [s1, recType, cs] = algorithmWConstrained(env, expr.record, classEnv);
+      const fieldType = freshTypeVar();
+      const restRow = freshTypeVar();
+      const expectedType = new TRecord(new TRowExtend(expr.label, fieldType, restRow));
+      const s2 = unify(recType.apply(s1), expectedType);
+      return [composeSubst(s2, s1), fieldType.apply(s2), cs];
+    }
+
+    case 'recordExtend': {
+      const [s1, recType, cs1] = algorithmWConstrained(env, expr.record, classEnv);
+      const [s2, valType, cs2] = algorithmWConstrained(env.apply(s1), expr.value, classEnv);
+      const restRow = freshTypeVar();
+      const expectedRec = new TRecord(restRow);
+      const s3 = unify(recType.apply(s2), expectedRec);
+      const newRow = new TRowExtend(expr.label, valType, restRow.apply(s3));
+      return [composeSubst(s3, composeSubst(s2, s1)), new TRecord(newRow), [...cs1, ...cs2]];
+    }
+
+    case 'recordRestrict': {
+      const [s1, recType, cs] = algorithmWConstrained(env, expr.record, classEnv);
+      const fieldType = freshTypeVar();
+      const restRow = freshTypeVar();
+      const expectedType = new TRecord(new TRowExtend(expr.label, fieldType, restRow));
+      const s2 = unify(recType.apply(s1), expectedType);
+      return [composeSubst(s2, s1), new TRecord(restRow.apply(s2)), cs];
+    }
+
     default:
       throw new Error(`Unknown expression tag: ${expr.tag}`);
   }
@@ -742,7 +934,7 @@ function algorithmW(env, expr) {
       if (expr.type === 'string') return [new Map(), tString];
       return [new Map(), tUnit];
     }
-    
+
     case 'var': {
       const scheme = env.lookup(expr.name);
       if (!scheme) throw new Error(`Unbound variable: ${expr.name}`);
@@ -751,14 +943,14 @@ function algorithmW(env, expr) {
       }
       return [new Map(), scheme];
     }
-    
+
     case 'lam': {
       const paramType = freshTypeVar();
       const newEnv = env.extend(expr.param, paramType);
       const [s1, bodyType] = algorithmW(newEnv, expr.body);
       return [s1, new TFun(paramType.apply(s1), bodyType)];
     }
-    
+
     case 'app': {
       const resultType = freshTypeVar();
       const [s1, fnType] = algorithmW(env, expr.fn);
@@ -766,7 +958,7 @@ function algorithmW(env, expr) {
       const s3 = unify(fnType.apply(s2), new TFun(argType, resultType));
       return [composeSubst(s3, composeSubst(s2, s1)), resultType.apply(s3)];
     }
-    
+
     case 'let': {
       const [s1, valueType] = algorithmW(env, expr.value);
       const generalizedType = generalize(env.apply(s1), valueType);
@@ -774,7 +966,7 @@ function algorithmW(env, expr) {
       const [s2, bodyType] = algorithmW(newEnv, expr.body);
       return [composeSubst(s2, s1), bodyType];
     }
-    
+
     case 'letrec': {
       const recType = freshTypeVar();
       const newEnv = env.extend(expr.name, recType);
@@ -786,7 +978,7 @@ function algorithmW(env, expr) {
       const [s3, bodyType] = algorithmW(bodyEnv, expr.body);
       return [composeSubst(s3, finalSubst), bodyType];
     }
-    
+
     case 'if': {
       const [s1, condType] = algorithmW(env, expr.cond);
       const s2 = unify(condType, tBool);
@@ -797,7 +989,7 @@ function algorithmW(env, expr) {
       const s5 = unify(thenType.apply(s4), elseType);
       return [composeSubst(s5, composeSubst(s4, composeSubst(s3, composeSubst(s2, s1)))), elseType.apply(s5)];
     }
-    
+
     case 'binop': {
       const opTypes = {
         '+': [tInt, tInt, tInt],
@@ -814,48 +1006,89 @@ function algorithmW(env, expr) {
         '&&': [tBool, tBool, tBool],
         '||': [tBool, tBool, tBool],
       };
-      
+
       const [s1, leftType] = algorithmW(env, expr.left);
       const [s2, rightType] = algorithmW(env.apply(s1), expr.right);
-      
+
       if (expr.op === '==' || expr.op === '!=') {
         // Polymorphic equality: both sides must be same type, returns Bool
         const s3 = unify(leftType.apply(s2), rightType);
         return [composeSubst(s3, composeSubst(s2, s1)), tBool];
       }
-      
+
       const [expectedLeft, expectedRight, resultType] = opTypes[expr.op];
       const s3 = unify(leftType.apply(s2), expectedLeft);
       const s4 = unify(rightType.apply(s3), expectedRight);
       return [composeSubst(s4, composeSubst(s3, composeSubst(s2, s1))), resultType];
     }
-    
+
     case 'match': {
       const [s1, exprType] = algorithmW(env, expr.expr);
       let subst = s1;
       let resultType = freshTypeVar();
-      
+
       for (const { pattern, body } of expr.cases) {
         // Infer pattern type and get bindings
         const [patSubst, patType, bindings] = inferPattern(pattern, env.apply(subst));
         const s2 = unify(exprType.apply(subst).apply(patSubst), patType);
         subst = composeSubst(s2, composeSubst(patSubst, subst));
-        
+
         // Extend env with pattern bindings
         let bodyEnv = env.apply(subst);
         for (const [name, type] of bindings) {
           bodyEnv = bodyEnv.extend(name, type.apply(subst));
         }
-        
+
         const [s3, bodyType] = algorithmW(bodyEnv, body);
         const s4 = unify(resultType.apply(s3).apply(subst), bodyType);
         subst = composeSubst(s4, composeSubst(s3, subst));
         resultType = resultType.apply(subst);
       }
-      
+
       return [subst, resultType.apply(subst)];
     }
-    
+
+    case 'record': {
+      // { name: expr, ... }
+      let subst = new Map();
+      let row = new TRowEmpty();
+      const labels = Object.keys(expr.fields).reverse();
+      for (const label of labels) {
+        const [s, fieldType] = algorithmW(env.apply(subst), expr.fields[label]);
+        subst = composeSubst(s, subst);
+        row = new TRowExtend(label, fieldType, row);
+      }
+      return [subst, new TRecord(row)];
+    }
+
+    case 'recordAccess': {
+      const [s1, recType] = algorithmW(env, expr.record);
+      const fieldType = freshTypeVar();
+      const restRow = freshTypeVar();
+      const expectedType = new TRecord(new TRowExtend(expr.label, fieldType, restRow));
+      const s2 = unify(recType.apply(s1), expectedType);
+      return [composeSubst(s2, s1), fieldType.apply(s2)];
+    }
+
+    case 'recordExtend': {
+      const [s1, recType] = algorithmW(env, expr.record);
+      const [s2, valType] = algorithmW(env.apply(s1), expr.value);
+      const restRow = freshTypeVar();
+      const expectedRec = new TRecord(restRow);
+      const s3 = unify(recType.apply(s2), expectedRec);
+      const newRow = new TRowExtend(expr.label, valType, restRow.apply(s3));
+      return [composeSubst(s3, composeSubst(s2, s1)), new TRecord(newRow)];
+    }
+
+    case 'recordRestrict': {
+      const [s1, recType] = algorithmW(env, expr.record);
+      const fieldType = freshTypeVar();
+      const restRow = freshTypeVar();
+      const expectedType = new TRecord(new TRowExtend(expr.label, fieldType, restRow));
+      const s2 = unify(recType.apply(s1), expectedType);
+      return [composeSubst(s2, s1), new TRecord(restRow.apply(s2))];
+    }
+
     default:
       throw new Error(`Unknown expression tag: ${expr.tag}`);
   }
@@ -881,14 +1114,14 @@ function inferPattern(pattern, env) {
       // Look up constructor type in environment
       const conScheme = env.lookup(pattern.name);
       if (!conScheme) throw new Error(`Unknown constructor: ${pattern.name}`);
-      
+
       const conType = conScheme instanceof TForall ? conScheme.instantiate() : conScheme;
-      
+
       // For each arg pattern, infer its type
       const bindings = [];
       let currentType = conType;
       let subst = new Map();
-      
+
       for (const argPat of pattern.args) {
         if (!(currentType instanceof TFun)) {
           throw new Error(`Constructor ${pattern.name} applied to too many arguments`);
@@ -899,7 +1132,7 @@ function inferPattern(pattern, env) {
         bindings.push(...patBindings);
         currentType = currentType.to.apply(subst);
       }
-      
+
       return [subst, currentType.apply(subst), bindings];
     }
     default:

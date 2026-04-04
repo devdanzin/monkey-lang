@@ -1134,16 +1134,20 @@
       "id": "T114",
       "mode": "BUILD",
       "task": "Add type classes: class/instance declarations, constrained types, dictionary passing during inference",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T109",
-      "started": "2026-04-04T18:49:51.707Z"
+      "started": "2026-04-04T18:49:51.707Z",
+      "completed": "2026-04-04T18:53:49.486Z",
+      "duration_ms": 600000,
+      "summary": "Type classes: Eq/Ord/Num/Show classes, class/instance env, constrained Algorithm W, constraint resolution. 23 new tests (114 total). All passing."
     },
     {
       "id": "T115",
       "mode": "BUILD",
       "task": "Add row polymorphism: extensible records with row variables, record access/extension",
-      "status": "upcoming",
-      "plan_ref": "T109"
+      "status": "in-progress",
+      "plan_ref": "T109",
+      "started": "2026-04-04T18:54:05.853Z"
     },
     {
       "id": "T110",
@@ -1164,5 +1168,5 @@
       "task": "Final session housekeeping"
     }
   ],
-  "updated_at": "2026-04-04T18:49:51.707Z"
+  "updated_at": "2026-04-04T18:54:05.853Z"
 }
