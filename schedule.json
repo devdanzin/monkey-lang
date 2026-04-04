@@ -2343,9 +2343,19 @@
       "completed": "2026-04-04T23:28:05.352Z",
       "duration_ms": 600000,
       "summary": "JSON Schema validator: type validation (string/number/integer/boolean/null/array/object), string constraints (minLength/maxLength/pattern/format), number constraints (minimum/maximum/exclusiveMinimum/multipleOf), object (required, properties, additionalProperties, nested), array (minItems/maxItems/uniqueItems/items/tuple), combinators (enum/const/oneOf/anyOf/allOf/not), $ref resolution, if/then/else, format validation (email/uri/date/ipv4). 43 tests. GitHub: henry-the-frog/json-schema"
+    },
+    {
+      "id": "T227",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "ORM: model definition with decorators-like API, CRUD operations, query builder (where/orderBy/limit/offset/join), migrations, relationships (hasMany/belongsTo), eager/lazy loading. 30+ tests.",
+      "started": "2026-04-04T23:28:32.853Z",
+      "completed": "2026-04-04T23:29:55.377Z",
+      "duration_ms": 600000,
+      "summary": "ORM: defineModel with field types, CRUD (create/findById/update/delete with auto-increment IDs and timestamps), QueryBuilder (where with equality and comparison operators $gt/$gte/$lt/$lte/$ne, orderBy, limit, offset, select, findAll/findOne/count, chaining), relationships (hasMany/belongsTo with eager loading), bulk operations (bulkCreate/truncate), migrations (up/down/rollback). 24 tests. GitHub: henry-the-frog/henry-orm"
     }
   ],
-  "updated_at": "2026-04-04T23:28:05.352Z",
+  "updated_at": "2026-04-04T23:29:55.377Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -2414,6 +2424,10 @@
     {
       "time": "2026-04-04T23:26:41.441Z",
       "msg": "Added T226 (BUILD) after end: JSON Schema validator: type validation, required/optional properties, minLength/maxLength, minimum/maximum, pattern (regex), enum, oneOf/anyOf/allOf, nested objects, array items,  support. 30+ tests."
+    },
+    {
+      "time": "2026-04-04T23:28:32.159Z",
+      "msg": "Added T227 (BUILD) after end: ORM: model definition with decorators-like API, CRUD operations, query builder (where/orderBy/limit/offset/join), migrations, relationships (hasMany/belongsTo), eager/lazy loading. 30+ tests."
     }
   ]
 }
