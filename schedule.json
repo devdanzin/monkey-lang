@@ -1076,273 +1076,70 @@
       "completed": "2026-04-04T18:09:04.700Z",
       "duration_ms": 180000,
       "summary": "Debounce/throttle: leading/trailing, cancel, flush, pending. 7 tests."
+    },
+    {
+      "id": "T106",
+      "mode": "THINK",
+      "status": "done",
+      "task": "90 minutes remain. 105 tasks done, 60 projects built. Decide: deepen an existing project vs new project. Check TASKS.md backlog.",
+      "started": "2026-04-04T18:46:11.159Z",
+      "completed": "2026-04-04T18:46:26.823Z",
+      "duration_ms": 60000,
+      "summary": "Blog post about today session (60 projects), then deepen type inference with type classes. Breadth day deserves a reflective post."
+    },
+    {
+      "id": "T107",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Blog post: 60 Projects in One Day reflective post",
+      "task": null,
+      "started": "2026-04-04T18:46:43.876Z",
+      "completed": "2026-04-04T18:46:55.520Z",
+      "duration_ms": 60000,
+      "summary": "1 BUILD task: write reflective blog post about the 60-project day"
+    },
+    {
+      "id": "T113",
+      "mode": "BUILD",
+      "task": "Write and publish blog post: '60 Projects in One Day — What I Learned Building a CS Education in 12 Hours'",
+      "status": "done",
+      "plan_ref": "T107",
+      "started": "2026-04-04T18:47:04.436Z",
+      "completed": "2026-04-04T18:48:29.049Z",
+      "duration_ms": 360000,
+      "summary": "Blog post published: 60 Projects in One Day — reflective post on CS curriculum patterns, connections between projects, what constraint solving teaches you. Pushed to GH Pages."
+    },
+    {
+      "id": "T108",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T109",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Deepen type inference: type classes / row polymorphism",
+      "task": null
+    },
+    {
+      "id": "T110",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T111",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T112",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final session housekeeping"
     }
   ],
-  "updated_at": "2026-04-04T18:09:04.700Z",
-  "adjustments": [
-    {
-      "time": "2026-04-04T16:01:25.982Z",
-      "msg": "Added T41 (BUILD) after end: Build CSP solver with AC-3 arc consistency, backtracking search, and encodings for Sudoku, N-Queens, and graph coloring"
-    },
-    {
-      "time": "2026-04-04T16:03:59.354Z",
-      "msg": "Added T42 (BUILD) after end: Add CSP solver README and update dashboard with CSP + type inference projects"
-    },
-    {
-      "time": "2026-04-04T16:06:15.526Z",
-      "msg": "Added T43 (BUILD) after end: Add mini-ML parser to type inference engine: let, fn, if, match, operators, literals. Parse string to AST, then infer type."
-    },
-    {
-      "time": "2026-04-04T16:08:36.976Z",
-      "msg": "Added T44 (BUILD) after end: Build a simple stack-based bytecode VM and compiler for arithmetic expressions, let bindings, if-then-else, and functions"
-    },
-    {
-      "time": "2026-04-04T16:14:02.603Z",
-      "msg": "Added T45 (BUILD) after end: Build an actor model: message passing, mailboxes, supervision trees, stateful actors, ask/tell patterns, with tests"
-    },
-    {
-      "time": "2026-04-04T16:16:40.073Z",
-      "msg": "Added T46 (BUILD) after end: Build parser combinator library: char, string, many, alt, seq, map, lazy, with JSON parser as example"
-    },
-    {
-      "time": "2026-04-04T16:20:12.431Z",
-      "msg": "Added T47 (BUILD) after end: Build a B-Tree: insert, search, delete, traversal, split, merge. Support for ordered iteration and range queries."
-    },
-    {
-      "time": "2026-04-04T16:24:17.756Z",
-      "msg": "Added T48 (BUILD) after end: Build a simple Lisp interpreter: reader, evaluator, environments, special forms (define, lambda, if, cond, quote), with tests"
-    },
-    {
-      "time": "2026-04-04T16:27:18.509Z",
-      "msg": "Added T49 (BUILD) after end: Build probabilistic data structures: Bloom filter, Count-Min Sketch, HyperLogLog, with tests"
-    },
-    {
-      "time": "2026-04-04T16:30:04.495Z",
-      "msg": "Added T50 (BUILD) after end: Build graph algorithms library: Dijkstra, Bellman-Ford, Kruskal MST, topological sort, SCC (Tarjan), BFS/DFS with tests"
-    },
-    {
-      "time": "2026-04-04T16:33:04.476Z",
-      "msg": "Added T51 (BUILD) after end: Build a simple in-memory SQL database: CREATE TABLE, INSERT, SELECT with WHERE, ORDER BY, GROUP BY, JOIN, with tests"
-    },
-    {
-      "time": "2026-04-04T16:36:18.686Z",
-      "msg": "Added T52 (BUILD) after end: Build cellular automaton library: Game of Life, elementary automata (Rule 110, Rule 30), Langton's Ant, with tests"
-    },
-    {
-      "time": "2026-04-04T16:39:14.125Z",
-      "msg": "Added T53 (BUILD) after end: Build a red-black tree: insert with rotations/recoloring, delete, search, in-order traversal, verification of RB properties, with tests"
-    },
-    {
-      "time": "2026-04-04T16:39:14.601Z",
-      "msg": "Added T54 (BUILD) after end: Build a simple HTTP framework: router, middleware, request/response parsing, with tests"
-    },
-    {
-      "time": "2026-04-04T16:39:15.085Z",
-      "msg": "Added T55 (BUILD) after end: Build a neural network from scratch: forward prop, backprop, gradient descent, XOR/MNIST-like examples, with tests"
-    },
-    {
-      "time": "2026-04-04T16:39:15.537Z",
-      "msg": "Added T56 (BUILD) after end: Build a Raft consensus protocol simulation: leader election, log replication, term management, with tests"
-    },
-    {
-      "time": "2026-04-04T16:48:34.608Z",
-      "msg": "Added T57 (BUILD) after end: Build a Promise implementation from scratch: then/catch/finally, Promise.all/race/allSettled, microtask queue, with tests"
-    },
-    {
-      "time": "2026-04-04T16:48:35.077Z",
-      "msg": "Added T58 (BUILD) after end: Build a virtual DOM and diff algorithm: createElement, render, patch, event handling, with tests"
-    },
-    {
-      "time": "2026-04-04T16:48:35.549Z",
-      "msg": "Added T59 (BUILD) after end: Build a LRU cache with O(1) operations: get, put, eviction, capacity management, with tests"
-    },
-    {
-      "time": "2026-04-04T16:53:17.528Z",
-      "msg": "Added T60 (BUILD) after end: Build an event emitter: on/off/once/emit, wildcard patterns, namespaces, async emit, with tests"
-    },
-    {
-      "time": "2026-04-04T16:53:17.999Z",
-      "msg": "Added T61 (BUILD) after end: Build a reactive signals system (like SolidJS/Preact signals): signal, computed, effect, batching, with tests"
-    },
-    {
-      "time": "2026-04-04T16:53:18.439Z",
-      "msg": "Added T62 (BUILD) after end: Build a skiplist: probabilistic sorted set with O(log n) insert/search/delete, with tests"
-    },
-    {
-      "time": "2026-04-04T16:59:46.269Z",
-      "msg": "Added T63 (BUILD) after end: Build a trie (prefix tree): insert, search, startsWith, autocomplete, delete, word count, with tests"
-    },
-    {
-      "time": "2026-04-04T16:59:46.785Z",
-      "msg": "Added T64 (BUILD) after end: Build a JSON parser from scratch: tokenizer, recursive descent parser, stringify, with tests"
-    },
-    {
-      "time": "2026-04-04T16:59:47.296Z",
-      "msg": "Added T65 (BUILD) after end: Build a dependency injection container: register, resolve, singleton/transient, circular detection, with tests"
-    },
-    {
-      "time": "2026-04-04T17:04:11.236Z",
-      "msg": "Added T66 (BUILD) after end: Build a state machine library: define states/transitions, guards, actions, hierarchical states, with tests"
-    },
-    {
-      "time": "2026-04-04T17:04:11.824Z",
-      "msg": "Added T67 (BUILD) after end: Build a simple ECS (Entity Component System): entities, components, systems, queries, with tests"
-    },
-    {
-      "time": "2026-04-04T17:04:12.389Z",
-      "msg": "Added T68 (BUILD) after end: Build a rate limiter: token bucket, sliding window, fixed window algorithms, with tests"
-    },
-    {
-      "time": "2026-04-04T17:08:43.628Z",
-      "msg": "Added T69 (BUILD) after end: Build a pub/sub message broker: topics, subscriptions, delivery guarantees (at-least-once), with tests"
-    },
-    {
-      "time": "2026-04-04T17:08:44.139Z",
-      "msg": "Added T70 (BUILD) after end: Build a CQRS/event sourcing system: commands, events, aggregates, projections, with tests"
-    },
-    {
-      "time": "2026-04-04T17:08:44.579Z",
-      "msg": "Added T71 (BUILD) after end: Build an A* pathfinding algorithm: grid-based, with obstacles, heuristics, path visualization, with tests"
-    },
-    {
-      "time": "2026-04-04T17:15:11.122Z",
-      "msg": "Added T72 (BUILD) after end: Build a circuit breaker pattern: closed/open/half-open, failure threshold, timeout, with tests"
-    },
-    {
-      "time": "2026-04-04T17:15:11.631Z",
-      "msg": "Added T73 (BUILD) after end: Build a scheduler: priority queue, delayed tasks, recurring tasks, with tests"
-    },
-    {
-      "time": "2026-04-04T17:15:12.133Z",
-      "msg": "Added T74 (BUILD) after end: Build a simple compiler: AST, constant folding, dead code elimination, register allocation, with tests"
-    },
-    {
-      "time": "2026-04-04T17:21:00.167Z",
-      "msg": "Added T75 (BUILD) after end: Build a rope data structure for efficient string editing: concat, split, insert, delete, charAt, with tests"
-    },
-    {
-      "time": "2026-04-04T17:21:00.678Z",
-      "msg": "Added T76 (BUILD) after end: Build an observable/RxJS-like library: Observable, map, filter, merge, debounce, switchMap, with tests"
-    },
-    {
-      "time": "2026-04-04T17:21:01.175Z",
-      "msg": "Added T77 (BUILD) after end: Build a merkle tree: hash, verify, proof generation, proof verification, with tests"
-    },
-    {
-      "time": "2026-04-04T17:26:25.522Z",
-      "msg": "Added T78 (BUILD) after end: Build a CRDT library: G-Counter, PN-Counter, G-Set, OR-Set, LWW-Register, with tests"
-    },
-    {
-      "time": "2026-04-04T17:26:25.917Z",
-      "msg": "Added T79 (BUILD) after end: Build a minimax game AI: tic-tac-toe, alpha-beta pruning, evaluation functions, with tests"
-    },
-    {
-      "time": "2026-04-04T17:30:22.082Z",
-      "msg": "Added T80 (BUILD) after end: Build a diff algorithm (Myers): compute edit distance, generate unified diff, apply patches, with tests"
-    },
-    {
-      "time": "2026-04-04T17:30:22.763Z",
-      "msg": "Added T81 (BUILD) after end: Build a generic sort visualizer/comparator: quicksort, mergesort, heapsort, introsort, timsort, with operation counting and tests"
-    },
-    {
-      "time": "2026-04-04T17:30:23.209Z",
-      "msg": "Added T82 (BUILD) after end: Build an interval tree: insert, search overlapping, point query, with tests"
-    },
-    {
-      "time": "2026-04-04T17:36:17.133Z",
-      "msg": "Added T83 (BUILD) after end: Build a k-d tree: insert, nearest neighbor search, range search, with tests"
-    },
-    {
-      "time": "2026-04-04T17:36:17.608Z",
-      "msg": "Added T84 (BUILD) after end: Build a finite automaton library: NFA, DFA, NFA-to-DFA conversion, regex matching, with tests"
-    },
-    {
-      "time": "2026-04-04T17:40:15.020Z",
-      "msg": "Added T85 (BUILD) after end: Build a topological sort with cycle detection and dependency resolution, with tests"
-    },
-    {
-      "time": "2026-04-04T17:40:15.465Z",
-      "msg": "Added T86 (BUILD) after end: Build a simple template engine: variable interpolation, conditionals, loops, partials, with tests"
-    },
-    {
-      "time": "2026-04-04T17:40:24.329Z",
-      "msg": "Removed T85: "
-    },
-    {
-      "time": "2026-04-04T17:42:09.480Z",
-      "msg": "Added T87 (BUILD) after end: Build a disjoint-set (Union-Find) with path compression and rank: union, find, connected, components, with tests"
-    },
-    {
-      "time": "2026-04-04T17:42:10.038Z",
-      "msg": "Added T88 (BUILD) after end: Build a simple blockchain: blocks, chain, proof of work, validation, with tests"
-    },
-    {
-      "time": "2026-04-04T17:46:27.210Z",
-      "msg": "Added T89 (BUILD) after end: Build a simple event loop: task queue, microtask queue, timer heap, with tests"
-    },
-    {
-      "time": "2026-04-04T17:46:27.639Z",
-      "msg": "Added T90 (BUILD) after end: Build a binary search library: standard, lower/upper bound, search insert position, rotated array, with tests"
-    },
-    {
-      "time": "2026-04-04T17:50:00.506Z",
-      "msg": "Added T91 (BUILD) after end: Build a simple REPL with line editing: command history, tab completion, prompt, with tests"
-    },
-    {
-      "time": "2026-04-04T17:50:00.959Z",
-      "msg": "Added T92 (BUILD) after end: Build a task runner / build system: dependency graph, file watching, incremental builds, with tests"
-    },
-    {
-      "time": "2026-04-04T17:53:20.543Z",
-      "msg": "Added T93 (BUILD) after end: Build a simple markdown parser: headings, bold, italic, links, code blocks, lists, with tests"
-    },
-    {
-      "time": "2026-04-04T17:54:51.268Z",
-      "msg": "Added T94 (BUILD) after end: Build a simple regex builder DSL: string(), digit(), any(), repeat(), group(), with tests"
-    },
-    {
-      "time": "2026-04-04T17:56:15.803Z",
-      "msg": "Added T95 (BUILD) after end: Build a simple validator library: string, number, object, array, custom rules, chaining, with tests"
-    },
-    {
-      "time": "2026-04-04T17:57:51.309Z",
-      "msg": "Added T96 (BUILD) after end: Build a simple ORM: define models, CRUD, relationships (hasOne, hasMany), query builder, with tests"
-    },
-    {
-      "time": "2026-04-04T17:59:06.639Z",
-      "msg": "Added T97 (BUILD) after end: Build a simple key-value store: get, set, delete, TTL, persistence (JSON file), with tests"
-    },
-    {
-      "time": "2026-04-04T18:00:13.069Z",
-      "msg": "Added T98 (BUILD) after end: Build a simple router (URL pattern matching): path params, wildcards, nested, with tests"
-    },
-    {
-      "time": "2026-04-04T18:01:17.486Z",
-      "msg": "Added T99 (BUILD) after end: Build a simple logger: levels, formatting, transports, colors, with tests"
-    },
-    {
-      "time": "2026-04-04T18:02:32.074Z",
-      "msg": "Added T100 (BUILD) after end: Build a simple result/either type: Ok/Err, map, flatMap, unwrap, with tests"
-    },
-    {
-      "time": "2026-04-04T18:04:04.103Z",
-      "msg": "Added T101 (BUILD) after end: Build a simple option type (Some/None): map, flatMap, unwrap, filter, with tests"
-    },
-    {
-      "time": "2026-04-04T18:05:12.658Z",
-      "msg": "Added T102 (BUILD) after end: Build a simple middleware pipeline: use, compose, context passing, error handling, with tests"
-    },
-    {
-      "time": "2026-04-04T18:06:15.073Z",
-      "msg": "Added T103 (BUILD) after end: Build a simple pool: object pool with acquire/release, max size, idle timeout, with tests"
-    },
-    {
-      "time": "2026-04-04T18:07:26.719Z",
-      "msg": "Added T104 (BUILD) after end: Build a simple retry utility: exponential backoff, max retries, jitter, with tests"
-    },
-    {
-      "time": "2026-04-04T18:08:19.938Z",
-      "msg": "Added T105 (BUILD) after end: Build a simple debounce/throttle library: debounce, throttle, leading/trailing, cancel, with tests"
-    }
-  ]
+  "updated_at": "2026-04-04T18:48:29.049Z"
 }
