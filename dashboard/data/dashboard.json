@@ -956,14 +956,24 @@
       "completed": "2026-04-04T17:54:27.242Z",
       "duration_ms": 300000,
       "summary": "Markdown parser: headings, bold, italic, links, code blocks, lists, blockquotes, images. 16 tests."
+    },
+    {
+      "id": "T94",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a simple regex builder DSL: string(), digit(), any(), repeat(), group(), with tests",
+      "started": "2026-04-04T17:54:51.831Z",
+      "completed": "2026-04-04T17:55:53.176Z",
+      "duration_ms": 300000,
+      "summary": "Regex builder DSL: fluent API for regex, groups, quantifiers, alternation, flags. 16 tests."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 92,
+    "completed": 93,
     "yielded": 0,
     "skipped": 1,
-    "total_duration_ms": 32220000
+    "total_duration_ms": 32520000
   },
-  "updated_at": "2026-04-04T17:54:27.242Z"
+  "updated_at": "2026-04-04T17:55:53.176Z"
 }
