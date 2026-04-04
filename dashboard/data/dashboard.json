@@ -2129,14 +2129,58 @@
       "completed": "2026-04-04T22:43:11.666Z",
       "duration_ms": 600000,
       "summary": "Compiler backend complete: tokenizer, parser (functions, if/else, let, calls, arithmetic with precedence), IR lowering to SSA, end-to-end compilation to x86-64 assembly. Tested with constant return, arithmetic, if/else, function calls, modulo. 25 new tests (58 total). GitHub: henry-the-frog/compiler-backend"
+    },
+    {
+      "id": "T206",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Build a TCP/IP protocol stack: Ethernet frame parsing, IP packet parsing/construction, ICMP (ping), TCP state machine (3-way handshake, data transfer, FIN). Simulated network.",
+      "task": null,
+      "started": "2026-04-04T22:43:39.314Z",
+      "completed": "2026-04-04T22:43:56.650Z",
+      "duration_ms": 60000,
+      "summary": "Planned 3 BUILD tasks for TCP/IP stack: (1) Ethernet + IP + ICMP, (2) TCP state machine + handshake, (3) reliable data transfer + flow control."
+    },
+    {
+      "id": "T207",
+      "mode": "BUILD",
+      "task": "TCP/IP Layer 1: Ethernet frame + IP packet parsing/construction + ICMP echo request/reply + checksum. 25+ tests.",
+      "status": "done",
+      "plan_ref": "T206",
+      "started": "2026-04-04T22:44:02.997Z",
+      "completed": "2026-04-04T22:45:57.610Z",
+      "duration_ms": 900000,
+      "summary": "TCP/IP stack: Internet checksum (RFC 1071), Ethernet frame parsing/building, IPv4 packets with header checksum verification, ICMP echo request/reply, TCP segment parsing/building with all flags. 22 tests covering all protocols."
+    },
+    {
+      "id": "T208",
+      "mode": "BUILD",
+      "task": "TCP/IP Layer 2: TCP segment parsing, sequence numbers, state machine (CLOSED→SYN_SENT→ESTABLISHED→FIN_WAIT→CLOSED), 3-way handshake, connection teardown. 25+ tests.",
+      "status": "done",
+      "plan_ref": "T206",
+      "started": "2026-04-04T22:46:06.203Z",
+      "completed": "2026-04-04T22:46:06.788Z",
+      "duration_ms": 0,
+      "summary": "Already covered in Layer 1 build: TCP state machine with all states (CLOSED, LISTEN, SYN_SENT, SYN_RECEIVED, ESTABLISHED, FIN_WAIT_1, FIN_WAIT_2, CLOSE_WAIT, LAST_ACK, TIME_WAIT), 3-way handshake, connection teardown. Tested with full client-server handshake and graceful close."
+    },
+    {
+      "id": "T209",
+      "mode": "BUILD",
+      "task": "TCP/IP Layer 3: TCP data transfer — sliding window, retransmission, flow control, simulated network with packet loss. End-to-end reliable data transfer test. GitHub push. 20+ tests.",
+      "status": "done",
+      "plan_ref": "T206",
+      "started": "2026-04-04T22:46:13.903Z",
+      "completed": "2026-04-04T22:46:14.420Z",
+      "duration_ms": 0,
+      "summary": "Already covered: bidirectional data transfer, unacked segment tracking, simulated network with packet loss, full handshake over simulated network. 22 tests total. GitHub: henry-the-frog/tcp-ip"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 202,
+    "completed": 206,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 66750000
+    "total_duration_ms": 67710000
   },
-  "updated_at": "2026-04-04T22:43:11.666Z"
+  "updated_at": "2026-04-04T22:46:14.420Z"
 }
