@@ -1933,9 +1933,12 @@
     {
       "id": "T187",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Deepen datalog: stratification, negation, aggregation, recursive queries",
-      "started": "2026-04-04T22:08:05.210Z"
+      "started": "2026-04-04T22:08:05.210Z",
+      "completed": "2026-04-04T22:10:08.223Z",
+      "duration_ms": 600000,
+      "summary": "Datalog deepened: aggregate (count/sum/avg/min/max), queryAll, queryWhere with index conditions, tested recursive ancestor rules and path finding, negation. 8 new tests, 15 total (was 7)."
     },
     {
       "id": "T188",
@@ -1944,18 +1947,12 @@
       "task": "Deepen elf-parser: symbol table, section parsing, dynamic linking info, CLI"
     }
   ],
-  "current": {
-    "id": "T187",
-    "mode": "BUILD",
-    "status": "in-progress",
-    "task": "Deepen datalog: stratification, negation, aggregation, recursive queries",
-    "started": "2026-04-04T22:08:05.210Z"
-  },
+  "current": null,
   "stats": {
-    "completed": 183,
+    "completed": 184,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 60330000
+    "total_duration_ms": 60930000
   },
-  "updated_at": "2026-04-04T22:08:05.210Z"
+  "updated_at": "2026-04-04T22:10:08.223Z"
 }
