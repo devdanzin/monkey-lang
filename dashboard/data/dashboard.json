@@ -2223,14 +2223,24 @@
       "completed": "2026-04-04T22:59:11.093Z",
       "duration_ms": 600000,
       "summary": "Markdown parser + HTML renderer: headings (h1-h6), bold/italic/strikethrough/inline code, links, images, blockquotes, unordered + ordered lists, fenced code blocks with language class, horizontal rules, paragraphs, GFM tables with alignment. 49 tests. GitHub: henry-the-frog/henry-markdown"
+    },
+    {
+      "id": "T215",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Regex engine: parser, NFA construction (Thompson's), NFA→DFA conversion (subset construction), matching with character classes, quantifiers (*, +, ?, {n,m}), groups, alternation, anchors. 35+ tests.",
+      "started": "2026-04-04T22:59:34.864Z",
+      "completed": "2026-04-04T23:01:47.887Z",
+      "duration_ms": 600000,
+      "summary": "Regex engine: parser, Thompson NFA construction, NFA simulation with epsilon closure, character classes, quantifiers, groups, alternation, full match + search. 32 tests. GitHub: henry-the-frog/henry-regex"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 211,
+    "completed": 212,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 71910000
+    "total_duration_ms": 72510000
   },
-  "updated_at": "2026-04-04T22:59:11.093Z"
+  "updated_at": "2026-04-04T23:01:47.887Z"
 }
