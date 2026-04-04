@@ -529,9 +529,19 @@
       "completed": "2026-04-04T16:31:45.956Z",
       "duration_ms": 480000,
       "summary": "Graph algorithms: Dijkstra, Bellman-Ford, Kruskal MST, topological sort, Tarjan SCC, cycle detection. 26 tests."
+    },
+    {
+      "id": "T51",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a simple in-memory SQL database: CREATE TABLE, INSERT, SELECT with WHERE, ORDER BY, GROUP BY, JOIN, with tests",
+      "started": "2026-04-04T16:33:11.033Z",
+      "completed": "2026-04-04T16:34:50.422Z",
+      "duration_ms": 480000,
+      "summary": "In-memory SQL database: CREATE, INSERT, SELECT, UPDATE, DELETE, JOIN, GROUP BY, aggregates, WHERE, ORDER BY, LIMIT. 23 tests."
     }
   ],
-  "updated_at": "2026-04-04T16:31:45.956Z",
+  "updated_at": "2026-04-04T16:34:50.422Z",
   "adjustments": [
     {
       "time": "2026-04-04T16:01:25.982Z",
@@ -572,6 +582,10 @@
     {
       "time": "2026-04-04T16:30:04.495Z",
       "msg": "Added T50 (BUILD) after end: Build graph algorithms library: Dijkstra, Bellman-Ford, Kruskal MST, topological sort, SCC (Tarjan), BFS/DFS with tests"
+    },
+    {
+      "time": "2026-04-04T16:33:04.476Z",
+      "msg": "Added T51 (BUILD) after end: Build a simple in-memory SQL database: CREATE TABLE, INSERT, SELECT with WHERE, ORDER BY, GROUP BY, JOIN, with tests"
     }
   ]
 }
