@@ -1761,9 +1761,35 @@
     {
       "id": "T171",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Build a key-value database: B-tree indexing, write-ahead log (WAL), ACID transactions, crash recovery",
-      "task": null
+      "task": null,
+      "started": "2026-04-04T21:31:56.631Z",
+      "completed": "2026-04-04T21:32:37.693Z",
+      "duration_ms": 60000,
+      "summary": "KV store exists but shallow (14 tests, Map wrapper). Plan: deepen with B-tree, WAL, transactions."
+    },
+    {
+      "id": "T173",
+      "mode": "BUILD",
+      "task": "B-tree: in-memory B-tree with insert, search, delete, range queries, iteration. Configurable order.",
+      "status": "in-progress",
+      "plan_ref": "T171",
+      "started": "2026-04-04T21:32:50.553Z"
+    },
+    {
+      "id": "T174",
+      "mode": "BUILD",
+      "task": "WAL + persistence: append-only write-ahead log, checkpoint, crash recovery, compaction",
+      "status": "upcoming",
+      "plan_ref": "T171"
+    },
+    {
+      "id": "T175",
+      "mode": "BUILD",
+      "task": "Transactions: begin/commit/rollback, MVCC snapshot isolation, concurrent reads",
+      "status": "upcoming",
+      "plan_ref": "T171"
     },
     {
       "id": "T172",
@@ -1772,19 +1798,5 @@
       "task": "Session B final wrap — git push all repos, daily log, dashboard update, scratch notes"
     }
   ],
-  "updated_at": "2026-04-04T21:31:37.442Z",
-  "adjustments": [
-    {
-      "time": "2026-04-04T21:30:18.518Z",
-      "msg": "Added T170 (BUILD) after end: HTTP server: add static file serving middleware + README + GitHub Actions CI"
-    },
-    {
-      "time": "2026-04-04T21:30:19.111Z",
-      "msg": "Added T171 (PLAN) after end: Build a key-value database: B-tree indexing, write-ahead log (WAL), ACID transactions, crash recovery"
-    },
-    {
-      "time": "2026-04-04T21:30:25.326Z",
-      "msg": "Added T172 (MAINTAIN) after end: Session B final wrap — git push all repos, daily log, dashboard update, scratch notes"
-    }
-  ]
+  "updated_at": "2026-04-04T21:32:50.553Z"
 }
