@@ -2183,14 +2183,24 @@
       "completed": "2026-04-04T22:48:47.195Z",
       "duration_ms": 900000,
       "summary": "ELF64 binary generator: x86-64 machine code encoder (mov, add, sub, imul, xor, cmp, push/pop, jmp/je/jne with label resolution, syscall, all 16 GPRs including r8-r15 with REX prefix), ELF64 builder (header, program headers, segments), minimal executable builder, exit(N) program, hello world program. 27 tests. GitHub: henry-the-frog/elf-gen"
+    },
+    {
+      "id": "T211",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Tiny OS kernel simulation: memory manager (paging, allocation), process scheduler (round-robin, priority), VFS (virtual filesystem with inodes), simple shell interpreter. 40+ tests. GitHub push.",
+      "started": "2026-04-04T22:49:17.371Z",
+      "completed": "2026-04-04T22:51:09.144Z",
+      "duration_ms": 900000,
+      "summary": "TinyOS kernel: MemoryManager (paging, virtual→physical translation, per-process allocation), Scheduler (round-robin + priority, create/terminate/block/unblock, CPU/wait time tracking, parent-child), VFS (inodes, directories, files, mkdir/rm/ls/stat/readFile/writeFile), Shell (echo/pwd/cd/ls/cat/touch/mkdir/rm/write/ps/kill/free/env/export/history). 40 tests. GitHub: henry-the-frog/tiny-os"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 207,
+    "completed": 208,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 68610000
+    "total_duration_ms": 69510000
   },
-  "updated_at": "2026-04-04T22:48:47.195Z"
+  "updated_at": "2026-04-04T22:51:09.144Z"
 }
