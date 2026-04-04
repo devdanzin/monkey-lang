@@ -429,14 +429,24 @@
       "completed": "2026-04-04T15:59:43.991Z",
       "duration_ms": 180000,
       "summary": "README written, dashboard updated with type inference project (54 tests). Pushed to GH Pages."
+    },
+    {
+      "id": "T41",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build CSP solver with AC-3 arc consistency, backtracking search, and encodings for Sudoku, N-Queens, and graph coloring",
+      "started": "2026-04-04T16:01:32.327Z",
+      "completed": "2026-04-04T16:03:30.567Z",
+      "duration_ms": 600000,
+      "summary": "CSP solver: AC-3 + backtracking + MRV + forward checking. Sudoku, N-Queens, graph/map coloring. 22 tests."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 40,
+    "completed": 41,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 11340000
+    "total_duration_ms": 11940000
   },
-  "updated_at": "2026-04-04T15:59:43.991Z"
+  "updated_at": "2026-04-04T16:03:30.567Z"
 }
