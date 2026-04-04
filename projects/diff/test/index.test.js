@@ -1,70 +1,98 @@
-const { test } = require('node:test');
-const assert = require('node:assert/strict');
-const { diff, diffLines, diffChars, unified, patch, editDistance } = require('../src/index.js');
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
+import { diff, diffLines, unifiedDiff, applyPatch, editDistance, Op } from '../src/index.js';
 
-test('identical sequences', () => {
-  const edits = diff(['a', 'b', 'c'], ['a', 'b', 'c']);
-  assert.ok(edits.every(e => e.type === 'equal'));
-  assert.equal(edits.length, 3);
+describe('diff — basic', () => {
+  it('identical sequences', () => {
+    const ops = diff([1, 2, 3], [1, 2, 3]);
+    assert.ok(ops.every(o => o.op === Op.EQUAL));
+  });
+
+  it('empty sequences', () => {
+    assert.deepEqual(diff([], []), []);
+  });
+
+  it('insert only', () => {
+    const ops = diff([], ['a', 'b']);
+    assert.ok(ops.every(o => o.op === Op.INSERT));
+    assert.equal(ops.length, 2);
+  });
+
+  it('delete only', () => {
+    const ops = diff(['a', 'b'], []);
+    assert.ok(ops.every(o => o.op === Op.DELETE));
+  });
+
+  it('mixed operations', () => {
+    const ops = diff(['a', 'b', 'c'], ['a', 'x', 'c']);
+    assert.equal(ops[0].op, Op.EQUAL);
+    assert.ok(ops.some(o => o.op === Op.DELETE && o.value === 'b'));
+    assert.ok(ops.some(o => o.op === Op.INSERT && o.value === 'x'));
+  });
+
+  it('strings work', () => {
+    const ops = diff('abc'.split(''), 'axc'.split(''));
+    assert.ok(ops.length > 0);
+  });
 });
 
-test('insert', () => {
-  const edits = diff(['a', 'c'], ['a', 'b', 'c']);
-  const types = edits.map(e => e.type);
-  assert.ok(types.includes('insert'));
-  assert.equal(patch(null, edits).join(''), 'abc');
+describe('applyPatch', () => {
+  it('reconstructs target from ops', () => {
+    const a = ['a', 'b', 'c'];
+    const b = ['a', 'x', 'c'];
+    const ops = diff(a, b);
+    assert.deepEqual(applyPatch(a, ops), b);
+  });
+
+  it('handles empty to something', () => {
+    const ops = diff([], ['x', 'y']);
+    assert.deepEqual(applyPatch([], ops), ['x', 'y']);
+  });
+
+  it('handles something to empty', () => {
+    const ops = diff(['a', 'b'], []);
+    assert.deepEqual(applyPatch(['a', 'b'], ops), []);
+  });
+
+  it('round-trip complex', () => {
+    const a = 'the quick brown fox'.split(' ');
+    const b = 'the slow brown dog'.split(' ');
+    const ops = diff(a, b);
+    assert.deepEqual(applyPatch(a, ops), b);
+  });
 });
 
-test('delete', () => {
-  const edits = diff(['a', 'b', 'c'], ['a', 'c']);
-  const types = edits.map(e => e.type);
-  assert.ok(types.includes('delete'));
-  assert.equal(patch(null, edits).join(''), 'ac');
+describe('editDistance', () => {
+  it('identical = 0', () => assert.equal(editDistance([1, 2, 3], [1, 2, 3]), 0));
+  it('one insert', () => assert.equal(editDistance([1, 2], [1, 2, 3]), 1));
+  it('one delete', () => assert.equal(editDistance([1, 2, 3], [1, 3]), 1));
+  it('replace = delete + insert', () => assert.equal(editDistance(['a'], ['b']), 2));
 });
 
-test('completely different', () => {
-  const edits = diff(['a', 'b'], ['c', 'd']);
-  assert.equal(patch(null, edits).join(''), 'cd');
+describe('diffLines', () => {
+  it('diffs text by lines', () => {
+    const a = 'line1\nline2\nline3';
+    const b = 'line1\nchanged\nline3';
+    const ops = diffLines(a, b);
+    assert.ok(ops.some(o => o.op === Op.DELETE && o.value === 'line2'));
+    assert.ok(ops.some(o => o.op === Op.INSERT && o.value === 'changed'));
+  });
 });
 
-test('empty sequences', () => {
-  assert.deepEqual(diff([], []), []);
-  const edits = diff([], ['a']);
-  assert.equal(edits.length, 1);
-  assert.equal(edits[0].type, 'insert');
-});
+describe('unifiedDiff', () => {
+  it('generates unified format', () => {
+    const a = 'line1\nline2\nline3';
+    const b = 'line1\nchanged\nline3';
+    const result = unifiedDiff(a, b);
+    assert.ok(result.includes('---'));
+    assert.ok(result.includes('+++'));
+    assert.ok(result.includes('@@'));
+    assert.ok(result.includes('-line2'));
+    assert.ok(result.includes('+changed'));
+  });
 
-test('diffLines', () => {
-  const edits = diffLines('line1\nline2\nline3', 'line1\nchanged\nline3');
-  const insertCount = edits.filter(e => e.type === 'insert').length;
-  const deleteCount = edits.filter(e => e.type === 'delete').length;
-  assert.ok(insertCount > 0);
-  assert.ok(deleteCount > 0);
-});
-
-test('unified format', () => {
-  const edits = diff(['a', 'b', 'c'], ['a', 'd', 'c']);
-  const output = unified(edits);
-  assert.ok(output.includes(' a'));
-  assert.ok(output.includes('-b'));
-  assert.ok(output.includes('+d'));
-});
-
-test('diffChars', () => {
-  const edits = diffChars('kitten', 'sitting');
-  assert.ok(edits.length > 0);
-  assert.equal(patch(null, edits).join(''), 'sitting');
-});
-
-test('editDistance', () => {
-  assert.equal(editDistance('kitten', 'sitting'), editDistance('kitten', 'sitting'));
-  assert.ok(editDistance('abc', 'abc') === 0);
-  assert.ok(editDistance('abc', 'xyz') > 0);
-});
-
-test('patch reconstructs target', () => {
-  const a = ['the', 'quick', 'brown', 'fox'];
-  const b = ['the', 'slow', 'brown', 'cat'];
-  const edits = diff(a, b);
-  assert.deepEqual(patch(a, edits), b);
+  it('no changes produces no hunks', () => {
+    const result = unifiedDiff('same\n', 'same\n');
+    assert.ok(!result.includes('@@'));
+  });
 });

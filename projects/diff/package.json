@@ -1,7 +1,6 @@
 {
-  "name": "tiny-diff",
-  "version": "1.0.0",
-  "description": "Myers diff algorithm from scratch",
-  "main": "src/index.js",
-  "scripts": { "test": "node --test test/index.test.js" }
+  "name": "diff",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": { "test": "node --test test/*.test.js" }
 }
