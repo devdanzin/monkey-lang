@@ -1,9 +1,11 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  infer, unify, composeSubst, TVar, TConst, TFun, TList, TTuple, TForall,
+  infer, unify, composeSubst, TVar, TConst, TFun, TList, TTuple, TForall, TApp,
   tInt, tBool, tString, tUnit,
   intLit, boolLit, strLit, varRef, lam, app, letExpr, ifExpr, binOp, letRec,
+  matchExpr, matchCase, pVar, pLit, pCon, pWild,
+  DataType,
   defaultEnv, generalize, TypeEnv, UnificationError,
   freshTypeVar, resetTypeVarCounter,
 } from '../src/index.js';
@@ -359,5 +361,119 @@ describe('Type scheme instantiation', () => {
     assert.ok(t1 instanceof TFun);
     assert.ok(t2 instanceof TFun);
     assert.notEqual(t1.from.name, t2.from.name);
+  });
+});
+
+// ===== Data Types and Pattern Matching =====
+describe('Data types', () => {
+  it('creates Maybe type', () => {
+    const a = new TVar('a');
+    const maybe = new DataType('Maybe', ['a'], [
+      { name: 'Nothing', fields: [] },
+      { name: 'Just', fields: [a] },
+    ]);
+    
+    const nothingType = maybe.constructorType('Nothing');
+    assert.ok(nothingType instanceof TApp);
+    assert.equal(nothingType.name, 'Maybe');
+    
+    const justType = maybe.constructorType('Just');
+    assert.ok(justType instanceof TFun);
+  });
+
+  it('creates Bool-like type', () => {
+    const boolType = new DataType('MyBool', [], [
+      { name: 'MyTrue', fields: [] },
+      { name: 'MyFalse', fields: [] },
+    ]);
+    
+    const trueType = boolType.constructorType('MyTrue');
+    assert.ok(trueType instanceof TApp);
+    assert.equal(trueType.name, 'MyBool');
+  });
+
+  it('creates Pair type', () => {
+    const a = new TVar('a');
+    const b = new TVar('b');
+    const pair = new DataType('Pair', ['a', 'b'], [
+      { name: 'MkPair', fields: [a, b] },
+    ]);
+    
+    const mkPairType = pair.constructorType('MkPair');
+    assert.ok(mkPairType instanceof TFun);
+    // Should be a -> b -> Pair a b
+  });
+});
+
+describe('Pattern matching', () => {
+  it('match on literal patterns', () => {
+    // match 42 { 0 => true, x => false }
+    const t = infer(
+      matchExpr(intLit(42), [
+        matchCase(pLit(0, 'int'), boolLit(true)),
+        matchCase(pVar('x'), boolLit(false)),
+      ])
+    );
+    assert.equal(t.toString(), 'Bool');
+  });
+
+  it('match binds variables', () => {
+    // match 42 { x => x + 1 }
+    const t = infer(
+      matchExpr(intLit(42), [
+        matchCase(pVar('x'), binOp('+', varRef('x'), intLit(1))),
+      ])
+    );
+    assert.equal(t.toString(), 'Int');
+  });
+
+  it('match wildcard', () => {
+    // match 42 { _ => true }
+    const t = infer(
+      matchExpr(intLit(42), [
+        matchCase(pWild(), boolLit(true)),
+      ])
+    );
+    assert.equal(t.toString(), 'Bool');
+  });
+
+  it('match branches must agree on type', () => {
+    // match true { true => 1, false => "no" } — should fail
+    assert.throws(() => infer(
+      matchExpr(boolLit(true), [
+        matchCase(pLit(true, 'bool'), intLit(1)),
+        matchCase(pLit(false, 'bool'), strLit('no')),
+      ])
+    ));
+  });
+
+  it('match on constructor with environment', () => {
+    // Set up Maybe constructors in env
+    const a = new TVar('_a');
+    const maybeA = new TApp('Maybe', [a]);
+    const env = defaultEnv()
+      .extend('Nothing', new TForall(['_a'], maybeA))
+      .extend('Just', new TForall(['_a'], new TFun(a, maybeA)));
+    
+    // match Just(42) { Just(x) => x, Nothing => 0 }
+    const t = infer(
+      matchExpr(app(varRef('Just'), intLit(42)), [
+        matchCase(pCon('Just', [pVar('x')]), varRef('x')),
+        matchCase(pCon('Nothing', []), intLit(0)),
+      ]),
+      env,
+    );
+    assert.equal(t.toString(), 'Int');
+  });
+
+  it('match preserves polymorphism', () => {
+    // match with identity in each branch
+    const t = infer(
+      matchExpr(boolLit(true), [
+        matchCase(pLit(true, 'bool'), lam('x', varRef('x'))),
+        matchCase(pLit(false, 'bool'), lam('y', varRef('y'))),
+      ])
+    );
+    assert.ok(t instanceof TFun);
   });
 });

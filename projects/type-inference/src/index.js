@@ -168,6 +168,18 @@ export function unify(t1, t2) {
     return subst;
   }
   
+  if (t1 instanceof TApp && t2 instanceof TApp) {
+    if (t1.name !== t2.name || t1.args.length !== t2.args.length) {
+      throw new UnificationError(`Cannot unify ${t1} with ${t2}`, t1, t2);
+    }
+    let subst = new Map();
+    for (let i = 0; i < t1.args.length; i++) {
+      const s = unify(t1.args[i].apply(subst), t2.args[i].apply(subst));
+      subst = composeSubst(s, subst);
+    }
+    return subst;
+  }
+  
   throw new UnificationError(`Cannot unify ${t1} with ${t2}`, t1, t2);
 }
 
@@ -248,6 +260,69 @@ export const binOp = (op, left, right) => ({ tag: 'binop', op, left, right });
 
 // Let-rec: let rec f = e1 in e2
 export const letRec = (name, value, body) => ({ tag: 'letrec', name, value, body });
+
+// Match expression: match expr { patterns }
+export const matchExpr = (expr, cases) => ({ tag: 'match', expr, cases });
+// Case: pattern => body
+export const matchCase = (pattern, body) => ({ pattern, body });
+
+// Patterns
+export const pVar = (name) => ({ tag: 'pvar', name });
+export const pLit = (value, type) => ({ tag: 'plit', value, type });
+export const pCon = (name, args) => ({ tag: 'pcon', name, args });
+export const pWild = () => ({ tag: 'pwild' });
+
+// Type constructor application: Maybe Int, List Bool, etc.
+export class TApp {
+  constructor(name, args) { this.name = name; this.args = args; }
+  toString() {
+    if (this.args.length === 0) return this.name;
+    return `${this.name} ${this.args.map(a => a instanceof TFun || a instanceof TApp ? `(${a})` : `${a}`).join(' ')}`;
+  }
+  equals(other) {
+    return other instanceof TApp && this.name === other.name
+      && this.args.length === other.args.length
+      && this.args.every((a, i) => a.equals(other.args[i]));
+  }
+  freeVars() {
+    const s = new Set();
+    for (const a of this.args) for (const v of a.freeVars()) s.add(v);
+    return s;
+  }
+  apply(subst) { return new TApp(this.name, this.args.map(a => a.apply(subst))); }
+}
+
+// Data type definition
+export class DataType {
+  constructor(name, typeParams, constructors) {
+    this.name = name;           // e.g., "Maybe"
+    this.typeParams = typeParams; // e.g., ["a"]
+    this.constructors = constructors; // e.g., [{ name: "Nothing", fields: [] }, { name: "Just", fields: [TVar("a")] }]
+  }
+  
+  // Get the type of a constructor as a function type
+  constructorType(conName) {
+    const con = this.constructors.find(c => c.name === conName);
+    if (!con) return null;
+    
+    // Instantiate type params with fresh vars
+    const subst = new Map();
+    for (const p of this.typeParams) {
+      subst.set(p, freshTypeVar());
+    }
+    
+    const resultType = new TApp(this.name, this.typeParams.map(p => subst.get(p)));
+    
+    if (con.fields.length === 0) return resultType;
+    
+    // Build function type: field1 -> field2 -> ... -> ResultType
+    let t = resultType;
+    for (let i = con.fields.length - 1; i >= 0; i--) {
+      t = new TFun(con.fields[i].apply(subst), t);
+    }
+    return t;
+  }
+}
 
 // ===== Algorithm W =====
 
@@ -353,8 +428,80 @@ function algorithmW(env, expr) {
       return [composeSubst(s4, composeSubst(s3, composeSubst(s2, s1))), resultType];
     }
     
+    case 'match': {
+      const [s1, exprType] = algorithmW(env, expr.expr);
+      let subst = s1;
+      let resultType = freshTypeVar();
+      
+      for (const { pattern, body } of expr.cases) {
+        // Infer pattern type and get bindings
+        const [patSubst, patType, bindings] = inferPattern(pattern, env.apply(subst));
+        const s2 = unify(exprType.apply(subst).apply(patSubst), patType);
+        subst = composeSubst(s2, composeSubst(patSubst, subst));
+        
+        // Extend env with pattern bindings
+        let bodyEnv = env.apply(subst);
+        for (const [name, type] of bindings) {
+          bodyEnv = bodyEnv.extend(name, type.apply(subst));
+        }
+        
+        const [s3, bodyType] = algorithmW(bodyEnv, body);
+        const s4 = unify(resultType.apply(s3).apply(subst), bodyType);
+        subst = composeSubst(s4, composeSubst(s3, subst));
+        resultType = resultType.apply(subst);
+      }
+      
+      return [subst, resultType.apply(subst)];
+    }
+    
     default:
       throw new Error(`Unknown expression tag: ${expr.tag}`);
+  }
+}
+
+// Infer type of a pattern, return [substitution, type, bindings]
+function inferPattern(pattern, env) {
+  switch (pattern.tag) {
+    case 'pvar': {
+      const t = freshTypeVar();
+      return [new Map(), t, [[pattern.name, t]]];
+    }
+    case 'plit': {
+      if (pattern.type === 'int') return [new Map(), tInt, []];
+      if (pattern.type === 'bool') return [new Map(), tBool, []];
+      if (pattern.type === 'string') return [new Map(), tString, []];
+      return [new Map(), tUnit, []];
+    }
+    case 'pwild': {
+      return [new Map(), freshTypeVar(), []];
+    }
+    case 'pcon': {
+      // Look up constructor type in environment
+      const conScheme = env.lookup(pattern.name);
+      if (!conScheme) throw new Error(`Unknown constructor: ${pattern.name}`);
+      
+      const conType = conScheme instanceof TForall ? conScheme.instantiate() : conScheme;
+      
+      // For each arg pattern, infer its type
+      const bindings = [];
+      let currentType = conType;
+      let subst = new Map();
+      
+      for (const argPat of pattern.args) {
+        if (!(currentType instanceof TFun)) {
+          throw new Error(`Constructor ${pattern.name} applied to too many arguments`);
+        }
+        const [patSubst, patType, patBindings] = inferPattern(argPat, env.apply(subst));
+        const s = unify(currentType.from.apply(subst).apply(patSubst), patType);
+        subst = composeSubst(s, composeSubst(patSubst, subst));
+        bindings.push(...patBindings);
+        currentType = currentType.to.apply(subst);
+      }
+      
+      return [subst, currentType.apply(subst), bindings];
+    }
+    default:
+      throw new Error(`Unknown pattern tag: ${pattern.tag}`);
   }
 }
 
