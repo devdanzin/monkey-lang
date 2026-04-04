@@ -1,0 +1,9 @@
+{
+  "name": "graph-algorithms",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Graph algorithms: Dijkstra, Bellman-Ford, Kruskal, topological sort, SCC",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  }
+}
