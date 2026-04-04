@@ -2423,9 +2423,19 @@
       "completed": "2026-04-04T23:43:23.742Z",
       "duration_ms": 600000,
       "summary": "Cron parser: 5-field expression parsing (minute/hour/dom/month/dow), wildcards, ranges, steps, lists, named months and days, range+step combo, matches() time check, nextOccurrence/prevOccurrence (wraps days), describe() human-readable, presets. 22 tests. GitHub: henry-the-frog/cron-parser"
+    },
+    {
+      "id": "T235",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Semver: parse/compare/sort, ranges (^, ~, >=, ||), satisfies(), coerce, increment (major/minor/patch/prerelease), diff, valid. 25+ tests.",
+      "started": "2026-04-04T23:43:34.648Z",
+      "completed": "2026-04-04T23:45:01.164Z",
+      "duration_ms": 600000,
+      "summary": "Semver: parse (major/minor/patch/prerelease/build), valid, format, compare (with prerelease ordering), gt/lt/eq/gte/lte, sort, increment (major/minor/patch/prerelease), diff, coerce, satisfies (exact, ^caret, ~tilde, >=/>/</<=/= operators, AND ranges, OR ranges). 43 tests. GitHub: henry-the-frog/semver"
     }
   ],
-  "updated_at": "2026-04-04T23:43:23.742Z",
+  "updated_at": "2026-04-04T23:45:01.164Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -2526,6 +2536,10 @@
     {
       "time": "2026-04-04T23:42:04.007Z",
       "msg": "Added T234 (BUILD) after end: Cron expression parser: 5-field cron (min/hour/dom/month/dow), wildcards, ranges, steps, lists, named months/days, next/prev occurrence, human-readable description. 25+ tests."
+    },
+    {
+      "time": "2026-04-04T23:43:33.996Z",
+      "msg": "Added T235 (BUILD) after end: Semver: parse/compare/sort, ranges (^, ~, >=, ||), satisfies(), coerce, increment (major/minor/patch/prerelease), diff, valid. 25+ tests."
     }
   ]
 }
