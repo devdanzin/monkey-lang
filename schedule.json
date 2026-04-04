@@ -589,9 +589,69 @@
       "completed": "2026-04-04T16:48:07.578Z",
       "duration_ms": 480000,
       "summary": "Raft consensus: leader election, log replication, term management, commit advancement. 20 tests."
+    },
+    {
+      "id": "T57",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a Promise implementation from scratch: then/catch/finally, Promise.all/race/allSettled, microtask queue, with tests",
+      "started": "2026-04-04T16:48:40.675Z",
+      "completed": "2026-04-04T16:49:54.243Z",
+      "duration_ms": 480000,
+      "summary": "Promise/A+ implementation: then/catch/finally, all/race/allSettled/any, delay, fromCallback. 29 tests."
+    },
+    {
+      "id": "T58",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a virtual DOM and diff algorithm: createElement, render, patch, event handling, with tests",
+      "started": "2026-04-04T16:50:10.767Z",
+      "completed": "2026-04-04T16:51:35.507Z",
+      "duration_ms": 420000,
+      "summary": "Virtual DOM: h(), diff algorithm, renderToString, patch application. 24 tests."
+    },
+    {
+      "id": "T59",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a LRU cache with O(1) operations: get, put, eviction, capacity management, with tests",
+      "started": "2026-04-04T16:51:52.629Z",
+      "completed": "2026-04-04T16:53:04.085Z",
+      "duration_ms": 360000,
+      "summary": "LRU Cache with O(1) get/put, DLL+hashmap, TTL cache, peek, iterator. 23 tests."
+    },
+    {
+      "id": "T60",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build an event emitter: on/off/once/emit, wildcard patterns, namespaces, async emit, with tests",
+      "started": "2026-04-04T16:53:23.897Z",
+      "completed": "2026-04-04T16:54:33.726Z",
+      "duration_ms": 360000,
+      "summary": "Event emitter: on/off/once/emit, wildcards, async emit, waitFor, pipe. 19 tests."
+    },
+    {
+      "id": "T61",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a reactive signals system (like SolidJS/Preact signals): signal, computed, effect, batching, with tests",
+      "started": "2026-04-04T16:54:51.497Z",
+      "completed": "2026-04-04T16:57:52.179Z",
+      "duration_ms": 600000,
+      "summary": "Reactive signals: signal, computed, effect, batch, untracked. Fine-grained reactivity. 19 tests."
+    },
+    {
+      "id": "T62",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a skiplist: probabilistic sorted set with O(log n) insert/search/delete, with tests",
+      "started": "2026-04-04T16:58:09.437Z",
+      "completed": "2026-04-04T16:59:18.653Z",
+      "duration_ms": 360000,
+      "summary": "Skip list: insert/search/delete O(log n), range queries, custom comparator, iterator. 18 tests."
     }
   ],
-  "updated_at": "2026-04-04T16:48:07.578Z",
+  "updated_at": "2026-04-04T16:59:18.653Z",
   "adjustments": [
     {
       "time": "2026-04-04T16:01:25.982Z",
@@ -656,6 +716,30 @@
     {
       "time": "2026-04-04T16:39:15.537Z",
       "msg": "Added T56 (BUILD) after end: Build a Raft consensus protocol simulation: leader election, log replication, term management, with tests"
+    },
+    {
+      "time": "2026-04-04T16:48:34.608Z",
+      "msg": "Added T57 (BUILD) after end: Build a Promise implementation from scratch: then/catch/finally, Promise.all/race/allSettled, microtask queue, with tests"
+    },
+    {
+      "time": "2026-04-04T16:48:35.077Z",
+      "msg": "Added T58 (BUILD) after end: Build a virtual DOM and diff algorithm: createElement, render, patch, event handling, with tests"
+    },
+    {
+      "time": "2026-04-04T16:48:35.549Z",
+      "msg": "Added T59 (BUILD) after end: Build a LRU cache with O(1) operations: get, put, eviction, capacity management, with tests"
+    },
+    {
+      "time": "2026-04-04T16:53:17.528Z",
+      "msg": "Added T60 (BUILD) after end: Build an event emitter: on/off/once/emit, wildcard patterns, namespaces, async emit, with tests"
+    },
+    {
+      "time": "2026-04-04T16:53:17.999Z",
+      "msg": "Added T61 (BUILD) after end: Build a reactive signals system (like SolidJS/Preact signals): signal, computed, effect, batching, with tests"
+    },
+    {
+      "time": "2026-04-04T16:53:18.439Z",
+      "msg": "Added T62 (BUILD) after end: Build a skiplist: probabilistic sorted set with O(log n) insert/search/delete, with tests"
     }
   ]
 }
