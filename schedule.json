@@ -869,9 +869,46 @@
       "completed": "2026-04-04T17:39:45.335Z",
       "duration_ms": 480000,
       "summary": "Finite automaton: NFA, DFA, Thompsons construction (regex to NFA), subset construction (NFA to DFA). 14 tests."
+    },
+    {
+      "id": "T85",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": "Build a topological sort with cycle detection and dependency resolution, with tests",
+      "skip_reason": ""
+    },
+    {
+      "id": "T86",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a simple template engine: variable interpolation, conditionals, loops, partials, with tests",
+      "started": "2026-04-04T17:40:32.018Z",
+      "completed": "2026-04-04T17:41:49.387Z",
+      "duration_ms": 360000,
+      "summary": "Template engine: Mustache-like with variables, conditionals, loops, partials, helpers, HTML escaping. 17 tests."
+    },
+    {
+      "id": "T87",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a disjoint-set (Union-Find) with path compression and rank: union, find, connected, components, with tests",
+      "started": "2026-04-04T17:42:20.912Z",
+      "completed": "2026-04-04T17:44:17.533Z",
+      "duration_ms": 360000,
+      "summary": "Union-Find: path compression, union by rank, weighted variant, dynamic makeSet, 10K stress test. 12 tests."
+    },
+    {
+      "id": "T88",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a simple blockchain: blocks, chain, proof of work, validation, with tests",
+      "started": "2026-04-04T17:44:44.429Z",
+      "completed": "2026-04-04T17:45:57.910Z",
+      "duration_ms": 360000,
+      "summary": "Blockchain: proof of work mining, chain validation, tamper detection, transactions, balances. 12 tests."
     }
   ],
-  "updated_at": "2026-04-04T17:39:45.335Z",
+  "updated_at": "2026-04-04T17:45:57.910Z",
   "adjustments": [
     {
       "time": "2026-04-04T16:01:25.982Z",
@@ -1048,6 +1085,26 @@
     {
       "time": "2026-04-04T17:36:17.608Z",
       "msg": "Added T84 (BUILD) after end: Build a finite automaton library: NFA, DFA, NFA-to-DFA conversion, regex matching, with tests"
+    },
+    {
+      "time": "2026-04-04T17:40:15.020Z",
+      "msg": "Added T85 (BUILD) after end: Build a topological sort with cycle detection and dependency resolution, with tests"
+    },
+    {
+      "time": "2026-04-04T17:40:15.465Z",
+      "msg": "Added T86 (BUILD) after end: Build a simple template engine: variable interpolation, conditionals, loops, partials, with tests"
+    },
+    {
+      "time": "2026-04-04T17:40:24.329Z",
+      "msg": "Removed T85: "
+    },
+    {
+      "time": "2026-04-04T17:42:09.480Z",
+      "msg": "Added T87 (BUILD) after end: Build a disjoint-set (Union-Find) with path compression and rank: union, find, connected, components, with tests"
+    },
+    {
+      "time": "2026-04-04T17:42:10.038Z",
+      "msg": "Added T88 (BUILD) after end: Build a simple blockchain: blocks, chain, proof of work, validation, with tests"
     }
   ]
 }
