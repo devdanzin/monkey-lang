@@ -1026,9 +1026,19 @@
       "completed": "2026-04-04T18:03:25.702Z",
       "duration_ms": 240000,
       "summary": "Result type (Ok/Err): map, flatMap, unwrap, tryCatch, collect. TASK 100! 13 tests."
+    },
+    {
+      "id": "T101",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a simple option type (Some/None): map, flatMap, unwrap, filter, with tests",
+      "started": "2026-04-04T18:04:04.829Z",
+      "completed": "2026-04-04T18:05:02.168Z",
+      "duration_ms": 240000,
+      "summary": "Option type: Some/None, map, flatMap, filter, zip, fromNullable. 16 tests."
     }
   ],
-  "updated_at": "2026-04-04T18:03:25.702Z",
+  "updated_at": "2026-04-04T18:05:02.168Z",
   "adjustments": [
     {
       "time": "2026-04-04T16:01:25.982Z",
@@ -1273,6 +1283,10 @@
     {
       "time": "2026-04-04T18:02:32.074Z",
       "msg": "Added T100 (BUILD) after end: Build a simple result/either type: Ok/Err, map, flatMap, unwrap, with tests"
+    },
+    {
+      "time": "2026-04-04T18:04:04.103Z",
+      "msg": "Added T101 (BUILD) after end: Build a simple option type (Some/None): map, flatMap, unwrap, filter, with tests"
     }
   ]
 }
