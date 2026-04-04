@@ -1556,9 +1556,45 @@
     {
       "id": "T150",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Build a chess engine: board representation, move generation, alpha-beta search, evaluation",
-      "task": null
+      "task": null,
+      "started": "2026-04-04T20:54:42.718Z",
+      "completed": "2026-04-04T20:55:00.546Z",
+      "duration_ms": 60000,
+      "summary": "Planned chess engine: 4 BUILD tasks — bitboard/movegen, search (alpha-beta+TT), evaluation, UCI protocol + perft tests"
+    },
+    {
+      "id": "T156",
+      "mode": "BUILD",
+      "task": "Chess board representation (bitboards) + complete move generation (all pieces, castling, en passant, promotions)",
+      "status": "done",
+      "plan_ref": "T150",
+      "started": "2026-04-04T20:55:11.829Z",
+      "completed": "2026-04-04T20:57:51.041Z",
+      "duration_ms": 900000,
+      "summary": "Chess board with bitboards: full move generation (all 6 piece types, castling, en passant, promotions, promotion captures). Perft-validated through depth 4 (197,281 nodes). Kiwipete position validated. 31 tests, all passing."
+    },
+    {
+      "id": "T157",
+      "mode": "BUILD",
+      "task": "Chess search: alpha-beta with iterative deepening, quiescence search, transposition table, move ordering",
+      "status": "upcoming",
+      "plan_ref": "T150"
+    },
+    {
+      "id": "T158",
+      "mode": "BUILD",
+      "task": "Chess evaluation: material, piece-square tables, mobility, king safety, pawn structure",
+      "status": "upcoming",
+      "plan_ref": "T150"
+    },
+    {
+      "id": "T159",
+      "mode": "BUILD",
+      "task": "Chess UCI protocol + test suite: perft validation, tactical puzzles, CLI interface",
+      "status": "upcoming",
+      "plan_ref": "T150"
     },
     {
       "id": "T151",
@@ -1580,5 +1616,5 @@
       "task": "Final session B wrap — git push, daily log, scratch notes"
     }
   ],
-  "updated_at": "2026-04-04T20:54:24.370Z"
+  "updated_at": "2026-04-04T20:57:51.041Z"
 }
