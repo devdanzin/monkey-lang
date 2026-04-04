@@ -2173,14 +2173,24 @@
       "completed": "2026-04-04T22:46:14.420Z",
       "duration_ms": 0,
       "summary": "Already covered: bidirectional data transfer, unacked segment tracking, simulated network with packet loss, full handshake over simulated network. 22 tests total. GitHub: henry-the-frog/tcp-ip"
+    },
+    {
+      "id": "T210",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "ELF binary generator: ELF64 header, program headers, section headers, .text/.data/.bss sections, symbol table, x86-64 machine code encoding. Generate a minimal working Linux ELF executable. 30+ tests.",
+      "started": "2026-04-04T22:46:54.921Z",
+      "completed": "2026-04-04T22:48:47.195Z",
+      "duration_ms": 900000,
+      "summary": "ELF64 binary generator: x86-64 machine code encoder (mov, add, sub, imul, xor, cmp, push/pop, jmp/je/jne with label resolution, syscall, all 16 GPRs including r8-r15 with REX prefix), ELF64 builder (header, program headers, segments), minimal executable builder, exit(N) program, hello world program. 27 tests. GitHub: henry-the-frog/elf-gen"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 206,
+    "completed": 207,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 67710000
+    "total_duration_ms": 68610000
   },
-  "updated_at": "2026-04-04T22:46:14.420Z"
+  "updated_at": "2026-04-04T22:48:47.195Z"
 }
