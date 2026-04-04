@@ -1973,6 +1973,12 @@
       "mode": "BUILD",
       "status": "upcoming",
       "task": "Probabilistic data structures: Bloom filter, Count-Min Sketch, HyperLogLog cardinality estimator"
+    },
+    {
+      "id": "T193",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Template engine: lexer, parser, AST, compiler, conditionals, loops, partials, escaping"
     }
   ],
   "updated_at": "2026-04-04T22:10:58.713Z",
@@ -2012,6 +2018,10 @@
     {
       "time": "2026-04-04T22:18:33.597Z",
       "msg": "Added T192 (BUILD) after end: Probabilistic data structures: Bloom filter, Count-Min Sketch, HyperLogLog cardinality estimator"
+    },
+    {
+      "time": "2026-04-04T22:20:42.869Z",
+      "msg": "Added T193 (BUILD) after end: Template engine: lexer, parser, AST, compiler, conditionals, loops, partials, escaping"
     }
   ]
 }

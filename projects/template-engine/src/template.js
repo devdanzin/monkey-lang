@@ -1,190 +1,207 @@
-// Template Engine — Mustache/Handlebars-like syntax
-// Supports: {{var}}, {{#if}}, {{#each}}, {{#unless}}, {{else}}, {{> partial}}, filters
+// template.js — Template engine with Handlebars-like syntax
+// Supports: {{var}}, {{{raw}}}, {{#if}}, {{#each}}, {{#unless}}, {{> partial}}, {{! comment}}
 
-export function compile(template) {
-  const tokens = tokenize(template);
-  const ast = parseTokens(tokens);
-  return function render(data, partials = {}) {
-    return evaluate(ast, data, partials);
-  };
-}
-
-export function render(template, data, partials) {
-  return compile(template)(data, partials);
+export function compile(source, options = {}) {
+  const ast = parse(tokenize(source));
+  return (data, partials = {}) => render(ast, data, partials, options.helpers || {});
 }
 
 // ===== Tokenizer =====
-function tokenize(template) {
+function tokenize(source) {
   const tokens = [];
   let i = 0;
 
-  while (i < template.length) {
-    const start = template.indexOf('{{', i);
-    if (start === -1) {
-      tokens.push({ type: 'text', value: template.slice(i) });
-      break;
+  while (i < source.length) {
+    // Check for expression start
+    if (source[i] === '{' && source[i + 1] === '{') {
+      const raw = source[i + 2] === '{';
+      const start = raw ? i + 3 : i + 2;
+      const end = raw
+        ? source.indexOf('}}}', start)
+        : source.indexOf('}}', start);
+
+      if (end === -1) throw new Error('Unterminated expression');
+
+      const content = source.slice(start, end).trim();
+      tokens.push({ type: 'expression', content, raw });
+      i = end + (raw ? 3 : 2);
+      continue;
     }
 
-    if (start > i) {
-      tokens.push({ type: 'text', value: template.slice(i, start) });
+    // Plain text
+    let text = '';
+    while (i < source.length && !(source[i] === '{' && source[i + 1] === '{')) {
+      text += source[i++];
     }
-
-    // Triple braces for unescaped
-    if (template[start + 2] === '{') {
-      const end = template.indexOf('}}}', start);
-      if (end === -1) throw new Error('Unclosed {{{');
-      tokens.push({ type: 'raw', value: template.slice(start + 3, end).trim() });
-      i = end + 3;
-    } else {
-      const end = template.indexOf('}}', start);
-      if (end === -1) throw new Error('Unclosed {{');
-      const content = template.slice(start + 2, end).trim();
-
-      if (content.startsWith('#')) {
-        tokens.push({ type: 'block-open', value: content.slice(1).trim() });
-      } else if (content.startsWith('/')) {
-        tokens.push({ type: 'block-close', value: content.slice(1).trim() });
-      } else if (content === 'else') {
-        tokens.push({ type: 'else' });
-      } else if (content.startsWith('>')) {
-        tokens.push({ type: 'partial', value: content.slice(1).trim() });
-      } else if (content.startsWith('!')) {
-        // Comment — skip
-      } else {
-        tokens.push({ type: 'var', value: content });
-      }
-      i = end + 2;
-    }
+    if (text) tokens.push({ type: 'text', value: text });
   }
 
   return tokens;
 }
 
 // ===== Parser =====
-function parseTokens(tokens) {
+function parse(tokens) {
   const ast = [];
   let i = 0;
 
-  function parseBlock() {
-    const nodes = [];
+  function parseBlock(endTag) {
+    const body = [];
     while (i < tokens.length) {
-      const token = tokens[i];
-      if (token.type === 'block-close' || token.type === 'else') return nodes;
-      nodes.push(parseNode());
-    }
-    return nodes;
-  }
+      const tok = tokens[i];
 
-  function parseNode() {
-    const token = tokens[i++];
-
-    switch (token.type) {
-      case 'text': return { type: 'text', value: token.value };
-      case 'var': return { type: 'var', value: token.value };
-      case 'raw': return { type: 'raw', value: token.value };
-      case 'partial': return { type: 'partial', value: token.value };
-
-      case 'block-open': {
-        const parts = token.value.split(/\s+/);
-        const keyword = parts[0];
-        const arg = parts.slice(1).join(' ');
-
-        const body = parseBlock();
-        let elseBody = null;
-
-        if (i < tokens.length && tokens[i].type === 'else') {
-          i++; // skip else
-          elseBody = parseBlock();
-        }
-
-        if (i < tokens.length && tokens[i].type === 'block-close') i++; // skip close
-
-        if (keyword === 'if') return { type: 'if', condition: arg, body, elseBody };
-        if (keyword === 'unless') return { type: 'unless', condition: arg, body, elseBody };
-        if (keyword === 'each') return { type: 'each', collection: arg, body };
-        if (keyword === 'with') return { type: 'with', context: arg, body };
-
-        return { type: 'block', name: keyword, arg, body, elseBody };
+      if (tok.type === 'text') {
+        body.push({ type: 'text', value: tok.value });
+        i++;
+        continue;
       }
 
-      default: return { type: 'text', value: '' };
+      if (tok.type === 'expression') {
+        const c = tok.content;
+
+        // Comment
+        if (c.startsWith('!')) { i++; continue; }
+
+        // End block
+        if (c.startsWith('/')) {
+          const tag = c.slice(1).trim();
+          if (tag === endTag) { i++; return body; }
+          throw new Error(`Unexpected {{/${tag}}}, expected {{/${endTag}}}`);
+        }
+
+        // Block helpers
+        if (c.startsWith('#if ')) {
+          i++;
+          const expr = c.slice(4).trim();
+          const consequent = parseBlock('if');
+          let alternate = [];
+          // Check for {{else}}
+          if (i < tokens.length && tokens[i]?.type === 'expression' && tokens[i].content === 'else') {
+            i++;
+            alternate = parseBlock('if');
+          }
+          body.push({ type: 'if', expr, consequent, alternate });
+          continue;
+        }
+
+        if (c.startsWith('#unless ')) {
+          i++;
+          const expr = c.slice(8).trim();
+          const block = parseBlock('unless');
+          body.push({ type: 'unless', expr, body: block });
+          continue;
+        }
+
+        if (c.startsWith('#each ')) {
+          i++;
+          const expr = c.slice(6).trim();
+          const block = parseBlock('each');
+          body.push({ type: 'each', expr, body: block });
+          continue;
+        }
+
+        if (c.startsWith('#with ')) {
+          i++;
+          const expr = c.slice(6).trim();
+          const block = parseBlock('with');
+          body.push({ type: 'with', expr, body: block });
+          continue;
+        }
+
+        // Partial
+        if (c.startsWith('> ')) {
+          body.push({ type: 'partial', name: c.slice(2).trim() });
+          i++;
+          continue;
+        }
+
+        // else (standalone)
+        if (c === 'else') { i++; return body; }
+
+        // Variable
+        body.push({ type: 'variable', expr: c, raw: tok.raw });
+        i++;
+        continue;
+      }
+
+      i++;
     }
+
+    if (endTag) throw new Error(`Missing {{/${endTag}}}`);
+    return body;
   }
 
-  while (i < tokens.length) ast.push(parseNode());
-  return ast;
+  return parseBlock(null);
 }
 
-// ===== Evaluator =====
-function evaluate(ast, data, partials) {
+// ===== Renderer =====
+function render(nodes, data, partials, helpers) {
   let output = '';
 
-  for (const node of ast) {
+  for (const node of nodes) {
     switch (node.type) {
       case 'text':
         output += node.value;
         break;
 
-      case 'var': {
-        const [path, ...filters] = node.value.split('|').map(s => s.trim());
-        let val = resolve(data, path);
-        for (const f of filters) val = applyFilter(val, f);
-        output += escapeHtml(String(val ?? ''));
-        break;
-      }
-
-      case 'raw': {
-        const val = resolve(data, node.value);
-        output += String(val ?? '');
+      case 'variable': {
+        let value;
+        if (helpers[node.expr]) {
+          value = helpers[node.expr](data);
+        } else {
+          value = resolve(data, node.expr);
+        }
+        if (value === undefined || value === null) value = '';
+        output += node.raw ? String(value) : escapeHtml(String(value));
         break;
       }
 
       case 'if': {
-        const val = resolve(data, node.condition);
-        if (isTruthy(val)) output += evaluate(node.body, data, partials);
-        else if (node.elseBody) output += evaluate(node.elseBody, data, partials);
+        const val = resolve(data, node.expr);
+        if (isTruthy(val)) {
+          output += render(node.consequent, data, partials, helpers);
+        } else {
+          output += render(node.alternate, data, partials, helpers);
+        }
         break;
       }
 
       case 'unless': {
-        const val = resolve(data, node.condition);
-        if (!isTruthy(val)) output += evaluate(node.body, data, partials);
-        else if (node.elseBody) output += evaluate(node.elseBody, data, partials);
+        const val = resolve(data, node.expr);
+        if (!isTruthy(val)) {
+          output += render(node.body, data, partials, helpers);
+        }
         break;
       }
 
       case 'each': {
-        const collection = resolve(data, node.collection);
-        if (Array.isArray(collection)) {
-          for (let idx = 0; idx < collection.length; idx++) {
-            const item = collection[idx];
-            const ctx = typeof item === 'object' ? { ...data, ...item, '@index': idx, '@first': idx === 0, '@last': idx === collection.length - 1 } : { ...data, '.': item, '@index': idx, '@first': idx === 0, '@last': idx === collection.length - 1 };
-            output += evaluate(node.body, ctx, partials);
+        const val = resolve(data, node.expr);
+        if (Array.isArray(val)) {
+          for (let i = 0; i < val.length; i++) {
+            const ctx = { ...val[i], '@index': i, '@first': i === 0, '@last': i === val.length - 1, '.': val[i] };
+            output += render(node.body, ctx, partials, helpers);
           }
-        } else if (collection && typeof collection === 'object') {
-          const entries = Object.entries(collection);
-          for (let idx = 0; idx < entries.length; idx++) {
-            const [key, value] = entries[idx];
-            const ctx = { ...data, '@key': key, '@value': value, '@index': idx };
-            output += evaluate(node.body, ctx, partials);
+        } else if (val && typeof val === 'object') {
+          const keys = Object.keys(val);
+          for (let i = 0; i < keys.length; i++) {
+            const ctx = { '@key': keys[i], '@value': val[keys[i]], '.': val[keys[i]], ...val[keys[i]] };
+            output += render(node.body, ctx, partials, helpers);
           }
         }
         break;
       }
 
       case 'with': {
-        const ctx = resolve(data, node.context);
-        if (ctx && typeof ctx === 'object') {
-          output += evaluate(node.body, { ...data, ...ctx }, partials);
-        }
+        const val = resolve(data, node.expr);
+        if (val) output += render(node.body, val, partials, helpers);
         break;
       }
 
       case 'partial': {
-        const partial = partials[node.value];
-        if (partial) {
-          if (typeof partial === 'function') output += partial(data);
-          else output += render(partial, data, partials);
+        const partial = partials[node.name];
+        if (typeof partial === 'function') {
+          output += partial(data);
+        } else if (typeof partial === 'string') {
+          output += compile(partial)(data, partials);
         }
         break;
       }
@@ -194,40 +211,32 @@ function evaluate(ast, data, partials) {
   return output;
 }
 
-// Resolve dotted path: "user.name" → data.user.name
+// ===== Utilities =====
 function resolve(data, path) {
-  if (path === '.') return data['.'] ?? data;
+  if (path === '.') return data;
   if (path === 'this') return data;
-  return path.split('.').reduce((obj, key) => obj?.[key], data);
+  const parts = path.split('.');
+  let current = data;
+  for (const part of parts) {
+    if (current === null || current === undefined) return undefined;
+    current = current[part];
+  }
+  return current;
 }
 
 function isTruthy(val) {
-  if (val === false || val === null || val === undefined || val === 0 || val === '') return false;
+  if (val === false || val === null || val === undefined || val === '' || val === 0) return false;
   if (Array.isArray(val) && val.length === 0) return false;
   return true;
 }
 
-function escapeHtml(s) {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+function escapeHtml(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
-// Built-in filters
-const FILTERS = {
-  upper: v => String(v).toUpperCase(),
-  lower: v => String(v).toLowerCase(),
-  capitalize: v => String(v).charAt(0).toUpperCase() + String(v).slice(1),
-  trim: v => String(v).trim(),
-  json: v => JSON.stringify(v),
-  length: v => (v?.length ?? 0),
-  reverse: v => typeof v === 'string' ? [...v].reverse().join('') : v,
-  default: v => v ?? '(empty)',
-};
-
-function applyFilter(value, filterName) {
-  const fn = FILTERS[filterName];
-  return fn ? fn(value) : value;
-}
-
-export function registerFilter(name, fn) {
-  FILTERS[name] = fn;
-}
+export { tokenize, parse, render, resolve, escapeHtml };

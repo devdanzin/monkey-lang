@@ -1,6 +1,1 @@
-{
-  "name": "template-engine",
-  "version": "0.1.0",
-  "type": "module",
-  "scripts": { "test": "node --test test/*.test.js" }
-}
+{"name":"template-engine","version":"1.0.0","description":"Template engine from scratch — Handlebars-like syntax","type":"module","scripts":{"test":"node --test src/**/*.test.js"}}
