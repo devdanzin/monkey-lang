@@ -14,22 +14,53 @@
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Complete CDCL SAT solver — clause learning, VSIDS, watched literals, DIMACS",
-      "task": null
+      "task": null,
+      "started": "2026-04-04T14:16:04.609Z",
+      "completed": "2026-04-04T14:46:14.726Z",
+      "duration_ms": 120000,
+      "summary": "Planned 3 BUILD tasks: fix 4-Queens bug + watched literals, comprehensive tests, CLI + benchmarks + README"
     },
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
-      "plan_ref": "T2"
+      "status": "done",
+      "task": "Fix 4-Queens CDCL bug (debug conflict analysis / propagation), then implement two-watched literal scheme replacing naive scan",
+      "plan_ref": "T2",
+      "started": "2026-04-04T14:46:29.944Z",
+      "completed": "2026-04-04T14:50:30.756Z",
+      "duration_ms": 600000,
+      "summary": "Fixed 1UIP conflict analysis bug (resolution loop), implemented two-watched literal propagation scheme. 34/34 tests pass, 4-Queens/8-Queens verified."
+    },
+    {
+      "id": "T19",
+      "mode": "BUILD",
+      "task": "Add comprehensive tests: 8-Queens, graph coloring encoding, Sudoku encoding, UNSAT certificates, restart behavior, VSIDS verification",
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-04-04T14:50:52.476Z",
+      "completed": "2026-04-04T14:53:16.766Z",
+      "duration_ms": 480000,
+      "summary": "Comprehensive test suite: 69 tests covering graph coloring, Sudoku, N-Queens (1-8), pigeonhole, VSIDS, restarts, XOR ladders, random 3-SAT agreement, model verification."
+    },
+    {
+      "id": "T20",
+      "mode": "BUILD",
+      "task": "Add CLI with DIMACS file input, benchmarks comparing DPLL vs CDCL, and README",
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-04-04T14:53:38.388Z",
+      "completed": "2026-04-04T14:54:59.002Z",
+      "duration_ms": 360000,
+      "summary": "CLI with DIMACS input/queens/pigeon/random/bench modes, DPLL vs CDCL benchmarks (14-35x speedup on larger instances), comprehensive README with architecture docs."
     },
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping — git push, dashboard health, email check"
+      "status": "in-progress",
+      "task": "Housekeeping — git push, dashboard health, email check",
+      "started": "2026-04-04T14:55:20.442Z"
     },
     {
       "id": "T5",
@@ -122,12 +153,18 @@
       "task": "Research: consciousness or AI safety reading — evening exploration"
     }
   ],
-  "current": null,
+  "current": {
+    "id": "T4",
+    "mode": "MAINTAIN",
+    "status": "in-progress",
+    "task": "Housekeeping — git push, dashboard health, email check",
+    "started": "2026-04-04T14:55:20.442Z"
+  },
   "stats": {
-    "completed": 1,
+    "completed": 5,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 60000
+    "total_duration_ms": 1620000
   },
-  "updated_at": "2026-04-04T14:15:40.132Z"
+  "updated_at": "2026-04-04T14:55:20.442Z"
 }
