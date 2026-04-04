@@ -1066,9 +1066,19 @@
       "completed": "2026-04-04T18:08:10.891Z",
       "duration_ms": 180000,
       "summary": "Retry: exponential backoff, jitter, max retries, onRetry, sync variant. 8 tests."
+    },
+    {
+      "id": "T105",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a simple debounce/throttle library: debounce, throttle, leading/trailing, cancel, with tests",
+      "started": "2026-04-04T18:08:20.510Z",
+      "completed": "2026-04-04T18:09:04.700Z",
+      "duration_ms": 180000,
+      "summary": "Debounce/throttle: leading/trailing, cancel, flush, pending. 7 tests."
     }
   ],
-  "updated_at": "2026-04-04T18:08:10.891Z",
+  "updated_at": "2026-04-04T18:09:04.700Z",
   "adjustments": [
     {
       "time": "2026-04-04T16:01:25.982Z",
@@ -1329,6 +1339,10 @@
     {
       "time": "2026-04-04T18:07:26.719Z",
       "msg": "Added T104 (BUILD) after end: Build a simple retry utility: exponential backoff, max retries, jitter, with tests"
+    },
+    {
+      "time": "2026-04-04T18:08:19.938Z",
+      "msg": "Added T105 (BUILD) after end: Build a simple debounce/throttle library: debounce, throttle, leading/trailing, cancel, with tests"
     }
   ]
 }
