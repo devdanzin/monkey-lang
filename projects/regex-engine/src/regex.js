@@ -72,9 +72,12 @@ function parse(pattern) {
     if (ch === '*' || ch === '+' || ch === '?') {
       advance();
       const lazy = peek() === '?' ? (advance(), true) : false;
-      if (ch === '*') return { type: 'star', child: node, lazy };
-      if (ch === '+') return { type: 'plus', child: node, lazy };
-      if (ch === '?') return { type: 'question', child: node, lazy };
+      const possessive = !lazy && peek() === '+' ? (advance(), true) : false;
+      let qNode;
+      if (ch === '*') qNode = { type: 'star', child: node, lazy };
+      else if (ch === '+') qNode = { type: 'plus', child: node, lazy };
+      else qNode = { type: 'question', child: node, lazy };
+      return possessive ? { type: 'atomic', child: qNode } : qNode;
     }
     if (ch === '{') {
       return parseRepetition(node);
@@ -128,6 +131,13 @@ function parse(pattern) {
           const node = parseRegex();
           expect(')');
           return { type: kind === '=' ? 'lookbehind' : 'neg-lookbehind', child: node };
+        }
+        // Atomic group (?>...)
+        if (nextCh === '>') {
+          advance(); advance(); // skip ?>
+          const node = parseRegex();
+          expect(')');
+          return { type: 'atomic', child: node };
         }
         // Named group (?<name>...)
         if (nextCh === '<') {
@@ -368,6 +378,11 @@ function compile(ast) {
         const s = newState();
         s.lookbehind = { child: node.child, negative: node.type === 'neg-lookbehind' };
         return new Fragment(s, [s]);
+      }
+      case 'atomic': {
+        // Atomic groups: match child but discard backtrack positions
+        // In NFA, we treat it like a regular group (atomicity enforced in backtracker)
+        return build(node.child);
       }
       case 'backref': {
         const s = newState();
@@ -891,6 +906,11 @@ function backtrackerMatch(ast, input, groupCount, startPos = 0) {
         if (childResults.length === 0) return [{ end: pos, groups }];
         return [];
       }
+      case 'atomic': {
+        // Match child but only keep the first (preferred) result — no backtracking
+        const childResults = matchNode(node.child, pos, groups);
+        return childResults.length > 0 ? [childResults[0]] : [];
+      }
       case 'lookbehind': {
         // Try all possible lengths behind current position in the full input
         for (let len = 0; len <= pos; len++) {
@@ -1022,6 +1042,10 @@ function _backtrackerInner(ast, input, groupCount, startPos = 0) {
         return matchNode(node.child, pos, groups).length > 0 ? [{ end: pos, groups }] : [];
       case 'neg-lookahead':
         return matchNode(node.child, pos, groups).length === 0 ? [{ end: pos, groups }] : [];
+      case 'atomic': {
+        const childResults = matchNode(node.child, pos, groups);
+        return childResults.length > 0 ? [childResults[0]] : [];
+      }
       case 'lookbehind': {
         for (let len = 0; len <= pos; len++) {
           const behind = input.slice(pos - len, pos);
@@ -1077,6 +1101,7 @@ export class Regex {
     this.hasBackrefs = pattern.includes('\\') && /\\[1-9]/.test(pattern);
     this.hasLazy = /[*+?]\?|\{\d+,?\d*\}\?/.test(pattern);
     this.hasLookbehind = /\(\?<[=!]/.test(pattern);
+    this.hasAtomic = /\(\?>/.test(pattern) || /[*+?]\+/.test(pattern);
     this.nfa = compile(this.ast);
     this._dfa = null; // lazily built
   }
@@ -1098,7 +1123,7 @@ export class Regex {
 
   // Full match (entire string must match)
   test(input) {
-    if (this.hasBackrefs || this.hasLazy) {
+    if (this.hasBackrefs || this.hasLazy || this.hasAtomic) {
       const results = _backtrackerInner(this.ast, input, this.groupCount);
       return results.some(r => r.end === input.length);
     }
@@ -1179,7 +1204,7 @@ export class Regex {
   // Search (find first match anywhere in string)
   search(input) {
     // Use backtracker for patterns with lazy quantifiers or backrefs (NFA can't handle laziness)
-    if (this.hasLazy || this.hasBackrefs || this.hasLookbehind) {
+    if (this.hasLazy || this.hasBackrefs || this.hasLookbehind || this.hasAtomic) {
       return this._backtrackerSearch(input, false);
     }
     return this._nfaSearch(input);
@@ -1234,7 +1259,7 @@ export class Regex {
 
   // Find all non-overlapping matches
   matchAll(input) {
-    if (this.hasLazy || this.hasBackrefs || this.hasLookbehind) {
+    if (this.hasLazy || this.hasBackrefs || this.hasLookbehind || this.hasAtomic) {
       return this._backtrackerMatchAll(input);
     }
     const results = [];

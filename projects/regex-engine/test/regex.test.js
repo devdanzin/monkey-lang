@@ -1076,3 +1076,85 @@ describe('Regex — lookbehind', () => {
     assert.equal(matches[1].match, 'bob');
   });
 });
+
+// ===== Atomic Groups and Possessive Quantifiers =====
+describe('Regex — atomic groups', () => {
+  it('atomic group: basic match', () => {
+    const r = new Regex('(?>abc)');
+    assert.equal(r.test('abc'), true);
+    assert.equal(r.test('ab'), false);
+  });
+
+  it('atomic group: prevents backtracking', () => {
+    // Without atomic: a*a matches "aaa" (a* takes 2, a takes 1)
+    // With atomic: (?>a*)a fails on "aaa" because a* takes all 3, then a can't match
+    const r1 = new Regex('a*a');
+    assert.equal(r1.test('aaa'), true); // normal: works
+
+    const r2 = new Regex('(?>a*)a');
+    assert.equal(r2.test('aaa'), false); // atomic: fails (a* eats everything)
+  });
+
+  it('atomic group: alternation', () => {
+    // (?>foo|foobar) against "foobar" — first alt "foo" matches, atomic locks it, rest fails
+    const r = new Regex('(?>foo|foobar)bar');
+    assert.equal(r.test('foobar'), true); // "foo" matches, then "bar" matches
+    
+    // But: (?>foobar|foo)bar — "foobar" matches first, atomic locks, "bar" from input is gone
+    const r2 = new Regex('(?>foobar|foo)bar');
+    assert.equal(r2.test('foobar'), false); // "foobar" consumed all input, no "bar" left
+    assert.equal(r2.test('foobarbar'), true); // "foobar" + "bar" works
+  });
+
+  it('possessive quantifier: *+', () => {
+    const r = new Regex('a*+a');
+    assert.equal(r.test('aaa'), false); // a*+ eats all, can't give back
+    
+    const r2 = new Regex('a*+b');
+    assert.equal(r2.test('aaab'), true); // a*+ eats a's, b matches
+  });
+
+  it('possessive quantifier: ++', () => {
+    const r = new Regex('a++a');
+    assert.equal(r.test('aaa'), false); // a++ eats all, can't give back
+    
+    const r2 = new Regex('a++b');
+    assert.equal(r2.test('aaab'), true);
+    assert.equal(r2.test('b'), false); // ++ requires at least 1
+  });
+
+  it('possessive quantifier: ?+', () => {
+    const r = new Regex('a?+a');
+    assert.equal(r.test('a'), false); // a?+ takes the a, nothing left
+    assert.equal(r.test('aa'), true); // a?+ takes first a, second a matches
+  });
+
+  it('possessive quantifier with character class', () => {
+    const r = new Regex('[a-z]++\\d');
+    assert.equal(r.search('abc123') !== null, true);
+    const m = r.search('abc1');
+    assert.ok(m);
+    assert.equal(m.match, 'abc1');
+  });
+
+  it('atomic group in search context', () => {
+    const r = new Regex('(?>\\d+)\\.');
+    const m = r.search('test 123.456');
+    assert.ok(m);
+    assert.equal(m.match, '123.');
+  });
+
+  it('nested atomic group', () => {
+    const r = new Regex('(?>(?>a+)b)c');
+    assert.equal(r.test('aabc'), true);
+    assert.equal(r.test('abc'), true);
+    assert.equal(r.test('ac'), false);
+  });
+
+  it('atomic group with quantifier', () => {
+    // (?>ab){2} matches "abab"
+    const r = new Regex('(?>ab){2}');
+    assert.equal(r.test('abab'), true);
+    assert.equal(r.test('ab'), false);
+  });
+});
