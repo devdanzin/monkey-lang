@@ -412,23 +412,35 @@
       "id": "T39",
       "mode": "BUILD",
       "task": "Add let-polymorphism (generalization + instantiation), recursive definitions, and algebraic data types with tests",
-      "status": "upcoming",
-      "plan_ref": "T37"
+      "status": "done",
+      "plan_ref": "T37",
+      "started": "2026-04-04T15:55:33.855Z",
+      "completed": "2026-04-04T15:57:30.750Z",
+      "duration_ms": 420000,
+      "summary": "Added ADTs (TApp, DataType, constructors), pattern matching (literal, variable, wildcard, constructor patterns). 54 total tests."
     },
     {
       "id": "T40",
       "mode": "BUILD",
       "task": "Add error messages, type pretty-printing, and README with examples",
-      "status": "upcoming",
-      "plan_ref": "T37"
+      "status": "in-progress",
+      "plan_ref": "T37",
+      "started": "2026-04-04T15:58:04.096Z"
     }
   ],
-  "current": null,
+  "current": {
+    "id": "T40",
+    "mode": "BUILD",
+    "task": "Add error messages, type pretty-printing, and README with examples",
+    "status": "in-progress",
+    "plan_ref": "T37",
+    "started": "2026-04-04T15:58:04.096Z"
+  },
   "stats": {
-    "completed": 38,
+    "completed": 39,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 10740000
+    "total_duration_ms": 11160000
   },
-  "updated_at": "2026-04-04T15:55:01.730Z"
+  "updated_at": "2026-04-04T15:58:04.096Z"
 }
