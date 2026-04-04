@@ -1784,8 +1784,9 @@
       "id": "T174",
       "mode": "BUILD",
       "task": "WAL + persistence: append-only write-ahead log, checkpoint, crash recovery, compaction",
-      "status": "upcoming",
-      "plan_ref": "T171"
+      "status": "in-progress",
+      "plan_ref": "T171",
+      "started": "2026-04-04T21:35:47.779Z"
     },
     {
       "id": "T175",
@@ -1801,12 +1802,19 @@
       "task": "Session B final wrap — git push all repos, daily log, dashboard update, scratch notes"
     }
   ],
-  "current": null,
+  "current": {
+    "id": "T174",
+    "mode": "BUILD",
+    "task": "WAL + persistence: append-only write-ahead log, checkpoint, crash recovery, compaction",
+    "status": "in-progress",
+    "plan_ref": "T171",
+    "started": "2026-04-04T21:35:47.779Z"
+  },
   "stats": {
     "completed": 169,
     "yielded": 0,
     "skipped": 3,
     "total_duration_ms": 54390000
   },
-  "updated_at": "2026-04-04T21:35:24.214Z"
+  "updated_at": "2026-04-04T21:35:47.779Z"
 }
