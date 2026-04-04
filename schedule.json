@@ -4,8 +4,12 @@
     {
       "id": "T1",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Review yesterday: 5 new projects, SAT solver in-progress. Assess what to deepen vs start fresh. Saturday priorities."
+      "status": "done",
+      "task": "Review yesterday: 5 new projects, SAT solver in-progress. Assess what to deepen vs start fresh. Saturday priorities.",
+      "started": "2026-04-04T14:15:18.476Z",
+      "completed": "2026-04-04T14:15:40.131Z",
+      "duration_ms": 60000,
+      "summary": "Queue looks good. SAT solver first (unfinished), dashboard second (commitment), depth work third. No queue changes needed."
     },
     {
       "id": "T2",
@@ -118,5 +122,5 @@
       "task": "Research: consciousness or AI safety reading — evening exploration"
     }
   ],
-  "updated_at": "2026-04-04T14:02:10.432Z"
+  "updated_at": "2026-04-04T14:15:40.132Z"
 }
