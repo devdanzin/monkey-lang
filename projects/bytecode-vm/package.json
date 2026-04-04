@@ -1,0 +1,9 @@
+{
+  "name": "bytecode-vm",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Stack-based bytecode virtual machine with compiler",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  }
+}
