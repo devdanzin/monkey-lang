@@ -539,9 +539,59 @@
       "completed": "2026-04-04T16:34:50.422Z",
       "duration_ms": 480000,
       "summary": "In-memory SQL database: CREATE, INSERT, SELECT, UPDATE, DELETE, JOIN, GROUP BY, aggregates, WHERE, ORDER BY, LIMIT. 23 tests."
+    },
+    {
+      "id": "T52",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build cellular automaton library: Game of Life, elementary automata (Rule 110, Rule 30), Langton's Ant, with tests",
+      "started": "2026-04-04T16:36:26.428Z",
+      "completed": "2026-04-04T16:38:53.722Z",
+      "duration_ms": 480000,
+      "summary": "Game of Life (still lifes, oscillators, spaceships), elementary CA (Rule 110/30/90/184), Langtons Ant. 26 tests."
+    },
+    {
+      "id": "T53",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a red-black tree: insert with rotations/recoloring, delete, search, in-order traversal, verification of RB properties, with tests",
+      "started": "2026-04-04T16:39:20.585Z",
+      "completed": "2026-04-04T16:40:46.775Z",
+      "duration_ms": 480000,
+      "summary": "Red-black tree: insert/delete with rotations/recoloring, RB property verification, range queries, iterator. 22 tests."
+    },
+    {
+      "id": "T54",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a simple HTTP framework: router, middleware, request/response parsing, with tests",
+      "started": "2026-04-04T16:41:04.151Z",
+      "completed": "2026-04-04T16:44:07.920Z",
+      "duration_ms": 600000,
+      "summary": "Express-like HTTP framework: routing, middleware, path/query params, sub-routers, CORS, error handling. 15 tests."
+    },
+    {
+      "id": "T55",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a neural network from scratch: forward prop, backprop, gradient descent, XOR/MNIST-like examples, with tests",
+      "started": "2026-04-04T16:44:23.616Z",
+      "completed": "2026-04-04T16:45:56.192Z",
+      "duration_ms": 600000,
+      "summary": "Neural network from scratch: Matrix class, backpropagation, gradient descent. Learns XOR, AND, OR. 23 tests."
+    },
+    {
+      "id": "T56",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a Raft consensus protocol simulation: leader election, log replication, term management, with tests",
+      "started": "2026-04-04T16:46:14.214Z",
+      "completed": "2026-04-04T16:48:07.578Z",
+      "duration_ms": 480000,
+      "summary": "Raft consensus: leader election, log replication, term management, commit advancement. 20 tests."
     }
   ],
-  "updated_at": "2026-04-04T16:34:50.422Z",
+  "updated_at": "2026-04-04T16:48:07.578Z",
   "adjustments": [
     {
       "time": "2026-04-04T16:01:25.982Z",
@@ -586,6 +636,26 @@
     {
       "time": "2026-04-04T16:33:04.476Z",
       "msg": "Added T51 (BUILD) after end: Build a simple in-memory SQL database: CREATE TABLE, INSERT, SELECT with WHERE, ORDER BY, GROUP BY, JOIN, with tests"
+    },
+    {
+      "time": "2026-04-04T16:36:18.686Z",
+      "msg": "Added T52 (BUILD) after end: Build cellular automaton library: Game of Life, elementary automata (Rule 110, Rule 30), Langton's Ant, with tests"
+    },
+    {
+      "time": "2026-04-04T16:39:14.125Z",
+      "msg": "Added T53 (BUILD) after end: Build a red-black tree: insert with rotations/recoloring, delete, search, in-order traversal, verification of RB properties, with tests"
+    },
+    {
+      "time": "2026-04-04T16:39:14.601Z",
+      "msg": "Added T54 (BUILD) after end: Build a simple HTTP framework: router, middleware, request/response parsing, with tests"
+    },
+    {
+      "time": "2026-04-04T16:39:15.085Z",
+      "msg": "Added T55 (BUILD) after end: Build a neural network from scratch: forward prop, backprop, gradient descent, XOR/MNIST-like examples, with tests"
+    },
+    {
+      "time": "2026-04-04T16:39:15.537Z",
+      "msg": "Added T56 (BUILD) after end: Build a Raft consensus protocol simulation: leader election, log replication, term management, with tests"
     }
   ]
 }
