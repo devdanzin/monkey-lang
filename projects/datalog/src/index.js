@@ -80,57 +80,33 @@ class Datalog {
         const matches = this._matchAtom(first, bindings);
         if (matches.length === 0) newBindings.push(bindings);
       } else {
-        const matches = this._matchAtom(first, bindings);
-        newBindings.push(...matches);
+
+  aggregate(predicate, index, fn) {
+    const facts = this.db.get(predicate) || [];
+    const values = facts.map(f => f[index]).filter(v => typeof v === 'number');
+    switch (fn) {
+      case 'count': return values.length;
+      case 'sum': return values.reduce((a, b) => a + b, 0);
+      case 'avg': return values.length ? values.reduce((a, b) => a + b, 0) / values.length : 0;
+      case 'min': return Math.min(...values);
+      case 'max': return Math.max(...values);
+      default: return values;
+    }
+  }
+
+  queryAll(predicate) {
+    return this.db.get(predicate) || [];
+  }
+
+  queryWhere(predicate, conditions) {
+    const facts = this.db.get(predicate) || [];
+    return facts.filter(fact => {
+      for (const [idx, value] of Object.entries(conditions)) {
+        if (fact[parseInt(idx)] !== value) return false;
       }
-    }
-    
-    return this._solveBody(rest, newBindings);
-  }
-
-  _matchAtom(atom, bindings) {
-    const facts = this.facts.get(atom.pred);
-    if (!facts) return [];
-    
-    const results = [];
-    const resolvedArgs = atom.args.map(a => this._resolve(a, bindings));
-    
-    for (const factStr of facts) {
-      const fact = JSON.parse(factStr);
-      const newBindings = this._unifyArgs(resolvedArgs, fact);
-      if (newBindings !== null) {
-        results.push({ ...bindings, ...newBindings });
-      }
-    }
-    return results;
-  }
-
-  _unifyArgs(pattern, values) {
-    if (pattern.length !== values.length) return null;
-    const bindings = {};
-    for (let i = 0; i < pattern.length; i++) {
-      const p = pattern[i];
-      const v = values[i];
-      if (typeof p === 'string' && p.startsWith('?')) {
-        if (bindings[p] !== undefined && bindings[p] !== v) return null;
-        bindings[p] = v;
-      } else if (p !== v) return null;
-    }
-    return bindings;
-  }
-
-  _resolve(arg, bindings) {
-    if (typeof arg === 'string' && arg.startsWith('?')) {
-      return bindings[arg] !== undefined ? bindings[arg] : arg;
-    }
-    return arg;
+      return true;
+    });
   }
 }
 
-// Helpers
-const fact = (pred, ...args) => ({ pred, args });
-const rule = (head, ...body) => ({ head, body });
-const atom = (pred, ...args) => ({ pred, args, negated: false });
-const not = (pred, ...args) => ({ pred, args, negated: true });
-
-module.exports = { Datalog, fact, rule, atom, not };
+module.exports = Datalog;

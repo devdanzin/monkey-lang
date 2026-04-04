@@ -97,3 +97,83 @@ test('ground query', () => {
   assert.equal(yes.length, 1);
   assert.equal(no.length, 0);
 });
+
+test('aggregate count', () => {
+  const dl = new Datalog();
+  dl.addFact('score', ['alice', 90]);
+  dl.addFact('score', ['bob', 80]);
+  dl.addFact('score', ['charlie', 95]);
+  dl.evaluate();
+  assert.equal(dl.aggregate('score', 1, 'count'), 3);
+});
+
+test('aggregate sum', () => {
+  const dl = new Datalog();
+  dl.addFact('score', ['alice', 90]);
+  dl.addFact('score', ['bob', 80]);
+  dl.evaluate();
+  assert.equal(dl.aggregate('score', 1, 'sum'), 170);
+});
+
+test('aggregate avg', () => {
+  const dl = new Datalog();
+  dl.addFact('score', ['alice', 80]);
+  dl.addFact('score', ['bob', 100]);
+  dl.evaluate();
+  assert.equal(dl.aggregate('score', 1, 'avg'), 90);
+});
+
+test('queryAll returns all facts', () => {
+  const dl = new Datalog();
+  dl.addFact('color', ['sky', 'blue']);
+  dl.addFact('color', ['grass', 'green']);
+  dl.addFact('color', ['fire', 'red']);
+  dl.evaluate();
+  assert.equal(dl.queryAll('color').length, 3);
+});
+
+test('queryWhere filters', () => {
+  const dl = new Datalog();
+  dl.addFact('parent', ['tom', 'bob']);
+  dl.addFact('parent', ['tom', 'liz']);
+  dl.addFact('parent', ['bob', 'ann']);
+  dl.evaluate();
+  const results = dl.queryWhere('parent', { 0: 'tom' });
+  assert.equal(results.length, 2);
+});
+
+test('recursive ancestor rule', () => {
+  const dl = new Datalog();
+  dl.addFact('parent', ['tom', 'bob']);
+  dl.addFact('parent', ['bob', 'ann']);
+  dl.addFact('parent', ['bob', 'pat']);
+  dl.addRule('ancestor', ['X', 'Y'], [['parent', ['X', 'Y']]]);
+  dl.addRule('ancestor', ['X', 'Z'], [['parent', ['X', 'Y']], ['ancestor', ['Y', 'Z']]]);
+  dl.evaluate();
+  const ancestors = dl.queryAll('ancestor');
+  assert.ok(ancestors.length >= 5); // tom->bob, bob->ann, bob->pat, tom->ann, tom->pat
+});
+
+test('negation in rules', () => {
+  const dl = new Datalog();
+  dl.addFact('student', ['alice']);
+  dl.addFact('student', ['bob']);
+  dl.addFact('graduated', ['bob']);
+  dl.addRule('active_student', ['X'], [['student', ['X']], ['!graduated', ['X']]]);
+  dl.evaluate();
+  const active = dl.queryAll('active_student');
+  assert.equal(active.length, 1);
+  assert.equal(active[0][0], 'alice');
+});
+
+test('multiple facts and rules', () => {
+  const dl = new Datalog();
+  dl.addFact('edge', ['a', 'b']);
+  dl.addFact('edge', ['b', 'c']);
+  dl.addFact('edge', ['c', 'd']);
+  dl.addRule('path', ['X', 'Y'], [['edge', ['X', 'Y']]]);
+  dl.addRule('path', ['X', 'Z'], [['edge', ['X', 'Y']], ['path', ['Y', 'Z']]]);
+  dl.evaluate();
+  const paths = dl.queryAll('path');
+  assert.ok(paths.length >= 6); // a->b, b->c, c->d, a->c, a->d, b->d
+});

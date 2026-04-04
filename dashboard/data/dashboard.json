@@ -1933,8 +1933,9 @@
     {
       "id": "T187",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Deepen datalog: stratification, negation, aggregation, recursive queries"
+      "status": "in-progress",
+      "task": "Deepen datalog: stratification, negation, aggregation, recursive queries",
+      "started": "2026-04-04T22:08:05.210Z"
     },
     {
       "id": "T188",
@@ -1943,12 +1944,18 @@
       "task": "Deepen elf-parser: symbol table, section parsing, dynamic linking info, CLI"
     }
   ],
-  "current": null,
+  "current": {
+    "id": "T187",
+    "mode": "BUILD",
+    "status": "in-progress",
+    "task": "Deepen datalog: stratification, negation, aggregation, recursive queries",
+    "started": "2026-04-04T22:08:05.210Z"
+  },
   "stats": {
     "completed": 183,
     "yielded": 0,
     "skipped": 3,
     "total_duration_ms": 60330000
   },
-  "updated_at": "2026-04-04T22:07:45.223Z"
+  "updated_at": "2026-04-04T22:08:05.210Z"
 }
