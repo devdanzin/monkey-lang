@@ -1923,8 +1923,9 @@
     {
       "id": "T186",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": "Deepen graph-db: Cypher-like query language, pattern matching, path finding, aggregations"
+      "status": "in-progress",
+      "task": "Deepen graph-db: Cypher-like query language, pattern matching, path finding, aggregations",
+      "started": "2026-04-04T22:01:08.618Z"
     },
     {
       "id": "T187",
@@ -1939,7 +1940,7 @@
       "task": "Deepen elf-parser: symbol table, section parsing, dynamic linking info, CLI"
     }
   ],
-  "updated_at": "2026-04-04T22:00:52.838Z",
+  "updated_at": "2026-04-04T22:01:08.618Z",
   "adjustments": [
     {
       "time": "2026-04-04T21:58:17.264Z",
