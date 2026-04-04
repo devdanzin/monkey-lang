@@ -1311,23 +1311,33 @@
     {
       "id": "T128",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add call/cc (call-with-current-continuation) to Lisp interpreter",
-      "started": "2026-04-04T19:18:41.512Z"
+      "started": "2026-04-04T19:18:41.512Z",
+      "completed": "2026-04-04T19:21:18.571Z",
+      "duration_ms": 600000,
+      "summary": "Lisp: call/cc (escape continuations), call-with-current-continuation, values. Tests cover early return, nested call/cc, try/catch pattern, break-from-loop (sum 1..100). 13 new tests (69 total)."
+    },
+    {
+      "id": "T129",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add hygienic macros to Lisp: define-syntax, syntax-rules, macro expansion",
+      "started": "2026-04-04T19:21:43.565Z"
     }
   ],
   "current": {
-    "id": "T128",
+    "id": "T129",
     "mode": "BUILD",
     "status": "in-progress",
-    "task": "Add call/cc (call-with-current-continuation) to Lisp interpreter",
-    "started": "2026-04-04T19:18:41.512Z"
+    "task": "Add hygienic macros to Lisp: define-syntax, syntax-rules, macro expansion",
+    "started": "2026-04-04T19:21:43.565Z"
   },
   "stats": {
-    "completed": 126,
+    "completed": 127,
     "yielded": 0,
     "skipped": 1,
-    "total_duration_ms": 39360000
+    "total_duration_ms": 39960000
   },
-  "updated_at": "2026-04-04T19:18:41.512Z"
+  "updated_at": "2026-04-04T19:21:43.565Z"
 }

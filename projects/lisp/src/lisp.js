@@ -36,6 +36,33 @@ class ContinuationJump {
   constructor(tag, value) { this.tag = tag; this.value = value; }
 }
 
+// Macro: stores a transformer function that takes unevaluated code and returns new code
+export class LispMacro {
+  constructor(name, params, body, env, restParam = null) {
+    this.name = name;
+    this.params = params;
+    this.body = body;
+    this.env = env;
+    this.restParam = restParam;
+  }
+  toString() { return `<macro ${this.name}>`; }
+  
+  // Expand: bind unevaluated args to params, evaluate body to get new code
+  expand(args, evalFn) {
+    const expandEnv = new Environment(this.env);
+    for (let i = 0; i < this.params.length; i++) {
+      expandEnv.set(this.params[i], args[i] || NIL);
+    }
+    if (this.restParam) {
+      const restArgs = args.slice(this.params.length);
+      expandEnv.set(this.restParam, new LispList(restArgs));
+    }
+    let result = NIL;
+    for (const expr of this.body) result = evalFn(expr, expandEnv);
+    return result;
+  }
+}
+
 export function lispToString(val) {
   if (val === NIL) return 'nil';
   if (val === true) return '#t';
@@ -68,6 +95,13 @@ export function tokenize(input) {
 
     // Quote shorthand
     if (ch === "'") { tokens.push("'"); i++; continue; }
+
+    // Quasiquote reader macros
+    if (ch === '`') { tokens.push('`'); i++; continue; }
+    if (ch === ',' && i + 1 < input.length && input[i + 1] === '@') {
+      tokens.push(',@'); i += 2; continue;
+    }
+    if (ch === ',') { tokens.push(','); i++; continue; }
 
     // String
     if (ch === '"') {
@@ -117,6 +151,24 @@ export function parseTokens(tokens) {
       pos++;
       const expr = parseExpr();
       return new LispList([new LispSymbol('quote'), expr]);
+    }
+
+    if (token === '`') {
+      pos++;
+      const expr = parseExpr();
+      return new LispList([new LispSymbol('quasiquote'), expr]);
+    }
+
+    if (token === ',@') {
+      pos++;
+      const expr = parseExpr();
+      return new LispList([new LispSymbol('unquote-splicing'), expr]);
+    }
+
+    if (token === ',') {
+      pos++;
+      const expr = parseExpr();
+      return new LispList([new LispSymbol('unquote'), expr]);
     }
 
     if (token === '(') {
@@ -340,6 +392,58 @@ export function evaluate(expr, env) {
           for (let i = 1; i < expr.length; i++) vals.push(evaluate(expr.get(i), env));
           return new LispList(vals);
         }
+
+        case 'defmacro': {
+          // (defmacro name (params...) body...)
+          // Also supports rest params: (defmacro name (a b . rest) body...)
+          const name = expr.get(1).name;
+          const paramList = expr.get(2).items;
+          const params = [];
+          let restParam = null;
+          for (let i = 0; i < paramList.length; i++) {
+            if (paramList[i] instanceof LispSymbol && paramList[i].name === '.') {
+              restParam = paramList[i + 1].name;
+              break;
+            }
+            params.push(paramList[i].name);
+          }
+          const body = expr.items.slice(3);
+          const macro = new LispMacro(name, params, body, env, restParam);
+          env.set(name, macro);
+          return macro;
+        }
+
+        case 'macroexpand': {
+          // (macroexpand (macro-call arg1 arg2...))
+          const form = expr.get(1);
+          if (form instanceof LispList && form.length > 0) {
+            const macroName = form.get(0).name;
+            const macro = env.get(macroName);
+            if (macro instanceof LispMacro) {
+              return macro.expand(form.items.slice(1), evaluate);
+            }
+          }
+          return form;
+        }
+
+        case 'quasiquote': {
+          // (quasiquote expr) — like quote but with unquote/unquote-splicing
+          return expandQuasiquote(expr.get(1), env);
+        }
+      }
+    }
+
+    // Check for macro call first
+    if (first instanceof LispSymbol) {
+      try {
+        const maybeMacro = env.get(first.name);
+        if (maybeMacro instanceof LispMacro) {
+          // Macro expansion: pass unevaluated args, then evaluate the expanded form
+          const expanded = maybeMacro.expand(expr.items.slice(1), evaluate);
+          return evaluate(expanded, env);
+        }
+      } catch (e) {
+        // Not found in env — fall through to normal eval
       }
     }
 
@@ -497,4 +601,33 @@ export function run(code) {
   let result = NIL;
   for (const expr of exprs) result = evaluate(expr, env);
   return result;
+}
+
+// Quasiquote expansion
+function expandQuasiquote(expr, env) {
+  if (expr instanceof LispList) {
+    if (expr.length > 0 && expr.get(0) instanceof LispSymbol) {
+      if (expr.get(0).name === 'unquote') {
+        return evaluate(expr.get(1), env);
+      }
+    }
+    
+    const result = [];
+    for (const item of expr.items) {
+      if (item instanceof LispList && item.length > 0 && item.get(0) instanceof LispSymbol) {
+        if (item.get(0).name === 'unquote-splicing') {
+          const spliced = evaluate(item.get(1), env);
+          if (spliced instanceof LispList) {
+            result.push(...spliced.items);
+          } else {
+            result.push(spliced);
+          }
+          continue;
+        }
+      }
+      result.push(expandQuasiquote(item, env));
+    }
+    return new LispList(result);
+  }
+  return expr; // Atoms are returned as-is (like quote)
 }
