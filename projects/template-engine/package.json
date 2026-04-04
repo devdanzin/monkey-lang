@@ -1,12 +1,6 @@
 {
   "name": "template-engine",
-  "version": "1.0.0",
-  "description": "Template engine from scratch — Mustache/Handlebars-like",
+  "version": "0.1.0",
   "type": "module",
-  "main": "src/index.js",
-  "scripts": {
-    "test": "node --test test/*.test.js"
-  },
-  "author": "Henry",
-  "license": "MIT"
+  "scripts": { "test": "node --test test/*.test.js" }
 }
