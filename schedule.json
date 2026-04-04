@@ -439,13 +439,24 @@
       "completed": "2026-04-04T16:03:30.567Z",
       "duration_ms": 600000,
       "summary": "CSP solver: AC-3 + backtracking + MRV + forward checking. Sudoku, N-Queens, graph/map coloring. 22 tests."
+    },
+    {
+      "id": "T42",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add CSP solver README and update dashboard with CSP + type inference projects",
+      "started": "2026-04-04T16:04:07.122Z"
     }
   ],
-  "updated_at": "2026-04-04T16:03:30.567Z",
+  "updated_at": "2026-04-04T16:04:07.122Z",
   "adjustments": [
     {
       "time": "2026-04-04T16:01:25.982Z",
       "msg": "Added T41 (BUILD) after end: Build CSP solver with AC-3 arc consistency, backtracking search, and encodings for Sudoku, N-Queens, and graph coloring"
+    },
+    {
+      "time": "2026-04-04T16:03:59.354Z",
+      "msg": "Added T42 (BUILD) after end: Add CSP solver README and update dashboard with CSP + type inference projects"
     }
   ]
 }
