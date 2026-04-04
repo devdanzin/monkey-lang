@@ -976,9 +976,19 @@
       "completed": "2026-04-04T17:57:22.825Z",
       "duration_ms": 300000,
       "summary": "Validator library: Zod-inspired, string/number/boolean/array/object schemas, chaining, optional. 22 tests. PROJECT #50!"
+    },
+    {
+      "id": "T96",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a simple ORM: define models, CRUD, relationships (hasOne, hasMany), query builder, with tests",
+      "started": "2026-04-04T17:57:51.884Z",
+      "completed": "2026-04-04T17:58:56.466Z",
+      "duration_ms": 300000,
+      "summary": "ORM: models, CRUD, query builder with operators, hasMany/belongsTo relationships. 15 tests."
     }
   ],
-  "updated_at": "2026-04-04T17:57:22.825Z",
+  "updated_at": "2026-04-04T17:58:56.466Z",
   "adjustments": [
     {
       "time": "2026-04-04T16:01:25.982Z",
@@ -1203,6 +1213,10 @@
     {
       "time": "2026-04-04T17:56:15.803Z",
       "msg": "Added T95 (BUILD) after end: Build a simple validator library: string, number, object, array, custom rules, chaining, with tests"
+    },
+    {
+      "time": "2026-04-04T17:57:51.309Z",
+      "msg": "Added T96 (BUILD) after end: Build a simple ORM: define models, CRUD, relationships (hasOne, hasMany), query builder, with tests"
     }
   ]
 }
