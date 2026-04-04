@@ -1961,6 +1961,12 @@
       "mode": "BUILD",
       "status": "upcoming",
       "task": "DNS resolver: DNS packet parsing, query building, recursive resolution, caching, A/AAAA/MX/TXT records"
+    },
+    {
+      "id": "T191",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "JSONPath query engine: path expressions, filters, wildcards, recursive descent, array slicing"
     }
   ],
   "updated_at": "2026-04-04T22:10:58.713Z",
@@ -1992,6 +1998,10 @@
     {
       "time": "2026-04-04T22:15:05.218Z",
       "msg": "Added T190 (BUILD) after end: DNS resolver: DNS packet parsing, query building, recursive resolution, caching, A/AAAA/MX/TXT records"
+    },
+    {
+      "time": "2026-04-04T22:16:53.625Z",
+      "msg": "Added T191 (BUILD) after end: JSONPath query engine: path expressions, filters, wildcards, recursive descent, array slicing"
     }
   ]
 }
