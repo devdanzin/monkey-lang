@@ -1,0 +1,9 @@
+{
+  "name": "sdf-renderer",
+  "version": "1.0.0",
+  "description": "SDF ray marcher — signed distance functions, sphere marching, soft shadows, ambient occlusion",
+  "type": "module",
+  "scripts": {
+    "test": "node --test src/**/*.test.js"
+  }
+}

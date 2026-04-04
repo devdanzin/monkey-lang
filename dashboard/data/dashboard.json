@@ -1811,14 +1811,50 @@
       "completed": "2026-04-04T21:40:52.613Z",
       "duration_ms": 180000,
       "summary": "Git pushed, dashboard updated, scratch note for chess engine, CURRENT.md updated. Session B at task 35."
+    },
+    {
+      "id": "T176",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Build SDF ray marcher: signed distance functions, sphere marching, CSG operations, soft shadows, ambient occlusion, PPM image output",
+      "task": null,
+      "started": "2026-04-04T21:41:21.911Z",
+      "completed": "2026-04-04T21:41:41.123Z",
+      "duration_ms": 60000,
+      "summary": "3 BUILD tasks for SDF ray marcher: SDF library, ray marcher engine, scene builder + advanced features"
+    },
+    {
+      "id": "T177",
+      "mode": "BUILD",
+      "task": "SDF library: sphere, box, torus, cylinder, plane + CSG ops (union, intersection, subtraction, smooth union). Normal estimation via gradient.",
+      "status": "done",
+      "plan_ref": "T176",
+      "started": "2026-04-04T21:41:49.500Z",
+      "completed": "2026-04-04T21:44:22.479Z",
+      "duration_ms": 600000,
+      "summary": "SDF library: sphere, box, plane, torus, cylinder, capsule, rounded box. CSG: union, intersection, subtraction, smooth union/sub/intersect. Transforms: translate, rotate (X/Y/Z), scale, domain repetition. Normal estimation via gradient. 32 tests."
+    },
+    {
+      "id": "T178",
+      "mode": "BUILD",
+      "task": "Ray marcher: sphere marching, soft shadows, ambient occlusion, Phong shading. PPM output with antialiasing.",
+      "status": "upcoming",
+      "plan_ref": "T176"
+    },
+    {
+      "id": "T179",
+      "mode": "BUILD",
+      "task": "Scene builder + advanced features: transforms (translate, rotate, scale), material system, reflection, domain repetition. Test scenes.",
+      "status": "upcoming",
+      "plan_ref": "T176"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 172,
+    "completed": 174,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 55770000
+    "total_duration_ms": 56430000
   },
-  "updated_at": "2026-04-04T21:40:52.613Z"
+  "updated_at": "2026-04-04T21:44:22.479Z"
 }
