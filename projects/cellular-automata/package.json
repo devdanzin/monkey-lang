@@ -1,0 +1,9 @@
+{
+  "name": "cellular-automata",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Cellular automata: Game of Life, elementary automata, Langton's Ant",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  }
+}
