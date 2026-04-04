@@ -2483,9 +2483,19 @@
       "completed": "2026-04-04T23:52:01.200Z",
       "duration_ms": 600000,
       "summary": "JSON-RPC 2.0: message builders (request/notification/response/error), validation (isRequest/isNotification/isResponse/isBatch), Server (method registry, middleware, string/object input, named/positional params, JsonRpcError, internal error handling, notifications return nothing, batch processing), Client (call/notify/batch via transport abstraction, error propagation). 23 tests. GitHub: henry-the-frog/json-rpc"
+    },
+    {
+      "id": "T241",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "URL parser: parse URL components (scheme, auth, host, port, path, query, fragment), URLSearchParams, URL builder, relative URL resolution, punycode basics. 25+ tests.",
+      "started": "2026-04-04T23:52:11.730Z",
+      "completed": "2026-04-04T23:53:43.227Z",
+      "duration_ms": 600000,
+      "summary": "URL parser: parseUrl (scheme/auth/host/port/path/query/fragment, origin, href roundtrip), buildUrl (with auth encoding), SearchParams (get/getAll/has/set/append/delete/keys/entries/toString, encoded values), resolveUrl (absolute path, relative path, protocol-relative, absolute passthrough), normalizePath (. and ..), default ports. 25 tests. GitHub: henry-the-frog/url-parser"
     }
   ],
-  "updated_at": "2026-04-04T23:52:01.200Z",
+  "updated_at": "2026-04-04T23:53:43.227Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -2610,6 +2620,10 @@
     {
       "time": "2026-04-04T23:50:52.527Z",
       "msg": "Added T240 (BUILD) after end: JSON-RPC 2.0: request/response/notification/batch, method registry, error codes, middleware, transport abstraction. 25+ tests."
+    },
+    {
+      "time": "2026-04-04T23:52:11.116Z",
+      "msg": "Added T241 (BUILD) after end: URL parser: parse URL components (scheme, auth, host, port, path, query, fragment), URLSearchParams, URL builder, relative URL resolution, punycode basics. 25+ tests."
     }
   ]
 }

@@ -1,83 +1,121 @@
-// URL parser — parse, format, resolve, query strings
+// url.js — URL parser from scratch
 
-export function parse(url) {
-  const m = url.match(/^(?:([a-zA-Z][a-zA-Z0-9+.-]*):)?(?:\/\/(?:([^@/?#]*)@)?([^:/?#]*)(?::(\d+))?)?([^?#]*)(?:\?([^#]*))?(?:#(.*))?$/);
+const URL_RE = /^(?:([a-zA-Z][a-zA-Z0-9+.-]*):)?(?:\/\/(?:([^@/?#]*)@)?([^:/?#]*)(?::(\d+))?)?([^?#]*)(?:\?([^#]*))?(?:#(.*))?$/;
+
+export function parseUrl(url) {
+  const m = URL_RE.exec(url);
   if (!m) throw new Error(`Invalid URL: ${url}`);
-  const [, protocol, auth, hostname, port, pathname, search, hash] = m;
-  const [username, password] = auth ? auth.split(':') : [undefined, undefined];
+  
+  const [, scheme, auth, host, port, path, query, fragment] = m;
+  
+  let username = '', password = '';
+  if (auth) {
+    const [u, p] = auth.split(':');
+    username = decodeURIComponent(u || '');
+    password = decodeURIComponent(p || '');
+  }
+  
   return {
-    protocol: protocol || '',
-    username: username ? decodeURIComponent(username) : '',
-    password: password ? decodeURIComponent(password) : '',
-    hostname: hostname || '',
+    scheme: scheme || '',
+    username,
+    password,
+    host: host || '',
     port: port ? parseInt(port) : null,
-    pathname: pathname || '/',
-    search: search || '',
-    hash: hash || '',
-    get host() { return this.port ? `${this.hostname}:${this.port}` : this.hostname; },
-    get origin() { return this.protocol ? `${this.protocol}://${this.host}` : ''; },
-    get query() { return parseQuery(this.search); },
+    path: path || '/',
+    query: query || '',
+    fragment: fragment || '',
+    get origin() { return `${this.scheme}://${this.host}${this.port ? ':' + this.port : ''}`; },
+    get href() { return buildUrl(this); },
+    get searchParams() { return parseSearchParams(this.query); },
   };
 }
 
-export function format(parts) {
+export function buildUrl(parts) {
   let url = '';
-  if (parts.protocol) url += parts.protocol + '://';
+  if (parts.scheme) url += `${parts.scheme}://`;
   if (parts.username) {
     url += encodeURIComponent(parts.username);
-    if (parts.password) url += ':' + encodeURIComponent(parts.password);
+    if (parts.password) url += `:${encodeURIComponent(parts.password)}`;
     url += '@';
   }
-  url += parts.hostname || '';
-  if (parts.port) url += ':' + parts.port;
-  url += parts.pathname || '/';
-  if (parts.search) url += '?' + parts.search;
-  if (parts.hash) url += '#' + parts.hash;
+  url += parts.host || '';
+  if (parts.port) url += `:${parts.port}`;
+  url += parts.path || '/';
+  if (parts.query) url += `?${parts.query}`;
+  if (parts.fragment) url += `#${parts.fragment}`;
   return url;
 }
 
-export function parseQuery(qs) {
-  const params = {};
-  if (!qs) return params;
-  for (const pair of qs.split('&')) {
-    const [key, ...rest] = pair.split('=');
-    const value = rest.join('=');
-    const k = decodeURIComponent(key);
-    const v = decodeURIComponent(value);
-    if (params[k] !== undefined) {
-      if (!Array.isArray(params[k])) params[k] = [params[k]];
-      params[k].push(v);
-    } else params[k] = v;
+// ===== SearchParams =====
+export function parseSearchParams(query) {
+  const params = new Map();
+  if (!query) {
+    // still return functional object
+  } else for (const pair of query.split('&')) {
+    const eq = pair.indexOf('=');
+    const key = decodeURIComponent(eq === -1 ? pair : pair.slice(0, eq));
+    const value = eq === -1 ? '' : decodeURIComponent(pair.slice(eq + 1));
+    if (!params.has(key)) params.set(key, []);
+    params.get(key).push(value);
   }
-  return params;
+  
+  return {
+    get(key) { return params.get(key)?.[0] ?? null; },
+    getAll(key) { return params.get(key) || []; },
+    has(key) { return params.has(key); },
+    set(key, value) { params.set(key, [value]); },
+    append(key, value) { if (!params.has(key)) params.set(key, []); params.get(key).push(value); },
+    delete(key) { params.delete(key); },
+    keys() { return [...params.keys()]; },
+    entries() { return [...params.entries()].flatMap(([k, v]) => v.map(val => [k, val])); },
+    toString() {
+      return [...params.entries()].flatMap(([k, v]) => v.map(val => `${encodeURIComponent(k)}=${encodeURIComponent(val)}`)).join('&');
+    },
+  };
 }
 
-export function formatQuery(params) {
-  const parts = [];
-  for (const [key, val] of Object.entries(params)) {
-    const vals = Array.isArray(val) ? val : [val];
-    for (const v of vals) parts.push(`${encodeURIComponent(key)}=${encodeURIComponent(v)}`);
+// ===== Relative URL Resolution =====
+export function resolveUrl(base, relative) {
+  const b = parseUrl(base);
+  
+  if (relative.startsWith('//')) {
+    return `${b.scheme}:${relative}`;
   }
-  return parts.join('&');
-}
-
-export function resolve(base, relative) {
-  if (/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(relative)) return relative; // absolute
-  const b = parse(base);
-  if (relative.startsWith('//')) return b.protocol + ':' + relative;
-  if (relative.startsWith('/')) return format({ ...b, pathname: relative, search: '', hash: '' });
+  if (relative.startsWith('/')) {
+    return `${b.scheme}://${b.host}${b.port ? ':' + b.port : ''}${relative}`;
+  }
+  if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(relative)) {
+    return relative; // absolute URL
+  }
+  
   // Relative path
-  const basePath = b.pathname.replace(/\/[^/]*$/, '/');
-  const newPath = normalizePath(basePath + relative);
-  return format({ ...b, pathname: newPath, search: '', hash: '' });
+  const basePath = b.path.slice(0, b.path.lastIndexOf('/') + 1);
+  let resolved = basePath + relative;
+  
+  // Normalize path (remove . and ..)
+  resolved = normalizePath(resolved);
+  
+  return `${b.scheme}://${b.host}${b.port ? ':' + b.port : ''}${resolved}`;
 }
 
-function normalizePath(path) {
+export function normalizePath(path) {
   const parts = path.split('/');
   const result = [];
-  for (const p of parts) {
-    if (p === '..') result.pop();
-    else if (p !== '.') result.push(p);
+  for (const part of parts) {
+    if (part === '.') continue;
+    if (part === '..') { result.pop(); continue; }
+    result.push(part);
   }
   return result.join('/') || '/';
+}
+
+// ===== Default ports =====
+const DEFAULT_PORTS = { http: 80, https: 443, ftp: 21, ssh: 22, ws: 80, wss: 443 };
+
+export function getDefaultPort(scheme) {
+  return DEFAULT_PORTS[scheme?.toLowerCase()] ?? null;
+}
+
+export function isDefaultPort(scheme, port) {
+  return getDefaultPort(scheme) === port;
 }
