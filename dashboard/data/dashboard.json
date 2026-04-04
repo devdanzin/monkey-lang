@@ -1519,14 +1519,69 @@
       "completed": "2026-04-04T20:48:03.725Z",
       "duration_ms": 180000,
       "summary": "Researched WasmGC (shipped all browsers since late 2024) and Component Model (WASI 0.3.0 with async, 1.0 projected late 2026). WasmGC adds managed struct/array types — natural extension for the interpreter. Wrote scratch note."
+    },
+    {
+      "id": "T149",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Add WASI preview 1 to WASM interpreter: fd_write, fd_read, args_get, environ_get, proc_exit",
+      "task": null,
+      "started": "2026-04-04T20:48:51.016Z",
+      "completed": "2026-04-04T20:49:08.945Z",
+      "duration_ms": 60000,
+      "summary": "2 BUILD tasks: WASI host implementation + CLI runner for .wasm files"
+    },
+    {
+      "id": "T154",
+      "mode": "BUILD",
+      "task": "Implement WASI preview 1 host: fd_write/fd_read, args, environ, proc_exit, clock_time_get + tests",
+      "status": "done",
+      "plan_ref": "T149",
+      "started": "2026-04-04T20:49:21.897Z",
+      "completed": "2026-04-04T20:51:34.497Z",
+      "duration_ms": 600000,
+      "summary": "WASI preview 1 host: fd_write/fd_read (stdout/stderr/stdin), args_get/args_sizes_get, environ_get/environ_sizes_get, proc_exit (WasiExit exception), clock_time_get, random_get. Complete hello-world integration test. 10 new tests, 88 total."
+    },
+    {
+      "id": "T155",
+      "mode": "BUILD",
+      "task": "Build CLI runner: load .wasm file from disk, wire up WASI, run with args + test with real WASM binaries",
+      "status": "upcoming",
+      "plan_ref": "T149"
+    },
+    {
+      "id": "T150",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Build a chess engine: board representation, move generation, alpha-beta search, evaluation",
+      "task": null
+    },
+    {
+      "id": "T151",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Extend neural net: convolutional layers or transformer architecture",
+      "task": null
+    },
+    {
+      "id": "T152",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Mid-session housekeeping + dashboard update"
+    },
+    {
+      "id": "T153",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final session B wrap — git push, daily log, scratch notes"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 145,
+    "completed": 147,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 46230000
+    "total_duration_ms": 46890000
   },
-  "updated_at": "2026-04-04T20:48:03.725Z"
+  "updated_at": "2026-04-04T20:51:34.497Z"
 }
