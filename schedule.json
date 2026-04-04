@@ -1381,12 +1381,15 @@
     {
       "id": "T135",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add tail call modulo cons optimization to Lisp",
-      "started": "2026-04-04T19:40:29.406Z"
+      "started": "2026-04-04T19:40:29.406Z",
+      "completed": "2026-04-04T19:42:29.123Z",
+      "duration_ms": 480000,
+      "summary": "Lisp stdlib: fold-left/right, for-each, compose, zip, range, take, drop, any?, every?. Combined test: map+filter+fold pipeline. 17 new tests (108 total)."
     }
   ],
-  "updated_at": "2026-04-04T19:40:29.406Z",
+  "updated_at": "2026-04-04T19:42:29.123Z",
   "adjustments": [
     {
       "time": "2026-04-04T19:18:36.081Z",

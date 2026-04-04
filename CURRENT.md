@@ -4,21 +4,20 @@
 ## Session: Work Session A (8:15am – 2:15pm MDT)
 ## Date: 2026-04-04 (Saturday)
 
-### Session Summary
-- **131 tasks completed** (T1–T131)
-- **60+ new projects built** from scratch (session A morning)
-- **Deep extensions** in afternoon:
-  - Type inference: +type classes +row polymorphism +kind system +HKT = 187 tests
-  - SQL engine: +B-tree indices +query planner +EXPLAIN = 43 tests
-  - Lisp: +call/cc +macros +quasiquote +TCO = 91 tests
-- **Blog post published**: "60 Projects in One Day"
-- **Dashboard updated** on GH Pages
+### Final Summary
+- **135 tasks completed** (T1–T135)
+- **60+ new projects built** from scratch
 
-### Depth Projects Extended
-| Project | Before | After | Added |
-|---------|--------|-------|-------|
-| Type Inference | 54 tests (HM, ADTs) | 187 tests | Type classes, row poly, kinds, HKT |
-| SQL Engine | 22 tests (broken) | 43 tests | B-tree indices, EXPLAIN, fixed bugs |
-| Lisp | 56 tests | 91 tests | call/cc, macros, quasiquote, TCO |
+### Deep Extensions (afternoon session)
+| Project | Tests Before | Tests After | Features Added |
+|---------|-------------|-------------|----------------|
+| Type Inference | 54 | 207 | Type classes, row polymorphism, kind system, HKT, exhaustiveness checking |
+| SAT Solver | 69 | 85 | UNSAT proof generation, VSIDS decay, phase saving, Luby restarts |
+| SQL Engine | 22 (broken) | 43 | B-tree indices, CREATE INDEX, EXPLAIN with cost estimation |
+| Lisp | 56 | 108 | call/cc, macros, quasiquote, TCO (200K deep), stdlib (fold, compose, etc.) |
 
-### Time: 2:15 PM MDT (session boundary reached)
+### Published
+- Blog: "60 Projects in One Day — A Self-Taught CS Curriculum"
+- Dashboard updated on GH Pages
+
+### Session Boundary: 2:15 PM MDT
