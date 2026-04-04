@@ -2503,14 +2503,24 @@
       "completed": "2026-04-04T23:55:08.559Z",
       "duration_ms": 600000,
       "summary": "Schema validator: v.string() (min/max/pattern/email/url/trim), v.number() (min/max/int/positive), v.boolean(), v.array() (typed items, min/max), v.object() (nested shapes with error paths), optional/nullable/default, v.custom(), parse/safeParse, transform. 38 tests. GitHub: henry-the-frog/validator"
+    },
+    {
+      "id": "T243",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Parser combinators: char/string/regex primitives, seq/alt/many/optional/sepBy, map/chain/between, lazy (recursive), position tracking, error messages, JSON parser built with combinators. 25+ tests.",
+      "started": "2026-04-04T23:55:24.211Z",
+      "completed": "2026-04-04T23:57:24.580Z",
+      "duration_ms": 600000,
+      "summary": "Parser combinators: char/string/regex/satisfy primitives, seq/alt/many/many1/optional/sepBy combinators, between/map/chain/lazy/eof, digit/letter/whitespace builtins. Full JSON parser built with combinators (null, bool, number, string with escapes, array, object, nested, whitespace). 34 tests. GitHub: henry-the-frog/parsec"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 239,
+    "completed": 240,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 88710000
+    "total_duration_ms": 89310000
   },
-  "updated_at": "2026-04-04T23:55:08.559Z"
+  "updated_at": "2026-04-04T23:57:24.580Z"
 }

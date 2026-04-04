@@ -2503,9 +2503,19 @@
       "completed": "2026-04-04T23:55:08.559Z",
       "duration_ms": 600000,
       "summary": "Schema validator: v.string() (min/max/pattern/email/url/trim), v.number() (min/max/int/positive), v.boolean(), v.array() (typed items, min/max), v.object() (nested shapes with error paths), optional/nullable/default, v.custom(), parse/safeParse, transform. 38 tests. GitHub: henry-the-frog/validator"
+    },
+    {
+      "id": "T243",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Parser combinators: char/string/regex primitives, seq/alt/many/optional/sepBy, map/chain/between, lazy (recursive), position tracking, error messages, JSON parser built with combinators. 25+ tests.",
+      "started": "2026-04-04T23:55:24.211Z",
+      "completed": "2026-04-04T23:57:24.580Z",
+      "duration_ms": 600000,
+      "summary": "Parser combinators: char/string/regex/satisfy primitives, seq/alt/many/many1/optional/sepBy combinators, between/map/chain/lazy/eof, digit/letter/whitespace builtins. Full JSON parser built with combinators (null, bool, number, string with escapes, array, object, nested, whitespace). 34 tests. GitHub: henry-the-frog/parsec"
     }
   ],
-  "updated_at": "2026-04-04T23:55:08.559Z",
+  "updated_at": "2026-04-04T23:57:24.580Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -2638,6 +2648,10 @@
     {
       "time": "2026-04-04T23:53:54.612Z",
       "msg": "Added T242 (BUILD) after end: Schema validation library: string/number/boolean/array/object schemas, min/max/pattern/email/url, optional/nullable/default, nested objects, custom validators, error messages, transform/coerce. 30+ tests."
+    },
+    {
+      "time": "2026-04-04T23:55:23.480Z",
+      "msg": "Added T243 (BUILD) after end: Parser combinators: char/string/regex primitives, seq/alt/many/optional/sepBy, map/chain/between, lazy (recursive), position tracking, error messages, JSON parser built with combinators. 25+ tests."
     }
   ]
 }
