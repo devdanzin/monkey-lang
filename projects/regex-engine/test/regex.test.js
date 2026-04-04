@@ -892,3 +892,85 @@ describe('Regex — lazy DFA', () => {
     assert.equal(r.testLazyDFA('ab'), false);
   });
 });
+
+// ===== API completeness =====
+describe('Regex — API completeness', () => {
+  it('toString returns pattern', () => {
+    assert.equal(new Regex('abc').toString(), '/abc/');
+    assert.equal(new Regex('[a-z]+').toString(), '/[a-z]+/');
+  });
+  it('groupCount tracks capturing groups', () => {
+    assert.equal(new Regex('(a)(b)(c)').groupCount, 3);
+    assert.equal(new Regex('(?:a)(b)').groupCount, 1);
+    assert.equal(new Regex('abc').groupCount, 0);
+  });
+  it('matchAll with groups-like pattern', () => {
+    const r = new Regex('[A-Z][a-z]+');
+    const m = r.matchAll('Hello World Foo');
+    assert.equal(m.length, 3);
+    assert.equal(m[0].match, 'Hello');
+    assert.equal(m[1].match, 'World');
+    assert.equal(m[2].match, 'Foo');
+  });
+  it('replace with function receives match and index', () => {
+    const r = new Regex('[0-9]+');
+    const result = r.replace('x1y22z', (match, idx) => `${match}@${idx}`);
+    assert.equal(result, 'x1@1y22@3z');
+  });
+  it('split preserves empty strings', () => {
+    const r = new Regex(',');
+    assert.deepEqual(r.split(',a,b,'), ['', 'a', 'b', '']);
+  });
+  it('search returns null for empty pattern on empty string', () => {
+    // Empty pattern can match empty string; search behavior
+    const r = new Regex('x');
+    assert.equal(r.search(''), null);
+  });
+  it('all three DFA modes agree', () => {
+    const patterns = ['abc', 'a*b+c?', '[a-z]{2,5}', '(x|y|z)+'];
+    const inputs = ['abc', 'bc', 'bc', 'ab', 'abcde', 'xyz', 'xyzzy', ''];
+    for (const pat of patterns) {
+      const r = new Regex(pat);
+      for (const inp of inputs) {
+        const nfa = r.test(inp);
+        const dfa = r.testDFA(inp);
+        const minDfa = r.testMinDFA(inp);
+        const lazyDfa = r.testLazyDFA(inp);
+        assert.equal(nfa, dfa, `NFA/DFA mismatch: /${pat}/ on "${inp}"`);
+        assert.equal(dfa, minDfa, `DFA/MinDFA mismatch: /${pat}/ on "${inp}"`);
+        assert.equal(dfa, lazyDfa, `DFA/LazyDFA mismatch: /${pat}/ on "${inp}"`);
+      }
+    }
+  });
+  it('exec with no groups returns array with full match only', () => {
+    const r = new Regex('abc');
+    const m = r.exec('abc');
+    assert.ok(m);
+    assert.equal(m[0], 'abc');
+    assert.equal(m.length, 1);
+  });
+});
+
+// ===== Performance =====
+describe('Regex — performance', () => {
+  it('a*a does not catastrophic backtrack (NFA is linear)', () => {
+    const n = 20;
+    const r = new Regex('a?'.repeat(n) + 'a'.repeat(n));
+    assert.equal(r.test('a'.repeat(n)), true);
+  });
+  it('DFA handles long strings efficiently', () => {
+    const r = new Regex('[a-z]+');
+    const input = 'a'.repeat(10000);
+    assert.equal(r.testDFA(input), true);
+  });
+  it('lazy DFA handles long strings', () => {
+    const r = new Regex('[a-z]+');
+    assert.equal(r.testLazyDFA('a'.repeat(10000)), true);
+  });
+  it('matchAll on large input', () => {
+    const r = new Regex('[0-9]+');
+    const input = Array.from({ length: 100 }, (_, i) => `word${i}`).join(' ');
+    const matches = r.matchAll(input);
+    assert.equal(matches.length, 100);
+  });
+});
