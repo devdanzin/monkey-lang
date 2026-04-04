@@ -1730,8 +1730,12 @@
       "id": "T168",
       "mode": "BUILD",
       "task": "Router + middleware: path matching (static + params), middleware chain, error handling, JSON body parsing, static file serving",
-      "status": "upcoming",
-      "plan_ref": "T166"
+      "status": "done",
+      "plan_ref": "T166",
+      "started": "2026-04-04T21:27:45.709Z",
+      "completed": "2026-04-04T21:29:40.962Z",
+      "duration_ms": 600000,
+      "summary": "HTTP server: router with parameterized paths + wildcards, middleware chain, error handling, JSON body parsing. Integration tests with real TCP connections: 10 concurrent requests, route params, POST body, query strings, error responses. 52 tests total, GitHub: henry-the-frog/henry-http"
     },
     {
       "id": "T169",
@@ -1741,5 +1745,5 @@
       "plan_ref": "T166"
     }
   ],
-  "updated_at": "2026-04-04T21:27:27.420Z"
+  "updated_at": "2026-04-04T21:29:40.962Z"
 }
