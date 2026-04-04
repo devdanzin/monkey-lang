@@ -1397,14 +1397,84 @@
       "completed": "2026-04-04T20:16:31.663Z",
       "duration_ms": 90000,
       "summary": "Session B priorities: (1) Monkey WASM backend depth — closures + hash maps + GC, (2) Ray tracer depth — volumetrics + importance sampling, (3) Extend deep projects if time. CI failures already fixed. 6 hours available."
+    },
+    {
+      "id": "T137",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Monkey WASM backend depth: closures (function table + env pointer), hash maps in linear memory, mark-sweep GC",
+      "task": null,
+      "started": "2026-04-04T20:17:32.664Z",
+      "completed": "2026-04-04T20:19:24.492Z",
+      "duration_ms": 120000,
+      "summary": "WASM backend already has closures + hash maps + GC (580 LOC). 182 tests passing, only 3 perf threshold failures. Pivoting: fill BUILD tasks with ray tracer depth instead. WASM closures/GC were already done in prior sessions."
+    },
+    {
+      "id": "T139",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Mid-session housekeeping"
+    },
+    {
+      "id": "T138",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T137"
+    },
+    {
+      "id": "T140",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Ray tracer depth: volumetric rendering, importance sampling, motion blur",
+      "task": null
+    },
+    {
+      "id": "T141",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T140"
+    },
+    {
+      "id": "T142",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Reflect on WASM + ray tracer depth. What to extend next?"
+    },
+    {
+      "id": "T143",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Extend deep projects: type inference, Lisp, or SMT solver depth work",
+      "task": null
+    },
+    {
+      "id": "T144",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T143"
+    },
+    {
+      "id": "T145",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final housekeeping + git push"
+    },
+    {
+      "id": "T146",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Research WebAssembly GC proposal (WasmGC) and component model for potential future integration"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 135,
+    "completed": 136,
     "yielded": 0,
     "skipped": 1,
-    "total_duration_ms": 43350000
+    "total_duration_ms": 43470000
   },
-  "updated_at": "2026-04-04T20:16:31.663Z"
+  "updated_at": "2026-04-04T20:19:24.492Z"
 }

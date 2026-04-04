@@ -1401,9 +1401,13 @@
     {
       "id": "T137",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Monkey WASM backend depth: closures (function table + env pointer), hash maps in linear memory, mark-sweep GC",
-      "task": null
+      "task": null,
+      "started": "2026-04-04T20:17:32.664Z",
+      "completed": "2026-04-04T20:19:24.492Z",
+      "duration_ms": 120000,
+      "summary": "WASM backend already has closures + hash maps + GC (580 LOC). 182 tests passing, only 3 perf threshold failures. Pivoting: fill BUILD tasks with ray tracer depth instead. WASM closures/GC were already done in prior sessions."
     },
     {
       "id": "T139",
@@ -1414,9 +1418,10 @@
     {
       "id": "T138",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "skipped",
       "task": null,
-      "plan_ref": "T137"
+      "plan_ref": "T137",
+      "skip_reason": "WASM backend already complete, no BUILD needed"
     },
     {
       "id": "T140",
@@ -1465,7 +1470,7 @@
       "task": "Research WebAssembly GC proposal (WasmGC) and component model for potential future integration"
     }
   ],
-  "updated_at": "2026-04-04T20:16:31.663Z",
+  "updated_at": "2026-04-04T20:19:24.492Z",
   "adjustments": [
     {
       "time": "2026-04-04T19:18:36.081Z",
@@ -1542,6 +1547,10 @@
     {
       "time": "2026-04-04T20:16:58.808Z",
       "msg": "Added T146 (EXPLORE) after end: Research WebAssembly GC proposal (WasmGC) and component model for potential future integration"
+    },
+    {
+      "time": "2026-04-04T20:19:29.123Z",
+      "msg": "Removed T138: WASM backend already complete, no BUILD needed"
     }
   ]
 }
