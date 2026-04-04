@@ -1,0 +1,9 @@
+{
+  "name": "sql-engine",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "In-memory SQL database engine with query parser and optimizer",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  }
+}
