@@ -2333,9 +2333,19 @@
       "completed": "2026-04-04T23:26:21.571Z",
       "duration_ms": 600000,
       "summary": "Event sourcing + CQRS: EventStore (append-only log, streams, global positions, optimistic concurrency, subscriptions, snapshots), AggregateRoot with event replay, BankAccount example (open/deposit/withdraw/close with business rules), Projection (materialized views, rebuild, catch-up), CommandHandler (command routing), EventBus (typed + wildcard). 30 tests. GitHub: henry-the-frog/event-sourcing"
+    },
+    {
+      "id": "T226",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "JSON Schema validator: type validation, required/optional properties, minLength/maxLength, minimum/maximum, pattern (regex), enum, oneOf/anyOf/allOf, nested objects, array items,  support. 30+ tests.",
+      "started": "2026-04-04T23:26:42.052Z",
+      "completed": "2026-04-04T23:28:05.352Z",
+      "duration_ms": 600000,
+      "summary": "JSON Schema validator: type validation (string/number/integer/boolean/null/array/object), string constraints (minLength/maxLength/pattern/format), number constraints (minimum/maximum/exclusiveMinimum/multipleOf), object (required, properties, additionalProperties, nested), array (minItems/maxItems/uniqueItems/items/tuple), combinators (enum/const/oneOf/anyOf/allOf/not), $ref resolution, if/then/else, format validation (email/uri/date/ipv4). 43 tests. GitHub: henry-the-frog/json-schema"
     }
   ],
-  "updated_at": "2026-04-04T23:26:21.571Z",
+  "updated_at": "2026-04-04T23:28:05.352Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -2400,6 +2410,10 @@
     {
       "time": "2026-04-04T23:24:57.192Z",
       "msg": "Added T225 (BUILD) after end: Event sourcing + CQRS: event store (append-only), aggregate root, projection/materialized views, command handler, event bus, snapshot support, optimistic concurrency. 30+ tests."
+    },
+    {
+      "time": "2026-04-04T23:26:41.441Z",
+      "msg": "Added T226 (BUILD) after end: JSON Schema validator: type validation, required/optional properties, minLength/maxLength, minimum/maximum, pattern (regex), enum, oneOf/anyOf/allOf, nested objects, array items,  support. 30+ tests."
     }
   ]
 }
