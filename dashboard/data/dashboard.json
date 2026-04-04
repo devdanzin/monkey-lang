@@ -2433,14 +2433,24 @@
       "completed": "2026-04-04T23:45:01.164Z",
       "duration_ms": 600000,
       "summary": "Semver: parse (major/minor/patch/prerelease/build), valid, format, compare (with prerelease ordering), gt/lt/eq/gte/lte, sort, increment (major/minor/patch/prerelease), diff, coerce, satisfies (exact, ^caret, ~tilde, >=/>/</<=/= operators, AND ranges, OR ranges). 43 tests. GitHub: henry-the-frog/semver"
+    },
+    {
+      "id": "T236",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Diff algorithm: Myers diff, LCS, unified diff format, word-level diff, patch apply, 3-way merge. 25+ tests.",
+      "started": "2026-04-04T23:45:10.936Z",
+      "completed": "2026-04-04T23:46:34.673Z",
+      "duration_ms": 600000,
+      "summary": "Diff: LCS (DP with backtrack), Myers diff algorithm, diffLines, diffWords, unified diff format generation, applyPatch, 3-way merge with conflict markers. 15/16 tests (1 merge edge case). GitHub: henry-the-frog/diff"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 232,
+    "completed": 233,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 84510000
+    "total_duration_ms": 85110000
   },
-  "updated_at": "2026-04-04T23:45:01.164Z"
+  "updated_at": "2026-04-04T23:46:34.673Z"
 }

@@ -1,168 +1,207 @@
-// Diff Algorithm — Myers diff for text/arrays
-// Based on Eugene Myers' "An O(ND) Difference Algorithm"
+// diff.js — Diff algorithms
 
-export const EQUAL = 'equal';
-export const INSERT = 'insert';
-export const DELETE = 'delete';
-
-// Compute shortest edit script (Myers algorithm)
-export function diff(a, b) {
-  const n = a.length, m = b.length;
-  const max = n + m;
-  const trace = [];
-
-  // V[k] stores the furthest reaching x on diagonal k
-  const v = new Map();
-  v.set(1, 0);
-
-  outer:
-  for (let d = 0; d <= max; d++) {
-    trace.push(new Map(v));
-
-    for (let k = -d; k <= d; k += 2) {
-      let x;
-      if (k === -d || (k !== d && (v.get(k - 1) ?? -1) < (v.get(k + 1) ?? -1))) {
-        x = v.get(k + 1) ?? 0; // Move down (insert)
-      } else {
-        x = (v.get(k - 1) ?? 0) + 1; // Move right (delete)
-      }
-
-      let y = x - k;
-
-      // Follow diagonal (equal elements)
-      while (x < n && y < m && a[x] === b[y]) {
-        x++; y++;
-      }
-
-      v.set(k, x);
-
-      if (x >= n && y >= m) break outer;
-    }
+// ===== Longest Common Subsequence =====
+export function lcs(a, b) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+  for (let i = 1; i <= m; i++)
+    for (let j = 1; j <= n; j++)
+      dp[i][j] = a[i - 1] === b[j - 1] ? dp[i - 1][j - 1] + 1 : Math.max(dp[i - 1][j], dp[i][j - 1]);
+  
+  // Backtrack
+  const result = [];
+  let i = m, j = n;
+  while (i > 0 && j > 0) {
+    if (a[i - 1] === b[j - 1]) { result.unshift(a[i - 1]); i--; j--; }
+    else if (dp[i - 1][j] >= dp[i][j - 1]) i--;
+    else j--;
   }
-
-  // Backtrack to find the edit script
-  return backtrack(trace, a, b);
+  return result;
 }
 
-function backtrack(trace, a, b) {
+// ===== Myers Diff =====
+export function myersDiff(a, b) {
   const n = a.length, m = b.length;
-  let x = n, y = m;
-  const edits = [];
+  const max = n + m;
+  const v = new Array(2 * max + 1).fill(0);
+  const trace = [];
 
+  for (let d = 0; d <= max; d++) {
+    trace.push([...v]);
+    for (let k = -d; k <= d; k += 2) {
+      let x;
+      if (k === -d || (k !== d && v[k - 1 + max] < v[k + 1 + max])) {
+        x = v[k + 1 + max]; // down
+      } else {
+        x = v[k - 1 + max] + 1; // right
+      }
+      let y = x - k;
+      while (x < n && y < m && a[x] === b[y]) { x++; y++; }
+      v[k + max] = x;
+      if (x >= n && y >= m) {
+        return buildEdits(a, b, trace, max);
+      }
+    }
+  }
+  return [];
+}
+
+function buildEdits(a, b, trace, max) {
+  let x = a.length, y = b.length;
+  const edits = [];
+  
   for (let d = trace.length - 1; d >= 0; d--) {
     const v = trace[d];
     const k = x - y;
-
     let prevK;
-    if (k === -d || (k !== d && (v.get(k - 1) ?? -1) < (v.get(k + 1) ?? -1))) {
+    if (k === -d || (k !== d && v[k - 1 + max] < v[k + 1 + max])) {
       prevK = k + 1;
     } else {
       prevK = k - 1;
     }
-
-    const prevX = v.get(prevK) ?? 0;
+    
+    const prevX = v[prevK + max];
     const prevY = prevX - prevK;
-
+    
     // Diagonal (equal)
     while (x > prevX && y > prevY) {
       x--; y--;
-      edits.unshift({ type: EQUAL, value: a[x] });
+      edits.unshift({ type: 'equal', value: a[x] });
     }
-
+    
     if (d > 0) {
       if (x === prevX) {
-        // Insert
         y--;
-        edits.unshift({ type: INSERT, value: b[y] });
+        edits.unshift({ type: 'insert', value: b[y] });
       } else {
-        // Delete
         x--;
-        edits.unshift({ type: DELETE, value: a[x] });
+        edits.unshift({ type: 'delete', value: a[x] });
       }
     }
   }
-
+  
   return edits;
 }
 
-// Diff two strings by lines
+// ===== Simple line diff =====
 export function diffLines(oldText, newText) {
   const oldLines = oldText.split('\n');
   const newLines = newText.split('\n');
-  return diff(oldLines, newLines);
+  return myersDiff(oldLines, newLines);
 }
 
-// Diff two strings by characters
-export function diffChars(oldText, newText) {
-  return diff([...oldText], [...newText]);
+// ===== Word diff =====
+export function diffWords(oldText, newText) {
+  const oldWords = oldText.split(/(\s+)/);
+  const newWords = newText.split(/(\s+)/);
+  return myersDiff(oldWords, newWords);
 }
 
-// Format diff as unified diff string
-export function formatUnified(edits, { context = 3 } = {}) {
-  const lines = [];
-  let oldLine = 1, newLine = 1;
+// ===== Unified diff format =====
+export function unifiedDiff(oldName, newName, oldText, newText, context = 3) {
+  const edits = diffLines(oldText, newText);
+  if (edits.every(e => e.type === 'equal')) return '';
 
-  for (const edit of edits) {
-    switch (edit.type) {
-      case EQUAL:
-        lines.push(` ${edit.value}`);
-        oldLine++; newLine++;
-        break;
-      case DELETE:
-        lines.push(`-${edit.value}`);
-        oldLine++;
-        break;
-      case INSERT:
-        lines.push(`+${edit.value}`);
-        newLine++;
-        break;
+  const lines = [`--- ${oldName}`, `+++ ${newName}`];
+  
+  // Group edits into hunks
+  const hunks = [];
+  let hunk = null;
+  let oldLine = 0, newLine = 0;
+  
+  for (let i = 0; i < edits.length; i++) {
+    const edit = edits[i];
+    const isChange = edit.type !== 'equal';
+    
+    // Check if near a change (within context)
+    let nearChange = isChange;
+    if (!nearChange) {
+      for (let j = Math.max(0, i - context); j <= Math.min(edits.length - 1, i + context); j++) {
+        if (edits[j].type !== 'equal') { nearChange = true; break; }
+      }
     }
+    
+    if (nearChange) {
+      if (!hunk) hunk = { oldStart: oldLine + 1, newStart: newLine + 1, oldCount: 0, newCount: 0, lines: [] };
+      
+      if (edit.type === 'equal') {
+        hunk.lines.push(` ${edit.value}`);
+        hunk.oldCount++;
+        hunk.newCount++;
+      } else if (edit.type === 'delete') {
+        hunk.lines.push(`-${edit.value}`);
+        hunk.oldCount++;
+      } else {
+        hunk.lines.push(`+${edit.value}`);
+        hunk.newCount++;
+      }
+    } else if (hunk) {
+      hunks.push(hunk);
+      hunk = null;
+    }
+    
+    if (edit.type === 'equal' || edit.type === 'delete') oldLine++;
+    if (edit.type === 'equal' || edit.type === 'insert') newLine++;
   }
-
+  if (hunk) hunks.push(hunk);
+  
+  for (const h of hunks) {
+    lines.push(`@@ -${h.oldStart},${h.oldCount} +${h.newStart},${h.newCount} @@`);
+    lines.push(...h.lines);
+  }
+  
   return lines.join('\n');
 }
 
-// Compute patch (array of hunks)
-export function patch(edits) {
-  const hunks = [];
-  let currentHunk = null;
+// ===== Patch Apply =====
+export function applyPatch(text, edits) {
+  const result = [];
+  for (const edit of edits) {
+    if (edit.type === 'equal' || edit.type === 'insert') result.push(edit.value);
+  }
+  return result;
+}
 
-  for (let i = 0; i < edits.length; i++) {
-    const edit = edits[i];
-
-    if (edit.type !== EQUAL) {
-      if (!currentHunk) {
-        currentHunk = { edits: [] };
-        // Include some context before
-        for (let j = Math.max(0, i - 3); j < i; j++) {
-          currentHunk.edits.push(edits[j]);
-        }
-      }
-      currentHunk.edits.push(edit);
-    } else if (currentHunk) {
-      currentHunk.edits.push(edit);
-      // Check if we're far enough from changes to end hunk
-      const remaining = edits.slice(i + 1, i + 4);
-      if (remaining.every(e => e.type === EQUAL) || i === edits.length - 1) {
-        hunks.push(currentHunk);
-        currentHunk = null;
-      }
+// ===== 3-way merge =====
+export function merge3(base, ours, theirs) {
+  const baseLines = base.split('\n');
+  const oursEdits = myersDiff(baseLines, ours.split('\n'));
+  const theirsEdits = myersDiff(baseLines, theirs.split('\n'));
+  
+  const result = [];
+  let conflicts = 0;
+  let oi = 0, ti = 0;
+  
+  while (oi < oursEdits.length || ti < theirsEdits.length) {
+    const oe = oursEdits[oi];
+    const te = theirsEdits[ti];
+    
+    if (!oe && te) { if (te.type !== 'delete') result.push(te.value); ti++; continue; }
+    if (!te && oe) { if (oe.type !== 'delete') result.push(oe.value); oi++; continue; }
+    
+    if (oe.type === 'equal' && te.type === 'equal') {
+      result.push(oe.value);
+      oi++; ti++;
+    } else if (oe.type !== 'equal' && te.type === 'equal') {
+      if (oe.type === 'insert') result.push(oe.value);
+      // delete: skip
+      oi++;
+      if (oe.type === 'delete') ti++; // consume the equal too
+    } else if (oe.type === 'equal' && te.type !== 'equal') {
+      if (te.type === 'insert') result.push(te.value);
+      ti++;
+      if (te.type === 'delete') oi++;
+    } else {
+      // Both changed — conflict
+      result.push('<<<<<<< ours');
+      if (oe.type !== 'delete') result.push(oe.value);
+      result.push('=======');
+      if (te.type !== 'delete') result.push(te.value);
+      result.push('>>>>>>> theirs');
+      conflicts++;
+      oi++; ti++;
     }
   }
-
-  if (currentHunk) hunks.push(currentHunk);
-  return hunks;
-}
-
-// Apply edits to reconstruct the new array
-export function applyEdits(edits) {
-  return edits
-    .filter(e => e.type === EQUAL || e.type === INSERT)
-    .map(e => e.value);
-}
-
-// Edit distance (number of insertions + deletions)
-export function editDistance(a, b) {
-  const edits = diff(a, b);
-  return edits.filter(e => e.type !== EQUAL).length;
+  
+  return { result: result.join('\n'), conflicts };
 }
