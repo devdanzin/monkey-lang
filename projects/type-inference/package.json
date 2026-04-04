@@ -1,0 +1,9 @@
+{
+  "name": "type-inference",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Hindley-Milner type inference engine with Algorithm W",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  }
+}
