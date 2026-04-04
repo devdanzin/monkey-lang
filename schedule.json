@@ -1218,22 +1218,81 @@
       "id": "T121",
       "mode": "BUILD",
       "task": "Add HKT type classes: Functor/Applicative/Monad with higher-kinded constraints, fmap/pure/bind inference + tests",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T117",
-      "started": "2026-04-04T19:01:01.576Z"
+      "started": "2026-04-04T19:01:01.576Z",
+      "completed": "2026-04-04T19:02:59.167Z",
+      "duration_ms": 600000,
+      "summary": "HKT type classes: THKApp type, Functor/Applicative/Monad, Maybe/List instances, fmap/pure/bind inference. THKApp↔TApp unification. 22 new tests (187 total)."
     },
     {
       "id": "T118",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "started": "2026-04-04T19:03:16.684Z",
+      "completed": "2026-04-04T19:03:17.272Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled placeholder"
+    },
+    {
+      "id": "T119",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "started": "2026-04-04T19:03:28.962Z",
+      "completed": "2026-04-04T19:03:29.471Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled placeholder"
+    },
+    {
+      "id": "T122",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Update dashboard: type inference now 187 tests, refresh generate.cjs",
+      "started": "2026-04-04T19:03:56.674Z",
+      "completed": "2026-04-04T19:05:15.894Z",
+      "duration_ms": 180000,
+      "summary": "Dashboard refreshed: type inference at 187 tests, 3847 total. Pushed to GH Pages."
+    },
+    {
+      "id": "T123",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Add B-tree indices and query optimizer to SQL engine",
+      "task": null,
+      "started": "2026-04-04T19:05:28.063Z",
+      "completed": "2026-04-04T19:05:50.023Z",
+      "duration_ms": 60000,
+      "summary": "2 BUILD tasks: B-tree indices + WHERE optimization, query planner with EXPLAIN"
+    },
+    {
+      "id": "T126",
+      "mode": "BUILD",
+      "task": "Add B-tree indices to SQL engine: CREATE INDEX, automatic index usage in WHERE clauses with range scans",
+      "status": "in-progress",
+      "plan_ref": "T123",
+      "started": "2026-04-04T19:06:00.030Z"
+    },
+    {
+      "id": "T127",
+      "mode": "BUILD",
+      "task": "Add query planner: cost estimation, index selection, EXPLAIN output showing query plan",
+      "status": "upcoming",
+      "plan_ref": "T123"
+    },
+    {
+      "id": "T124",
       "mode": "BUILD",
       "status": "upcoming",
       "task": null
     },
     {
-      "id": "T119",
+      "id": "T125",
       "mode": "BUILD",
       "status": "upcoming",
       "task": null
     }
   ],
-  "updated_at": "2026-04-04T19:01:01.576Z"
+  "updated_at": "2026-04-04T19:06:00.030Z"
 }

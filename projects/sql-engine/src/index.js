@@ -1,5 +1,187 @@
 // ===== Simple SQL Database Engine =====
 
+// ===== B-Tree Index =====
+
+class BTreeNode {
+  constructor(order, isLeaf = true) {
+    this.order = order;
+    this.keys = [];    // { key, rowIndices: number[] }
+    this.children = [];
+    this.isLeaf = isLeaf;
+  }
+}
+
+export class BTreeIndex {
+  constructor(name, column, order = 16) {
+    this.name = name;
+    this.column = column;
+    this.order = order;
+    this.root = new BTreeNode(order, true);
+    this.size = 0;
+  }
+
+  // Insert a key → rowIndex mapping
+  insert(key, rowIndex) {
+    const root = this.root;
+    if (root.keys.length === 2 * this.order - 1) {
+      const newRoot = new BTreeNode(this.order, false);
+      newRoot.children.push(root);
+      this._splitChild(newRoot, 0);
+      this.root = newRoot;
+    }
+    this._insertNonFull(this.root, key, rowIndex);
+    this.size++;
+  }
+
+  _insertNonFull(node, key, rowIndex) {
+    let i = node.keys.length - 1;
+    
+    if (node.isLeaf) {
+      // Check if key already exists
+      const existing = node.keys.find(k => k.key === key);
+      if (existing) {
+        existing.rowIndices.push(rowIndex);
+        return;
+      }
+      // Insert in sorted position
+      while (i >= 0 && node.keys[i].key > key) i--;
+      node.keys.splice(i + 1, 0, { key, rowIndices: [rowIndex] });
+    } else {
+      while (i >= 0 && node.keys[i].key > key) i--;
+      // Check if equal to existing key
+      if (i >= 0 && node.keys[i].key === key) {
+        node.keys[i].rowIndices.push(rowIndex);
+        return;
+      }
+      i++;
+      if (node.children[i] && node.children[i].keys.length === 2 * this.order - 1) {
+        this._splitChild(node, i);
+        if (i < node.keys.length && key > node.keys[i].key) i++;
+        if (i < node.keys.length && node.keys[i].key === key) {
+          node.keys[i].rowIndices.push(rowIndex);
+          return;
+        }
+      }
+      this._insertNonFull(node.children[i], key, rowIndex);
+    }
+  }
+
+  _splitChild(parent, i) {
+    const t = this.order;
+    const child = parent.children[i];
+    const newNode = new BTreeNode(t, child.isLeaf);
+    
+    parent.keys.splice(i, 0, child.keys[t - 1]);
+    parent.children.splice(i + 1, 0, newNode);
+    
+    newNode.keys = child.keys.splice(t, t - 1);
+    child.keys.splice(t - 1, 1);
+    
+    if (!child.isLeaf) {
+      newNode.children = child.children.splice(t, t);
+    }
+  }
+
+  // Point lookup: return row indices for exact key match
+  lookup(key) {
+    return this._search(this.root, key);
+  }
+
+  _search(node, key) {
+    let i = 0;
+    while (i < node.keys.length && key > node.keys[i].key) i++;
+    
+    if (i < node.keys.length && node.keys[i].key === key) {
+      return [...node.keys[i].rowIndices];
+    }
+    
+    if (node.isLeaf) return [];
+    return this._search(node.children[i], key);
+  }
+
+  // Range scan: return row indices where lo <= key <= hi
+  range(lo, hi) {
+    const result = [];
+    this._rangeSearch(this.root, lo, hi, result);
+    return result;
+  }
+
+  _rangeSearch(node, lo, hi, result) {
+    let i = 0;
+    while (i < node.keys.length && node.keys[i].key < lo) {
+      if (!node.isLeaf) this._rangeSearch(node.children[i], lo, hi, result);
+      i++;
+    }
+    
+    while (i < node.keys.length && node.keys[i].key <= hi) {
+      if (!node.isLeaf) this._rangeSearch(node.children[i], lo, hi, result);
+      result.push(...node.keys[i].rowIndices);
+      i++;
+    }
+    
+    if (!node.isLeaf && i < node.children.length) {
+      this._rangeSearch(node.children[i], lo, hi, result);
+    }
+  }
+
+  // Greater-than scan: return row indices where key > val
+  greaterThan(val) {
+    const result = [];
+    this._gtSearch(this.root, val, result);
+    return result;
+  }
+
+  _gtSearch(node, val, result) {
+    let i = 0;
+    while (i < node.keys.length && node.keys[i].key <= val) {
+      if (!node.isLeaf) this._gtSearch(node.children[i], val, result);
+      i++;
+    }
+    
+    while (i < node.keys.length) {
+      if (!node.isLeaf) this._gtSearch(node.children[i], val, result);
+      result.push(...node.keys[i].rowIndices);
+      i++;
+    }
+    
+    if (!node.isLeaf && i < node.children.length) {
+      this._gtSearch(node.children[i], val, result);
+    }
+  }
+
+  // Less-than scan: return row indices where key < val
+  lessThan(val) {
+    const result = [];
+    this._ltSearch(this.root, val, result);
+    return result;
+  }
+
+  _ltSearch(node, val, result) {
+    let i = 0;
+    while (i < node.keys.length && node.keys[i].key < val) {
+      if (!node.isLeaf) this._ltSearch(node.children[i], val, result);
+      result.push(...node.keys[i].rowIndices);
+      i++;
+    }
+    
+    if (!node.isLeaf && i < node.children.length && (i === 0 || node.keys[i - 1].key < val)) {
+      // Don't descend if we've already gone past val
+    }
+  }
+
+  // Rebuild index from scratch (needed after row mutations)
+  rebuild(rows) {
+    this.root = new BTreeNode(this.order, true);
+    this.size = 0;
+    for (let i = 0; i < rows.length; i++) {
+      const key = rows[i][this.column];
+      if (key !== undefined && key !== null) {
+        this.insert(key, i);
+      }
+    }
+  }
+}
+
 // ===== Table =====
 
 export class Table {
@@ -8,6 +190,7 @@ export class Table {
     this.columns = columns; // [{name, type}]
     this.rows = [];
     this.autoIncrement = 0;
+    this.indices = new Map(); // column -> BTreeIndex
   }
 
   insert(row) {
@@ -15,8 +198,39 @@ export class Table {
     if (this.columns.some(c => c.name === 'id') && row.id === undefined) {
       row.id = ++this.autoIncrement;
     }
+    const rowIndex = this.rows.length;
     this.rows.push({ ...row });
+    
+    // Update indices
+    for (const [col, index] of this.indices) {
+      const key = row[col];
+      if (key !== undefined && key !== null) {
+        index.insert(key, rowIndex);
+      }
+    }
+    
     return row;
+  }
+
+  createIndex(name, column) {
+    const index = new BTreeIndex(name, column);
+    // Index all existing rows
+    for (let i = 0; i < this.rows.length; i++) {
+      const key = this.rows[i][column];
+      if (key !== undefined && key !== null) {
+        index.insert(key, i);
+      }
+    }
+    this.indices.set(column, index);
+    return index;
+  }
+
+  dropIndex(column) {
+    this.indices.delete(column);
+  }
+
+  getIndex(column) {
+    return this.indices.get(column) || null;
   }
 
   columnNames() { return this.columns.map(c => c.name); }
@@ -51,11 +265,13 @@ export class Database {
   execute(query) {
     switch (query.type) {
       case 'create': return this._executeCreate(query);
+      case 'createIndex': return this._executeCreateIndex(query);
       case 'insert': return this._executeInsert(query);
       case 'select': return this._executeSelect(query);
       case 'update': return this._executeUpdate(query);
       case 'delete': return this._executeDelete(query);
       case 'drop': return this._executeDrop(query);
+      case 'explain': return this._executeExplain(query);
       default: throw new Error(`Unknown query type: ${query.type}`);
     }
   }
@@ -63,6 +279,12 @@ export class Database {
   _executeCreate(query) {
     this.createTable(query.table, query.columns);
     return { type: 'ok', message: `Table ${query.table} created` };
+  }
+
+  _executeCreateIndex(query) {
+    const table = this.getTable(query.table);
+    table.createIndex(query.name, query.column);
+    return { type: 'ok', message: `Index ${query.name} created on ${query.table}(${query.column})` };
   }
 
   _executeInsert(query) {
@@ -77,10 +299,11 @@ export class Database {
 
   _executeSelect(query) {
     let rows = [];
+    let table = null;
     
     // FROM clause
     if (query.from) {
-      const table = this.getTable(query.from);
+      table = this.getTable(query.from);
       rows = table.rows.map(r => ({ ...r }));
     }
     
@@ -111,9 +334,24 @@ export class Database {
       rows = newRows;
     }
     
-    // WHERE clause
+    // WHERE clause — try to use index
     if (query.where) {
-      rows = rows.filter(row => this._evaluateCondition(row, query.where));
+      const indexPlan = this._tryIndexScan(query.from, query.where);
+      if (indexPlan) {
+        const indexRows = indexPlan.rowIndices.map(i => ({ ...table.rows[i] }));
+        // If the index only partially covers the condition, filter the rest
+        if (indexPlan.residual) {
+          rows = indexRows.filter(row => this._evaluateCondition(row, indexPlan.residual));
+        } else {
+          rows = indexRows;
+        }
+        this._lastQueryPlan = { type: 'index_scan', index: indexPlan.indexName, column: indexPlan.column, residual: !!indexPlan.residual };
+      } else {
+        rows = rows.filter(row => this._evaluateCondition(row, query.where));
+        this._lastQueryPlan = { type: 'full_scan', table: query.from };
+      }
+    } else {
+      this._lastQueryPlan = { type: 'full_scan', table: query.from };
     }
     
     // GROUP BY
@@ -203,7 +441,77 @@ export class Database {
     return { type: 'ok', message: `Table ${query.table} dropped` };
   }
 
+  _executeExplain(query) {
+    // Execute the inner query to populate plan
+    this.execute(query.inner);
+    return { type: 'plan', plan: this._lastQueryPlan || { type: 'unknown' } };
+  }
+
+  // Try to use a B-tree index for a WHERE condition
+  // Note: column references and string literals are both JS strings.
+  // We distinguish by checking if the string is a known column name.
+  _tryIndexScan(tableName, cond) {
+    if (!tableName) return null;
+    const table = this.tables.get(tableName);
+    if (!table) return null;
+    const colNames = new Set(table.columnNames());
+
+    // Simple equality: column = value
+    if (cond.op === '=') {
+      // left is column, right is value
+      if (typeof cond.left === 'string' && colNames.has(cond.left)) {
+        const index = table.getIndex(cond.left);
+        if (index) {
+          const val = typeof cond.right === 'string' && colNames.has(cond.right) ? null : cond.right;
+          if (val !== null) {
+            return { indexName: index.name, column: cond.left, rowIndices: index.lookup(val), residual: null };
+          }
+        }
+      }
+      // right is column, left is value
+      if (typeof cond.right === 'string' && colNames.has(cond.right)) {
+        const index = table.getIndex(cond.right);
+        if (index) {
+          const val = typeof cond.left === 'string' && colNames.has(cond.left) ? null : cond.left;
+          if (val !== null) {
+            return { indexName: index.name, column: cond.right, rowIndices: index.lookup(val), residual: null };
+          }
+        }
+      }
+    }
+
+    // Range: column > value, column < value, column >= value, column <= value
+    if ((cond.op === '>' || cond.op === '>=' || cond.op === '<' || cond.op === '<=') && typeof cond.left === 'string' && colNames.has(cond.left)) {
+      const index = table.getIndex(cond.left);
+      if (index) {
+        const val = cond.right;
+        let rowIndices;
+        if (cond.op === '>') rowIndices = index.greaterThan(val);
+        else if (cond.op === '>=') rowIndices = [...index.lookup(val), ...index.greaterThan(val)];
+        else if (cond.op === '<') rowIndices = index.lessThan(val);
+        else rowIndices = [...index.lessThan(val), ...index.lookup(val)];
+        return { indexName: index.name, column: cond.left, rowIndices, residual: null };
+      }
+    }
+
+    // AND: try to use index on one side, filter the other
+    if (cond.op === 'AND') {
+      const leftPlan = this._tryIndexScan(tableName, cond.left);
+      if (leftPlan) {
+        return { ...leftPlan, residual: cond.right };
+      }
+      const rightPlan = this._tryIndexScan(tableName, cond.right);
+      if (rightPlan) {
+        return { ...rightPlan, residual: cond.left };
+      }
+    }
+
+    return null;
+  }
+
   _resolveValue(row, ref) {
+    // Column references: { col: 'name' } or raw string for backward compat
+    if (ref && typeof ref === 'object' && ref.col) return row[ref.col];
     if (typeof ref === 'string') return row[ref];
     return ref;
   }
@@ -216,8 +524,22 @@ export class Database {
       return this._evaluateCondition(row, cond.left) || this._evaluateCondition(row, cond.right);
     }
     
-    const left = typeof cond.left === 'string' ? row[cond.left] : cond.left;
-    const right = typeof cond.right === 'string' ? row[cond.right] : cond.right;
+    // Determine what's a column reference vs a literal value
+    // Column refs are strings that exist as column names in the row
+    // Otherwise treat as literal
+    const resolveArg = (arg) => {
+      if (typeof arg === 'string') {
+        // If the row has this key, it's a column reference
+        if (arg in row) return row[arg];
+        // Otherwise it's a string literal
+        return arg;
+      }
+      if (Array.isArray(arg)) return arg;
+      return arg;
+    };
+    
+    const left = resolveArg(cond.left);
+    const right = resolveArg(cond.right);
     
     switch (cond.op) {
       case '=': return left === right;
@@ -315,3 +637,12 @@ export function sum(column, alias) { return { aggregate: 'SUM', column, alias };
 export function avg(column, alias) { return { aggregate: 'AVG', column, alias }; }
 export function min(column, alias) { return { aggregate: 'MIN', column, alias }; }
 export function max(column, alias) { return { aggregate: 'MAX', column, alias }; }
+
+// Index + explain helpers
+export function createIndex(name, table, column) {
+  return { type: 'createIndex', name, table, column };
+}
+
+export function explain(query) {
+  return { type: 'explain', inner: query };
+}
