@@ -1,0 +1,9 @@
+{
+  "name": "wasm-interpreter",
+  "version": "1.0.0",
+  "description": "WebAssembly interpreter from scratch — binary decoder + stack machine executor",
+  "type": "module",
+  "scripts": {
+    "test": "node --test src/**/*.test.js"
+  }
+}

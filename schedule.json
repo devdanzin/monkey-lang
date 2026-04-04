@@ -1470,9 +1470,13 @@
     {
       "id": "T144",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Build WASM binary decoder: parse module sections (type, function, memory, export, code), LEB128, instruction decoding",
-      "plan_ref": "T143"
+      "plan_ref": "T143",
+      "started": "2026-04-04T20:22:28.389Z",
+      "completed": "2026-04-04T20:25:32.873Z",
+      "duration_ms": 600000,
+      "summary": "WASM binary decoder: parses all sections (type, import, function, table, memory, global, export, start, element, code, data, custom). LEB128 signed/unsigned, full instruction set. Encoder for test generation. 30 tests, all passing."
     },
     {
       "id": "T147",
@@ -1501,5 +1505,5 @@
       "task": "Research WebAssembly GC proposal (WasmGC) and component model for potential future integration"
     }
   ],
-  "updated_at": "2026-04-04T20:22:11.164Z"
+  "updated_at": "2026-04-04T20:25:32.873Z"
 }
