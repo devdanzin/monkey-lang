@@ -1,0 +1,9 @@
+{
+  "name": "csp-solver",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Constraint satisfaction problem solver with AC-3 and backtracking search",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  }
+}
