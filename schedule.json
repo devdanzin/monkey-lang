@@ -2203,9 +2203,19 @@
       "completed": "2026-04-04T22:53:59.192Z",
       "duration_ms": 900000,
       "summary": "BitTorrent protocol: bencode encoding/decoding (int, string, list, dict), handshake, peer wire protocol (choke/unchoke/interested/have/bitfield/request/piece/keepalive), bitfield with set/clear/has, piece manager with SHA-1 verification and rarest-first selection, simulated swarm with download completion. 34 tests. GitHub: henry-the-frog/bittorrent"
+    },
+    {
+      "id": "T213",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Redis-like in-memory store: key-value with TTL, data types (string, list, set, sorted set, hash), pub/sub, RESP protocol parser, LRU eviction. 40+ tests.",
+      "started": "2026-04-04T22:54:28.243Z",
+      "completed": "2026-04-04T22:56:39.697Z",
+      "duration_ms": 900000,
+      "summary": "HenryRedis: RESP protocol parser (encode/decode), string commands (GET/SET/DEL/EXISTS/INCR/DECR), TTL (EXPIRE/TTL/PERSIST), lists (LPUSH/RPUSH/LPOP/RPOP/LRANGE/LLEN), sets (SADD/SREM/SISMEMBER/SMEMBERS/SCARD), hashes (HSET/HGET/HDEL/HGETALL/HLEN), sorted sets (ZADD/ZSCORE/ZRANK/ZRANGE/ZCARD), pub/sub (subscribe/unsubscribe/publish), LRU eviction. 55 tests. GitHub: henry-the-frog/henry-redis"
     }
   ],
-  "updated_at": "2026-04-04T22:53:59.193Z",
+  "updated_at": "2026-04-04T22:56:39.697Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -2218,6 +2228,10 @@
     {
       "time": "2026-04-04T22:51:31.075Z",
       "msg": "Added T212 (BUILD) after end: BitTorrent protocol: bencode encoding/decoding, .torrent metainfo parsing, peer wire protocol (handshake, have, bitfield, request, piece, choke/unchoke), piece manager with SHA-1 verification, simulated swarm. 35+ tests."
+    },
+    {
+      "time": "2026-04-04T22:54:21.422Z",
+      "msg": "Added T213 (BUILD) after end: Redis-like in-memory store: key-value with TTL, data types (string, list, set, sorted set, hash), pub/sub, RESP protocol parser, LRU eviction. 40+ tests."
     }
   ]
 }
