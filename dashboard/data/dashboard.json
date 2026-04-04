@@ -1112,15 +1112,38 @@
     {
       "id": "T108",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-04-04T18:48:54.192Z",
+      "completed": "2026-04-04T18:48:54.757Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled placeholder"
     },
     {
       "id": "T109",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Deepen type inference: type classes / row polymorphism",
-      "task": null
+      "task": null,
+      "started": "2026-04-04T18:49:03.840Z",
+      "completed": "2026-04-04T18:49:42.909Z",
+      "duration_ms": 120000,
+      "summary": "2 BUILD tasks: type classes with constraint propagation, row polymorphism for records"
+    },
+    {
+      "id": "T114",
+      "mode": "BUILD",
+      "task": "Add type classes: class/instance declarations, constrained types, dictionary passing during inference",
+      "status": "in-progress",
+      "plan_ref": "T109",
+      "started": "2026-04-04T18:49:51.707Z"
+    },
+    {
+      "id": "T115",
+      "mode": "BUILD",
+      "task": "Add row polymorphism: extensible records with row variables, record access/extension",
+      "status": "upcoming",
+      "plan_ref": "T109"
     },
     {
       "id": "T110",
@@ -1141,12 +1164,19 @@
       "task": "Final session housekeeping"
     }
   ],
-  "current": null,
+  "current": {
+    "id": "T114",
+    "mode": "BUILD",
+    "task": "Add type classes: class/instance declarations, constrained types, dictionary passing during inference",
+    "status": "in-progress",
+    "plan_ref": "T109",
+    "started": "2026-04-04T18:49:51.707Z"
+  },
   "stats": {
-    "completed": 107,
+    "completed": 109,
     "yielded": 0,
     "skipped": 1,
-    "total_duration_ms": 35580000
+    "total_duration_ms": 35700000
   },
-  "updated_at": "2026-04-04T18:48:29.049Z"
+  "updated_at": "2026-04-04T18:49:51.707Z"
 }

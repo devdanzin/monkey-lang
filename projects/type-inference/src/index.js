@@ -99,6 +99,185 @@ export const tBool = new TConst('Bool');
 export const tString = new TConst('String');
 export const tUnit = new TConst('Unit');
 
+// ===== Type Classes =====
+
+// A constraint like "Eq a" or "Num a"
+export class TConstraint {
+  constructor(className, typeArg) {
+    this.className = className;
+    this.typeArg = typeArg;
+  }
+  toString() { return `${this.className} ${this.typeArg}`; }
+  freeVars() { return this.typeArg.freeVars(); }
+  apply(subst) { return new TConstraint(this.className, this.typeArg.apply(subst)); }
+  equals(other) {
+    return other instanceof TConstraint && this.className === other.className
+      && this.typeArg.equals(other.typeArg);
+  }
+}
+
+// A qualified type: constraints => type (e.g., "Eq a => a -> a -> Bool")
+export class TQualified {
+  constructor(constraints, type) {
+    this.constraints = constraints; // TConstraint[]
+    this.type = type;
+  }
+  toString() {
+    if (this.constraints.length === 0) return `${this.type}`;
+    const cs = this.constraints.map(c => c.toString()).join(', ');
+    return `(${cs}) => ${this.type}`;
+  }
+  freeVars() {
+    const s = this.type.freeVars();
+    for (const c of this.constraints) for (const v of c.freeVars()) s.add(v);
+    return s;
+  }
+  apply(subst) {
+    return new TQualified(
+      this.constraints.map(c => c.apply(subst)),
+      this.type.apply(subst)
+    );
+  }
+}
+
+// Type class declaration: class Eq a where eq :: a -> a -> Bool
+export class TypeClass {
+  constructor(name, typeParam, methods, superclasses = []) {
+    this.name = name;
+    this.typeParam = typeParam;      // e.g., "a"
+    this.methods = methods;          // Map<string, type> (using typeParam)
+    this.superclasses = superclasses; // string[] — superclass names
+  }
+}
+
+// Type class instance: instance Eq Int where eq = ...
+export class TypeClassInstance {
+  constructor(className, type, constraints = []) {
+    this.className = className;
+    this.type = type;          // concrete type or parameterized (e.g., TApp("List", [TVar("a")]))
+    this.constraints = constraints; // required constraints (e.g., [TConstraint("Eq", TVar("a"))] for Eq [a])
+  }
+}
+
+// Class environment: stores class declarations and instances
+export class ClassEnv {
+  constructor() {
+    this.classes = new Map();    // className -> TypeClass
+    this.instances = new Map();  // className -> TypeClassInstance[]
+  }
+
+  addClass(cls) {
+    this.classes.set(cls.name, cls);
+    if (!this.instances.has(cls.name)) {
+      this.instances.set(cls.name, []);
+    }
+  }
+
+  addInstance(inst) {
+    const insts = this.instances.get(inst.className) || [];
+    insts.push(inst);
+    this.instances.set(inst.className, insts);
+  }
+
+  getClass(name) { return this.classes.get(name) || null; }
+
+  getInstances(className) { return this.instances.get(className) || []; }
+
+  // Check if a constraint is satisfiable (instance exists for the type)
+  entails(constraint) {
+    const cls = this.classes.get(constraint.className);
+    if (!cls) return false;
+
+    const instances = this.getInstances(constraint.className);
+    for (const inst of instances) {
+      try {
+        // Try to unify the instance type with the constraint's type arg
+        const subst = unify(inst.type, constraint.typeArg);
+        // Check that any required instance constraints are also satisfiable
+        const allSatisfied = inst.constraints.every(c => this.entails(c.apply(subst)));
+        if (allSatisfied) return true;
+      } catch (e) {
+        // Unification failed — this instance doesn't match
+        continue;
+      }
+    }
+    return false;
+  }
+
+  // Resolve: find the matching instance and return required sub-constraints
+  resolve(constraint) {
+    const instances = this.getInstances(constraint.className);
+    for (const inst of instances) {
+      try {
+        const subst = unify(inst.type, constraint.typeArg);
+        return inst.constraints.map(c => c.apply(subst));
+      } catch (e) {
+        continue;
+      }
+    }
+    return null; // Not resolvable yet (may have free type vars)
+  }
+}
+
+// Build a default class environment with Eq, Ord, Num, Show
+export function defaultClassEnv() {
+  const a = new TVar('_a');
+  const env = new ClassEnv();
+
+  // class Eq a where eq :: a -> a -> Bool
+  env.addClass(new TypeClass('Eq', '_a', new Map([
+    ['eq', new TFun(a, new TFun(a, tBool))],
+    ['neq', new TFun(a, new TFun(a, tBool))],
+  ])));
+
+  // class Eq a => Ord a where compare :: a -> a -> Int
+  env.addClass(new TypeClass('Ord', '_a', new Map([
+    ['compare', new TFun(a, new TFun(a, tInt))],
+    ['lt', new TFun(a, new TFun(a, tBool))],
+    ['gt', new TFun(a, new TFun(a, tBool))],
+  ]), ['Eq']));
+
+  // class Num a where add :: a -> a -> a, mul :: a -> a -> a, fromInt :: Int -> a
+  env.addClass(new TypeClass('Num', '_a', new Map([
+    ['add', new TFun(a, new TFun(a, a))],
+    ['sub', new TFun(a, new TFun(a, a))],
+    ['mul', new TFun(a, new TFun(a, a))],
+    ['fromInt', new TFun(tInt, a)],
+  ])));
+
+  // class Show a where show :: a -> String
+  env.addClass(new TypeClass('Show', '_a', new Map([
+    ['show', new TFun(a, tString)],
+  ])));
+
+  // Instances for Int
+  env.addInstance(new TypeClassInstance('Eq', tInt));
+  env.addInstance(new TypeClassInstance('Ord', tInt));
+  env.addInstance(new TypeClassInstance('Num', tInt));
+  env.addInstance(new TypeClassInstance('Show', tInt));
+
+  // Instances for Bool
+  env.addInstance(new TypeClassInstance('Eq', tBool));
+  env.addInstance(new TypeClassInstance('Show', tBool));
+
+  // Instances for String
+  env.addInstance(new TypeClassInstance('Eq', tString));
+  env.addInstance(new TypeClassInstance('Ord', tString));
+  env.addInstance(new TypeClassInstance('Show', tString));
+
+  // Instance for List: Eq [a] requires Eq a
+  env.addInstance(new TypeClassInstance('Eq', new TList(new TVar('_a')),
+    [new TConstraint('Eq', new TVar('_a'))]));
+  env.addInstance(new TypeClassInstance('Show', new TList(new TVar('_a')),
+    [new TConstraint('Show', new TVar('_a'))]));
+
+  return env;
+}
+
+// AST nodes for type class features
+export const classMethodRef = (className, methodName) => ({ tag: 'classmethod', className, methodName });
+export const constrainedExpr = (constraints, expr) => ({ tag: 'constrained', constraints, expr });
+
 // ===== Substitution =====
 
 export function composeSubst(s1, s2) {
@@ -326,10 +505,233 @@ export class DataType {
 
 // ===== Algorithm W =====
 
-export function infer(expr, env = defaultEnv()) {
+export function infer(expr, env = defaultEnv(), classEnv = null) {
   resetTypeVarCounter();
+  if (classEnv) {
+    const [subst, type, constraints] = algorithmWConstrained(env, expr, classEnv);
+    const finalType = type.apply(subst);
+    // Reduce constraints: remove those satisfied by known instances
+    const unreduced = constraints.map(c => c.apply(subst));
+    const remaining = reduceConstraints(unreduced, classEnv);
+    if (remaining.length > 0) {
+      return new TQualified(remaining, finalType);
+    }
+    return finalType;
+  }
   const [subst, type] = algorithmW(env, expr);
   return type.apply(subst);
+}
+
+// Reduce constraints by removing those entailed by the class environment
+function reduceConstraints(constraints, classEnv) {
+  const remaining = [];
+  for (const c of constraints) {
+    // If the type is fully concrete, check if an instance exists
+    if (c.typeArg.freeVars().size === 0) {
+      if (!classEnv.entails(c)) {
+        throw new Error(`No instance for ${c}`);
+      }
+      // Constraint is satisfied — drop it
+    } else {
+      // Type still has free vars — constraint remains
+      // Deduplicate
+      if (!remaining.some(r => r.equals(c))) {
+        remaining.push(c);
+      }
+    }
+  }
+  return remaining;
+}
+
+// Constrained Algorithm W — returns [subst, type, constraints[]]
+function algorithmWConstrained(env, expr, classEnv) {
+  switch (expr.tag) {
+    case 'classmethod': {
+      const cls = classEnv.getClass(expr.className);
+      if (!cls) throw new Error(`Unknown class: ${expr.className}`);
+      const methodType = cls.methods.get(expr.methodName);
+      if (!methodType) throw new Error(`Unknown method ${expr.methodName} in class ${expr.className}`);
+      // Instantiate with a fresh type variable and add constraint
+      const tv = freshTypeVar();
+      const subst = new Map([[cls.typeParam, tv]]);
+      const instantiatedType = methodType.apply(subst);
+      return [new Map(), instantiatedType, [new TConstraint(expr.className, tv)]];
+    }
+
+    case 'constrained': {
+      // User-annotated constrained expression
+      const [s, t, cs] = algorithmWConstrained(env, expr.expr, classEnv);
+      return [s, t, [...cs, ...expr.constraints]];
+    }
+
+    case 'lit':
+    case 'var':
+    case 'lam':
+    case 'app':
+    case 'let':
+    case 'letrec':
+    case 'if':
+    case 'binop':
+    case 'match': {
+      // Delegate to standard Algorithm W, collecting constraints from sub-expressions
+      return algorithmWConstrainedDispatch(env, expr, classEnv);
+    }
+
+    default:
+      throw new Error(`Unknown expression tag: ${expr.tag}`);
+  }
+}
+
+function algorithmWConstrainedDispatch(env, expr, classEnv) {
+  switch (expr.tag) {
+    case 'lit': {
+      if (expr.type === 'int') return [new Map(), tInt, []];
+      if (expr.type === 'bool') return [new Map(), tBool, []];
+      if (expr.type === 'string') return [new Map(), tString, []];
+      return [new Map(), tUnit, []];
+    }
+
+    case 'var': {
+      const scheme = env.lookup(expr.name);
+      if (!scheme) throw new Error(`Unbound variable: ${expr.name}`);
+      if (scheme instanceof TForall) {
+        const instantiated = scheme.instantiate();
+        // If the forall body was a TQualified, split into type + constraints
+        if (instantiated instanceof TQualified) {
+          return [new Map(), instantiated.type, [...instantiated.constraints]];
+        }
+        return [new Map(), instantiated, []];
+      }
+      if (scheme instanceof TQualified) {
+        const freshSubst = new Map();
+        const fvs = scheme.freeVars();
+        for (const v of fvs) freshSubst.set(v, freshTypeVar());
+        return [new Map(), scheme.type.apply(freshSubst), scheme.constraints.map(c => c.apply(freshSubst))];
+      }
+      return [new Map(), scheme, []];
+    }
+
+    case 'lam': {
+      const paramType = freshTypeVar();
+      const newEnv = env.extend(expr.param, paramType);
+      const [s1, bodyType, cs] = algorithmWConstrained(newEnv, expr.body, classEnv);
+      return [s1, new TFun(paramType.apply(s1), bodyType), cs];
+    }
+
+    case 'app': {
+      const resultType = freshTypeVar();
+      const [s1, fnType, cs1] = algorithmWConstrained(env, expr.fn, classEnv);
+      const [s2, argType, cs2] = algorithmWConstrained(env.apply(s1), expr.arg, classEnv);
+      const s3 = unify(fnType.apply(s2), new TFun(argType, resultType));
+      const allCs = [...cs1.map(c => c.apply(composeSubst(s3, s2))), ...cs2.map(c => c.apply(s3))];
+      return [composeSubst(s3, composeSubst(s2, s1)), resultType.apply(s3), allCs];
+    }
+
+    case 'let': {
+      const [s1, valueType, cs1] = algorithmWConstrained(env, expr.value, classEnv);
+      // Reduce constraints for generalization
+      const reduced = reduceConstraints(cs1.map(c => c.apply(s1)), classEnv);
+      let generalizedType;
+      if (reduced.length > 0) {
+        // Create a qualified type scheme
+        generalizedType = generalize(env.apply(s1), new TQualified(reduced, valueType));
+      } else {
+        generalizedType = generalize(env.apply(s1), valueType);
+      }
+      const newEnv = env.apply(s1).extend(expr.name, generalizedType);
+      const [s2, bodyType, cs2] = algorithmWConstrained(newEnv, expr.body, classEnv);
+      return [composeSubst(s2, s1), bodyType, cs2];
+    }
+
+    case 'letrec': {
+      const recType = freshTypeVar();
+      const newEnv = env.extend(expr.name, recType);
+      const [s1, valueType, cs1] = algorithmWConstrained(newEnv, expr.value, classEnv);
+      const s2 = unify(recType.apply(s1), valueType);
+      const finalSubst = composeSubst(s2, s1);
+      const reduced = reduceConstraints(cs1.map(c => c.apply(finalSubst)), classEnv);
+      let generalizedType;
+      if (reduced.length > 0) {
+        generalizedType = generalize(env.apply(finalSubst), new TQualified(reduced, valueType.apply(s2)));
+      } else {
+        generalizedType = generalize(env.apply(finalSubst), valueType.apply(s2));
+      }
+      const bodyEnv = env.apply(finalSubst).extend(expr.name, generalizedType);
+      const [s3, bodyType, cs2] = algorithmWConstrained(bodyEnv, expr.body, classEnv);
+      return [composeSubst(s3, finalSubst), bodyType, cs2];
+    }
+
+    case 'if': {
+      const [s1, condType, cs1] = algorithmWConstrained(env, expr.cond, classEnv);
+      const s2 = unify(condType, tBool);
+      const env1 = env.apply(composeSubst(s2, s1));
+      const [s3, thenType, cs2] = algorithmWConstrained(env1, expr.then, classEnv);
+      const env2 = env1.apply(s3);
+      const [s4, elseType, cs3] = algorithmWConstrained(env2, expr.else, classEnv);
+      const s5 = unify(thenType.apply(s4), elseType);
+      const allSubst = composeSubst(s5, composeSubst(s4, composeSubst(s3, composeSubst(s2, s1))));
+      return [allSubst, elseType.apply(s5), [...cs1, ...cs2, ...cs3].map(c => c.apply(allSubst))];
+    }
+
+    case 'binop': {
+      const [s1, leftType, cs1] = algorithmWConstrained(env, expr.left, classEnv);
+      const [s2, rightType, cs2] = algorithmWConstrained(env.apply(s1), expr.right, classEnv);
+
+      if (expr.op === '==' || expr.op === '!=') {
+        const s3 = unify(leftType.apply(s2), rightType);
+        const eqConstraint = new TConstraint('Eq', rightType.apply(s3));
+        return [composeSubst(s3, composeSubst(s2, s1)), tBool, [...cs1, ...cs2, eqConstraint]];
+      }
+
+      const opTypes = {
+        '+': [tInt, tInt, tInt],
+        '-': [tInt, tInt, tInt],
+        '*': [tInt, tInt, tInt],
+        '/': [tInt, tInt, tInt],
+        '%': [tInt, tInt, tInt],
+        '<': [tInt, tInt, tBool],
+        '>': [tInt, tInt, tBool],
+        '<=': [tInt, tInt, tBool],
+        '>=': [tInt, tInt, tBool],
+        '&&': [tBool, tBool, tBool],
+        '||': [tBool, tBool, tBool],
+      };
+
+      const [expectedLeft, expectedRight, resultType] = opTypes[expr.op];
+      const s3 = unify(leftType.apply(s2), expectedLeft);
+      const s4 = unify(rightType.apply(s3), expectedRight);
+      return [composeSubst(s4, composeSubst(s3, composeSubst(s2, s1))), resultType, [...cs1, ...cs2]];
+    }
+
+    case 'match': {
+      const [s1, exprType, cs1] = algorithmWConstrained(env, expr.expr, classEnv);
+      let subst = s1;
+      let resultType = freshTypeVar();
+      let allConstraints = [...cs1];
+
+      for (const { pattern, body } of expr.cases) {
+        const [patSubst, patType, bindings] = inferPattern(pattern, env.apply(subst));
+        const s2 = unify(exprType.apply(subst).apply(patSubst), patType);
+        subst = composeSubst(s2, composeSubst(patSubst, subst));
+
+        let bodyEnv = env.apply(subst);
+        for (const [name, type] of bindings) {
+          bodyEnv = bodyEnv.extend(name, type.apply(subst));
+        }
+
+        const [s3, bodyType, cs] = algorithmWConstrained(bodyEnv, body, classEnv);
+        const s4 = unify(resultType.apply(s3).apply(subst), bodyType);
+        subst = composeSubst(s4, composeSubst(s3, subst));
+        resultType = resultType.apply(subst);
+        allConstraints.push(...cs.map(c => c.apply(subst)));
+      }
+
+      return [subst, resultType.apply(subst), allConstraints];
+    }
+
+    default:
+      throw new Error(`Unknown expression tag: ${expr.tag}`);
+  }
 }
 
 function algorithmW(env, expr) {
