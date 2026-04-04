@@ -1,9 +1,9 @@
 {
-  "name": "tiny-lisp",
-  "version": "1.0.0",
-  "description": "Lisp interpreter with macros, closures, tail-call optimization, and a standard library",
-  "main": "src/index.js",
+  "name": "lisp",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Lisp interpreter — reader, evaluator, special forms, closures, macros",
   "scripts": {
-    "test": "node --test test/"
+    "test": "node --test test/*.test.js"
   }
 }

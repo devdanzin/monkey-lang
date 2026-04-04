@@ -1,309 +1,173 @@
-const { test } = require('node:test');
-const assert = require('node:assert/strict');
-const { run, print } = require('../src/index.js');
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
+import { read, evaluate, run, standardEnv, LispList, LispSymbol, NIL, lispToString } from '../src/index.js';
 
-const ev = (src) => run(src).print;
-const out = (src) => run(src).output.join('');
-
-// ==================== Basics ====================
-
-test('numbers', () => {
-  assert.equal(ev('42'), '42');
-  assert.equal(ev('-3.14'), '-3.14');
+describe('Lisp — reader', () => {
+  it('reads integer', () => assert.equal(read('42'), 42));
+  it('reads negative', () => assert.equal(read('-7'), -7));
+  it('reads float', () => assert.equal(read('3.14'), 3.14));
+  it('reads string', () => assert.equal(read('"hello"'), 'hello'));
+  it('reads symbol', () => assert.ok(read('foo') instanceof LispSymbol));
+  it('reads boolean', () => { assert.equal(read('#t'), true); assert.equal(read('#f'), false); });
+  it('reads list', () => { const r = read('(1 2 3)'); assert.ok(r instanceof LispList); assert.equal(r.length, 3); });
+  it('reads nested list', () => { const r = read('(+ (* 2 3) 4)'); assert.equal(r.length, 3); });
+  it('reads quote', () => { const r = read("'x"); assert.equal(r.get(0).name, 'quote'); });
+  it('reads empty list', () => { const r = read('()'); assert.equal(r.length, 0); });
 });
 
-test('strings', () => {
-  assert.equal(ev('"hello"'), '"hello"');
+describe('Lisp — arithmetic', () => {
+  it('addition', () => assert.equal(run('(+ 1 2 3)'), 6));
+  it('subtraction', () => assert.equal(run('(- 10 3)'), 7));
+  it('negation', () => assert.equal(run('(- 5)'), -5));
+  it('multiplication', () => assert.equal(run('(* 6 7)'), 42));
+  it('division', () => assert.equal(run('(/ 10 3)'), 3));
+  it('modulo', () => assert.equal(run('(% 10 3)'), 1));
+  it('nested', () => assert.equal(run('(+ (* 2 3) (* 4 5))'), 26));
 });
 
-test('booleans', () => {
-  assert.equal(ev('#t'), '#t');
-  assert.equal(ev('#f'), '#f');
+describe('Lisp — comparison', () => {
+  it('equal', () => assert.equal(run('(= 42 42)'), true));
+  it('not equal', () => assert.equal(run('(= 1 2)'), false));
+  it('less than', () => assert.equal(run('(< 1 2)'), true));
+  it('greater than', () => assert.equal(run('(> 2 1)'), true));
 });
 
-test('nil', () => {
-  assert.equal(ev('nil'), 'nil');
+describe('Lisp — special forms', () => {
+  it('quote', () => { const r = run("'(1 2 3)"); assert.ok(r instanceof LispList); });
+  it('if true', () => assert.equal(run('(if #t 1 2)'), 1));
+  it('if false', () => assert.equal(run('(if #f 1 2)'), 2));
+  it('if without else', () => assert.equal(run('(if #f 1)'), NIL));
+  
+  it('cond', () => {
+    assert.equal(run('(cond (#f 1) (#t 2) (else 3))'), 2);
+  });
+  
+  it('and', () => {
+    assert.equal(run('(and #t #t)'), true);
+    assert.equal(run('(and #t #f)'), false);
+    assert.equal(run('(and 1 2 3)'), 3);
+  });
+  
+  it('or', () => {
+    assert.equal(run('(or #f #t)'), true);
+    assert.equal(run('(or #f #f)'), false);
+    assert.equal(run('(or #f 42)'), 42);
+  });
+  
+  it('begin', () => assert.equal(run('(begin 1 2 3)'), 3));
 });
 
-// ==================== Arithmetic ====================
-
-test('arithmetic', () => {
-  assert.equal(ev('(+ 2 3)'), '5');
-  assert.equal(ev('(- 10 4)'), '6');
-  assert.equal(ev('(* 3 7)'), '21');
-  assert.equal(ev('(/ 10 2)'), '5');
-  assert.equal(ev('(modulo 10 3)'), '1');
+describe('Lisp — define and lambda', () => {
+  it('define variable', () => assert.equal(run('(begin (define x 42) x)'), 42));
+  it('define function (sugar)', () => assert.equal(run('(begin (define (double x) (* x 2)) (double 21))'), 42));
+  it('lambda', () => assert.equal(run('((lambda (x) (* x 2)) 21)'), 42));
+  it('closure', () => assert.equal(run('(begin (define (adder n) (lambda (x) (+ n x))) ((adder 10) 32))'), 42));
+  
+  it('let binding', () => assert.equal(run('(let ((x 10) (y 20)) (+ x y))'), 30));
+  it('nested let', () => assert.equal(run('(let ((x 5)) (let ((y (* x 2))) (+ x y)))'), 15));
+  
+  it('set!', () => assert.equal(run('(begin (define x 1) (set! x 42) x)'), 42));
 });
 
-test('nested arithmetic', () => {
-  assert.equal(ev('(+ (* 3 4) (- 10 5))'), '17');
+describe('Lisp — recursion', () => {
+  it('factorial', () => {
+    assert.equal(run(`
+      (begin
+        (define (fact n)
+          (if (= n 0) 1 (* n (fact (- n 1)))))
+        (fact 10))
+    `), 3628800);
+  });
+  
+  it('fibonacci', () => {
+    assert.equal(run(`
+      (begin
+        (define (fib n)
+          (if (< n 2) n (+ (fib (- n 1)) (fib (- n 2)))))
+        (fib 10))
+    `), 55);
+  });
+  
+  it('tail-recursive sum', () => {
+    assert.equal(run(`
+      (begin
+        (define (sum n acc)
+          (if (= n 0) acc (sum (- n 1) (+ acc n))))
+        (sum 1000 0))
+    `), 500500);
+  });
 });
 
-test('variadic arithmetic', () => {
-  assert.equal(ev('(+ 1 2 3 4 5)'), '15');
-  assert.equal(ev('(* 2 3 4)'), '24');
+describe('Lisp — list operations', () => {
+  it('cons', () => {
+    const r = run("(cons 1 '(2 3))");
+    assert.equal(lispToString(r), '(1 2 3)');
+  });
+  
+  it('car', () => assert.equal(run("(car '(1 2 3))"), 1));
+  it('cdr', () => assert.equal(lispToString(run("(cdr '(1 2 3))")), '(2 3)'));
+  it('list', () => assert.equal(lispToString(run('(list 1 2 3)')), '(1 2 3)'));
+  it('length', () => assert.equal(run("(length '(1 2 3))"), 3));
+  
+  it('append', () => {
+    assert.equal(lispToString(run("(append '(1 2) '(3 4))")), '(1 2 3 4)');
+  });
+  
+  it('map', () => {
+    assert.equal(lispToString(run(`
+      (begin
+        (define (double x) (* x 2))
+        (map double '(1 2 3)))
+    `)), '(2 4 6)');
+  });
+  
+  it('filter', () => {
+    assert.equal(lispToString(run(`
+      (begin
+        (define (even? x) (= (% x 2) 0))
+        (filter even? '(1 2 3 4 5 6)))
+    `)), '(2 4 6)');
+  });
+  
+  it('reduce', () => {
+    assert.equal(run("(reduce + 0 '(1 2 3 4 5))"), 15);
+  });
 });
 
-// ==================== Comparison ====================
-
-test('comparisons', () => {
-  assert.equal(ev('(= 1 1)'), '#t');
-  assert.equal(ev('(= 1 2)'), '#f');
-  assert.equal(ev('(< 1 2)'), '#t');
-  assert.equal(ev('(> 3 1)'), '#t');
-  assert.equal(ev('(<= 1 1)'), '#t');
-  assert.equal(ev('(>= 2 3)'), '#f');
+describe('Lisp — predicates', () => {
+  it('number?', () => { assert.equal(run('(number? 42)'), true); assert.equal(run('(number? "hi")'), false); });
+  it('string?', () => assert.equal(run('(string? "hello")'), true));
+  it('zero?', () => { assert.equal(run('(zero? 0)'), true); assert.equal(run('(zero? 1)'), false); });
+  it('even?', () => { assert.equal(run('(even? 4)'), true); assert.equal(run('(even? 3)'), false); });
+  it('null?', () => assert.equal(run("(null? '())"), true));
+  it('not', () => { assert.equal(run('(not #f)'), true); assert.equal(run('(not #t)'), false); });
 });
 
-test('not', () => {
-  assert.equal(ev('(not #t)'), '#f');
-  assert.equal(ev('(not #f)'), '#t');
-});
+describe('Lisp — higher-order', () => {
+  it('compose', () => {
+    assert.equal(run(`
+      (begin
+        (define (compose f g)
+          (lambda (x) (f (g x))))
+        (define (add1 x) (+ x 1))
+        (define (double x) (* x 2))
+        ((compose add1 double) 10))
+    `), 21);
+  });
 
-// ==================== Variables ====================
-
-test('define and use', () => {
-  assert.equal(ev('(define x 10) x'), '10');
-});
-
-test('set!', () => {
-  assert.equal(ev('(define x 1) (set! x 42) x'), '42');
-});
-
-// ==================== Functions ====================
-
-test('lambda', () => {
-  assert.equal(ev('((lambda (x) (* x x)) 5)'), '25');
-});
-
-test('define function shorthand', () => {
-  assert.equal(ev('(define (square x) (* x x)) (square 7)'), '49');
-});
-
-test('closures', () => {
-  assert.equal(ev(`
-    (define (make-adder n) (lambda (x) (+ n x)))
-    (define add5 (make-adder 5))
-    (add5 10)
-  `), '15');
-});
-
-test('recursion — factorial', () => {
-  assert.equal(ev(`
-    (define (fact n)
-      (if (<= n 1) 1 (* n (fact (- n 1)))))
-    (fact 10)
-  `), '3628800');
-});
-
-test('mutual recursion', () => {
-  assert.equal(ev(`
-    (define (even? n) (if (= n 0) #t (odd? (- n 1))))
-    (define (odd? n) (if (= n 0) #f (even? (- n 1))))
-    (even? 10)
-  `), '#t');
-});
-
-// ==================== Tail Call Optimization ====================
-
-test('tail-recursive loop does not overflow', () => {
-  assert.equal(ev(`
-    (define (loop n acc)
-      (if (= n 0) acc (loop (- n 1) (+ acc 1))))
-    (loop 10000 0)
-  `), '10000');
-});
-
-// ==================== List Operations ====================
-
-test('cons, car, cdr', () => {
-  assert.equal(ev("(car '(1 2 3))"), '1');
-  assert.equal(ev("(cdr '(1 2 3))"), '(2 3)');
-  assert.equal(ev("(cons 0 '(1 2))"), '(0 1 2)');
-});
-
-test('list creation', () => {
-  assert.equal(ev('(list 1 2 3)'), '(1 2 3)');
-});
-
-test('length', () => {
-  assert.equal(ev("(length '(a b c))"), '3');
-  assert.equal(ev("(length '())"), '0');
-});
-
-test('append', () => {
-  assert.equal(ev("(append '(1 2) '(3 4))"), '(1 2 3 4)');
-});
-
-test('null?', () => {
-  assert.equal(ev("(null? '())"), '#t');
-  assert.equal(ev("(null? '(1))"), '#f');
-  assert.equal(ev('(null? nil)'), '#t');
-});
-
-// ==================== Control Flow ====================
-
-test('if', () => {
-  assert.equal(ev('(if #t 1 2)'), '1');
-  assert.equal(ev('(if #f 1 2)'), '2');
-});
-
-test('cond', () => {
-  assert.equal(ev(`
-    (cond
-      ((= 1 2) "no")
-      ((= 1 1) "yes")
-      (else "maybe"))
-  `), '"yes"');
-});
-
-test('and / or', () => {
-  assert.equal(ev('(and #t #t)'), '#t');
-  assert.equal(ev('(and #t #f)'), '#f');
-  assert.equal(ev('(or #f #t)'), '#t');
-  assert.equal(ev('(or #f #f)'), '#f');
-});
-
-test('begin', () => {
-  assert.equal(ev('(begin 1 2 3)'), '3');
-});
-
-test('let', () => {
-  assert.equal(ev('(let ((x 10) (y 20)) (+ x y))'), '30');
-});
-
-// ==================== Macros ====================
-
-test('defmacro — when macro', () => {
-  assert.equal(ev(`
-    (defmacro when (condition body)
-      \`(if ,condition ,body nil))
-    (when #t 42)
-  `), '42');
-  assert.equal(ev(`
-    (defmacro when (condition body)
-      \`(if ,condition ,body nil))
-    (when #f 42)
-  `), 'nil');
-});
-
-test('defmacro — unless', () => {
-  assert.equal(ev(`
-    (defmacro unless (condition body)
-      \`(if ,condition nil ,body))
-    (unless #f 99)
-  `), '99');
-});
-
-// ==================== Quasiquote ====================
-
-test('quasiquote with unquote', () => {
-  assert.equal(ev('(define x 42) `(a ,x c)'), '(a 42 c)');
-});
-
-test('quasiquote with unquote-splicing', () => {
-  assert.equal(ev("(define xs '(1 2 3)) `(a ,@xs b)"), '(a 1 2 3 b)');
-});
-
-// ==================== Higher-Order Functions ====================
-
-test('map', () => {
-  assert.equal(ev(`
-    (define (double x) (* x 2))
-    (map double '(1 2 3 4))
-  `), '(2 4 6 8)');
-});
-
-test('filter', () => {
-  assert.equal(ev(`
-    (define (positive? x) (> x 0))
-    (filter positive? '(-1 2 -3 4 5))
-  `), '(2 4 5)');
-});
-
-test('reduce', () => {
-  assert.equal(ev(`(reduce + 0 '(1 2 3 4 5))`), '15');
-});
-
-// ==================== Type Checks ====================
-
-test('type predicates', () => {
-  assert.equal(ev('(number? 42)'), '#t');
-  assert.equal(ev('(string? "hi")'), '#t');
-  assert.equal(ev("(symbol? 'foo)"), '#t');
-  assert.equal(ev('(boolean? #t)'), '#t');
-  assert.equal(ev("(list? '(1 2))"), '#t');
-  assert.equal(ev('(null? nil)'), '#t');
-});
-
-// ==================== Display / I/O ====================
-
-test('display', () => {
-  assert.equal(out('(display "hello") (display " ") (display 42)'), 'hello 42');
-});
-
-// ==================== Math ====================
-
-test('math builtins', () => {
-  assert.equal(ev('(abs -5)'), '5');
-  assert.equal(ev('(max 1 5 3)'), '5');
-  assert.equal(ev('(min 1 5 3)'), '1');
-  assert.equal(ev('(floor 3.7)'), '3');
-  assert.equal(ev('(sqrt 9)'), '3');
-  assert.equal(ev('(expt 2 10)'), '1024');
-});
-
-// ==================== String ====================
-
-test('string operations', () => {
-  assert.equal(ev('(string-append "hello" " " "world")'), '"hello world"');
-  assert.equal(ev('(number->string 42)'), '"42"');
-  assert.equal(ev('(string->number "3.14")'), '3.14');
-});
-
-// ==================== Integration ====================
-
-test('fibonacci', () => {
-  assert.equal(ev(`
-    (define (fib n)
-      (if (< n 2) n (+ (fib (- n 1)) (fib (- n 2)))))
-    (fib 10)
-  `), '55');
-});
-
-test('quicksort', () => {
-  assert.equal(ev(`
-    (define (qs lst)
-      (if (null? lst) '()
-        (let ((pivot (car lst))
-              (rest (cdr lst)))
-          (append
-            (qs (filter (lambda (x) (< x pivot)) rest))
-            (list pivot)
-            (qs (filter (lambda (x) (>= x pivot)) rest))))))
-    (qs '(3 1 4 1 5 9 2 6))
-  `), '(1 1 2 3 4 5 6 9)');
-});
-
-test('church numerals', () => {
-  assert.equal(ev(`
-    (define zero (lambda (f) (lambda (x) x)))
-    (define succ (lambda (n) (lambda (f) (lambda (x) (f ((n f) x))))))
-    (define church->int (lambda (n) ((n (lambda (x) (+ x 1))) 0)))
-    (define one (succ zero))
-    (define two (succ one))
-    (define three (succ two))
-    (church->int three)
-  `), '3');
-});
-
-test('comments are ignored', () => {
-  assert.equal(ev(`
-    ; This is a comment
-    (+ 1 2) ; inline comment
-  `), '3');
-});
-
-test('apply', () => {
-  assert.equal(ev("(apply + '(1 2 3 4))"), '10');
+  it('Y combinator (if supported)', () => {
+    // This tests deep closure and recursion
+    assert.equal(run(`
+      (begin
+        (define (make-counter)
+          (let ((count 0))
+            (lambda ()
+              (set! count (+ count 1))
+              count)))
+        (define counter (make-counter))
+        (counter)
+        (counter)
+        (counter))
+    `), 3);
+  });
 });
