@@ -2383,9 +2383,19 @@
       "completed": "2026-04-04T23:35:39.944Z",
       "duration_ms": 600000,
       "summary": "Job queue: MinHeap priority queue (O(log n)), Job with priority/delay/retry/backoff, RateLimiter (sliding window), JobQueue (processOne/processAll, concurrency limiting, rate limiting, retry with exponential backoff, dead letter queue, event emission, retryDead). 23 tests. GitHub: henry-the-frog/job-queue"
+    },
+    {
+      "id": "T231",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Image processing: pixel buffer (RGBA), color conversion (RGB/HSL/hex), blur (box + Gaussian), sharpen, edge detection (Sobel), grayscale, threshold, resize (bilinear), rotate, crop, histogram. 30+ tests.",
+      "started": "2026-04-04T23:36:08.318Z",
+      "completed": "2026-04-04T23:37:36.963Z",
+      "duration_ms": 600000,
+      "summary": "Image processing: Color (RGB/HSL/hex conversion), ImageBuffer (RGBA, get/set pixel, fill, clone), Filters (grayscale, invert, threshold, brightness), Convolution (box blur, Gaussian blur, sharpen, Sobel edge detection), Transforms (crop, bilinear resize, rotate90, flipH), Histogram. 28 tests. GitHub: henry-the-frog/image-proc"
     }
   ],
-  "updated_at": "2026-04-04T23:35:39.944Z",
+  "updated_at": "2026-04-04T23:37:36.963Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -2470,6 +2480,10 @@
     {
       "time": "2026-04-04T23:34:22.672Z",
       "msg": "Added T230 (BUILD) after end: Job queue: priority queue with O(log n) operations, task scheduling with delays, retries with exponential backoff, dead letter queue, concurrency limiting, rate limiting. 25+ tests."
+    },
+    {
+      "time": "2026-04-04T23:36:07.653Z",
+      "msg": "Added T231 (BUILD) after end: Image processing: pixel buffer (RGBA), color conversion (RGB/HSL/hex), blur (box + Gaussian), sharpen, edge detection (Sobel), grayscale, threshold, resize (bilinear), rotate, crop, histogram. 30+ tests."
     }
   ]
 }

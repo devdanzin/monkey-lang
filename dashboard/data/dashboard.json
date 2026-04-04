@@ -2383,14 +2383,24 @@
       "completed": "2026-04-04T23:35:39.944Z",
       "duration_ms": 600000,
       "summary": "Job queue: MinHeap priority queue (O(log n)), Job with priority/delay/retry/backoff, RateLimiter (sliding window), JobQueue (processOne/processAll, concurrency limiting, rate limiting, retry with exponential backoff, dead letter queue, event emission, retryDead). 23 tests. GitHub: henry-the-frog/job-queue"
+    },
+    {
+      "id": "T231",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Image processing: pixel buffer (RGBA), color conversion (RGB/HSL/hex), blur (box + Gaussian), sharpen, edge detection (Sobel), grayscale, threshold, resize (bilinear), rotate, crop, histogram. 30+ tests.",
+      "started": "2026-04-04T23:36:08.318Z",
+      "completed": "2026-04-04T23:37:36.963Z",
+      "duration_ms": 600000,
+      "summary": "Image processing: Color (RGB/HSL/hex conversion), ImageBuffer (RGBA, get/set pixel, fill, clone), Filters (grayscale, invert, threshold, brightness), Convolution (box blur, Gaussian blur, sharpen, Sobel edge detection), Transforms (crop, bilinear resize, rotate90, flipH), Histogram. 28 tests. GitHub: henry-the-frog/image-proc"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 227,
+    "completed": 228,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 81510000
+    "total_duration_ms": 82110000
   },
-  "updated_at": "2026-04-04T23:35:39.944Z"
+  "updated_at": "2026-04-04T23:37:36.963Z"
 }
