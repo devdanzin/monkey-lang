@@ -459,14 +459,24 @@
       "completed": "2026-04-04T16:08:11.446Z",
       "duration_ms": 420000,
       "summary": "Mini-ML parser: let, fn, if, match, operators, application. 37 new tests, 91 total type inference tests. typeOf() convenience function."
+    },
+    {
+      "id": "T44",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a simple stack-based bytecode VM and compiler for arithmetic expressions, let bindings, if-then-else, and functions",
+      "started": "2026-04-04T16:08:44.826Z",
+      "completed": "2026-04-04T16:12:04.334Z",
+      "duration_ms": 600000,
+      "summary": "Stack-based bytecode VM: 26 opcodes, compiler, closures, call frames, disassembler. 30 tests."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 43,
+    "completed": 44,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 12480000
+    "total_duration_ms": 13080000
   },
-  "updated_at": "2026-04-04T16:08:11.446Z"
+  "updated_at": "2026-04-04T16:12:04.334Z"
 }
