@@ -1,9 +1,1 @@
-{
-  "name": "lisp",
-  "version": "0.1.0",
-  "type": "module",
-  "description": "Lisp interpreter — reader, evaluator, special forms, closures, macros",
-  "scripts": {
-    "test": "node --test test/*.test.js"
-  }
-}
+{"name":"lisp","version":"1.0.0","description":"Lisp interpreter from scratch","type":"module","scripts":{"test":"node --test src/**/*.test.js"}}

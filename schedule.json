@@ -2253,9 +2253,19 @@
       "completed": "2026-04-04T23:06:27.536Z",
       "duration_ms": 600000,
       "summary": "GC: mark-sweep (mark+sweep, transitive reachability, cycle collection), mark-compact (compaction, memory reclamation, OOM handling), generational (nursery, old gen, minor/major GC, promotion), reference counting (cascading free, shared refs, cycle detection via backup mark-sweep). 23 tests. GitHub: henry-the-frog/henry-gc"
+    },
+    {
+      "id": "T218",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Lisp interpreter: S-expression parser, eval/apply, lexical environments with closures, define/lambda/if/cond/let/begin, arithmetic, list operations (car/cdr/cons), quoting, tail-call optimization, simple macros. 30+ tests.",
+      "started": "2026-04-04T23:07:19.957Z",
+      "completed": "2026-04-04T23:10:24.477Z",
+      "duration_ms": 600000,
+      "summary": "Lisp interpreter: S-expression parser (atoms, lists, strings, booleans, quote), eval/apply, lexical environments with closures, define/lambda/if/cond/let/begin/and/or/set!, arithmetic, list ops (car/cdr/cons/map/filter/reduce), strings, tail-call optimization (100K deep recursion), quoting. Factorial, fibonacci, higher-order functions. 47 tests. GitHub: henry-the-frog/henry-lisp"
     }
   ],
-  "updated_at": "2026-04-04T23:06:27.536Z",
+  "updated_at": "2026-04-04T23:10:24.477Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -2288,6 +2298,10 @@
     {
       "time": "2026-04-04T23:04:12.990Z",
       "msg": "Added T217 (BUILD) after end: Garbage collector: heap simulation, mark-sweep, mark-compact, generational GC (nursery + old gen), reference counting with cycle detection. 35+ tests."
+    },
+    {
+      "time": "2026-04-04T23:07:19.325Z",
+      "msg": "Added T218 (BUILD) after end: Lisp interpreter: S-expression parser, eval/apply, lexical environments with closures, define/lambda/if/cond/let/begin, arithmetic, list operations (car/cdr/cons), quoting, tail-call optimization, simple macros. 30+ tests."
     }
   ]
 }
