@@ -230,6 +230,24 @@ export class Environment {
 
 // ===== Evaluator =====
 export function evaluate(expr, env) {
+  // Trampoline loop for TCO
+  while (true) {
+    const result = evaluateInner(expr, env);
+    if (result instanceof TailCall) {
+      expr = result.expr;
+      env = result.env;
+      continue;
+    }
+    return result;
+  }
+}
+
+// Tail call marker
+class TailCall {
+  constructor(expr, env) { this.expr = expr; this.env = env; }
+}
+
+function evaluateInner(expr, env) {
   // Numbers, strings, booleans
   if (typeof expr === 'number' || typeof expr === 'string' || typeof expr === 'boolean') return expr;
   if (expr === NIL) return NIL;
@@ -250,9 +268,10 @@ export function evaluate(expr, env) {
 
         case 'if': {
           const cond = evaluate(expr.get(1), env);
-          return (cond !== false && cond !== NIL)
-            ? evaluate(expr.get(2), env)
-            : (expr.length > 3 ? evaluate(expr.get(3), env) : NIL);
+          if (cond !== false && cond !== NIL) {
+            return new TailCall(expr.get(2), env);
+          }
+          return expr.length > 3 ? new TailCall(expr.get(3), env) : NIL;
         }
 
         case 'cond': {
@@ -304,15 +323,15 @@ export function evaluate(expr, env) {
           for (const b of bindings.items) {
             childEnv.set(b.get(0).name, evaluate(b.get(1), env));
           }
-          let result = NIL;
-          for (let i = 2; i < expr.length; i++) result = evaluate(expr.get(i), childEnv);
-          return result;
+          for (let i = 2; i < expr.length - 1; i++) evaluate(expr.get(i), childEnv);
+          if (expr.length > 2) return new TailCall(expr.get(expr.length - 1), childEnv);
+          return NIL;
         }
 
         case 'begin': {
-          let result = NIL;
-          for (let i = 1; i < expr.length; i++) result = evaluate(expr.get(i), env);
-          return result;
+          for (let i = 1; i < expr.length - 1; i++) evaluate(expr.get(i), env);
+          if (expr.length > 1) return new TailCall(expr.get(expr.length - 1), env);
+          return NIL;
         }
 
         case 'and': {
@@ -458,9 +477,12 @@ export function evaluate(expr, env) {
       for (let i = 0; i < fn.params.length; i++) {
         callEnv.set(fn.params[i], args[i] !== undefined ? args[i] : NIL);
       }
-      let result = NIL;
-      for (const bodyExpr of fn.body) result = evaluate(bodyExpr, callEnv);
-      return result;
+      // TCO: evaluate all but last body expression, then tail-call the last
+      for (let i = 0; i < fn.body.length - 1; i++) evaluate(fn.body[i], callEnv);
+      if (fn.body.length > 0) {
+        return new TailCall(fn.body[fn.body.length - 1], callEnv);
+      }
+      return NIL;
     }
 
     throw new Error(`Not a function: ${lispToString(fn)}`);

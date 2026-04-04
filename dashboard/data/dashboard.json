@@ -1321,23 +1321,39 @@
     {
       "id": "T129",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add hygienic macros to Lisp: define-syntax, syntax-rules, macro expansion",
-      "started": "2026-04-04T19:21:43.565Z"
+      "started": "2026-04-04T19:21:43.565Z",
+      "completed": "2026-04-04T19:24:48.350Z",
+      "duration_ms": 600000,
+      "summary": "Lisp macros: defmacro with rest params, macroexpand, quasiquote/unquote/unquote-splicing with reader macros (backtick, comma, comma-at). Tests: when, unless, swap!, square, nested macros, quasiquote expansion. 14 new tests (83 total)."
+    },
+    {
+      "id": "T130",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add tail call optimization (TCO) to Lisp interpreter — trampoline-based",
+      "started": "2026-04-04T19:25:16.975Z"
+    },
+    {
+      "id": "T131",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final session housekeeping: update CURRENT.md, daily log, scratch note, git push"
     }
   ],
   "current": {
-    "id": "T129",
+    "id": "T130",
     "mode": "BUILD",
     "status": "in-progress",
-    "task": "Add hygienic macros to Lisp: define-syntax, syntax-rules, macro expansion",
-    "started": "2026-04-04T19:21:43.565Z"
+    "task": "Add tail call optimization (TCO) to Lisp interpreter — trampoline-based",
+    "started": "2026-04-04T19:25:16.975Z"
   },
   "stats": {
-    "completed": 127,
+    "completed": 128,
     "yielded": 0,
     "skipped": 1,
-    "total_duration_ms": 39960000
+    "total_duration_ms": 40560000
   },
-  "updated_at": "2026-04-04T19:21:43.565Z"
+  "updated_at": "2026-04-04T19:25:16.975Z"
 }
