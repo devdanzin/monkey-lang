@@ -1955,6 +1955,12 @@
       "mode": "BUILD",
       "status": "upcoming",
       "task": "Protocol Buffers: .proto parser, wire format encoder/decoder (varint, length-delimited, fixed), message serialization"
+    },
+    {
+      "id": "T190",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "DNS resolver: DNS packet parsing, query building, recursive resolution, caching, A/AAAA/MX/TXT records"
     }
   ],
   "updated_at": "2026-04-04T22:10:58.713Z",
@@ -1982,6 +1988,10 @@
     {
       "time": "2026-04-04T22:12:30.604Z",
       "msg": "Added T189 (BUILD) after end: Protocol Buffers: .proto parser, wire format encoder/decoder (varint, length-delimited, fixed), message serialization"
+    },
+    {
+      "time": "2026-04-04T22:15:05.218Z",
+      "msg": "Added T190 (BUILD) after end: DNS resolver: DNS packet parsing, query building, recursive resolution, caching, A/AAAA/MX/TXT records"
     }
   ]
 }
