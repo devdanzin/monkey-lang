@@ -926,9 +926,29 @@
       "completed": "2026-04-04T17:49:28.926Z",
       "duration_ms": 300000,
       "summary": "Binary search: 10+ variants — standard, lower/upper bound, rotated array, peak, bisect. 27 tests."
+    },
+    {
+      "id": "T91",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a simple REPL with line editing: command history, tab completion, prompt, with tests",
+      "started": "2026-04-04T17:50:08.443Z",
+      "completed": "2026-04-04T17:51:15.365Z",
+      "duration_ms": 300000,
+      "summary": "REPL: history navigation, tab completion, custom commands, custom evaluator. 17 tests."
+    },
+    {
+      "id": "T92",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a task runner / build system: dependency graph, file watching, incremental builds, with tests",
+      "started": "2026-04-04T17:51:35.638Z",
+      "completed": "2026-04-04T17:52:36.185Z",
+      "duration_ms": 300000,
+      "summary": "Task runner: dependency resolution, parallel execution, caching, circular detection. 12 tests."
     }
   ],
-  "updated_at": "2026-04-04T17:49:28.926Z",
+  "updated_at": "2026-04-04T17:52:36.185Z",
   "adjustments": [
     {
       "time": "2026-04-04T16:01:25.982Z",
@@ -1133,6 +1153,14 @@
     {
       "time": "2026-04-04T17:46:27.639Z",
       "msg": "Added T90 (BUILD) after end: Build a binary search library: standard, lower/upper bound, search insert position, rotated array, with tests"
+    },
+    {
+      "time": "2026-04-04T17:50:00.506Z",
+      "msg": "Added T91 (BUILD) after end: Build a simple REPL with line editing: command history, tab completion, prompt, with tests"
+    },
+    {
+      "time": "2026-04-04T17:50:00.959Z",
+      "msg": "Added T92 (BUILD) after end: Build a task runner / build system: dependency graph, file watching, incremental builds, with tests"
     }
   ]
 }
