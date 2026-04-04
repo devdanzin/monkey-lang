@@ -679,14 +679,74 @@
       "completed": "2026-04-04T17:03:51.464Z",
       "duration_ms": 360000,
       "summary": "DI container: singleton/transient/scoped lifecycles, circular detection, class registration. 15 tests."
+    },
+    {
+      "id": "T66",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a state machine library: define states/transitions, guards, actions, hierarchical states, with tests",
+      "started": "2026-04-04T17:04:17.944Z",
+      "completed": "2026-04-04T17:05:25.225Z",
+      "duration_ms": 360000,
+      "summary": "State machine: guards, actions, entry/exit, conditional transitions, onChange, final states. 16 tests."
+    },
+    {
+      "id": "T67",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a simple ECS (Entity Component System): entities, components, systems, queries, with tests",
+      "started": "2026-04-04T17:05:42.651Z",
+      "completed": "2026-04-04T17:06:57.100Z",
+      "duration_ms": 360000,
+      "summary": "ECS: entities, components, systems, queries, deferred destroy, game example. 15 tests."
+    },
+    {
+      "id": "T68",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a rate limiter: token bucket, sliding window, fixed window algorithms, with tests",
+      "started": "2026-04-04T17:07:15.412Z",
+      "completed": "2026-04-04T17:08:22.650Z",
+      "duration_ms": 360000,
+      "summary": "Rate limiter: token bucket, fixed window, sliding window log, sliding window counter. Per-key limits. 17 tests."
+    },
+    {
+      "id": "T69",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a pub/sub message broker: topics, subscriptions, delivery guarantees (at-least-once), with tests",
+      "started": "2026-04-04T17:08:51.265Z",
+      "completed": "2026-04-04T17:10:04.922Z",
+      "duration_ms": 360000,
+      "summary": "Pub/sub broker: consumer groups, filters, retries, dead letter, wildcard topics. 14 tests."
+    },
+    {
+      "id": "T70",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a CQRS/event sourcing system: commands, events, aggregates, projections, with tests",
+      "started": "2026-04-04T17:10:23.438Z",
+      "completed": "2026-04-04T17:11:35.273Z",
+      "duration_ms": 360000,
+      "summary": "CQRS/Event Sourcing: aggregates, event store, projections, command bus, repository. BankAccount example. 13 tests."
+    },
+    {
+      "id": "T71",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build an A* pathfinding algorithm: grid-based, with obstacles, heuristics, path visualization, with tests",
+      "started": "2026-04-04T17:11:53.402Z",
+      "completed": "2026-04-04T17:13:11.545Z",
+      "duration_ms": 360000,
+      "summary": "A* pathfinding: grid, 4 heuristics, diagonal, weighted paths, BFS, maze solving, render. 20 tests."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 65,
+    "completed": 71,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 22560000
+    "total_duration_ms": 24720000
   },
-  "updated_at": "2026-04-04T17:03:51.464Z"
+  "updated_at": "2026-04-04T17:13:11.545Z"
 }
