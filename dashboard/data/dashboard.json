@@ -1175,23 +1175,20 @@
     {
       "id": "T112",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final session housekeeping",
-      "started": "2026-04-04T18:57:32.490Z"
+      "started": "2026-04-04T18:57:32.490Z",
+      "completed": "2026-04-04T18:58:04.506Z",
+      "duration_ms": 120000,
+      "summary": "Final housekeeping: CURRENT.md updated, dashboard verified, git push."
     }
   ],
-  "current": {
-    "id": "T112",
-    "mode": "MAINTAIN",
-    "status": "in-progress",
-    "task": "Final session housekeeping",
-    "started": "2026-04-04T18:57:32.490Z"
-  },
+  "current": null,
   "stats": {
-    "completed": 113,
+    "completed": 114,
     "yielded": 0,
     "skipped": 1,
-    "total_duration_ms": 36780000
+    "total_duration_ms": 36900000
   },
-  "updated_at": "2026-04-04T18:57:32.490Z"
+  "updated_at": "2026-04-04T18:58:04.506Z"
 }
