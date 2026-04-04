@@ -946,9 +946,19 @@
       "completed": "2026-04-04T17:52:36.185Z",
       "duration_ms": 300000,
       "summary": "Task runner: dependency resolution, parallel execution, caching, circular detection. 12 tests."
+    },
+    {
+      "id": "T93",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a simple markdown parser: headings, bold, italic, links, code blocks, lists, with tests",
+      "started": "2026-04-04T17:53:21.229Z",
+      "completed": "2026-04-04T17:54:27.242Z",
+      "duration_ms": 300000,
+      "summary": "Markdown parser: headings, bold, italic, links, code blocks, lists, blockquotes, images. 16 tests."
     }
   ],
-  "updated_at": "2026-04-04T17:52:36.185Z",
+  "updated_at": "2026-04-04T17:54:27.242Z",
   "adjustments": [
     {
       "time": "2026-04-04T16:01:25.982Z",
@@ -1161,6 +1171,10 @@
     {
       "time": "2026-04-04T17:50:00.959Z",
       "msg": "Added T92 (BUILD) after end: Build a task runner / build system: dependency graph, file watching, incremental builds, with tests"
+    },
+    {
+      "time": "2026-04-04T17:53:20.543Z",
+      "msg": "Added T93 (BUILD) after end: Build a simple markdown parser: headings, bold, italic, links, code blocks, lists, with tests"
     }
   ]
 }
