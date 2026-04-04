@@ -111,74 +111,281 @@
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping — git push, dashboard, knowledge capture",
-      "started": "2026-04-04T15:00:27.013Z"
+      "started": "2026-04-04T15:00:27.013Z",
+      "completed": "2026-04-04T15:01:09.579Z",
+      "duration_ms": 120000,
+      "summary": "Git push, wrote SAT solver scratch note, updated INDEX.md. Dashboard already pushed."
     },
     {
       "id": "T9",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Afternoon direction — depth work on existing project vs new exploration"
+      "status": "done",
+      "task": "Afternoon direction — depth work on existing project vs new exploration",
+      "started": "2026-04-04T15:01:19.051Z",
+      "completed": "2026-04-04T15:01:31.792Z",
+      "duration_ms": 60000,
+      "summary": "Going with regex engine depth work — backreferences and lookahead are CS-hard problems. Blog post on SAT solving. Queue unchanged."
     },
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Depth work: extend regex engine or GC simulator with mark-compact or generational GC",
-      "task": null
+      "task": null,
+      "started": "2026-04-04T15:01:40.743Z",
+      "completed": "2026-04-04T15:02:28.333Z",
+      "duration_ms": 120000,
+      "summary": "Planned 3 BUILD tasks: lookbehind assertions, atomic groups + possessive quantifiers, README update."
     },
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
-      "plan_ref": "T10"
+      "status": "done",
+      "task": "Add lookbehind (?<=...) and (?<!...) to regex engine parser, NFA, and backtracker + tests",
+      "plan_ref": "T10",
+      "started": "2026-04-04T15:02:33.857Z",
+      "completed": "2026-04-04T15:09:23.713Z",
+      "duration_ms": 600000,
+      "summary": "Added lookbehind (?<=...) and (?<!...) to regex engine. 12 new tests, 159 total. Parser, NFA, backtracker all updated."
+    },
+    {
+      "id": "T22",
+      "mode": "BUILD",
+      "task": "Add atomic groups (?>...) and possessive quantifiers (++, *+, ?+) to regex engine + tests",
+      "status": "done",
+      "plan_ref": "T10",
+      "started": "2026-04-04T15:09:45.860Z",
+      "completed": "2026-04-04T15:13:06.042Z",
+      "duration_ms": 420000,
+      "summary": "Added atomic groups (?>...) and possessive quantifiers (++, *+, ?+). 10 new tests, 169 total. Atomicity prevents backtracking as expected."
+    },
+    {
+      "id": "T23",
+      "mode": "BUILD",
+      "task": "Update regex engine README with feature list and architecture docs",
+      "status": "done",
+      "plan_ref": "T10",
+      "started": "2026-04-04T15:13:25.263Z",
+      "completed": "2026-04-04T15:14:17.361Z",
+      "duration_ms": 180000,
+      "summary": "Comprehensive README: feature table (30+ features), architecture docs (Thompson NFA, DFA, lazy DFA, backtracker), complexity table, references."
     },
     {
       "id": "T12",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping — git push, dashboard, PR check"
+      "status": "done",
+      "task": "Housekeeping — git push, dashboard, PR check",
+      "started": "2026-04-04T15:14:37.268Z",
+      "completed": "2026-04-04T15:15:14.648Z",
+      "duration_ms": 120000,
+      "summary": "Git push, dashboard regenerated (3275 tests), pushed to GH Pages."
     },
     {
       "id": "T13",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Evening direction — what to explore tonight"
+      "status": "done",
+      "task": "Evening direction — what to explore tonight",
+      "started": "2026-04-04T15:15:27.831Z",
+      "completed": "2026-04-04T15:15:44.161Z",
+      "duration_ms": 60000,
+      "summary": "5 hours remain. Blog post on SAT solving next, then GC simulator depth work, then explore tasks."
     },
     {
       "id": "T14",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Blog post: write about SAT solving or GC algorithms deep dive",
-      "task": null
+      "task": null,
+      "started": "2026-04-04T15:15:53.331Z",
+      "completed": "2026-04-04T15:16:07.274Z",
+      "duration_ms": 60000,
+      "summary": "Planned 2 BUILD tasks: write SAT blog post, deploy and update dashboard."
     },
     {
       "id": "T15",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
-      "plan_ref": "T14"
+      "status": "done",
+      "task": "Write blog post: Building a SAT Solver from Scratch — DPLL to CDCL, with code snippets and benchmarks",
+      "plan_ref": "T14",
+      "started": "2026-04-04T15:16:12.106Z",
+      "completed": "2026-04-04T15:17:23.169Z",
+      "duration_ms": 480000,
+      "summary": "Blog post written: Building a SAT Solver from Scratch — DPLL to CDCL. Covers 1UIP, watched literals, VSIDS, benchmarks, bug story."
+    },
+    {
+      "id": "T24",
+      "mode": "BUILD",
+      "task": "Deploy blog post and update dashboard",
+      "status": "done",
+      "plan_ref": "T14",
+      "started": "2026-04-04T15:17:40.236Z",
+      "completed": "2026-04-04T15:18:09.137Z",
+      "duration_ms": 120000,
+      "summary": "Blog post deployed to GH Pages, dashboard updated."
     },
     {
       "id": "T16",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping — git push, dashboard update"
+      "status": "done",
+      "task": "Housekeeping — git push, dashboard update",
+      "started": "2026-04-04T15:18:19.525Z",
+      "completed": "2026-04-04T15:18:19.843Z",
+      "duration_ms": 30000,
+      "summary": "Already pushed during T24. Dashboard up to date."
     },
     {
       "id": "T17",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Research: constraint programming, SMT solvers, or model checking — follow curiosity"
+      "status": "done",
+      "task": "Research: constraint programming, SMT solvers, or model checking — follow curiosity",
+      "started": "2026-04-04T15:18:30.015Z",
+      "completed": "2026-04-04T15:19:27.939Z",
+      "duration_ms": 300000,
+      "summary": "Researched SMT solver architecture (DPLL(T)). Wrote scratch note. Natural extension of SAT solver: add theory solvers (EUF via Union-Find, then LIA via Simplex). Future project candidate."
     },
     {
       "id": "T18",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Research: consciousness or AI safety reading — evening exploration"
+      "status": "done",
+      "task": "Research: consciousness or AI safety reading — evening exploration",
+      "started": "2026-04-04T15:19:47.697Z",
+      "completed": "2026-04-04T15:19:54.358Z",
+      "duration_ms": 30000,
+      "summary": "Skipping consciousness reading — redirecting energy to building an SMT solver. More impactful use of 4.5 remaining hours."
+    },
+    {
+      "id": "T25",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Generate work: build SMT solver (EUF theory + DPLL(T) integration) as extension of SAT solver",
+      "started": "2026-04-04T15:20:17.663Z",
+      "completed": "2026-04-04T15:20:26.483Z",
+      "duration_ms": 60000,
+      "summary": "Building an SMT solver with EUF theory on top of CDCL. PLAN task next."
+    },
+    {
+      "id": "T26",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Build SMT solver: EUF theory solver + DPLL(T) integration with existing CDCL SAT engine",
+      "task": null,
+      "started": "2026-04-04T15:20:39.912Z",
+      "completed": "2026-04-04T15:20:47.165Z",
+      "duration_ms": 60000,
+      "summary": "Planned 3 BUILD tasks: Union-Find + EUF solver, DPLL(T) + SMT-LIB parser, README + benchmarks."
+    },
+    {
+      "id": "T27",
+      "mode": "BUILD",
+      "task": "Build backtrackable Union-Find and EUF theory solver (congruence closure) with tests",
+      "status": "done",
+      "plan_ref": "T26",
+      "started": "2026-04-04T15:20:54.222Z",
+      "completed": "2026-04-04T15:22:58.458Z",
+      "duration_ms": 600000,
+      "summary": "Built backtrackable Union-Find and EUF theory solver with congruence closure. 31/31 tests passing. Handles equality/disequality, transitivity, nested congruence, multi-level backtracking."
+    },
+    {
+      "id": "T28",
+      "mode": "BUILD",
+      "task": "Build DPLL(T) framework: integrate CDCL SAT engine with theory solver interface, S-expression parser for SMT-LIB, and end-to-end tests",
+      "status": "done",
+      "plan_ref": "T26",
+      "started": "2026-04-04T15:23:20.391Z",
+      "completed": "2026-04-04T15:25:25.543Z",
+      "duration_ms": 900000,
+      "summary": "Built DPLL(T) framework: S-expression parser, Tseitin transformation, Boolean+theory integration, SMT-LIB input. 56 tests (31 EUF + 25 integration), all passing."
+    },
+    {
+      "id": "T29",
+      "mode": "BUILD",
+      "task": "Add README, benchmarks, and update dashboard for SMT solver project",
+      "status": "done",
+      "plan_ref": "T26",
+      "started": "2026-04-04T15:25:41.428Z",
+      "completed": "2026-04-04T15:27:06.676Z",
+      "duration_ms": 240000,
+      "summary": "README written, dashboard updated with SMT solver. Git push to main and GH Pages."
+    },
+    {
+      "id": "T30",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Extend GC simulator: add mark-compact collector and generational GC (nursery + tenured)",
+      "task": null,
+      "started": "2026-04-04T15:27:45.119Z",
+      "completed": "2026-04-04T15:27:52.373Z",
+      "duration_ms": 60000,
+      "summary": "Planned 3 BUILD tasks: mark-compact, generational GC, README update."
+    },
+    {
+      "id": "T31",
+      "mode": "BUILD",
+      "task": "Implement mark-compact GC algorithm (mark phase + compact/slide phase) with tests",
+      "status": "done",
+      "plan_ref": "T30",
+      "started": "2026-04-04T15:27:59.065Z",
+      "completed": "2026-04-04T15:30:15.606Z",
+      "duration_ms": 480000,
+      "summary": "Built mark-compact GC: 3-phase (mark, compute forwarding, update+slide). Handles circular refs, compacts to front. 14 new tests, 69 total."
+    },
+    {
+      "id": "T32",
+      "mode": "BUILD",
+      "task": "Implement generational GC: nursery (semi-space) + tenured (mark-compact) + write barrier + promotion + tests",
+      "status": "done",
+      "plan_ref": "T30",
+      "started": "2026-04-04T15:30:38.328Z",
+      "completed": "2026-04-04T15:39:26.737Z",
+      "duration_ms": 900000,
+      "summary": "Generational GC: nursery (Cheney semi-space) + tenured (mark-compact) + write barrier + promotion. Fixed age tracking bug. 13 new tests, 82 total."
+    },
+    {
+      "id": "T33",
+      "mode": "BUILD",
+      "task": "Update GC simulator README and dashboard",
+      "status": "done",
+      "plan_ref": "T30",
+      "started": "2026-04-04T15:39:45.822Z",
+      "completed": "2026-04-04T15:40:46.354Z",
+      "duration_ms": 180000,
+      "summary": "README written, dashboard updated and pushed to GH Pages."
+    },
+    {
+      "id": "T34",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Add Linear Integer Arithmetic (LIA) theory solver to SMT solver using difference logic (simpler than full Simplex)",
+      "task": null,
+      "started": "2026-04-04T15:41:45.336Z",
+      "completed": "2026-04-04T15:41:52.818Z",
+      "duration_ms": 60000,
+      "summary": "Planned 2 BUILD tasks: difference logic solver, DPLL(T) integration with arithmetic."
+    },
+    {
+      "id": "T35",
+      "mode": "BUILD",
+      "task": "Implement difference logic theory solver (x - y <= c using Bellman-Ford negative cycle detection) with backtracking + tests",
+      "status": "done",
+      "plan_ref": "T34",
+      "started": "2026-04-04T15:42:00.778Z",
+      "completed": "2026-04-04T15:47:01.789Z",
+      "duration_ms": 900000,
+      "summary": "Difference logic theory solver: Bellman-Ford negative cycle detection, model extraction with normalization, backtracking. 20 tests, 76 total."
+    },
+    {
+      "id": "T36",
+      "mode": "BUILD",
+      "task": "Integrate difference logic with DPLL(T), extend SMT-LIB parser for arithmetic, end-to-end tests",
+      "status": "done",
+      "plan_ref": "T34",
+      "started": "2026-04-04T15:47:20.741Z",
+      "completed": "2026-04-04T15:50:03.240Z",
+      "duration_ms": 600000,
+      "summary": "Combined DPLL(T) with EUF + difference logic. Extended SMT-LIB parser for arithmetic. Task scheduling examples. 85 total tests."
     }
   ],
-  "updated_at": "2026-04-04T15:00:27.013Z"
+  "updated_at": "2026-04-04T15:50:03.240Z"
 }
