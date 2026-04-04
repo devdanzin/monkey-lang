@@ -1,170 +1,187 @@
-const { test } = require('node:test');
-const assert = require('node:assert/strict');
-const { World } = require('../src/index.js');
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
+import { World } from '../src/index.js';
 
-test('create and destroy entities', () => {
-  const world = new World();
-  const e1 = world.createEntity();
-  const e2 = world.createEntity();
-  assert.equal(world.entityCount(), 2);
-  world.destroyEntity(e1);
-  assert.equal(world.entityCount(), 1);
-});
-
-test('add and get components', () => {
-  const world = new World();
-  const e = world.createEntity();
-  world.addComponent(e, 'Position', { x: 10, y: 20 });
-  world.addComponent(e, 'Velocity', { vx: 1, vy: -1 });
-
-  const pos = world.getComponent(e, 'Position');
-  assert.deepEqual(pos, { x: 10, y: 20 });
-  assert.ok(world.hasComponent(e, 'Position'));
-  assert.ok(!world.hasComponent(e, 'Health'));
-});
-
-test('remove component', () => {
-  const world = new World();
-  const e = world.createEntity();
-  world.addComponent(e, 'Tag', {});
-  assert.ok(world.hasComponent(e, 'Tag'));
-  world.removeComponent(e, 'Tag');
-  assert.ok(!world.hasComponent(e, 'Tag'));
-});
-
-test('query entities by components', () => {
-  const world = new World();
-  const e1 = world.createEntity();
-  const e2 = world.createEntity();
-  const e3 = world.createEntity();
-
-  world.addComponent(e1, 'Position', { x: 0, y: 0 });
-  world.addComponent(e1, 'Velocity', { vx: 1, vy: 0 });
-  world.addComponent(e2, 'Position', { x: 5, y: 5 });
-  world.addComponent(e3, 'Health', { hp: 100 });
-
-  const movable = world.query('Position', 'Velocity');
-  assert.equal(movable.length, 1);
-  assert.equal(movable[0].entity, e1);
-
-  const positioned = world.query('Position');
-  assert.equal(positioned.length, 2);
-});
-
-test('systems process entities', () => {
-  const world = new World();
-  const e = world.createEntity();
-  world.addComponent(e, 'Position', { x: 0, y: 0 });
-  world.addComponent(e, 'Velocity', { vx: 10, vy: 5 });
-
-  world.addSystem('movement', ['Position', 'Velocity'], (entities, dt) => {
-    for (const { Position, Velocity } of entities) {
-      Position.x += Velocity.vx * dt;
-      Position.y += Velocity.vy * dt;
-    }
+describe('ECS — entities', () => {
+  it('creates entity', () => {
+    const w = new World();
+    const e = w.createEntity();
+    assert.ok(e > 0);
+    assert.equal(w.hasEntity(e), true);
   });
 
-  world.update(1);
-  const pos = world.getComponent(e, 'Position');
-  assert.equal(pos.x, 10);
-  assert.equal(pos.y, 5);
-
-  world.update(0.5);
-  assert.equal(pos.x, 15);
-  assert.equal(pos.y, 7.5);
-});
-
-test('system priority ordering', () => {
-  const world = new World();
-  const order = [];
-
-  world.addSystem('second', [], () => order.push('second'), 2);
-  world.addSystem('first', [], () => order.push('first'), 1);
-  world.addSystem('third', [], () => order.push('third'), 3);
-
-  world.update(0);
-  assert.deepEqual(order, ['first', 'second', 'third']);
-});
-
-test('events — emit and handle', () => {
-  const world = new World();
-  const received = [];
-
-  world.on('damage', (data) => received.push(data));
-  world.emit('damage', { target: 1, amount: 25 });
-  world.emit('damage', { target: 2, amount: 50 });
-
-  assert.equal(received.length, 2);
-  assert.equal(received[0].amount, 25);
-  assert.equal(received[1].amount, 50);
-});
-
-test('destroy entity removes all components', () => {
-  const world = new World();
-  const e = world.createEntity();
-  world.addComponent(e, 'Position', { x: 0, y: 0 });
-  world.addComponent(e, 'Health', { hp: 100 });
-
-  world.destroyEntity(e);
-  assert.ok(!world.hasComponent(e, 'Position'));
-  assert.ok(!world.hasComponent(e, 'Health'));
-});
-
-test('serialize and deserialize', () => {
-  const world = new World();
-  const e1 = world.createEntity();
-  const e2 = world.createEntity();
-  world.addComponent(e1, 'Position', { x: 10, y: 20 });
-  world.addComponent(e1, 'Name', { value: 'Player' });
-  world.addComponent(e2, 'Position', { x: 5, y: 5 });
-
-  const data = world.serialize();
-  const restored = World.deserialize(data);
-
-  assert.equal(restored.entityCount(), 2);
-  assert.deepEqual(restored.getComponent(e1, 'Position'), { x: 10, y: 20 });
-  assert.deepEqual(restored.getComponent(e1, 'Name'), { value: 'Player' });
-  assert.deepEqual(restored.getComponent(e2, 'Position'), { x: 5, y: 5 });
-});
-
-test('game loop simulation', () => {
-  const world = new World();
-
-  // Create entities
-  for (let i = 0; i < 10; i++) {
-    const e = world.createEntity();
-    world.addComponent(e, 'Position', { x: i * 10, y: 0 });
-    world.addComponent(e, 'Velocity', { vx: 1, vy: 0.5 });
-    world.addComponent(e, 'Health', { hp: 100 });
-  }
-
-  // Movement system
-  world.addSystem('movement', ['Position', 'Velocity'], (entities, dt) => {
-    for (const { Position, Velocity } of entities) {
-      Position.x += Velocity.vx * dt;
-      Position.y += Velocity.vy * dt;
-    }
+  it('destroys entity', () => {
+    const w = new World();
+    const e = w.createEntity();
+    w.destroyEntity(e);
+    assert.equal(w.hasEntity(e), false);
   });
 
-  // Damage system (damages entities below y=0 — none here, just testing system runs)
-  let damageChecks = 0;
-  world.addSystem('damage', ['Health'], (entities) => {
-    damageChecks += entities.length;
+  it('tracks entity count', () => {
+    const w = new World();
+    w.createEntity(); w.createEntity();
+    assert.equal(w.entityCount, 2);
   });
-
-  // Run 10 frames
-  for (let f = 0; f < 10; f++) world.update(1/60);
-
-  assert.equal(damageChecks, 100); // 10 entities * 10 frames
-  const pos = world.getComponent(1, 'Position');
-  assert.ok(pos.x > 0); // moved
 });
 
-test('multiple event handlers', () => {
-  const world = new World();
-  let count = 0;
-  world.on('tick', () => count++);
-  world.on('tick', () => count++);
-  world.emit('tick', {});
-  assert.equal(count, 2);
+describe('ECS — components', () => {
+  it('adds component', () => {
+    const w = new World();
+    const e = w.createEntity();
+    w.addComponent(e, 'Position', { x: 10, y: 20 });
+    assert.equal(w.hasComponent(e, 'Position'), true);
+    assert.deepEqual(w.getComponent(e, 'Position'), { x: 10, y: 20 });
+  });
+
+  it('removes component', () => {
+    const w = new World();
+    const e = w.createEntity();
+    w.addComponent(e, 'Health', { hp: 100 });
+    w.removeComponent(e, 'Health');
+    assert.equal(w.hasComponent(e, 'Health'), false);
+  });
+
+  it('multiple components on entity', () => {
+    const w = new World();
+    const e = w.createEntity();
+    w.addComponent(e, 'Position', { x: 0, y: 0 });
+    w.addComponent(e, 'Velocity', { vx: 1, vy: 2 });
+    assert.deepEqual(w.getEntityComponents(e).sort(), ['Position', 'Velocity']);
+  });
+
+  it('destroying entity removes components', () => {
+    const w = new World();
+    const e = w.createEntity();
+    w.addComponent(e, 'Tag');
+    w.destroyEntity(e);
+    assert.equal(w.hasComponent(e, 'Tag'), false);
+  });
+
+  it('throws on adding to nonexistent entity', () => {
+    const w = new World();
+    assert.throws(() => w.addComponent(999, 'Pos'));
+  });
+});
+
+describe('ECS — queries', () => {
+  it('finds entities with components', () => {
+    const w = new World();
+    const e1 = w.createEntity();
+    const e2 = w.createEntity();
+    const e3 = w.createEntity();
+    
+    w.addComponent(e1, 'Pos', { x: 0 }).addComponent(e1, 'Vel', { vx: 1 });
+    w.addComponent(e2, 'Pos', { x: 5 });
+    w.addComponent(e3, 'Pos', { x: 10 }).addComponent(e3, 'Vel', { vx: 2 });
+    
+    const movable = w.query('Pos', 'Vel');
+    assert.equal(movable.length, 2);
+    assert.ok(movable.includes(e1));
+    assert.ok(movable.includes(e3));
+  });
+
+  it('queryWith returns data', () => {
+    const w = new World();
+    const e = w.createEntity();
+    w.addComponent(e, 'Pos', { x: 5, y: 10 });
+    
+    const results = w.queryWith('Pos');
+    assert.equal(results.length, 1);
+    assert.equal(results[0].Pos.x, 5);
+  });
+
+  it('empty query', () => {
+    const w = new World();
+    assert.deepEqual(w.query('NonExistent'), []);
+  });
+});
+
+describe('ECS — systems', () => {
+  it('adds and runs system', () => {
+    const w = new World();
+    const e = w.createEntity();
+    w.addComponent(e, 'Pos', { x: 0, y: 0 });
+    w.addComponent(e, 'Vel', { vx: 1, vy: 2 });
+    
+    w.addSystem({
+      update(world, dt) {
+        for (const id of world.query('Pos', 'Vel')) {
+          const pos = world.getComponent(id, 'Pos');
+          const vel = world.getComponent(id, 'Vel');
+          pos.x += vel.vx * dt;
+          pos.y += vel.vy * dt;
+        }
+      },
+    });
+    
+    w.update(1);
+    assert.deepEqual(w.getComponent(e, 'Pos'), { x: 1, y: 2 });
+    
+    w.update(2);
+    assert.deepEqual(w.getComponent(e, 'Pos'), { x: 3, y: 6 });
+  });
+
+  it('multiple systems run in order', () => {
+    const w = new World();
+    const log = [];
+    w.addSystem({ update() { log.push('A'); } });
+    w.addSystem({ update() { log.push('B'); } });
+    w.update();
+    assert.deepEqual(log, ['A', 'B']);
+  });
+
+  it('deferred destroy', () => {
+    const w = new World();
+    const e = w.createEntity();
+    w.addComponent(e, 'Health', { hp: 0 });
+    
+    w.addSystem({
+      update(world) {
+        for (const id of world.query('Health')) {
+          if (world.getComponent(id, 'Health').hp <= 0) {
+            world.markForDestroy(id);
+          }
+        }
+      },
+    });
+    
+    w.update();
+    assert.equal(w.hasEntity(e), false);
+  });
+});
+
+describe('ECS — game example', () => {
+  it('simple game loop', () => {
+    const w = new World();
+    
+    // Create player
+    const player = w.createEntity();
+    w.addComponent(player, 'Pos', { x: 0, y: 0 });
+    w.addComponent(player, 'Vel', { vx: 5, vy: 0 });
+    w.addComponent(player, 'Player', {});
+    
+    // Create enemies
+    const enemy1 = w.createEntity();
+    w.addComponent(enemy1, 'Pos', { x: 100, y: 0 });
+    w.addComponent(enemy1, 'Enemy', {});
+    
+    // Movement system
+    w.addSystem({
+      update(world, dt) {
+        for (const id of world.query('Pos', 'Vel')) {
+          const pos = world.getComponent(id, 'Pos');
+          const vel = world.getComponent(id, 'Vel');
+          pos.x += vel.vx * dt;
+          pos.y += vel.vy * dt;
+        }
+      },
+    });
+    
+    // Run 10 frames
+    for (let i = 0; i < 10; i++) w.update(1);
+    
+    assert.equal(w.getComponent(player, 'Pos').x, 50);
+    assert.equal(w.query('Player').length, 1);
+    assert.equal(w.query('Enemy').length, 1);
+  });
 });

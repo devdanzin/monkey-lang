@@ -1,125 +1,125 @@
-/**
- * Tiny ECS — Entity Component System
- * 
- * Game architecture pattern:
- * - Entities: just IDs
- * - Components: data attached to entities
- * - Systems: logic that operates on entities with matching components
- * - Queries: find entities by component types
- * - Events
- */
+// ===== Entity Component System =====
 
-class World {
+let nextEntityId = 1;
+
+export class World {
   constructor() {
-    this.nextId = 1;
-    this.entities = new Set();
-    this.components = new Map(); // componentName -> Map<entityId, data>
+    this.entities = new Map();      // entityId → Set of component names
+    this.components = new Map();    // componentName → Map(entityId → data)
     this.systems = [];
-    this.events = new Map(); // eventName -> [handlers]
+    this._toDestroy = [];
   }
 
+  // ===== Entities =====
+
   createEntity() {
-    const id = this.nextId++;
-    this.entities.add(id);
+    const id = nextEntityId++;
+    this.entities.set(id, new Set());
     return id;
   }
 
   destroyEntity(id) {
-    this.entities.delete(id);
-    for (const store of this.components.values()) {
-      store.delete(id);
+    const comps = this.entities.get(id);
+    if (!comps) return;
+    for (const name of comps) {
+      this.components.get(name)?.delete(id);
     }
+    this.entities.delete(id);
   }
 
-  addComponent(entity, name, data = {}) {
-    if (!this.components.has(name)) this.components.set(name, new Map());
-    this.components.get(name).set(entity, data);
+  hasEntity(id) { return this.entities.has(id); }
+
+  // ===== Components =====
+
+  addComponent(entityId, name, data = {}) {
+    if (!this.entities.has(entityId)) throw new Error(`Entity ${entityId} does not exist`);
+    
+    if (!this.components.has(name)) {
+      this.components.set(name, new Map());
+    }
+    this.components.get(name).set(entityId, { ...data });
+    this.entities.get(entityId).add(name);
     return this;
   }
 
-  removeComponent(entity, name) {
-    const store = this.components.get(name);
-    if (store) store.delete(entity);
+  removeComponent(entityId, name) {
+    this.components.get(name)?.delete(entityId);
+    this.entities.get(entityId)?.delete(name);
     return this;
   }
 
-  getComponent(entity, name) {
-    const store = this.components.get(name);
-    return store ? store.get(entity) : undefined;
+  getComponent(entityId, name) {
+    return this.components.get(name)?.get(entityId);
   }
 
-  hasComponent(entity, name) {
-    const store = this.components.get(name);
-    return store ? store.has(entity) : false;
+  hasComponent(entityId, name) {
+    return this.components.get(name)?.has(entityId) ?? false;
   }
 
+  // ===== Queries =====
+
+  // Find all entities with ALL specified components
   query(...componentNames) {
     const results = [];
-    for (const entity of this.entities) {
-      let match = true;
-      for (const name of componentNames) {
-        if (!this.hasComponent(entity, name)) { match = false; break; }
-      }
-      if (match) {
-        const components = {};
-        for (const name of componentNames) {
-          components[name] = this.getComponent(entity, name);
+    
+    // Start with smallest component pool for efficiency
+    const sorted = [...componentNames].sort((a, b) => 
+      (this.components.get(a)?.size ?? 0) - (this.components.get(b)?.size ?? 0)
+    );
+    
+    const first = this.components.get(sorted[0]);
+    if (!first) return results;
+    
+    for (const entityId of first.keys()) {
+      let hasAll = true;
+      for (let i = 1; i < sorted.length; i++) {
+        if (!this.components.get(sorted[i])?.has(entityId)) {
+          hasAll = false;
+          break;
         }
-        results.push({ entity, ...components });
       }
+      if (hasAll) results.push(entityId);
     }
+    
     return results;
   }
 
-  addSystem(name, componentNames, fn, priority = 0) {
-    this.systems.push({ name, components: componentNames, fn, priority });
-    this.systems.sort((a, b) => a.priority - b.priority);
+  // Query returning component data
+  queryWith(...componentNames) {
+    return this.query(...componentNames).map(id => ({
+      id,
+      ...Object.fromEntries(componentNames.map(name => [name, this.getComponent(id, name)])),
+    }));
+  }
+
+  // ===== Systems =====
+
+  addSystem(system) {
+    this.systems.push(system);
+    if (system.init) system.init(this);
     return this;
   }
 
+  // Run all systems once
   update(dt = 0) {
     for (const system of this.systems) {
-      const entities = this.query(...system.components);
-      system.fn(entities, dt, this);
+      system.update(this, dt);
     }
+    // Process deferred destroys
+    for (const id of this._toDestroy) this.destroyEntity(id);
+    this._toDestroy = [];
   }
 
-  on(event, handler) {
-    if (!this.events.has(event)) this.events.set(event, []);
-    this.events.get(event).push(handler);
-    return this;
+  // Mark entity for deferred destruction (safe during system update)
+  markForDestroy(id) {
+    this._toDestroy.push(id);
   }
 
-  emit(event, data) {
-    const handlers = this.events.get(event) || [];
-    for (const handler of handlers) handler(data, this);
-  }
+  // ===== Utility =====
 
-  entityCount() { return this.entities.size; }
+  get entityCount() { return this.entities.size; }
 
-  serialize() {
-    const entities = [];
-    for (const id of this.entities) {
-      const components = {};
-      for (const [name, store] of this.components) {
-        if (store.has(id)) components[name] = store.get(id);
-      }
-      entities.push({ id, components });
-    }
-    return { entities, nextId: this.nextId };
-  }
-
-  static deserialize(data) {
-    const world = new World();
-    world.nextId = data.nextId;
-    for (const { id, components } of data.entities) {
-      world.entities.add(id);
-      for (const [name, compData] of Object.entries(components)) {
-        world.addComponent(id, name, compData);
-      }
-    }
-    return world;
+  getEntityComponents(entityId) {
+    return [...(this.entities.get(entityId) || [])];
   }
 }
-
-module.exports = { World };
