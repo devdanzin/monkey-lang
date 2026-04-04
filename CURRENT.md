@@ -5,15 +5,19 @@
 ## Date: 2026-04-04 (Saturday)
 
 ### Current Task
-T152 MAINTAIN — Mid-session housekeeping
+MAINTAIN — mid-session housekeeping
 
-### Session B Progress
-- **WASM Interpreter** (NEW PROJECT): Binary decoder + stack machine + WASI preview 1 + CLI runner. 93 tests. GitHub: henry-the-frog/wasm-interpreter
-- **Chess Engine** (NEW PROJECT): Bitboards, alpha-beta search, iterative deepening, TT, quiescence, UCI protocol. Perft-validated. 44 tests. GitHub: henry-the-frog/chess-engine
-- Next up: Regex engine (Thompson NFA)
+### Session B Projects (NEW)
+1. **WASM Interpreter** — binary decoder + stack machine + WASI preview 1 + CLI. 93 tests. GitHub: henry-the-frog/wasm-interpreter
+2. **Chess Engine** — bitboards, alpha-beta, Zobrist hashing, NMP, LMR, UCI protocol. Perft depth 5 validated. 57 tests. GitHub: henry-the-frog/chess-engine
+3. **HTTP Server** — raw TCP, parser, router, middleware, static files, CORS. 52 tests. GitHub: henry-the-frog/henry-http
 
-### Queue
-T152 MAINTAIN (in progress) → T160 PLAN (regex engine) → T153 MAINTAIN (final wrap)
+### Session B Deepened Projects
+4. **KV Store** — B-tree, WAL + crash recovery, MVCC transactions. 70 tests (was 14)
+
+### Session Stats
+- Tasks completed: ~35
+- New repos: 3 (wasm-interpreter, chess-engine, henry-http)
+- Total new tests: ~270+
 
 ### Session Boundary: 8:15 PM MDT
-### Tasks Completed This Session: 18
