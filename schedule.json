@@ -1741,9 +1741,50 @@
       "id": "T169",
       "mode": "BUILD",
       "task": "Integration tests: real TCP connections, concurrent requests, chunked upload/download, error responses, file serving, keep-alive",
+      "status": "done",
+      "plan_ref": "T166",
+      "started": "2026-04-04T21:30:02.341Z",
+      "completed": "2026-04-04T21:30:02.833Z",
+      "duration_ms": 10000,
+      "summary": "Integration tests already built in T168 — 19 TCP tests including 10 concurrent requests."
+    },
+    {
+      "id": "T170",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HTTP server: add static file serving middleware + README + GitHub Actions CI",
+      "started": "2026-04-04T21:30:36.343Z",
+      "completed": "2026-04-04T21:31:37.442Z",
+      "duration_ms": 300000,
+      "summary": "Static file serving middleware (MIME types, directory traversal prevention, index files, cache control), CORS middleware, README, GitHub Actions CI. Pushed."
+    },
+    {
+      "id": "T171",
+      "mode": "PLAN",
       "status": "upcoming",
-      "plan_ref": "T166"
+      "goal": "Build a key-value database: B-tree indexing, write-ahead log (WAL), ACID transactions, crash recovery",
+      "task": null
+    },
+    {
+      "id": "T172",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Session B final wrap — git push all repos, daily log, dashboard update, scratch notes"
     }
   ],
-  "updated_at": "2026-04-04T21:29:40.962Z"
+  "updated_at": "2026-04-04T21:31:37.442Z",
+  "adjustments": [
+    {
+      "time": "2026-04-04T21:30:18.518Z",
+      "msg": "Added T170 (BUILD) after end: HTTP server: add static file serving middleware + README + GitHub Actions CI"
+    },
+    {
+      "time": "2026-04-04T21:30:19.111Z",
+      "msg": "Added T171 (PLAN) after end: Build a key-value database: B-tree indexing, write-ahead log (WAL), ACID transactions, crash recovery"
+    },
+    {
+      "time": "2026-04-04T21:30:25.326Z",
+      "msg": "Added T172 (MAINTAIN) after end: Session B final wrap — git push all repos, daily log, dashboard update, scratch notes"
+    }
+  ]
 }
