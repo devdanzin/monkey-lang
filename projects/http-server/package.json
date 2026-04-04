@@ -1,12 +1,9 @@
 {
   "name": "http-server",
   "version": "1.0.0",
-  "description": "HTTP server from scratch using Node.js net module",
+  "description": "HTTP/1.1 server from scratch — raw TCP, request parsing, routing, middleware",
   "type": "module",
-  "main": "src/index.js",
   "scripts": {
-    "test": "node --test test/*.test.js"
-  },
-  "author": "Henry",
-  "license": "MIT"
+    "test": "node --test src/**/*.test.js"
+  }
 }

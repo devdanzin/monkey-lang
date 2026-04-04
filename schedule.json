@@ -1697,15 +1697,49 @@
     {
       "id": "T165",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "REAL final session B wrap — git push, daily log, scratch notes",
+      "started": "2026-04-04T21:24:49.307Z",
+      "completed": "2026-04-04T21:24:49.776Z",
+      "duration_ms": 10000,
+      "summary": "Deferred again — 5 hours remain."
+    },
+    {
+      "id": "T166",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HTTP/1.1 server from scratch: TCP socket, request parsing, response builder, routing, middleware, chunked transfer, keep-alive",
+      "task": null,
+      "started": "2026-04-04T21:25:08.146Z",
+      "completed": "2026-04-04T21:25:22.302Z",
+      "duration_ms": 60000,
+      "summary": "HTTP server plan: 3 BUILD tasks — parser, router+middleware, integration tests"
+    },
+    {
+      "id": "T167",
+      "mode": "BUILD",
+      "task": "HTTP parser: request line + headers + body (content-length + chunked). Response builder with status codes, headers, body. Keep-alive support.",
+      "status": "done",
+      "plan_ref": "T166",
+      "started": "2026-04-04T21:25:33.649Z",
+      "completed": "2026-04-04T21:27:27.420Z",
+      "duration_ms": 600000,
+      "summary": "HTTP/1.1 parser: request line + headers + body (content-length + chunked transfer encoding). Response builder (json/text/html/send, custom headers, status codes). Query string parser. Keep-alive detection. HttpError class. 33 tests."
+    },
+    {
+      "id": "T168",
+      "mode": "BUILD",
+      "task": "Router + middleware: path matching (static + params), middleware chain, error handling, JSON body parsing, static file serving",
       "status": "upcoming",
-      "task": "REAL final session B wrap — git push, daily log, scratch notes"
+      "plan_ref": "T166"
+    },
+    {
+      "id": "T169",
+      "mode": "BUILD",
+      "task": "Integration tests: real TCP connections, concurrent requests, chunked upload/download, error responses, file serving, keep-alive",
+      "status": "upcoming",
+      "plan_ref": "T166"
     }
   ],
-  "updated_at": "2026-04-04T21:24:28.738Z",
-  "adjustments": [
-    {
-      "time": "2026-04-04T21:06:30.312Z",
-      "msg": "Added T165 (MAINTAIN) after end: REAL final session B wrap — git push, daily log, scratch notes"
-    }
-  ]
+  "updated_at": "2026-04-04T21:27:27.420Z"
 }
