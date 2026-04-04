@@ -2313,9 +2313,19 @@
       "completed": "2026-04-04T23:22:13.167Z",
       "duration_ms": 600000,
       "summary": "FFT: Complex number class, DFT (O(n²)), Cooley-Tukey FFT (radix-2), inverse FFT, convolution via FFT, windowing (Hamming/Hanning/Blackman), power/magnitude spectrum, dominant frequency detection, signal generation (sine/cosine/square), spectrogram. 24 tests. GitHub: henry-the-frog/fft"
+    },
+    {
+      "id": "T224",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Graph algorithms: Dijkstra, A*, Bellman-Ford, Floyd-Warshall, topological sort, strongly connected components (Tarjan), minimum spanning tree (Kruskal + Prim), max flow (Ford-Fulkerson). 30+ tests.",
+      "started": "2026-04-04T23:22:45.471Z",
+      "completed": "2026-04-04T23:24:26.270Z",
+      "duration_ms": 600000,
+      "summary": "Graph algorithms: Dijkstra (shortest path + distances), A* search, Bellman-Ford (negative weights + cycle detection), Floyd-Warshall (all-pairs), topological sort, Tarjan SCC, Kruskal MST (union-find), Prim MST, Ford-Fulkerson max flow (BFS augmenting paths). 43 tests. GitHub: henry-the-frog/graph-algorithms"
     }
   ],
-  "updated_at": "2026-04-04T23:22:13.167Z",
+  "updated_at": "2026-04-04T23:24:26.270Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -2372,6 +2382,10 @@
     {
       "time": "2026-04-04T23:20:43.054Z",
       "msg": "Added T223 (BUILD) after end: Signal processing: FFT (Cooley-Tukey), inverse FFT, convolution, DFT, windowing functions (Hamming, Hanning), spectrogram, frequency analysis. 25+ tests."
+    },
+    {
+      "time": "2026-04-04T23:22:44.847Z",
+      "msg": "Added T224 (BUILD) after end: Graph algorithms: Dijkstra, A*, Bellman-Ford, Floyd-Warshall, topological sort, strongly connected components (Tarjan), minimum spanning tree (Kruskal + Prim), max flow (Ford-Fulkerson). 30+ tests."
     }
   ]
 }
