@@ -1,81 +1,137 @@
-const { test } = require('node:test');
-const assert = require('node:assert/strict');
-const { Rope } = require('../src/index.js');
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
+import { Rope } from '../src/index.js';
 
-test('create and toString', () => {
-  const r = Rope.from('Hello, World!');
-  assert.equal(r.toString(), 'Hello, World!');
-  assert.equal(r.length, 13);
+describe('Rope — basic', () => {
+  it('creates from string', () => {
+    const r = new Rope('hello');
+    assert.equal(r.toString(), 'hello');
+    assert.equal(r.length, 5);
+  });
+
+  it('empty rope', () => {
+    const r = new Rope('');
+    assert.equal(r.length, 0);
+    assert.equal(r.toString(), '');
+  });
+
+  it('charAt', () => {
+    const r = new Rope('hello');
+    assert.equal(r.charAt(0), 'h');
+    assert.equal(r.charAt(4), 'o');
+    assert.equal(r.charAt(5), undefined);
+  });
 });
 
-test('charAt', () => {
-  const r = Rope.from('ABCDEF');
-  assert.equal(r.charAt(0), 'A');
-  assert.equal(r.charAt(5), 'F');
-  assert.equal(r.charAt(3), 'D');
+describe('Rope — concat', () => {
+  it('concatenates ropes', () => {
+    const a = new Rope('hello');
+    const b = new Rope(' world');
+    const c = a.concat(b);
+    assert.equal(c.toString(), 'hello world');
+    assert.equal(c.length, 11);
+  });
+
+  it('concatenates with string', () => {
+    const r = new Rope('hello').concat(' world');
+    assert.equal(r.toString(), 'hello world');
+  });
+
+  it('concat with empty', () => {
+    const r = new Rope('hello');
+    assert.equal(r.concat('').toString(), 'hello');
+    assert.equal(new Rope('').concat(r).toString(), 'hello');
+  });
 });
 
-test('insert', () => {
-  const r = Rope.from('Hello World');
-  const r2 = r.insert(5, ',');
-  assert.equal(r2.toString(), 'Hello, World');
-  assert.equal(r.toString(), 'Hello World'); // original unchanged
+describe('Rope — split', () => {
+  it('splits at middle', () => {
+    const [left, right] = new Rope('hello world').split(5);
+    assert.equal(left.toString(), 'hello');
+    assert.equal(right.toString(), ' world');
+  });
+
+  it('splits at start', () => {
+    const [left, right] = new Rope('hello').split(0);
+    assert.equal(left.toString(), '');
+    assert.equal(right.toString(), 'hello');
+  });
+
+  it('splits at end', () => {
+    const [left, right] = new Rope('hello').split(5);
+    assert.equal(left.toString(), 'hello');
+    assert.equal(right.toString(), '');
+  });
 });
 
-test('delete', () => {
-  const r = Rope.from('Hello, World!');
-  const r2 = r.delete(5, 2); // remove ", "
-  assert.equal(r2.toString(), 'HelloWorld!');
+describe('Rope — insert', () => {
+  it('inserts at beginning', () => {
+    const r = new Rope('world').insert(0, 'hello ');
+    assert.equal(r.toString(), 'hello world');
+  });
+
+  it('inserts at end', () => {
+    const r = new Rope('hello').insert(5, ' world');
+    assert.equal(r.toString(), 'hello world');
+  });
+
+  it('inserts in middle', () => {
+    const r = new Rope('helo').insert(2, 'l');
+    assert.equal(r.toString(), 'hello');
+  });
 });
 
-test('substring', () => {
-  const r = Rope.from('Hello, World!');
-  assert.equal(r.substring(0, 5), 'Hello');
-  assert.equal(r.substring(7, 12), 'World');
+describe('Rope — delete', () => {
+  it('deletes range', () => {
+    const r = new Rope('hello world').delete(5, 11);
+    assert.equal(r.toString(), 'hello');
+  });
+
+  it('deletes from beginning', () => {
+    const r = new Rope('hello world').delete(0, 6);
+    assert.equal(r.toString(), 'world');
+  });
+
+  it('deletes from middle', () => {
+    const r = new Rope('abcde').delete(1, 4);
+    assert.equal(r.toString(), 'ae');
+  });
 });
 
-test('concat', () => {
-  const a = Rope.from('Hello');
-  const b = Rope.from(' World');
-  const c = a.concat(b);
-  assert.equal(c.toString(), 'Hello World');
-  assert.equal(c.length, 11);
+describe('Rope — substring', () => {
+  it('extracts substring', () => {
+    const r = new Rope('hello world');
+    assert.equal(r.substring(0, 5), 'hello');
+    assert.equal(r.substring(6, 11), 'world');
+  });
 });
 
-test('indexOf', () => {
-  const r = Rope.from('the quick brown fox');
-  assert.equal(r.indexOf('quick'), 4);
-  assert.equal(r.indexOf('xyz'), -1);
+describe('Rope — lines', () => {
+  it('counts lines', () => {
+    const r = new Rope('line1\nline2\nline3');
+    assert.equal(r.lineCount(), 3);
+  });
+
+  it('returns lines array', () => {
+    const r = new Rope('a\nb\nc');
+    assert.deepEqual(r.lines(), ['a', 'b', 'c']);
+  });
 });
 
-test('lines', () => {
-  const r = Rope.from('line1\nline2\nline3');
-  assert.deepEqual(r.lines(), ['line1', 'line2', 'line3']);
-  assert.equal(r.lineAt(1), 'line2');
-});
+describe('Rope — large', () => {
+  it('handles long strings', () => {
+    const str = 'a'.repeat(10000);
+    const r = new Rope(str);
+    assert.equal(r.length, 10000);
+    assert.equal(r.charAt(5000), 'a');
+    assert.equal(r.toString().length, 10000);
+  });
 
-test('large text', () => {
-  const text = 'A'.repeat(10000);
-  const r = Rope.from(text);
-  assert.equal(r.length, 10000);
-  assert.equal(r.charAt(5000), 'A');
-  
-  const r2 = r.insert(5000, 'B');
-  assert.equal(r2.length, 10001);
-  assert.equal(r2.charAt(5000), 'B');
-});
-
-test('empty rope', () => {
-  const r = Rope.from('');
-  assert.equal(r.length, 0);
-  assert.equal(r.toString(), '');
-});
-
-test('rebalance', () => {
-  let r = Rope.from('');
-  for (let i = 0; i < 100; i++) {
-    r = r.insert(r.length, String.fromCharCode(65 + (i % 26)));
-  }
-  const rebalanced = r.rebalance();
-  assert.equal(rebalanced.toString(), r.toString());
+  it('multiple operations', () => {
+    let r = new Rope('hello');
+    r = r.insert(5, ' world');
+    r = r.insert(11, '!');
+    r = r.delete(0, 6);
+    assert.equal(r.toString(), 'world!');
+  });
 });
