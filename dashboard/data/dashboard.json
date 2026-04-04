@@ -1513,16 +1513,20 @@
     {
       "id": "T146",
       "mode": "EXPLORE",
-      "status": "upcoming",
-      "task": "Research WebAssembly GC proposal (WasmGC) and component model for potential future integration"
+      "status": "done",
+      "task": "Research WebAssembly GC proposal (WasmGC) and component model for potential future integration",
+      "started": "2026-04-04T20:47:12.806Z",
+      "completed": "2026-04-04T20:48:03.725Z",
+      "duration_ms": 180000,
+      "summary": "Researched WasmGC (shipped all browsers since late 2024) and Component Model (WASI 0.3.0 with async, 1.0 projected late 2026). WasmGC adds managed struct/array types — natural extension for the interpreter. Wrote scratch note."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 144,
+    "completed": 145,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 46050000
+    "total_duration_ms": 46230000
   },
-  "updated_at": "2026-04-04T20:46:54.712Z"
+  "updated_at": "2026-04-04T20:48:03.725Z"
 }
