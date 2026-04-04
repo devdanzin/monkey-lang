@@ -1036,9 +1036,19 @@
       "completed": "2026-04-04T18:05:02.168Z",
       "duration_ms": 240000,
       "summary": "Option type: Some/None, map, flatMap, filter, zip, fromNullable. 16 tests."
+    },
+    {
+      "id": "T102",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a simple middleware pipeline: use, compose, context passing, error handling, with tests",
+      "started": "2026-04-04T18:05:13.372Z",
+      "completed": "2026-04-04T18:06:06.809Z",
+      "duration_ms": 180000,
+      "summary": "Middleware pipeline: Koa-style compose, error handling, context passing. 6 tests."
     }
   ],
-  "updated_at": "2026-04-04T18:05:02.168Z",
+  "updated_at": "2026-04-04T18:06:06.809Z",
   "adjustments": [
     {
       "time": "2026-04-04T16:01:25.982Z",
@@ -1287,6 +1297,10 @@
     {
       "time": "2026-04-04T18:04:04.103Z",
       "msg": "Added T101 (BUILD) after end: Build a simple option type (Some/None): map, flatMap, unwrap, filter, with tests"
+    },
+    {
+      "time": "2026-04-04T18:05:12.658Z",
+      "msg": "Added T102 (BUILD) after end: Build a simple middleware pipeline: use, compose, context passing, error handling, with tests"
     }
   ]
 }

@@ -1036,14 +1036,24 @@
       "completed": "2026-04-04T18:05:02.168Z",
       "duration_ms": 240000,
       "summary": "Option type: Some/None, map, flatMap, filter, zip, fromNullable. 16 tests."
+    },
+    {
+      "id": "T102",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a simple middleware pipeline: use, compose, context passing, error handling, with tests",
+      "started": "2026-04-04T18:05:13.372Z",
+      "completed": "2026-04-04T18:06:06.809Z",
+      "duration_ms": 180000,
+      "summary": "Middleware pipeline: Koa-style compose, error handling, context passing. 6 tests."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 100,
+    "completed": 101,
     "yielded": 0,
     "skipped": 1,
-    "total_duration_ms": 34380000
+    "total_duration_ms": 34560000
   },
-  "updated_at": "2026-04-04T18:05:02.168Z"
+  "updated_at": "2026-04-04T18:06:06.809Z"
 }
