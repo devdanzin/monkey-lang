@@ -819,14 +819,64 @@
       "completed": "2026-04-04T17:29:43.543Z",
       "duration_ms": 360000,
       "summary": "Minimax game AI: tic-tac-toe, alpha-beta pruning, AI that never loses. 13 tests."
+    },
+    {
+      "id": "T80",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a diff algorithm (Myers): compute edit distance, generate unified diff, apply patches, with tests",
+      "started": "2026-04-04T17:30:31.621Z",
+      "completed": "2026-04-04T17:31:54.871Z",
+      "duration_ms": 360000,
+      "summary": "Myers diff: SES, edit distance, unified diff format, patch application. 17 tests."
+    },
+    {
+      "id": "T81",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a generic sort visualizer/comparator: quicksort, mergesort, heapsort, introsort, timsort, with operation counting and tests",
+      "started": "2026-04-04T17:32:22.794Z",
+      "completed": "2026-04-04T17:33:45.816Z",
+      "duration_ms": 360000,
+      "summary": "5 sorting algorithms (quicksort, mergesort, heapsort, timsort, introsort) with operation counting and benchmark. 46 tests."
+    },
+    {
+      "id": "T82",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build an interval tree: insert, search overlapping, point query, with tests",
+      "started": "2026-04-04T17:34:13.981Z",
+      "completed": "2026-04-04T17:35:25.514Z",
+      "duration_ms": 360000,
+      "summary": "Interval tree: augmented BST, overlap search, point query, hasOverlap, calendar example. 14 tests."
+    },
+    {
+      "id": "T83",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a k-d tree: insert, nearest neighbor search, range search, with tests",
+      "started": "2026-04-04T17:36:26.088Z",
+      "completed": "2026-04-04T17:37:43.959Z",
+      "duration_ms": 360000,
+      "summary": "k-d tree: nearest neighbor (k-NN), range search, rectangular search, 3D, balanced build. 12 tests."
+    },
+    {
+      "id": "T84",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a finite automaton library: NFA, DFA, NFA-to-DFA conversion, regex matching, with tests",
+      "started": "2026-04-04T17:38:02.807Z",
+      "completed": "2026-04-04T17:39:45.335Z",
+      "duration_ms": 480000,
+      "summary": "Finite automaton: NFA, DFA, Thompsons construction (regex to NFA), subset construction (NFA to DFA). 14 tests."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 79,
+    "completed": 84,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 27720000
+    "total_duration_ms": 29640000
   },
-  "updated_at": "2026-04-04T17:29:43.543Z"
+  "updated_at": "2026-04-04T17:39:45.335Z"
 }
