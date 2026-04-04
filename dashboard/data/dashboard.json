@@ -1145,42 +1145,53 @@
       "id": "T115",
       "mode": "BUILD",
       "task": "Add row polymorphism: extensible records with row variables, record access/extension",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T109",
-      "started": "2026-04-04T18:54:05.853Z"
+      "started": "2026-04-04T18:54:05.853Z",
+      "completed": "2026-04-04T18:56:55.144Z",
+      "duration_ms": 480000,
+      "summary": "Row polymorphism: TRecord/TRowExtend/TRowEmpty types, row unification with rewriting, record lit/access/extend/restrict. 23 new tests (137 total)."
     },
     {
       "id": "T110",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-04-04T18:57:11.251Z",
+      "completed": "2026-04-04T18:57:11.737Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled placeholder"
     },
     {
       "id": "T111",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-04-04T18:57:22.074Z",
+      "completed": "2026-04-04T18:57:22.611Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled placeholder"
     },
     {
       "id": "T112",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final session housekeeping"
+      "status": "in-progress",
+      "task": "Final session housekeeping",
+      "started": "2026-04-04T18:57:32.490Z"
     }
   ],
   "current": {
-    "id": "T115",
-    "mode": "BUILD",
-    "task": "Add row polymorphism: extensible records with row variables, record access/extension",
+    "id": "T112",
+    "mode": "MAINTAIN",
     "status": "in-progress",
-    "plan_ref": "T109",
-    "started": "2026-04-04T18:54:05.853Z"
+    "task": "Final session housekeeping",
+    "started": "2026-04-04T18:57:32.490Z"
   },
   "stats": {
-    "completed": 110,
+    "completed": 113,
     "yielded": 0,
     "skipped": 1,
-    "total_duration_ms": 36300000
+    "total_duration_ms": 36780000
   },
-  "updated_at": "2026-04-04T18:54:05.853Z"
+  "updated_at": "2026-04-04T18:57:32.490Z"
 }
