@@ -1784,9 +1784,12 @@
       "id": "T174",
       "mode": "BUILD",
       "task": "WAL + persistence: append-only write-ahead log, checkpoint, crash recovery, compaction",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T171",
-      "started": "2026-04-04T21:35:47.779Z"
+      "started": "2026-04-04T21:35:47.779Z",
+      "completed": "2026-04-04T21:37:14.432Z",
+      "duration_ms": 600000,
+      "summary": "WAL: append-only log with JSON entries, truncate, recovery. PersistentKVStore: WAL-backed B-tree, auto-checkpoint at threshold, crash recovery (replay WAL on top of last checkpoint), atomic writes via rename. 11 new tests, 52 total."
     },
     {
       "id": "T175",
@@ -1802,19 +1805,12 @@
       "task": "Session B final wrap — git push all repos, daily log, dashboard update, scratch notes"
     }
   ],
-  "current": {
-    "id": "T174",
-    "mode": "BUILD",
-    "task": "WAL + persistence: append-only write-ahead log, checkpoint, crash recovery, compaction",
-    "status": "in-progress",
-    "plan_ref": "T171",
-    "started": "2026-04-04T21:35:47.779Z"
-  },
+  "current": null,
   "stats": {
-    "completed": 169,
+    "completed": 170,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 54390000
+    "total_duration_ms": 54990000
   },
-  "updated_at": "2026-04-04T21:35:47.779Z"
+  "updated_at": "2026-04-04T21:37:14.432Z"
 }
