@@ -2243,14 +2243,24 @@
       "completed": "2026-04-04T23:03:48.495Z",
       "duration_ms": 600000,
       "summary": "Promise/A+ implementation: pending/fulfilled/rejected states, then/catch/finally, chaining with promise resolution, error propagation, recovery, Promise.all/race/allSettled/any, thenable interop, deferred helper. Event loop simulation with setTimeout/setInterval/clearTimeout, microtask queue. 77 tests total (35 new). GitHub pushed."
+    },
+    {
+      "id": "T217",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Garbage collector: heap simulation, mark-sweep, mark-compact, generational GC (nursery + old gen), reference counting with cycle detection. 35+ tests.",
+      "started": "2026-04-04T23:04:13.587Z",
+      "completed": "2026-04-04T23:06:27.536Z",
+      "duration_ms": 600000,
+      "summary": "GC: mark-sweep (mark+sweep, transitive reachability, cycle collection), mark-compact (compaction, memory reclamation, OOM handling), generational (nursery, old gen, minor/major GC, promotion), reference counting (cascading free, shared refs, cycle detection via backup mark-sweep). 23 tests. GitHub: henry-the-frog/henry-gc"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 213,
+    "completed": 214,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 73110000
+    "total_duration_ms": 73710000
   },
-  "updated_at": "2026-04-04T23:03:48.495Z"
+  "updated_at": "2026-04-04T23:06:27.536Z"
 }
