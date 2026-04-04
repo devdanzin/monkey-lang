@@ -1546,8 +1546,12 @@
       "id": "T155",
       "mode": "BUILD",
       "task": "Build CLI runner: load .wasm file from disk, wire up WASI, run with args + test with real WASM binaries",
-      "status": "upcoming",
-      "plan_ref": "T149"
+      "status": "done",
+      "plan_ref": "T149",
+      "started": "2026-04-04T20:51:52.663Z",
+      "completed": "2026-04-04T20:54:24.370Z",
+      "duration_ms": 600000,
+      "summary": "CLI runner: loads .wasm files, wires WASI, --decode for inspection, --stats for timing. Fixed Buffer→ArrayBuffer conversion. 5 CLI tests, 93 total. GitHub pushed."
     },
     {
       "id": "T150",
@@ -1578,10 +1582,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 147,
+    "completed": 148,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 46890000
+    "total_duration_ms": 47490000
   },
-  "updated_at": "2026-04-04T20:51:34.497Z"
+  "updated_at": "2026-04-04T20:54:24.370Z"
 }

@@ -1,8 +1,11 @@
 {
   "name": "wasm-interpreter",
   "version": "1.0.0",
-  "description": "WebAssembly interpreter from scratch — binary decoder + stack machine executor",
+  "description": "WebAssembly interpreter from scratch — binary decoder + stack machine executor + WASI",
   "type": "module",
+  "bin": {
+    "wasm-run": "./src/cli.js"
+  },
   "scripts": {
     "test": "node --test src/**/*.test.js"
   }

@@ -62,6 +62,19 @@ const instance = instantiate(wasm, {
 });
 ```
 
+### WASI Support
+
+```bash
+# Run a WASI program
+node src/cli.js program.wasm arg1 arg2
+
+# Just decode (inspect module)
+node src/cli.js program.wasm --decode
+
+# With timing stats
+node src/cli.js program.wasm --stats
+```
+
 ## Architecture
 
 ```
@@ -91,7 +104,9 @@ const instance = instantiate(wasm, {
 | Decoder | 30 | Binary format parsing, LEB128, all section types |
 | Runtime | 40 | Stack machine, control flow, arithmetic, memory |
 | Integration | 8 | End-to-end programs: fibonacci, sort, mutual recursion |
-| **Total** | **78** | |
+| WASI | 10 | fd_write/read, args, environ, proc_exit, clock |
+| CLI | 5 | File loading, decode mode, WASI execution |
+| **Total** | **93** | |
 
 ## Programs Tested
 
