@@ -799,14 +799,34 @@
       "completed": "2026-04-04T17:25:58.113Z",
       "duration_ms": 360000,
       "summary": "Merkle tree: SHA-256, proof generation, proof verification, integrity check, tree diff. 14 tests."
+    },
+    {
+      "id": "T78",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a CRDT library: G-Counter, PN-Counter, G-Set, OR-Set, LWW-Register, with tests",
+      "started": "2026-04-04T17:26:33.962Z",
+      "completed": "2026-04-04T17:27:58.309Z",
+      "duration_ms": 360000,
+      "summary": "CRDTs: G-Counter, PN-Counter, G-Set, OR-Set, LWW-Register. Commutative/idempotent merge. 20 tests."
+    },
+    {
+      "id": "T79",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a minimax game AI: tic-tac-toe, alpha-beta pruning, evaluation functions, with tests",
+      "started": "2026-04-04T17:28:24.505Z",
+      "completed": "2026-04-04T17:29:43.543Z",
+      "duration_ms": 360000,
+      "summary": "Minimax game AI: tic-tac-toe, alpha-beta pruning, AI that never loses. 13 tests."
     }
   ],
   "current": null,
   "stats": {
-    "completed": 77,
+    "completed": 79,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 27000000
+    "total_duration_ms": 27720000
   },
-  "updated_at": "2026-04-04T17:25:58.113Z"
+  "updated_at": "2026-04-04T17:29:43.543Z"
 }
