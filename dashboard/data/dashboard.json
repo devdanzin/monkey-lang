@@ -1687,8 +1687,12 @@
       "id": "T164",
       "mode": "BUILD",
       "task": "Add perft depth 5 and tactical mate-in-2 puzzles to chess engine",
-      "status": "upcoming",
-      "plan_ref": "T160"
+      "status": "done",
+      "plan_ref": "T160",
+      "started": "2026-04-04T21:19:49.075Z",
+      "completed": "2026-04-04T21:24:28.738Z",
+      "duration_ms": 600000,
+      "summary": "Added perft depth 5 (4,865,609 nodes, validated), Kiwipete depth 3, 3 more standard positions, 3 tactical mate puzzles. Fixed Position 5 expected value (was wrong). 57 total tests, all passing."
     },
     {
       "id": "T165",
@@ -1699,10 +1703,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 160,
+    "completed": 161,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 51550000
+    "total_duration_ms": 52150000
   },
-  "updated_at": "2026-04-04T21:19:23.720Z"
+  "updated_at": "2026-04-04T21:24:28.738Z"
 }
