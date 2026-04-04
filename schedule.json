@@ -423,10 +423,13 @@
       "id": "T40",
       "mode": "BUILD",
       "task": "Add error messages, type pretty-printing, and README with examples",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T37",
-      "started": "2026-04-04T15:58:04.096Z"
+      "started": "2026-04-04T15:58:04.096Z",
+      "completed": "2026-04-04T15:59:43.991Z",
+      "duration_ms": 180000,
+      "summary": "README written, dashboard updated with type inference project (54 tests). Pushed to GH Pages."
     }
   ],
-  "updated_at": "2026-04-04T15:58:04.096Z"
+  "updated_at": "2026-04-04T15:59:43.991Z"
 }
