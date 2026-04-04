@@ -2193,14 +2193,24 @@
       "completed": "2026-04-04T22:51:09.144Z",
       "duration_ms": 900000,
       "summary": "TinyOS kernel: MemoryManager (paging, virtual→physical translation, per-process allocation), Scheduler (round-robin + priority, create/terminate/block/unblock, CPU/wait time tracking, parent-child), VFS (inodes, directories, files, mkdir/rm/ls/stat/readFile/writeFile), Shell (echo/pwd/cd/ls/cat/touch/mkdir/rm/write/ps/kill/free/env/export/history). 40 tests. GitHub: henry-the-frog/tiny-os"
+    },
+    {
+      "id": "T212",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "BitTorrent protocol: bencode encoding/decoding, .torrent metainfo parsing, peer wire protocol (handshake, have, bitfield, request, piece, choke/unchoke), piece manager with SHA-1 verification, simulated swarm. 35+ tests.",
+      "started": "2026-04-04T22:51:38.965Z",
+      "completed": "2026-04-04T22:53:59.192Z",
+      "duration_ms": 900000,
+      "summary": "BitTorrent protocol: bencode encoding/decoding (int, string, list, dict), handshake, peer wire protocol (choke/unchoke/interested/have/bitfield/request/piece/keepalive), bitfield with set/clear/has, piece manager with SHA-1 verification and rarest-first selection, simulated swarm with download completion. 34 tests. GitHub: henry-the-frog/bittorrent"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 208,
+    "completed": 209,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 69510000
+    "total_duration_ms": 70410000
   },
-  "updated_at": "2026-04-04T22:51:09.144Z"
+  "updated_at": "2026-04-04T22:53:59.193Z"
 }
