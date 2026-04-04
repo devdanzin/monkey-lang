@@ -2363,14 +2363,24 @@
       "completed": "2026-04-04T23:32:26.164Z",
       "duration_ms": 600000,
       "summary": "State machine: createMachine/interpret, transitions with string and object config, conditional transitions (guard arrays), entry/exit/transition actions, context with assign (function + object), event payload, subscribers with unsubscribe, state matching, can() check, history tracking, serialization (toJSON/fromJSON), reset, complex traffic light simulation. 24 tests. GitHub: henry-the-frog/state-machine"
+    },
+    {
+      "id": "T229",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Dependency injection container: service registration (singleton/transient/scoped), constructor injection, property injection, factory functions, circular dependency detection, tagged bindings, child containers. 25+ tests.",
+      "started": "2026-04-04T23:32:54.890Z",
+      "completed": "2026-04-04T23:34:04.291Z",
+      "duration_ms": 600000,
+      "summary": "DI Container: register class/factory/value, lifetimes (singleton/transient/scoped), constructor injection, property injection, circular dependency detection, tagged bindings, child containers with inheritance and override, has() check, dispose(), deep dependency chains. 23 tests. GitHub: henry-the-frog/di-container"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 225,
+    "completed": 226,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 80310000
+    "total_duration_ms": 80910000
   },
-  "updated_at": "2026-04-04T23:32:26.164Z"
+  "updated_at": "2026-04-04T23:34:04.291Z"
 }
