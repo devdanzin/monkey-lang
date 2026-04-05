@@ -511,23 +511,20 @@
     {
       "id": "T49",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: SUBSTRING function, REPLACE function, TRIM, ABS/ROUND math functions",
-      "started": "2026-04-05T16:12:21.165Z"
+      "started": "2026-04-05T16:12:21.165Z",
+      "completed": "2026-04-05T16:13:45.493Z",
+      "duration_ms": 120000,
+      "summary": "String functions: SUBSTRING, REPLACE, TRIM. Math functions: ABS, ROUND, CEIL, FLOOR. 12 new tests → 524 total (398 growth!)."
     }
   ],
-  "current": {
-    "id": "T49",
-    "mode": "BUILD",
-    "status": "in-progress",
-    "task": "HenryDB: SUBSTRING function, REPLACE function, TRIM, ABS/ROUND math functions",
-    "started": "2026-04-05T16:12:21.165Z"
-  },
+  "current": null,
   "stats": {
-    "completed": 48,
+    "completed": 49,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 6962000
+    "total_duration_ms": 7082000
   },
-  "updated_at": "2026-04-05T16:12:21.165Z"
+  "updated_at": "2026-04-05T16:13:45.493Z"
 }
