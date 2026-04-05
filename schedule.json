@@ -491,12 +491,15 @@
     {
       "id": "T47",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: Push to 500 tests — stress tests, DELETE edge cases, UPDATE with subquery, index stress",
-      "started": "2026-04-05T16:00:53.336Z"
+      "started": "2026-04-05T16:00:53.336Z",
+      "completed": "2026-04-05T16:07:43.560Z",
+      "duration_ms": 300000,
+      "summary": "🎯 500 TESTS MILESTONE! Fixed critical ORDER BY/LIMIT before GROUP BY bug. 20 new tests → 500 total (374 growth from 126 this session!)."
     }
   ],
-  "updated_at": "2026-04-05T16:00:53.336Z",
+  "updated_at": "2026-04-05T16:07:43.560Z",
   "adjustments": [
     {
       "time": "2026-04-05T15:35:44.249Z",
