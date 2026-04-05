@@ -2613,9 +2613,19 @@
       "completed": "2026-04-05T00:12:29.984Z",
       "duration_ms": 600000,
       "summary": "Rate limiter: TokenBucket (refill, multi-token, retryAfter), FixedWindow (reset on window, remaining, retryAfter), SlidingWindowLog (timestamp-based, remaining), LeakyBucket (drain over time), KeyedRateLimiter (per-key separate limits, keys tracking, cleanup). 15 tests. GitHub: henry-the-frog/ratelimit"
+    },
+    {
+      "id": "T254",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Binary search tree + AVL tree: insert, delete, search, min/max, inorder/preorder/postorder traversal, height, balance, AVL rotations, iteration. 25+ tests.",
+      "started": "2026-04-05T00:12:42.622Z",
+      "completed": "2026-04-05T00:14:10.314Z",
+      "duration_ms": 600000,
+      "summary": "BST: insert/search/has/delete, key-value pairs, update, min/max, inorder/preorder/postorder, height, iterable, custom comparator. AVL: balanced insert (sequential 1-100 stays balanced, height <= 8), delete with rebalance, logarithmic height (1000 items, height <= 15). 22 tests. GitHub: henry-the-frog/bst"
     }
   ],
-  "updated_at": "2026-04-05T00:12:29.984Z",
+  "updated_at": "2026-04-05T00:14:10.314Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -2792,6 +2802,10 @@
     {
       "time": "2026-04-05T00:11:21.589Z",
       "msg": "Added T253 (BUILD) after end: Rate limiter: token bucket, sliding window, fixed window, leaky bucket, per-key limiting, middleware adapter, retry-after header. 20+ tests."
+    },
+    {
+      "time": "2026-04-05T00:12:41.883Z",
+      "msg": "Added T254 (BUILD) after end: Binary search tree + AVL tree: insert, delete, search, min/max, inorder/preorder/postorder traversal, height, balance, AVL rotations, iteration. 25+ tests."
     }
   ]
 }

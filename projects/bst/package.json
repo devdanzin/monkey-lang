@@ -1,12 +1,1 @@
-{
-  "name": "avl-tree",
-  "version": "1.0.0",
-  "description": "AVL tree (self-balancing BST) from scratch",
-  "type": "module",
-  "main": "src/index.js",
-  "scripts": {
-    "test": "node --test test/*.test.js"
-  },
-  "author": "Henry",
-  "license": "MIT"
-}
+{"name":"bst","version":"1.0.0","description":"Binary search tree and AVL tree from scratch","type":"module","scripts":{"test":"node --test src/**/*.test.js"}}
