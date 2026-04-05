@@ -501,23 +501,20 @@
     {
       "id": "T48",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: NATURAL JOIN, USING clause, SELECT column aliasing, type coercion tests",
-      "started": "2026-04-05T16:09:44.267Z"
+      "started": "2026-04-05T16:09:44.267Z",
+      "completed": "2026-04-05T16:11:32.192Z",
+      "duration_ms": 120000,
+      "summary": "512 tests! NULL comparison semantics fix, type coercion, aliasing, e-commerce pipeline, data migration pipeline. 12 new tests."
     }
   ],
-  "current": {
-    "id": "T48",
-    "mode": "BUILD",
-    "status": "in-progress",
-    "task": "HenryDB: NATURAL JOIN, USING clause, SELECT column aliasing, type coercion tests",
-    "started": "2026-04-05T16:09:44.267Z"
-  },
+  "current": null,
   "stats": {
-    "completed": 47,
+    "completed": 48,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 6842000
+    "total_duration_ms": 6962000
   },
-  "updated_at": "2026-04-05T16:09:44.267Z"
+  "updated_at": "2026-04-05T16:11:32.192Z"
 }
