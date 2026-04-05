@@ -1301,23 +1301,83 @@
     {
       "id": "T125",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Pre-boundary final push",
-      "started": "2026-04-05T18:43:40.051Z"
+      "started": "2026-04-05T18:43:40.051Z",
+      "completed": "2026-04-05T18:44:10.349Z",
+      "duration_ms": 30000,
+      "summary": "Session A complete. 88 tasks, 711 new tests across 6 projects. Final git push done."
+    },
+    {
+      "id": "T126",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Write scratch note on DFA construction + minimization",
+      "started": "2026-04-05T18:44:31.240Z",
+      "completed": "2026-04-05T18:44:59.371Z",
+      "duration_ms": 60000,
+      "summary": "Wrote DFA construction + minimization scratch note."
+    },
+    {
+      "id": "T127",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Push chess engine to 200 tests",
+      "started": "2026-04-05T18:45:06.832Z",
+      "completed": "2026-04-05T18:45:45.970Z",
+      "duration_ms": 60000,
+      "summary": "🎯 Chess engine 200 TESTS! 7 Zobrist hash tests (path independence, castling/EP/side)."
+    },
+    {
+      "id": "T128",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Push regex engine to 170 tests",
+      "started": "2026-04-05T18:45:52.987Z",
+      "completed": "2026-04-05T18:46:31.340Z",
+      "duration_ms": 60000,
+      "summary": "🎯 Regex engine 170 TESTS! 14 quantifier edge tests."
+    },
+    {
+      "id": "T129",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Push type checker to 100 tests",
+      "started": "2026-04-05T18:46:38.715Z",
+      "completed": "2026-04-05T18:47:19.774Z",
+      "duration_ms": 30000,
+      "summary": "🎯 Type checker 100 TESTS! Nested if, compose, type error."
+    },
+    {
+      "id": "T130",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: push toward 750 — expression eval and math tests",
+      "started": "2026-04-05T18:47:27.038Z",
+      "completed": "2026-04-05T18:48:12.680Z",
+      "duration_ms": 60000,
+      "summary": "18 math/expression tests. 745 total HenryDB tests. Only 5 from 750!"
+    },
+    {
+      "id": "T131",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final boundary cleanup",
+      "started": "2026-04-05T18:49:01.016Z"
     }
   ],
   "current": {
-    "id": "T125",
+    "id": "T131",
     "mode": "MAINTAIN",
     "status": "in-progress",
-    "task": "Pre-boundary final push",
-    "started": "2026-04-05T18:43:40.051Z"
+    "task": "Final boundary cleanup",
+    "started": "2026-04-05T18:49:01.016Z"
   },
   "stats": {
-    "completed": 124,
+    "completed": 130,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 16622000
+    "total_duration_ms": 16922000
   },
-  "updated_at": "2026-04-05T18:43:40.051Z"
+  "updated_at": "2026-04-05T18:49:01.016Z"
 }
