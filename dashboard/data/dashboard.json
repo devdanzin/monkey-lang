@@ -2793,14 +2793,24 @@
       "completed": "2026-04-05T00:43:59.415Z",
       "duration_ms": 600000,
       "summary": "Circuit breaker: closed/open/half-open states, failure/success thresholds, timeout with auto half-open transition, reset, open, event callbacks (stateChange/success/failure/rejected), stats, CircuitBreakerError. Bulkhead (concurrency limiter with queue, activeCount, pendingCount). 12 tests. GitHub: henry-the-frog/circuit-breaker"
+    },
+    {
+      "id": "T272",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "JSON Pointer (RFC 6901) + JSON Patch (RFC 6902): get/set by pointer, escape/unescape, add/remove/replace/move/copy/test operations, apply patch, generate diff. 25+ tests.",
+      "started": "2026-04-05T00:44:21.309Z",
+      "completed": "2026-04-05T00:45:42.638Z",
+      "duration_ms": 600000,
+      "summary": "JSON Pointer + Patch: parsePointer/compilePointer (escape ~0 ~1), get (root, nested, array, escaped), set (existing, new, array, immutable), remove (key, array splice). Patch: add/remove/replace/move/copy/test operations, multiple ops. generateDiff (add/remove/replace detection, no-change, roundtrip verification). 30 tests. GitHub: henry-the-frog/json-patch"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 268,
+    "completed": 269,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 106110000
+    "total_duration_ms": 106710000
   },
-  "updated_at": "2026-04-05T00:43:59.415Z"
+  "updated_at": "2026-04-05T00:45:42.638Z"
 }
