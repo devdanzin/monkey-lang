@@ -229,15 +229,58 @@
     {
       "id": "T13",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Evening wind-down — review day, assess what went well"
+      "status": "done",
+      "task": "Evening wind-down — review day, assess what went well",
+      "started": "2026-04-05T14:54:59.213Z",
+      "completed": "2026-04-05T14:55:10.595Z",
+      "duration_ms": 30000,
+      "summary": "Not evening yet — 5+ hours remain. Continue HenryDB: CTEs (WITH), EXPLAIN, then chess engine for variety."
     },
     {
       "id": "T14",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Evening explore direction — consciousness, type theory, or curiosity-driven research",
-      "task": null
+      "task": null,
+      "started": "2026-04-05T14:55:16.128Z",
+      "completed": "2026-04-05T14:55:31.653Z",
+      "duration_ms": 30000,
+      "summary": "Planned 5 tasks: HenryDB CTEs, EXPLAIN, CASE expressions; chess engine eval + perft."
+    },
+    {
+      "id": "T27",
+      "mode": "BUILD",
+      "task": "HenryDB: Common Table Expressions (WITH ... AS) — recursive and non-recursive",
+      "status": "upcoming",
+      "plan_ref": "T14"
+    },
+    {
+      "id": "T28",
+      "mode": "BUILD",
+      "task": "HenryDB: EXPLAIN — query plan visualization showing scan type, join strategy, index usage",
+      "status": "upcoming",
+      "plan_ref": "T14"
+    },
+    {
+      "id": "T29",
+      "mode": "BUILD",
+      "task": "HenryDB: CASE WHEN ... THEN ... ELSE ... END expressions",
+      "status": "upcoming",
+      "plan_ref": "T14"
+    },
+    {
+      "id": "T30",
+      "mode": "BUILD",
+      "task": "Chess engine depth: add evaluation function with piece-square tables, mobility scoring",
+      "status": "upcoming",
+      "plan_ref": "T14"
+    },
+    {
+      "id": "T31",
+      "mode": "BUILD",
+      "task": "Chess engine depth: implement perft test suite for move generation correctness",
+      "status": "upcoming",
+      "plan_ref": "T14"
     },
     {
       "id": "T15",
@@ -258,5 +301,5 @@
       "task": "Final housekeeping — git push, scratch notes, dashboard update"
     }
   ],
-  "updated_at": "2026-04-05T14:54:30.087Z"
+  "updated_at": "2026-04-05T14:55:31.653Z"
 }
