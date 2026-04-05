@@ -2603,14 +2603,24 @@
       "completed": "2026-04-05T00:10:54.462Z",
       "duration_ms": 600000,
       "summary": "Color library: parse (hex 3/6/8-digit, rgb, rgba, hsl, named colors), convert (toHex, toRgb, toHSL, roundtrip), manipulate (lighten, darken, saturate, desaturate, grayscale, invert, alpha, mix), accessibility (luminance, contrast ratio, WCAG AA/AAA), palette generation (complementary, triadic, analogous), equals. 28 tests. GitHub: henry-the-frog/color"
+    },
+    {
+      "id": "T253",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Rate limiter: token bucket, sliding window, fixed window, leaky bucket, per-key limiting, middleware adapter, retry-after header. 20+ tests.",
+      "started": "2026-04-05T00:11:22.267Z",
+      "completed": "2026-04-05T00:12:29.984Z",
+      "duration_ms": 600000,
+      "summary": "Rate limiter: TokenBucket (refill, multi-token, retryAfter), FixedWindow (reset on window, remaining, retryAfter), SlidingWindowLog (timestamp-based, remaining), LeakyBucket (drain over time), KeyedRateLimiter (per-key separate limits, keys tracking, cleanup). 15 tests. GitHub: henry-the-frog/ratelimit"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 249,
+    "completed": 250,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 94710000
+    "total_duration_ms": 95310000
   },
-  "updated_at": "2026-04-05T00:10:54.462Z"
+  "updated_at": "2026-04-05T00:12:29.984Z"
 }
