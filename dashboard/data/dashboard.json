@@ -407,14 +407,27 @@
       "completed": "2026-04-05T15:34:30.177Z",
       "duration_ms": 120000,
       "summary": "UPDATE with expressions: SET col = col + 1, UPPER(col), COALESCE. 8 new tests → 361 total. HenryDB grew 235 tests this session."
+    },
+    {
+      "id": "T39",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: TRUNCATE TABLE, OR REPLACE/ON CONFLICT, multi-value INSERT, LIMIT on UPDATE/DELETE",
+      "started": "2026-04-05T15:35:52.890Z"
     }
   ],
-  "current": null,
+  "current": {
+    "id": "T39",
+    "mode": "BUILD",
+    "status": "in-progress",
+    "task": "HenryDB: TRUNCATE TABLE, OR REPLACE/ON CONFLICT, multi-value INSERT, LIMIT on UPDATE/DELETE",
+    "started": "2026-04-05T15:35:52.890Z"
+  },
   "stats": {
     "completed": 38,
     "yielded": 0,
     "skipped": 0,
     "total_duration_ms": 5342000
   },
-  "updated_at": "2026-04-05T15:34:30.177Z"
+  "updated_at": "2026-04-05T15:35:52.890Z"
 }
