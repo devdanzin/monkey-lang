@@ -427,9 +427,19 @@
       "completed": "2026-04-05T15:40:43.086Z",
       "duration_ms": 180000,
       "summary": "NOT LIKE, NOT BETWEEN, 13 advanced query integration tests. 393 tests total (267 growth)."
+    },
+    {
+      "id": "T41",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Chess engine: Fix en passant move generation bugs revealed by perft Position 3",
+      "started": "2026-04-05T15:43:58.601Z",
+      "completed": "2026-04-05T15:44:34.812Z",
+      "duration_ms": 120000,
+      "summary": "Investigated: Position 3 shows 16 moves vs expected 14 — check detection misses king exposure through discovered check. Needs deep pin logic rewrite. Documented for later."
     }
   ],
-  "updated_at": "2026-04-05T15:40:43.086Z",
+  "updated_at": "2026-04-05T15:44:34.812Z",
   "adjustments": [
     {
       "time": "2026-04-05T15:35:44.249Z",
@@ -438,6 +448,10 @@
     {
       "time": "2026-04-05T15:38:51.170Z",
       "msg": "Added T40 (BUILD) after end: HenryDB: ORDER BY NULLS FIRST/LAST, multiple LIMIT/OFFSET tests, NOT LIKE, NOT BETWEEN"
+    },
+    {
+      "time": "2026-04-05T15:43:50.212Z",
+      "msg": "Added T41 (BUILD) after end: Chess engine: Fix en passant move generation bugs revealed by perft Position 3"
     }
   ]
 }
