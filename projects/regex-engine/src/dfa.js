@@ -33,13 +33,10 @@ function getAlphabet(nfa) {
     for (const t of state.transitions) {
       if (t.epsilon) {
         stack.push(t.state);
+      } else if (t.dot) {
+        alphabet.add('.'); // wildcard marker
       } else if (t.char) {
-        if (t.char === '.') {
-          // Wildcard — we'll handle this specially
-          alphabet.add('.');
-        } else {
-          alphabet.add(t.char);
-        }
+        alphabet.add(t.char);
       } else if (t.charClass) {
         for (const ch of t.charClass) alphabet.add(ch);
       }
@@ -55,7 +52,9 @@ function nfaMove(states, symbol) {
   for (const state of states) {
     for (const t of state.transitions) {
       if (t.epsilon) continue;
-      if (t.char === symbol || t.char === '.') {
+      if (t.dot) {
+        next.add(t.state);
+      } else if (t.char === symbol) {
         next.add(t.state);
       } else if (t.charClass) {
         const inClass = t.charClass.includes(symbol);

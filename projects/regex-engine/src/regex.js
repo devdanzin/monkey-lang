@@ -139,7 +139,7 @@ export function buildNFA(ast) {
         const s = new State();
         const e = new State();
         e.isAccept = true;
-        s.addTransition('.', e); // special: matches any
+        s.transitions.push({ dot: true, state: e }); // special: matches any
         return new Fragment(s, e);
       }
       case 'class': {
@@ -261,7 +261,9 @@ function step(states, char) {
   for (const state of states) {
     for (const t of state.transitions) {
       if (t.epsilon) continue;
-      if (t.char === char || t.char === '.') {
+      if (t.dot) {
+        next.add(t.state);
+      } else if (t.char === char) {
         next.add(t.state);
       } else if (t.charClass) {
         const inClass = t.charClass.includes(char);
