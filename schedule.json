@@ -531,12 +531,15 @@
     {
       "id": "T51",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: MIN/MAX on strings, aggregate with DISTINCT in GROUP BY, COUNT(column) vs COUNT(*)",
-      "started": "2026-04-05T16:17:08.604Z"
+      "started": "2026-04-05T16:17:08.604Z",
+      "completed": "2026-04-05T16:18:00.339Z",
+      "duration_ms": 90000,
+      "summary": "Advanced aggregates: MIN/MAX on strings, COUNT(col) vs COUNT(*) NULL handling, AVG/SUM NULL skipping, GROUP BY NULL. 9 new tests → 550 total (424 growth!)."
     }
   ],
-  "updated_at": "2026-04-05T16:17:08.604Z",
+  "updated_at": "2026-04-05T16:18:00.339Z",
   "adjustments": [
     {
       "time": "2026-04-05T15:35:44.249Z",
