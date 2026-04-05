@@ -481,12 +481,15 @@
     {
       "id": "T46",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: OFFSET tests, nested subquery chains, schema introspection (SHOW TABLES, DESCRIBE)",
-      "started": "2026-04-05T15:57:11.646Z"
+      "started": "2026-04-05T15:57:11.646Z",
+      "completed": "2026-04-05T16:00:14.372Z",
+      "duration_ms": 180000,
+      "summary": "SHOW TABLES, DESCRIBE (with index info), nested subqueries, OFFSET pagination. 18 new tests → 458 total (332 growth)."
     }
   ],
-  "updated_at": "2026-04-05T15:57:11.646Z",
+  "updated_at": "2026-04-05T16:00:14.372Z",
   "adjustments": [
     {
       "time": "2026-04-05T15:35:44.249Z",
