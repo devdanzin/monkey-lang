@@ -2843,14 +2843,24 @@
       "completed": "2026-04-05T00:52:29.221Z",
       "duration_ms": 600000,
       "summary": "Middleware: Koa-style compose (onion model execution order), context propagation, async support, multiple next() detection, empty middleware, error propagation, named middleware, conditional (when with bool or function), errorHandler wrapper, App class (use chaining, run). 13 tests. GitHub: henry-the-frog/middleware"
+    },
+    {
+      "id": "T277",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "XML parser (simple): parse XML to tree, element/attribute/text nodes, querySelector-like API (tag, ., #), serialize back to XML. 20+ tests.",
+      "started": "2026-04-05T00:52:51.608Z",
+      "completed": "2026-04-05T00:55:03.488Z",
+      "duration_ms": 600000,
+      "summary": "XML parser: parse to tree (elements, attributes, text, self-closing, mixed content, entities, comments, PI), query (getElementsByTagName, querySelector by tag/id/class, querySelectorAll), textContent, getAttribute/setAttribute, serialize (self-closing, children, text, attributes, entities roundtrip). 21 tests. GitHub: henry-the-frog/xml"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 273,
+    "completed": 274,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 109110000
+    "total_duration_ms": 109710000
   },
-  "updated_at": "2026-04-05T00:52:29.221Z"
+  "updated_at": "2026-04-05T00:55:03.488Z"
 }
