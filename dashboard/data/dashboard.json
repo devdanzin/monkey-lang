@@ -284,9 +284,12 @@
       "id": "T30",
       "mode": "BUILD",
       "task": "Chess engine depth: add evaluation function with piece-square tables, mobility scoring",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T14",
-      "started": "2026-04-05T15:05:21.015Z"
+      "started": "2026-04-05T15:05:21.015Z",
+      "completed": "2026-04-05T15:12:59.342Z",
+      "duration_ms": 300000,
+      "summary": "Enhanced chess eval: actual mobility counting (knight, bishop, rook, queen), pawn structure (doubled/isolated), rook on open files, king safety (pawn shield), bishop pair. 14 new eval tests."
     },
     {
       "id": "T31",
@@ -314,19 +317,12 @@
       "task": "Final housekeeping — git push, scratch notes, dashboard update"
     }
   ],
-  "current": {
-    "id": "T30",
-    "mode": "BUILD",
-    "task": "Chess engine depth: add evaluation function with piece-square tables, mobility scoring",
-    "status": "in-progress",
-    "plan_ref": "T14",
-    "started": "2026-04-05T15:05:21.015Z"
-  },
+  "current": null,
   "stats": {
-    "completed": 26,
+    "completed": 27,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 3750000
+    "total_duration_ms": 4050000
   },
-  "updated_at": "2026-04-05T15:05:21.015Z"
+  "updated_at": "2026-04-05T15:12:59.342Z"
 }
