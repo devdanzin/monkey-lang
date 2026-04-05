@@ -417,13 +417,24 @@
       "completed": "2026-04-05T15:38:22.758Z",
       "duration_ms": 180000,
       "summary": "TRUNCATE TABLE, 19 misc/edge case tests. Total: 380 tests (254 growth from 126)."
+    },
+    {
+      "id": "T40",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: ORDER BY NULLS FIRST/LAST, multiple LIMIT/OFFSET tests, NOT LIKE, NOT BETWEEN",
+      "started": "2026-04-05T15:38:59.620Z"
     }
   ],
-  "updated_at": "2026-04-05T15:38:22.758Z",
+  "updated_at": "2026-04-05T15:38:59.621Z",
   "adjustments": [
     {
       "time": "2026-04-05T15:35:44.249Z",
       "msg": "Added T39 (BUILD) after end: HenryDB: TRUNCATE TABLE, OR REPLACE/ON CONFLICT, multi-value INSERT, LIMIT on UPDATE/DELETE"
+    },
+    {
+      "time": "2026-04-05T15:38:51.170Z",
+      "msg": "Added T40 (BUILD) after end: HenryDB: ORDER BY NULLS FIRST/LAST, multiple LIMIT/OFFSET tests, NOT LIKE, NOT BETWEEN"
     }
   ]
 }
