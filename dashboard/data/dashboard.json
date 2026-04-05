@@ -37,8 +37,12 @@
       "id": "T18",
       "mode": "BUILD",
       "task": "Update dashboard frontend — project grid with category filter, search, total project/test counts in vital stats",
-      "status": "upcoming",
-      "plan_ref": "T2"
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-04-05T14:19:55.942Z",
+      "completed": "2026-04-05T14:21:49.445Z",
+      "duration_ms": 240000,
+      "summary": "Updated dashboard frontend: project grid with 11 category filters, search, pagination (24/page), summary stats. Vital stats show totalProjectCount."
     },
     {
       "id": "T19",
@@ -139,10 +143,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 3,
+    "completed": 4,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 330000
+    "total_duration_ms": 570000
   },
-  "updated_at": "2026-04-05T14:19:40.175Z"
+  "updated_at": "2026-04-05T14:21:49.445Z"
 }
