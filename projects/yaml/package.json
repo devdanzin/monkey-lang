@@ -1,7 +1,1 @@
-{
-  "name": "tiny-yaml",
-  "version": "1.0.0",
-  "description": "YAML parser/stringifier from scratch",
-  "main": "src/index.js",
-  "scripts": { "test": "node --test test/index.test.js" }
-}
+{"name":"yaml","version":"1.0.0","description":"YAML parser from scratch","type":"module","scripts":{"test":"node --test src/**/*.test.js"}}
