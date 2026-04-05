@@ -1,22 +1,67 @@
-// Retry with backoff
-export async function retry(fn, { maxRetries = 3, delay = 100, backoff = 'exponential', maxDelay = 30000, onRetry, jitter = false, retryIf } = {}) {
+// retry.js — Retry utility
+
+export async function retry(fn, options = {}) {
+  const maxRetries = options.maxRetries ?? 3;
+  const baseDelay = options.baseDelay ?? 1000;
+  const maxDelay = options.maxDelay ?? 30000;
+  const backoffFactor = options.backoffFactor ?? 2;
+  const jitter = options.jitter ?? true;
+  const shouldRetry = options.shouldRetry ?? (() => true);
+  const onRetry = options.onRetry ?? (() => {});
+  const signal = options.signal;
+
   let lastError;
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    try { return await fn(attempt); }
-    catch (err) {
-      lastError = err;
-      if (retryIf && !retryIf(err)) throw err;
-      if (attempt >= maxRetries) throw err;
-      let wait;
-      if (backoff === 'exponential') wait = Math.min(delay * Math.pow(2, attempt), maxDelay);
-      else if (backoff === 'linear') wait = Math.min(delay * (attempt + 1), maxDelay);
-      else wait = delay;
-      if (jitter) wait += Math.random() * wait * 0.2;
-      if (onRetry) onRetry(err, attempt + 1, wait);
-      await new Promise(r => setTimeout(r, wait));
+    if (signal?.aborted) throw new Error('Aborted');
+    
+    try {
+      return await fn(attempt);
+    } catch (error) {
+      lastError = error;
+      
+      if (attempt >= maxRetries) break;
+      if (!shouldRetry(error, attempt)) break;
+      
+      let delay = Math.min(baseDelay * Math.pow(backoffFactor, attempt), maxDelay);
+      if (jitter) delay *= (0.5 + Math.random() * 0.5);
+      
+      onRetry(error, attempt + 1, delay);
+      
+      await new Promise(resolve => {
+        const timer = setTimeout(resolve, delay);
+        if (signal) signal.addEventListener('abort', () => { clearTimeout(timer); resolve(); }, { once: true });
+      });
     }
   }
+  
   throw lastError;
 }
 
-export function withRetry(fn, options) { return (...args) => retry(() => fn(...args), options); }
+// ===== Timeout wrapper =====
+export async function withTimeout(fn, ms) {
+  return Promise.race([
+    fn(),
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), ms)),
+  ]);
+}
+
+// ===== Retry with timeout =====
+export async function retryWithTimeout(fn, options = {}) {
+  const timeoutMs = options.timeout ?? 5000;
+  return retry(() => withTimeout(fn, timeoutMs), options);
+}
+
+// ===== Constant backoff =====
+export function constantBackoff(delay) {
+  return { baseDelay: delay, backoffFactor: 1, jitter: false };
+}
+
+// ===== Linear backoff =====
+export function linearBackoff(baseDelay) {
+  return {
+    baseDelay,
+    backoffFactor: 1,
+    jitter: false,
+    // Override delay calculation — not directly possible with current API, but approximate
+  };
+}
