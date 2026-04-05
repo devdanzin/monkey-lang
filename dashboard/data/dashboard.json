@@ -112,8 +112,9 @@
       "id": "T21",
       "mode": "BUILD",
       "task": "HenryDB: Subqueries — scalar subqueries in WHERE, EXISTS, IN (SELECT ...)",
-      "status": "upcoming",
-      "plan_ref": "T6"
+      "status": "in-progress",
+      "plan_ref": "T6",
+      "started": "2026-04-05T14:33:26.824Z"
     },
     {
       "id": "T22",
@@ -193,12 +194,19 @@
       "task": "Final housekeeping — git push, scratch notes, dashboard update"
     }
   ],
-  "current": null,
+  "current": {
+    "id": "T21",
+    "mode": "BUILD",
+    "task": "HenryDB: Subqueries — scalar subqueries in WHERE, EXISTS, IN (SELECT ...)",
+    "status": "in-progress",
+    "plan_ref": "T6",
+    "started": "2026-04-05T14:33:26.824Z"
+  },
   "stats": {
     "completed": 10,
     "yielded": 0,
     "skipped": 0,
     "total_duration_ms": 1380000
   },
-  "updated_at": "2026-04-05T14:33:05.019Z"
+  "updated_at": "2026-04-05T14:33:26.824Z"
 }
