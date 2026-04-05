@@ -276,13 +276,23 @@ export class NeuralNetwork {
       let epochLoss;
 
       if (batchSize && batchSize < inputMatrix.rows) {
-        // Mini-batch training
+        // Mini-batch training with shuffle
+        const indices = Array.from({ length: inputMatrix.rows }, (_, i) => i);
+        for (let i = indices.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [indices[i], indices[j]] = [indices[j], indices[i]];
+        }
         let totalLoss = 0;
         let batchCount = 0;
-        for (let start = 0; start < inputMatrix.rows; start += batchSize) {
-          const end = Math.min(start + batchSize, inputMatrix.rows);
-          const batchInput = inputMatrix.slice(start, end);
-          const batchTarget = targetMatrix.slice(start, end);
+        for (let start = 0; start < indices.length; start += batchSize) {
+          const end = Math.min(start + batchSize, indices.length);
+          const batchIndices = indices.slice(start, end);
+          const batchInput = new Matrix(batchIndices.length, inputMatrix.cols);
+          const batchTarget = new Matrix(batchIndices.length, targetMatrix.cols);
+          for (let i = 0; i < batchIndices.length; i++) {
+            for (let j = 0; j < inputMatrix.cols; j++) batchInput.set(i, j, inputMatrix.get(batchIndices[i], j));
+            for (let j = 0; j < targetMatrix.cols; j++) batchTarget.set(i, j, targetMatrix.get(batchIndices[i], j));
+          }
           const output = this.forward(batchInput);
           totalLoss += this._lossObj.forward(output, batchTarget);
           this.backward(output, batchTarget, currentLR);
@@ -370,15 +380,26 @@ export class NeuralNetwork {
       let totalLoss = 0;
       let steps = 0;
 
-      for (let start = 0; start < inputMatrix.rows; start += mbSize) {
-        const end = Math.min(start + mbSize, inputMatrix.rows);
-        const batchInput = inputMatrix.slice(start, end);
-        const batchTarget = targetMatrix.slice(start, end);
+      // Shuffle indices
+      const indices = Array.from({ length: inputMatrix.rows }, (_, i) => i);
+      for (let i = indices.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [indices[i], indices[j]] = [indices[j], indices[i]];
+      }
+
+      for (let start = 0; start < indices.length; start += mbSize) {
+        const end = Math.min(start + mbSize, indices.length);
+        const batchIndices = indices.slice(start, end);
+        const batchInput = new Matrix(batchIndices.length, inputMatrix.cols);
+        const batchTarget = new Matrix(batchIndices.length, targetMatrix.cols);
+        for (let bi = 0; bi < batchIndices.length; bi++) {
+          for (let j = 0; j < inputMatrix.cols; j++) batchInput.set(bi, j, inputMatrix.get(batchIndices[bi], j));
+          for (let j = 0; j < targetMatrix.cols; j++) batchTarget.set(bi, j, targetMatrix.get(batchIndices[bi], j));
+        }
         const output = this.forward(batchInput);
         totalLoss += this._lossObj.forward(output, batchTarget);
-        // Scale learning rate by accumulation
-        const effectiveLR = currentLR / Math.ceil(inputMatrix.rows / mbSize);
-        this.backward(output, batchTarget, effectiveLR);
+        // Scale learning rate by accumulation steps
+        this.backward(output, batchTarget, currentLR / accumSteps);
         steps++;
       }
 
