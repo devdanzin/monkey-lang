@@ -1,7 +1,9 @@
 {
-  "name": "tiny-forth",
+  "name": "forth",
   "version": "1.0.0",
-  "description": "Forth interpreter from scratch",
-  "main": "src/index.js",
-  "scripts": { "test": "node --test test/index.test.js" }
+  "description": "Forth interpreter — stack-based threaded language",
+  "main": "forth.js",
+  "scripts": {
+    "test": "node --test forth.test.js"
+  }
 }

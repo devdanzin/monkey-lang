@@ -256,6 +256,165 @@ test('HEX and DECIMAL', () => {
   assert.deepEqual(stack('HEX FF DECIMAL'), [255]);
 });
 
+// === CASE/OF/ENDOF/ENDCASE ===
+test('CASE basic', () => {
+  assert.equal(output(`
+    : DAYNAME
+      CASE
+        1 OF ." Monday" ENDOF
+        2 OF ." Tuesday" ENDOF
+        3 OF ." Wednesday" ENDOF
+        ." other"
+      ENDCASE ;
+    1 DAYNAME
+  `), 'Monday');
+});
+test('CASE default', () => {
+  assert.equal(output(`
+    : DAYNAME
+      CASE
+        1 OF ." Mon" ENDOF
+        2 OF ." Tue" ENDOF
+        ." ???"
+      ENDCASE ;
+    99 DAYNAME
+  `), '???');
+});
+
+// === DEFER / IS ===
+test('DEFER IS', () => {
+  assert.deepEqual(stack(`
+    DEFER ACTION
+    : DOUBLE DUP + ;
+    ' DOUBLE IS ACTION
+    5 ACTION
+  `), [10]);
+});
+
+// === CHAR / [CHAR] ===
+test('CHAR', () => assert.deepEqual(stack('CHAR A'), [65]));
+test('[CHAR] in definition', () => {
+  assert.equal(output(': STAR [CHAR] * EMIT ; STAR'), '*');
+});
+
+// === CREATE DOES> ===
+test('CREATE DOES> constant-like', () => {
+  assert.deepEqual(stack(`
+    : CONST CREATE , DOES> @ ;
+    42 CONST ANSWER
+    ANSWER
+  `), [42]);
+});
+test('CREATE DOES> array', () => {
+  assert.deepEqual(stack(`
+    : ARRAY CREATE CELLS ALLOT DOES> SWAP CELLS + ;
+    3 ARRAY NUMS
+    10 0 NUMS !
+    20 1 NUMS !
+    30 2 NUMS !
+    0 NUMS @
+    1 NUMS @
+    2 NUMS @
+  `), [10, 20, 30]);
+});
+
+// === SEE decompiler ===
+test('SEE user word', () => {
+  const o = output(': DOUBLE DUP + ; SEE DOUBLE');
+  assert.ok(o.includes(': DOUBLE'));
+  assert.ok(o.includes('DUP'));
+  assert.ok(o.includes(';'));
+});
+test('SEE primitive', () => {
+  const o = output('SEE DUP');
+  assert.ok(o.includes('<primitive>'));
+});
+
+// === Nested control flow ===
+test('IF inside DO LOOP', () => {
+  assert.equal(output(`
+    : EVENS 10 0 DO I 2 MOD 0= IF I . THEN LOOP ;
+    EVENS
+  `), '0 2 4 6 8 ');
+});
+test('DO LOOP inside IF', () => {
+  assert.equal(output(`
+    : TEST 1 IF 3 0 DO I . LOOP THEN ;
+    TEST
+  `), '0 1 2 ');
+});
+
+// === More complex programs ===
+test('bubble sort', () => {
+  assert.deepEqual(stack(`
+    CREATE ARR 3 , 1 , 2 ,
+    : AG CELLS ARR + @ ;
+    : AS CELLS ARR + ! ;
+    VARIABLE TMP
+    : SW 2DUP AG TMP ! AG SWAP AS TMP @ SWAP AS ;
+    : SORT3
+      0 AG 1 AG > IF 0 1 SW THEN
+      0 AG 2 AG > IF 0 2 SW THEN
+      1 AG 2 AG > IF 1 2 SW THEN ;
+    SORT3
+    0 AG 1 AG 2 AG
+  `), [1, 2, 3]);
+});
+
+test('power function', () => {
+  assert.deepEqual(stack(`
+    : POWER
+      1 SWAP
+      0 DO OVER * LOOP
+      NIP ;
+    2 10 POWER
+  `), [1024]);
+});
+
+test('string output in loop', () => {
+  assert.equal(output(`
+    : COUNTDOWN
+      5 BEGIN
+        DUP . 1-
+        DUP 0=
+      UNTIL
+      DROP
+      ." Liftoff!" ;
+    COUNTDOWN
+  `), '5 4 3 2 1 Liftoff!');
+});
+
+// === POSTPONE ===
+test('POSTPONE', () => {
+  // Create an immediate word that compiles DUP when used in a definition
+  assert.deepEqual(stack(`
+    : MY-DUP POSTPONE DUP ; IMMEDIATE
+    : TEST MY-DUP + ;
+    5 TEST
+  `), [10]);
+});
+
+// === Edge cases ===
+test('undefined word error', () => {
+  assert.throws(() => stack('FOOBAR'), ForthError);
+});
+test('empty input', () => assert.deepEqual(stack(''), []));
+test('whitespace only', () => assert.deepEqual(stack('   \n  \t  '), []));
+test('negative numbers', () => assert.deepEqual(stack('-5 -3 +'), [-8]));
+test('deeply nested IF', () => {
+  assert.equal(output(`
+    : DEEP
+      1 IF
+        1 IF
+          1 IF
+            ." deep"
+          THEN
+        THEN
+      THEN ;
+    DEEP
+  `), 'deep');
+});
+
 // === Stress: FizzBuzz ===
 test('FizzBuzz', () => {
   const result = output(`

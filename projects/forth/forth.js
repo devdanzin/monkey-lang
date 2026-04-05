@@ -231,7 +231,17 @@ class Forth {
         continue;
       } else if (instr.type === 'recurse') {
         this._exec(code);
-        // After recursion, continue
+      } else if (instr.type === 'does>') {
+        // Take remaining code after this instruction
+        const doesCode = code.slice(ip + 1);
+        // Patch the most recently created word
+        const lastWord = this.dictionary[this.dictionary.length - 1];
+        const origCode = lastWord.code;
+        lastWord.code = (f) => {
+          origCode(f); // push data address
+          f._exec(doesCode);
+        };
+        return; // stop executing the defining word
       }
       ip++;
     }
@@ -372,12 +382,17 @@ class Forth {
       f.latestDef = name;
       f.compileBuffer = [];
       f.state = 1;
+      f._colonStartPos = f.inputPos;
     });
 
     f.addWord(';', (f) => {
       const code = [...f.compileBuffer];
       const name = f.latestDef;
+      const startPos = f._colonStartPos || 0;
+      // Capture source between : name ... ;
+      const source = f.inputBuffer.substring(startPos, f.inputPos).replace(/\s*;\s*$/, '').trim();
       f.addWord(name, (f) => { f._exec(code); });
+      f.dictionary[f.dictionary.length - 1]._source = source;
       f.state = 0;
       f.latestDef = null;
     }, true);
@@ -515,12 +530,10 @@ class Forth {
     });
 
     f.addWord('DOES>', (f) => {
-      // Everything after DOES> in the compile buffer becomes the runtime behavior
-      // The created word should push its data address, then execute the DOES> code
-      const doerCode = f.compileBuffer.splice(f.compileBuffer.indexOf(
-        f.compileBuffer.find(c => c.type === 'call' && c.word.name === 'DOES>')
-      ));
-      // Simpler approach: capture remaining compile buffer after DOES>
+      // Mark this position in the compile buffer
+      // When the defining word runs, everything after DOES> becomes the runtime behavior
+      // of the most recently CREATEd word
+      f.compileBuffer.push({ type: 'does>' });
     }, true);
 
     // IMMEDIATE
@@ -587,8 +600,8 @@ class Forth {
       const word = f.findWord(name);
       if (!word) throw new ForthError(`Undefined word: ${name}`);
       f.type(`: ${word.name} `);
-      if (word._compiled) {
-        f.type(word._compiled.join(' '));
+      if (word._source) {
+        f.type(word._source);
       } else {
         f.type('<primitive>');
       }
@@ -599,6 +612,78 @@ class Forth {
     f.addWord('WORDS', (f) => {
       const words = f.dictionary.filter(w => !w.hidden).map(w => w.name);
       f.type(words.join(' '));
+    });
+
+    // CASE/OF/ENDOF/ENDCASE
+    f.addWord('CASE', (f) => {
+      f.rpush(0); // count of ENDOFs to patch
+    }, true);
+
+    f.addWord('OF', (f) => {
+      f.compileBuffer.push({ type: 'call', word: f.findWord('OVER') });
+      f.compileBuffer.push({ type: 'call', word: f.findWord('=') });
+      f.compileBuffer.push({ type: 'branch0', target: -1 });
+      f.rpush(f.compileBuffer.length - 1);
+      f.compileBuffer.push({ type: 'call', word: f.findWord('DROP') });
+    }, true);
+
+    f.addWord('ENDOF', (f) => {
+      f.compileBuffer.push({ type: 'branch', target: -1 });
+      const endofIdx = f.compileBuffer.length - 1;
+      const ofIdx = f.rpop();
+      f.compileBuffer[ofIdx].target = f.compileBuffer.length;
+      // Save ENDOF position and increment count
+      const count = f.rpop();
+      // Push ENDOF positions + new count
+      // Store positions in a simpler way - use a marker array
+      for (let i = 0; i < count; i++) {
+        const pos = f.rpop();
+        f.rpush(pos);
+      }
+      f.rpush(endofIdx);
+      f.rpush(count + 1);
+    }, true);
+
+    f.addWord('ENDCASE', (f) => {
+      f.compileBuffer.push({ type: 'call', word: f.findWord('DROP') });
+      const count = f.rpop();
+      for (let i = 0; i < count; i++) {
+        const pos = f.rpop();
+        f.compileBuffer[pos].target = f.compileBuffer.length;
+      }
+    }, true);
+
+    // DEFER / IS
+    f.addWord('DEFER', (f) => {
+      const name = f.nextToken();
+      if (!name) throw new ForthError('Expected word name');
+      const deferRef = { fn: null };
+      f.addWord(name, (f) => {
+        if (!deferRef.fn) throw new ForthError(`${name} is uninitialized (DEFER)`);
+        deferRef.fn.code(f);
+      });
+      f.dictionary[f.dictionary.length - 1]._deferRef = deferRef;
+    });
+
+    f.addWord('IS', (f) => {
+      const name = f.nextToken();
+      if (!name) throw new ForthError('Expected word name');
+      const word = f.findWord(name);
+      if (!word || !word._deferRef) throw new ForthError(`${name} is not a DEFERred word`);
+      word._deferRef.fn = f.pop();
+    });
+
+    // [CHAR]
+    f.addWord('[CHAR]', (f) => {
+      const tok = f.nextToken();
+      if (!tok) throw new ForthError('Expected character');
+      f.compileBuffer.push({ type: 'literal', value: tok.charCodeAt(0) });
+    }, true);
+
+    f.addWord('CHAR', (f) => {
+      const tok = f.nextToken();
+      if (!tok) throw new ForthError('Expected character');
+      f.push(tok.charCodeAt(0));
     });
 
     // Misc
