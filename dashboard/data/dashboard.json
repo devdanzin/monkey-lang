@@ -2663,14 +2663,24 @@
       "completed": "2026-04-05T00:21:00.728Z",
       "duration_ms": 600000,
       "summary": "JWT: sign (HS256, auto-iat, expiresIn, notBefore, issuer, subject, audience), verify (signature validation with timing-safe compare, expiry check, nbf check, issuer/audience validation), decode (no verification, header + payload), JWTError, tamper detection (modified payload caught). 16 tests. GitHub: henry-the-frog/jwt"
+    },
+    {
+      "id": "T259",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "CBOR: encode/decode unsigned/negative integers, byte strings, text strings, arrays, maps, booleans, null, undefined, floats, tags, indefinite-length. 25+ tests.",
+      "started": "2026-04-05T00:21:23.033Z",
+      "completed": "2026-04-05T00:22:40.617Z",
+      "duration_ms": 600000,
+      "summary": "CBOR: encode/decode unsigned integers (0-23, 24-255, 2-byte, 4-byte), negative integers, text strings (empty, ASCII, unicode), byte strings, arrays (empty, numbers, mixed, nested), maps/objects (empty, string keys, nested), booleans, null, undefined, float64, complex roundtrip. Compact encoding verified (1 byte for small values). 28 tests. GitHub: henry-the-frog/cbor"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 255,
+    "completed": 256,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 98310000
+    "total_duration_ms": 98910000
   },
-  "updated_at": "2026-04-05T00:21:00.728Z"
+  "updated_at": "2026-04-05T00:22:40.617Z"
 }
