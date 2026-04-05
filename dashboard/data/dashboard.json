@@ -467,14 +467,27 @@
       "completed": "2026-04-05T15:53:26.041Z",
       "duration_ms": 120000,
       "summary": "RIGHT JOIN, CROSS JOIN (cartesian product), aggregate JOINs with GROUP BY/HAVING. 7 new tests → 430 total (304 growth)."
+    },
+    {
+      "id": "T45",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: HAVING with complex expressions, ORDER BY expression, SELECT expression alias reuse",
+      "started": "2026-04-05T15:54:08.072Z"
     }
   ],
-  "current": null,
+  "current": {
+    "id": "T45",
+    "mode": "BUILD",
+    "status": "in-progress",
+    "task": "HenryDB: HAVING with complex expressions, ORDER BY expression, SELECT expression alias reuse",
+    "started": "2026-04-05T15:54:08.072Z"
+  },
   "stats": {
     "completed": 44,
     "yielded": 0,
     "skipped": 0,
     "total_duration_ms": 6182000
   },
-  "updated_at": "2026-04-05T15:53:26.041Z"
+  "updated_at": "2026-04-05T15:54:08.072Z"
 }
