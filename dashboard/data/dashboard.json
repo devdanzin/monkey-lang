@@ -357,9 +357,12 @@
       "id": "T34",
       "mode": "BUILD",
       "task": "HenryDB: IS NULL / IS NOT NULL in WHERE and CASE",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T33",
-      "started": "2026-04-05T15:22:50.826Z"
+      "started": "2026-04-05T15:22:50.826Z",
+      "completed": "2026-04-05T15:26:51.428Z",
+      "duration_ms": 240000,
+      "summary": "IS NULL/IS NOT NULL, COALESCE, NULLIF, arithmetic expressions (+,-,*,/,%). 21 new tests → 347 total."
     },
     {
       "id": "T35",
@@ -390,19 +393,12 @@
       "plan_ref": "T33"
     }
   ],
-  "current": {
-    "id": "T34",
-    "mode": "BUILD",
-    "task": "HenryDB: IS NULL / IS NOT NULL in WHERE and CASE",
-    "status": "in-progress",
-    "plan_ref": "T33",
-    "started": "2026-04-05T15:22:50.826Z"
-  },
+  "current": null,
   "stats": {
-    "completed": 33,
+    "completed": 34,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 4800000
+    "total_duration_ms": 5040000
   },
-  "updated_at": "2026-04-05T15:22:50.826Z"
+  "updated_at": "2026-04-05T15:26:51.428Z"
 }
