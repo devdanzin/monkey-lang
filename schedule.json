@@ -2883,9 +2883,19 @@
       "completed": "2026-04-05T00:59:16.196Z",
       "duration_ms": 600000,
       "summary": "Test framework: expect (toBe, toEqual, toBeTruthy, toBeFalsy, toBeNull, toBeUndefined, toBeGreaterThan, toBeLessThan, toContain string+array, toHaveLength, toThrow with pattern, toBeInstanceOf), not (toBe, toEqual, toContain, toThrow), Suite (describe/it, xit skip, fit only, beforeEach/afterEach, async support, run, passed/failed/skipped/total, toTAP output). 27 tests. GitHub: henry-the-frog/test-framework"
+    },
+    {
+      "id": "T281",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "CLI parser: positional args, flags (--flag), options (--key value), aliases (-f), boolean flags, default values, required, help generation, subcommands. 20+ tests.",
+      "started": "2026-04-05T00:59:34.812Z",
+      "completed": "2026-04-05T01:00:36.615Z",
+      "duration_ms": 600000,
+      "summary": "CLI parser: positional args, --flags (boolean), --key value options (string, number), -alias short flags, defaults, required (throws on missing), named positionals, subcommands (command routing), double-dash (-- stops parsing), help generation (usage, description, options with aliases, commands). 17 tests. GitHub: henry-the-frog/cli"
     }
   ],
-  "updated_at": "2026-04-05T00:59:16.196Z",
+  "updated_at": "2026-04-05T01:00:36.615Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -3170,6 +3180,10 @@
     {
       "time": "2026-04-05T00:58:13.593Z",
       "msg": "Added T280 (BUILD) after end: Test framework: describe/it/expect matchers (toBe, toEqual, toThrow, toBeTruthy, toContain), beforeEach/afterEach, skip/only, async support, test runner, TAP output. 20+ tests."
+    },
+    {
+      "time": "2026-04-05T00:59:34.181Z",
+      "msg": "Added T281 (BUILD) after end: CLI parser: positional args, flags (--flag), options (--key value), aliases (-f), boolean flags, default values, required, help generation, subcommands. 20+ tests."
     }
   ]
 }

@@ -2883,14 +2883,24 @@
       "completed": "2026-04-05T00:59:16.196Z",
       "duration_ms": 600000,
       "summary": "Test framework: expect (toBe, toEqual, toBeTruthy, toBeFalsy, toBeNull, toBeUndefined, toBeGreaterThan, toBeLessThan, toContain string+array, toHaveLength, toThrow with pattern, toBeInstanceOf), not (toBe, toEqual, toContain, toThrow), Suite (describe/it, xit skip, fit only, beforeEach/afterEach, async support, run, passed/failed/skipped/total, toTAP output). 27 tests. GitHub: henry-the-frog/test-framework"
+    },
+    {
+      "id": "T281",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "CLI parser: positional args, flags (--flag), options (--key value), aliases (-f), boolean flags, default values, required, help generation, subcommands. 20+ tests.",
+      "started": "2026-04-05T00:59:34.812Z",
+      "completed": "2026-04-05T01:00:36.615Z",
+      "duration_ms": 600000,
+      "summary": "CLI parser: positional args, --flags (boolean), --key value options (string, number), -alias short flags, defaults, required (throws on missing), named positionals, subcommands (command routing), double-dash (-- stops parsing), help generation (usage, description, options with aliases, commands). 17 tests. GitHub: henry-the-frog/cli"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 277,
+    "completed": 278,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 111510000
+    "total_duration_ms": 112110000
   },
-  "updated_at": "2026-04-05T00:59:16.196Z"
+  "updated_at": "2026-04-05T01:00:36.615Z"
 }
