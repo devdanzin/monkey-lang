@@ -2853,9 +2853,19 @@
       "completed": "2026-04-05T00:55:03.488Z",
       "duration_ms": 600000,
       "summary": "XML parser: parse to tree (elements, attributes, text, self-closing, mixed content, entities, comments, PI), query (getElementsByTagName, querySelector by tag/id/class, querySelectorAll), textContent, getAttribute/setAttribute, serialize (self-closing, children, text, attributes, entities roundtrip). 21 tests. GitHub: henry-the-frog/xml"
+    },
+    {
+      "id": "T278",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Immutable: persistent list (cons/head/tail/map/filter), persistent map (assoc/dissoc/get), structural sharing, fromArray/toArray. 20+ tests.",
+      "started": "2026-04-05T00:55:23.979Z",
+      "completed": "2026-04-05T00:56:32.202Z",
+      "duration_ms": 600000,
+      "summary": "Immutable: persistent list (cons/head/tail/isEmpty, list constructor, toArray/fromArray, iterable, map/filter/reduce, reverse, structural sharing verification, frozen), PMap (assoc/get/has/dissoc, update, merge, map/filter, toObject/fromObject, equals, immutable verification, original unchanged on assoc, default value, keys/values/entries). 29 tests. GitHub: henry-the-frog/immutable"
     }
   ],
-  "updated_at": "2026-04-05T00:55:03.488Z",
+  "updated_at": "2026-04-05T00:56:32.202Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -3128,6 +3138,10 @@
     {
       "time": "2026-04-05T00:52:50.918Z",
       "msg": "Added T277 (BUILD) after end: XML parser (simple): parse XML to tree, element/attribute/text nodes, querySelector-like API (tag, ., #), serialize back to XML. 20+ tests."
+    },
+    {
+      "time": "2026-04-05T00:55:23.345Z",
+      "msg": "Added T278 (BUILD) after end: Immutable: persistent list (cons/head/tail/map/filter), persistent map (assoc/dissoc/get), structural sharing, fromArray/toArray. 20+ tests."
     }
   ]
 }
