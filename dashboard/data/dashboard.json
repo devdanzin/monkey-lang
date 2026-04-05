@@ -25,9 +25,13 @@
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Update generate.cjs — auto-discover all projects under projects/, count tests dynamically, compute total test count",
-      "plan_ref": "T2"
+      "plan_ref": "T2",
+      "started": "2026-04-05T14:17:43.175Z",
+      "completed": "2026-04-05T14:19:40.175Z",
+      "duration_ms": 180000,
+      "summary": "Auto-discover all 260 projects in generate.cjs. 9185 total tests, categorized into 11 categories. Top: monkey-lang 1474, neural-net 435, ray-tracer 262."
     },
     {
       "id": "T18",
@@ -135,10 +139,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 2,
+    "completed": 3,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 150000
+    "total_duration_ms": 330000
   },
-  "updated_at": "2026-04-05T14:17:14.050Z"
+  "updated_at": "2026-04-05T14:19:40.175Z"
 }
