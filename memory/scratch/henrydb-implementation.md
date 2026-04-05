@@ -47,9 +47,25 @@ topics: database, SQL, B+tree, WAL, MVCC, query-planner, secondary-indexes
 - B+ tree overwriting values on duplicate keys (broke non-unique secondary indexes)
 - ALTER TABLE invalidating index RIDs (required full rebuild)
 
-## Growth: 126 → 223 tests in one session
+## Growth: 126 → 282 tests in one session
 - +24 secondary index tests
 - +15 GROUP BY tests
 - +15 subquery tests
 - +21 ALTER TABLE tests
 - +22 crash recovery stress tests
+- +21 string function tests (LIKE, UPPER, LOWER, LENGTH, CONCAT, ||, BETWEEN)
+- +14 window function tests (ROW_NUMBER, RANK, DENSE_RANK, aggregate OVER)
+- +12 view tests (CREATE VIEW, DROP VIEW, query from views)
+- +12 DISTINCT tests (SELECT DISTINCT, COUNT(DISTINCT))
+
+## SQL Feature Coverage (comprehensive)
+- DDL: CREATE TABLE, DROP TABLE, ALTER TABLE (ADD/DROP/RENAME COLUMN, RENAME TABLE), CREATE/DROP INDEX, CREATE/DROP VIEW
+- DML: INSERT, SELECT, UPDATE, DELETE
+- Expressions: arithmetic, string functions, LIKE, BETWEEN, IN, EXISTS, subqueries
+- Aggregates: COUNT, SUM, AVG, MIN, MAX (with DISTINCT support)
+- Clauses: WHERE, ORDER BY, LIMIT, OFFSET, GROUP BY, HAVING, DISTINCT
+- Joins: INNER JOIN, LEFT JOIN
+- Window functions: ROW_NUMBER, RANK, DENSE_RANK, COUNT/SUM OVER PARTITION
+- Views: CREATE VIEW AS SELECT, query from views
+- Indexes: B+ tree, unique/non-unique, auto-selection in query planner
+- Transactions: MVCC, WAL, snapshot isolation, crash recovery
