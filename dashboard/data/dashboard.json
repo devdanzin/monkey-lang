@@ -209,9 +209,12 @@
       "id": "T26",
       "mode": "BUILD",
       "task": "HenryDB: DISTINCT, COUNT DISTINCT, SELECT DISTINCT",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T10",
-      "started": "2026-04-05T14:50:47.893Z"
+      "started": "2026-04-05T14:50:47.893Z",
+      "completed": "2026-04-05T14:53:05.613Z",
+      "duration_ms": 180000,
+      "summary": "DISTINCT: SELECT DISTINCT (dedup), COUNT(DISTINCT col), GROUP BY + COUNT DISTINCT. 12 new tests → 282 total."
     },
     {
       "id": "T12",
@@ -251,19 +254,12 @@
       "task": "Final housekeeping — git push, scratch notes, dashboard update"
     }
   ],
-  "current": {
-    "id": "T26",
-    "mode": "BUILD",
-    "task": "HenryDB: DISTINCT, COUNT DISTINCT, SELECT DISTINCT",
-    "status": "in-progress",
-    "plan_ref": "T10",
-    "started": "2026-04-05T14:50:47.893Z"
-  },
+  "current": null,
   "stats": {
-    "completed": 19,
+    "completed": 20,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 2850000
+    "total_duration_ms": 3030000
   },
-  "updated_at": "2026-04-05T14:50:47.893Z"
+  "updated_at": "2026-04-05T14:53:05.613Z"
 }
