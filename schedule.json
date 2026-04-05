@@ -357,8 +357,9 @@
       "id": "T34",
       "mode": "BUILD",
       "task": "HenryDB: IS NULL / IS NOT NULL in WHERE and CASE",
-      "status": "upcoming",
-      "plan_ref": "T33"
+      "status": "in-progress",
+      "plan_ref": "T33",
+      "started": "2026-04-05T15:22:50.826Z"
     },
     {
       "id": "T35",
@@ -389,5 +390,5 @@
       "plan_ref": "T33"
     }
   ],
-  "updated_at": "2026-04-05T15:22:41.052Z"
+  "updated_at": "2026-04-05T15:22:50.826Z"
 }
