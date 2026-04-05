@@ -2893,9 +2893,19 @@
       "completed": "2026-04-05T01:00:36.615Z",
       "duration_ms": 600000,
       "summary": "CLI parser: positional args, --flags (boolean), --key value options (string, number), -alias short flags, defaults, required (throws on missing), named positionals, subcommands (command routing), double-dash (-- stops parsing), help generation (usage, description, options with aliases, commands). 17 tests. GitHub: henry-the-frog/cli"
+    },
+    {
+      "id": "T282",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Logger: log levels (trace/debug/info/warn/error/fatal), formatters, child loggers, transports, structured logging (JSON), context/metadata, mute/unmute. 20+ tests.",
+      "started": "2026-04-05T01:00:54.474Z",
+      "completed": "2026-04-05T01:01:50.780Z",
+      "duration_ms": 600000,
+      "summary": "Logger: 6 log levels (trace-fatal), isLevelEnabled, defaultFormatter (ISO timestamp, level, name, meta), jsonFormatter (structured logging), arrayTransport, callbackTransport, child loggers (inherit level/transports, merge context), metadata in logs, mute/unmute, setLevel (dynamic). 15 tests. GitHub: henry-the-frog/logger"
     }
   ],
-  "updated_at": "2026-04-05T01:00:36.615Z",
+  "updated_at": "2026-04-05T01:01:50.780Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -3184,6 +3194,10 @@
     {
       "time": "2026-04-05T00:59:34.181Z",
       "msg": "Added T281 (BUILD) after end: CLI parser: positional args, flags (--flag), options (--key value), aliases (-f), boolean flags, default values, required, help generation, subcommands. 20+ tests."
+    },
+    {
+      "time": "2026-04-05T01:00:53.754Z",
+      "msg": "Added T282 (BUILD) after end: Logger: log levels (trace/debug/info/warn/error/fatal), formatters, child loggers, transports, structured logging (JSON), context/metadata, mute/unmute. 20+ tests."
     }
   ]
 }
