@@ -1131,12 +1131,52 @@
     {
       "id": "T108",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final session cleanup",
-      "started": "2026-04-05T18:14:34.235Z"
+      "started": "2026-04-05T18:14:34.235Z",
+      "completed": "2026-04-05T18:14:53.083Z",
+      "duration_ms": 30000,
+      "summary": "Git pushed (main + henrydb). 63 tasks done."
+    },
+    {
+      "id": "T109",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: date/time functions and type casting tests",
+      "started": "2026-04-05T18:16:07.077Z",
+      "completed": "2026-04-05T18:18:01.461Z",
+      "duration_ms": 180000,
+      "summary": "14 NULL/type handling tests. COUNT(col) vs COUNT(*), AVG ignoring NULL, type comparisons. 658 total HenryDB tests."
+    },
+    {
+      "id": "T110",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: error handling and edge case tests",
+      "started": "2026-04-05T18:18:12.152Z",
+      "completed": "2026-04-05T18:20:07.127Z",
+      "duration_ms": 180000,
+      "summary": "20 error/edge case tests. Syntax errors, empty tables, DELETE/UPDATE, large values. 678 total HenryDB tests."
+    },
+    {
+      "id": "T111",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray-tracer: README with features and architecture",
+      "started": "2026-04-05T18:20:24.495Z",
+      "completed": "2026-04-05T18:21:04.454Z",
+      "duration_ms": 60000,
+      "summary": "Ray-tracer README: architecture, features, pipeline, math, references."
+    },
+    {
+      "id": "T112",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Pre-boundary cleanup",
+      "started": "2026-04-05T18:21:13.674Z"
     }
   ],
-  "updated_at": "2026-04-05T18:14:34.235Z",
+  "updated_at": "2026-04-05T18:21:13.674Z",
   "adjustments": [
     {
       "time": "2026-04-05T18:05:37.757Z",
@@ -1157,6 +1197,22 @@
     {
       "time": "2026-04-05T18:06:02.758Z",
       "msg": "Added T108 (MAINTAIN) after end: Final session cleanup"
+    },
+    {
+      "time": "2026-04-05T18:15:55.167Z",
+      "msg": "Added T109 (BUILD) after end: HenryDB: date/time functions and type casting tests"
+    },
+    {
+      "time": "2026-04-05T18:15:55.802Z",
+      "msg": "Added T110 (BUILD) after end: HenryDB: error handling and edge case tests"
+    },
+    {
+      "time": "2026-04-05T18:15:56.250Z",
+      "msg": "Added T111 (BUILD) after end: Ray-tracer: README with features and architecture"
+    },
+    {
+      "time": "2026-04-05T18:15:56.833Z",
+      "msg": "Added T112 (MAINTAIN) after end: Pre-boundary cleanup"
     }
   ]
 }
