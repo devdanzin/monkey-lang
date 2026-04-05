@@ -2683,14 +2683,24 @@
       "completed": "2026-04-05T00:24:17.744Z",
       "duration_ms": 600000,
       "summary": "S-expression: tokenizer (symbols, numbers, strings with escapes, booleans, nil), parser (atoms, lists, nested, dotted pairs, quote shorthand, comments), stringify (numbers, symbols, nil, booleans, proper lists, dotted pairs, nested), toArray helper, prettyPrint, roundtrip. 23 tests. GitHub: henry-the-frog/sexpr"
+    },
+    {
+      "id": "T261",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "MessagePack: encode/decode nil, bool, int (fixint, int8-64, uint8-64), float32/64, str (fixstr, str8-32), bin, array (fixarray, array16/32), map (fixmap, map16/32). 25+ tests.",
+      "started": "2026-04-05T00:24:32.713Z",
+      "completed": "2026-04-05T00:25:52.589Z",
+      "duration_ms": 600000,
+      "summary": "MessagePack: nil, bool (true/false), integers (positive fixint, uint8/16/32, negative fixint, int8/16/32), float64, strings (fixstr, str8, str16, unicode), binary (bin8), arrays (fixarray, array16, mixed, nested), maps (fixmap, map16, nested), complex roundtrip, compact encoding verification (shorter than JSON). 30 tests. GitHub: henry-the-frog/msgpack"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 257,
+    "completed": 258,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 99510000
+    "total_duration_ms": 100110000
   },
-  "updated_at": "2026-04-05T00:24:17.744Z"
+  "updated_at": "2026-04-05T00:25:52.589Z"
 }
