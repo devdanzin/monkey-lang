@@ -773,42 +773,87 @@
     {
       "id": "T71",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Mid-session checkpoint",
-      "started": "2026-04-05T17:33:18.507Z"
+      "started": "2026-04-05T17:33:18.507Z",
+      "completed": "2026-04-05T17:33:31.110Z",
+      "duration_ms": 30000,
+      "summary": "Git pushed. Chess 186 tests, regex 120 tests. 16 tasks completed this session."
     },
     {
       "id": "T72",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Plan regex engine README + benchmarks",
-      "task": null
+      "task": null,
+      "started": "2026-04-05T17:33:42.037Z",
+      "completed": "2026-04-05T17:33:56.608Z",
+      "duration_ms": 15000,
+      "summary": "Planned: chess README, regex README, regex benchmarks."
+    },
+    {
+      "id": "T78",
+      "mode": "BUILD",
+      "task": "Chess engine README with architecture, features, usage examples",
+      "status": "done",
+      "plan_ref": "T72",
+      "started": "2026-04-05T17:34:07.348Z",
+      "completed": "2026-04-05T17:34:54.172Z",
+      "duration_ms": 120000,
+      "summary": "Chess engine README: architecture, features, usage, perft table, API examples."
+    },
+    {
+      "id": "T79",
+      "mode": "BUILD",
+      "task": "Regex engine README with API docs, examples, architecture diagram",
+      "status": "done",
+      "plan_ref": "T72",
+      "started": "2026-04-05T17:36:25.163Z",
+      "completed": "2026-04-05T17:37:16.047Z",
+      "duration_ms": 120000,
+      "summary": "Regex engine README: pipeline diagram, API docs, syntax table, architecture overview."
+    },
+    {
+      "id": "T80",
+      "mode": "BUILD",
+      "task": "Benchmark: regex engine NFA vs DFA vs native RegExp performance",
+      "status": "done",
+      "plan_ref": "T72",
+      "started": "2026-04-05T17:37:26.918Z",
+      "completed": "2026-04-05T17:38:40.055Z",
+      "duration_ms": 180000,
+      "summary": "Benchmarks: 9 suites, NFA vs DFA vs native. DFA 100-1000x faster than NFA. 127 total regex tests."
     },
     {
       "id": "T73",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-04-05T17:39:01.477Z",
+      "completed": "2026-04-05T17:39:01.972Z",
+      "duration_ms": 0,
+      "summary": "Skipped unfilled placeholder"
     },
     {
       "id": "T74",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final session housekeeping"
+      "status": "in-progress",
+      "task": "Final session housekeeping",
+      "started": "2026-04-05T17:39:14.039Z"
     }
   ],
   "current": {
-    "id": "T71",
+    "id": "T74",
     "mode": "MAINTAIN",
     "status": "in-progress",
-    "task": "Mid-session checkpoint",
-    "started": "2026-04-05T17:33:18.507Z"
+    "task": "Final session housekeeping",
+    "started": "2026-04-05T17:39:14.039Z"
   },
   "stats": {
-    "completed": 73,
+    "completed": 79,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 10967000
+    "total_duration_ms": 11432000
   },
-  "updated_at": "2026-04-05T17:33:18.507Z"
+  "updated_at": "2026-04-05T17:39:14.039Z"
 }
