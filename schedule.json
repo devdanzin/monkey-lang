@@ -699,10 +699,103 @@
     {
       "id": "T61",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final housekeeping",
-      "started": "2026-04-05T17:25:16.672Z"
+      "started": "2026-04-05T17:25:16.672Z",
+      "completed": "2026-04-05T17:25:54.568Z",
+      "duration_ms": 30000,
+      "summary": "Dashboard regenerated, git pushed. Regex 120, chess 144 tests."
+    },
+    {
+      "id": "T68",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Generate work for remaining ~2.5 hours. Options: (1) chess engine UCI protocol + game play, (2) regex engine README + optimizations, (3) new deep project (ECS, compiler backend, or type checker improvements), (4) blog post about today's work",
+      "started": "2026-04-05T17:26:15.550Z",
+      "completed": "2026-04-05T17:26:27.368Z",
+      "duration_ms": 30000,
+      "summary": "Decision: Chess UCI protocol + interactive CLI game. Makes the engine playable. Then regex README if time."
+    },
+    {
+      "id": "T69",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan chess UCI protocol + interactive game",
+      "task": null,
+      "started": "2026-04-05T17:26:43.999Z",
+      "completed": "2026-04-05T17:26:54.732Z",
+      "duration_ms": 15000,
+      "summary": "Planned 3 tasks: UCI protocol, interactive CLI game, self-play."
+    },
+    {
+      "id": "T75",
+      "mode": "BUILD",
+      "task": "UCI protocol: uci/isready/position/go/bestmove commands, stdin/stdout interface",
+      "status": "done",
+      "plan_ref": "T69",
+      "started": "2026-04-05T17:27:04.328Z",
+      "completed": "2026-04-05T17:29:03.540Z",
+      "duration_ms": 300000,
+      "summary": "Full UCI protocol: uci/isready/position/go/stop/quit, time control, info output. 20 tests → 164 total chess."
+    },
+    {
+      "id": "T76",
+      "mode": "BUILD",
+      "task": "Interactive CLI chess game: play vs engine, ASCII board, move input, PGN save",
+      "status": "done",
+      "plan_ref": "T69",
+      "started": "2026-04-05T17:29:24.943Z",
+      "completed": "2026-04-05T17:30:47.057Z",
+      "duration_ms": 240000,
+      "summary": "Interactive CLI chess game: Unicode board, SAN/UCI input, hints, PGN export. 13 tests → 177 total."
+    },
+    {
+      "id": "T77",
+      "mode": "BUILD",
+      "task": "Engine self-play: auto-play games, track results, export PGN",
+      "status": "done",
+      "plan_ref": "T69",
+      "started": "2026-04-05T17:30:57.078Z",
+      "completed": "2026-04-05T17:32:47.835Z",
+      "duration_ms": 300000,
+      "summary": "Self-play, tournament, benchmarking. 9 tests → 186 total chess engine tests."
+    },
+    {
+      "id": "T70",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "started": "2026-04-05T17:33:07.726Z",
+      "completed": "2026-04-05T17:33:08.306Z",
+      "duration_ms": 0,
+      "summary": "Skipped unfilled placeholder"
+    },
+    {
+      "id": "T71",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Mid-session checkpoint",
+      "started": "2026-04-05T17:33:18.507Z"
+    },
+    {
+      "id": "T72",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Plan regex engine README + benchmarks",
+      "task": null
+    },
+    {
+      "id": "T73",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T74",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final session housekeeping"
     }
   ],
-  "updated_at": "2026-04-05T17:25:16.672Z"
+  "updated_at": "2026-04-05T17:33:18.507Z"
 }
