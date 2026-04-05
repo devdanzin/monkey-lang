@@ -20,6 +20,12 @@ const letExpr = (name, value, body) => ({ tag: 'let', name, value, body });
 const ifExpr = (cond, then, els) => ({ tag: 'if', cond, then, else: els });
 const lam = (param, body) => ({ tag: 'lam', param, body });
 const app = (fn, arg) => ({ tag: 'app', fn, arg });
+const arr = (...elements) => ({ tag: 'arr', elements });
+const idx = (obj, index) => ({ tag: 'idx', obj, index });
+const len = (obj) => ({ tag: 'len', obj });
+const push = (arrExpr, value) => ({ tag: 'push', arr: arrExpr, value });
+const concat = (left, right) => ({ tag: 'concat', left, right });
+const slice = (obj, start, end) => ({ tag: 'slice', obj, start, end });
 
 describe('Chunk', () => {
   it('emits instructions', () => {
@@ -461,5 +467,193 @@ describe('Compiler — Chunk inspection', () => {
     assert.ok(dis.includes('CONST'));
     assert.ok(dis.includes('ADD'));
     assert.ok(dis.includes('HALT'));
+  });
+});
+
+describe('VM — Arrays', () => {
+  it('creates empty array', () => {
+    const result = runChunk(c => {
+      c.emit(Op.ARRAY, 0);
+    });
+    assert.deepEqual(result, []);
+  });
+
+  it('creates array with elements', () => {
+    const result = runChunk(c => {
+      c.emit(Op.CONST, c.addConstant(1));
+      c.emit(Op.CONST, c.addConstant(2));
+      c.emit(Op.CONST, c.addConstant(3));
+      c.emit(Op.ARRAY, 3);
+    });
+    assert.deepEqual(result, [1, 2, 3]);
+  });
+
+  it('indexes array', () => {
+    const result = runChunk(c => {
+      c.emit(Op.CONST, c.addConstant(10));
+      c.emit(Op.CONST, c.addConstant(20));
+      c.emit(Op.CONST, c.addConstant(30));
+      c.emit(Op.ARRAY, 3);
+      c.emit(Op.CONST, c.addConstant(1));
+      c.emit(Op.INDEX);
+    });
+    assert.equal(result, 20);
+  });
+
+  it('sets array index', () => {
+    const result = runChunk(c => {
+      c.emit(Op.CONST, c.addConstant(10));
+      c.emit(Op.CONST, c.addConstant(20));
+      c.emit(Op.CONST, c.addConstant(30));
+      c.emit(Op.ARRAY, 3);
+      c.emit(Op.CONST, c.addConstant(1));
+      c.emit(Op.CONST, c.addConstant(99));
+      c.emit(Op.SET_INDEX);
+    });
+    assert.deepEqual(result, [10, 99, 30]);
+  });
+
+  it('gets array length', () => {
+    const result = runChunk(c => {
+      c.emit(Op.CONST, c.addConstant(1));
+      c.emit(Op.CONST, c.addConstant(2));
+      c.emit(Op.CONST, c.addConstant(3));
+      c.emit(Op.ARRAY, 3);
+      c.emit(Op.LEN);
+    });
+    assert.equal(result, 3);
+  });
+
+  it('pushes to array', () => {
+    const result = runChunk(c => {
+      c.emit(Op.CONST, c.addConstant(1));
+      c.emit(Op.CONST, c.addConstant(2));
+      c.emit(Op.ARRAY, 2);
+      c.emit(Op.CONST, c.addConstant(3));
+      c.emit(Op.PUSH);
+    });
+    assert.deepEqual(result, [1, 2, 3]);
+  });
+
+  it('concatenates arrays', () => {
+    const result = runChunk(c => {
+      c.emit(Op.CONST, c.addConstant(1));
+      c.emit(Op.CONST, c.addConstant(2));
+      c.emit(Op.ARRAY, 2);
+      c.emit(Op.CONST, c.addConstant(3));
+      c.emit(Op.CONST, c.addConstant(4));
+      c.emit(Op.ARRAY, 2);
+      c.emit(Op.CONCAT);
+    });
+    assert.deepEqual(result, [1, 2, 3, 4]);
+  });
+
+  it('slices array', () => {
+    const result = runChunk(c => {
+      c.emit(Op.CONST, c.addConstant(10));
+      c.emit(Op.CONST, c.addConstant(20));
+      c.emit(Op.CONST, c.addConstant(30));
+      c.emit(Op.CONST, c.addConstant(40));
+      c.emit(Op.ARRAY, 4);
+      c.emit(Op.CONST, c.addConstant(1));
+      c.emit(Op.CONST, c.addConstant(3));
+      c.emit(Op.SLICE);
+    });
+    assert.deepEqual(result, [20, 30]);
+  });
+});
+
+describe('VM — Strings', () => {
+  it('indexes string', () => {
+    const result = runChunk(c => {
+      c.emit(Op.CONST, c.addConstant('hello'));
+      c.emit(Op.CONST, c.addConstant(1));
+      c.emit(Op.INDEX);
+    });
+    assert.equal(result, 'e');
+  });
+
+  it('gets string length', () => {
+    const result = runChunk(c => {
+      c.emit(Op.CONST, c.addConstant('hello'));
+      c.emit(Op.LEN);
+    });
+    assert.equal(result, 5);
+  });
+
+  it('concatenates strings', () => {
+    const result = runChunk(c => {
+      c.emit(Op.CONST, c.addConstant('hello'));
+      c.emit(Op.CONST, c.addConstant(' world'));
+      c.emit(Op.CONCAT);
+    });
+    assert.equal(result, 'hello world');
+  });
+
+  it('slices string', () => {
+    const result = runChunk(c => {
+      c.emit(Op.CONST, c.addConstant('hello'));
+      c.emit(Op.CONST, c.addConstant(1));
+      c.emit(Op.CONST, c.addConstant(4));
+      c.emit(Op.SLICE);
+    });
+    assert.equal(result, 'ell');
+  });
+});
+
+describe('VM — DUP', () => {
+  it('duplicates top of stack', () => {
+    const result = runChunk(c => {
+      c.emit(Op.CONST, c.addConstant(42));
+      c.emit(Op.DUP);
+      c.emit(Op.ADD);
+    });
+    assert.equal(result, 84);
+  });
+});
+
+describe('Compiler — Arrays', () => {
+  it('compiles array literal', () => {
+    assert.deepEqual(evaluate(arr(lit(1), lit(2), lit(3))), [1, 2, 3]);
+  });
+
+  it('compiles array index', () => {
+    assert.equal(evaluate(idx(arr(lit(10), lit(20), lit(30)), lit(1))), 20);
+  });
+
+  it('compiles array length', () => {
+    assert.equal(evaluate(len(arr(lit(1), lit(2), lit(3)))), 3);
+  });
+
+  it('compiles array push', () => {
+    assert.deepEqual(evaluate(push(arr(lit(1), lit(2)), lit(3))), [1, 2, 3]);
+  });
+
+  it('compiles string length', () => {
+    assert.equal(evaluate(len(lit('hello'))), 5);
+  });
+
+  it('compiles string index', () => {
+    assert.equal(evaluate(idx(lit('hello'), lit(0))), 'h');
+  });
+
+  it('compiles concat', () => {
+    assert.deepEqual(evaluate(concat(arr(lit(1)), arr(lit(2)))), [1, 2]);
+  });
+
+  it('compiles slice', () => {
+    assert.deepEqual(evaluate(slice(arr(lit(10), lit(20), lit(30), lit(40)), lit(1), lit(3))), [20, 30]);
+  });
+
+  it('compiles nested: len of push', () => {
+    assert.equal(evaluate(len(push(arr(lit(1), lit(2)), lit(3)))), 3);
+  });
+
+  it('compiles array in let', () => {
+    assert.deepEqual(evaluate(
+      letExpr('xs', arr(lit(1), lit(2), lit(3)),
+        idx(vr('xs'), lit(2))
+      )
+    ), 3);
   });
 });

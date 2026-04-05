@@ -28,6 +28,17 @@ export const Op = {
   CLOSURE: 21, GET_FREE: 22,
   POP: 23, PRINT: 24, HALT: 25,
   NEGATE: 26,
+  // New: Array and string ops
+  ARRAY: 27,      // ARRAY <n> — pop n elements, push array
+  INDEX: 28,      // INDEX — pop index, pop array/string, push element
+  SET_INDEX: 29,  // SET_INDEX — pop value, pop index, pop array, push modified array
+  LEN: 30,        // LEN — pop array/string, push length
+  PUSH: 31,       // PUSH — pop value, pop array, push extended array
+  CONCAT: 32,     // CONCAT — pop 2, push concatenated array/string
+  SLICE: 33,      // SLICE — pop end, pop start, pop array, push slice
+  LOAD_GLOBAL: 34, // LOAD_GLOBAL <idx> — push global variable
+  STORE_GLOBAL: 35, // STORE_GLOBAL <idx> — pop into global
+  DUP: 36,        // DUP — duplicate top of stack
 };
 
 const opNames = Object.fromEntries(Object.entries(Op).map(([k, v]) => [v, k]));
@@ -68,6 +79,9 @@ export class Chunk {
         case Op.STORE:
         case Op.CALL:
         case Op.GET_FREE:
+        case Op.ARRAY:
+        case Op.LOAD_GLOBAL:
+        case Op.STORE_GLOBAL:
           lines.push(`${i.toString().padStart(4)}: ${name} ${this.code[i + 1]}`);
           i += 2;
           break;
@@ -116,6 +130,7 @@ export class VM {
     this.ip = 0;
     this.bp = 0; // base pointer for local variables
     this.maxSteps = 100000;
+    this.globals = {}; // global variables
   }
   
   push(value) { this.stack.push(value); }
@@ -232,6 +247,101 @@ export class VM {
         }
         
         case Op.HALT: return this.peek();
+        
+        // ===== Array and String Operations =====
+        case Op.ARRAY: {
+          const n = this.chunk.code[this.ip++];
+          const arr = [];
+          for (let i = 0; i < n; i++) arr.unshift(this.pop());
+          this.push(arr);
+          break;
+        }
+        
+        case Op.INDEX: {
+          const idx = this.pop();
+          const obj = this.pop();
+          if (typeof obj === 'string') {
+            this.push(obj[idx] ?? null);
+          } else if (Array.isArray(obj)) {
+            this.push(obj[idx] ?? null);
+          } else {
+            throw new Error(`Cannot index into ${typeof obj}`);
+          }
+          break;
+        }
+        
+        case Op.SET_INDEX: {
+          const val = this.pop();
+          const idx = this.pop();
+          const arr = this.pop();
+          if (!Array.isArray(arr)) throw new Error('SET_INDEX requires array');
+          const newArr = [...arr];
+          newArr[idx] = val;
+          this.push(newArr);
+          break;
+        }
+        
+        case Op.LEN: {
+          const obj = this.pop();
+          if (typeof obj === 'string' || Array.isArray(obj)) {
+            this.push(obj.length);
+          } else {
+            throw new Error(`Cannot get length of ${typeof obj}`);
+          }
+          break;
+        }
+        
+        case Op.PUSH: {
+          const val = this.pop();
+          const arr = this.pop();
+          if (!Array.isArray(arr)) throw new Error('PUSH requires array');
+          this.push([...arr, val]);
+          break;
+        }
+        
+        case Op.CONCAT: {
+          const b = this.pop(), a = this.pop();
+          if (Array.isArray(a) && Array.isArray(b)) {
+            this.push([...a, ...b]);
+          } else if (typeof a === 'string' && typeof b === 'string') {
+            this.push(a + b);
+          } else {
+            this.push(String(a) + String(b));
+          }
+          break;
+        }
+        
+        case Op.SLICE: {
+          const end = this.pop();
+          const start = this.pop();
+          const obj = this.pop();
+          this.push(obj.slice(start, end));
+          break;
+        }
+        
+        case Op.LOAD_GLOBAL: {
+          const idx = this.chunk.code[this.ip++];
+          const name = this.chunk.constants[idx];
+          if (this.globals && name in this.globals) {
+            this.push(this.globals[name]);
+          } else {
+            throw new Error(`Undefined global: ${name}`);
+          }
+          break;
+        }
+        
+        case Op.STORE_GLOBAL: {
+          const idx = this.chunk.code[this.ip++];
+          const name = this.chunk.constants[idx];
+          if (!this.globals) this.globals = {};
+          this.globals[name] = this.pop();
+          break;
+        }
+        
+        case Op.DUP: {
+          this.push(this.peek());
+          break;
+        }
         
         default:
           throw new Error(`Unknown opcode: ${op} at ip=${this.ip - 1}`);
@@ -355,6 +465,49 @@ export class Compiler {
         this._compileExpr(expr.fn);
         this._compileExpr(expr.arg);
         this.chunk.emit(Op.CALL, 1);
+        break;
+      }
+      
+      case 'arr': {
+        for (const el of expr.elements) {
+          this._compileExpr(el);
+        }
+        this.chunk.emit(Op.ARRAY, expr.elements.length);
+        break;
+      }
+      
+      case 'idx': {
+        this._compileExpr(expr.obj);
+        this._compileExpr(expr.index);
+        this.chunk.emit(Op.INDEX);
+        break;
+      }
+      
+      case 'len': {
+        this._compileExpr(expr.obj);
+        this.chunk.emit(Op.LEN);
+        break;
+      }
+      
+      case 'push': {
+        this._compileExpr(expr.arr);
+        this._compileExpr(expr.value);
+        this.chunk.emit(Op.PUSH);
+        break;
+      }
+      
+      case 'concat': {
+        this._compileExpr(expr.left);
+        this._compileExpr(expr.right);
+        this.chunk.emit(Op.CONCAT);
+        break;
+      }
+      
+      case 'slice': {
+        this._compileExpr(expr.obj);
+        this._compileExpr(expr.start);
+        this._compileExpr(expr.end);
+        this.chunk.emit(Op.SLICE);
         break;
       }
       
