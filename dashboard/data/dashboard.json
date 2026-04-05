@@ -2563,14 +2563,24 @@
       "completed": "2026-04-05T00:04:18.023Z",
       "duration_ms": 600000,
       "summary": "Matrix math: from2D, identity, zeros, add/subtract/scale/multiply (non-square + identity), transpose, determinant (2x2, 3x3 via LU), LU decomposition (L*U = A verified), inverse (Gauss-Jordan, 2x2 and 3x3), solve linear system (LU forward+back substitution), trace, rotation2D, clone, equals. 21 tests. GitHub: henry-the-frog/matrix"
+    },
+    {
+      "id": "T249",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Finite automata: NFA construction (Thompson), NFA simulation, NFA-to-DFA subset construction, DFA minimization, regex-to-NFA compiler, string matching. 25+ tests.",
+      "started": "2026-04-05T00:04:29.608Z",
+      "completed": "2026-04-05T00:05:43.334Z",
+      "duration_ms": 600000,
+      "summary": "Finite automata: NFA (epsilon closure, simulate), Thompson construction (char, concat, union, star, plus, optional), NFA→DFA subset construction, DFA simulation, regex compiler (literals, *, +, ?, |, groups, dot), complex patterns (email-like, binary strings). 18 tests. GitHub: henry-the-frog/automata"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 245,
+    "completed": 246,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 92310000
+    "total_duration_ms": 92910000
   },
-  "updated_at": "2026-04-05T00:04:18.023Z"
+  "updated_at": "2026-04-05T00:05:43.334Z"
 }
