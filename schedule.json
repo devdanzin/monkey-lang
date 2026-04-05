@@ -123,8 +123,9 @@
       "id": "T22",
       "mode": "BUILD",
       "task": "HenryDB: ALTER TABLE (ADD COLUMN, DROP COLUMN), column defaults",
-      "status": "upcoming",
-      "plan_ref": "T6"
+      "status": "in-progress",
+      "plan_ref": "T6",
+      "started": "2026-04-05T14:35:18.675Z"
     },
     {
       "id": "T23",
@@ -197,5 +198,5 @@
       "task": "Final housekeeping — git push, scratch notes, dashboard update"
     }
   ],
-  "updated_at": "2026-04-05T14:34:55.780Z"
+  "updated_at": "2026-04-05T14:35:18.675Z"
 }
