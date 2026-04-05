@@ -2,9 +2,9 @@
 
 status: done
 mode: BUILD
-task: HenryDB UPDATE with expressions
+task: HenryDB SQL compatibility tests
 context-files: projects/henrydb/
-current_position: T38
-started: 2026-04-05T15:32:31Z
-completed: 2026-04-05T15:34:30Z
-tasks_completed_this_session: 31
+current_position: T45
+started: 2026-04-05T15:54:08Z
+completed: 2026-04-05T15:56:24Z
+tasks_completed_this_session: 42

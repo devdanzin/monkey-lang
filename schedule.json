@@ -471,12 +471,15 @@
     {
       "id": "T45",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: HAVING with complex expressions, ORDER BY expression, SELECT expression alias reuse",
-      "started": "2026-04-05T15:54:08.072Z"
+      "started": "2026-04-05T15:54:08.072Z",
+      "completed": "2026-04-05T15:56:24.797Z",
+      "duration_ms": 180000,
+      "summary": "SQL compatibility tests: HAVING complex, ORDER BY + OFFSET, large dataset GROUP BY, INSERT SELECT verification, nested aggregation. 10 new tests → 440 total (314 growth!)."
     }
   ],
-  "updated_at": "2026-04-05T15:54:08.072Z",
+  "updated_at": "2026-04-05T15:56:24.797Z",
   "adjustments": [
     {
       "time": "2026-04-05T15:35:44.249Z",
