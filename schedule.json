@@ -547,9 +547,16 @@
       "completed": "2026-04-05T16:20:12.653Z",
       "duration_ms": 60000,
       "summary": "README updated for 550 tests, scratch note comprehensive, dashboard at 9627 tests."
+    },
+    {
+      "id": "T53",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: LIMIT on DELETE/UPDATE, DELETE FROM ... WHERE EXISTS, more operator tests (!=, <>)",
+      "started": "2026-04-05T16:20:32.710Z"
     }
   ],
-  "updated_at": "2026-04-05T16:20:12.653Z",
+  "updated_at": "2026-04-05T16:20:32.710Z",
   "adjustments": [
     {
       "time": "2026-04-05T15:35:44.249Z",
@@ -606,6 +613,10 @@
     {
       "time": "2026-04-05T16:18:16.844Z",
       "msg": "Added T52 (MAINTAIN) after end: Update HenryDB README to reflect 550 tests, update scratch note, final dashboard"
+    },
+    {
+      "time": "2026-04-05T16:20:26.170Z",
+      "msg": "Added T53 (BUILD) after end: HenryDB: LIMIT on DELETE/UPDATE, DELETE FROM ... WHERE EXISTS, more operator tests (!=, <>)"
     }
   ]
 }

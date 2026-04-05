@@ -547,14 +547,27 @@
       "completed": "2026-04-05T16:20:12.653Z",
       "duration_ms": 60000,
       "summary": "README updated for 550 tests, scratch note comprehensive, dashboard at 9627 tests."
+    },
+    {
+      "id": "T53",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: LIMIT on DELETE/UPDATE, DELETE FROM ... WHERE EXISTS, more operator tests (!=, <>)",
+      "started": "2026-04-05T16:20:32.710Z"
     }
   ],
-  "current": null,
+  "current": {
+    "id": "T53",
+    "mode": "BUILD",
+    "status": "in-progress",
+    "task": "HenryDB: LIMIT on DELETE/UPDATE, DELETE FROM ... WHERE EXISTS, more operator tests (!=, <>)",
+    "started": "2026-04-05T16:20:32.710Z"
+  },
   "stats": {
     "completed": 52,
     "yielded": 0,
     "skipped": 0,
     "total_duration_ms": 7352000
   },
-  "updated_at": "2026-04-05T16:20:12.653Z"
+  "updated_at": "2026-04-05T16:20:32.710Z"
 }
