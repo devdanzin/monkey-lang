@@ -2673,14 +2673,24 @@
       "completed": "2026-04-05T00:22:40.617Z",
       "duration_ms": 600000,
       "summary": "CBOR: encode/decode unsigned integers (0-23, 24-255, 2-byte, 4-byte), negative integers, text strings (empty, ASCII, unicode), byte strings, arrays (empty, numbers, mixed, nested), maps/objects (empty, string keys, nested), booleans, null, undefined, float64, complex roundtrip. Compact encoding verified (1 byte for small values). 28 tests. GitHub: henry-the-frog/cbor"
+    },
+    {
+      "id": "T260",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "S-expression parser: atoms (symbols, numbers, strings), lists, nested lists, quoting, dotted pairs, comments, pretty-print. 20+ tests.",
+      "started": "2026-04-05T00:23:01.406Z",
+      "completed": "2026-04-05T00:24:17.744Z",
+      "duration_ms": 600000,
+      "summary": "S-expression: tokenizer (symbols, numbers, strings with escapes, booleans, nil), parser (atoms, lists, nested, dotted pairs, quote shorthand, comments), stringify (numbers, symbols, nil, booleans, proper lists, dotted pairs, nested), toArray helper, prettyPrint, roundtrip. 23 tests. GitHub: henry-the-frog/sexpr"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 256,
+    "completed": 257,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 98910000
+    "total_duration_ms": 99510000
   },
-  "updated_at": "2026-04-05T00:22:40.617Z"
+  "updated_at": "2026-04-05T00:24:17.744Z"
 }
