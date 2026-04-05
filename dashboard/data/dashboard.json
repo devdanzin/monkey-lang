@@ -421,23 +421,20 @@
     {
       "id": "T40",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: ORDER BY NULLS FIRST/LAST, multiple LIMIT/OFFSET tests, NOT LIKE, NOT BETWEEN",
-      "started": "2026-04-05T15:38:59.620Z"
+      "started": "2026-04-05T15:38:59.620Z",
+      "completed": "2026-04-05T15:40:43.086Z",
+      "duration_ms": 180000,
+      "summary": "NOT LIKE, NOT BETWEEN, 13 advanced query integration tests. 393 tests total (267 growth)."
     }
   ],
-  "current": {
-    "id": "T40",
-    "mode": "BUILD",
-    "status": "in-progress",
-    "task": "HenryDB: ORDER BY NULLS FIRST/LAST, multiple LIMIT/OFFSET tests, NOT LIKE, NOT BETWEEN",
-    "started": "2026-04-05T15:38:59.620Z"
-  },
+  "current": null,
   "stats": {
-    "completed": 39,
+    "completed": 40,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 5522000
+    "total_duration_ms": 5702000
   },
-  "updated_at": "2026-04-05T15:38:59.621Z"
+  "updated_at": "2026-04-05T15:40:43.086Z"
 }
