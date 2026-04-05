@@ -517,9 +517,16 @@
       "completed": "2026-04-05T16:13:45.493Z",
       "duration_ms": 120000,
       "summary": "String functions: SUBSTRING, REPLACE, TRIM. Math functions: ABS, ROUND, CEIL, FLOOR. 12 new tests → 524 total (398 growth!)."
+    },
+    {
+      "id": "T50",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: IFNULL, IIF, TYPEOF functions + comprehensive query plan tests for EXPLAIN",
+      "started": "2026-04-05T16:15:04.839Z"
     }
   ],
-  "updated_at": "2026-04-05T16:13:45.493Z",
+  "updated_at": "2026-04-05T16:15:04.839Z",
   "adjustments": [
     {
       "time": "2026-04-05T15:35:44.249Z",
@@ -564,6 +571,10 @@
     {
       "time": "2026-04-05T16:12:11.705Z",
       "msg": "Added T49 (BUILD) after end: HenryDB: SUBSTRING function, REPLACE function, TRIM, ABS/ROUND math functions"
+    },
+    {
+      "time": "2026-04-05T16:14:58.195Z",
+      "msg": "Added T50 (BUILD) after end: HenryDB: IFNULL, IIF, TYPEOF functions + comprehensive query plan tests for EXPLAIN"
     }
   ]
 }
