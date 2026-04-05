@@ -2623,9 +2623,19 @@
       "completed": "2026-04-05T00:14:10.314Z",
       "duration_ms": 600000,
       "summary": "BST: insert/search/has/delete, key-value pairs, update, min/max, inorder/preorder/postorder, height, iterable, custom comparator. AVL: balanced insert (sequential 1-100 stays balanced, height <= 8), delete with rebalance, logarithmic height (1000 items, height <= 15). 22 tests. GitHub: henry-the-frog/bst"
+    },
+    {
+      "id": "T255",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Simple blockchain: block (hash, prevHash, nonce), chain validation, proof-of-work mining, transaction model, wallet (keypair), Merkle tree. 25+ tests.",
+      "started": "2026-04-05T00:14:27.884Z",
+      "completed": "2026-04-05T00:15:39.721Z",
+      "duration_ms": 600000,
+      "summary": "Blockchain: Block (hash, prevHash, nonce, calculateHash, mine with difficulty), Transaction (from/to/amount, hash), Blockchain (genesis, addTransaction, minePendingTransactions with mining reward, getBalance, isValid, tamper detection), Wallet (address generation, createTransaction), merkleRoot (empty, single, multiple, deterministic, order-sensitive). 21 tests. GitHub: henry-the-frog/blockchain"
     }
   ],
-  "updated_at": "2026-04-05T00:14:10.314Z",
+  "updated_at": "2026-04-05T00:15:39.721Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -2806,6 +2816,10 @@
     {
       "time": "2026-04-05T00:12:41.883Z",
       "msg": "Added T254 (BUILD) after end: Binary search tree + AVL tree: insert, delete, search, min/max, inorder/preorder/postorder traversal, height, balance, AVL rotations, iteration. 25+ tests."
+    },
+    {
+      "time": "2026-04-05T00:14:27.256Z",
+      "msg": "Added T255 (BUILD) after end: Simple blockchain: block (hash, prevHash, nonce), chain validation, proof-of-work mining, transaction model, wallet (keypair), Merkle tree. 25+ tests."
     }
   ]
 }
