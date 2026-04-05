@@ -551,12 +551,15 @@
     {
       "id": "T53",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: LIMIT on DELETE/UPDATE, DELETE FROM ... WHERE EXISTS, more operator tests (!=, <>)",
-      "started": "2026-04-05T16:20:32.710Z"
+      "started": "2026-04-05T16:20:32.710Z",
+      "completed": "2026-04-05T16:21:25.626Z",
+      "duration_ms": 90000,
+      "summary": "Operator tests (<>, !=, >, >=, <, <=, string comparison), DML error handling (non-existent tables, duplicates). 14 new tests → 564 total."
     }
   ],
-  "updated_at": "2026-04-05T16:20:32.710Z",
+  "updated_at": "2026-04-05T16:21:25.626Z",
   "adjustments": [
     {
       "time": "2026-04-05T15:35:44.249Z",
