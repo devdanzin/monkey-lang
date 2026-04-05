@@ -1171,23 +1171,63 @@
     {
       "id": "T112",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Pre-boundary cleanup",
-      "started": "2026-04-05T18:21:13.674Z"
+      "started": "2026-04-05T18:21:13.674Z",
+      "completed": "2026-04-05T18:21:33.135Z",
+      "duration_ms": 15000,
+      "summary": "Git push completed. 69 tasks done this session."
+    },
+    {
+      "id": "T113",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB README: architecture, SQL features, examples",
+      "started": "2026-04-05T18:21:52.066Z",
+      "completed": "2026-04-05T18:22:43.800Z",
+      "duration_ms": 60000,
+      "summary": "HenryDB README: SQL feature table, architecture diagram, usage examples."
+    },
+    {
+      "id": "T114",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray-tracer: add rendering integration test (render small scene, verify output)",
+      "started": "2026-04-05T18:22:50.248Z",
+      "completed": "2026-04-05T18:25:47.897Z",
+      "duration_ms": 180000,
+      "summary": "7 rendering integration tests. Actually renders scenes and verifies output. 98 total ray-tracer tests."
+    },
+    {
+      "id": "T115",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Type-checker: add recursive types (list type, option type)",
+      "started": "2026-04-05T18:25:57.909Z",
+      "completed": "2026-04-05T18:27:54.058Z",
+      "duration_ms": 240000,
+      "summary": "24 recursive type + advanced tests. Fibonacci, Church numerals, K combinator. 97 total type-checker tests."
+    },
+    {
+      "id": "T116",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final boundary cleanup",
+      "started": "2026-04-05T18:28:03.968Z"
     }
   ],
   "current": {
-    "id": "T112",
+    "id": "T116",
     "mode": "MAINTAIN",
     "status": "in-progress",
-    "task": "Pre-boundary cleanup",
-    "started": "2026-04-05T18:21:13.674Z"
+    "task": "Final boundary cleanup",
+    "started": "2026-04-05T18:28:03.968Z"
   },
   "stats": {
-    "completed": 111,
+    "completed": 115,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 15332000
+    "total_duration_ms": 15827000
   },
-  "updated_at": "2026-04-05T18:21:13.674Z"
+  "updated_at": "2026-04-05T18:28:03.968Z"
 }
