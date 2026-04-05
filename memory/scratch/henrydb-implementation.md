@@ -47,7 +47,7 @@ topics: database, SQL, B+tree, WAL, MVCC, query-planner, secondary-indexes
 - B+ tree overwriting values on duplicate keys (broke non-unique secondary indexes)
 - ALTER TABLE invalidating index RIDs (required full rebuild)
 
-## Growth: 126 → 326 tests in one session
+## Growth: 126 → 401 tests in one session (275 new tests!)
 - +24 secondary index tests
 - +15 GROUP BY tests
 - +15 subquery tests
@@ -61,6 +61,12 @@ topics: database, SQL, B+tree, WAL, MVCC, query-planner, secondary-indexes
 - +15 EXPLAIN tests (query plan visualization)
 - +9 CASE WHEN tests (conditional expressions)
 - +8 UNION tests (UNION, UNION ALL)
+- +21 NULL/arithmetic tests (IS NULL, COALESCE, NULLIF, +/-/*//%)
+- +6 INSERT SELECT tests
+- +8 UPDATE expression tests
+- +19 TRUNCATE + misc edge case tests
+- +13 NOT LIKE/BETWEEN + integration tests
+- +8 milestone/completeness tests
 
 ## SQL Feature Coverage (comprehensive)
 - DDL: CREATE TABLE, DROP TABLE, ALTER TABLE (ADD/DROP/RENAME COLUMN, RENAME TABLE), CREATE/DROP INDEX, CREATE/DROP VIEW
