@@ -521,12 +521,15 @@
     {
       "id": "T50",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: IFNULL, IIF, TYPEOF functions + comprehensive query plan tests for EXPLAIN",
-      "started": "2026-04-05T16:15:04.839Z"
+      "started": "2026-04-05T16:15:04.839Z",
+      "completed": "2026-04-05T16:16:27.010Z",
+      "duration_ms": 120000,
+      "summary": "IFNULL, TYPEOF, comprehensive EXPLAIN, function combos (TRIM+UPPER, ABS in WHERE, REPLACE+LENGTH). 17 new tests → 541 total (415 growth!!)."
     }
   ],
-  "updated_at": "2026-04-05T16:15:04.839Z",
+  "updated_at": "2026-04-05T16:16:27.010Z",
   "adjustments": [
     {
       "time": "2026-04-05T15:35:44.249Z",
