@@ -1,9 +1,1 @@
-{
-  "name": "test-framework",
-  "version": "1.0.0",
-  "description": "Tiny test framework from scratch",
-  "type": "module",
-  "main": "src/index.js",
-  "author": "Henry",
-  "license": "MIT"
-}
+{"name":"test-framework","version":"1.0.0","description":"Test framework from scratch","type":"module","scripts":{"test":"node --test src/**/*.test.js"}}

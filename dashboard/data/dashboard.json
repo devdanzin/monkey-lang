@@ -2873,14 +2873,24 @@
       "completed": "2026-04-05T00:57:56.317Z",
       "duration_ms": 600000,
       "summary": "WebSocket: generateAcceptKey (RFC 6455 test vector), generateClientKey, encodeFrame (text, binary, ping, pong, close with code+reason, empty, medium 200-byte, FIN bit control), decodeFrame (opcode, fin, masked, length, payload), masking (XOR with random key), fragmentation (continuation frames, reassembly). 12 tests. GitHub: henry-the-frog/websocket"
+    },
+    {
+      "id": "T280",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Test framework: describe/it/expect matchers (toBe, toEqual, toThrow, toBeTruthy, toContain), beforeEach/afterEach, skip/only, async support, test runner, TAP output. 20+ tests.",
+      "started": "2026-04-05T00:58:14.385Z",
+      "completed": "2026-04-05T00:59:16.196Z",
+      "duration_ms": 600000,
+      "summary": "Test framework: expect (toBe, toEqual, toBeTruthy, toBeFalsy, toBeNull, toBeUndefined, toBeGreaterThan, toBeLessThan, toContain string+array, toHaveLength, toThrow with pattern, toBeInstanceOf), not (toBe, toEqual, toContain, toThrow), Suite (describe/it, xit skip, fit only, beforeEach/afterEach, async support, run, passed/failed/skipped/total, toTAP output). 27 tests. GitHub: henry-the-frog/test-framework"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 276,
+    "completed": 277,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 110910000
+    "total_duration_ms": 111510000
   },
-  "updated_at": "2026-04-05T00:57:56.317Z"
+  "updated_at": "2026-04-05T00:59:16.196Z"
 }
