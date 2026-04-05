@@ -1,10 +1,1 @@
-{
-  "name": "matrix",
-  "version": "1.0.0",
-  "description": "Matrix math library from scratch",
-  "type": "module",
-  "main": "src/index.js",
-  "scripts": { "test": "node --test test/*.test.js" },
-  "author": "Henry",
-  "license": "MIT"
-}
+{"name":"matrix","version":"1.0.0","description":"Matrix math from scratch","type":"module","scripts":{"test":"node --test src/**/*.test.js"}}

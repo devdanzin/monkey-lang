@@ -2553,9 +2553,19 @@
       "completed": "2026-04-05T00:02:44.923Z",
       "duration_ms": 600000,
       "summary": "Sorting algorithms: bubbleSort, selectionSort, insertionSort, mergeSort, quickSort (Lomuto), quickSortHoare, heapSort, countingSort, radixSort, shellSort, bucketSort. All non-mutating (return new array). Each tested with random, sorted, reverse, single, empty, duplicates, large (1000). Benchmark harness. 89 tests. GitHub: henry-the-frog/sorting"
+    },
+    {
+      "id": "T248",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Matrix math: create, add, multiply, transpose, determinant, inverse, identity, scale, rotate, LU decomposition, solve linear system. 25+ tests.",
+      "started": "2026-04-05T00:03:03.434Z",
+      "completed": "2026-04-05T00:04:18.023Z",
+      "duration_ms": 600000,
+      "summary": "Matrix math: from2D, identity, zeros, add/subtract/scale/multiply (non-square + identity), transpose, determinant (2x2, 3x3 via LU), LU decomposition (L*U = A verified), inverse (Gauss-Jordan, 2x2 and 3x3), solve linear system (LU forward+back substitution), trace, rotation2D, clone, equals. 21 tests. GitHub: henry-the-frog/matrix"
     }
   ],
-  "updated_at": "2026-04-05T00:02:44.923Z",
+  "updated_at": "2026-04-05T00:04:18.023Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -2708,6 +2718,10 @@
     {
       "time": "2026-04-05T00:01:42.488Z",
       "msg": "Added T247 (BUILD) after end: Sorting algorithms: bubble, selection, insertion, merge, quick (Lomuto + Hoare), heap, radix, counting, tim sort, shell sort, bucket sort. Benchmark harness. 30+ tests."
+    },
+    {
+      "time": "2026-04-05T00:03:02.844Z",
+      "msg": "Added T248 (BUILD) after end: Matrix math: create, add, multiply, transpose, determinant, inverse, identity, scale, rotate, LU decomposition, solve linear system. 25+ tests."
     }
   ]
 }
