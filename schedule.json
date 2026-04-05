@@ -2763,9 +2763,19 @@
       "completed": "2026-04-05T00:38:58.297Z",
       "duration_ms": 600000,
       "summary": "Config: deepMerge, getPath/setPath (dotted), expandEnv, Config class (get/set/has, layer with deep merge, toJSON), freeze (prevents set/layer), validate (required/type/custom), watch (path patterns, unsubscribe), fromEnv (parse prefix, type coercion). 24 tests. GitHub: henry-the-frog/config"
+    },
+    {
+      "id": "T269",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Lazy iterables: range, map, filter, take, drop, zip, chain, repeat, cycle, enumerate, chunk, flatMap, reduce, find, every, some, toArray, from. 25+ tests.",
+      "started": "2026-04-05T00:39:20.129Z",
+      "completed": "2026-04-05T00:40:33.320Z",
+      "duration_ms": 600000,
+      "summary": "Lazy iterables: range (0-n, start-end, step, negative step), map (with index), filter, take, drop, zip (uneven), chain, repeat (finite/infinite), cycle, enumerate, chunk, flatMap, unique, sliding window. Terminal: reduce, find, every, some, count, first, last, sum. Lazy evaluation (infinite range + take), pipe composition. 32 tests. GitHub: henry-the-frog/lazy"
     }
   ],
-  "updated_at": "2026-04-05T00:38:58.297Z",
+  "updated_at": "2026-04-05T00:40:33.320Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -3002,6 +3012,10 @@
     {
       "time": "2026-04-05T00:37:42.935Z",
       "msg": "Added T268 (BUILD) after end: Config: hierarchical config (defaults, env, file, CLI overrides), deep merge, env variable expansion, dotted path access (get/set), schema validation, freeze, watch for changes. 20+ tests."
+    },
+    {
+      "time": "2026-04-05T00:39:19.515Z",
+      "msg": "Added T269 (BUILD) after end: Lazy iterables: range, map, filter, take, drop, zip, chain, repeat, cycle, enumerate, chunk, flatMap, reduce, find, every, some, toArray, from. 25+ tests."
     }
   ]
 }
