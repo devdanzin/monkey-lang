@@ -262,8 +262,9 @@
       "id": "T28",
       "mode": "BUILD",
       "task": "HenryDB: EXPLAIN — query plan visualization showing scan type, join strategy, index usage",
-      "status": "upcoming",
-      "plan_ref": "T14"
+      "status": "in-progress",
+      "plan_ref": "T14",
+      "started": "2026-04-05T14:59:19.091Z"
     },
     {
       "id": "T29",
@@ -305,12 +306,19 @@
       "task": "Final housekeeping — git push, scratch notes, dashboard update"
     }
   ],
-  "current": null,
+  "current": {
+    "id": "T28",
+    "mode": "BUILD",
+    "task": "HenryDB: EXPLAIN — query plan visualization showing scan type, join strategy, index usage",
+    "status": "in-progress",
+    "plan_ref": "T14",
+    "started": "2026-04-05T14:59:19.091Z"
+  },
   "stats": {
     "completed": 24,
     "yielded": 0,
     "skipped": 0,
     "total_duration_ms": 3390000
   },
-  "updated_at": "2026-04-05T14:58:51.673Z"
+  "updated_at": "2026-04-05T14:59:19.091Z"
 }
