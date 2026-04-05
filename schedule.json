@@ -3022,12 +3022,22 @@
     {
       "id": "T295",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Write scratch note: neural-net-architecture — lessons from 435-test modular neural network",
-      "started": "2026-04-05T01:52:16.189Z"
+      "started": "2026-04-05T01:52:16.189Z",
+      "completed": "2026-04-05T01:52:59.400Z",
+      "duration_ms": 120000,
+      "summary": "Wrote scratch note on neural-net-architecture: gradient normalization, mini-batch shuffling, activation dual interface, barrel file pattern."
+    },
+    {
+      "id": "T296",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Session end: final push, daily log update, CURRENT.md cleanup",
+      "started": "2026-04-05T01:53:23.316Z"
     }
   ],
-  "updated_at": "2026-04-05T01:52:16.190Z",
+  "updated_at": "2026-04-05T01:53:23.316Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -3380,6 +3390,10 @@
     {
       "time": "2026-04-05T01:52:10.898Z",
       "msg": "Added T295 (BUILD) after end: Write scratch note: neural-net-architecture — lessons from 435-test modular neural network"
+    },
+    {
+      "time": "2026-04-05T01:53:22.095Z",
+      "msg": "Added T296 (MAINTAIN) after end: Session end: final push, daily log update, CURRENT.md cleanup"
     }
   ]
 }
