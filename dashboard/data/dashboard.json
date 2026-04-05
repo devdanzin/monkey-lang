@@ -561,23 +561,20 @@
     {
       "id": "T54",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: Column aliases in WHERE/ORDER BY, SELECT *, table.* in multi-table queries",
-      "started": "2026-04-05T16:21:50.422Z"
+      "started": "2026-04-05T16:21:50.422Z",
+      "completed": "2026-04-05T16:22:44.835Z",
+      "duration_ms": 90000,
+      "summary": "Column projection, aliases, data types (int/text/bool/null/large int), multi-table refs. 17 new tests → 581 total."
     }
   ],
-  "current": {
-    "id": "T54",
-    "mode": "BUILD",
-    "status": "in-progress",
-    "task": "HenryDB: Column aliases in WHERE/ORDER BY, SELECT *, table.* in multi-table queries",
-    "started": "2026-04-05T16:21:50.422Z"
-  },
+  "current": null,
   "stats": {
-    "completed": 53,
+    "completed": 54,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 7442000
+    "total_duration_ms": 7532000
   },
-  "updated_at": "2026-04-05T16:21:50.422Z"
+  "updated_at": "2026-04-05T16:22:44.835Z"
 }
