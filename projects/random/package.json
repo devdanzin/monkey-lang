@@ -1,1 +1,1 @@
-{"name":"random","version":"1.0.0","description":"Random utilities","type":"module","main":"src/index.js","scripts":{"test":"node --test test/*.test.js"},"author":"Henry","license":"MIT"}
+{"name":"random","version":"1.0.0","description":"Random from scratch","type":"module","scripts":{"test":"node --test src/**/*.test.js"}}

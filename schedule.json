@@ -2913,9 +2913,19 @@
       "completed": "2026-04-05T01:03:17.809Z",
       "duration_ms": 600000,
       "summary": "Type checker: Type primitives (number/string/boolean/null/undefined/any/never/unknown), literal, array, tuple, object, union, intersection, optional, func. check (runtime type checking for all types). isAssignable (type compatibility: same/different primitive, literal→primitive, any, union source/target, array, structural subtyping with extra props, never). infer (number, string, null, array, object). typeToString (pretty print all types). 35 tests. GitHub: henry-the-frog/typechecker"
+    },
+    {
+      "id": "T284",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Random: seeded PRNG (xorshift128, PCG), uniform, gaussian, shuffle, sample, weighted random, dice roller, UUID-like. 20+ tests.",
+      "started": "2026-04-05T01:03:38.374Z",
+      "completed": "2026-04-05T01:04:43.030Z",
+      "duration_ms": 600000,
+      "summary": "Random: XorShift128 PRNG (deterministic, float, int), Random class (float/int range, bool, gaussian Box-Muller, pick, sample without replacement, shuffle Fisher-Yates deterministic, weighted random, dice notation 1d6/2d6/1d20+5, random string with charset). 23 tests. GitHub: henry-the-frog/random"
     }
   ],
-  "updated_at": "2026-04-05T01:03:17.809Z",
+  "updated_at": "2026-04-05T01:04:43.030Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -3212,6 +3222,10 @@
     {
       "time": "2026-04-05T01:02:07.543Z",
       "msg": "Added T283 (BUILD) after end: Type checker: type definitions (number, string, boolean, array, object, union, intersection, tuple, optional), type inference, structural subtyping, type compatibility checking. 25+ tests."
+    },
+    {
+      "time": "2026-04-05T01:03:37.712Z",
+      "msg": "Added T284 (BUILD) after end: Random: seeded PRNG (xorshift128, PCG), uniform, gaussian, shuffle, sample, weighted random, dice roller, UUID-like. 20+ tests."
     }
   ]
 }
