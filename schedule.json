@@ -487,9 +487,16 @@
       "completed": "2026-04-05T16:00:14.372Z",
       "duration_ms": 180000,
       "summary": "SHOW TABLES, DESCRIBE (with index info), nested subqueries, OFFSET pagination. 18 new tests → 458 total (332 growth)."
+    },
+    {
+      "id": "T47",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: Push to 500 tests — stress tests, DELETE edge cases, UPDATE with subquery, index stress",
+      "started": "2026-04-05T16:00:53.336Z"
     }
   ],
-  "updated_at": "2026-04-05T16:00:14.372Z",
+  "updated_at": "2026-04-05T16:00:53.336Z",
   "adjustments": [
     {
       "time": "2026-04-05T15:35:44.249Z",
@@ -522,6 +529,10 @@
     {
       "time": "2026-04-05T15:57:03.345Z",
       "msg": "Added T46 (BUILD) after end: HenryDB: OFFSET tests, nested subquery chains, schema introspection (SHOW TABLES, DESCRIBE)"
+    },
+    {
+      "time": "2026-04-05T16:00:43.925Z",
+      "msg": "Added T47 (BUILD) after end: HenryDB: Push to 500 tests — stress tests, DELETE edge cases, UPDATE with subquery, index stress"
     }
   ]
 }
