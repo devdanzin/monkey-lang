@@ -1,58 +1,41 @@
-// Bit manipulation utilities
+// bits.js — Bit manipulation
 
-// Count set bits (population count)
-export function popcount(n) { n = n >>> 0; let count = 0; while (n) { count += n & 1; n >>>= 1; } return count; }
-
-// Check if power of 2
+// ===== Utility functions =====
+export function popcount(n) { let c = 0; while (n) { c += n & 1; n >>>= 1; } return c; }
+export function clz32(n) { if (n === 0) return 32; let c = 0; if (!(n & 0xFFFF0000)) { c += 16; n <<= 16; } if (!(n & 0xFF000000)) { c += 8; n <<= 8; } if (!(n & 0xF0000000)) { c += 4; n <<= 4; } if (!(n & 0xC0000000)) { c += 2; n <<= 2; } if (!(n & 0x80000000)) c++; return c; }
+export function ctz32(n) { if (n === 0) return 32; let c = 0; while (!(n & 1)) { c++; n >>>= 1; } return c; }
 export function isPowerOf2(n) { return n > 0 && (n & (n - 1)) === 0; }
-
-// Next power of 2
-export function nextPowerOf2(n) { if (n <= 0) return 1; n--; n |= n >> 1; n |= n >> 2; n |= n >> 4; n |= n >> 8; n |= n >> 16; return n + 1; }
-
-// Get/set/clear/toggle individual bits
-export function getBit(n, pos) { return (n >>> pos) & 1; }
-export function setBit(n, pos) { return n | (1 << pos); }
-export function clearBit(n, pos) { return n & ~(1 << pos); }
-export function toggleBit(n, pos) { return n ^ (1 << pos); }
-
-// Count leading/trailing zeros
-export function clz(n) { if (n === 0) return 32; let count = 0; n = n >>> 0; while (!(n & 0x80000000)) { count++; n <<= 1; } return count; }
-export function ctz(n) { if (n === 0) return 32; let count = 0; n = n >>> 0; while (!(n & 1)) { count++; n >>>= 1; } return count; }
-
-// Reverse bits
-export function reverseBits(n) { let result = 0; for (let i = 0; i < 32; i++) { result = (result << 1) | (n & 1); n >>>= 1; } return result >>> 0; }
-
-// Swap two values without temp (XOR swap)
-export function xorSwap(a, b) { a ^= b; b ^= a; a ^= b; return [a, b]; }
-
-// Integer log2 (floor)
-export function log2(n) { if (n <= 0) return -1; let result = 0; n = n >>> 0; while (n > 1) { result++; n >>>= 1; } return result; }
-
-// Check if nth bit is set
-export function isSet(n, pos) { return ((n >>> pos) & 1) === 1; }
-
-// Count different bits between two numbers
+export function nextPowerOf2(n) { if (n <= 1) return 1; n--; n |= n >> 1; n |= n >> 2; n |= n >> 4; n |= n >> 8; n |= n >> 16; return n + 1; }
+export function reverseBits(n, bits = 32) { let r = 0; for (let i = 0; i < bits; i++) { r = (r << 1) | (n & 1); n >>>= 1; } return r >>> 0; }
+export function rotateLeft(n, shift, bits = 32) { return ((n << shift) | (n >>> (bits - shift))) >>> 0; }
+export function rotateRight(n, shift, bits = 32) { return ((n >>> shift) | (n << (bits - shift))) >>> 0; }
 export function hammingDistance(a, b) { return popcount(a ^ b); }
+export function getBit(n, pos) { return (n >>> pos) & 1; }
+export function setBit(n, pos) { return (n | (1 << pos)) >>> 0; }
+export function clearBit(n, pos) { return (n & ~(1 << pos)) >>> 0; }
+export function toggleBit(n, pos) { return (n ^ (1 << pos)) >>> 0; }
+export function swapBits(n, i, j) { const bi = getBit(n, i), bj = getBit(n, j); if (bi !== bj) { n = toggleBit(n, i); n = toggleBit(n, j); } return n; }
 
-// Rotate left/right
-export function rotateLeft(n, bits, width = 32) { return ((n << bits) | (n >>> (width - bits))) >>> 0; }
-export function rotateRight(n, bits, width = 32) { return ((n >>> bits) | (n << (width - bits))) >>> 0; }
+// ===== BitSet =====
+export class BitSet {
+  constructor(size = 32) { this.words = new Uint32Array(Math.ceil(size / 32)); this.size = size; }
 
-// Extract bit range [lo, hi] inclusive
-export function extractBits(n, lo, hi) { const mask = ((1 << (hi - lo + 1)) - 1) << lo; return (n & mask) >>> lo; }
-
-// Absolute value without branching
-export function abs(n) { const mask = n >> 31; return (n + mask) ^ mask; }
-
-// Min/max without branching
-export function min(a, b) { return b + ((a - b) & ((a - b) >> 31)); }
-export function max(a, b) { return a - ((a - b) & ((a - b) >> 31)); }
-
-// Sign of number (-1, 0, 1)
-export function sign(n) { return (n > 0) - (n < 0); }
-
-// Check if same sign
-export function sameSign(a, b) { return (a ^ b) >= 0; }
-
-// To binary string
-export function toBinary(n, width = 32) { return (n >>> 0).toString(2).padStart(width, '0'); }
+  set(pos) { this.words[pos >>> 5] |= 1 << (pos & 31); return this; }
+  clear(pos) { this.words[pos >>> 5] &= ~(1 << (pos & 31)); return this; }
+  test(pos) { return (this.words[pos >>> 5] & (1 << (pos & 31))) !== 0; }
+  toggle(pos) { this.words[pos >>> 5] ^= 1 << (pos & 31); return this; }
+  
+  count() { let c = 0; for (const w of this.words) c += popcount(w); return c; }
+  
+  toArray() { const a = []; for (let i = 0; i < this.size; i++) if (this.test(i)) a.push(i); return a; }
+  
+  union(other) { const r = new BitSet(Math.max(this.size, other.size)); for (let i = 0; i < r.words.length; i++) r.words[i] = (this.words[i] || 0) | (other.words[i] || 0); return r; }
+  intersection(other) { const r = new BitSet(Math.min(this.size, other.size)); for (let i = 0; i < r.words.length; i++) r.words[i] = (this.words[i] || 0) & (other.words[i] || 0); return r; }
+  xor(other) { const r = new BitSet(Math.max(this.size, other.size)); for (let i = 0; i < r.words.length; i++) r.words[i] = (this.words[i] || 0) ^ (other.words[i] || 0); return r; }
+  
+  equals(other) { const len = Math.max(this.words.length, other.words.length); for (let i = 0; i < len; i++) if ((this.words[i] || 0) !== (other.words[i] || 0)) return false; return true; }
+  
+  toString() { let s = ''; for (let i = this.size - 1; i >= 0; i--) s += this.test(i) ? '1' : '0'; return s; }
+  
+  static fromArray(bits, size) { const bs = new BitSet(size || Math.max(...bits) + 1); for (const b of bits) bs.set(b); return bs; }
+}

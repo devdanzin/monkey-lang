@@ -2713,9 +2713,19 @@
       "completed": "2026-04-05T00:29:06.317Z",
       "duration_ms": 600000,
       "summary": "ECS: World (createEntity, destroyEntity, entityCount), components (addComponent/removeComponent/getComponent/hasComponent, chaining, destroy removes components), queries (single/multi-component, queryWith returns data), systems (run on matching entities, skip non-matching, priority ordering), events (entityCreated, componentAdded). 16 tests. GitHub: henry-the-frog/ecs"
+    },
+    {
+      "id": "T264",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Bit manipulation: BitSet (set/clear/test/toggle/count/toArray/union/intersection/xor/toString), popcount, CLZ, CTZ, isPowerOf2, nextPowerOf2, reverse bits, bit rotation, hamming distance. 25+ tests.",
+      "started": "2026-04-05T00:29:28.304Z",
+      "completed": "2026-04-05T00:30:48.338Z",
+      "duration_ms": 600000,
+      "summary": "Bit manipulation: popcount, clz32, ctz32, isPowerOf2, nextPowerOf2, reverseBits, rotateLeft/Right, hammingDistance, getBit/setBit/clearBit/toggleBit, swapBits. BitSet (set/clear/test/toggle/count/toArray/union/intersection/xor/equals/toString/fromArray, large 1000-bit). 38 tests. GitHub: henry-the-frog/bits"
     }
   ],
-  "updated_at": "2026-04-05T00:29:06.317Z",
+  "updated_at": "2026-04-05T00:30:48.338Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -2932,6 +2942,10 @@
     {
       "time": "2026-04-05T00:27:49.106Z",
       "msg": "Added T263 (BUILD) after end: ECS: entities, components, systems, archetypes, queries, world with add/remove entity, component storage, system execution order, events. 20+ tests."
+    },
+    {
+      "time": "2026-04-05T00:29:27.480Z",
+      "msg": "Added T264 (BUILD) after end: Bit manipulation: BitSet (set/clear/test/toggle/count/toArray/union/intersection/xor/toString), popcount, CLZ, CTZ, isPowerOf2, nextPowerOf2, reverse bits, bit rotation, hamming distance. 25+ tests."
     }
   ]
 }
