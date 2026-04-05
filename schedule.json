@@ -2923,9 +2923,19 @@
       "completed": "2026-04-05T01:04:43.030Z",
       "duration_ms": 600000,
       "summary": "Random: XorShift128 PRNG (deterministic, float, int), Random class (float/int range, bool, gaussian Box-Muller, pick, sample without replacement, shuffle Fisher-Yates deterministic, weighted random, dice notation 1d6/2d6/1d20+5, random string with charset). 23 tests. GitHub: henry-the-frog/random"
+    },
+    {
+      "id": "T285",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Object utils: deepClone, deepEqual, pick, omit, flatten, unflatten, diff, mapValues, filterValues, groupBy, keyBy, invert, defaults. 25+ tests.",
+      "started": "2026-04-05T01:05:05.457Z",
+      "completed": "2026-04-05T01:06:09.864Z",
+      "duration_ms": 600000,
+      "summary": "Object utils: deepClone (object, array, null, Date), deepEqual (nested, types), pick/omit, flatten/unflatten (roundtrip), diff (changes/addition/removal), mapValues/filterValues/mapKeys, groupBy (by property), keyBy, invert, defaults, isEmpty, size. 32 tests. GitHub: henry-the-frog/objects"
     }
   ],
-  "updated_at": "2026-04-05T01:04:43.030Z",
+  "updated_at": "2026-04-05T01:06:09.864Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -3226,6 +3236,10 @@
     {
       "time": "2026-04-05T01:03:37.712Z",
       "msg": "Added T284 (BUILD) after end: Random: seeded PRNG (xorshift128, PCG), uniform, gaussian, shuffle, sample, weighted random, dice roller, UUID-like. 20+ tests."
+    },
+    {
+      "time": "2026-04-05T01:05:04.698Z",
+      "msg": "Added T285 (BUILD) after end: Object utils: deepClone, deepEqual, pick, omit, flatten, unflatten, diff, mapValues, filterValues, groupBy, keyBy, invert, defaults. 25+ tests."
     }
   ]
 }
