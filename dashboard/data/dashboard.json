@@ -273,9 +273,12 @@
       "id": "T29",
       "mode": "BUILD",
       "task": "HenryDB: CASE WHEN ... THEN ... ELSE ... END expressions",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T14",
-      "started": "2026-04-05T15:02:12.059Z"
+      "started": "2026-04-05T15:02:12.059Z",
+      "completed": "2026-04-05T15:05:00.453Z",
+      "duration_ms": 180000,
+      "summary": "CASE WHEN expressions: multi-branch conditional in SELECT and WHERE. 9 new tests → 318 total."
     },
     {
       "id": "T30",
@@ -310,19 +313,12 @@
       "task": "Final housekeeping — git push, scratch notes, dashboard update"
     }
   ],
-  "current": {
-    "id": "T29",
-    "mode": "BUILD",
-    "task": "HenryDB: CASE WHEN ... THEN ... ELSE ... END expressions",
-    "status": "in-progress",
-    "plan_ref": "T14",
-    "started": "2026-04-05T15:02:12.059Z"
-  },
+  "current": null,
   "stats": {
-    "completed": 25,
+    "completed": 26,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 3570000
+    "total_duration_ms": 3750000
   },
-  "updated_at": "2026-04-05T15:02:12.059Z"
+  "updated_at": "2026-04-05T15:05:00.453Z"
 }
