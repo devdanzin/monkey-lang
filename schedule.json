@@ -3173,25 +3173,184 @@
       "completed": "2026-04-05T02:43:08.446Z",
       "duration_ms": 300000,
       "summary": "Blog post: Forth — The Stack Machine That Changed Computing. Covers stack-based computation, dictionary, compile/interpret duality, CREATE/DOES>, bytecode VM, why Forth still matters. Published to GH Pages."
+    },
+    {
+      "id": "T310",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Evening session C: 45 min of work time. What depth work or exploration? Consider: deepening HenryDB (disk persistence), chess engine (opening book), or an EXPLORE topic. Evening = curiosity time.",
+      "started": "2026-04-05T03:16:12.615Z",
+      "completed": "2026-04-05T03:16:32.556Z",
+      "duration_ms": 60000,
+      "summary": "45 min available. EXPLORE+BUILD: lambda calculus reducer with multiple reduction strategies. Connects to type theory work."
+    },
+    {
+      "id": "T311",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Build a lambda calculus interpreter: parser, Church encodings, beta reduction (normal order, applicative order, call-by-need), alpha conversion, de Bruijn indices, normalization, combinators (SKI)",
+      "task": null,
+      "started": "2026-04-05T03:16:50.258Z",
+      "completed": "2026-04-05T03:17:04.764Z",
+      "duration_ms": 60000,
+      "summary": "1 BUILD task: full lambda calculus interpreter with reductions, Church encodings, de Bruijn, SKI."
+    },
+    {
+      "id": "T314",
+      "mode": "BUILD",
+      "task": "Build lambda calculus: parser (λx.body), AST, alpha conversion, beta reduction (normal/applicative/lazy), Church encodings (numerals, booleans, pairs, lists), de Bruijn indices, SKI combinators, pretty printer. 30+ tests. GitHub push.",
+      "status": "done",
+      "plan_ref": "T311",
+      "started": "2026-04-05T03:17:14.183Z",
+      "completed": "2026-04-05T03:19:54.434Z",
+      "duration_ms": 600000,
+      "summary": "Lambda calculus interpreter: parser (λx.body), 3 reduction strategies (normal/applicative/CBV), Church encodings (booleans, numerals, pairs), de Bruijn indices, SKI combinators, alpha equivalence, capture-avoiding substitution, divergence detection. 52 tests."
+    },
+    {
+      "id": "T312",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "placeholder",
+      "started": "2026-04-05T03:20:16.237Z",
+      "completed": "2026-04-05T03:20:16.717Z",
+      "duration_ms": 0,
+      "summary": "Skipped — unfilled placeholder"
+    },
+    {
+      "id": "T315",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build simply-typed lambda calculus: extend lambda-calculus with type annotations, type checking, simple types (Int, Bool, Arrow), typing rules, type errors. 20+ tests.",
+      "started": "2026-04-05T03:20:32.503Z",
+      "completed": "2026-04-05T03:22:09.145Z",
+      "duration_ms": 600000,
+      "summary": "Simply-typed lambda calculus: type checker (Int, Bool, Unit, Arrow types), type environment, if/let/binop/higher-order typing, evaluator with closures. 32 tests, all passing. 84 total tests in lambda-calculus project."
+    },
+    {
+      "id": "T316",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a System F (polymorphic lambda calculus): type abstraction (Λα.e), type application (e [τ]), universal quantification (∀α.τ), polymorphic identity and Church encodings. 20+ tests.",
+      "started": "2026-04-05T03:22:26.334Z",
+      "completed": "2026-04-05T03:24:06.537Z",
+      "duration_ms": 600000,
+      "summary": "System F (polymorphic lambda calculus): ∀α type quantification, Λα type abstraction, e[τ] type application, type substitution, well-formedness checking, polymorphic identity/const/apply/compose/flip/double, Church encodings typed. Evaluator with type closures. 20 tests (104 total in lambda-calculus)."
+    },
+    {
+      "id": "T317",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a denotational semantics interpreter: define domain theory primitives, Scott domains, fixed-point combinator via Kleene chain, denotation of lambda terms. 15+ tests.",
+      "started": "2026-04-05T03:24:23.555Z",
+      "completed": "2026-04-05T03:25:46.790Z",
+      "duration_ms": 600000,
+      "summary": "Denotational semantics: domain values (⊥ bottom, DInt, DBool, DFun, DPair), denotation function ⟦·⟧, ⊥ propagation (strict semantics), Kleene fixed-point for recursion (factorial, fibonacci via fix), closures, pairs, division-by-zero as ⊥. 23 tests (127 total in lambda-calculus project)."
+    },
+    {
+      "id": "T318",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build operational semantics: small-step and big-step semantics for a simple expression language, derivation tree tracing, confluence/determinism proofs as tests. 15+ tests.",
+      "started": "2026-04-05T03:26:04.922Z",
+      "completed": "2026-04-05T03:27:34.599Z",
+      "duration_ms": 600000,
+      "summary": "Operational semantics: small-step (e→e with derivation rule tracing), big-step (e⇓v with derivation trees), substitution, confluence proofs (small-step ≡ big-step), determinism test. Arithmetic, if, let, lambda, application. 23 tests (150 total in lambda-calculus)."
+    },
+    {
+      "id": "T319",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build a Continuation-Passing Style (CPS) transformer: convert direct-style lambda terms to CPS form, tail-call guarantees, call/cc as a primitive. 15+ tests.",
+      "started": "2026-04-05T03:27:51.594Z",
+      "completed": "2026-04-05T03:29:09.354Z",
+      "duration_ms": 600000,
+      "summary": "CPS transformer: direct-style to CPS conversion, continuation parameter insertion, call/cc with abort semantics, CPS evaluator, join points for if-branches, higher-order functions. 20 tests (170 total in lambda-calculus)."
+    },
+    {
+      "id": "T320",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build Normalization by Evaluation (NbE): semantic domain (neutral/normal), readback, quote/unquote, normalize open terms with free variables, eta-expansion. 15+ tests.",
+      "started": "2026-04-05T03:29:25.132Z",
+      "completed": "2026-04-05T03:30:52.197Z",
+      "duration_ms": 600000,
+      "summary": "NbE: evaluate to semantic domain (VLam, VNeutral), readback to normal forms, handles open terms via neutral terms, S K K, Church numerals, compose, normalizes under lambdas. 16 tests (186 total in lambda-calculus)."
+    },
+    {
+      "id": "T321",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build bidirectional type checking: check mode (check against known type) and infer mode (synthesize type), annotations, subtyping. 15+ tests.",
+      "started": "2026-04-05T03:31:09.052Z",
+      "completed": "2026-04-05T03:32:25.039Z",
+      "duration_ms": 600000,
+      "summary": "Bidirectional type checking: infer (⇒) and check (⇐) modes, type annotations for mode switching, unannotated lambdas check against arrow types, higher-order functions, compose. 22 tests (208 total in lambda-calculus)."
+    },
+    {
+      "id": "T322",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build linear type system: variables must be used exactly once, split/merge contexts, linear arrow (⊸), unrestricted (!), pairs with linear resources. 15+ tests.",
+      "started": "2026-04-05T03:32:42.331Z",
+      "completed": "2026-04-05T03:34:19.866Z",
+      "duration_ms": 600000,
+      "summary": "Linear type system: ⊸ linear arrow (use-once), !τ unrestricted modality, ⊗ tensor pairs, context splitting, let-pair/let-bang elimination. 16 tests (224 total in lambda-calculus)."
+    },
+    {
+      "id": "T323",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build dependent types: Pi types (Π(x:A).B), Sigma types (Σ(x:A).B), type-in-type universe, dependent application, type checking with normalization. 15+ tests.",
+      "started": "2026-04-05T03:34:36.776Z",
+      "completed": "2026-04-05T03:36:46.484Z",
+      "duration_ms": 600000,
+      "summary": "Dependent type checker: Π types (dependent functions), Σ types (dependent pairs), Type:Type universe, Nat/Zero/Succ, NbE-based conversion checking, polymorphic identity, bidirectional checking. 21 tests (245 total in lambda-calculus)."
+    },
+    {
+      "id": "T313",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Session wind-down: dashboard, daily log, git push, CURRENT.md",
+      "started": "2026-04-05T03:36:58.054Z"
     }
   ],
-  "updated_at": "2026-04-05T02:43:08.446Z",
+  "updated_at": "2026-04-05T03:36:58.054Z",
   "adjustments": [
     {
-      "time": "2026-04-05T02:33:14.229Z",
-      "msg": "Added T306 (BUILD) after end: Build an L-system engine: string rewriting, turtle graphics interpretation, classic fractals (Koch snowflake, Sierpinski, Dragon curve, fractal plant), SVG output. 25+ tests."
+      "time": "2026-04-05T03:20:23.226Z",
+      "msg": "Added T315 (BUILD) after T312: Build simply-typed lambda calculus: extend lambda-calculus with type annotations, type checking, simple types (Int, Bool, Arrow), typing rules, type errors. 20+ tests."
     },
     {
-      "time": "2026-04-05T02:37:04.538Z",
-      "msg": "Added T307 (BUILD) after end: Cellular automaton engine: 1D elementary (all 256 rules), 2D Game of Life, pattern library (glider, spaceship, pulsar, etc.), ASCII + canvas rendering. 30+ tests."
+      "time": "2026-04-05T03:22:21.107Z",
+      "msg": "Added T316 (BUILD) after T315: Build a System F (polymorphic lambda calculus): type abstraction (Λα.e), type application (e [τ]), universal quantification (∀α.τ), polymorphic identity and Church encodings. 20+ tests."
     },
     {
-      "time": "2026-04-05T02:40:34.703Z",
-      "msg": "Added T308 (MAINTAIN) after end: Update dashboard with new projects: Forth (138 tests), L-System (32 tests), Cellular (34 tests). Git push."
+      "time": "2026-04-05T03:24:18.676Z",
+      "msg": "Added T317 (BUILD) after T316: Build a denotational semantics interpreter: define domain theory primitives, Scott domains, fixed-point combinator via Kleene chain, denotation of lambda terms. 15+ tests."
     },
     {
-      "time": "2026-04-05T02:41:48.544Z",
-      "msg": "Added T309 (BUILD) after end: Blog post: 'Forth — The Stack Machine That Changed Computing' covering threaded code, the dictionary, compile/interpret duality, CREATE/DOES>, and why Forth remains relevant."
+      "time": "2026-04-05T03:26:00.013Z",
+      "msg": "Added T318 (BUILD) after T317: Build operational semantics: small-step and big-step semantics for a simple expression language, derivation tree tracing, confluence/determinism proofs as tests. 15+ tests."
+    },
+    {
+      "time": "2026-04-05T03:27:46.845Z",
+      "msg": "Added T319 (BUILD) after T318: Build a Continuation-Passing Style (CPS) transformer: convert direct-style lambda terms to CPS form, tail-call guarantees, call/cc as a primitive. 15+ tests."
+    },
+    {
+      "time": "2026-04-05T03:29:20.680Z",
+      "msg": "Added T320 (BUILD) after T319: Build Normalization by Evaluation (NbE): semantic domain (neutral/normal), readback, quote/unquote, normalize open terms with free variables, eta-expansion. 15+ tests."
+    },
+    {
+      "time": "2026-04-05T03:31:04.430Z",
+      "msg": "Added T321 (BUILD) after T320: Build bidirectional type checking: check mode (check against known type) and infer mode (synthesize type), annotations, subtyping. 15+ tests."
+    },
+    {
+      "time": "2026-04-05T03:32:37.580Z",
+      "msg": "Added T322 (BUILD) after T321: Build linear type system: variables must be used exactly once, split/merge contexts, linear arrow (⊸), unrestricted (!), pairs with linear resources. 15+ tests."
+    },
+    {
+      "time": "2026-04-05T03:34:31.951Z",
+      "msg": "Added T323 (BUILD) after T322: Build dependent types: Pi types (Π(x:A).B), Sigma types (Σ(x:A).B), type-in-type universe, dependent application, type checking with normalization. 15+ tests."
     }
   ]
 }

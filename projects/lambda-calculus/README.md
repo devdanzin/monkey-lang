@@ -1,75 +1,56 @@
-# Lambda Calculus Interpreter
+# Lambda Calculus — A Complete Type Theory Exploration
 
-Pure untyped lambda calculus interpreter with multiple reduction strategies, Church encodings, de Bruijn indices, and SKI combinators.
+10 modules covering the full spectrum of lambda calculus, from untyped through dependent types.
 
-## Features
+## Modules
 
-### Core
-- **Parser** — `λx.body` and `\x.body` syntax, parenthesized expressions, multi-param sugar
-- **AST** — Var, Abs (abstraction), App (application)
-- **Pretty printer** — Readable output with minimal parentheses
-- **Free variables** — Compute free variable sets
-- **Alpha conversion** — Rename bound variables
-- **Alpha equivalence** — Compare terms up to renaming (via de Bruijn)
-- **Capture-avoiding substitution** — Automatic renaming to prevent variable capture
+| Module | File | Tests | Description |
+|--------|------|-------|-------------|
+| **Untyped λ-calculus** | `lambda.cjs` | 52 | Parser, 3 reduction strategies, Church encodings, de Bruijn, SKI |
+| **Simply-Typed (STLC)** | `stlc.cjs` | 32 | Type checker, evaluator, Int/Bool/Arrow, if/let/binops |
+| **System F** | `system-f.cjs` | 20 | ∀α quantification, Λα abstraction, type application |
+| **Denotational Semantics** | `denotational.cjs` | 23 | Domain theory, ⊥ bottom, Kleene fixed-point, ⟦·⟧ |
+| **Operational Semantics** | `operational.cjs` | 23 | Small-step (→), big-step (⇓), derivation trees, confluence |
+| **CPS Transform** | `cps.cjs` | 20 | Direct→CPS conversion, call/cc, abort semantics |
+| **NbE** | `nbe.cjs` | 16 | Normalization by Evaluation, neutral/normal readback |
+| **Bidirectional Types** | `bidir.cjs` | 22 | Infer (⇒) / check (⇐) modes, annotations |
+| **Linear Types** | `linear.cjs` | 16 | ⊸ linear arrow, !τ unrestricted, ⊗ tensor, use-once |
+| **Dependent Types** | `dependent.cjs` | 21 | Π/Σ types, Type:Type, Nat, NbE conversion checking |
 
-### Reduction Strategies
-- **Normal order** — Leftmost, outermost redex first (finds normal form if one exists)
-- **Applicative order** — Leftmost, innermost redex first (eager evaluation)
-- **Call-by-value** — Only reduces when argument is a value (models real languages)
-- **Step limiting** — Configurable max steps to detect divergence
-- **Reduction trace** — Records every step for visualization
+**Total: 245 tests across 10 modules**
 
-### Church Encodings
-- **Booleans** — true, false, and, or, not, if
-- **Numerals** — zero through three, successor, plus, mult, pow, predecessor, isZero
-- **Pairs** — pair, fst, snd
-- **Conversion** — `toNumber`, `toBool`, `fromNumber` for interop with JS
-
-### De Bruijn Indices
-- Convert named terms to de Bruijn representation
-- Pretty print de Bruijn terms
-- Used internally for alpha equivalence
-
-### Combinators
-- **S** — `λx y z.x z (y z)` (substitution)
-- **K** — `λx y.x` (constant)
-- **I** — `λx.x` (identity)
-- **B** — `λf g x.f (g x)` (composition)
-- **C** — `λf x y.f y x` (flip)
-- **W** — `λf x.f x x` (duplicate)
-- **Y** — Fixed-point combinator (recursion)
-- **Ω** — `(λx.x x)(λx.x x)` (divergence)
-
-## Examples
-
-```javascript
-const { parse, reduce, prettyPrint, church } = require('./lambda.cjs');
-
-// Identity applied to a
-const { result } = reduce(parse('(λx.x) a'));
-prettyPrint(result); // "a"
-
-// Church arithmetic: 2 + 3 = 5
-const sum = new App(new App(church.plus, church.two), church.three);
-church.toNumber(reduce(sum).result); // 5
-
-// S K K = I (classic proof)
-const skk = parse('(λx y z.x z (y z)) (λx y.x) (λx y.x)');
-const applied = new App(reduce(skk).result, new Var('a'));
-reduce(applied).result.name; // "a"
-```
-
-## Tests
+## Run Tests
 
 ```bash
-node lambda.test.cjs
+for f in *.test.cjs; do echo "=== $f ===" && node "$f"; done
 ```
 
-52 tests covering parser, reduction strategies, Church encodings, de Bruijn indices, combinators, divergence detection.
+## Architecture
 
-## Theory
+Each module is self-contained with its own AST, type system, and evaluator. They form a progression:
 
-The untyped lambda calculus is the simplest Turing-complete programming language. Every computable function can be expressed using only three constructs: variables, abstraction (function definition), and application (function call).
+1. **Untyped** — Pure computation, no types
+2. **STLC** — Simple types prevent some errors
+3. **System F** — Polymorphism (parametric types)
+4. **Bidirectional** — Better type inference (less annotation)
+5. **Linear** — Resource tracking (use-once semantics)
+6. **Dependent** — Types that depend on values (the most expressive)
 
-**Normal order** always finds a normal form if one exists (Church-Rosser theorem), but may be inefficient. **Applicative order** can diverge on terms that have a normal form (e.g., `(λx.a) Ω`). **Call-by-value** models how most real programming languages work.
+The semantic modules complement these:
+- **Denotational** — Mathematical meaning of programs
+- **Operational** — Step-by-step execution rules
+- **CPS** — Explicit continuations and control flow
+- **NbE** — Efficient normalization using host language
+
+## Key Concepts Demonstrated
+
+- **Church encodings** — Data as pure functions (numerals, booleans, pairs)
+- **Capture-avoiding substitution** — Correct variable handling
+- **De Bruijn indices** — Canonical representation, no alpha issues
+- **SKI combinators** — Computation without variables
+- **Fixed points** — Recursion from non-recursive primitives
+- **call/cc** — First-class continuations and abort
+- **⊥ propagation** — Modeling divergence in domain theory
+- **Confluence** — Small-step and big-step agree
+- **Π types** — Functions whose return type depends on input
+- **Σ types** — Pairs whose second component type depends on first
