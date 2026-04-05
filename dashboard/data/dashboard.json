@@ -2773,14 +2773,24 @@
       "completed": "2026-04-05T00:40:33.320Z",
       "duration_ms": 600000,
       "summary": "Lazy iterables: range (0-n, start-end, step, negative step), map (with index), filter, take, drop, zip (uneven), chain, repeat (finite/infinite), cycle, enumerate, chunk, flatMap, unique, sliding window. Terminal: reduce, find, every, some, count, first, last, sum. Lazy evaluation (infinite range + take), pipe composition. 32 tests. GitHub: henry-the-frog/lazy"
+    },
+    {
+      "id": "T270",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Result/Option types (Rust-inspired): Option (Some/None, map/flatMap/unwrap/unwrapOr/filter/match), Result (Ok/Err, map/mapErr/andThen/orElse/unwrap/match), try/catch wrapper. 25+ tests.",
+      "started": "2026-04-05T00:40:58.021Z",
+      "completed": "2026-04-05T00:42:18.241Z",
+      "duration_ms": 600000,
+      "summary": "Result/Option: Some (isSome, unwrap, unwrapOr, map, flatMap, filter, match, and, or, toResult), None (isNone, unwrap throws, unwrapOr, unwrapOrElse, map/flatMap return None, match, toResult), Option constructor (null/undefined -> None, falsy values -> Some), Ok (isOk, unwrap, map, mapErr skips, andThen, orElse, match, toOption), Err (isErr, unwrap throws, unwrapOr, unwrapErr, map skips, mapErr, andThen skips, orElse, match, toOption), tryCatch, tryCatchAsync. 46 tests. GitHub: henry-the-frog/result"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 266,
+    "completed": 267,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 104910000
+    "total_duration_ms": 105510000
   },
-  "updated_at": "2026-04-05T00:40:33.320Z"
+  "updated_at": "2026-04-05T00:42:18.241Z"
 }
