@@ -2653,14 +2653,24 @@
       "completed": "2026-04-05T00:19:41.157Z",
       "duration_ms": 600000,
       "summary": "UUID: v4 (random, correct version/variant bits), v1 (time-based, Gregorian epoch, clock sequence), v5 (name-based SHA-1, deterministic, custom namespace), parse (to bytes), validate (regex), version detection, compare, isNil, NIL constant, DNS/URL namespaces. 23 tests. GitHub: henry-the-frog/uuid"
+    },
+    {
+      "id": "T258",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "JWT: encode/decode, HS256 signing, verify, claims (exp, iat, nbf, iss, sub, aud), expired token detection, header parsing. 20+ tests.",
+      "started": "2026-04-05T00:19:54.552Z",
+      "completed": "2026-04-05T00:21:00.728Z",
+      "duration_ms": 600000,
+      "summary": "JWT: sign (HS256, auto-iat, expiresIn, notBefore, issuer, subject, audience), verify (signature validation with timing-safe compare, expiry check, nbf check, issuer/audience validation), decode (no verification, header + payload), JWTError, tamper detection (modified payload caught). 16 tests. GitHub: henry-the-frog/jwt"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 254,
+    "completed": 255,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 97710000
+    "total_duration_ms": 98310000
   },
-  "updated_at": "2026-04-05T00:19:41.157Z"
+  "updated_at": "2026-04-05T00:21:00.728Z"
 }
