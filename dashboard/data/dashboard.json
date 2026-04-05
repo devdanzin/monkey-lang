@@ -2703,14 +2703,24 @@
       "completed": "2026-04-05T00:27:29.136Z",
       "duration_ms": 600000,
       "summary": "Glob: * (any), ** (deep paths), ? (single char), [abc] character classes, [a-z] ranges, [!0-9] negation, {a,b} braces, ! pattern negation, dot file handling, path matching (segments), filter (list), isGlob detection. 25 tests. GitHub: henry-the-frog/glob"
+    },
+    {
+      "id": "T263",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "ECS: entities, components, systems, archetypes, queries, world with add/remove entity, component storage, system execution order, events. 20+ tests.",
+      "started": "2026-04-05T00:27:49.744Z",
+      "completed": "2026-04-05T00:29:06.317Z",
+      "duration_ms": 600000,
+      "summary": "ECS: World (createEntity, destroyEntity, entityCount), components (addComponent/removeComponent/getComponent/hasComponent, chaining, destroy removes components), queries (single/multi-component, queryWith returns data), systems (run on matching entities, skip non-matching, priority ordering), events (entityCreated, componentAdded). 16 tests. GitHub: henry-the-frog/ecs"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 259,
+    "completed": 260,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 100710000
+    "total_duration_ms": 101310000
   },
-  "updated_at": "2026-04-05T00:27:29.136Z"
+  "updated_at": "2026-04-05T00:29:06.317Z"
 }

@@ -1,154 +1,96 @@
-// Entity Component System — data-oriented game engine architecture
-// Entities are IDs, Components are data, Systems query entities by component signature
+// ecs.js — Entity Component System
+
+let nextEntityId = 0;
 
 export class World {
   constructor() {
-    this.nextEntityId = 0;
-    this.entities = new Set();
-    this.components = new Map(); // componentName → Map<entityId, componentData>
+    this.entities = new Map();
+    this.components = new Map(); // componentName -> Map<entityId, data>
     this.systems = [];
-    this.resources = new Map(); // global shared state
+    this.events = [];
+    this.listeners = new Map();
   }
 
-  // ===== Entities =====
-  spawn(...components) {
-    const id = this.nextEntityId++;
-    this.entities.add(id);
-    for (const comp of components) {
-      this.addComponent(id, comp);
-    }
+  createEntity() {
+    const id = nextEntityId++;
+    this.entities.set(id, new Set());
+    this.emit('entityCreated', { entity: id });
     return id;
   }
 
-  despawn(entity) {
-    this.entities.delete(entity);
-    for (const [, store] of this.components) {
-      store.delete(entity);
+  destroyEntity(id) {
+    const comps = this.entities.get(id);
+    if (!comps) return;
+    for (const comp of comps) {
+      this.components.get(comp)?.delete(id);
     }
+    this.entities.delete(id);
+    this.emit('entityDestroyed', { entity: id });
   }
 
-  isAlive(entity) {
-    return this.entities.has(entity);
-  }
-
-  // ===== Components =====
-  addComponent(entity, component) {
-    const name = component.constructor.name || component._type;
-    if (!this.components.has(name)) {
-      this.components.set(name, new Map());
-    }
-    this.components.get(name).set(entity, component);
+  addComponent(entity, name, data = {}) {
+    if (!this.components.has(name)) this.components.set(name, new Map());
+    this.components.get(name).set(entity, data);
+    this.entities.get(entity)?.add(name);
+    this.emit('componentAdded', { entity, component: name });
     return this;
   }
 
-  removeComponent(entity, componentClass) {
-    const name = componentClass.name;
-    const store = this.components.get(name);
-    if (store) store.delete(entity);
-    return this;
+  removeComponent(entity, name) {
+    this.components.get(name)?.delete(entity);
+    this.entities.get(entity)?.delete(name);
+    this.emit('componentRemoved', { entity, component: name });
   }
 
-  getComponent(entity, componentClass) {
-    const name = componentClass.name;
-    const store = this.components.get(name);
-    return store ? store.get(entity) : undefined;
+  getComponent(entity, name) {
+    return this.components.get(name)?.get(entity);
   }
 
-  hasComponent(entity, componentClass) {
-    const name = componentClass.name;
-    const store = this.components.get(name);
-    return store ? store.has(entity) : false;
+  hasComponent(entity, name) {
+    return this.components.get(name)?.has(entity) ?? false;
   }
 
-  // ===== Queries =====
-  // Get all entities that have ALL the specified components
-  query(...componentClasses) {
+  // Query entities with ALL specified components
+  query(...componentNames) {
     const results = [];
-    const names = componentClasses.map(c => c.name);
-    const stores = names.map(n => this.components.get(n));
-
-    // If any component type has no store, no entities can match
-    if (stores.some(s => !s)) return results;
-
-    // Iterate over the smallest store for efficiency
-    let smallest = stores[0], smallestIdx = 0;
-    for (let i = 1; i < stores.length; i++) {
-      if (stores[i].size < smallest.size) { smallest = stores[i]; smallestIdx = i; }
-    }
-
-    for (const [entity] of smallest) {
-      if (!this.entities.has(entity)) continue;
-      let match = true;
-      for (let i = 0; i < stores.length; i++) {
-        if (i !== smallestIdx && !stores[i].has(entity)) { match = false; break; }
-      }
-      if (match) {
-        const comps = stores.map(s => s.get(entity));
-        results.push([entity, ...comps]);
+    for (const [entityId, comps] of this.entities) {
+      if (componentNames.every(c => comps.has(c))) {
+        results.push(entityId);
       }
     }
-
     return results;
   }
 
-  // Query returning entities WITHOUT a component
-  queryWithout(include, exclude) {
-    const results = this.query(...include);
-    const excludeNames = exclude.map(c => c.name);
-    return results.filter(([entity]) => {
-      return !excludeNames.some(name => {
-        const store = this.components.get(name);
-        return store && store.has(entity);
-      });
-    });
+  // Query returning component data
+  queryWith(...componentNames) {
+    return this.query(...componentNames).map(id => ({
+      entity: id,
+      ...Object.fromEntries(componentNames.map(c => [c, this.getComponent(id, c)])),
+    }));
   }
 
-  // ===== Resources =====
-  setResource(name, value) { this.resources.set(name, value); }
-  getResource(name) { return this.resources.get(name); }
-
-  // ===== Systems =====
-  addSystem(system) {
-    this.systems.push(system);
+  // Register system
+  addSystem(name, components, fn, priority = 0) {
+    this.systems.push({ name, components, fn, priority });
+    this.systems.sort((a, b) => a.priority - b.priority);
     return this;
   }
 
-  // Run all systems once
-  tick(dt = 1/60) {
+  // Run all systems
+  update(dt = 0) {
     for (const system of this.systems) {
-      system(this, dt);
+      const entities = this.query(...system.components);
+      for (const entity of entities) {
+        const data = {};
+        for (const comp of system.components) data[comp] = this.getComponent(entity, comp);
+        system.fn(entity, data, dt, this);
+      }
     }
   }
 
-  // ===== Utility =====
-  entityCount() { return this.entities.size; }
+  // Events
+  emit(event, data) { this.events.push({ event, data }); for (const fn of this.listeners.get(event) || []) fn(data); }
+  on(event, fn) { if (!this.listeners.has(event)) this.listeners.set(event, []); this.listeners.get(event).push(fn); }
 
-  // Get all components for an entity
-  inspect(entity) {
-    const result = {};
-    for (const [name, store] of this.components) {
-      if (store.has(entity)) result[name] = store.get(entity);
-    }
-    return result;
-  }
-
-  // Clear everything
-  clear() {
-    this.entities.clear();
-    this.components.clear();
-    this.systems = [];
-    this.resources.clear();
-    this.nextEntityId = 0;
-  }
-}
-
-// Component helper — creates a simple component class
-export function defineComponent(name, defaults = {}) {
-  const ComponentClass = class {
-    constructor(values = {}) {
-      Object.assign(this, defaults, values);
-    }
-  };
-  Object.defineProperty(ComponentClass, 'name', { value: name });
-  return ComponentClass;
+  get entityCount() { return this.entities.size; }
 }
