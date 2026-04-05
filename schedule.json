@@ -198,9 +198,12 @@
       "id": "T25",
       "mode": "BUILD",
       "task": "HenryDB: Views — CREATE VIEW, query from view, DROP VIEW",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T10",
-      "started": "2026-04-05T14:48:20.122Z"
+      "started": "2026-04-05T14:48:20.122Z",
+      "completed": "2026-04-05T14:50:23.086Z",
+      "duration_ms": 180000,
+      "summary": "Views: CREATE VIEW AS SELECT, DROP VIEW, query from views (with WHERE, ORDER BY, LIMIT). Views reflect data changes. 12 new tests → 270 total."
     },
     {
       "id": "T26",
@@ -247,5 +250,5 @@
       "task": "Final housekeeping — git push, scratch notes, dashboard update"
     }
   ],
-  "updated_at": "2026-04-05T14:48:20.122Z"
+  "updated_at": "2026-04-05T14:50:23.086Z"
 }
