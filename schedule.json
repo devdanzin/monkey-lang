@@ -447,9 +447,16 @@
       "completed": "2026-04-05T15:46:32.634Z",
       "duration_ms": 120000,
       "summary": "11 comprehensive boolean logic tests: OR, NOT, nested parens, IN+AND/OR, LIKE+OR, BETWEEN+OR, IS NULL+OR. 412 total tests."
+    },
+    {
+      "id": "T43",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: LEFT JOIN comprehensive tests, multi-table queries, self-joins",
+      "started": "2026-04-05T15:47:15.439Z"
     }
   ],
-  "updated_at": "2026-04-05T15:46:32.634Z",
+  "updated_at": "2026-04-05T15:47:15.439Z",
   "adjustments": [
     {
       "time": "2026-04-05T15:35:44.249Z",
@@ -466,6 +473,10 @@
     {
       "time": "2026-04-05T15:44:51.782Z",
       "msg": "Added T42 (BUILD) after end: HenryDB: OR in WHERE, nested parentheses, complex boolean logic tests to push past 9500 total tests"
+    },
+    {
+      "time": "2026-04-05T15:47:06.717Z",
+      "msg": "Added T43 (BUILD) after end: HenryDB: LEFT JOIN comprehensive tests, multi-table queries, self-joins"
     }
   ]
 }

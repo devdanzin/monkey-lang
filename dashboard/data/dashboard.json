@@ -447,14 +447,27 @@
       "completed": "2026-04-05T15:46:32.634Z",
       "duration_ms": 120000,
       "summary": "11 comprehensive boolean logic tests: OR, NOT, nested parens, IN+AND/OR, LIKE+OR, BETWEEN+OR, IS NULL+OR. 412 total tests."
+    },
+    {
+      "id": "T43",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: LEFT JOIN comprehensive tests, multi-table queries, self-joins",
+      "started": "2026-04-05T15:47:15.439Z"
     }
   ],
-  "current": null,
+  "current": {
+    "id": "T43",
+    "mode": "BUILD",
+    "status": "in-progress",
+    "task": "HenryDB: LEFT JOIN comprehensive tests, multi-table queries, self-joins",
+    "started": "2026-04-05T15:47:15.439Z"
+  },
   "stats": {
     "completed": 42,
     "yielded": 0,
     "skipped": 0,
     "total_duration_ms": 5942000
   },
-  "updated_at": "2026-04-05T15:46:32.634Z"
+  "updated_at": "2026-04-05T15:47:15.439Z"
 }
