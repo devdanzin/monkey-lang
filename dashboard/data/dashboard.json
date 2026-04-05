@@ -305,9 +305,12 @@
     {
       "id": "T15",
       "mode": "EXPLORE",
-      "status": "in-progress",
+      "status": "done",
       "task": "Deep research — follow the PLAN direction",
-      "started": "2026-04-05T15:16:30.221Z"
+      "started": "2026-04-05T15:16:30.221Z",
+      "completed": "2026-04-05T15:18:18.308Z",
+      "duration_ms": 180000,
+      "summary": "HenryDB comprehensive README: 7-layer architecture, full SQL feature docs, examples with CTE/window/EXPLAIN. Chess engine README not needed."
     },
     {
       "id": "T16",
@@ -322,18 +325,12 @@
       "task": "Final housekeeping — git push, scratch notes, dashboard update"
     }
   ],
-  "current": {
-    "id": "T15",
-    "mode": "EXPLORE",
-    "status": "in-progress",
-    "task": "Deep research — follow the PLAN direction",
-    "started": "2026-04-05T15:16:30.221Z"
-  },
+  "current": null,
   "stats": {
-    "completed": 28,
+    "completed": 29,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 4350000
+    "total_duration_ms": 4530000
   },
-  "updated_at": "2026-04-05T15:16:30.221Z"
+  "updated_at": "2026-04-05T15:18:18.308Z"
 }
