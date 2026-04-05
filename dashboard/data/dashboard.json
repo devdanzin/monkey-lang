@@ -2633,14 +2633,24 @@
       "completed": "2026-04-05T00:15:39.721Z",
       "duration_ms": 600000,
       "summary": "Blockchain: Block (hash, prevHash, nonce, calculateHash, mine with difficulty), Transaction (from/to/amount, hash), Blockchain (genesis, addTransaction, minePendingTransactions with mining reward, getBalance, isValid, tamper detection), Wallet (address generation, createTransaction), merkleRoot (empty, single, multiple, deterministic, order-sensitive). 21 tests. GitHub: henry-the-frog/blockchain"
+    },
+    {
+      "id": "T256",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "ASN.1/DER: encode/decode INTEGER, BOOLEAN, OCTET STRING, BIT STRING, NULL, SEQUENCE, OID, UTF8String, constructed types, length encoding (short/long form). 20+ tests.",
+      "started": "2026-04-05T00:16:10.765Z",
+      "completed": "2026-04-05T00:18:07.897Z",
+      "duration_ms": 600000,
+      "summary": "ASN.1 DER: length encoding (short/long form), BOOLEAN, NULL, INTEGER (0, positive, large, negative, -128), OCTET STRING (string + bytes), BIT STRING, UTF8 String (ASCII + unicode), OID (1.2.840, RSA OID), SEQUENCE (mixed types, nested). Full roundtrip encoding/decoding. 23 tests. GitHub: henry-the-frog/asn1"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 252,
+    "completed": 253,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 96510000
+    "total_duration_ms": 97110000
   },
-  "updated_at": "2026-04-05T00:15:39.721Z"
+  "updated_at": "2026-04-05T00:18:07.897Z"
 }
