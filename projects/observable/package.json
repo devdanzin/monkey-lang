@@ -1,6 +1,1 @@
-{
-  "name": "observable",
-  "version": "0.1.0",
-  "type": "module",
-  "scripts": { "test": "node --test test/*.test.js" }
-}
+{"name":"observable","version":"1.0.0","description":"Observable from scratch","type":"module","scripts":{"test":"node --test src/**/*.test.js"}}

@@ -2803,9 +2803,19 @@
       "completed": "2026-04-05T00:45:42.638Z",
       "duration_ms": 600000,
       "summary": "JSON Pointer + Patch: parsePointer/compilePointer (escape ~0 ~1), get (root, nested, array, escaped), set (existing, new, array, immutable), remove (key, array splice). Patch: add/remove/replace/move/copy/test operations, multiple ops. generateDiff (add/remove/replace detection, no-change, roundtrip verification). 30 tests. GitHub: henry-the-frog/json-patch"
+    },
+    {
+      "id": "T273",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Observable: subscribe, next/error/complete, operators (map/filter/take/skip/debounce/throttle/distinctUntilChanged/scan/mergeMap/switchMap), Subject, BehaviorSubject, ReplaySubject. 25+ tests.",
+      "started": "2026-04-05T00:46:05.765Z",
+      "completed": "2026-04-05T00:47:55.811Z",
+      "duration_ms": 600000,
+      "summary": "Observable: subscribe (next/error/complete, safe observer, unsubscribe), Observable.of/from/interval/empty, operators (map, filter, take, skip, scan, distinctUntilChanged, tap), pipe chaining, Subject (multicast, unsubscribe), BehaviorSubject (current value, emits on subscribe), ReplaySubject (buffered replay). 18 tests. GitHub: henry-the-frog/observable"
     }
   ],
-  "updated_at": "2026-04-05T00:45:42.638Z",
+  "updated_at": "2026-04-05T00:47:55.811Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -3058,6 +3068,10 @@
     {
       "time": "2026-04-05T00:44:20.615Z",
       "msg": "Added T272 (BUILD) after end: JSON Pointer (RFC 6901) + JSON Patch (RFC 6902): get/set by pointer, escape/unescape, add/remove/replace/move/copy/test operations, apply patch, generate diff. 25+ tests."
+    },
+    {
+      "time": "2026-04-05T00:46:05.098Z",
+      "msg": "Added T273 (BUILD) after end: Observable: subscribe, next/error/complete, operators (map/filter/take/skip/debounce/throttle/distinctUntilChanged/scan/mergeMap/switchMap), Subject, BehaviorSubject, ReplaySubject. 25+ tests."
     }
   ]
 }

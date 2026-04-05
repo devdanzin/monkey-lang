@@ -1,276 +1,74 @@
-// Observable — reactive streams library (RxJS-lite)
-// Supports: create, map, filter, reduce, take, skip, debounce, throttle, merge, combineLatest, pipe
+// observable.js — Observable
 
 export class Observable {
-  constructor(subscribeFn) {
-    this._subscribe = subscribeFn;
-  }
+  constructor(subscribeFn) { this._subscribe = subscribeFn; }
 
   subscribe(observerOrNext, error, complete) {
     const observer = typeof observerOrNext === 'function'
-      ? { next: observerOrNext, error: error || (() => {}), complete: complete || (() => {}) }
-      : { next: observerOrNext.next || (() => {}), error: observerOrNext.error || (() => {}), complete: observerOrNext.complete || (() => {}) };
+      ? { next: observerOrNext, error: error || (e => { throw e; }), complete: complete || (() => {}) }
+      : { next: observerOrNext.next || (() => {}), error: observerOrNext.error || (e => { throw e; }), complete: observerOrNext.complete || (() => {}) };
 
     let unsubscribed = false;
-    const subscription = {
-      unsubscribe() { unsubscribed = true; }
-    };
-
     const safeObserver = {
-      next(value) { if (!unsubscribed) observer.next(value); },
-      error(err) { if (!unsubscribed) { observer.error(err); unsubscribed = true; } },
-      complete() { if (!unsubscribed) { observer.complete(); unsubscribed = true; } },
+      next: (v) => { if (!unsubscribed) observer.next(v); },
+      error: (e) => { if (!unsubscribed) observer.error(e); },
+      complete: () => { if (!unsubscribed) { observer.complete(); unsubscribed = true; } },
     };
 
-    try {
-      const teardown = this._subscribe(safeObserver);
-      const origUnsub = subscription.unsubscribe;
-      subscription.unsubscribe = () => {
-        origUnsub();
-        if (typeof teardown === 'function') teardown();
-      };
-    } catch (err) {
-      safeObserver.error(err);
-    }
-
-    return subscription;
+    const teardown = this._subscribe(safeObserver);
+    return { unsubscribe() { unsubscribed = true; if (typeof teardown === 'function') teardown(); } };
   }
 
-  // Pipe operators
-  pipe(...operators) {
-    return operators.reduce((obs, op) => op(obs), this);
-  }
+  pipe(...operators) { return operators.reduce((obs, op) => op(obs), this); }
 
-  // ===== Creation =====
-  static of(...values) {
-    return new Observable(observer => {
-      for (const v of values) observer.next(v);
-      observer.complete();
-    });
-  }
+  static of(...values) { return new Observable(obs => { for (const v of values) obs.next(v); obs.complete(); }); }
+  static from(iterable) { return new Observable(obs => { for (const v of iterable) obs.next(v); obs.complete(); }); }
+  static interval(ms) { return new Observable(obs => { let i = 0; const id = setInterval(() => obs.next(i++), ms); return () => clearInterval(id); }); }
+  static empty() { return new Observable(obs => obs.complete()); }
+}
 
-  static from(iterable) {
-    return new Observable(observer => {
-      for (const v of iterable) observer.next(v);
-      observer.complete();
-    });
-  }
+// ===== Operators =====
+export const map = (fn) => (source) => new Observable(obs => source.subscribe({ next: v => obs.next(fn(v)), error: e => obs.error(e), complete: () => obs.complete() }));
 
-  static interval(ms) {
-    return new Observable(observer => {
-      let i = 0;
-      const id = setInterval(() => observer.next(i++), ms);
-      return () => clearInterval(id);
-    });
-  }
+export const filter = (fn) => (source) => new Observable(obs => source.subscribe({ next: v => { if (fn(v)) obs.next(v); }, error: e => obs.error(e), complete: () => obs.complete() }));
 
-  static fromEvent(target, eventName) {
-    return new Observable(observer => {
-      const handler = e => observer.next(e);
-      target.addEventListener(eventName, handler);
-      return () => target.removeEventListener(eventName, handler);
-    });
-  }
+export const take = (n) => (source) => new Observable(obs => { let count = 0; let sub; sub = source.subscribe({ next: v => { if (count < n) { obs.next(v); count++; if (count >= n) { obs.complete(); if (sub) sub.unsubscribe(); } } }, error: e => obs.error(e), complete: () => obs.complete() }); return () => sub.unsubscribe(); });
 
-  static fromPromise(promise) {
-    return new Observable(observer => {
-      promise.then(
-        value => { observer.next(value); observer.complete(); },
-        err => observer.error(err)
-      );
-    });
-  }
+export const skip = (n) => (source) => new Observable(obs => { let count = 0; return source.subscribe({ next: v => { if (count++ >= n) obs.next(v); }, error: e => obs.error(e), complete: () => obs.complete() }); });
 
-  static empty() {
-    return new Observable(observer => observer.complete());
-  }
+export const scan = (fn, seed) => (source) => new Observable(obs => { let acc = seed; return source.subscribe({ next: v => { acc = fn(acc, v); obs.next(acc); }, error: e => obs.error(e), complete: () => obs.complete() }); });
 
-  static never() {
-    return new Observable(() => {});
-  }
+export const distinctUntilChanged = () => (source) => new Observable(obs => { let prev, hasPrev = false; return source.subscribe({ next: v => { if (!hasPrev || v !== prev) { obs.next(v); prev = v; hasPrev = true; } }, error: e => obs.error(e), complete: () => obs.complete() }); });
 
-  static throwError(err) {
-    return new Observable(observer => observer.error(err));
-  }
+export const tap = (fn) => (source) => new Observable(obs => source.subscribe({ next: v => { fn(v); obs.next(v); }, error: e => obs.error(e), complete: () => obs.complete() }));
 
-  // ===== Combination =====
-  static merge(...observables) {
-    return new Observable(observer => {
-      let completed = 0;
-      const subs = observables.map(obs =>
-        obs.subscribe({
-          next: v => observer.next(v),
-          error: e => observer.error(e),
-          complete: () => { if (++completed === observables.length) observer.complete(); }
-        })
-      );
-      return () => subs.forEach(s => s.unsubscribe());
-    });
-  }
+// ===== Subject =====
+export class Subject extends Observable {
+  constructor() { super(obs => { this._observers.push(obs); return () => { this._observers = this._observers.filter(o => o !== obs); }; }); this._observers = []; }
+  next(value) { for (const obs of [...this._observers]) obs.next(value); }
+  error(err) { for (const obs of [...this._observers]) obs.error(err); }
+  complete() { for (const obs of [...this._observers]) obs.complete(); }
+}
 
-  static combineLatest(...observables) {
-    return new Observable(observer => {
-      const values = new Array(observables.length);
-      const hasValue = new Array(observables.length).fill(false);
-      let completed = 0;
-
-      const subs = observables.map((obs, i) =>
-        obs.subscribe({
-          next: v => {
-            values[i] = v;
-            hasValue[i] = true;
-            if (hasValue.every(Boolean)) observer.next([...values]);
-          },
-          error: e => observer.error(e),
-          complete: () => { if (++completed === observables.length) observer.complete(); }
-        })
-      );
-      return () => subs.forEach(s => s.unsubscribe());
-    });
-  }
-
-  // ===== Convert to Promise =====
-  toPromise() {
-    return new Promise((resolve, reject) => {
-      let last;
-      this.subscribe({
-        next: v => { last = v; },
-        error: reject,
-        complete: () => resolve(last),
-      });
-    });
-  }
-
-  // ===== Collect all values =====
-  toArray() {
-    return new Promise((resolve, reject) => {
-      const arr = [];
-      this.subscribe({
-        next: v => arr.push(v),
-        error: reject,
-        complete: () => resolve(arr),
-      });
-    });
+export class BehaviorSubject extends Subject {
+  constructor(initialValue) { super(); this._value = initialValue; }
+  get value() { return this._value; }
+  next(value) { this._value = value; super.next(value); }
+  subscribe(observerOrNext, error, complete) {
+    const sub = super.subscribe(observerOrNext, error, complete);
+    const observer = typeof observerOrNext === 'function' ? observerOrNext : observerOrNext.next;
+    if (observer) observer(this._value);
+    return sub;
   }
 }
 
-// ===== Operators (pipeable) =====
-export function map(fn) {
-  return source => new Observable(observer => {
-    return source.subscribe({
-      next: v => observer.next(fn(v)),
-      error: e => observer.error(e),
-      complete: () => observer.complete(),
-    });
-  });
-}
-
-export function filter(predicate) {
-  return source => new Observable(observer => {
-    return source.subscribe({
-      next: v => { if (predicate(v)) observer.next(v); },
-      error: e => observer.error(e),
-      complete: () => observer.complete(),
-    });
-  });
-}
-
-export function take(count) {
-  return source => new Observable(observer => {
-    let taken = 0;
-    const sub = source.subscribe({
-      next: v => {
-        if (taken < count) { observer.next(v); taken++; }
-        if (taken >= count) { observer.complete(); sub.unsubscribe(); }
-      },
-      error: e => observer.error(e),
-      complete: () => observer.complete(),
-    });
-    return () => sub.unsubscribe();
-  });
-}
-
-export function skip(count) {
-  return source => new Observable(observer => {
-    let skipped = 0;
-    return source.subscribe({
-      next: v => { if (skipped >= count) observer.next(v); else skipped++; },
-      error: e => observer.error(e),
-      complete: () => observer.complete(),
-    });
-  });
-}
-
-export function reduce(fn, seed) {
-  return source => new Observable(observer => {
-    let acc = seed;
-    return source.subscribe({
-      next: v => { acc = fn(acc, v); },
-      error: e => observer.error(e),
-      complete: () => { observer.next(acc); observer.complete(); },
-    });
-  });
-}
-
-export function scan(fn, seed) {
-  return source => new Observable(observer => {
-    let acc = seed;
-    return source.subscribe({
-      next: v => { acc = fn(acc, v); observer.next(acc); },
-      error: e => observer.error(e),
-      complete: () => observer.complete(),
-    });
-  });
-}
-
-export function tap(fn) {
-  return source => new Observable(observer => {
-    return source.subscribe({
-      next: v => { fn(v); observer.next(v); },
-      error: e => observer.error(e),
-      complete: () => observer.complete(),
-    });
-  });
-}
-
-export function distinctUntilChanged(comparator) {
-  const cmp = comparator || ((a, b) => a === b);
-  return source => new Observable(observer => {
-    let prev, hasPrev = false;
-    return source.subscribe({
-      next: v => {
-        if (!hasPrev || !cmp(prev, v)) { observer.next(v); prev = v; hasPrev = true; }
-      },
-      error: e => observer.error(e),
-      complete: () => observer.complete(),
-    });
-  });
-}
-
-export function switchMap(fn) {
-  return source => new Observable(observer => {
-    let innerSub = null;
-    const outerSub = source.subscribe({
-      next: v => {
-        if (innerSub) innerSub.unsubscribe();
-        innerSub = fn(v).subscribe({
-          next: iv => observer.next(iv),
-          error: e => observer.error(e),
-        });
-      },
-      error: e => observer.error(e),
-      complete: () => { if (!innerSub) observer.complete(); },
-    });
-    return () => { outerSub.unsubscribe(); if (innerSub) innerSub.unsubscribe(); };
-  });
-}
-
-export function catchError(handler) {
-  return source => new Observable(observer => {
-    return source.subscribe({
-      next: v => observer.next(v),
-      error: e => handler(e).subscribe(observer),
-      complete: () => observer.complete(),
-    });
-  });
+export class ReplaySubject extends Subject {
+  constructor(bufferSize = Infinity) { super(); this._buffer = []; this._bufferSize = bufferSize; }
+  next(value) { this._buffer.push(value); if (this._buffer.length > this._bufferSize) this._buffer.shift(); super.next(value); }
+  subscribe(observerOrNext, error, complete) {
+    const sub = super.subscribe(observerOrNext, error, complete);
+    const observer = typeof observerOrNext === 'function' ? observerOrNext : observerOrNext.next;
+    if (observer) for (const v of this._buffer) observer(v);
+    return sub;
+  }
 }
