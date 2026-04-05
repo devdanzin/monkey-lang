@@ -144,15 +144,22 @@
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Midday housekeeping — git push, knowledge capture, dashboard update",
-      "started": "2026-04-05T14:39:58.624Z"
+      "started": "2026-04-05T14:39:58.624Z",
+      "completed": "2026-04-05T14:41:10.249Z",
+      "duration_ms": 90000,
+      "summary": "Git pushed, scratch note for HenryDB, dashboard updated to 9282 total tests."
     },
     {
       "id": "T9",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Afternoon direction — assess progress, decide next depth work or blog post"
+      "status": "done",
+      "task": "Afternoon direction — assess progress, decide next depth work or blog post",
+      "started": "2026-04-05T14:41:25.984Z",
+      "completed": "2026-04-05T14:41:37.438Z",
+      "duration_ms": 30000,
+      "summary": "Continue HenryDB depth: string functions (LIKE, CONCAT), window functions, views. Strong momentum from 126→223 tests."
     },
     {
       "id": "T10",
@@ -206,5 +213,5 @@
       "task": "Final housekeeping — git push, scratch notes, dashboard update"
     }
   ],
-  "updated_at": "2026-04-05T14:39:58.624Z"
+  "updated_at": "2026-04-05T14:41:37.438Z"
 }
