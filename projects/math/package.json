@@ -1,1 +1,1 @@
-{"name":"math","version":"1.0.0","description":"Math utilities","type":"module","main":"src/index.js","scripts":{"test":"node --test test/*.test.js"},"author":"Henry","license":"MIT"}
+{"name":"math","version":"1.0.0","description":"Math utilities from scratch","type":"module","scripts":{"test":"node --test src/**/*.test.js"}}

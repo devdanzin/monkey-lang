@@ -2723,14 +2723,24 @@
       "completed": "2026-04-05T00:30:48.338Z",
       "duration_ms": 600000,
       "summary": "Bit manipulation: popcount, clz32, ctz32, isPowerOf2, nextPowerOf2, reverseBits, rotateLeft/Right, hammingDistance, getBit/setBit/clearBit/toggleBit, swapBits. BitSet (set/clear/test/toggle/count/toArray/union/intersection/xor/equals/toString/fromArray, large 1000-bit). 38 tests. GitHub: henry-the-frog/bits"
+    },
+    {
+      "id": "T265",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Math utils: factorial, fibonacci, gcd, lcm, isPrime, primes sieve, combinations, permutations, power, sqrt (Newton), modular arithmetic, catalan numbers, binomial. 40+ tests.",
+      "started": "2026-04-05T00:31:09.526Z",
+      "completed": "2026-04-05T00:32:49.570Z",
+      "duration_ms": 600000,
+      "summary": "Math: factorial (BigInt), fibonacci, gcd, lcm, isPrime (6k±1 optimization), sieve of Eratosthenes, power (binary exponentiation), modPow (BigInt), sqrt (Newton method), combinations, permutations, binomial, catalan, abs, clamp, lerp, degToRad/radToDeg, mean, median, variance, stddev. 47 tests. GitHub: henry-the-frog/math"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 261,
+    "completed": 262,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 101910000
+    "total_duration_ms": 102510000
   },
-  "updated_at": "2026-04-05T00:30:48.338Z"
+  "updated_at": "2026-04-05T00:32:49.570Z"
 }
