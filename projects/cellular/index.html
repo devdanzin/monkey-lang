@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cellular Automata</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,sans-serif;background:#0a0a1a;color:#e0e0e0;display:flex;flex-direction:column;height:100vh}
+#top{display:flex;gap:8px;padding:8px;background:#111;border-bottom:1px solid #333;align-items:center;flex-wrap:wrap}
+button{padding:6px 14px;background:#2a5298;color:white;border:none;border-radius:4px;cursor:pointer;font-size:.85em}
+button:hover{background:#3a6bc5}
+button.active{background:#4a8}
+select,input{padding:4px 8px;background:#1a1a2e;border:1px solid #333;color:#e0e0e0;border-radius:4px;font-size:.85em}
+label{font-size:.85em;color:#aaa}
+.sep{width:1px;height:24px;background:#333;margin:0 4px}
+#info{font-size:.8em;color:#888;margin-left:auto}
+canvas{flex:1;cursor:crosshair}
+#tabs{display:flex;gap:0}
+#tabs button{border-radius:4px 4px 0 0;background:#222}
+#tabs button.active{background:#2a5298}
+</style>
+</head>
+<body>
+<div id="top">
+  <div id="tabs">
+    <button class="active" onclick="setMode('life')">Game of Life</button>
+    <button onclick="setMode('1d')">1D Elementary</button>
+  </div>
+  <div class="sep"></div>
+  <div id="life-controls">
+    <button onclick="togglePlay()" id="playBtn">▶ Play</button>
+    <button onclick="stepOnce()">Step</button>
+    <button onclick="clearGrid()">Clear</button>
+    <button onclick="randomFill()">Random</button>
+    <div class="sep" style="display:inline-block"></div>
+    <label>Pattern:</label>
+    <select id="patternSelect" onchange="selectPattern()">
+      <option value="">Draw</option>
+      <option value="glider">Glider</option>
+      <option value="lwss">LWSS</option>
+      <option value="blinker">Blinker</option>
+      <option value="pulsar">Pulsar</option>
+      <option value="rpentomino">R-pentomino</option>
+      <option value="acorn">Acorn</option>
+      <option value="gosperGliderGun">Gosper Gun</option>
+    </select>
+    <label>Speed:</label>
+    <input type="range" id="speed" min="1" max="60" value="10" style="width:80px">
+  </div>
+  <div id="ca1d-controls" style="display:none">
+    <label>Rule:</label>
+    <input type="number" id="ruleNum" min="0" max="255" value="30" style="width:60px">
+    <button onclick="run1D()">Generate</button>
+    <label>Width:</label>
+    <input type="number" id="caWidth" min="21" max="501" value="201" step="2" style="width:60px">
+    <label>Steps:</label>
+    <input type="number" id="caSteps" min="10" max="500" value="100" style="width:60px">
+  </div>
+  <span id="info">Gen: 0 | Pop: 0</span>
+</div>
+<canvas id="canvas"></canvas>
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let mode = 'life';
+let playing = false;
+let animId = null;
+let cellSize = 10;
+let cols, rows;
+let grid, buf;
+let gen = 0;
+let selectedPattern = '';
+let drawing = false;
+
+// Patterns
+const PATTERNS = {
+  glider: [[1,0],[2,1],[0,2],[1,2],[2,2]],
+  lwss: [[1,0],[4,0],[0,1],[0,2],[4,2],[0,3],[1,3],[2,3],[3,3]],
+  blinker: [[0,0],[1,0],[2,0]],
+  pulsar: (()=>{const c=[];const r=[2,3,4,8,9,10];for(const x of r){c.push([x,0],[x,5],[x,7],[x,12])}for(const y of[2,3,4,8,9,10]){c.push([0,y],[5,y],[7,y],[12,y])}return c})(),
+  rpentomino: [[1,0],[2,0],[0,1],[1,1],[1,2]],
+  acorn: [[1,0],[3,1],[0,2],[1,2],[4,2],[5,2],[6,2]],
+  gosperGliderGun: (()=>{const s=`........................O...........
+......................O.O...........
+............OO......OO............OO
+...........O...O....OO............OO
+OO........O.....O...OO..............
+OO........O...O.OO....O.O...........
+..........O.....O.......O...........
+...........O...O........................
+............OO..........................`;const c=[];s.split('\n').forEach((l,y)=>{for(let x=0;x<l.length;x++)if(l[x]==='O')c.push([x,y])});return c})(),
+};
+
+function resize() {
+  canvas.width = canvas.parentElement.clientWidth;
+  canvas.height = canvas.parentElement.clientHeight - document.getElementById('top').offsetHeight;
+  if (mode === 'life') {
+    cols = Math.floor(canvas.width / cellSize);
+    rows = Math.floor(canvas.height / cellSize);
+    const newGrid = new Uint8Array(cols * rows);
+    if (grid) {
+      // Copy old data
+      const oc = Math.min(cols, grid._cols || cols);
+      const or = Math.min(rows, grid._rows || rows);
+      for (let y = 0; y < or; y++)
+        for (let x = 0; x < oc; x++)
+          newGrid[y * cols + x] = grid[y * (grid._cols || cols) + x] || 0;
+    }
+    newGrid._cols = cols; newGrid._rows = rows;
+    grid = newGrid;
+    buf = new Uint8Array(cols * rows);
+    buf._cols = cols; buf._rows = rows;
+  }
+}
+
+function initLife() {
+  cellSize = 10;
+  resize();
+  grid.fill(0); grid._cols = cols; grid._rows = rows;
+  gen = 0;
+  render();
+}
+
+function stepLife() {
+  for (let y = 0; y < rows; y++) {
+    for (let x = 0; x < cols; x++) {
+      let n = 0;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        if (!dx && !dy) continue;
+        const nx = (x+dx+cols)%cols, ny = (y+dy+rows)%rows;
+        n += grid[ny*cols+nx];
+      }
+      const alive = grid[y*cols+x];
+      buf[y*cols+x] = (alive && (n===2||n===3))||(!alive&&n===3)?1:0;
+    }
+  }
+  [grid,buf]=[buf,grid];
+  grid._cols=cols;grid._rows=rows;buf._cols=cols;buf._rows=rows;
+  gen++;
+}
+
+function render() {
+  ctx.fillStyle = '#0a0a1a';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  if (mode === 'life') {
+    ctx.fillStyle = '#4a9eff';
+    for (let y=0;y<rows;y++) for (let x=0;x<cols;x++) {
+      if (grid[y*cols+x]) ctx.fillRect(x*cellSize,y*cellSize,cellSize-1,cellSize-1);
+    }
+    // Grid lines (faint)
+    ctx.strokeStyle = '#1a1a2e';
+    ctx.lineWidth = 0.5;
+    for (let x=0;x<=cols;x++){ctx.beginPath();ctx.moveTo(x*cellSize,0);ctx.lineTo(x*cellSize,rows*cellSize);ctx.stroke()}
+    for (let y=0;y<=rows;y++){ctx.beginPath();ctx.moveTo(0,y*cellSize);ctx.lineTo(cols*cellSize,y*cellSize);ctx.stroke()}
+  }
+  let pop=0;for(let i=0;i<(grid?grid.length:0);i++)pop+=grid[i]||0;
+  document.getElementById('info').textContent=`Gen: ${gen} | Pop: ${pop}`;
+}
+
+function togglePlay() {
+  playing = !playing;
+  document.getElementById('playBtn').textContent = playing ? '⏸ Pause' : '▶ Play';
+  if (playing) loop();
+  else if (animId) { cancelAnimationFrame(animId); animId = null; }
+}
+
+let lastFrame = 0;
+function loop(ts) {
+  if (!playing) return;
+  const fps = +document.getElementById('speed').value;
+  if (!lastFrame || ts - lastFrame > 1000/fps) {
+    stepLife();
+    render();
+    lastFrame = ts;
+  }
+  animId = requestAnimationFrame(loop);
+}
+
+function stepOnce() { if(mode==='life'){stepLife();render()} }
+function clearGrid() { if(grid)grid.fill(0);gen=0;render() }
+function randomFill() { for(let i=0;i<grid.length;i++)grid[i]=Math.random()<.3?1:0;gen=0;render() }
+function selectPattern() { selectedPattern=document.getElementById('patternSelect').value }
+
+function placePattern(cx, cy) {
+  const pat = PATTERNS[selectedPattern];
+  if (!pat) return;
+  for (const [dx,dy] of pat) {
+    const x=cx+dx,y=cy+dy;
+    if(x>=0&&x<cols&&y>=0&&y<rows) grid[y*cols+x]=1;
+  }
+}
+
+canvas.addEventListener('mousedown', e => {
+  if (mode !== 'life') return;
+  const rect = canvas.getBoundingClientRect();
+  const cx = Math.floor((e.clientX-rect.left)/cellSize);
+  const cy = Math.floor((e.clientY-rect.top)/cellSize);
+  if (selectedPattern) { placePattern(cx,cy); render(); return; }
+  drawing = true;
+  if(cx>=0&&cx<cols&&cy>=0&&cy<rows){ grid[cy*cols+cx]=grid[cy*cols+cx]?0:1; render() }
+});
+canvas.addEventListener('mousemove', e => {
+  if (!drawing || mode !== 'life') return;
+  const rect = canvas.getBoundingClientRect();
+  const cx = Math.floor((e.clientX-rect.left)/cellSize);
+  const cy = Math.floor((e.clientY-rect.top)/cellSize);
+  if(cx>=0&&cx<cols&&cy>=0&&cy<rows){ grid[cy*cols+cx]=1; render() }
+});
+canvas.addEventListener('mouseup', () => drawing=false);
+canvas.addEventListener('mouseleave', () => drawing=false);
+
+// 1D CA
+function run1D() {
+  const rule = +document.getElementById('ruleNum').value;
+  const w = +document.getElementById('caWidth').value;
+  const steps = +document.getElementById('caSteps').value;
+  
+  const ruleTable = new Uint8Array(8);
+  for (let i=0;i<8;i++) ruleTable[i]=(rule>>i)&1;
+  
+  let state = new Uint8Array(w);
+  state[Math.floor(w/2)] = 1;
+  const history = [new Uint8Array(state)];
+  for (let s=0;s<steps;s++) {
+    const next = new Uint8Array(w);
+    for (let i=0;i<w;i++) {
+      const l=i>0?state[i-1]:0, c=state[i], r=i<w-1?state[i+1]:0;
+      next[i]=ruleTable[(l<<2)|(c<<1)|r];
+    }
+    state=next;
+    history.push(new Uint8Array(state));
+  }
+  
+  // Render
+  const cw = Math.max(1, Math.floor(canvas.width/w));
+  const ch = Math.max(1, Math.floor(canvas.height/history.length));
+  const sz = Math.min(cw,ch,4);
+  
+  ctx.fillStyle='#0a0a1a';ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#4a9eff';
+  const ox = Math.floor((canvas.width - w*sz)/2);
+  for (let y=0;y<history.length;y++) for (let x=0;x<w;x++) {
+    if (history[y][x]) ctx.fillRect(ox+x*sz,y*sz,sz,sz);
+  }
+  document.getElementById('info').textContent=`Rule ${rule} | ${w}×${history.length} | Class: ${({0:1,8:1,30:3,90:3,110:4,150:3,184:2}[rule])||'?'}`;
+}
+
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`#tabs button:nth-child(${m==='life'?1:2})`).classList.add('active');
+  document.getElementById('life-controls').style.display = m==='life'?'':'none';
+  document.getElementById('ca1d-controls').style.display = m==='1d'?'':'none';
+  if (m==='life') { playing=false;document.getElementById('playBtn').textContent='▶ Play';initLife() }
+  else run1D();
+}
+
+window.addEventListener('resize', ()=>{ resize(); if(mode==='life')render();else run1D() });
+initLife();
+</script>
+</body>
+</html>

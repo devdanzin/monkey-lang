@@ -1,0 +1,9 @@
+{
+  "name": "cellular",
+  "version": "1.0.0",
+  "description": "Cellular automaton engine — 1D elementary + 2D Game of Life",
+  "main": "automaton.js",
+  "scripts": {
+    "test": "node --test automaton.test.js"
+  }
+}
