@@ -2783,9 +2783,19 @@
       "completed": "2026-04-05T00:42:18.241Z",
       "duration_ms": 600000,
       "summary": "Result/Option: Some (isSome, unwrap, unwrapOr, map, flatMap, filter, match, and, or, toResult), None (isNone, unwrap throws, unwrapOr, unwrapOrElse, map/flatMap return None, match, toResult), Option constructor (null/undefined -> None, falsy values -> Some), Ok (isOk, unwrap, map, mapErr skips, andThen, orElse, match, toOption), Err (isErr, unwrap throws, unwrapOr, unwrapErr, map skips, mapErr, andThen skips, orElse, match, toOption), tryCatch, tryCatchAsync. 46 tests. GitHub: henry-the-frog/result"
+    },
+    {
+      "id": "T271",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Circuit breaker: states (closed/open/half-open), failure threshold, success threshold, timeout, reset, event callbacks, retry with backoff, bulkhead pattern. 20+ tests.",
+      "started": "2026-04-05T00:42:40.535Z",
+      "completed": "2026-04-05T00:43:59.415Z",
+      "duration_ms": 600000,
+      "summary": "Circuit breaker: closed/open/half-open states, failure/success thresholds, timeout with auto half-open transition, reset, open, event callbacks (stateChange/success/failure/rejected), stats, CircuitBreakerError. Bulkhead (concurrency limiter with queue, activeCount, pendingCount). 12 tests. GitHub: henry-the-frog/circuit-breaker"
     }
   ],
-  "updated_at": "2026-04-05T00:42:18.241Z",
+  "updated_at": "2026-04-05T00:43:59.415Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -3030,6 +3040,10 @@
     {
       "time": "2026-04-05T00:40:57.450Z",
       "msg": "Added T270 (BUILD) after end: Result/Option types (Rust-inspired): Option (Some/None, map/flatMap/unwrap/unwrapOr/filter/match), Result (Ok/Err, map/mapErr/andThen/orElse/unwrap/match), try/catch wrapper. 25+ tests."
+    },
+    {
+      "time": "2026-04-05T00:42:39.932Z",
+      "msg": "Added T271 (BUILD) after end: Circuit breaker: states (closed/open/half-open), failure threshold, success threshold, timeout, reset, event callbacks, retry with backoff, bulkhead pattern. 20+ tests."
     }
   ]
 }
