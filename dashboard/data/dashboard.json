@@ -101,9 +101,12 @@
       "id": "T20",
       "mode": "BUILD",
       "task": "HenryDB: GROUP BY clause with aggregate functions, HAVING support",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T6",
-      "started": "2026-04-05T14:31:34.585Z"
+      "started": "2026-04-05T14:31:34.585Z",
+      "completed": "2026-04-05T14:33:05.019Z",
+      "duration_ms": 180000,
+      "summary": "GROUP BY with aggregates (COUNT, SUM, AVG, MIN, MAX), HAVING filter, multi-column grouping. 15 new tests → 165 total."
     },
     {
       "id": "T21",
@@ -190,19 +193,12 @@
       "task": "Final housekeeping — git push, scratch notes, dashboard update"
     }
   ],
-  "current": {
-    "id": "T20",
-    "mode": "BUILD",
-    "task": "HenryDB: GROUP BY clause with aggregate functions, HAVING support",
-    "status": "in-progress",
-    "plan_ref": "T6",
-    "started": "2026-04-05T14:31:34.585Z"
-  },
+  "current": null,
   "stats": {
-    "completed": 9,
+    "completed": 10,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 1200000
+    "total_duration_ms": 1380000
   },
-  "updated_at": "2026-04-05T14:31:34.585Z"
+  "updated_at": "2026-04-05T14:33:05.019Z"
 }
