@@ -134,9 +134,12 @@
       "id": "T23",
       "mode": "BUILD",
       "task": "HenryDB: Crash recovery stress test — simulate crash mid-transaction, verify WAL replay",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T6",
-      "started": "2026-04-05T14:38:18.236Z"
+      "started": "2026-04-05T14:38:18.236Z",
+      "completed": "2026-04-05T14:39:35.316Z",
+      "duration_ms": 180000,
+      "summary": "Crash recovery stress tests: WAL integrity, uncommitted detection, rollback correctness, 20-tx interleaved stress, MVCC visibility. 22 new tests → 223 total."
     },
     {
       "id": "T8",
@@ -202,19 +205,12 @@
       "task": "Final housekeeping — git push, scratch notes, dashboard update"
     }
   ],
-  "current": {
-    "id": "T23",
-    "mode": "BUILD",
-    "task": "HenryDB: Crash recovery stress test — simulate crash mid-transaction, verify WAL replay",
-    "status": "in-progress",
-    "plan_ref": "T6",
-    "started": "2026-04-05T14:38:18.236Z"
-  },
+  "current": null,
   "stats": {
-    "completed": 12,
+    "completed": 13,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 1860000
+    "total_duration_ms": 2040000
   },
-  "updated_at": "2026-04-05T14:38:18.236Z"
+  "updated_at": "2026-04-05T14:39:35.316Z"
 }
