@@ -35,6 +35,10 @@ const TUnit = new TCon('Unit');
 function tFun(from, to) { return new TCon('->', [from, to]); }
 function tList(t) { return new TCon('List', [t]); }
 function tPair(a, b) { return new TCon('Pair', [a, b]); }
+function tTuple(types) { return new TCon('Tuple' + types.length, types); }
+function tRecord(fieldNames, fieldTypes) {
+  return new TCon('Record{' + fieldNames.join(',') + '}', fieldTypes);
+}
 
 // ─── Type Scheme ────────────────────────────────────────
 
@@ -191,6 +195,9 @@ const Expr = {
   Unit: () => ({ tag: 'Unit' }),
   List: (items) => ({ tag: 'List', items }),
   Pair: (fst, snd) => ({ tag: 'Pair', fst, snd }),
+  Tuple: (items) => ({ tag: 'Tuple', items }),
+  Record: (fields) => ({ tag: 'Record', fields }), // fields: [{name, value}]
+  FieldAccess: (expr, field) => ({ tag: 'FieldAccess', expr, field }),
   Ann: (expr, type) => ({ tag: 'Ann', expr, type }),
 };
 
@@ -312,6 +319,42 @@ function infer(env, expr) {
       const [s1, t1] = infer(env, expr.fst);
       const [s2, t2] = infer(s1.applyEnv(env), expr.snd);
       return [s2.compose(s1), tPair(s2.apply(t1), t2)];
+    }
+
+    case 'Tuple': {
+      let s = Subst.empty();
+      const types = [];
+      for (const item of expr.items) {
+        const [si, ti] = infer(s.applyEnv(env), item);
+        s = si.compose(s);
+        types.push(ti);
+      }
+      return [s, tTuple(types.map(t => s.apply(t)))];
+    }
+
+    case 'Record': {
+      let s = Subst.empty();
+      const fieldNames = [];
+      const fieldTypes = [];
+      for (const { name, value } of expr.fields) {
+        const [si, ti] = infer(s.applyEnv(env), value);
+        s = si.compose(s);
+        fieldNames.push(name);
+        fieldTypes.push(ti);
+      }
+      return [s, tRecord(fieldNames, fieldTypes.map(t => s.apply(t)))];
+    }
+
+    case 'FieldAccess': {
+      const [s1, t1] = infer(env, expr.expr);
+      const resolved = s1.apply(t1);
+      if (resolved.kind === 'TCon' && resolved.name.startsWith('Record{')) {
+        const fieldNames = resolved.name.slice(7, -1).split(',');
+        const idx = fieldNames.indexOf(expr.field);
+        if (idx === -1) throw new TypeError(`No field '${expr.field}' in record type ${resolved}`);
+        return [s1, resolved.args[idx]];
+      }
+      throw new TypeError(`Cannot access field '${expr.field}' on type ${resolved}`);
     }
 
     case 'Ann': {
@@ -474,7 +517,7 @@ function typeCheck(src) {
 module.exports = {
   TVar, TCon, Scheme, Subst, Expr,
   TInt, TBool, TString, TUnit,
-  tFun, tList, tPair,
+  tFun, tList, tPair, tTuple, tRecord,
   ftv, ftvScheme, ftvEnv,
   unify, generalize, instantiate,
   infer, typeOf, typeCheck,

@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
 const {
   TVar, TCon, Scheme, Subst, Expr,
   TInt, TBool, TString, TUnit,
-  tFun, tList, tPair,
+  tFun, tList, tPair, tTuple, tRecord,
   ftv, ftvScheme, ftvEnv,
   unify, generalize, instantiate,
   infer, typeOf, typeCheck,
@@ -376,5 +376,139 @@ describe('Scheme toString', () => {
   it('forall for polymorphic', () => {
     const s = new Scheme(['a'], tFun(new TVar('a'), new TVar('a')));
     assert.ok(s.toString().includes('forall'));
+  });
+});
+
+describe('Type Inference — Tuples', () => {
+  it('infers empty tuple (unit-like)', () => {
+    const t = typeOf(Expr.Tuple([]));
+    assert.ok(t.toString().includes('Tuple0'));
+  });
+
+  it('infers single-element tuple', () => {
+    const t = typeOf(Expr.Tuple([Expr.Int(1)]));
+    assert.ok(t.toString().includes('Int'));
+  });
+
+  it('infers multi-element tuple', () => {
+    const t = typeOf(Expr.Tuple([Expr.Int(1), Expr.Bool(true), Expr.Str('hello')]));
+    const s = t.toString();
+    assert.ok(s.includes('Int'));
+    assert.ok(s.includes('Bool'));
+    assert.ok(s.includes('String'));
+  });
+
+  it('infers nested tuple', () => {
+    const t = typeOf(Expr.Tuple([
+      Expr.Int(1),
+      Expr.Tuple([Expr.Bool(true), Expr.Str('x')])
+    ]));
+    assert.ok(t.toString().includes('Int'));
+    assert.ok(t.toString().includes('Bool'));
+  });
+});
+
+describe('Type Inference — Records', () => {
+  it('infers simple record', () => {
+    const t = typeOf(Expr.Record([
+      { name: 'x', value: Expr.Int(1) },
+      { name: 'y', value: Expr.Int(2) },
+    ]));
+    assert.ok(t.toString().includes('Int'));
+    assert.ok(t.toString().includes('x'));
+    assert.ok(t.toString().includes('y'));
+  });
+
+  it('infers heterogeneous record', () => {
+    const t = typeOf(Expr.Record([
+      { name: 'name', value: Expr.Str('hello') },
+      { name: 'age', value: Expr.Int(42) },
+      { name: 'active', value: Expr.Bool(true) },
+    ]));
+    const s = t.toString();
+    assert.ok(s.includes('String'));
+    assert.ok(s.includes('Int'));
+    assert.ok(s.includes('Bool'));
+  });
+
+  it('infers field access', () => {
+    const t = typeOf(
+      Expr.Let('r',
+        Expr.Record([
+          { name: 'x', value: Expr.Int(1) },
+          { name: 'y', value: Expr.Bool(true) },
+        ]),
+        Expr.FieldAccess(Expr.Var('r'), 'x')
+      )
+    );
+    assert.equal(t.toString(), 'Int');
+  });
+
+  it('infers field access for second field', () => {
+    const t = typeOf(
+      Expr.Let('r',
+        Expr.Record([
+          { name: 'x', value: Expr.Int(1) },
+          { name: 'y', value: Expr.Bool(true) },
+        ]),
+        Expr.FieldAccess(Expr.Var('r'), 'y')
+      )
+    );
+    assert.equal(t.toString(), 'Bool');
+  });
+
+  it('rejects access to nonexistent field', () => {
+    assert.throws(() =>
+      typeOf(
+        Expr.Let('r',
+          Expr.Record([{ name: 'x', value: Expr.Int(1) }]),
+          Expr.FieldAccess(Expr.Var('r'), 'z')
+        )
+      ),
+    /No field/);
+  });
+
+  it('rejects field access on non-record', () => {
+    assert.throws(() =>
+      typeOf(Expr.FieldAccess(Expr.Int(42), 'x')),
+    /Cannot access/);
+  });
+});
+
+describe('Type Inference — Advanced polymorphism', () => {
+  it('infers polymorphic identity used at different types', () => {
+    resetFresh();
+    const t = typeOf(
+      Expr.Let('id', Expr.Lam('x', Expr.Var('x')),
+        Expr.Pair(
+          Expr.App(Expr.Var('id'), Expr.Int(42)),
+          Expr.App(Expr.Var('id'), Expr.Str('hello'))
+        )
+      )
+    );
+    assert.ok(t.toString().includes('Int'));
+    assert.ok(t.toString().includes('String'));
+  });
+
+  it('infers polymorphic compose', () => {
+    // let compose = fn f => fn g => fn x => f (g x)
+    // compose should have type (b -> c) -> (a -> b) -> a -> c
+    resetFresh();
+    const compose = Expr.Lam('f', Expr.Lam('g', Expr.Lam('x',
+      Expr.App(Expr.Var('f'), Expr.App(Expr.Var('g'), Expr.Var('x')))
+    )));
+    const t = typeOf(compose);
+    // Check it's a 3-argument function
+    assert.ok(t.kind === 'TCon' && t.name === '->');
+  });
+
+  it('infers S combinator', () => {
+    // S = fn f => fn g => fn x => f x (g x)
+    resetFresh();
+    const s = Expr.Lam('f', Expr.Lam('g', Expr.Lam('x',
+      Expr.App(Expr.App(Expr.Var('f'), Expr.Var('x')), Expr.App(Expr.Var('g'), Expr.Var('x')))
+    )));
+    const t = typeOf(s);
+    assert.ok(t.kind === 'TCon' && t.name === '->');
   });
 });
