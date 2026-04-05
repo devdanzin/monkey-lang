@@ -2583,14 +2583,24 @@
       "completed": "2026-04-05T00:07:37.557Z",
       "duration_ms": 600000,
       "summary": "Message queue: Channel (pub/sub, unsubscribe, pending), ConsumerGroup (round-robin, acknowledgment), Broker (multi-topic, wildcard subscribe), topic matching (* single level, # multi-level), Message (TTL, expiry), dead letter queue processing, stats. 15 tests. GitHub: henry-the-frog/message-queue"
+    },
+    {
+      "id": "T251",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Task runner: define tasks with dependencies, parallel execution, file watching, task caching (skip if up-to-date), command execution, task groups. 20+ tests.",
+      "started": "2026-04-05T00:07:55.667Z",
+      "completed": "2026-04-05T00:09:21.335Z",
+      "duration_ms": 600000,
+      "summary": "Task runner: task definition with deps, dependency chain execution, single-execution guarantee, circular dependency detection, context with name and log, execution logging with duration, reset, getOrder (topo sort), dryRun, groups, list, async tasks, CachedTaskRunner (skip up-to-date, re-run on file change). 16 tests. GitHub: henry-the-frog/taskrunner"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 247,
+    "completed": 248,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 93510000
+    "total_duration_ms": 94110000
   },
-  "updated_at": "2026-04-05T00:07:37.557Z"
+  "updated_at": "2026-04-05T00:09:21.335Z"
 }
