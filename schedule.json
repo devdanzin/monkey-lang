@@ -922,10 +922,84 @@
     {
       "id": "T84",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Session checkpoint",
-      "started": "2026-04-05T17:48:11.308Z"
+      "started": "2026-04-05T17:48:11.308Z",
+      "completed": "2026-04-05T17:48:46.268Z",
+      "duration_ms": 30000,
+      "summary": "Git pushed, wrote chess-engine-architecture scratch note. 37 tasks done this session."
+    },
+    {
+      "id": "T89",
+      "mode": "THINK",
+      "status": "done",
+      "task": "~2.5h left. Deep dive candidates: (1) HenryDB query optimizer/planner, (2) ray-tracer improvements, (3) type-checker, (4) ECS game engine. Which has most CS depth?",
+      "started": "2026-04-05T17:48:58.720Z",
+      "completed": "2026-04-05T17:49:28.089Z",
+      "duration_ms": 30000,
+      "summary": "Decision: type-checker deep dive. Full HM inference, 482 lines, 0 tests. Add tests + extend features."
+    },
+    {
+      "id": "T90",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan type-checker depth: tests + feature extensions",
+      "task": null,
+      "started": "2026-04-05T17:49:43.683Z",
+      "completed": "2026-04-05T17:50:00.859Z",
+      "duration_ms": 30000,
+      "summary": "Planned: tests, feature extensions, README."
+    },
+    {
+      "id": "T93",
+      "mode": "BUILD",
+      "task": "type-checker: comprehensive test suite (types, unification, inference, polymorphism, errors)",
+      "status": "done",
+      "plan_ref": "T90",
+      "started": "2026-04-05T17:50:09.722Z",
+      "completed": "2026-04-05T17:51:27.489Z",
+      "duration_ms": 300000,
+      "summary": "60 tests for HM type checker (0→60). Covers unification, inference, polymorphism, errors. All pass first try."
+    },
+    {
+      "id": "T94",
+      "mode": "BUILD",
+      "task": "type-checker: add tuple types, recursive types, or sum types",
+      "status": "done",
+      "plan_ref": "T90",
+      "started": "2026-04-05T17:51:54.149Z",
+      "completed": "2026-04-05T17:53:36.997Z",
+      "duration_ms": 240000,
+      "summary": "Tuples, records, field access. Advanced polymorphism tests (compose, S combinator). 73 tests (was 60)."
+    },
+    {
+      "id": "T95",
+      "mode": "BUILD",
+      "task": "type-checker: README with examples and type theory explanation",
+      "status": "done",
+      "plan_ref": "T90",
+      "started": "2026-04-05T17:54:00.409Z",
+      "completed": "2026-04-05T17:54:50.374Z",
+      "duration_ms": 120000,
+      "summary": "Type checker README: Algorithm W walkthrough, type table, usage examples, error catalog."
+    },
+    {
+      "id": "T91",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "started": "2026-04-05T17:55:05.442Z",
+      "completed": "2026-04-05T17:55:05.989Z",
+      "duration_ms": 0,
+      "summary": "Skipped unfilled placeholder"
+    },
+    {
+      "id": "T92",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Late session checkpoint",
+      "started": "2026-04-05T17:55:14.050Z"
     }
   ],
-  "updated_at": "2026-04-05T17:48:11.308Z"
+  "updated_at": "2026-04-05T17:55:14.050Z"
 }
