@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L-System Explorer</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: system-ui, -apple-system, sans-serif; background: #0a0a1a; color: #e0e0e0; display: flex; height: 100vh; }
+#sidebar { width: 300px; padding: 16px; overflow-y: auto; background: #111; border-right: 1px solid #333; }
+#canvas-wrap { flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+canvas { background: #0a0a1a; }
+h1 { font-size: 1.4em; margin-bottom: 12px; color: #7cb3ff; }
+h2 { font-size: 1em; margin: 12px 0 6px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; font-size: 0.75em; }
+label { display: block; margin: 6px 0 2px; font-size: 0.85em; color: #ccc; }
+input, textarea, select { width: 100%; padding: 6px 8px; background: #1a1a2e; border: 1px solid #333; color: #e0e0e0; border-radius: 4px; font-family: monospace; font-size: 0.85em; }
+textarea { resize: vertical; height: 80px; }
+input[type="range"] { padding: 0; }
+.range-row { display: flex; align-items: center; gap: 8px; }
+.range-row input { flex: 1; }
+.range-val { min-width: 40px; text-align: right; font-size: 0.85em; color: #888; }
+button { padding: 8px 16px; background: #2a5298; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9em; margin: 4px 2px; }
+button:hover { background: #3a6bc5; }
+button.active { background: #4a8; }
+.presets { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+.presets button { font-size: 0.75em; padding: 4px 8px; }
+.stats { font-size: 0.8em; color: #888; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div id="sidebar">
+  <h1>🌿 L-System Explorer</h1>
+  
+  <h2>Presets</h2>
+  <div class="presets" id="presets"></div>
+  
+  <h2>Grammar</h2>
+  <label>Axiom</label>
+  <input type="text" id="axiom" value="F--F--F">
+  <label>Rules (one per line: F=F+F--F+F)</label>
+  <textarea id="rules">F=F+F--F+F</textarea>
+  
+  <h2>Parameters</h2>
+  <label>Iterations</label>
+  <div class="range-row">
+    <input type="range" id="iterations" min="0" max="10" value="4">
+    <span class="range-val" id="iter-val">4</span>
+  </div>
+  
+  <label>Angle (°)</label>
+  <div class="range-row">
+    <input type="range" id="angle" min="1" max="180" value="60">
+    <span class="range-val" id="angle-val">60</span>
+  </div>
+  
+  <label>Step Size</label>
+  <div class="range-row">
+    <input type="range" id="step" min="1" max="50" value="5">
+    <span class="range-val" id="step-val">5</span>
+  </div>
+  
+  <label>Start Angle (°)</label>
+  <div class="range-row">
+    <input type="range" id="startAngle" min="-180" max="180" value="0">
+    <span class="range-val" id="start-val">0</span>
+  </div>
+  
+  <h2>Style</h2>
+  <label>Color</label>
+  <input type="color" id="color" value="#4a9eff">
+  <label>Line Width</label>
+  <div class="range-row">
+    <input type="range" id="lineWidth" min="0.5" max="5" step="0.5" value="1">
+    <span class="range-val" id="lw-val">1</span>
+  </div>
+  
+  <div class="stats" id="stats"></div>
+</div>
+
+<div id="canvas-wrap">
+  <canvas id="canvas"></canvas>
+</div>
+
+<script>
+// Inline L-System engine for the browser
+class LSystem {
+  constructor({ axiom, rules, angle, stepSize, iterations }) {
+    this.axiom = axiom;
+    this.rules = rules;
+    this.angle = angle || 90;
+    this.stepSize = stepSize || 10;
+    this.iterations = iterations || 3;
+  }
+  generate(n) {
+    let s = this.axiom;
+    for (let i = 0; i < (n ?? this.iterations); i++) {
+      let next = '';
+      for (const ch of s) next += (this.rules[ch] !== undefined) ? this.rules[ch] : ch;
+      s = next;
+    }
+    return s;
+  }
+  interpret(str, opts = {}) {
+    const angle = opts.angle || this.angle;
+    const step = opts.stepSize || this.stepSize;
+    let x = 0, y = 0, dir = opts.startAngle || 0;
+    const stack = [], segs = [];
+    let minX = 0, maxX = 0, minY = 0, maxY = 0;
+    for (const ch of str) {
+      if ('FGAB'.includes(ch)) {
+        const r = dir * Math.PI / 180;
+        const nx = x + step * Math.cos(r), ny = y + step * Math.sin(r);
+        segs.push({ x1: x, y1: y, x2: nx, y2: ny });
+        x = nx; y = ny;
+        minX = Math.min(minX, x); maxX = Math.max(maxX, x);
+        minY = Math.min(minY, y); maxY = Math.max(maxY, y);
+      } else if (ch === 'f') {
+        const r = dir * Math.PI / 180;
+        x += step * Math.cos(r); y += step * Math.sin(r);
+        minX = Math.min(minX, x); maxX = Math.max(maxX, x);
+        minY = Math.min(minY, y); maxY = Math.max(maxY, y);
+      } else if (ch === '+') dir += angle;
+      else if (ch === '-') dir -= angle;
+      else if (ch === '[') stack.push({ x, y, dir });
+      else if (ch === ']') { const s = stack.pop(); x = s.x; y = s.y; dir = s.dir; }
+      else if (ch === '|') dir += 180;
+    }
+    return { segments: segs, bounds: { minX, maxX, minY, maxY } };
+  }
+}
+
+const PRESETS = {
+  'Koch Snowflake': { axiom: 'F--F--F', rules: { F: 'F+F--F+F' }, angle: 60, iterations: 4 },
+  'Koch Curve': { axiom: 'F', rules: { F: 'F+F-F-F+F' }, angle: 90, iterations: 4 },
+  'Sierpinski': { axiom: 'F-G-G', rules: { F: 'F-G+F+G-F', G: 'GG' }, angle: 120, iterations: 6 },
+  'Sierpinski Arrow': { axiom: 'A', rules: { A: 'B-A-B', B: 'A+B+A' }, angle: 60, iterations: 6 },
+  'Dragon Curve': { axiom: 'F', rules: { F: 'F+G', G: 'F-G' }, angle: 90, iterations: 12 },
+  'Fractal Plant': { axiom: 'X', rules: { X: 'F+[[X]-X]-F[-FX]+X', F: 'FF' }, angle: 25, iterations: 5, startAngle: -90 },
+  'Hilbert': { axiom: 'A', rules: { A: '-BF+AFA+FB-', B: '+AF-BFB-FA+' }, angle: 90, iterations: 5 },
+  'Gosper': { axiom: 'A', rules: { A: 'A-B--B+A++AA+B-', B: '+A-BB--B-A++A+B' }, angle: 60, iterations: 4 },
+  'Lévy C': { axiom: 'F', rules: { F: '+F--F+' }, angle: 45, iterations: 12 },
+  'Barnsley Fern': { axiom: 'X', rules: { X: 'F+[[X]-X]-F[-FX]+X', F: 'FF' }, angle: 22.5, iterations: 6, startAngle: -90 },
+  'Square Koch': { axiom: 'F+F+F+F', rules: { F: 'F+F-F-FF+F+F-F' }, angle: 90, iterations: 3 },
+  'Penrose': { axiom: '[F]++[F]++[F]++[F]++[F]', rules: { F: 'F++F----F++F' }, angle: 36, iterations: 4 },
+};
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const $axiom = document.getElementById('axiom');
+const $rules = document.getElementById('rules');
+const $iters = document.getElementById('iterations');
+const $angle = document.getElementById('angle');
+const $step = document.getElementById('step');
+const $startAngle = document.getElementById('startAngle');
+const $color = document.getElementById('color');
+const $lineWidth = document.getElementById('lineWidth');
+const $stats = document.getElementById('stats');
+
+// Populate presets
+const presetsDiv = document.getElementById('presets');
+for (const name of Object.keys(PRESETS)) {
+  const btn = document.createElement('button');
+  btn.textContent = name;
+  btn.onclick = () => loadPreset(name);
+  presetsDiv.appendChild(btn);
+}
+
+function loadPreset(name) {
+  const p = PRESETS[name];
+  $axiom.value = p.axiom;
+  $rules.value = Object.entries(p.rules).map(([k,v]) => `${k}=${v}`).join('\n');
+  $iters.value = p.iterations || 3;
+  $angle.value = p.angle || 90;
+  $step.value = p.stepSize || 5;
+  $startAngle.value = p.startAngle || 0;
+  updateLabels();
+  render();
+}
+
+function parseRules() {
+  const rules = {};
+  for (const line of $rules.value.split('\n')) {
+    const [k, ...rest] = line.split('=');
+    if (k && rest.length) rules[k.trim()] = rest.join('=').trim();
+  }
+  return rules;
+}
+
+function updateLabels() {
+  document.getElementById('iter-val').textContent = $iters.value;
+  document.getElementById('angle-val').textContent = $angle.value;
+  document.getElementById('step-val').textContent = $step.value;
+  document.getElementById('start-val').textContent = $startAngle.value;
+  document.getElementById('lw-val').textContent = $lineWidth.value;
+}
+
+function render() {
+  const wrap = document.getElementById('canvas-wrap');
+  canvas.width = wrap.clientWidth;
+  canvas.height = wrap.clientHeight;
+  
+  const sys = new LSystem({
+    axiom: $axiom.value,
+    rules: parseRules(),
+    angle: +$angle.value,
+    stepSize: +$step.value,
+    iterations: +$iters.value,
+  });
+  
+  const t0 = performance.now();
+  const str = sys.generate();
+  const t1 = performance.now();
+  const result = sys.interpret(str, { startAngle: +$startAngle.value });
+  const t2 = performance.now();
+  
+  const { segments, bounds } = result;
+  const bw = bounds.maxX - bounds.minX || 1;
+  const bh = bounds.maxY - bounds.minY || 1;
+  const pad = 40;
+  const scale = Math.min((canvas.width - pad * 2) / bw, (canvas.height - pad * 2) / bh);
+  const ox = (canvas.width - bw * scale) / 2 - bounds.minX * scale;
+  const oy = (canvas.height - bh * scale) / 2 - bounds.minY * scale;
+  
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.strokeStyle = $color.value;
+  ctx.lineWidth = +$lineWidth.value;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  
+  for (const s of segments) {
+    ctx.moveTo(s.x1 * scale + ox, s.y1 * scale + oy);
+    ctx.lineTo(s.x2 * scale + ox, s.y2 * scale + oy);
+  }
+  ctx.stroke();
+  const t3 = performance.now();
+  
+  $stats.textContent = `String: ${str.length.toLocaleString()} chars | Segments: ${segments.toLocaleString ? segments.length.toLocaleString() : segments.length} | Generate: ${(t1-t0).toFixed(1)}ms | Interpret: ${(t2-t1).toFixed(1)}ms | Render: ${(t3-t2).toFixed(1)}ms`;
+}
+
+// Event listeners
+for (const el of [$axiom, $rules, $iters, $angle, $step, $startAngle, $color, $lineWidth]) {
+  el.addEventListener('input', () => { updateLabels(); render(); });
+}
+
+window.addEventListener('resize', render);
+
+// Initial render
+loadPreset('Koch Snowflake');
+</script>
+</body>
+</html>

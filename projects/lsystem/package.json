@@ -1,0 +1,9 @@
+{
+  "name": "lsystem",
+  "version": "1.0.0",
+  "description": "L-System engine — string rewriting + turtle graphics",
+  "main": "lsystem.js",
+  "scripts": {
+    "test": "node --test lsystem.test.js"
+  }
+}
