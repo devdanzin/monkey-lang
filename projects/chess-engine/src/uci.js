@@ -1,165 +1,232 @@
-#!/usr/bin/env node
-// uci.js — Universal Chess Interface protocol handler
+// uci.js — Universal Chess Interface (UCI) protocol implementation
+// Allows the engine to be used with any UCI-compatible chess GUI
 
-import { createInterface } from 'node:readline';
 import { Board, STARTING_FEN } from './board.js';
 import { SearchEngine } from './search.js';
+import { moveToSAN } from './pgn.js';
+import { createInterface } from 'readline';
 
-const ENGINE_NAME = 'HenryChess 1.0';
+const ENGINE_NAME = 'HenryChess';
 const ENGINE_AUTHOR = 'Henry';
 
-let board = Board.fromFEN(STARTING_FEN);
-const engine = new SearchEngine();
+export class UCIEngine {
+  constructor() {
+    this.engine = new SearchEngine();
+    this.board = Board.fromFEN(STARTING_FEN);
+    this.debug = false;
+    this.options = {
+      Hash: 64, // TT size in MB
+      Threads: 1,
+      MoveTime: 0, // ms, 0 = use time control
+    };
+  }
 
-const rl = createInterface({ input: process.stdin, output: process.stdout, terminal: false });
+  // Process a single UCI command
+  processCommand(line) {
+    const parts = line.trim().split(/\s+/);
+    const cmd = parts[0];
 
-function send(msg) {
-  process.stdout.write(msg + '\n');
-}
+    switch (cmd) {
+      case 'uci':
+        return this.handleUci();
+      case 'debug':
+        this.debug = parts[1] === 'on';
+        return [];
+      case 'isready':
+        return ['readyok'];
+      case 'setoption':
+        return this.handleSetOption(parts);
+      case 'ucinewgame':
+        this.engine.tt.clear();
+        this.engine._clearHistory();
+        this.engine._clearKillers();
+        this.board = Board.fromFEN(STARTING_FEN);
+        return [];
+      case 'position':
+        return this.handlePosition(parts);
+      case 'go':
+        return this.handleGo(parts);
+      case 'stop':
+        this.engine.stopped = true;
+        return [];
+      case 'quit':
+        return ['__quit__'];
+      case 'board': // non-standard: show board
+        return [this.boardToString()];
+      case 'eval': // non-standard: show evaluation
+        return this.handleEval();
+      default:
+        return [];
+    }
+  }
 
-rl.on('line', (line) => {
-  const tokens = line.trim().split(/\s+/);
-  const cmd = tokens[0];
+  handleUci() {
+    return [
+      `id name ${ENGINE_NAME}`,
+      `id author ${ENGINE_AUTHOR}`,
+      'option name Hash type spin default 64 min 1 max 1024',
+      'option name UseBook type check default true',
+      'uciok',
+    ];
+  }
 
-  switch (cmd) {
-    case 'uci':
-      send(`id name ${ENGINE_NAME}`);
-      send(`id author ${ENGINE_AUTHOR}`);
-      send('option name Depth type spin default 6 min 1 max 20');
-      send('option name MoveTime type spin default 1000 min 100 max 60000');
-      send('uciok');
-      break;
-
-    case 'isready':
-      send('readyok');
-      break;
-
-    case 'ucinewgame':
-      board = Board.fromFEN(STARTING_FEN);
-      engine.tt.clear();
-      break;
-
-    case 'position': {
-      let idx = 1;
-      if (tokens[idx] === 'startpos') {
-        board = Board.fromFEN(STARTING_FEN);
-        idx++;
-      } else if (tokens[idx] === 'fen') {
-        idx++;
-        const fenParts = [];
-        while (idx < tokens.length && tokens[idx] !== 'moves') {
-          fenParts.push(tokens[idx]);
-          idx++;
-        }
-        board = Board.fromFEN(fenParts.join(' '));
+  handleSetOption(parts) {
+    // setoption name <name> value <value>
+    const nameIdx = parts.indexOf('name');
+    const valueIdx = parts.indexOf('value');
+    if (nameIdx >= 0 && valueIdx >= 0) {
+      const name = parts.slice(nameIdx + 1, valueIdx).join(' ');
+      const value = parts.slice(valueIdx + 1).join(' ');
+      if (name === 'UseBook') {
+        this.engine.useBook = value === 'true';
       }
+    }
+    return [];
+  }
 
-      if (tokens[idx] === 'moves') {
-        idx++;
-        while (idx < tokens.length) {
-          const move = board.findMoveFromUCI(tokens[idx]);
-          if (move) {
-            board = board.makeMove(move);
+  handlePosition(parts) {
+    let fenEnd = 2;
+
+    if (parts[1] === 'startpos') {
+      this.board = Board.fromFEN(STARTING_FEN);
+      fenEnd = 2;
+    } else if (parts[1] === 'fen') {
+      const fen = parts.slice(2, 8).join(' ');
+      this.board = Board.fromFEN(fen);
+      fenEnd = 8;
+    }
+
+    // Apply moves
+    const movesIdx = parts.indexOf('moves');
+    if (movesIdx >= 0) {
+      for (let i = movesIdx + 1; i < parts.length; i++) {
+        const move = this.board.findMoveFromUCI(parts[i]);
+        if (move) {
+          this.board = this.board.makeMove(move);
+        }
+      }
+    }
+
+    return [];
+  }
+
+  handleGo(parts) {
+    let depth = 64;
+    let timeLimit = 0;
+    let movetime = 0;
+    let wtime = 0, btime = 0, winc = 0, binc = 0;
+    let movestogo = 30;
+
+    for (let i = 1; i < parts.length; i++) {
+      switch (parts[i]) {
+        case 'depth': depth = parseInt(parts[++i]); break;
+        case 'movetime': movetime = parseInt(parts[++i]); break;
+        case 'wtime': wtime = parseInt(parts[++i]); break;
+        case 'btime': btime = parseInt(parts[++i]); break;
+        case 'winc': winc = parseInt(parts[++i]); break;
+        case 'binc': binc = parseInt(parts[++i]); break;
+        case 'movestogo': movestogo = parseInt(parts[++i]); break;
+        case 'infinite': depth = 64; break;
+      }
+    }
+
+    // Calculate time allocation
+    if (movetime > 0) {
+      timeLimit = movetime;
+    } else if (wtime > 0 || btime > 0) {
+      const myTime = this.board.side === 0 ? wtime : btime;
+      const myInc = this.board.side === 0 ? winc : binc;
+      // Use 1/30th of remaining time + increment
+      timeLimit = Math.max(50, Math.floor(myTime / movestogo) + myInc);
+    }
+
+    const output = [];
+
+    const result = this.engine.search(this.board, {
+      depth,
+      timeLimit: timeLimit || undefined,
+      log: (info) => {
+        const scoreStr = Math.abs(info.score) > 90000
+          ? `mate ${Math.sign(info.score) * Math.ceil((100001 - Math.abs(info.score)) / 2)}`
+          : `cp ${info.score}`;
+        output.push(
+          `info depth ${info.depth} score ${scoreStr} nodes ${info.nodes} ` +
+          `time ${info.time} nps ${info.nps} pv ${info.pv}`
+        );
+      },
+    });
+
+    if (result.move) {
+      const uci = Board.moveToUCI(result.move);
+      output.push(`bestmove ${uci}`);
+    } else {
+      output.push('bestmove (none)');
+    }
+
+    return output;
+  }
+
+  handleEval() {
+    // Import eval dynamically would be complex, so just search depth 1
+    const result = this.engine.search(this.board, { depth: 1 });
+    return [`info string eval ${result.score} cp`];
+  }
+
+  boardToString() {
+    const board = this.board;
+    let s = '\n  +---+---+---+---+---+---+---+---+\n';
+    const pieces = ' PNBRQKpnbrqk';
+    for (let rank = 7; rank >= 0; rank--) {
+      s += `${rank + 1} |`;
+      for (let file = 0; file < 8; file++) {
+        const sq = rank * 8 + file;
+        let piece = ' ';
+        for (let color = 0; color < 2; color++) {
+          for (let p = 0; p < 6; p++) {
+            if ((board.pieces[color][p] >> BigInt(sq)) & 1n) {
+              piece = pieces[color * 6 + p + 1];
+            }
           }
-          idx++;
         }
+        s += ` ${piece} |`;
       }
-      break;
+      s += '\n  +---+---+---+---+---+---+---+---+\n';
     }
-
-    case 'go': {
-      let depth = 6;
-      let moveTime = 0;
-      let wtime = 0, btime = 0, winc = 0, binc = 0;
-
-      for (let i = 1; i < tokens.length; i += 2) {
-        switch (tokens[i]) {
-          case 'depth': depth = parseInt(tokens[i + 1]); break;
-          case 'movetime': moveTime = parseInt(tokens[i + 1]); break;
-          case 'wtime': wtime = parseInt(tokens[i + 1]); break;
-          case 'btime': btime = parseInt(tokens[i + 1]); break;
-          case 'winc': winc = parseInt(tokens[i + 1]); break;
-          case 'binc': binc = parseInt(tokens[i + 1]); break;
-          case 'infinite': depth = 20; break;
-          case 'perft': {
-            const d = parseInt(tokens[i + 1]);
-            const count = perft(board, d);
-            send(`info nodes ${count}`);
-            return;
-          }
-        }
-      }
-
-      // Calculate time from clock
-      if (!moveTime && (wtime || btime)) {
-        const ourTime = board.side === 0 ? wtime : btime;
-        const ourInc = board.side === 0 ? winc : binc;
-        moveTime = Math.max(100, Math.floor(ourTime / 30 + ourInc / 2));
-      }
-
-      const result = engine.search(board, {
-        depth: moveTime ? 20 : depth,
-        timeLimit: moveTime || 0,
-        log: (info) => {
-          const scoreStr = Math.abs(info.score) > 90000
-            ? `mate ${info.score > 0 ? Math.ceil((100001 - info.score) / 2) : -Math.ceil((100001 + info.score) / 2)}`
-            : `cp ${info.score}`;
-          send(`info depth ${info.depth} score ${scoreStr} nodes ${info.nodes} time ${info.time} nps ${info.nps} pv ${info.pv}`);
-        }
-      });
-
-      if (result.move) {
-        send(`bestmove ${Board.moveToUCI(result.move)}`);
-      } else {
-        send('bestmove 0000');
-      }
-      break;
-    }
-
-    case 'd':
-    case 'display':
-      send(board.toFEN());
-      printBoard(board);
-      break;
-
-    case 'perft': {
-      const d = parseInt(tokens[1]) || 1;
-      const t0 = Date.now();
-      const count = perft(board, d);
-      const elapsed = Date.now() - t0;
-      send(`Perft(${d}) = ${count} (${elapsed}ms)`);
-      break;
-    }
-
-    case 'quit':
-      process.exit(0);
-      break;
+    s += '    a   b   c   d   e   f   g   h\n';
+    s += `\n${board.side === 0 ? 'White' : 'Black'} to move`;
+    s += `\nFEN: ${board.toFEN()}`;
+    return s;
   }
-});
 
-function perft(board, depth) {
-  if (depth === 0) return 1;
-  const moves = board.generateLegalMoves();
-  let nodes = 0;
-  for (const move of moves) {
-    nodes += perft(board.makeMove(move), depth - 1);
+  // Run the UCI loop (stdin/stdout)
+  run() {
+    const rl = createInterface({
+      input: process.stdin,
+      output: process.stdout,
+      terminal: false,
+    });
+
+    rl.on('line', (line) => {
+      const responses = this.processCommand(line);
+      for (const r of responses) {
+        if (r === '__quit__') {
+          rl.close();
+          process.exit(0);
+        }
+        console.log(r);
+      }
+    });
   }
-  return nodes;
 }
 
-function printBoard(board) {
-  const pieces = '.PNBRQKpnbrqk';
-  for (let rank = 7; rank >= 0; rank--) {
-    let row = `${rank + 1} `;
-    for (let file = 0; file < 8; file++) {
-      const p = board.pieceAt(rank * 8 + file);
-      if (p) {
-        row += pieces[p.color * 6 + p.piece + 1] + ' ';
-      } else {
-        row += '. ';
-      }
-    }
-    send(row);
-  }
-  send('  a b c d e f g h');
+// Run if executed directly
+const isMainModule = process.argv[1] && (
+  process.argv[1].endsWith('/uci.js') ||
+  process.argv[1].endsWith('\\uci.js')
+);
+if (isMainModule) {
+  const engine = new UCIEngine();
+  engine.run();
 }
+
+export default UCIEngine;
