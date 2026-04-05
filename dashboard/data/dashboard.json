@@ -837,23 +837,108 @@
     {
       "id": "T74",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final session housekeeping",
-      "started": "2026-04-05T17:39:14.039Z"
+      "started": "2026-04-05T17:39:14.039Z",
+      "completed": "2026-04-05T17:39:28.045Z",
+      "duration_ms": 30000,
+      "summary": "Git pushed. Totals: chess 186 tests, regex 127 tests. 24 tasks done this session."
+    },
+    {
+      "id": "T81",
+      "mode": "THINK",
+      "status": "done",
+      "task": "2.5 hours left. Projects with depth potential: (1) HenryDB query optimizer, (2) ECS game engine, (3) Compiler backend (IR→bytecode→VM), (4) Type checker improvements, (5) HTTP server",
+      "started": "2026-04-05T17:39:39.340Z",
+      "completed": "2026-04-05T17:40:16.842Z",
+      "duration_ms": 30000,
+      "summary": "Decision: bytecode-vm deep dive — add tests, compiler, expand features. 373 lines of existing VM code, no tests."
+    },
+    {
+      "id": "T82",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan bytecode-vm deep dive: tests, compiler, features",
+      "task": null,
+      "started": "2026-04-05T17:40:29.684Z",
+      "completed": "2026-04-05T17:40:45.033Z",
+      "duration_ms": 30000,
+      "summary": "Planned 4 tasks: tests, string/array ops, source parser, README."
+    },
+    {
+      "id": "T85",
+      "mode": "BUILD",
+      "task": "bytecode-vm: comprehensive test suite for VM, Compiler, and Chunk (target 60+ tests)",
+      "status": "done",
+      "plan_ref": "T82",
+      "started": "2026-04-05T17:40:55.418Z",
+      "completed": "2026-04-05T17:42:08.555Z",
+      "duration_ms": 300000,
+      "summary": "54 tests for bytecode VM (0→54). Covers VM ops, compiler, control flow, functions, errors. All pass first try."
+    },
+    {
+      "id": "T86",
+      "mode": "BUILD",
+      "task": "bytecode-vm: add string ops, arrays, built-in functions (len, push, map)",
+      "status": "done",
+      "plan_ref": "T82",
+      "started": "2026-04-05T17:42:26.364Z",
+      "completed": "2026-04-05T17:44:18.425Z",
+      "duration_ms": 300000,
+      "summary": "Arrays, strings, 10 new opcodes. Compiler support for arr/idx/len/push/concat/slice. 77 tests (was 54)."
+    },
+    {
+      "id": "T87",
+      "mode": "BUILD",
+      "task": "bytecode-vm: add a tokenizer+parser so we can run programs from source code strings",
+      "status": "done",
+      "plan_ref": "T82",
+      "started": "2026-04-05T17:44:34.822Z",
+      "completed": "2026-04-05T17:46:39.019Z",
+      "duration_ms": 360000,
+      "summary": "Tokenizer + parser: let/in, if/then/else, fn/arrow, arrays, len/push. run() convenience. 44 tests → 121 total."
+    },
+    {
+      "id": "T88",
+      "mode": "BUILD",
+      "task": "bytecode-vm: README with architecture, opcodes, examples",
+      "status": "done",
+      "plan_ref": "T82",
+      "started": "2026-04-05T17:46:56.546Z",
+      "completed": "2026-04-05T17:47:50.141Z",
+      "duration_ms": 60000,
+      "summary": "bytecode-vm README: architecture, opcode table, language syntax, usage examples."
+    },
+    {
+      "id": "T83",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "started": "2026-04-05T17:48:03.535Z",
+      "completed": "2026-04-05T17:48:04.110Z",
+      "duration_ms": 0,
+      "summary": "Skipped unfilled placeholder"
+    },
+    {
+      "id": "T84",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Session checkpoint",
+      "started": "2026-04-05T17:48:11.308Z"
     }
   ],
   "current": {
-    "id": "T74",
+    "id": "T84",
     "mode": "MAINTAIN",
     "status": "in-progress",
-    "task": "Final session housekeeping",
-    "started": "2026-04-05T17:39:14.039Z"
+    "task": "Session checkpoint",
+    "started": "2026-04-05T17:48:11.308Z"
   },
   "stats": {
-    "completed": 79,
+    "completed": 87,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 11432000
+    "total_duration_ms": 12542000
   },
-  "updated_at": "2026-04-05T17:39:14.039Z"
+  "updated_at": "2026-04-05T17:48:11.308Z"
 }
