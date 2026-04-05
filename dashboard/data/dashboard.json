@@ -1211,23 +1211,73 @@
     {
       "id": "T116",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final boundary cleanup",
-      "started": "2026-04-05T18:28:03.968Z"
+      "started": "2026-04-05T18:28:03.968Z",
+      "completed": "2026-04-05T18:28:24.632Z",
+      "duration_ms": 15000,
+      "summary": "Git push, all repos synced. 75 tasks completed."
+    },
+    {
+      "id": "T117",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Chess engine: UCI/play demo — run self-play game and display board",
+      "started": "2026-04-05T18:28:48.053Z",
+      "completed": "2026-04-05T18:29:18.796Z",
+      "duration_ms": 30000,
+      "summary": "Self-play demo: QGD opening → tactical middlegame → Qxd2# checkmate in 12 moves. Engine works beautifully."
+    },
+    {
+      "id": "T118",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Bytecode VM: add more tests — closures, edge cases, error paths",
+      "started": "2026-04-05T18:29:28.290Z",
+      "completed": "2026-04-05T18:31:11.653Z",
+      "duration_ms": 120000,
+      "summary": "24 closure+edge tests. 145 total bytecode-vm tests (was 121)."
+    },
+    {
+      "id": "T119",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Regex engine: add more tests for character class ranges and escapes",
+      "started": "2026-04-05T18:31:20.889Z",
+      "completed": "2026-04-05T18:32:52.942Z",
+      "duration_ms": 120000,
+      "summary": "29 charclass+escape tests. Ranges, escapes, quantifier edges, DFA matching. 156 total regex tests."
+    },
+    {
+      "id": "T120",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: string function tests (UPPER, LOWER, LENGTH, SUBSTR, REPLACE)",
+      "started": "2026-04-05T18:33:02.803Z",
+      "completed": "2026-04-05T18:36:30.656Z",
+      "duration_ms": 120000,
+      "summary": "16 string function tests. UPPER, LOWER, REPLACE, TRIM, LIKE, ||. 694 total HenryDB tests."
+    },
+    {
+      "id": "T121",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Session end cleanup",
+      "started": "2026-04-05T18:36:40.304Z"
     }
   ],
   "current": {
-    "id": "T116",
+    "id": "T121",
     "mode": "MAINTAIN",
     "status": "in-progress",
-    "task": "Final boundary cleanup",
-    "started": "2026-04-05T18:28:03.968Z"
+    "task": "Session end cleanup",
+    "started": "2026-04-05T18:36:40.304Z"
   },
   "stats": {
-    "completed": 115,
+    "completed": 120,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 15827000
+    "total_duration_ms": 16232000
   },
-  "updated_at": "2026-04-05T18:28:03.968Z"
+  "updated_at": "2026-04-05T18:36:40.304Z"
 }
