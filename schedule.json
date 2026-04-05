@@ -2643,9 +2643,19 @@
       "completed": "2026-04-05T00:18:07.897Z",
       "duration_ms": 600000,
       "summary": "ASN.1 DER: length encoding (short/long form), BOOLEAN, NULL, INTEGER (0, positive, large, negative, -128), OCTET STRING (string + bytes), BIT STRING, UTF8 String (ASCII + unicode), OID (1.2.840, RSA OID), SEQUENCE (mixed types, nested). Full roundtrip encoding/decoding. 23 tests. GitHub: henry-the-frog/asn1"
+    },
+    {
+      "id": "T257",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "UUID: v4 (random), v1 (time-based), v5 (name-based SHA-1), parse, validate, version detection, nil UUID, comparison. 20+ tests.",
+      "started": "2026-04-05T00:18:28.918Z",
+      "completed": "2026-04-05T00:19:41.157Z",
+      "duration_ms": 600000,
+      "summary": "UUID: v4 (random, correct version/variant bits), v1 (time-based, Gregorian epoch, clock sequence), v5 (name-based SHA-1, deterministic, custom namespace), parse (to bytes), validate (regex), version detection, compare, isNil, NIL constant, DNS/URL namespaces. 23 tests. GitHub: henry-the-frog/uuid"
     }
   ],
-  "updated_at": "2026-04-05T00:18:07.897Z",
+  "updated_at": "2026-04-05T00:19:41.157Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -2834,6 +2844,10 @@
     {
       "time": "2026-04-05T00:16:10.199Z",
       "msg": "Added T256 (BUILD) after end: ASN.1/DER: encode/decode INTEGER, BOOLEAN, OCTET STRING, BIT STRING, NULL, SEQUENCE, OID, UTF8String, constructed types, length encoding (short/long form). 20+ tests."
+    },
+    {
+      "time": "2026-04-05T00:18:28.198Z",
+      "msg": "Added T257 (BUILD) after end: UUID: v4 (random), v1 (time-based), v5 (name-based SHA-1), parse, validate, version detection, nil UUID, comparison. 20+ tests."
     }
   ]
 }

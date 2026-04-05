@@ -1,73 +1,97 @@
-// UUID Generator — v4 (random) and v7 (timestamp-ordered)
+// uuid.js — UUID generator
 
-const HEX = '0123456789abcdef';
+import { randomBytes, createHash } from 'node:crypto';
 
-function randomBytes(n) {
-  const bytes = new Uint8Array(n);
-  for (let i = 0; i < n; i++) bytes[i] = Math.floor(Math.random() * 256);
-  return bytes;
-}
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-function bytesToHex(bytes) {
-  let hex = '';
-  for (const b of bytes) hex += HEX[b >> 4] + HEX[b & 0xf];
-  return hex;
-}
-
-function formatUUID(hex) {
-  return `${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20,32)}`;
-}
-
-// UUID v4 — random
-export function v4() {
-  const bytes = randomBytes(16);
-  bytes[6] = (bytes[6] & 0x0f) | 0x40; // Version 4
-  bytes[8] = (bytes[8] & 0x3f) | 0x80; // Variant 10
-  return formatUUID(bytesToHex(bytes));
-}
-
-// UUID v7 — timestamp-ordered (draft RFC 9562)
-export function v7() {
-  const now = Date.now();
-  const bytes = randomBytes(16);
-
-  // Timestamp (48 bits, ms since epoch) in bytes 0-5
-  bytes[0] = (now / 2**40) & 0xff;
-  bytes[1] = (now / 2**32) & 0xff;
-  bytes[2] = (now / 2**24) & 0xff;
-  bytes[3] = (now / 2**16) & 0xff;
-  bytes[4] = (now / 2**8) & 0xff;
-  bytes[5] = now & 0xff;
-
-  bytes[6] = (bytes[6] & 0x0f) | 0x70; // Version 7
-  bytes[8] = (bytes[8] & 0x3f) | 0x80; // Variant 10
-
-  return formatUUID(bytesToHex(bytes));
-}
-
-// UUID nil
 export const NIL = '00000000-0000-0000-0000-000000000000';
 
-// Parse UUID string to bytes
+// Format bytes as UUID string
+function format(bytes) {
+  const hex = [...bytes].map(b => b.toString(16).padStart(2, '0')).join('');
+  return `${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20)}`;
+}
+
+// ===== v4 (random) =====
+export function v4() {
+  const bytes = randomBytes(16);
+  bytes[6] = (bytes[6] & 0x0F) | 0x40; // version 4
+  bytes[8] = (bytes[8] & 0x3F) | 0x80; // variant 10xx
+  return format(bytes);
+}
+
+// ===== v1 (time-based) =====
+let clockSeq = null;
+let lastTime = 0;
+
+export function v1() {
+  // Gregorian epoch offset: Oct 15, 1582 to Jan 1, 1970 in 100ns intervals
+  const GREGORIAN_OFFSET = 122192928000000000n;
+  const now = BigInt(Date.now()) * 10000n + GREGORIAN_OFFSET;
+  
+  if (clockSeq === null) clockSeq = (randomBytes(2).readUInt16BE(0)) & 0x3FFF;
+  
+  const timeLow = Number(now & 0xFFFFFFFFn);
+  const timeMid = Number((now >> 32n) & 0xFFFFn);
+  const timeHigh = Number((now >> 48n) & 0x0FFFn) | 0x1000; // version 1
+  
+  const bytes = new Uint8Array(16);
+  bytes[0] = (timeLow >> 24) & 0xFF;
+  bytes[1] = (timeLow >> 16) & 0xFF;
+  bytes[2] = (timeLow >> 8) & 0xFF;
+  bytes[3] = timeLow & 0xFF;
+  bytes[4] = (timeMid >> 8) & 0xFF;
+  bytes[5] = timeMid & 0xFF;
+  bytes[6] = (timeHigh >> 8) & 0xFF;
+  bytes[7] = timeHigh & 0xFF;
+  bytes[8] = ((clockSeq >> 8) & 0x3F) | 0x80; // variant
+  bytes[9] = clockSeq & 0xFF;
+  // Node (random)
+  const node = randomBytes(6);
+  for (let i = 0; i < 6; i++) bytes[10 + i] = node[i];
+  
+  return format(bytes);
+}
+
+// ===== v5 (name-based, SHA-1) =====
+export const DNS_NAMESPACE = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
+export const URL_NAMESPACE = '6ba7b811-9dad-11d1-80b4-00c04fd430c8';
+
+export function v5(name, namespace = DNS_NAMESPACE) {
+  const nsBytes = parse(namespace);
+  const hash = createHash('sha1').update(Buffer.from(nsBytes)).update(name).digest();
+  const bytes = new Uint8Array(hash.slice(0, 16));
+  bytes[6] = (bytes[6] & 0x0F) | 0x50; // version 5
+  bytes[8] = (bytes[8] & 0x3F) | 0x80; // variant
+  return format(bytes);
+}
+
+// ===== Parse =====
 export function parse(uuid) {
   const hex = uuid.replace(/-/g, '');
   if (hex.length !== 32) throw new Error('Invalid UUID');
   const bytes = new Uint8Array(16);
-  for (let i = 0; i < 16; i++) bytes[i] = parseInt(hex.slice(i*2, i*2+2), 16);
+  for (let i = 0; i < 16; i++) bytes[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
   return bytes;
 }
 
-// Validate UUID format
-export function validate(uuid) {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(uuid);
-}
+// ===== Validate =====
+export function validate(uuid) { return UUID_RE.test(uuid); }
 
-// Get version from UUID
+// ===== Version =====
 export function version(uuid) {
+  if (!validate(uuid)) return -1;
   return parseInt(uuid[14], 16);
 }
 
-// Compare UUIDs (for sorting v7)
+// ===== Compare =====
 export function compare(a, b) {
-  return a < b ? -1 : a > b ? 1 : 0;
+  const ba = parse(a), bb = parse(b);
+  for (let i = 0; i < 16; i++) {
+    if (ba[i] < bb[i]) return -1;
+    if (ba[i] > bb[i]) return 1;
+  }
+  return 0;
 }
+
+export function isNil(uuid) { return uuid === NIL; }
