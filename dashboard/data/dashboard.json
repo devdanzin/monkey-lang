@@ -101,8 +101,9 @@
       "id": "T20",
       "mode": "BUILD",
       "task": "HenryDB: GROUP BY clause with aggregate functions, HAVING support",
-      "status": "upcoming",
-      "plan_ref": "T6"
+      "status": "in-progress",
+      "plan_ref": "T6",
+      "started": "2026-04-05T14:31:34.585Z"
     },
     {
       "id": "T21",
@@ -189,12 +190,19 @@
       "task": "Final housekeeping — git push, scratch notes, dashboard update"
     }
   ],
-  "current": null,
+  "current": {
+    "id": "T20",
+    "mode": "BUILD",
+    "task": "HenryDB: GROUP BY clause with aggregate functions, HAVING support",
+    "status": "in-progress",
+    "plan_ref": "T6",
+    "started": "2026-04-05T14:31:34.585Z"
+  },
   "stats": {
     "completed": 9,
     "yielded": 0,
     "skipped": 0,
     "total_duration_ms": 1200000
   },
-  "updated_at": "2026-04-05T14:31:11.928Z"
+  "updated_at": "2026-04-05T14:31:34.585Z"
 }
