@@ -209,8 +209,9 @@
       "id": "T26",
       "mode": "BUILD",
       "task": "HenryDB: DISTINCT, COUNT DISTINCT, SELECT DISTINCT",
-      "status": "upcoming",
-      "plan_ref": "T10"
+      "status": "in-progress",
+      "plan_ref": "T10",
+      "started": "2026-04-05T14:50:47.893Z"
     },
     {
       "id": "T12",
@@ -250,5 +251,5 @@
       "task": "Final housekeeping — git push, scratch notes, dashboard update"
     }
   ],
-  "updated_at": "2026-04-05T14:50:23.086Z"
+  "updated_at": "2026-04-05T14:50:47.893Z"
 }
