@@ -461,23 +461,20 @@
     {
       "id": "T44",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: RIGHT JOIN, CROSS JOIN, multiple aggregates with JOINs, DELETE with JOIN filter",
-      "started": "2026-04-05T15:50:49.805Z"
+      "started": "2026-04-05T15:50:49.805Z",
+      "completed": "2026-04-05T15:53:26.041Z",
+      "duration_ms": 120000,
+      "summary": "RIGHT JOIN, CROSS JOIN (cartesian product), aggregate JOINs with GROUP BY/HAVING. 7 new tests → 430 total (304 growth)."
     }
   ],
-  "current": {
-    "id": "T44",
-    "mode": "BUILD",
-    "status": "in-progress",
-    "task": "HenryDB: RIGHT JOIN, CROSS JOIN, multiple aggregates with JOINs, DELETE with JOIN filter",
-    "started": "2026-04-05T15:50:49.805Z"
-  },
+  "current": null,
   "stats": {
-    "completed": 43,
+    "completed": 44,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 6062000
+    "total_duration_ms": 6182000
   },
-  "updated_at": "2026-04-05T15:50:49.805Z"
+  "updated_at": "2026-04-05T15:53:26.041Z"
 }
