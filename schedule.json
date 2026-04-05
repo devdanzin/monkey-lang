@@ -537,9 +537,16 @@
       "completed": "2026-04-05T16:18:00.339Z",
       "duration_ms": 90000,
       "summary": "Advanced aggregates: MIN/MAX on strings, COUNT(col) vs COUNT(*) NULL handling, AVG/SUM NULL skipping, GROUP BY NULL. 9 new tests → 550 total (424 growth!)."
+    },
+    {
+      "id": "T52",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Update HenryDB README to reflect 550 tests, update scratch note, final dashboard",
+      "started": "2026-04-05T16:18:24.126Z"
     }
   ],
-  "updated_at": "2026-04-05T16:18:00.339Z",
+  "updated_at": "2026-04-05T16:18:24.126Z",
   "adjustments": [
     {
       "time": "2026-04-05T15:35:44.249Z",
@@ -592,6 +599,10 @@
     {
       "time": "2026-04-05T16:17:02.076Z",
       "msg": "Added T51 (BUILD) after end: HenryDB: MIN/MAX on strings, aggregate with DISTINCT in GROUP BY, COUNT(column) vs COUNT(*)"
+    },
+    {
+      "time": "2026-04-05T16:18:16.844Z",
+      "msg": "Added T52 (MAINTAIN) after end: Update HenryDB README to reflect 550 tests, update scratch note, final dashboard"
     }
   ]
 }
