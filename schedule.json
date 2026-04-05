@@ -2573,9 +2573,19 @@
       "completed": "2026-04-05T00:05:43.334Z",
       "duration_ms": 600000,
       "summary": "Finite automata: NFA (epsilon closure, simulate), Thompson construction (char, concat, union, star, plus, optional), NFA→DFA subset construction, DFA simulation, regex compiler (literals, *, +, ?, |, groups, dot), complex patterns (email-like, binary strings). 18 tests. GitHub: henry-the-frog/automata"
+    },
+    {
+      "id": "T250",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Message queue: pub/sub channels, topics with wildcards, message persistence, acknowledgment, dead letter queue, consumer groups, at-least-once delivery. 25+ tests.",
+      "started": "2026-04-05T00:06:01.182Z",
+      "completed": "2026-04-05T00:07:37.557Z",
+      "duration_ms": 600000,
+      "summary": "Message queue: Channel (pub/sub, unsubscribe, pending), ConsumerGroup (round-robin, acknowledgment), Broker (multi-topic, wildcard subscribe), topic matching (* single level, # multi-level), Message (TTL, expiry), dead letter queue processing, stats. 15 tests. GitHub: henry-the-frog/message-queue"
     }
   ],
-  "updated_at": "2026-04-05T00:05:43.334Z",
+  "updated_at": "2026-04-05T00:07:37.557Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -2736,6 +2746,10 @@
     {
       "time": "2026-04-05T00:04:28.867Z",
       "msg": "Added T249 (BUILD) after end: Finite automata: NFA construction (Thompson), NFA simulation, NFA-to-DFA subset construction, DFA minimization, regex-to-NFA compiler, string matching. 25+ tests."
+    },
+    {
+      "time": "2026-04-05T00:06:00.455Z",
+      "msg": "Added T250 (BUILD) after end: Message queue: pub/sub channels, topics with wildcards, message persistence, acknowledgment, dead letter queue, consumer groups, at-least-once delivery. 25+ tests."
     }
   ]
 }
