@@ -1,6 +1,1 @@
-{
-  "name": "middleware",
-  "version": "0.1.0",
-  "type": "module",
-  "scripts": { "test": "node --test test/*.test.js" }
-}
+{"name":"middleware","version":"1.0.0","description":"Middleware compose from scratch","type":"module","scripts":{"test":"node --test src/**/*.test.js"}}

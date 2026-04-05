@@ -2833,9 +2833,19 @@
       "completed": "2026-04-05T00:51:08.896Z",
       "duration_ms": 600000,
       "summary": "Promise pool: mapLimit (concurrent mapping, preserves order), filterLimit, settleAll (fulfilled/rejected), waterfall (chain), parallelLimit, timeout (promise race), retryAsync (with delay scaling), deferred (resolve/reject externally), delay. 13 tests. GitHub: henry-the-frog/promise-pool"
+    },
+    {
+      "id": "T276",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Middleware compose: Koa-style onion model, async compose, error handling, context propagation, named middleware, conditional middleware. 15+ tests.",
+      "started": "2026-04-05T00:51:21.908Z",
+      "completed": "2026-04-05T00:52:29.221Z",
+      "duration_ms": 600000,
+      "summary": "Middleware: Koa-style compose (onion model execution order), context propagation, async support, multiple next() detection, empty middleware, error propagation, named middleware, conditional (when with bool or function), errorHandler wrapper, App class (use chaining, run). 13 tests. GitHub: henry-the-frog/middleware"
     }
   ],
-  "updated_at": "2026-04-05T00:51:08.896Z",
+  "updated_at": "2026-04-05T00:52:29.221Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -3100,6 +3110,10 @@
     {
       "time": "2026-04-05T00:49:51.836Z",
       "msg": "Added T275 (BUILD) after end: Promise pool: map with concurrency limit, settle (allSettled), race, any, waterfall, retry, parallel with limit, timeout. 15+ tests."
+    },
+    {
+      "time": "2026-04-05T00:51:21.259Z",
+      "msg": "Added T276 (BUILD) after end: Middleware compose: Koa-style onion model, async compose, error handling, context propagation, named middleware, conditional middleware. 15+ tests."
     }
   ]
 }
