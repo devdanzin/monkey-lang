@@ -3,7 +3,7 @@
 
 // ===== NFA State =====
 let nextStateId = 0;
-class State {
+export class State {
   constructor() {
     this.id = nextStateId++;
     this.transitions = []; // { char, state } or { epsilon: true, state }
@@ -14,7 +14,7 @@ class State {
 }
 
 // ===== NFA Fragment =====
-class Fragment {
+export class Fragment {
   constructor(start, accept) {
     this.start = start;
     this.accept = accept;
