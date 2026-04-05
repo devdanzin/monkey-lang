@@ -635,29 +635,74 @@
     {
       "id": "T58",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping checkpoint",
-      "started": "2026-04-05T17:13:13.477Z"
+      "started": "2026-04-05T17:13:13.477Z",
+      "completed": "2026-04-05T17:14:11.297Z",
+      "duration_ms": 60000,
+      "summary": "Git push, dashboard regenerated (chess-engine 144 tests), all clean."
     },
     {
       "id": "T59",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Plan regex engine project: Thompson NFA, DFA, matching",
-      "task": null
+      "task": null,
+      "started": "2026-04-05T17:14:21.860Z",
+      "completed": "2026-04-05T17:14:56.363Z",
+      "duration_ms": 30000,
+      "summary": "Plan: deepen regex-engine with DFA conversion, minimization, capture groups. 3 BUILD tasks."
+    },
+    {
+      "id": "T65",
+      "mode": "BUILD",
+      "task": "regex-engine: NFA→DFA subset construction + DFA minimization (Hopcroft's)",
+      "status": "done",
+      "plan_ref": "T59",
+      "started": "2026-04-05T17:15:07.042Z",
+      "completed": "2026-04-05T17:17:06.963Z",
+      "duration_ms": 300000,
+      "summary": "NFA→DFA subset construction + Hopcroft minimization. 23 new tests → 55 total regex tests."
+    },
+    {
+      "id": "T66",
+      "mode": "BUILD",
+      "task": "regex-engine: Capture groups with group extraction and backreferences",
+      "status": "done",
+      "plan_ref": "T59",
+      "started": "2026-04-05T17:17:26.787Z",
+      "completed": "2026-04-05T17:21:11.273Z",
+      "duration_ms": 300000,
+      "summary": "Capture groups, backreferences, replace/replaceAll/split. Generator-based backtracking. 31 new tests → 86 total regex tests."
+    },
+    {
+      "id": "T67",
+      "mode": "BUILD",
+      "task": "regex-engine: Comprehensive test suite — DFA correctness, capture groups, edge cases",
+      "status": "done",
+      "plan_ref": "T59",
+      "started": "2026-04-05T17:21:30.416Z",
+      "completed": "2026-04-05T17:24:47.215Z",
+      "duration_ms": 300000,
+      "summary": "34 edge tests, fixed escaped dot bug in NFA, verified NFA/DFA consistency. 120 total regex tests (was 32)."
     },
     {
       "id": "T60",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null
+      "status": "done",
+      "task": null,
+      "started": "2026-04-05T17:25:05.373Z",
+      "completed": "2026-04-05T17:25:05.939Z",
+      "duration_ms": 0,
+      "summary": "Skipped unfilled placeholder"
     },
     {
       "id": "T61",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final housekeeping"
+      "status": "in-progress",
+      "task": "Final housekeeping",
+      "started": "2026-04-05T17:25:16.672Z"
     }
   ],
-  "updated_at": "2026-04-05T17:13:13.477Z"
+  "updated_at": "2026-04-05T17:25:16.672Z"
 }
