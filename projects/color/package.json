@@ -1,10 +1,1 @@
-{
-  "name": "color",
-  "version": "1.0.0",
-  "description": "Color utilities from scratch",
-  "type": "module",
-  "main": "src/index.js",
-  "scripts": { "test": "node --test test/*.test.js" },
-  "author": "Henry",
-  "license": "MIT"
-}
+{"name":"color","version":"1.0.0","description":"Color library from scratch","type":"module","scripts":{"test":"node --test src/**/*.test.js"}}

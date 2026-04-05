@@ -2593,9 +2593,19 @@
       "completed": "2026-04-05T00:09:21.335Z",
       "duration_ms": 600000,
       "summary": "Task runner: task definition with deps, dependency chain execution, single-execution guarantee, circular dependency detection, context with name and log, execution logging with duration, reset, getOrder (topo sort), dryRun, groups, list, async tasks, CachedTaskRunner (skip up-to-date, re-run on file change). 16 tests. GitHub: henry-the-frog/taskrunner"
+    },
+    {
+      "id": "T252",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Color library: parse (hex, rgb, hsl, named), convert between formats, lighten/darken, saturate/desaturate, mix, contrast ratio, WCAG compliance, palette generation, complementary/triadic/analogous. 25+ tests.",
+      "started": "2026-04-05T00:09:32.995Z",
+      "completed": "2026-04-05T00:10:54.462Z",
+      "duration_ms": 600000,
+      "summary": "Color library: parse (hex 3/6/8-digit, rgb, rgba, hsl, named colors), convert (toHex, toRgb, toHSL, roundtrip), manipulate (lighten, darken, saturate, desaturate, grayscale, invert, alpha, mix), accessibility (luminance, contrast ratio, WCAG AA/AAA), palette generation (complementary, triadic, analogous), equals. 28 tests. GitHub: henry-the-frog/color"
     }
   ],
-  "updated_at": "2026-04-05T00:09:21.335Z",
+  "updated_at": "2026-04-05T00:10:54.462Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -2764,6 +2774,10 @@
     {
       "time": "2026-04-05T00:07:55.035Z",
       "msg": "Added T251 (BUILD) after end: Task runner: define tasks with dependencies, parallel execution, file watching, task caching (skip if up-to-date), command execution, task groups. 20+ tests."
+    },
+    {
+      "time": "2026-04-05T00:09:32.294Z",
+      "msg": "Added T252 (BUILD) after end: Color library: parse (hex, rgb, hsl, named), convert between formats, lighten/darken, saturate/desaturate, mix, contrast ratio, WCAG compliance, palette generation, complementary/triadic/analogous. 25+ tests."
     }
   ]
 }
