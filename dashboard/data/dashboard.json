@@ -507,14 +507,27 @@
       "completed": "2026-04-05T16:11:32.192Z",
       "duration_ms": 120000,
       "summary": "512 tests! NULL comparison semantics fix, type coercion, aliasing, e-commerce pipeline, data migration pipeline. 12 new tests."
+    },
+    {
+      "id": "T49",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: SUBSTRING function, REPLACE function, TRIM, ABS/ROUND math functions",
+      "started": "2026-04-05T16:12:21.165Z"
     }
   ],
-  "current": null,
+  "current": {
+    "id": "T49",
+    "mode": "BUILD",
+    "status": "in-progress",
+    "task": "HenryDB: SUBSTRING function, REPLACE function, TRIM, ABS/ROUND math functions",
+    "started": "2026-04-05T16:12:21.165Z"
+  },
   "stats": {
     "completed": 48,
     "yielded": 0,
     "skipped": 0,
     "total_duration_ms": 6962000
   },
-  "updated_at": "2026-04-05T16:11:32.192Z"
+  "updated_at": "2026-04-05T16:12:21.165Z"
 }
