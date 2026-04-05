@@ -451,12 +451,15 @@
     {
       "id": "T43",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: LEFT JOIN comprehensive tests, multi-table queries, self-joins",
-      "started": "2026-04-05T15:47:15.439Z"
+      "started": "2026-04-05T15:47:15.439Z",
+      "completed": "2026-04-05T15:49:07.572Z",
+      "duration_ms": 120000,
+      "summary": "Advanced JOIN tests: LEFT JOIN with NULL, 3-table joins, self-join with aliases, empty table JOINs. 11 new tests → 423 total."
     }
   ],
-  "updated_at": "2026-04-05T15:47:15.439Z",
+  "updated_at": "2026-04-05T15:49:07.572Z",
   "adjustments": [
     {
       "time": "2026-04-05T15:35:44.249Z",
