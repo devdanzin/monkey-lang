@@ -3309,12 +3309,35 @@
     {
       "id": "T313",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Session wind-down: dashboard, daily log, git push, CURRENT.md",
-      "started": "2026-04-05T03:36:58.054Z"
+      "started": "2026-04-05T03:36:58.054Z",
+      "completed": "2026-04-05T03:38:45.238Z",
+      "duration_ms": 300000,
+      "summary": "Session C2 wind-down: daily log updated, dashboard regenerated, README written, scratch note captured, git pushed. Lambda calculus: 10 modules, 245 tests."
+    },
+    {
+      "id": "T324",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Blog post: 'From Untyped to Dependent: Building 10 Type Checkers in One Evening' — lambda calculus exploration, type theory progression, key insights.",
+      "started": "2026-04-05T03:39:03.221Z",
+      "completed": "2026-04-05T03:40:33.331Z",
+      "duration_ms": 300000,
+      "summary": "Blog post published: From Untyped to Dependent — 10 Lambda Calculus Modules. Covers the full progression with key insights. Pushed to GitHub Pages."
+    },
+    {
+      "id": "T325",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Build algebraic effect handler system: effect declarations, handler blocks, resume/continue, shallow and deep handlers, effect polymorphism. 15+ tests.",
+      "started": "2026-04-05T03:40:50.354Z",
+      "completed": "2026-04-05T03:42:30.999Z",
+      "duration_ms": 600000,
+      "summary": "Algebraic effects: CPS-based interpreter, perform/handle, resume continuations, exception effect, nested handlers, multiple effects, higher-order with effects. 15 tests (260 total in lambda-calculus)."
     }
   ],
-  "updated_at": "2026-04-05T03:36:58.054Z",
+  "updated_at": "2026-04-05T03:42:30.999Z",
   "adjustments": [
     {
       "time": "2026-04-05T03:20:23.226Z",
@@ -3351,6 +3374,14 @@
     {
       "time": "2026-04-05T03:34:31.951Z",
       "msg": "Added T323 (BUILD) after T322: Build dependent types: Pi types (Π(x:A).B), Sigma types (Σ(x:A).B), type-in-type universe, dependent application, type checking with normalization. 15+ tests."
+    },
+    {
+      "time": "2026-04-05T03:38:56.987Z",
+      "msg": "Added T324 (BUILD) after end: Blog post: 'From Untyped to Dependent: Building 10 Type Checkers in One Evening' — lambda calculus exploration, type theory progression, key insights."
+    },
+    {
+      "time": "2026-04-05T03:40:44.760Z",
+      "msg": "Added T325 (BUILD) after end: Build algebraic effect handler system: effect declarations, handler blocks, resume/continue, shallow and deep handlers, effect polymorphism. 15+ tests."
     }
   ]
 }
