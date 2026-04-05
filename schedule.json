@@ -175,10 +175,13 @@
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: String functions — LIKE pattern matching, UPPER, LOWER, LENGTH, CONCAT/|| operator",
       "plan_ref": "T10",
-      "started": "2026-04-05T14:42:18.208Z"
+      "started": "2026-04-05T14:42:18.208Z",
+      "completed": "2026-04-05T14:45:18.345Z",
+      "duration_ms": 240000,
+      "summary": "String functions: LIKE pattern matching, UPPER, LOWER, LENGTH, CONCAT, || operator, BETWEEN. 21 new tests → 244 total."
     },
     {
       "id": "T24",
@@ -239,5 +242,5 @@
       "task": "Final housekeeping — git push, scratch notes, dashboard update"
     }
   ],
-  "updated_at": "2026-04-05T14:42:18.208Z"
+  "updated_at": "2026-04-05T14:45:18.345Z"
 }
