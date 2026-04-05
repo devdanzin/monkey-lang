@@ -567,73 +567,97 @@
       "completed": "2026-04-05T16:22:44.835Z",
       "duration_ms": 90000,
       "summary": "Column projection, aliases, data types (int/text/bool/null/large int), multi-table refs. 17 new tests → 581 total."
+    },
+    {
+      "id": "T55",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Decide direction for Session A remainder (3.5 hrs). HenryDB at 600 tests — continue or switch to depth on another project? Consider: chess engine, ray tracer improvements, new project, blog post.",
+      "started": "2026-04-05T16:46:06.071Z",
+      "completed": "2026-04-05T16:46:36.257Z",
+      "duration_ms": 60000,
+      "summary": "Decided: chess engine depth (fix perft bugs) + new regex engine project + optional blog. Variety after HenryDB marathon."
+    },
+    {
+      "id": "T56",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan chess engine depth: fix perft bugs, proper move generation",
+      "task": null,
+      "started": "2026-04-05T16:47:01.605Z",
+      "completed": "2026-04-05T16:49:24.993Z",
+      "duration_ms": 90000,
+      "summary": "Investigated chess engine perft: ALL bugs already fixed! All 9 skipped tests pass when unskipped. Plan: unskip tests, add deeper perft levels, then add opening book or improve search."
+    },
+    {
+      "id": "T62",
+      "mode": "BUILD",
+      "task": "Unskip all perft tests, add deeper perft levels (d4, d5), add new test positions",
+      "status": "done",
+      "plan_ref": "T56",
+      "started": "2026-04-05T16:49:40.387Z",
+      "completed": "2026-04-05T17:05:02.651Z",
+      "duration_ms": 300000,
+      "summary": "Unskipped all 9 perft tests (all pass!). Added depth 4-5, Position 6, edge cases. 34 perft tests, 105 total chess tests (was 78+9 skipped)."
+    },
+    {
+      "id": "T63",
+      "mode": "BUILD",
+      "task": "Add opening book + improve search (iterative deepening, transposition table, quiescence)",
+      "status": "done",
+      "plan_ref": "T56",
+      "started": "2026-04-05T17:05:19.297Z",
+      "completed": "2026-04-05T17:09:38.224Z",
+      "duration_ms": 600000,
+      "summary": "Major search upgrade: opening book (12 lines), killer moves, history heuristic, aspiration windows, PVS, check extensions, delta pruning. 114 tests total (was 87). All passing."
+    },
+    {
+      "id": "T64",
+      "mode": "BUILD",
+      "task": "Add PGN export, game history, and algebraic notation",
+      "status": "done",
+      "plan_ref": "T56",
+      "started": "2026-04-05T17:09:55.007Z",
+      "completed": "2026-04-05T17:12:39.311Z",
+      "duration_ms": 480000,
+      "summary": "PGN export, algebraic notation (SAN), Game class with checkmate/stalemate detection. 30 new tests → 144 total."
+    },
+    {
+      "id": "T57",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "started": "2026-04-05T17:13:02.366Z",
+      "completed": "2026-04-05T17:13:02.920Z",
+      "duration_ms": 0,
+      "summary": "Skipped unfilled placeholder"
+    },
+    {
+      "id": "T58",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Housekeeping checkpoint",
+      "started": "2026-04-05T17:13:13.477Z"
+    },
+    {
+      "id": "T59",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Plan regex engine project: Thompson NFA, DFA, matching",
+      "task": null
+    },
+    {
+      "id": "T60",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null
+    },
+    {
+      "id": "T61",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final housekeeping"
     }
   ],
-  "updated_at": "2026-04-05T16:22:44.835Z",
-  "adjustments": [
-    {
-      "time": "2026-04-05T15:35:44.249Z",
-      "msg": "Added T39 (BUILD) after end: HenryDB: TRUNCATE TABLE, OR REPLACE/ON CONFLICT, multi-value INSERT, LIMIT on UPDATE/DELETE"
-    },
-    {
-      "time": "2026-04-05T15:38:51.170Z",
-      "msg": "Added T40 (BUILD) after end: HenryDB: ORDER BY NULLS FIRST/LAST, multiple LIMIT/OFFSET tests, NOT LIKE, NOT BETWEEN"
-    },
-    {
-      "time": "2026-04-05T15:43:50.212Z",
-      "msg": "Added T41 (BUILD) after end: Chess engine: Fix en passant move generation bugs revealed by perft Position 3"
-    },
-    {
-      "time": "2026-04-05T15:44:51.782Z",
-      "msg": "Added T42 (BUILD) after end: HenryDB: OR in WHERE, nested parentheses, complex boolean logic tests to push past 9500 total tests"
-    },
-    {
-      "time": "2026-04-05T15:47:06.717Z",
-      "msg": "Added T43 (BUILD) after end: HenryDB: LEFT JOIN comprehensive tests, multi-table queries, self-joins"
-    },
-    {
-      "time": "2026-04-05T15:50:43.701Z",
-      "msg": "Added T44 (BUILD) after end: HenryDB: RIGHT JOIN, CROSS JOIN, multiple aggregates with JOINs, DELETE with JOIN filter"
-    },
-    {
-      "time": "2026-04-05T15:53:58.588Z",
-      "msg": "Added T45 (BUILD) after end: HenryDB: HAVING with complex expressions, ORDER BY expression, SELECT expression alias reuse"
-    },
-    {
-      "time": "2026-04-05T15:57:03.345Z",
-      "msg": "Added T46 (BUILD) after end: HenryDB: OFFSET tests, nested subquery chains, schema introspection (SHOW TABLES, DESCRIBE)"
-    },
-    {
-      "time": "2026-04-05T16:00:43.925Z",
-      "msg": "Added T47 (BUILD) after end: HenryDB: Push to 500 tests — stress tests, DELETE edge cases, UPDATE with subquery, index stress"
-    },
-    {
-      "time": "2026-04-05T16:09:37.486Z",
-      "msg": "Added T48 (BUILD) after end: HenryDB: NATURAL JOIN, USING clause, SELECT column aliasing, type coercion tests"
-    },
-    {
-      "time": "2026-04-05T16:12:11.705Z",
-      "msg": "Added T49 (BUILD) after end: HenryDB: SUBSTRING function, REPLACE function, TRIM, ABS/ROUND math functions"
-    },
-    {
-      "time": "2026-04-05T16:14:58.195Z",
-      "msg": "Added T50 (BUILD) after end: HenryDB: IFNULL, IIF, TYPEOF functions + comprehensive query plan tests for EXPLAIN"
-    },
-    {
-      "time": "2026-04-05T16:17:02.076Z",
-      "msg": "Added T51 (BUILD) after end: HenryDB: MIN/MAX on strings, aggregate with DISTINCT in GROUP BY, COUNT(column) vs COUNT(*)"
-    },
-    {
-      "time": "2026-04-05T16:18:16.844Z",
-      "msg": "Added T52 (MAINTAIN) after end: Update HenryDB README to reflect 550 tests, update scratch note, final dashboard"
-    },
-    {
-      "time": "2026-04-05T16:20:26.170Z",
-      "msg": "Added T53 (BUILD) after end: HenryDB: LIMIT on DELETE/UPDATE, DELETE FROM ... WHERE EXISTS, more operator tests (!=, <>)"
-    },
-    {
-      "time": "2026-04-05T16:21:43.531Z",
-      "msg": "Added T54 (BUILD) after end: HenryDB: Column aliases in WHERE/ORDER BY, SELECT *, table.* in multi-table queries"
-    }
-  ]
+  "updated_at": "2026-04-05T17:13:13.477Z"
 }
