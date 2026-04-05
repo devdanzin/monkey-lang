@@ -1,7 +1,7 @@
 {
   "lastChecks": {
-    "email": 1743763320,
-    "github": 1743763320,
+    "email": 1743850140,
+    "github": 1743850140,
     "version": 1743674460,
     "dashboard": 1743763320
   },
@@ -11,6 +11,7 @@
     "issue_31448": "CLOSED — webhook fix confirmed included",
     "upgrade_ready": true,
     "unread_emails": "0 unread",
+    "github_notifications": "9 unread, all CI status on my PRs, no human reviews",
     "dashboard_generate": "hanging as of 2026-04-04 — investigate generate.cjs"
   }
 }
