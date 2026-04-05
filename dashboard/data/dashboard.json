@@ -441,23 +441,20 @@
     {
       "id": "T42",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: OR in WHERE, nested parentheses, complex boolean logic tests to push past 9500 total tests",
-      "started": "2026-04-05T15:44:58.826Z"
+      "started": "2026-04-05T15:44:58.826Z",
+      "completed": "2026-04-05T15:46:32.634Z",
+      "duration_ms": 120000,
+      "summary": "11 comprehensive boolean logic tests: OR, NOT, nested parens, IN+AND/OR, LIKE+OR, BETWEEN+OR, IS NULL+OR. 412 total tests."
     }
   ],
-  "current": {
-    "id": "T42",
-    "mode": "BUILD",
-    "status": "in-progress",
-    "task": "HenryDB: OR in WHERE, nested parentheses, complex boolean logic tests to push past 9500 total tests",
-    "started": "2026-04-05T15:44:58.826Z"
-  },
+  "current": null,
   "stats": {
-    "completed": 41,
+    "completed": 42,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 5822000
+    "total_duration_ms": 5942000
   },
-  "updated_at": "2026-04-05T15:44:58.826Z"
+  "updated_at": "2026-04-05T15:46:32.634Z"
 }
