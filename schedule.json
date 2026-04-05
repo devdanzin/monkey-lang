@@ -2933,9 +2933,19 @@
       "completed": "2026-04-05T01:06:09.864Z",
       "duration_ms": 600000,
       "summary": "Object utils: deepClone (object, array, null, Date), deepEqual (nested, types), pick/omit, flatten/unflatten (roundtrip), diff (changes/addition/removal), mapValues/filterValues/mapKeys, groupBy (by property), keyBy, invert, defaults, isEmpty, size. 32 tests. GitHub: henry-the-frog/objects"
+    },
+    {
+      "id": "T286",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Array utils: chunk, unique, compact, zip, unzip, flatten, intersection, difference, union, range, sum, min, max, groupBy, sortBy, partition, last, first. 20+ tests.",
+      "started": "2026-04-05T01:06:29.517Z",
+      "completed": "2026-04-05T01:07:42.699Z",
+      "duration_ms": 600000,
+      "summary": "Array utils: chunk, unique, compact, zip/unzip, flattenDeep, intersection/difference/union, range (with step), sum/min/max, groupBy, sortBy, partition, first/last, shuffle, count. 21 tests. GitHub: henry-the-frog/arrays"
     }
   ],
-  "updated_at": "2026-04-05T01:06:09.864Z",
+  "updated_at": "2026-04-05T01:07:42.699Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -3240,6 +3250,10 @@
     {
       "time": "2026-04-05T01:05:04.698Z",
       "msg": "Added T285 (BUILD) after end: Object utils: deepClone, deepEqual, pick, omit, flatten, unflatten, diff, mapValues, filterValues, groupBy, keyBy, invert, defaults. 25+ tests."
+    },
+    {
+      "time": "2026-04-05T01:06:28.738Z",
+      "msg": "Added T286 (BUILD) after end: Array utils: chunk, unique, compact, zip, unzip, flatten, intersection, difference, union, range, sum, min, max, groupBy, sortBy, partition, last, first. 20+ tests."
     }
   ]
 }
