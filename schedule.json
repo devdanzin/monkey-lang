@@ -2533,9 +2533,19 @@
       "completed": "2026-04-05T00:00:05.238Z",
       "duration_ms": 600000,
       "summary": "YAML parser: scalars (string, number, bool, null, tilde, quoted), block mappings (nested, deep), block sequences, flow sequences/mappings, comments (full line + inline), literal block (|), folded block (>), stringify (objects, arrays, nested, null, bool). 25 tests. GitHub: henry-the-frog/yaml"
+    },
+    {
+      "id": "T246",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Data structures: linked list (singly + doubly), stack, queue, deque, trie, LRU cache, ring buffer, skip list. 30+ tests.",
+      "started": "2026-04-05T00:00:19.621Z",
+      "completed": "2026-04-05T00:01:32.691Z",
+      "duration_ms": 600000,
+      "summary": "Data structures: LinkedList (push/unshift/pop/shift/get/includes/reverse/iterable), DoublyLinkedList (push/pop/unshift/shift/toArray/toArrayReverse), Stack (push/pop/peek/isEmpty), Queue (enqueue/dequeue/peek/size), Deque (pushFront/pushBack/popFront/popBack), Trie (insert/search/startsWith/autocomplete), LRUCache (put/get/eviction/refresh), RingBuffer (push/shift/overflow/isFull). 29 tests. GitHub: henry-the-frog/data-structures"
     }
   ],
-  "updated_at": "2026-04-05T00:00:05.238Z",
+  "updated_at": "2026-04-05T00:01:32.691Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -2680,6 +2690,10 @@
     {
       "time": "2026-04-04T23:58:50.727Z",
       "msg": "Added T245 (BUILD) after end: YAML parser (subset): scalars (string, number, bool, null), flow sequences, flow mappings, block sequences, block mappings, multiline strings (| and >), comments, nested structures. 25+ tests."
+    },
+    {
+      "time": "2026-04-05T00:00:18.934Z",
+      "msg": "Added T246 (BUILD) after end: Data structures: linked list (singly + doubly), stack, queue, deque, trie, LRU cache, ring buffer, skip list. 30+ tests."
     }
   ]
 }
