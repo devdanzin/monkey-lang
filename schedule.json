@@ -437,9 +437,16 @@
       "completed": "2026-04-05T15:44:34.812Z",
       "duration_ms": 120000,
       "summary": "Investigated: Position 3 shows 16 moves vs expected 14 — check detection misses king exposure through discovered check. Needs deep pin logic rewrite. Documented for later."
+    },
+    {
+      "id": "T42",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: OR in WHERE, nested parentheses, complex boolean logic tests to push past 9500 total tests",
+      "started": "2026-04-05T15:44:58.826Z"
     }
   ],
-  "updated_at": "2026-04-05T15:44:34.812Z",
+  "updated_at": "2026-04-05T15:44:58.826Z",
   "adjustments": [
     {
       "time": "2026-04-05T15:35:44.249Z",
@@ -452,6 +459,10 @@
     {
       "time": "2026-04-05T15:43:50.212Z",
       "msg": "Added T41 (BUILD) after end: Chess engine: Fix en passant move generation bugs revealed by perft Position 3"
+    },
+    {
+      "time": "2026-04-05T15:44:51.782Z",
+      "msg": "Added T42 (BUILD) after end: HenryDB: OR in WHERE, nested parentheses, complex boolean logic tests to push past 9500 total tests"
     }
   ]
 }
