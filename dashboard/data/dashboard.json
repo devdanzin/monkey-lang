@@ -198,8 +198,9 @@
       "id": "T25",
       "mode": "BUILD",
       "task": "HenryDB: Views — CREATE VIEW, query from view, DROP VIEW",
-      "status": "upcoming",
-      "plan_ref": "T10"
+      "status": "in-progress",
+      "plan_ref": "T10",
+      "started": "2026-04-05T14:48:20.122Z"
     },
     {
       "id": "T26",
@@ -246,12 +247,19 @@
       "task": "Final housekeeping — git push, scratch notes, dashboard update"
     }
   ],
-  "current": null,
+  "current": {
+    "id": "T25",
+    "mode": "BUILD",
+    "task": "HenryDB: Views — CREATE VIEW, query from view, DROP VIEW",
+    "status": "in-progress",
+    "plan_ref": "T10",
+    "started": "2026-04-05T14:48:20.122Z"
+  },
   "stats": {
     "completed": 18,
     "yielded": 0,
     "skipped": 0,
     "total_duration_ms": 2670000
   },
-  "updated_at": "2026-04-05T14:47:57.209Z"
+  "updated_at": "2026-04-05T14:48:20.122Z"
 }
