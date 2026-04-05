@@ -89,10 +89,13 @@
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: Secondary indexes — CREATE INDEX, DROP INDEX, automatic index selection in query planner",
       "plan_ref": "T6",
-      "started": "2026-04-05T14:25:45.938Z"
+      "started": "2026-04-05T14:25:45.938Z",
+      "completed": "2026-04-05T14:31:11.928Z",
+      "duration_ms": 300000,
+      "summary": "Secondary indexes: CREATE INDEX, CREATE UNIQUE INDEX, DROP INDEX. Non-unique B+ tree for duplicates. Index scan in query planner with AND residual. 24 new tests → 150 total."
     },
     {
       "id": "T20",
@@ -186,5 +189,5 @@
       "task": "Final housekeeping — git push, scratch notes, dashboard update"
     }
   ],
-  "updated_at": "2026-04-05T14:25:45.938Z"
+  "updated_at": "2026-04-05T14:31:11.928Z"
 }
