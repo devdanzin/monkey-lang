@@ -996,10 +996,167 @@
     {
       "id": "T92",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Late session checkpoint",
-      "started": "2026-04-05T17:55:14.050Z"
+      "started": "2026-04-05T17:55:14.050Z",
+      "completed": "2026-04-05T17:55:57.690Z",
+      "duration_ms": 30000,
+      "summary": "Dashboard updated, git pushed. Session totals: chess 186, regex 127, bytecode-vm 121, type-checker 73. 46 tasks done."
+    },
+    {
+      "id": "T96",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Continue: more depth on existing or start 5th project? HenryDB still at 600, could push to 650. Or tackle ray-tracer (3371 lines, 0 tests).",
+      "started": "2026-04-05T17:56:10.831Z",
+      "completed": "2026-04-05T17:56:22.578Z",
+      "duration_ms": 15000,
+      "summary": "Decision: ray-tracer tests. 3371 lines, 0 tests — biggest untested project. Pure CS depth."
+    },
+    {
+      "id": "T97",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Plan ray-tracer tests",
+      "task": null,
+      "started": "2026-04-05T17:56:48.549Z",
+      "completed": "2026-04-05T17:57:06.481Z",
+      "duration_ms": 15000,
+      "summary": "4 BUILD tasks: vec3/ray, sphere/plane/AABB, camera/material, BVH/triangle."
+    },
+    {
+      "id": "T100",
+      "mode": "BUILD",
+      "task": "ray-tracer: vec3 + ray tests (core math)",
+      "status": "done",
+      "plan_ref": "T97",
+      "started": "2026-04-05T17:57:14.005Z",
+      "completed": "2026-04-05T17:58:25.802Z",
+      "duration_ms": 180000,
+      "summary": "38 vec3+ray tests. Covers arithmetic, dot/cross, reflection, refraction, random generation."
+    },
+    {
+      "id": "T101",
+      "mode": "BUILD",
+      "task": "ray-tracer: sphere + plane + AABB intersection tests",
+      "status": "done",
+      "plan_ref": "T97",
+      "started": "2026-04-05T17:58:40.977Z",
+      "completed": "2026-04-05T18:00:37.647Z",
+      "duration_ms": 180000,
+      "summary": "20 geometry tests: sphere/AABB/HittableList intersection. 58 total ray-tracer tests."
+    },
+    {
+      "id": "T102",
+      "mode": "BUILD",
+      "task": "ray-tracer: camera + material + texture tests",
+      "status": "done",
+      "plan_ref": "T97",
+      "started": "2026-04-05T18:00:57.780Z",
+      "completed": "2026-04-05T18:03:09.903Z",
+      "duration_ms": 180000,
+      "summary": "16 camera/material/texture tests. 74 total ray-tracer tests."
+    },
+    {
+      "id": "T103",
+      "mode": "BUILD",
+      "task": "ray-tracer: BVH + triangle + transform tests",
+      "status": "done",
+      "plan_ref": "T97",
+      "started": "2026-04-05T18:03:22.853Z",
+      "completed": "2026-04-05T18:04:33.239Z",
+      "duration_ms": 240000,
+      "summary": "17 BVH+triangle tests. BVH/linear consistency verified. 91 total ray-tracer tests (from 0)."
+    },
+    {
+      "id": "T98",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "started": "2026-04-05T18:04:53.683Z",
+      "completed": "2026-04-05T18:04:54.142Z",
+      "duration_ms": 0,
+      "summary": "Skipped unfilled placeholder"
+    },
+    {
+      "id": "T99",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Session housekeeping",
+      "started": "2026-04-05T18:05:03.013Z",
+      "completed": "2026-04-05T18:05:23.920Z",
+      "duration_ms": 15000,
+      "summary": "Git pushed. 56 tasks this session."
+    },
+    {
+      "id": "T104",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Continue depth: (1) HenryDB push to 650+ tests (2) more ray-tracer depth (3) ECS/new project. Session totals so far: chess 186, regex 127, VM 121, type-checker 73, ray-tracer 91",
+      "started": "2026-04-05T18:05:38.842Z",
+      "completed": "2026-04-05T18:05:51.860Z",
+      "duration_ms": 15000,
+      "summary": "Decision: HenryDB depth — add window function tests, CTE tests, complex join tests. SQL engine depth."
+    },
+    {
+      "id": "T105",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: window functions test suite (ROW_NUMBER, RANK, SUM OVER, LAG, LEAD)",
+      "started": "2026-04-05T18:06:11.430Z",
+      "completed": "2026-04-05T18:08:38.885Z",
+      "duration_ms": 240000,
+      "summary": "15 advanced window tests: running aggregates, complex ordering, edge cases, combined clauses. 615 total HenryDB tests."
+    },
+    {
+      "id": "T106",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: CTE and recursive CTE test suite",
+      "started": "2026-04-05T18:08:45.213Z",
+      "completed": "2026-04-05T18:10:41.558Z",
+      "duration_ms": 180000,
+      "summary": "12 advanced CTE tests. 627 total HenryDB tests."
+    },
+    {
+      "id": "T107",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: complex join patterns and subquery tests",
+      "started": "2026-04-05T18:10:49.362Z",
+      "completed": "2026-04-05T18:14:05.703Z",
+      "duration_ms": 300000,
+      "summary": "17 complex join+subquery tests. Multi-table, self-join, LEFT JOIN, IN/NOT IN, scalar subqueries. 644 total HenryDB tests."
+    },
+    {
+      "id": "T108",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final session cleanup",
+      "started": "2026-04-05T18:14:34.235Z"
     }
   ],
-  "updated_at": "2026-04-05T17:55:14.050Z"
+  "updated_at": "2026-04-05T18:14:34.235Z",
+  "adjustments": [
+    {
+      "time": "2026-04-05T18:05:37.757Z",
+      "msg": "Added T104 (THINK) after end: Continue depth: (1) HenryDB push to 650+ tests (2) more ray-tracer depth (3) ECS/new project. Session totals so far: chess 186, regex 127, VM 121, type-checker 73, ray-tracer 91"
+    },
+    {
+      "time": "2026-04-05T18:06:01.333Z",
+      "msg": "Added T105 (BUILD) after end: HenryDB: window functions test suite (ROW_NUMBER, RANK, SUM OVER, LAG, LEAD)"
+    },
+    {
+      "time": "2026-04-05T18:06:01.815Z",
+      "msg": "Added T106 (BUILD) after end: HenryDB: CTE and recursive CTE test suite"
+    },
+    {
+      "time": "2026-04-05T18:06:02.323Z",
+      "msg": "Added T107 (BUILD) after end: HenryDB: complex join patterns and subquery tests"
+    },
+    {
+      "time": "2026-04-05T18:06:02.758Z",
+      "msg": "Added T108 (MAINTAIN) after end: Final session cleanup"
+    }
+  ]
 }
