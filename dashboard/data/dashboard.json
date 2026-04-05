@@ -262,9 +262,12 @@
       "id": "T28",
       "mode": "BUILD",
       "task": "HenryDB: EXPLAIN — query plan visualization showing scan type, join strategy, index usage",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T14",
-      "started": "2026-04-05T14:59:19.091Z"
+      "started": "2026-04-05T14:59:19.091Z",
+      "completed": "2026-04-05T15:01:49.914Z",
+      "duration_ms": 180000,
+      "summary": "EXPLAIN: query plan showing TABLE_SCAN, INDEX_SCAN, NESTED_LOOP_JOIN, HASH_GROUP_BY, SORT, DISTINCT, LIMIT, WINDOW_FUNCTION, VIEW_SCAN, CTE. 15 new tests → 309 total."
     },
     {
       "id": "T29",
@@ -306,19 +309,12 @@
       "task": "Final housekeeping — git push, scratch notes, dashboard update"
     }
   ],
-  "current": {
-    "id": "T28",
-    "mode": "BUILD",
-    "task": "HenryDB: EXPLAIN — query plan visualization showing scan type, join strategy, index usage",
-    "status": "in-progress",
-    "plan_ref": "T14",
-    "started": "2026-04-05T14:59:19.091Z"
-  },
+  "current": null,
   "stats": {
-    "completed": 24,
+    "completed": 25,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 3390000
+    "total_duration_ms": 3570000
   },
-  "updated_at": "2026-04-05T14:59:19.091Z"
+  "updated_at": "2026-04-05T15:01:49.914Z"
 }
