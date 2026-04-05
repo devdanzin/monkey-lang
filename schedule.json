@@ -2753,9 +2753,19 @@
       "completed": "2026-04-05T00:37:21.489Z",
       "duration_ms": 600000,
       "summary": "Date/time: isLeapYear, daysInMonth, dayOfYear, weekNumber, format (YYYY/MMMM/MMM/MM/DD/HH/mm/ss/dddd/ddd), add/subtract (years/months/days/hours/minutes/seconds), diff (seconds/minutes/hours/days/weeks), startOf/endOf (year/month/day/hour/minute), relative time (just now, X ago, in X), isBefore/isAfter/isSame. 31 tests. GitHub: henry-the-frog/datetime"
+    },
+    {
+      "id": "T268",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Config: hierarchical config (defaults, env, file, CLI overrides), deep merge, env variable expansion, dotted path access (get/set), schema validation, freeze, watch for changes. 20+ tests.",
+      "started": "2026-04-05T00:37:43.589Z",
+      "completed": "2026-04-05T00:38:58.297Z",
+      "duration_ms": 600000,
+      "summary": "Config: deepMerge, getPath/setPath (dotted), expandEnv, Config class (get/set/has, layer with deep merge, toJSON), freeze (prevents set/layer), validate (required/type/custom), watch (path patterns, unsubscribe), fromEnv (parse prefix, type coercion). 24 tests. GitHub: henry-the-frog/config"
     }
   ],
-  "updated_at": "2026-04-05T00:37:21.489Z",
+  "updated_at": "2026-04-05T00:38:58.297Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -2988,6 +2998,10 @@
     {
       "time": "2026-04-05T00:35:31.301Z",
       "msg": "Added T267 (BUILD) after end: Date/time: parse ISO 8601, format (strftime-like), add/subtract duration, difference between dates, start/end of period, isLeapYear, dayOfYear, weekNumber, relative time (2 hours ago). 25+ tests."
+    },
+    {
+      "time": "2026-04-05T00:37:42.935Z",
+      "msg": "Added T268 (BUILD) after end: Config: hierarchical config (defaults, env, file, CLI overrides), deep merge, env variable expansion, dotted path access (get/set), schema validation, freeze, watch for changes. 20+ tests."
     }
   ]
 }
