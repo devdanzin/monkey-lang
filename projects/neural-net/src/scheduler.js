@@ -93,6 +93,19 @@ export class CyclicLR {
   }
 }
 
+export class LinearDecay {
+  constructor(startLR = 0.01, endLR = 0.0001, totalEpochs = 100) {
+    this.startLR = startLR || 0.01;
+    this.endLR = endLR || 0.0001;
+    this.totalEpochs = totalEpochs || 100;
+  }
+
+  getLR(step) {
+    const t = Math.min(step / Math.max(1, this.totalEpochs - 1), 1);
+    return this.startLR + (this.endLR - this.startLR) * t;
+  }
+}
+
 export function createScheduler(name, options = {}) {
   switch (name) {
     case 'constant': return new ConstantLR(options.lr);
@@ -102,6 +115,7 @@ export function createScheduler(name, options = {}) {
     case 'warmup_cosine': return new WarmupCosine(options.maxLR || options.lr, options.minLR, options.warmupSteps, options.totalEpochs);
     case 'exponential': return new ExponentialDecay(options.lr, options.decayRate, options.decaySteps);
     case 'cyclic': return new CyclicLR(options.baseLR, options.maxLR || options.lr, options.stepSize);
+    case 'linear': return new LinearDecay(options.lr || options.baseLR, options.endLR, options.totalEpochs);
     default: throw new Error(`Unknown scheduler: ${name}`);
   }
 }

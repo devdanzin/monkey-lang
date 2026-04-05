@@ -2957,25 +2957,46 @@
     {
       "id": "T288",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, dashboard refresh, daily log catch-up",
-      "started": "2026-04-05T01:31:56.183Z"
+      "started": "2026-04-05T01:31:56.183Z",
+      "completed": "2026-04-05T01:32:47.068Z",
+      "duration_ms": 120000,
+      "summary": "Git push, dashboard confirmed, daily log updated with late session entry."
     },
     {
       "id": "T289",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Fix remaining 21 neural net test failures — API mismatch refactoring",
-      "task": null
+      "task": null,
+      "started": "2026-04-05T01:32:57.458Z",
+      "completed": "2026-04-05T01:34:33.946Z",
+      "duration_ms": 120000,
+      "summary": "21 failures mostly from missing re-exports in index.js. 2 BUILD tasks: (1) add all missing exports, (2) fix API mismatches in advanced.test.js."
     },
     {
       "id": "T290",
       "mode": "BUILD",
+      "status": "skipped",
+      "task": null,
+      "skip_reason": ""
+    },
+    {
+      "id": "T291",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Neural net: add missing re-exports to index.js (leakyRelu, linear, Dense, Conv2D, MaxPool2D, Flatten, RNN, LSTM, GRU, attention modules, Residual, Sequential, Autoencoder, VAE, GAN, MicroGPT, augmentation, EarlyStopping, LossHistory, Embedding, PositionalEncoding, TransformerEncoderBlock, LayerNorm)",
+      "started": "2026-04-05T01:34:53.154Z"
+    },
+    {
+      "id": "T292",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": null
+      "task": "Neural net: fix remaining API mismatches in advanced.test.js (activation backward, serialization, dropout, lr schedule, evaluate)"
     }
   ],
-  "updated_at": "2026-04-05T01:31:56.183Z",
+  "updated_at": "2026-04-05T01:34:53.154Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -3300,6 +3321,18 @@
     {
       "time": "2026-04-05T01:31:47.132Z",
       "msg": "Added T290 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-05T01:34:42.255Z",
+      "msg": "Removed T290: "
+    },
+    {
+      "time": "2026-04-05T01:34:42.785Z",
+      "msg": "Added T291 (BUILD) after end: Neural net: add missing re-exports to index.js (leakyRelu, linear, Dense, Conv2D, MaxPool2D, Flatten, RNN, LSTM, GRU, attention modules, Residual, Sequential, Autoencoder, VAE, GAN, MicroGPT, augmentation, EarlyStopping, LossHistory, Embedding, PositionalEncoding, TransformerEncoderBlock, LayerNorm)"
+    },
+    {
+      "time": "2026-04-05T01:34:43.349Z",
+      "msg": "Added T292 (BUILD) after end: Neural net: fix remaining API mismatches in advanced.test.js (activation backward, serialization, dropout, lr schedule, evaluate)"
     }
   ]
 }

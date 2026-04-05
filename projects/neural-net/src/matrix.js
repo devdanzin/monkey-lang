@@ -197,9 +197,22 @@ export class Matrix {
   }
 
   // Static constructors
+  // Slice rows [start, end)
+  slice(start, end) {
+    const rows = end - start;
+    const result = new Matrix(rows, this.cols);
+    result.data.set(this.data.subarray(start * this.cols, end * this.cols));
+    return result;
+  }
+
+  // Sum columns → 1×cols vector (alias for sumAxis(0))
+  sumRows() { return this.sumAxis(0); }
+
   static zeros(rows, cols) { return new Matrix(rows, cols); }
   static ones(rows, cols) { return new Matrix(rows, cols).fill(1); }
   static random(rows, cols, scale) { return new Matrix(rows, cols).randomize(scale); }
+  static xavier(rows, cols) { return Matrix.random(rows, cols, Math.sqrt(2 / (rows + cols))); }
+  static he(rows, cols) { return Matrix.random(rows, cols, Math.sqrt(2 / rows)); }
 
   static fromArray(arr) {
     if (Array.isArray(arr[0]) || ArrayBuffer.isView(arr[0])) {

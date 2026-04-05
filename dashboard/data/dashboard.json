@@ -2957,36 +2957,57 @@
     {
       "id": "T288",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, dashboard refresh, daily log catch-up",
-      "started": "2026-04-05T01:31:56.183Z"
+      "started": "2026-04-05T01:31:56.183Z",
+      "completed": "2026-04-05T01:32:47.068Z",
+      "duration_ms": 120000,
+      "summary": "Git push, dashboard confirmed, daily log updated with late session entry."
     },
     {
       "id": "T289",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Fix remaining 21 neural net test failures — API mismatch refactoring",
-      "task": null
+      "task": null,
+      "started": "2026-04-05T01:32:57.458Z",
+      "completed": "2026-04-05T01:34:33.946Z",
+      "duration_ms": 120000,
+      "summary": "21 failures mostly from missing re-exports in index.js. 2 BUILD tasks: (1) add all missing exports, (2) fix API mismatches in advanced.test.js."
     },
     {
       "id": "T290",
       "mode": "BUILD",
+      "status": "skipped",
+      "task": null,
+      "skip_reason": ""
+    },
+    {
+      "id": "T291",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Neural net: add missing re-exports to index.js (leakyRelu, linear, Dense, Conv2D, MaxPool2D, Flatten, RNN, LSTM, GRU, attention modules, Residual, Sequential, Autoencoder, VAE, GAN, MicroGPT, augmentation, EarlyStopping, LossHistory, Embedding, PositionalEncoding, TransformerEncoderBlock, LayerNorm)",
+      "started": "2026-04-05T01:34:53.154Z"
+    },
+    {
+      "id": "T292",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": null
+      "task": "Neural net: fix remaining API mismatches in advanced.test.js (activation backward, serialization, dropout, lr schedule, evaluate)"
     }
   ],
   "current": {
-    "id": "T288",
-    "mode": "MAINTAIN",
+    "id": "T291",
+    "mode": "BUILD",
     "status": "in-progress",
-    "task": "Housekeeping: git push, dashboard refresh, daily log catch-up",
-    "started": "2026-04-05T01:31:56.183Z"
+    "task": "Neural net: add missing re-exports to index.js (leakyRelu, linear, Dense, Conv2D, MaxPool2D, Flatten, RNN, LSTM, GRU, attention modules, Residual, Sequential, Autoencoder, VAE, GAN, MicroGPT, augmentation, EarlyStopping, LossHistory, Embedding, PositionalEncoding, TransformerEncoderBlock, LayerNorm)",
+    "started": "2026-04-05T01:34:53.154Z"
   },
   "stats": {
-    "completed": 284,
+    "completed": 286,
     "yielded": 0,
-    "skipped": 3,
-    "total_duration_ms": 115170000
+    "skipped": 4,
+    "total_duration_ms": 115410000
   },
-  "updated_at": "2026-04-05T01:31:56.183Z"
+  "updated_at": "2026-04-05T01:34:53.154Z"
 }
