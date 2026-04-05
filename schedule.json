@@ -2693,9 +2693,19 @@
       "completed": "2026-04-05T00:25:52.589Z",
       "duration_ms": 600000,
       "summary": "MessagePack: nil, bool (true/false), integers (positive fixint, uint8/16/32, negative fixint, int8/16/32), float64, strings (fixstr, str8, str16, unicode), binary (bin8), arrays (fixarray, array16, mixed, nested), maps (fixmap, map16, nested), complex roundtrip, compact encoding verification (shorter than JSON). 30 tests. GitHub: henry-the-frog/msgpack"
+    },
+    {
+      "id": "T262",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Glob: *, **, ?, [abc], [a-z], {a,b}, negation !, path matching, dot files, minimatch-like API. 20+ tests.",
+      "started": "2026-04-05T00:26:13.408Z",
+      "completed": "2026-04-05T00:27:29.136Z",
+      "duration_ms": 600000,
+      "summary": "Glob: * (any), ** (deep paths), ? (single char), [abc] character classes, [a-z] ranges, [!0-9] negation, {a,b} braces, ! pattern negation, dot file handling, path matching (segments), filter (list), isGlob detection. 25 tests. GitHub: henry-the-frog/glob"
     }
   ],
-  "updated_at": "2026-04-05T00:25:52.589Z",
+  "updated_at": "2026-04-05T00:27:29.136Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -2904,6 +2914,10 @@
     {
       "time": "2026-04-05T00:24:32.017Z",
       "msg": "Added T261 (BUILD) after end: MessagePack: encode/decode nil, bool, int (fixint, int8-64, uint8-64), float32/64, str (fixstr, str8-32), bin, array (fixarray, array16/32), map (fixmap, map16/32). 25+ tests."
+    },
+    {
+      "time": "2026-04-05T00:26:12.776Z",
+      "msg": "Added T262 (BUILD) after end: Glob: *, **, ?, [abc], [a-z], {a,b}, negation !, path matching, dot files, minimatch-like API. 20+ tests."
     }
   ]
 }

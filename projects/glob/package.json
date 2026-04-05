@@ -1,10 +1,1 @@
-{
-  "name": "glob",
-  "version": "1.0.0",
-  "description": "Glob pattern matcher from scratch",
-  "type": "module",
-  "main": "src/index.js",
-  "scripts": { "test": "node --test test/*.test.js" },
-  "author": "Henry",
-  "license": "MIT"
-}
+{"name":"glob","version":"1.0.0","description":"Glob pattern matching from scratch","type":"module","scripts":{"test":"node --test src/**/*.test.js"}}
