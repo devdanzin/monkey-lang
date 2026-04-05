@@ -1,5 +1,5 @@
 # HenryDB Implementation Notes
-uses: 1
+uses: 3
 created: 2026-04-05
 last-used: 2026-04-05
 topics: database, SQL, B+tree, WAL, MVCC, query-planner, secondary-indexes
@@ -47,9 +47,9 @@ topics: database, SQL, B+tree, WAL, MVCC, query-planner, secondary-indexes
 - B+ tree overwriting values on duplicate keys (broke non-unique secondary indexes)
 - ALTER TABLE invalidating index RIDs (required full rebuild)
 
-## Growth: 126 → 401 tests in one session (275 new tests!)
+## Growth: 126 → 550 tests in one session (424 new tests!)
 - +24 secondary index tests
-- +15 GROUP BY tests
+- +15 GROUP BY tests  
 - +15 subquery tests
 - +21 ALTER TABLE tests
 - +22 crash recovery stress tests
@@ -67,6 +67,17 @@ topics: database, SQL, B+tree, WAL, MVCC, query-planner, secondary-indexes
 - +19 TRUNCATE + misc edge case tests
 - +13 NOT LIKE/BETWEEN + integration tests
 - +8 milestone/completeness tests
+- +11 boolean logic tests
+- +11 advanced JOIN tests (LEFT, 3-table, self-join)
+- +7 JOIN type tests (RIGHT, CROSS)
+- +10 SQL compatibility tests
+- +18 schema introspection + nested subquery + OFFSET tests
+- +22 stress tests + edge cases
+- +20 milestone 500 tests
+- +12 type coercion + pipeline tests
+- +12 SUBSTRING, REPLACE, TRIM, ABS, ROUND, CEIL, FLOOR
+- +17 IFNULL, TYPEOF, EXPLAIN comprehensive, function combos
+- +9 advanced aggregate tests (NULL handling, MIN/MAX strings)
 
 ## SQL Feature Coverage (comprehensive)
 - DDL: CREATE TABLE, DROP TABLE, ALTER TABLE (ADD/DROP/RENAME COLUMN, RENAME TABLE), CREATE/DROP INDEX, CREATE/DROP VIEW
