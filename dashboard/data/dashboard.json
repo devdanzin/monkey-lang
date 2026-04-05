@@ -1441,23 +1441,40 @@
     {
       "id": "T139",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "actual boundary cleanup",
-      "started": "2026-04-05T18:57:34.723Z"
+      "started": "2026-04-05T18:57:34.723Z",
+      "completed": "2026-04-05T18:58:02.977Z",
+      "duration_ms": 30000,
+      "summary": "Session A FINAL. 108 tasks, 840 new tests: DB 800, Chess 210, Regex 180, VM 150, Ray 110, Type 100."
+    },
+    {
+      "id": "T140",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Push every project toward next round number milestone",
+      "started": "2026-04-05T18:58:11.852Z",
+      "completed": "2026-04-05T18:58:46.284Z",
+      "duration_ms": 60000,
+      "summary": "Scratch notes written: test-writing-patterns.md. Session continuing."
+    },
+    {
+      "id": "T141",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: push to 825+ — data integrity tests",
+      "started": "2026-04-05T18:58:54.719Z",
+      "completed": "2026-04-05T19:00:18.164Z",
+      "duration_ms": 120000,
+      "summary": "17 data integrity tests. HenryDB at 817 tests!"
     }
   ],
-  "current": {
-    "id": "T139",
-    "mode": "MAINTAIN",
-    "status": "in-progress",
-    "task": "actual boundary cleanup",
-    "started": "2026-04-05T18:57:34.723Z"
-  },
+  "current": null,
   "stats": {
-    "completed": 138,
+    "completed": 141,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 17462000
+    "total_duration_ms": 17672000
   },
-  "updated_at": "2026-04-05T18:57:34.723Z"
+  "updated_at": "2026-04-05T19:00:18.164Z"
 }
