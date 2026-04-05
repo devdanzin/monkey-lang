@@ -2,13 +2,14 @@
 
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { SearchEngine, MATE_SCORE } from './search.js';
+import { SearchEngine, MATE_SCORE, OPENING_BOOK } from './search.js';
 import { Board, WHITE, BLACK, STARTING_FEN, sqName } from './board.js';
 
 describe('Search', () => {
   describe('Basic search', () => {
     it('finds a move from starting position', () => {
       const engine = new SearchEngine();
+      engine.useBook = false;
       const board = Board.fromFEN(STARTING_FEN);
       const result = engine.search(board, { depth: 3 });
       assert.ok(result.move);
@@ -92,6 +93,7 @@ describe('Search', () => {
     it('iterative deepening increases depth', () => {
       const board = Board.fromFEN(STARTING_FEN);
       const engine = new SearchEngine();
+      engine.useBook = false;
       const result = engine.search(board, { depth: 4 });
       assert.equal(result.depth, 4);
     });
@@ -99,6 +101,7 @@ describe('Search', () => {
     it('reports node count', () => {
       const board = Board.fromFEN(STARTING_FEN);
       const engine = new SearchEngine();
+      engine.useBook = false;
       const result = engine.search(board, { depth: 3 });
       assert.ok(result.nodes > 0);
     });
@@ -217,5 +220,97 @@ describe('Tactical puzzles — mate in 2', () => {
     const result = engine.search(board, { depth: 4 });
     assert.ok(result.move);
     // Should find a strong move (Qe2 or similar)
+  });
+});
+
+describe('Opening book', () => {
+  it('has entries for starting position', () => {
+    assert.ok(OPENING_BOOK.size > 0, 'Opening book should have entries');
+  });
+
+  it('returns book move for starting position', () => {
+    const board = Board.fromFEN(STARTING_FEN);
+    const engine = new SearchEngine();
+    engine.useBook = true;
+    const result = engine.search(board, { depth: 1 });
+    assert.ok(result.book === true, 'Should use book move');
+    assert.ok(result.move, 'Should return a move');
+    const uci = Board.moveToUCI(result.move);
+    assert.ok(['e2e4', 'd2d4', 'c2c4', 'g1f3'].includes(uci),
+      `Book move ${uci} should be a standard opening`);
+  });
+
+  it('can disable book', () => {
+    const board = Board.fromFEN(STARTING_FEN);
+    const engine = new SearchEngine();
+    engine.useBook = false;
+    const result = engine.search(board, { depth: 3 });
+    assert.ok(!result.book, 'Should not use book');
+    assert.ok(result.depth >= 1);
+  });
+
+  it('returns non-book move for unknown position', () => {
+    const board = Board.fromFEN('4k3/8/8/8/8/8/4P3/4K3 w - - 0 1');
+    const engine = new SearchEngine();
+    const result = engine.search(board, { depth: 3 });
+    assert.ok(!result.book);
+    assert.ok(result.move);
+  });
+
+  it('book has multiple openings', () => {
+    // After e4 there should be book replies
+    let board = Board.fromFEN(STARTING_FEN);
+    const e4Move = board.findMoveFromUCI('e2e4');
+    board = board.makeMove(e4Move);
+    const engine = new SearchEngine();
+    const bookMoves = engine.getBookMove(board);
+    assert.ok(bookMoves && bookMoves.length > 0, 'Should have responses to e4');
+  });
+});
+
+describe('PV (Principal Variation)', () => {
+  it('returns PV from search', () => {
+    const board = Board.fromFEN(STARTING_FEN);
+    const engine = new SearchEngine();
+    engine.useBook = false;
+    const result = engine.search(board, { depth: 3 });
+    assert.ok(result.pv, 'Should have PV');
+    assert.ok(result.pv.length > 0, 'PV should not be empty');
+  });
+
+  it('PV first move matches best move', () => {
+    const board = Board.fromFEN('6k1/5ppp/8/8/8/8/8/R3K3 w Q - 0 1');
+    const engine = new SearchEngine();
+    engine.useBook = false;
+    const result = engine.search(board, { depth: 3 });
+    if (result.pv && result.pv.length > 0) {
+      assert.equal(Board.moveToUCI(result.pv[0]), Board.moveToUCI(result.move));
+    }
+  });
+});
+
+describe('Aspiration windows', () => {
+  it('search still correct at depth 5', () => {
+    const board = Board.fromFEN('r1bqkbnr/pppppppp/2n5/8/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 2 2');
+    const engine = new SearchEngine();
+    engine.useBook = false;
+    const result = engine.search(board, { depth: 5 });
+    assert.ok(result.move);
+    assert.equal(result.depth, 5);
+  });
+});
+
+describe('Search logging', () => {
+  it('log callback receives search info', () => {
+    const board = Board.fromFEN(STARTING_FEN);
+    const engine = new SearchEngine();
+    engine.useBook = false;
+    const logs = [];
+    engine.search(board, { depth: 3, log: info => logs.push(info) });
+    assert.ok(logs.length >= 3, 'Should log at each depth');
+    assert.ok(logs[0].depth === 1);
+    assert.ok(logs[0].nodes > 0);
+    assert.ok(logs[0].nps >= 0);
+    assert.ok(typeof logs[0].pv === 'string');
   });
 });
