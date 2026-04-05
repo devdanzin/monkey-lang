@@ -89,9 +89,10 @@
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "HenryDB: Secondary indexes — CREATE INDEX, DROP INDEX, automatic index selection in query planner",
-      "plan_ref": "T6"
+      "plan_ref": "T6",
+      "started": "2026-04-05T14:25:45.938Z"
     },
     {
       "id": "T20",
@@ -185,12 +186,19 @@
       "task": "Final housekeeping — git push, scratch notes, dashboard update"
     }
   ],
-  "current": null,
+  "current": {
+    "id": "T7",
+    "mode": "BUILD",
+    "status": "in-progress",
+    "task": "HenryDB: Secondary indexes — CREATE INDEX, DROP INDEX, automatic index selection in query planner",
+    "plan_ref": "T6",
+    "started": "2026-04-05T14:25:45.938Z"
+  },
   "stats": {
     "completed": 8,
     "yielded": 0,
     "skipped": 0,
     "total_duration_ms": 900000
   },
-  "updated_at": "2026-04-05T14:25:24.928Z"
+  "updated_at": "2026-04-05T14:25:45.938Z"
 }
