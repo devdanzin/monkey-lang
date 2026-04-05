@@ -2733,14 +2733,24 @@
       "completed": "2026-04-05T00:32:49.570Z",
       "duration_ms": 600000,
       "summary": "Math: factorial (BigInt), fibonacci, gcd, lcm, isPrime (6k±1 optimization), sieve of Eratosthenes, power (binary exponentiation), modPow (BigInt), sqrt (Newton method), combinations, permutations, binomial, catalan, abs, clamp, lerp, degToRad/radToDeg, mean, median, variance, stddev. 47 tests. GitHub: henry-the-frog/math"
+    },
+    {
+      "id": "T266",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "String utils: trim, pad, truncate, slugify, camelCase, snakeCase, kebabCase, titleCase, template literals, escape HTML, unescape HTML, word wrap, repeat, reverse, pluralize. 25+ tests.",
+      "started": "2026-04-05T00:33:21.225Z",
+      "completed": "2026-04-05T00:35:09.707Z",
+      "duration_ms": 600000,
+      "summary": "String utils: words (camelCase split), camelCase, snakeCase, kebabCase, titleCase, capitalize, slugify, truncate (custom suffix), padStart/padEnd/padCenter, repeat, reverse (unicode-safe), isPalindrome, wordWrap, escapeHtml/unescapeHtml (roundtrip), template (mustache-like), countOccurrences, pluralize (regular, es, ies, vowel-y), similarity (Levenshtein-based). 39 tests. GitHub: henry-the-frog/strings"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 262,
+    "completed": 263,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 102510000
+    "total_duration_ms": 103110000
   },
-  "updated_at": "2026-04-05T00:32:49.570Z"
+  "updated_at": "2026-04-05T00:35:09.707Z"
 }
