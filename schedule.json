@@ -144,8 +144,9 @@
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Midday housekeeping — git push, knowledge capture, dashboard update"
+      "status": "in-progress",
+      "task": "Midday housekeeping — git push, knowledge capture, dashboard update",
+      "started": "2026-04-05T14:39:58.624Z"
     },
     {
       "id": "T9",
@@ -205,5 +206,5 @@
       "task": "Final housekeeping — git push, scratch notes, dashboard update"
     }
   ],
-  "updated_at": "2026-04-05T14:39:35.316Z"
+  "updated_at": "2026-04-05T14:39:58.624Z"
 }
