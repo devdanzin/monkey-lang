@@ -251,9 +251,12 @@
       "id": "T27",
       "mode": "BUILD",
       "task": "HenryDB: Common Table Expressions (WITH ... AS) — recursive and non-recursive",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T14",
-      "started": "2026-04-05T14:55:44.500Z"
+      "started": "2026-04-05T14:55:44.500Z",
+      "completed": "2026-04-05T14:58:51.673Z",
+      "duration_ms": 240000,
+      "summary": "CTEs: WITH name AS (SELECT ...) — scoped temp views. Fixed view path to handle aggregates and DISTINCT. 12 new tests → 294 total."
     },
     {
       "id": "T28",
@@ -302,5 +305,5 @@
       "task": "Final housekeeping — git push, scratch notes, dashboard update"
     }
   ],
-  "updated_at": "2026-04-05T14:55:44.500Z"
+  "updated_at": "2026-04-05T14:58:51.673Z"
 }
