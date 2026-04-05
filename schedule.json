@@ -251,8 +251,9 @@
       "id": "T27",
       "mode": "BUILD",
       "task": "HenryDB: Common Table Expressions (WITH ... AS) — recursive and non-recursive",
-      "status": "upcoming",
-      "plan_ref": "T14"
+      "status": "in-progress",
+      "plan_ref": "T14",
+      "started": "2026-04-05T14:55:44.500Z"
     },
     {
       "id": "T28",
@@ -301,5 +302,5 @@
       "task": "Final housekeeping — git push, scratch notes, dashboard update"
     }
   ],
-  "updated_at": "2026-04-05T14:55:31.653Z"
+  "updated_at": "2026-04-05T14:55:44.500Z"
 }
