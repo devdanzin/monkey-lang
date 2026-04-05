@@ -2543,9 +2543,19 @@
       "completed": "2026-04-05T00:01:32.691Z",
       "duration_ms": 600000,
       "summary": "Data structures: LinkedList (push/unshift/pop/shift/get/includes/reverse/iterable), DoublyLinkedList (push/pop/unshift/shift/toArray/toArrayReverse), Stack (push/pop/peek/isEmpty), Queue (enqueue/dequeue/peek/size), Deque (pushFront/pushBack/popFront/popBack), Trie (insert/search/startsWith/autocomplete), LRUCache (put/get/eviction/refresh), RingBuffer (push/shift/overflow/isFull). 29 tests. GitHub: henry-the-frog/data-structures"
+    },
+    {
+      "id": "T247",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Sorting algorithms: bubble, selection, insertion, merge, quick (Lomuto + Hoare), heap, radix, counting, tim sort, shell sort, bucket sort. Benchmark harness. 30+ tests.",
+      "started": "2026-04-05T00:01:43.149Z",
+      "completed": "2026-04-05T00:02:44.923Z",
+      "duration_ms": 600000,
+      "summary": "Sorting algorithms: bubbleSort, selectionSort, insertionSort, mergeSort, quickSort (Lomuto), quickSortHoare, heapSort, countingSort, radixSort, shellSort, bucketSort. All non-mutating (return new array). Each tested with random, sorted, reverse, single, empty, duplicates, large (1000). Benchmark harness. 89 tests. GitHub: henry-the-frog/sorting"
     }
   ],
-  "updated_at": "2026-04-05T00:01:32.691Z",
+  "updated_at": "2026-04-05T00:02:44.923Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -2694,6 +2704,10 @@
     {
       "time": "2026-04-05T00:00:18.934Z",
       "msg": "Added T246 (BUILD) after end: Data structures: linked list (singly + doubly), stack, queue, deque, trie, LRU cache, ring buffer, skip list. 30+ tests."
+    },
+    {
+      "time": "2026-04-05T00:01:42.488Z",
+      "msg": "Added T247 (BUILD) after end: Sorting algorithms: bubble, selection, insertion, merge, quick (Lomuto + Hoare), heap, radix, counting, tim sort, shell sort, bucket sort. Benchmark harness. 30+ tests."
     }
   ]
 }
