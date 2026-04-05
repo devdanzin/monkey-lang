@@ -2863,9 +2863,19 @@
       "completed": "2026-04-05T00:56:32.202Z",
       "duration_ms": 600000,
       "summary": "Immutable: persistent list (cons/head/tail/isEmpty, list constructor, toArray/fromArray, iterable, map/filter/reduce, reverse, structural sharing verification, frozen), PMap (assoc/get/has/dissoc, update, merge, map/filter, toObject/fromObject, equals, immutable verification, original unchanged on assoc, default value, keys/values/entries). 29 tests. GitHub: henry-the-frog/immutable"
+    },
+    {
+      "id": "T279",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WebSocket frame: encode/decode frames (text, binary, ping, pong, close), masking, fragmentation, handshake key generation (SHA-1 + base64). 20+ tests.",
+      "started": "2026-04-05T00:56:49.631Z",
+      "completed": "2026-04-05T00:57:56.317Z",
+      "duration_ms": 600000,
+      "summary": "WebSocket: generateAcceptKey (RFC 6455 test vector), generateClientKey, encodeFrame (text, binary, ping, pong, close with code+reason, empty, medium 200-byte, FIN bit control), decodeFrame (opcode, fin, masked, length, payload), masking (XOR with random key), fragmentation (continuation frames, reassembly). 12 tests. GitHub: henry-the-frog/websocket"
     }
   ],
-  "updated_at": "2026-04-05T00:56:32.202Z",
+  "updated_at": "2026-04-05T00:57:56.317Z",
   "adjustments": [
     {
       "time": "2026-04-04T22:46:48.435Z",
@@ -3142,6 +3152,10 @@
     {
       "time": "2026-04-05T00:55:23.345Z",
       "msg": "Added T278 (BUILD) after end: Immutable: persistent list (cons/head/tail/map/filter), persistent map (assoc/dissoc/get), structural sharing, fromArray/toArray. 20+ tests."
+    },
+    {
+      "time": "2026-04-05T00:56:48.924Z",
+      "msg": "Added T279 (BUILD) after end: WebSocket frame: encode/decode frames (text, binary, ping, pong, close), masking, fragmentation, handshake key generation (SHA-1 + base64). 20+ tests."
     }
   ]
 }
