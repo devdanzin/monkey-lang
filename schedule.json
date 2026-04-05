@@ -78,15 +78,47 @@
     {
       "id": "T6",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Depth project — pick one project and go significantly deeper (real depth, not breadth)",
-      "task": null
+      "task": null,
+      "started": "2026-04-05T14:24:49.075Z",
+      "completed": "2026-04-05T14:25:24.928Z",
+      "duration_ms": 60000,
+      "summary": "Planned 5 BUILD tasks for HenryDB depth: secondary indexes, GROUP BY/HAVING, subqueries, ALTER TABLE, crash recovery stress tests."
     },
     {
       "id": "T7",
       "mode": "BUILD",
       "status": "upcoming",
-      "task": null,
+      "task": "HenryDB: Secondary indexes — CREATE INDEX, DROP INDEX, automatic index selection in query planner",
+      "plan_ref": "T6"
+    },
+    {
+      "id": "T20",
+      "mode": "BUILD",
+      "task": "HenryDB: GROUP BY clause with aggregate functions, HAVING support",
+      "status": "upcoming",
+      "plan_ref": "T6"
+    },
+    {
+      "id": "T21",
+      "mode": "BUILD",
+      "task": "HenryDB: Subqueries — scalar subqueries in WHERE, EXISTS, IN (SELECT ...)",
+      "status": "upcoming",
+      "plan_ref": "T6"
+    },
+    {
+      "id": "T22",
+      "mode": "BUILD",
+      "task": "HenryDB: ALTER TABLE (ADD COLUMN, DROP COLUMN), column defaults",
+      "status": "upcoming",
+      "plan_ref": "T6"
+    },
+    {
+      "id": "T23",
+      "mode": "BUILD",
+      "task": "HenryDB: Crash recovery stress test — simulate crash mid-transaction, verify WAL replay",
+      "status": "upcoming",
       "plan_ref": "T6"
     },
     {
@@ -153,5 +185,5 @@
       "task": "Final housekeeping — git push, scratch notes, dashboard update"
     }
   ],
-  "updated_at": "2026-04-05T14:24:25.322Z"
+  "updated_at": "2026-04-05T14:25:24.928Z"
 }
