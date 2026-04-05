@@ -115,10 +115,40 @@ ANSWER .  \ prints 42
 ## Tests
 
 ```bash
-node --test forth.test.js
+node --test forth.test.js   # 109 interpreter tests
+node --test vm.test.js      # 29 VM tests
+node bench.js               # Benchmark comparison
 ```
 
-109 tests covering arithmetic, stack ops, control flow, defining words, memory, strings, metaprogramming, and complex programs.
+138 tests total covering arithmetic, stack ops, control flow, defining words, memory, strings, metaprogramming, bytecode compilation, and complex programs.
+
+## Bytecode VM
+
+The project includes a bytecode compiler and stack-based VM:
+
+```javascript
+const { BytecodeVM, BytecodeCompiler, OP } = require('./vm.js');
+
+const vm = new BytecodeVM();
+// ... load compiled words, execute bytecode
+```
+
+### Opcodes (50+)
+- **Stack**: DUP, DROP, SWAP, OVER, ROT, NIP, TUCK, 2DUP, 2DROP, ?DUP, DEPTH, PICK
+- **Arithmetic**: ADD, SUB, MUL, DIV, MOD, NEGATE, ABS, MIN, MAX, INC, DEC, MUL2, DIV2
+- **Bitwise**: AND, OR, XOR, INVERT, LSHIFT, RSHIFT
+- **Comparison**: EQ, NE, LT, GT, LE, GE, ZEQ, ZLT, ZGT, NOT
+- **Control**: BRANCH, BRANCH0, CALL, RET, DO, LOOP, PLUSLOOP, I, J
+- **Return stack**: TOR, RFROM, RAT
+- **Memory**: STORE, FETCH, PSTORE
+- **I/O**: DOT, EMIT, CR
+
+### Benchmarks (Interpreter vs VM)
+
+| Benchmark | Interpreter | Bytecode VM | Speedup |
+|-----------|------------|-------------|---------|
+| fib(25) × 3 | 411ms | 247ms | **1.7×** |
+| sum(10000) × 100 | 235ms | 98ms | **2.4×** |
 
 ## Architecture
 
