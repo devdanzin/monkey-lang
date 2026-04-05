@@ -1261,12 +1261,52 @@
     {
       "id": "T121",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Session end cleanup",
-      "started": "2026-04-05T18:36:40.304Z"
+      "started": "2026-04-05T18:36:40.304Z",
+      "completed": "2026-04-05T18:37:42.609Z",
+      "duration_ms": 30000,
+      "summary": "Session cleanup. Git pushed all repos. HenryDB 702 tests!"
+    },
+    {
+      "id": "T122",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Chess engine: move generation benchmark — measure NPS at various depths",
+      "started": "2026-04-05T18:38:03.246Z",
+      "completed": "2026-04-05T18:40:08.861Z",
+      "duration_ms": 120000,
+      "summary": "7 performance benchmarks. 3K-12K NPS. TT effectiveness test. 193 total chess tests."
+    },
+    {
+      "id": "T123",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: push to 750 — transaction, index, and alter table tests",
+      "started": "2026-04-05T18:40:15.710Z",
+      "completed": "2026-04-05T18:42:35.370Z",
+      "duration_ms": 180000,
+      "summary": "25 transaction/index/ALTER/DISTINCT/OFFSET tests. 727 total HenryDB tests."
+    },
+    {
+      "id": "T124",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Ray-tracer: push to 100+ tests — transform and scene builder tests",
+      "started": "2026-04-05T18:42:42.664Z",
+      "completed": "2026-04-05T18:43:32.643Z",
+      "duration_ms": 60000,
+      "summary": "5 scene + BVH consistency tests. Ray-tracer crosses 100 — now 103 total tests!"
+    },
+    {
+      "id": "T125",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Pre-boundary final push",
+      "started": "2026-04-05T18:43:40.051Z"
     }
   ],
-  "updated_at": "2026-04-05T18:36:40.304Z",
+  "updated_at": "2026-04-05T18:43:40.051Z",
   "adjustments": [
     {
       "time": "2026-04-05T18:05:37.757Z",
@@ -1339,6 +1379,22 @@
     {
       "time": "2026-04-05T18:28:39.662Z",
       "msg": "Added T121 (MAINTAIN) after end: Session end cleanup"
+    },
+    {
+      "time": "2026-04-05T18:37:53.636Z",
+      "msg": "Added T122 (BUILD) after end: Chess engine: move generation benchmark — measure NPS at various depths"
+    },
+    {
+      "time": "2026-04-05T18:37:53.891Z",
+      "msg": "Added T123 (BUILD) after end: HenryDB: push to 750 — transaction, index, and alter table tests"
+    },
+    {
+      "time": "2026-04-05T18:37:54.143Z",
+      "msg": "Added T124 (BUILD) after end: Ray-tracer: push to 100+ tests — transform and scene builder tests"
+    },
+    {
+      "time": "2026-04-05T18:37:54.411Z",
+      "msg": "Added T125 (MAINTAIN) after end: Pre-boundary final push"
     }
   ]
 }
