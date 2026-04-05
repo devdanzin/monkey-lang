@@ -2743,14 +2743,24 @@
       "completed": "2026-04-05T00:35:09.707Z",
       "duration_ms": 600000,
       "summary": "String utils: words (camelCase split), camelCase, snakeCase, kebabCase, titleCase, capitalize, slugify, truncate (custom suffix), padStart/padEnd/padCenter, repeat, reverse (unicode-safe), isPalindrome, wordWrap, escapeHtml/unescapeHtml (roundtrip), template (mustache-like), countOccurrences, pluralize (regular, es, ies, vowel-y), similarity (Levenshtein-based). 39 tests. GitHub: henry-the-frog/strings"
+    },
+    {
+      "id": "T267",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Date/time: parse ISO 8601, format (strftime-like), add/subtract duration, difference between dates, start/end of period, isLeapYear, dayOfYear, weekNumber, relative time (2 hours ago). 25+ tests.",
+      "started": "2026-04-05T00:35:32.027Z",
+      "completed": "2026-04-05T00:37:21.489Z",
+      "duration_ms": 600000,
+      "summary": "Date/time: isLeapYear, daysInMonth, dayOfYear, weekNumber, format (YYYY/MMMM/MMM/MM/DD/HH/mm/ss/dddd/ddd), add/subtract (years/months/days/hours/minutes/seconds), diff (seconds/minutes/hours/days/weeks), startOf/endOf (year/month/day/hour/minute), relative time (just now, X ago, in X), isBefore/isAfter/isSame. 31 tests. GitHub: henry-the-frog/datetime"
     }
   ],
   "current": null,
   "stats": {
-    "completed": 263,
+    "completed": 264,
     "yielded": 0,
     "skipped": 3,
-    "total_duration_ms": 103110000
+    "total_duration_ms": 103710000
   },
-  "updated_at": "2026-04-05T00:35:09.707Z"
+  "updated_at": "2026-04-05T00:37:21.489Z"
 }
