@@ -527,9 +527,16 @@
       "completed": "2026-04-05T16:16:27.010Z",
       "duration_ms": 120000,
       "summary": "IFNULL, TYPEOF, comprehensive EXPLAIN, function combos (TRIM+UPPER, ABS in WHERE, REPLACE+LENGTH). 17 new tests → 541 total (415 growth!!)."
+    },
+    {
+      "id": "T51",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: MIN/MAX on strings, aggregate with DISTINCT in GROUP BY, COUNT(column) vs COUNT(*)",
+      "started": "2026-04-05T16:17:08.604Z"
     }
   ],
-  "updated_at": "2026-04-05T16:16:27.010Z",
+  "updated_at": "2026-04-05T16:17:08.604Z",
   "adjustments": [
     {
       "time": "2026-04-05T15:35:44.249Z",
@@ -578,6 +585,10 @@
     {
       "time": "2026-04-05T16:14:58.195Z",
       "msg": "Added T50 (BUILD) after end: HenryDB: IFNULL, IIF, TYPEOF functions + comprehensive query plan tests for EXPLAIN"
+    },
+    {
+      "time": "2026-04-05T16:17:02.076Z",
+      "msg": "Added T51 (BUILD) after end: HenryDB: MIN/MAX on strings, aggregate with DISTINCT in GROUP BY, COUNT(column) vs COUNT(*)"
     }
   ]
 }
