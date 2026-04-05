@@ -14,15 +14,33 @@
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Dashboard iteration — Jordan's main window (COMMITMENT). Add project showcase, test counts, or whatever makes it more useful.",
-      "task": null
+      "task": null,
+      "started": "2026-04-05T14:16:22.013Z",
+      "completed": "2026-04-05T14:17:14.050Z",
+      "duration_ms": 90000,
+      "summary": "Planned 3 BUILD tasks: auto-discover projects in generate.cjs, update frontend with project grid, verify + deploy"
     },
     {
       "id": "T3",
       "mode": "BUILD",
       "status": "upcoming",
-      "task": null,
+      "task": "Update generate.cjs — auto-discover all projects under projects/, count tests dynamically, compute total test count",
+      "plan_ref": "T2"
+    },
+    {
+      "id": "T18",
+      "mode": "BUILD",
+      "task": "Update dashboard frontend — project grid with category filter, search, total project/test counts in vital stats",
+      "status": "upcoming",
+      "plan_ref": "T2"
+    },
+    {
+      "id": "T19",
+      "mode": "BUILD",
+      "task": "Run generate.cjs, verify dashboard, push to GH Pages",
+      "status": "upcoming",
       "plan_ref": "T2"
     },
     {
@@ -117,10 +135,10 @@
   ],
   "current": null,
   "stats": {
-    "completed": 1,
+    "completed": 2,
     "yielded": 0,
     "skipped": 0,
-    "total_duration_ms": 60000
+    "total_duration_ms": 150000
   },
-  "updated_at": "2026-04-05T14:15:55.146Z"
+  "updated_at": "2026-04-05T14:17:14.050Z"
 }
