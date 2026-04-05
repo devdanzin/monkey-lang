@@ -284,8 +284,9 @@
       "id": "T30",
       "mode": "BUILD",
       "task": "Chess engine depth: add evaluation function with piece-square tables, mobility scoring",
-      "status": "upcoming",
-      "plan_ref": "T14"
+      "status": "in-progress",
+      "plan_ref": "T14",
+      "started": "2026-04-05T15:05:21.015Z"
     },
     {
       "id": "T31",
@@ -313,12 +314,19 @@
       "task": "Final housekeeping — git push, scratch notes, dashboard update"
     }
   ],
-  "current": null,
+  "current": {
+    "id": "T30",
+    "mode": "BUILD",
+    "task": "Chess engine depth: add evaluation function with piece-square tables, mobility scoring",
+    "status": "in-progress",
+    "plan_ref": "T14",
+    "started": "2026-04-05T15:05:21.015Z"
+  },
   "stats": {
     "completed": 26,
     "yielded": 0,
     "skipped": 0,
     "total_duration_ms": 3750000
   },
-  "updated_at": "2026-04-05T15:05:00.453Z"
+  "updated_at": "2026-04-05T15:05:21.015Z"
 }
