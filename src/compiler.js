@@ -216,6 +216,25 @@ export class Compiler {
       this.changeOperand(exitJump, this.currentInstructions().length);
       // While loop evaluates to null when condition is false
       this.emit(Opcodes.OpNull);
+    } else if (node instanceof AST.ForExpression) {
+      // Compile init
+      this.compile(node.init);
+      const loopStart = this.currentInstructions().length;
+      // Compile condition
+      this.compile(node.condition);
+      const exitJump = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+      // Compile body
+      this.compile(node.body);
+      if (this.lastInstructionIs(Opcodes.OpPop)) {
+        this.removeLastPop();
+      }
+      // Compile update
+      this.compile(node.update);
+      // Jump back to condition
+      this.emit(Opcodes.OpJump, loopStart);
+      // Patch exit
+      this.changeOperand(exitJump, this.currentInstructions().length);
+      this.emit(Opcodes.OpNull);
     } else if (node instanceof AST.LetStatement) {
       // Compile value BEFORE defining symbol, so RHS references resolve
       // to outer scope (not the new binding being created).

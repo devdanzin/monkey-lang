@@ -48,6 +48,7 @@ export class Parser {
     this.registerPrefix(TokenType.LPAREN, () => this.parseGroupedExpression());
     this.registerPrefix(TokenType.IF, () => this.parseIfExpression());
     this.registerPrefix(TokenType.WHILE, () => this.parseWhileExpression());
+    this.registerPrefix(TokenType.FOR, () => this.parseForExpression());
     this.registerPrefix(TokenType.FUNCTION, () => this.parseFunctionLiteral());
     this.registerPrefix(TokenType.LBRACKET, () => this.parseArrayLiteral());
     this.registerPrefix(TokenType.LBRACE, () => this.parseHashLiteral());
@@ -254,6 +255,45 @@ export class Parser {
     if (!this.expectPeek(TokenType.LBRACE)) return null;
     const body = this.parseBlockStatement();
     return new ast.WhileExpression(token, condition, body);
+  }
+
+  parseForExpression() {
+    const token = this.curToken;
+    if (!this.expectPeek(TokenType.LPAREN)) return null;
+
+    // Parse init: let x = 0 or set x = 0
+    this.nextToken();
+    let init;
+    if (this.curTokenIs(TokenType.LET)) {
+      init = this.parseLetStatement();
+    } else if (this.curTokenIs(TokenType.SET)) {
+      init = this.parseSetStatement();
+    } else {
+      this.errors.push(`expected LET or SET in for init, got ${this.curToken.type}`);
+      return null;
+    }
+
+    // Parse condition
+    this.nextToken();
+    const condition = this.parseExpression(Precedence.LOWEST);
+
+    // Expect semicolon after condition
+    if (!this.expectPeek(TokenType.SEMICOLON)) return null;
+
+    // Parse update: set x = x + 1
+    this.nextToken();
+    let update;
+    if (this.curTokenIs(TokenType.SET)) {
+      update = this.parseSetStatement();
+    } else {
+      this.errors.push(`expected SET in for update, got ${this.curToken.type}`);
+      return null;
+    }
+
+    if (!this.expectPeek(TokenType.RPAREN)) return null;
+    if (!this.expectPeek(TokenType.LBRACE)) return null;
+    const body = this.parseBlockStatement();
+    return new ast.ForExpression(token, init, condition, update, body);
   }
 
   parseFunctionLiteral() {    const token = this.curToken;

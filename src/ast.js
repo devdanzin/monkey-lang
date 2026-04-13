@@ -196,3 +196,15 @@ export class SetStatement {
   tokenLiteral() { return this.token.literal; }
   toString() { return `set ${this.name} = ${this.value}`; }
 }
+
+export class ForExpression {
+  constructor(token, init, condition, update, body) {
+    this.token = token;
+    this.init = init;       // LetStatement or SetStatement
+    this.condition = condition; // Expression
+    this.update = update;   // SetStatement
+    this.body = body;       // BlockStatement
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return `for (${this.init}; ${this.condition}; ${this.update}) ${this.body}`; }
+}
