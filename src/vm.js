@@ -105,6 +105,31 @@ const builtins = [
     }
     return NULL;
   }),
+  // format (string formatting)
+  new MonkeyBuiltin((...args) => {
+    if (args.length < 1) return new MonkeyError(`format requires at least 1 argument`);
+    if (!(args[0] instanceof MonkeyString)) return new MonkeyError(`first argument to format must be a string`);
+    let template = args[0].value;
+    let argIdx = 1;
+    let result = '';
+    for (let i = 0; i < template.length; i++) {
+      if (template[i] === '%' && i + 1 < template.length) {
+        const spec = template[i + 1];
+        if (spec === '%') { result += '%'; i++; continue; }
+        if (argIdx >= args.length) { result += '%' + spec; i++; continue; }
+        const arg = args[argIdx++];
+        switch (spec) {
+          case 's': result += arg.inspect(); break;
+          case 'd': result += arg instanceof MonkeyInteger ? String(arg.value) : arg.inspect(); break;
+          default: result += '%' + spec;
+        }
+        i++;
+      } else {
+        result += template[i];
+      }
+    }
+    return new MonkeyString(result);
+  }),
 ];
 
 /**
