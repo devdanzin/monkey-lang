@@ -13,6 +13,21 @@ const STACK_SIZE = 8192;
 const GLOBALS_SIZE = 65536;
 const MAX_FRAMES = 1024;
 
+// Integer cache for common values (-1 to 256)
+const INT_CACHE_MIN = -1;
+const INT_CACHE_MAX = 256;
+const intCache = new Array(INT_CACHE_MAX - INT_CACHE_MIN + 1);
+for (let i = INT_CACHE_MIN; i <= INT_CACHE_MAX; i++) {
+  intCache[i - INT_CACHE_MIN] = new MonkeyInteger(i);
+}
+
+function cachedInteger(value) {
+  if (value >= INT_CACHE_MIN && value <= INT_CACHE_MAX && Number.isInteger(value)) {
+    return intCache[value - INT_CACHE_MIN];
+  }
+  return new MonkeyInteger(value);
+}
+
 /**
  * Frame: a call frame tracking instruction pointer and base pointer.
  */
@@ -34,8 +49,8 @@ const builtins = [
   new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return new MonkeyError(`wrong number of arguments. got=${args.length}, want=1`);
     const arg = args[0];
-    if (arg instanceof MonkeyString) return new MonkeyInteger(arg.value.length);
-    if (arg instanceof MonkeyArray) return new MonkeyInteger(arg.elements.length);
+    if (arg instanceof MonkeyString) return cachedInteger(arg.value.length);
+    if (arg instanceof MonkeyArray) return cachedInteger(arg.elements.length);
     return new MonkeyError(`argument to \`len\` not supported, got ${arg.type()}`);
   }),
   // first
@@ -154,7 +169,7 @@ export class VM {
           if (!(operand instanceof MonkeyInteger)) {
             throw new Error(`unsupported type for negation: ${operand.type()}`);
           }
-          this.push(new MonkeyInteger(-operand.value));
+          this.push(cachedInteger(-operand.value));
           break;
         }
 
@@ -369,7 +384,7 @@ export class VM {
       case Opcodes.OpDiv: result = Math.trunc(left.value / right.value); break;
       default: throw new Error(`unknown integer operator: ${op}`);
     }
-    this.push(new MonkeyInteger(result));
+    this.push(cachedInteger(result));
   }
 
   executeComparison(op) {
