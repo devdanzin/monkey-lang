@@ -11,7 +11,8 @@ Built from the ground up in JavaScript, inspired by Thorsten Ball's "Writing An 
 - First-class functions with closures
 - Arrays and hash maps
 - Recursive functions (fibonacci, ackermann, etc.)
-- `while` loops (language extension)
+- `while` loops and C-style `for` loops
+- `set` statement for variable mutation
 - Alphanumeric identifiers (`count1`, `myVar2`)
 - Built-in functions: `len`, `first`, `last`, `rest`, `push`, `puts`
 
@@ -97,6 +98,25 @@ let sum = fn(n, acc) {
   sum(n - 1, acc + n)
 };
 sum(100000, 0) // → 5000050000 (no stack overflow)
+
+// Imperative with set + for loop
+let result = 1;
+for (let i = 1; i < 6; set i = i + 1) {
+  set result = result * i;
+}
+result // → 120 (factorial of 5)
+
+// While loop with mutation
+let fib1 = 0;
+let fib2 = 1;
+let count = 0;
+while (count < 10) {
+  let temp = fib2;
+  set fib2 = fib1 + fib2;
+  set fib1 = temp;
+  set count = count + 1;
+}
+fib2 // → 89 (11th fibonacci number)
 ```
 
 ## Architecture
@@ -117,7 +137,7 @@ src/
 
 ## Test Suite
 
-**285 tests** across all modules:
+**294 tests** across all modules:
 - Lexer tests (tokenization)
 - Parser tests (AST construction)
 - Evaluator tests (tree-walker correctness)
@@ -145,10 +165,12 @@ The VM wins decisively on compute-heavy recursive workloads. For trivial program
 ## Language Extensions Beyond Standard Monkey
 
 1. **While loops**: `while (condition) { body }` — compiled to bytecode jump loops
-2. **Alphanumeric identifiers**: `count1`, `myVar2`, `player1Score` — digits allowed after first char
-3. **Tail call optimization**: Automatic for tail-recursive functions
-4. **String comparisons**: `==`, `!=`, `<`, `>` work on strings (lexicographic)
-5. **Interactive REPL** with engine selection and persistent globals
+2. **For loops**: `for (let i = 0; i < 10; set i = i + 1) { body }` — C-style iteration
+3. **Set statement**: `set x = expr` — mutate existing variable bindings
+4. **Alphanumeric identifiers**: `count1`, `myVar2`, `player1Score` — digits allowed after first char
+5. **Tail call optimization**: Automatic for tail-recursive functions
+6. **String comparisons**: `==`, `!=`, `<`, `>` work on strings (lexicographic)
+7. **Interactive REPL** with engine selection and persistent globals
 
 ## License
 
