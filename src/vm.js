@@ -427,6 +427,12 @@ export class VM {
         case Opcodes.OpNotEqual: this.push(left.value !== right.value ? TRUE : FALSE); break;
         case Opcodes.OpGreaterThan: this.push(left.value > right.value ? TRUE : FALSE); break;
       }
+    } else if (left instanceof MonkeyString && right instanceof MonkeyString) {
+      switch (op) {
+        case Opcodes.OpEqual: this.push(left.value === right.value ? TRUE : FALSE); break;
+        case Opcodes.OpNotEqual: this.push(left.value !== right.value ? TRUE : FALSE); break;
+        case Opcodes.OpGreaterThan: this.push(left.value > right.value ? TRUE : FALSE); break;
+      }
     } else {
       switch (op) {
         case Opcodes.OpEqual: this.push(left === right ? TRUE : FALSE); break;
