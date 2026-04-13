@@ -194,6 +194,32 @@ const builtins = new Map([
     }
     return acc;
   })],
+  // sort(array) or sort(array, comparator)
+  ['sort', new MonkeyBuiltin((...args) => {
+    if (args.length < 1 || args.length > 2) return newError(`wrong number of arguments to sort. got=${args.length}`);
+    const arr = args[0];
+    if (!(arr instanceof MonkeyArray)) return newError(`first argument to sort must be ARRAY, got ${arr.type()}`);
+    const sorted = [...arr.elements];
+    if (args.length === 2) {
+      // Custom comparator: fn(a, b) returns integer (<0, 0, >0)
+      const fn = args[1];
+      if (!(fn instanceof MonkeyFunction) && !(fn instanceof MonkeyBuiltin))
+        return newError(`second argument to sort must be FUNCTION, got ${fn.type()}`);
+      sorted.sort((a, b) => {
+        const result = applyFunction(fn, [a, b]);
+        if (isError(result)) return 0;
+        return result.value || 0;
+      });
+    } else {
+      // Default sort: by value
+      sorted.sort((a, b) => {
+        if (a.value < b.value) return -1;
+        if (a.value > b.value) return 1;
+        return 0;
+      });
+    }
+    return new MonkeyArray(sorted);
+  })],
 ]);
 
 // --- Helpers ---

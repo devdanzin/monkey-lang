@@ -200,6 +200,18 @@ const builtins = [
     for (const [, v] of args[0].pairs) vs.push(v);
     return new MonkeyArray(vs);
   }),
+  // sort (default, no comparator in VM)
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyError(`wrong number of arguments to sort. got=${args.length} (VM sort only supports default sort)`);
+    if (!(args[0] instanceof MonkeyArray)) return new MonkeyError(`argument to sort must be ARRAY, got ${args[0].type()}`);
+    const sorted = [...args[0].elements];
+    sorted.sort((a, b) => {
+      if (a.value < b.value) return -1;
+      if (a.value > b.value) return 1;
+      return 0;
+    });
+    return new MonkeyArray(sorted);
+  }),
 ];
 
 /**
