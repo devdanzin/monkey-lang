@@ -128,7 +128,7 @@ class MonkeyGenerator {
     if (this.depth > this.maxDepth) return this.atom();
     this.depth++;
     let e;
-    const choice = this.rng.int(0, 8);
+    const choice = this.rng.int(0, 12);
     switch (choice) {
       case 0: case 1: case 2: e = this.atom(); break;
       case 3: case 4: e = this.binaryExpr(); break;
@@ -136,6 +136,10 @@ class MonkeyGenerator {
       case 6: e = this.ifExpr(); break;
       case 7: e = this.stringLiteral(); break;
       case 8: e = this.arrayLiteral(); break;
+      case 9: e = this.hashLiteral(); break;
+      case 10: e = this.closureExpr(); break;
+      case 11: e = this.indexExpr(); break;
+      case 12: e = this.stringOp(); break;
     }
     this.depth--;
     return e;
@@ -202,6 +206,43 @@ class MonkeyGenerator {
   comparison() {
     const op = this.rng.pick(['==', '!=', '<', '>']);
     return `${this.atom()} ${op} ${this.atom()}`;
+  }
+
+  hashLiteral() {
+    const len = this.rng.int(0, 3);
+    const pairs = [];
+    for (let i = 0; i < len; i++) {
+      const key = this.rng.bool() ? `"key${i}"` : String(this.rng.int(0, 10));
+      pairs.push(`${key}: ${this.intLiteral()}`);
+    }
+    return `{${pairs.join(', ')}}`;
+  }
+
+  closureExpr() {
+    // Create a closure that captures outer variables
+    const param = this.freshVar();
+    const capturedVars = this.vars.length > 0 ? [this.rng.pick(this.vars)] : [];
+    const body = capturedVars.length > 0
+      ? `${param} + ${capturedVars[0]}`
+      : `${param} + 1`;
+    return `fn(${param}) { ${body} }`;
+  }
+
+  indexExpr() {
+    if (this.vars.length > 0 && this.rng.bool(0.5)) {
+      // Index into an existing array variable
+      return `${this.rng.pick(this.vars)}[${this.rng.int(0, 3)}]`;
+    }
+    // Index into inline array
+    const len = this.rng.int(1, 4);
+    const elems = [];
+    for (let i = 0; i < len; i++) elems.push(this.intLiteral());
+    return `[${elems.join(', ')}][${this.rng.int(0, len - 1)}]`;
+  }
+
+  stringOp() {
+    const ops = ['len("hello")', 'len([1, 2, 3])', 'type(42)', 'type("hi")', 'type(true)'];
+    return this.rng.pick(ops);
   }
 
   freshVar() {
