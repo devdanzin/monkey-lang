@@ -105,6 +105,50 @@ const builtins = new Map([
     }
     return new MonkeyArray(elements);
   })],
+  // map(array, fn) — apply fn to each element
+  ['map', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError(`wrong number of arguments to map. got=${args.length}, want=2`);
+    const [arr, fn] = args;
+    if (!(arr instanceof MonkeyArray)) return newError(`first argument to map must be ARRAY, got ${arr.type()}`);
+    if (!(fn instanceof MonkeyFunction) && !(fn instanceof MonkeyBuiltin))
+      return newError(`second argument to map must be FUNCTION, got ${fn.type()}`);
+    const results = [];
+    for (const el of arr.elements) {
+      const result = applyFunction(fn, [el]);
+      if (isError(result)) return result;
+      results.push(result);
+    }
+    return new MonkeyArray(results);
+  })],
+  // filter(array, fn) — keep elements where fn returns truthy
+  ['filter', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError(`wrong number of arguments to filter. got=${args.length}, want=2`);
+    const [arr, fn] = args;
+    if (!(arr instanceof MonkeyArray)) return newError(`first argument to filter must be ARRAY, got ${arr.type()}`);
+    if (!(fn instanceof MonkeyFunction) && !(fn instanceof MonkeyBuiltin))
+      return newError(`second argument to filter must be FUNCTION, got ${fn.type()}`);
+    const results = [];
+    for (const el of arr.elements) {
+      const result = applyFunction(fn, [el]);
+      if (isError(result)) return result;
+      if (isTruthy(result)) results.push(el);
+    }
+    return new MonkeyArray(results);
+  })],
+  // reduce(array, initial, fn) — fold array with fn(acc, el)
+  ['reduce', new MonkeyBuiltin((...args) => {
+    if (args.length !== 3) return newError(`wrong number of arguments to reduce. got=${args.length}, want=3`);
+    const [arr, initial, fn] = args;
+    if (!(arr instanceof MonkeyArray)) return newError(`first argument to reduce must be ARRAY, got ${arr.type()}`);
+    if (!(fn instanceof MonkeyFunction) && !(fn instanceof MonkeyBuiltin))
+      return newError(`third argument to reduce must be FUNCTION, got ${fn.type()}`);
+    let acc = initial;
+    for (const el of arr.elements) {
+      acc = applyFunction(fn, [acc, el]);
+      if (isError(acc)) return acc;
+    }
+    return acc;
+  })],
 ]);
 
 // --- Helpers ---

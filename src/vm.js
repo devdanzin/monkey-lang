@@ -130,7 +130,7 @@ const builtins = [
     }
     return new MonkeyString(result);
   }),
-  // range(start, end) or range(end) — creates array [start, start+1, ..., end-1]
+  // range
   new MonkeyBuiltin((...args) => {
     if (args.length < 1 || args.length > 3) return new MonkeyError(`wrong number of arguments to range. got=${args.length}`);
     let start, end, step;
