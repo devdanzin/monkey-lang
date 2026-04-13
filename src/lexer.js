@@ -92,7 +92,7 @@ export class Lexer {
 
   readIdentifier() {
     const start = this.position;
-    while (this.ch && (isLetter(this.ch) || this.ch === '_')) {
+    while (this.ch && (isLetter(this.ch) || this.ch === '_' || (this.position > start && isDigit(this.ch)))) {
       this.readChar();
     }
     return this.input.slice(start, this.position);
