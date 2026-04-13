@@ -155,6 +155,22 @@ export class Compiler {
         this.emit(Opcodes.OpGreaterThan);
         return;
       }
+      // >= is NOT (right > left), i.e., NOT (a < b)
+      if (node.operator === '>=') {
+        this.compile(node.right);
+        this.compile(node.left);
+        this.emit(Opcodes.OpGreaterThan);
+        this.emit(Opcodes.OpBang);
+        return;
+      }
+      // <= is NOT (left > right)
+      if (node.operator === '<=') {
+        this.compile(node.left);
+        this.compile(node.right);
+        this.emit(Opcodes.OpGreaterThan);
+        this.emit(Opcodes.OpBang);
+        return;
+      }
       this.compile(node.left);
       this.compile(node.right);
       switch (node.operator) {

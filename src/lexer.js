@@ -150,8 +150,14 @@ export class Lexer {
       case '*': tok = new Token(TokenType.ASTERISK, '*'); break;
       case '/': tok = new Token(TokenType.SLASH, '/'); break;
       case '%': tok = new Token(TokenType.PERCENT, '%'); break;
-      case '<': tok = new Token(TokenType.LT, '<'); break;
-      case '>': tok = new Token(TokenType.GT, '>'); break;
+      case '<':
+        if (this.peekChar() === '=') { this.readChar(); tok = new Token(TokenType.LTE, '<='); }
+        else { tok = new Token(TokenType.LT, '<'); }
+        break;
+      case '>':
+        if (this.peekChar() === '=') { this.readChar(); tok = new Token(TokenType.GTE, '>='); }
+        else { tok = new Token(TokenType.GT, '>'); }
+        break;
       case ',': tok = new Token(TokenType.COMMA, ','); break;
       case ';': tok = new Token(TokenType.SEMICOLON, ';'); break;
       case ':': tok = new Token(TokenType.COLON, ':'); break;
