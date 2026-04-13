@@ -110,6 +110,7 @@ export class Parser {
   parseStatement() {
     switch (this.curToken.type) {
       case TokenType.LET: return this.parseLetStatement();
+      case TokenType.SET: return this.parseSetStatement();
       case TokenType.RETURN: return this.parseReturnStatement();
       default: return this.parseExpressionStatement();
     }
@@ -124,6 +125,17 @@ export class Parser {
     const value = this.parseExpression(Precedence.LOWEST);
     if (this.peekTokenIs(TokenType.SEMICOLON)) this.nextToken();
     return new ast.LetStatement(token, name, value);
+  }
+
+  parseSetStatement() {
+    const token = this.curToken;
+    if (!this.expectPeek(TokenType.IDENT)) return null;
+    const name = new ast.Identifier(this.curToken, this.curToken.literal);
+    if (!this.expectPeek(TokenType.ASSIGN)) return null;
+    this.nextToken();
+    const value = this.parseExpression(Precedence.LOWEST);
+    if (this.peekTokenIs(TokenType.SEMICOLON)) this.nextToken();
+    return new ast.SetStatement(token, name, value);
   }
 
   parseReturnStatement() {

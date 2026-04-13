@@ -231,6 +231,18 @@ export class Compiler {
       } else {
         this.emit(Opcodes.OpSetLocal, sym.index);
       }
+    } else if (node instanceof AST.SetStatement) {
+      // Set mutates an existing variable
+      const sym = this.symbolTable.resolve(node.name.value);
+      if (!sym) throw new Error(`undefined variable: ${node.name.value}`);
+      this.compile(node.value);
+      if (sym.scope === SymbolScopes.GLOBAL) {
+        this.emit(Opcodes.OpSetGlobal, sym.index);
+      } else if (sym.scope === SymbolScopes.LOCAL) {
+        this.emit(Opcodes.OpSetLocal, sym.index);
+      } else {
+        throw new Error(`cannot set ${sym.scope} variable: ${node.name.value}`);
+      }
     } else if (node instanceof AST.Identifier) {
       const sym = this.symbolTable.resolve(node.value);
       if (!sym) throw new Error(`undefined variable: ${node.value}`);

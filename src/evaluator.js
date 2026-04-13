@@ -72,6 +72,12 @@ export function monkeyEval(node, env) {
     env.set(node.name.value, val);
     return undefined;
   }
+  if (node instanceof AST.SetStatement) {
+    const val = monkeyEval(node.value, env);
+    if (isError(val)) return val;
+    env.update(node.name.value, val);
+    return undefined;
+  }
   if (node instanceof AST.ReturnStatement) {
     const val = monkeyEval(node.returnValue, env);
     if (isError(val)) return val;

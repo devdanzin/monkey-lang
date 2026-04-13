@@ -101,6 +101,17 @@ export class Environment {
     this.store.set(name, val);
     return val;
   }
+  update(name, val) {
+    // Update existing binding in the nearest scope that has it
+    if (this.store.has(name)) {
+      this.store.set(name, val);
+      return val;
+    }
+    if (this.outer) return this.outer.update(name, val);
+    // If not found, create in current scope (fallback)
+    this.store.set(name, val);
+    return val;
+  }
 }
 
 // Singletons

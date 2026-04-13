@@ -33,6 +33,7 @@ export const TokenType = {
   // Keywords
   FUNCTION: 'FUNCTION',
   LET: 'LET',
+  SET: 'SET',
   TRUE: 'TRUE',
   FALSE: 'FALSE',
   IF: 'IF',
@@ -48,6 +49,7 @@ export const TokenType = {
 const KEYWORDS = {
   fn: TokenType.FUNCTION,
   let: TokenType.LET,
+  set: TokenType.SET,
   true: TokenType.TRUE,
   false: TokenType.FALSE,
   if: TokenType.IF,
