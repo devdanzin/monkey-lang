@@ -214,6 +214,10 @@ export class Compiler {
     } else if (node instanceof AST.BlockStatement) {
       for (const stmt of node.statements) {
         this.compile(stmt);
+        // Dead code elimination: stop after return
+        if (this.lastInstructionIs(Opcodes.OpReturnValue) || this.lastInstructionIs(Opcodes.OpReturn)) {
+          break;
+        }
       }
     } else if (node instanceof AST.WhileExpression) {
       const loopStart = this.currentInstructions().length;
