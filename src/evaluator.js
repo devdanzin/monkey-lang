@@ -246,6 +246,19 @@ export function monkeyEval(node, env) {
   }
 
   if (node instanceof AST.InfixExpression) {
+    // Short-circuit logical operators
+    if (node.operator === '&&') {
+      const left = monkeyEval(node.left, env);
+      if (isError(left)) return left;
+      if (!isTruthy(left)) return left;
+      return monkeyEval(node.right, env);
+    }
+    if (node.operator === '||') {
+      const left = monkeyEval(node.left, env);
+      if (isError(left)) return left;
+      if (isTruthy(left)) return left;
+      return monkeyEval(node.right, env);
+    }
     const left = monkeyEval(node.left, env);
     if (isError(left)) return left;
     const right = monkeyEval(node.right, env);

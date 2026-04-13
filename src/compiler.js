@@ -163,6 +163,31 @@ export class Compiler {
         this.emit(Opcodes.OpBang);
         return;
       }
+      // && (logical AND with short-circuit)
+      if (node.operator === '&&') {
+        this.compile(node.left);
+        const jumpPos = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+        this.emit(Opcodes.OpPop);
+        this.compile(node.right);
+        const endPos = this.emit(Opcodes.OpJump, 9999);
+        this.changeOperand(jumpPos, this.currentInstructions().length);
+        this.emit(Opcodes.OpFalse);
+        this.changeOperand(endPos, this.currentInstructions().length);
+        return;
+      }
+      // || (logical OR with short-circuit)
+      if (node.operator === '||') {
+        this.compile(node.left);
+        const jumpNotPos = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+        this.emit(Opcodes.OpPop);
+        this.emit(Opcodes.OpTrue);
+        const jumpEnd = this.emit(Opcodes.OpJump, 9999);
+        this.changeOperand(jumpNotPos, this.currentInstructions().length);
+        this.emit(Opcodes.OpPop);
+        this.compile(node.right);
+        this.changeOperand(jumpEnd, this.currentInstructions().length);
+        return;
+      }
       // <= is NOT (left > right)
       if (node.operator === '<=') {
         this.compile(node.left);
