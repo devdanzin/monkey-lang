@@ -239,6 +239,12 @@ export class VM {
 
         case Opcodes.OpReturnValue: {
           const returnValue = this.pop();
+          if (this.framesIndex <= 1) {
+            // Top-level return — halt the VM
+            // Place value where lastPoppedStackElem can find it
+            this.stack[this.sp] = returnValue;
+            return;
+          }
           const frame = this.popFrame();
           this.sp = frame.basePointer - 1; // -1 to also pop the function
           this.push(returnValue);
@@ -246,6 +252,10 @@ export class VM {
         }
 
         case Opcodes.OpReturn: {
+          if (this.framesIndex <= 1) {
+            this.stack[this.sp] = NULL;
+            return;
+          }
           const frame = this.popFrame();
           this.sp = frame.basePointer - 1;
           this.push(NULL);
