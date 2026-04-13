@@ -209,6 +209,17 @@ export class ContinueStatement {
   toString() { return 'continue'; }
 }
 
+export class SliceExpression {
+  constructor(token, left, start, end) {
+    this.token = token;
+    this.left = left;
+    this.start = start; // null means beginning
+    this.end = end;     // null means end
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return `(${this.left}[${this.start || ''}:${this.end || ''}])`; }
+}
+
 export class SetStatement {
   constructor(token, name, value) {
     this.token = token;

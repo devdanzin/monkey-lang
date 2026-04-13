@@ -314,6 +314,34 @@ export function monkeyEval(node, env) {
   if (node instanceof AST.DoWhileExpression) return evalDoWhileExpression(node, env);
   if (node instanceof AST.BreakStatement) return BREAK_SIGNAL;
   if (node instanceof AST.ContinueStatement) return CONTINUE_SIGNAL;
+  if (node instanceof AST.SliceExpression) {
+    const left = monkeyEval(node.left, env);
+    if (isError(left)) return left;
+    const start = node.start ? monkeyEval(node.start, env) : new MonkeyInteger(0);
+    if (isError(start)) return start;
+    
+    if (left instanceof MonkeyArray) {
+      const len = left.elements.length;
+      let s = start.value;
+      let e = node.end ? monkeyEval(node.end, env).value : len;
+      if (s < 0) s = len + s;
+      if (e < 0) e = len + e;
+      s = Math.max(0, Math.min(s, len));
+      e = Math.max(0, Math.min(e, len));
+      return new MonkeyArray(left.elements.slice(s, e));
+    }
+    if (left instanceof MonkeyString) {
+      const len = left.value.length;
+      let s = start.value;
+      let e = node.end ? monkeyEval(node.end, env).value : len;
+      if (s < 0) s = len + s;
+      if (e < 0) e = len + e;
+      s = Math.max(0, Math.min(s, len));
+      e = Math.max(0, Math.min(e, len));
+      return new MonkeyString(left.value.slice(s, e));
+    }
+    return newError(`slice operator not supported: ${left.type()}`);
+  }
   if (node instanceof AST.ForExpression) return evalForExpression(node, env);
 
   if (node instanceof AST.Identifier) return evalIdentifier(node, env);

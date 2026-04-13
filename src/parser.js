@@ -359,7 +359,35 @@ export class Parser {
   parseIndexExpression(left) {
     const token = this.curToken;
     this.nextToken();
+    
+    // Check for slice: arr[:end], arr[start:end], arr[start:], arr[:]
+    if (this.curTokenIs(TokenType.COLON)) {
+      // arr[:end] or arr[:]
+      this.nextToken();
+      if (this.curTokenIs(TokenType.RBRACKET)) {
+        // arr[:] — full slice
+        return new ast.SliceExpression(token, left, null, null);
+      }
+      const end = this.parseExpression(Precedence.LOWEST);
+      if (!this.expectPeek(TokenType.RBRACKET)) return null;
+      return new ast.SliceExpression(token, left, null, end);
+    }
+    
     const index = this.parseExpression(Precedence.LOWEST);
+    
+    // Check for slice: arr[start:end] or arr[start:]
+    if (this.peekTokenIs(TokenType.COLON)) {
+      this.nextToken(); // consume :
+      this.nextToken();
+      if (this.curTokenIs(TokenType.RBRACKET)) {
+        // arr[start:]
+        return new ast.SliceExpression(token, left, index, null);
+      }
+      const end = this.parseExpression(Precedence.LOWEST);
+      if (!this.expectPeek(TokenType.RBRACKET)) return null;
+      return new ast.SliceExpression(token, left, index, end);
+    }
+    
     if (!this.expectPeek(TokenType.RBRACKET)) return null;
     return new ast.IndexExpression(token, left, index);
   }
