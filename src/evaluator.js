@@ -3,7 +3,7 @@
 import {
   MonkeyInteger, MonkeyString, MonkeyReturnValue, MonkeyError,
   MonkeyFunction, MonkeyArray, MonkeyHash, MonkeyBuiltin,
-  Environment, TRUE, FALSE, NULL, OBJ,
+  Environment, TRUE, FALSE, NULL, OBJ, BREAK_SIGNAL, CONTINUE_SIGNAL,
 } from './object.js';
 
 import * as AST from './ast.js';
@@ -295,6 +295,8 @@ export function monkeyEval(node, env) {
   if (node instanceof AST.IfExpression) return evalIfExpression(node, env);
   if (node instanceof AST.WhileExpression) return evalWhileExpression(node, env);
   if (node instanceof AST.DoWhileExpression) return evalDoWhileExpression(node, env);
+  if (node instanceof AST.BreakStatement) return BREAK_SIGNAL;
+  if (node instanceof AST.ContinueStatement) return CONTINUE_SIGNAL;
   if (node instanceof AST.ForExpression) return evalForExpression(node, env);
 
   if (node instanceof AST.Identifier) return evalIdentifier(node, env);
@@ -346,6 +348,7 @@ function evalBlockStatement(stmts, env) {
   let result;
   for (const stmt of stmts) {
     result = monkeyEval(stmt, env);
+    if (result === BREAK_SIGNAL || result === CONTINUE_SIGNAL) return result;
     if (result) {
       const rt = result.type();
       if (rt === OBJ.RETURN || rt === OBJ.ERROR) return result;
@@ -400,6 +403,8 @@ function evalIntegerInfix(op, left, right) {
     case '%': return new MonkeyInteger(l % r);
     case '<': return nativeBoolToBooleanObject(l < r);
     case '>': return nativeBoolToBooleanObject(l > r);
+    case '<=': return nativeBoolToBooleanObject(l <= r);
+    case '>=': return nativeBoolToBooleanObject(l >= r);
     case '==': return nativeBoolToBooleanObject(l === r);
     case '!=': return nativeBoolToBooleanObject(l !== r);
     default: return newError(`unknown operator: ${left.type()} ${op} ${right.type()}`);
@@ -418,6 +423,13 @@ function evalForExpression(node, env) {
     if (!isTruthy(condition)) break;
     
     result = monkeyEval(node.body, env);
+    if (result === BREAK_SIGNAL) break;
+    if (result === CONTINUE_SIGNAL) {
+      // Execute update even on continue
+      const updateResult = monkeyEval(node.update, env);
+      if (isError(updateResult)) return updateResult;
+      continue;
+    }
     if (isError(result)) return result;
     if (result instanceof MonkeyReturnValue) return result;
     
@@ -425,7 +437,7 @@ function evalForExpression(node, env) {
     const updateResult = monkeyEval(node.update, env);
     if (isError(updateResult)) return updateResult;
   }
-  return result;
+  return result === BREAK_SIGNAL || result === CONTINUE_SIGNAL ? NULL : result;
 }
 
 function evalWhileExpression(node, env) {
@@ -435,23 +447,29 @@ function evalWhileExpression(node, env) {
     if (isError(condition)) return condition;
     if (!isTruthy(condition)) break;
     result = monkeyEval(node.body, env);
+    if (result === BREAK_SIGNAL) break;
+    if (result === CONTINUE_SIGNAL) continue;
     if (isError(result)) return result;
     if (result instanceof MonkeyReturnValue) return result;
   }
-  return result;
+  return result === BREAK_SIGNAL || result === CONTINUE_SIGNAL ? NULL : result;
 }
 
 function evalDoWhileExpression(node, env) {
   let result = NULL;
-  do {
+  while (true) {
     result = monkeyEval(node.body, env);
-    if (isError(result)) return result;
-    if (result instanceof MonkeyReturnValue) return result;
+    if (result === BREAK_SIGNAL) break;
+    if (result === CONTINUE_SIGNAL) { /* fall through to condition check */ }
+    else {
+      if (isError(result)) return result;
+      if (result instanceof MonkeyReturnValue) return result;
+    }
     const condition = monkeyEval(node.condition, env);
     if (isError(condition)) return condition;
     if (!isTruthy(condition)) break;
-  } while (true);
-  return result;
+  }
+  return result === BREAK_SIGNAL || result === CONTINUE_SIGNAL ? NULL : result;
 }
 
 function evalIfExpression(node, env) {

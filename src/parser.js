@@ -56,6 +56,8 @@ export class Parser {
     this.registerPrefix(TokenType.IF, () => this.parseIfExpression());
     this.registerPrefix(TokenType.WHILE, () => this.parseWhileExpression());
     this.registerPrefix(TokenType.DO, () => this.parseDoWhileExpression());
+    this.registerPrefix(TokenType.BREAK, () => new ast.BreakStatement(this.curToken));
+    this.registerPrefix(TokenType.CONTINUE, () => new ast.ContinueStatement(this.curToken));
     this.registerPrefix(TokenType.FOR, () => this.parseForExpression());
     this.registerPrefix(TokenType.FUNCTION, () => this.parseFunctionLiteral());
     this.registerPrefix(TokenType.LBRACKET, () => this.parseArrayLiteral());

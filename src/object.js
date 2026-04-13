@@ -118,3 +118,5 @@ export class Environment {
 export const TRUE = new MonkeyBoolean(true);
 export const FALSE = new MonkeyBoolean(false);
 export const NULL = new MonkeyNull();
+export const BREAK_SIGNAL = { type: 'BREAK_SIGNAL' };
+export const CONTINUE_SIGNAL = { type: 'CONTINUE_SIGNAL' };

@@ -197,6 +197,18 @@ export class DoWhileExpression {
   toString() { return `do ${this.body} while (${this.condition})`; }
 }
 
+export class BreakStatement {
+  constructor(token) { this.token = token; }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return 'break'; }
+}
+
+export class ContinueStatement {
+  constructor(token) { this.token = token; }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return 'continue'; }
+}
+
 export class SetStatement {
   constructor(token, name, value) {
     this.token = token;
