@@ -150,6 +150,40 @@ const builtins = [
     }
     return new MonkeyArray(elements);
   }),
+  // split
+  new MonkeyBuiltin((...args) => {
+    if (args.length < 1 || args.length > 2) return new MonkeyError(`wrong number of arguments to split. got=${args.length}`);
+    if (!(args[0] instanceof MonkeyString)) return new MonkeyError(`argument to split must be STRING, got ${args[0].type()}`);
+    const sep = args.length === 2 && args[1] instanceof MonkeyString ? args[1].value : '';
+    const parts = sep === '' ? [...args[0].value] : args[0].value.split(sep);
+    return new MonkeyArray(parts.map(s => new MonkeyString(s)));
+  }),
+  // join
+  new MonkeyBuiltin((...args) => {
+    if (args.length < 1 || args.length > 2) return new MonkeyError(`wrong number of arguments to join. got=${args.length}`);
+    if (!(args[0] instanceof MonkeyArray)) return new MonkeyError(`first argument to join must be ARRAY, got ${args[0].type()}`);
+    const sep = args.length === 2 && args[1] instanceof MonkeyString ? args[1].value : '';
+    const strs = args[0].elements.map(e => e.inspect ? e.inspect() : String(e));
+    return new MonkeyString(strs.join(sep));
+  }),
+  // trim
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyError(`wrong number of arguments to trim. got=${args.length}, want=1`);
+    if (!(args[0] instanceof MonkeyString)) return new MonkeyError(`argument to trim must be STRING, got ${args[0].type()}`);
+    return new MonkeyString(args[0].value.trim());
+  }),
+  // upper
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyError(`wrong number of arguments to upper. got=${args.length}, want=1`);
+    if (!(args[0] instanceof MonkeyString)) return new MonkeyError(`argument to upper must be STRING, got ${args[0].type()}`);
+    return new MonkeyString(args[0].value.toUpperCase());
+  }),
+  // lower
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyError(`wrong number of arguments to lower. got=${args.length}, want=1`);
+    if (!(args[0] instanceof MonkeyString)) return new MonkeyError(`argument to lower must be STRING, got ${args[0].type()}`);
+    return new MonkeyString(args[0].value.toLowerCase());
+  }),
 ];
 
 /**
