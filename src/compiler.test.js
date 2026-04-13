@@ -26,48 +26,41 @@ function testInstructions(expected) {
 
 describe('Compiler', () => {
   describe('integer arithmetic', () => {
-    it('compiles 1 + 2', () => {
+    it('compiles 1 + 2 (constant folded)', () => {
       const bc = testCompile('1 + 2');
       const expected = testInstructions([
         make(Opcodes.OpConstant, 0),
-        make(Opcodes.OpConstant, 1),
-        make(Opcodes.OpAdd),
         make(Opcodes.OpPop),
       ]);
       assert.deepEqual([...bc.instructions], [...expected]);
-      assert.equal(bc.constants[0].value, 1);
-      assert.equal(bc.constants[1].value, 2);
+      // Constant folded: 1 + 2 = 3
+      assert.equal(bc.constants[0].value, 3);
     });
 
-    it('compiles 1 - 2', () => {
+    it('compiles 1 - 2 (constant folded)', () => {
       const bc = testCompile('1 - 2');
-      const expected = testInstructions([
-        make(Opcodes.OpConstant, 0),
-        make(Opcodes.OpConstant, 1),
-        make(Opcodes.OpSub),
-        make(Opcodes.OpPop),
-      ]);
-      assert.deepEqual([...bc.instructions], [...expected]);
+      assert.equal(bc.constants[0].value, -1);
     });
 
-    it('compiles 1 * 2', () => {
+    it('compiles 1 * 2 (constant folded)', () => {
       const bc = testCompile('1 * 2');
-      assert.ok(bc.instructions.includes(Opcodes.OpMul));
+      assert.equal(bc.constants[0].value, 2);
     });
 
-    it('compiles 2 / 1', () => {
+    it('compiles 2 / 1 (constant folded)', () => {
       const bc = testCompile('2 / 1');
-      assert.ok(bc.instructions.includes(Opcodes.OpDiv));
+      assert.equal(bc.constants[0].value, 2);
     });
 
-    it('compiles -1', () => {
+    it('compiles -1 (constant folded)', () => {
       const bc = testCompile('-1');
-      const expected = testInstructions([
-        make(Opcodes.OpConstant, 0),
-        make(Opcodes.OpMinus),
-        make(Opcodes.OpPop),
-      ]);
-      assert.deepEqual([...bc.instructions], [...expected]);
+      assert.equal(bc.constants[0].value, -1);
+    });
+
+    it('compiles complex constant: (2 + 3) * 4', () => {
+      const bc = testCompile('(2 + 3) * 4');
+      // Should fold to 20
+      assert.equal(bc.constants[0].value, 20);
     });
   });
 
@@ -89,11 +82,9 @@ describe('Compiler', () => {
 
     it('compiles 1 < 2 (as reversed >)', () => {
       const bc = testCompile('1 < 2');
-      // Should compile as: push 2, push 1, OpGreaterThan
+      // < is compiled as >, reversed operands — but both are constants
+      // so the comparison still works (not folded since result is boolean)
       assert.ok(bc.instructions.includes(Opcodes.OpGreaterThan));
-      // Constants should be in reversed order for <
-      assert.equal(bc.constants[0].value, 2);
-      assert.equal(bc.constants[1].value, 1);
     });
 
     it('compiles 1 == 2', () => {

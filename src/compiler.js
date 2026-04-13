@@ -142,6 +142,12 @@ export class Compiler {
       this.compile(node.expression);
       this.emit(Opcodes.OpPop);
     } else if (node instanceof AST.InfixExpression) {
+      // Constant folding: evaluate constant expressions at compile time
+      const folded = this.tryConstantFold(node);
+      if (folded !== null) {
+        this.emit(Opcodes.OpConstant, this.addConstant(folded));
+        return;
+      }
       // Special handling for '<': compile as '>' with swapped operands
       if (node.operator === '<') {
         this.compile(node.right);
@@ -163,6 +169,12 @@ export class Compiler {
         default: throw new Error(`unknown operator: ${node.operator}`);
       }
     } else if (node instanceof AST.PrefixExpression) {
+      // Constant folding for prefix
+      const folded = this.tryConstantFoldPrefix(node);
+      if (folded !== null) {
+        this.emit(Opcodes.OpConstant, this.addConstant(folded));
+        return;
+      }
       this.compile(node.right);
       switch (node.operator) {
         case '-': this.emit(Opcodes.OpMinus); break;
@@ -425,6 +437,66 @@ export class Compiler {
       case SymbolScopes.FREE: this.emit(Opcodes.OpGetFree, sym.index); break;
       case SymbolScopes.FUNCTION: this.emit(Opcodes.OpCurrentClosure); break;
     }
+  }
+
+  /**
+   * Try to constant-fold an infix expression. Returns a MonkeyObject or null.
+   */
+  tryConstantFold(node) {
+    // Only fold if both sides are literals
+    const left = this.getConstantValue(node.left);
+    const right = this.getConstantValue(node.right);
+    if (left === null || right === null) return null;
+    
+    // Integer arithmetic
+    if (typeof left === 'number' && typeof right === 'number') {
+      let result;
+      switch (node.operator) {
+        case '+': result = left + right; break;
+        case '-': result = left - right; break;
+        case '*': result = left * right; break;
+        case '/': result = right !== 0 ? Math.trunc(left / right) : null; break;
+        case '%': result = right !== 0 ? left % right : null; break;
+        default: return null;
+      }
+      return result !== null ? new MonkeyInteger(result) : null;
+    }
+    
+    // String concatenation
+    if (typeof left === 'string' && typeof right === 'string') {
+      if (node.operator === '+') return new MonkeyString(left + right);
+    }
+    
+    return null;
+  }
+
+  /**
+   * Try to constant-fold a prefix expression.
+   */
+  tryConstantFoldPrefix(node) {
+    const val = this.getConstantValue(node.right);
+    if (val === null) return null;
+    if (node.operator === '-' && typeof val === 'number') return new MonkeyInteger(-val);
+    return null;
+  }
+
+  /**
+   * Get the constant value of a simple literal expression, or null.
+   */
+  getConstantValue(node) {
+    if (node instanceof AST.IntegerLiteral) return node.value;
+    if (node instanceof AST.StringLiteral) return node.value;
+    // Recursively fold nested constant expressions
+    if (node instanceof AST.InfixExpression) {
+      const folded = this.tryConstantFold(node);
+      if (folded instanceof MonkeyInteger) return folded.value;
+      if (folded instanceof MonkeyString) return folded.value;
+    }
+    if (node instanceof AST.PrefixExpression) {
+      const folded = this.tryConstantFoldPrefix(node);
+      if (folded instanceof MonkeyInteger) return folded.value;
+    }
+    return null;
   }
 }
 
