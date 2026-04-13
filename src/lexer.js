@@ -46,6 +46,7 @@ export const TokenType = {
   ELSE: 'ELSE',
   RETURN: 'RETURN',
   WHILE: 'WHILE',
+  DO: 'DO',
 
   // Special
   EOF: 'EOF',
@@ -63,6 +64,7 @@ const KEYWORDS = {
   else: TokenType.ELSE,
   return: TokenType.RETURN,
   while: TokenType.WHILE,
+  do: TokenType.DO,
 };
 
 export class Token {

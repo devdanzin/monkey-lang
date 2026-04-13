@@ -294,6 +294,7 @@ export function monkeyEval(node, env) {
 
   if (node instanceof AST.IfExpression) return evalIfExpression(node, env);
   if (node instanceof AST.WhileExpression) return evalWhileExpression(node, env);
+  if (node instanceof AST.DoWhileExpression) return evalDoWhileExpression(node, env);
   if (node instanceof AST.ForExpression) return evalForExpression(node, env);
 
   if (node instanceof AST.Identifier) return evalIdentifier(node, env);
@@ -437,6 +438,19 @@ function evalWhileExpression(node, env) {
     if (isError(result)) return result;
     if (result instanceof MonkeyReturnValue) return result;
   }
+  return result;
+}
+
+function evalDoWhileExpression(node, env) {
+  let result = NULL;
+  do {
+    result = monkeyEval(node.body, env);
+    if (isError(result)) return result;
+    if (result instanceof MonkeyReturnValue) return result;
+    const condition = monkeyEval(node.condition, env);
+    if (isError(condition)) return condition;
+    if (!isTruthy(condition)) break;
+  } while (true);
   return result;
 }
 

@@ -274,6 +274,19 @@ export class Compiler {
       this.changeOperand(exitJump, this.currentInstructions().length);
       // While loop evaluates to null when condition is false
       this.emit(Opcodes.OpNull);
+    } else if (node instanceof AST.DoWhileExpression) {
+      const loopStart = this.currentInstructions().length;
+      this.compile(node.body);
+      if (this.lastInstructionIs(Opcodes.OpPop)) {
+        this.removeLastPop();
+      }
+      // Condition at end
+      this.compile(node.condition);
+      // If truthy, jump back to start
+      this.emit(Opcodes.OpJumpNotTruthy, this.currentInstructions().length + 4);
+      this.emit(Opcodes.OpJump, loopStart);
+      // Evaluate to null
+      this.emit(Opcodes.OpNull);
     } else if (node instanceof AST.ForExpression) {
       // Compile init
       this.compile(node.init);

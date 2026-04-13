@@ -55,6 +55,7 @@ export class Parser {
     this.registerPrefix(TokenType.LPAREN, () => this.parseGroupedExpression());
     this.registerPrefix(TokenType.IF, () => this.parseIfExpression());
     this.registerPrefix(TokenType.WHILE, () => this.parseWhileExpression());
+    this.registerPrefix(TokenType.DO, () => this.parseDoWhileExpression());
     this.registerPrefix(TokenType.FOR, () => this.parseForExpression());
     this.registerPrefix(TokenType.FUNCTION, () => this.parseFunctionLiteral());
     this.registerPrefix(TokenType.LBRACKET, () => this.parseArrayLiteral());
@@ -263,6 +264,18 @@ export class Parser {
     if (!this.expectPeek(TokenType.LBRACE)) return null;
     const body = this.parseBlockStatement();
     return new ast.WhileExpression(token, condition, body);
+  }
+
+  parseDoWhileExpression() {
+    const token = this.curToken;
+    if (!this.expectPeek(TokenType.LBRACE)) return null;
+    const body = this.parseBlockStatement();
+    if (!this.expectPeek(TokenType.WHILE)) return null;
+    if (!this.expectPeek(TokenType.LPAREN)) return null;
+    this.nextToken();
+    const condition = this.parseExpression(Precedence.LOWEST);
+    if (!this.expectPeek(TokenType.RPAREN)) return null;
+    return new ast.DoWhileExpression(token, body, condition);
   }
 
   parseForExpression() {
