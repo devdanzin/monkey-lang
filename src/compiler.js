@@ -202,6 +202,20 @@ export class Compiler {
       for (const stmt of node.statements) {
         this.compile(stmt);
       }
+    } else if (node instanceof AST.WhileExpression) {
+      const loopStart = this.currentInstructions().length;
+      this.compile(node.condition);
+      const exitJump = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+      this.compile(node.body);
+      if (this.lastInstructionIs(Opcodes.OpPop)) {
+        this.removeLastPop();
+      }
+      // Jump back to loop start
+      this.emit(Opcodes.OpJump, loopStart);
+      // Patch exit jump
+      this.changeOperand(exitJump, this.currentInstructions().length);
+      // While loop evaluates to null when condition is false
+      this.emit(Opcodes.OpNull);
     } else if (node instanceof AST.LetStatement) {
       // Compile value BEFORE defining symbol, so RHS references resolve
       // to outer scope (not the new binding being created).

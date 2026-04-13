@@ -176,3 +176,13 @@ export class HashLiteral {
     return `{${entries.join(', ')}}`;
   }
 }
+
+export class WhileExpression {
+  constructor(token, condition, body) {
+    this.token = token;
+    this.condition = condition;
+    this.body = body; // BlockStatement
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return `while (${this.condition}) ${this.body}`; }
+}

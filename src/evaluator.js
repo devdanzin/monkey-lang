@@ -98,6 +98,7 @@ export function monkeyEval(node, env) {
   }
 
   if (node instanceof AST.IfExpression) return evalIfExpression(node, env);
+  if (node instanceof AST.WhileExpression) return evalWhileExpression(node, env);
 
   if (node instanceof AST.Identifier) return evalIdentifier(node, env);
 
@@ -205,6 +206,19 @@ function evalIntegerInfix(op, left, right) {
     case '!=': return nativeBoolToBooleanObject(l !== r);
     default: return newError(`unknown operator: ${left.type()} ${op} ${right.type()}`);
   }
+}
+
+function evalWhileExpression(node, env) {
+  let result = NULL;
+  while (true) {
+    const condition = monkeyEval(node.condition, env);
+    if (isError(condition)) return condition;
+    if (!isTruthy(condition)) break;
+    result = monkeyEval(node.body, env);
+    if (isError(result)) return result;
+    if (result instanceof MonkeyReturnValue) return result;
+  }
+  return result;
 }
 
 function evalIfExpression(node, env) {
