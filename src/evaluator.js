@@ -44,6 +44,24 @@ const builtins = new Map([
     for (const arg of args) console.log(arg.inspect());
     return NULL;
   })],
+  ['type', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError(`wrong number of arguments. got=${args.length}, want=1`);
+    return new MonkeyString(args[0].type());
+  })],
+  ['str', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError(`wrong number of arguments. got=${args.length}, want=1`);
+    return new MonkeyString(args[0].inspect());
+  })],
+  ['int', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError(`wrong number of arguments. got=${args.length}, want=1`);
+    const arg = args[0];
+    if (arg instanceof MonkeyInteger) return arg;
+    if (arg instanceof MonkeyString) {
+      const n = parseInt(arg.value, 10);
+      return isNaN(n) ? NULL : new MonkeyInteger(n);
+    }
+    return NULL;
+  })],
 ]);
 
 // --- Helpers ---
@@ -297,6 +315,11 @@ function evalIndexExpression(left, index) {
     const max = left.elements.length - 1;
     if (idx < 0 || idx > max) return NULL;
     return left.elements[idx];
+  }
+  if (left.type() === OBJ.STRING && index.type() === OBJ.INTEGER) {
+    const idx = index.value;
+    if (idx < 0 || idx >= left.value.length) return NULL;
+    return new MonkeyString(left.value[idx]);
   }
   if (left.type() === OBJ.HASH) {
     if (typeof index.hashKey !== 'function') {

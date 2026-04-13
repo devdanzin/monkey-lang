@@ -84,6 +84,27 @@ const builtins = [
     for (const arg of args) console.log(arg.inspect());
     return NULL;
   }),
+  // type
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyError(`wrong number of arguments. got=${args.length}, want=1`);
+    return new MonkeyString(args[0].type());
+  }),
+  // str (convert to string)
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyError(`wrong number of arguments. got=${args.length}, want=1`);
+    return new MonkeyString(args[0].inspect());
+  }),
+  // int (convert to integer)
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyError(`wrong number of arguments. got=${args.length}, want=1`);
+    const arg = args[0];
+    if (arg instanceof MonkeyInteger) return arg;
+    if (arg instanceof MonkeyString) {
+      const n = parseInt(arg.value, 10);
+      return isNaN(n) ? NULL : cachedInteger(n);
+    }
+    return NULL;
+  }),
 ];
 
 /**
@@ -451,6 +472,13 @@ export class VM {
         this.push(NULL);
       } else {
         this.push(left.elements[idx]);
+      }
+    } else if (left instanceof MonkeyString && index instanceof MonkeyInteger) {
+      const idx = index.value;
+      if (idx < 0 || idx >= left.value.length) {
+        this.push(NULL);
+      } else {
+        this.push(new MonkeyString(left.value[idx]));
       }
     } else if (left instanceof MonkeyHash) {
       const key = left.pairs.get(index) || 
