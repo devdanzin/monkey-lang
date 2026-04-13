@@ -202,8 +202,15 @@ export class Compiler {
         this.compile(stmt);
       }
     } else if (node instanceof AST.LetStatement) {
-      const sym = this.symbolTable.define(node.name.value);
+      // Compile value BEFORE defining symbol, so RHS references resolve
+      // to outer scope (not the new binding being created).
+      // Exception: if RHS is a function literal, set its name for self-reference
+      // (enables recursion: let fib = fn(x) { fib(x-1) })
+      if (node.value instanceof AST.FunctionLiteral && !node.value.name) {
+        node.value.name = node.name.value;
+      }
       this.compile(node.value);
+      const sym = this.symbolTable.define(node.name.value);
       if (sym.scope === SymbolScopes.GLOBAL) {
         this.emit(Opcodes.OpSetGlobal, sym.index);
       } else {

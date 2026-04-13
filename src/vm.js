@@ -9,7 +9,7 @@ import {
   TRUE, FALSE, NULL, OBJ,
 } from './object.js';
 
-const STACK_SIZE = 2048;
+const STACK_SIZE = 8192;
 const GLOBALS_SIZE = 65536;
 const MAX_FRAMES = 1024;
 
