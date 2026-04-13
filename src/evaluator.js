@@ -514,13 +514,15 @@ function applyFunction(fn, args) {
 
 function evalIndexExpression(left, index) {
   if (left.type() === OBJ.ARRAY && index.type() === OBJ.INTEGER) {
-    const idx = index.value;
+    let idx = index.value;
+    if (idx < 0) idx = left.elements.length + idx; // negative indexing
     const max = left.elements.length - 1;
     if (idx < 0 || idx > max) return NULL;
     return left.elements[idx];
   }
   if (left.type() === OBJ.STRING && index.type() === OBJ.INTEGER) {
-    const idx = index.value;
+    let idx = index.value;
+    if (idx < 0) idx = left.value.length + idx; // negative indexing
     if (idx < 0 || idx >= left.value.length) return NULL;
     return new MonkeyString(left.value[idx]);
   }

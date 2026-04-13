@@ -574,14 +574,16 @@ export class VM {
 
   executeIndexExpression(left, index) {
     if (left instanceof MonkeyArray && index instanceof MonkeyInteger) {
-      const idx = index.value;
+      let idx = index.value;
+      if (idx < 0) idx = left.elements.length + idx; // negative indexing
       if (idx < 0 || idx >= left.elements.length) {
         this.push(NULL);
       } else {
         this.push(left.elements[idx]);
       }
     } else if (left instanceof MonkeyString && index instanceof MonkeyInteger) {
-      const idx = index.value;
+      let idx = index.value;
+      if (idx < 0) idx = left.value.length + idx; // negative indexing
       if (idx < 0 || idx >= left.value.length) {
         this.push(NULL);
       } else {

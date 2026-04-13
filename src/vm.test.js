@@ -219,7 +219,7 @@ describe('VM', () => {
     });
 
     it('evaluates [1][-1]', () => {
-      assert.equal(runVM('[1][-1]'), NULL);
+      assert.equal(runVM('[1][-1]').value, 1); // negative indexing: last element
     });
   });
 
