@@ -135,6 +135,21 @@ const builtins = new Map([
     if (!(args[0] instanceof MonkeyString)) return newError(`argument to lower must be STRING, got ${args[0].type()}`);
     return new MonkeyString(args[0].value.toLowerCase());
   })],
+  // Hash iteration
+  ['keys', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError(`wrong number of arguments to keys. got=${args.length}, want=1`);
+    if (!(args[0] instanceof MonkeyHash)) return newError(`argument to keys must be HASH, got ${args[0].type()}`);
+    const ks = [];
+    for (const [, { key }] of args[0].pairs) ks.push(key);
+    return new MonkeyArray(ks);
+  })],
+  ['values', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError(`wrong number of arguments to values. got=${args.length}, want=1`);
+    if (!(args[0] instanceof MonkeyHash)) return newError(`argument to values must be HASH, got ${args[0].type()}`);
+    const vs = [];
+    for (const [, { value }] of args[0].pairs) vs.push(value);
+    return new MonkeyArray(vs);
+  })],
   // map(array, fn) — apply fn to each element
   ['map', new MonkeyBuiltin((...args) => {
     if (args.length !== 2) return newError(`wrong number of arguments to map. got=${args.length}, want=2`);

@@ -184,6 +184,22 @@ const builtins = [
     if (!(args[0] instanceof MonkeyString)) return new MonkeyError(`argument to lower must be STRING, got ${args[0].type()}`);
     return new MonkeyString(args[0].value.toLowerCase());
   }),
+  // keys (VM hash format: Map<key, value>)
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyError(`wrong number of arguments to keys. got=${args.length}, want=1`);
+    if (!(args[0] instanceof MonkeyHash)) return new MonkeyError(`argument to keys must be HASH, got ${args[0].type()}`);
+    const ks = [];
+    for (const [k] of args[0].pairs) ks.push(k);
+    return new MonkeyArray(ks);
+  }),
+  // values (VM hash format: Map<key, value>)
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyError(`wrong number of arguments to values. got=${args.length}, want=1`);
+    if (!(args[0] instanceof MonkeyHash)) return new MonkeyError(`argument to values must be HASH, got ${args[0].type()}`);
+    const vs = [];
+    for (const [, v] of args[0].pairs) vs.push(v);
+    return new MonkeyArray(vs);
+  }),
 ];
 
 /**
