@@ -8,6 +8,7 @@ export const Opcodes = {
   OpSub:             0x02, // Pop two, push difference
   OpMul:             0x03, // Pop two, push product
   OpDiv:             0x04, // Pop two, push quotient
+  OpMod:             0x1F, // Pop two, push modulo
   OpPop:             0x05, // Pop top of stack (expression statement cleanup)
   OpTrue:            0x06, // Push true
   OpFalse:           0x07, // Push false
@@ -44,6 +45,7 @@ const definitions = new Map([
   [Opcodes.OpSub,            { name: 'OpSub',            operandWidths: [] }],
   [Opcodes.OpMul,            { name: 'OpMul',            operandWidths: [] }],
   [Opcodes.OpDiv,            { name: 'OpDiv',            operandWidths: [] }],
+  [Opcodes.OpMod,            { name: 'OpMod',            operandWidths: [] }],
   [Opcodes.OpPop,            { name: 'OpPop',            operandWidths: [] }],
   [Opcodes.OpTrue,           { name: 'OpTrue',           operandWidths: [] }],
   [Opcodes.OpFalse,          { name: 'OpFalse',          operandWidths: [] }],

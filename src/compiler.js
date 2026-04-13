@@ -156,6 +156,7 @@ export class Compiler {
         case '-': this.emit(Opcodes.OpSub); break;
         case '*': this.emit(Opcodes.OpMul); break;
         case '/': this.emit(Opcodes.OpDiv); break;
+        case '%': this.emit(Opcodes.OpMod); break;
         case '>': this.emit(Opcodes.OpGreaterThan); break;
         case '==': this.emit(Opcodes.OpEqual); break;
         case '!=': this.emit(Opcodes.OpNotEqual); break;

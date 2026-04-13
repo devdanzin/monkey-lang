@@ -136,7 +136,8 @@ export class VM {
         case Opcodes.OpAdd:
         case Opcodes.OpSub:
         case Opcodes.OpMul:
-        case Opcodes.OpDiv: {
+        case Opcodes.OpDiv:
+        case Opcodes.OpMod: {
           this.executeBinaryOperation(op);
           break;
         }
@@ -412,6 +413,7 @@ export class VM {
       case Opcodes.OpSub: result = left.value - right.value; break;
       case Opcodes.OpMul: result = left.value * right.value; break;
       case Opcodes.OpDiv: result = Math.trunc(left.value / right.value); break;
+      case Opcodes.OpMod: result = left.value % right.value; break;
       default: throw new Error(`unknown integer operator: ${op}`);
     }
     this.push(cachedInteger(result));
