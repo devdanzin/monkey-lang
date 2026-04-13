@@ -111,7 +111,7 @@ export class SymbolTable {
 }
 
 // Builtin function names (must match evaluator's builtin order)
-const builtinNames = ['len', 'first', 'last', 'rest', 'push', 'puts', 'type', 'str', 'int', 'format'];
+const builtinNames = ['len', 'first', 'last', 'rest', 'push', 'puts', 'type', 'str', 'int', 'format', 'range'];
 
 /**
  * Compiler: walks the AST and produces Bytecode.

@@ -130,6 +130,26 @@ const builtins = [
     }
     return new MonkeyString(result);
   }),
+  // range(start, end) or range(end) — creates array [start, start+1, ..., end-1]
+  new MonkeyBuiltin((...args) => {
+    if (args.length < 1 || args.length > 3) return new MonkeyError(`wrong number of arguments to range. got=${args.length}`);
+    let start, end, step;
+    if (args.length === 1) {
+      start = 0; end = args[0].value; step = 1;
+    } else if (args.length === 2) {
+      start = args[0].value; end = args[1].value; step = 1;
+    } else {
+      start = args[0].value; end = args[1].value; step = args[2].value;
+    }
+    if (step === 0) return new MonkeyError('range step cannot be zero');
+    const elements = [];
+    if (step > 0) {
+      for (let i = start; i < end; i += step) elements.push(cachedInteger(i));
+    } else {
+      for (let i = start; i > end; i += step) elements.push(cachedInteger(i));
+    }
+    return new MonkeyArray(elements);
+  }),
 ];
 
 /**
