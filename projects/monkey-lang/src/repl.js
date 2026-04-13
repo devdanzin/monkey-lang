@@ -41,6 +41,8 @@ if (process.argv.includes('--help') || process.argv.includes('-h')) {
   console.log(`  --check               Validate file syntax and WASM compatibility`);
   console.log(`  --stats               Show language and engine statistics`);
   console.log(`  --benchmark           Run 5-engine performance comparison`);
+  console.log(`  --trace-info          Emit JIT trace diagnostics as JSON to stderr`);
+  console.log(`  --diff-test           Run both interpreter and JIT, compare results`);
   console.log(`  --version, -v         Show version`);
   console.log(`  --help, -h            Show this help`);
   console.log(`\nREPL Commands:`);
@@ -318,20 +320,97 @@ if (fileArg) {
         process.exit(1);
       });
     } else {
-      // Run via VM
+      // Determine engine from flags
+      const engineArg = process.argv.find(a => a.startsWith('--engine='));
+      const engineName = engineArg ? engineArg.split('=')[1] : 'vm';
+      const traceInfo = process.argv.includes('--trace-info');
+      const diffTest = process.argv.includes('--diff-test');
+      const useJIT = traceInfo || diffTest || engineName === 'jit';
+
+      // Run via VM (with optional JIT)
       const l = new Lexer(STDLIB_SOURCE + '\n' + source);
       const p = new Parser(l);
       const prog = p.parseProgram();
       if (p.errors.length > 0) {
         console.error('Parse errors:');
         p.errors.forEach(e => console.error('  ' + e));
+        if (traceInfo || diffTest) {
+          console.error(JSON.stringify({ error: 'parse_error', errors: p.errors }));
+        }
         process.exit(1);
       }
+
+      // Capture output
+      const output = [];
+      const origLog = console.log;
+      if (diffTest) {
+        console.log = (...args) => output.push(args.join(' '));
+      }
+
       const c = new Compiler();
       const err = c.compile(prog);
       if (err) { console.error('Compile error:', err); process.exit(1); }
       const vm = new VM(c.bytecode());
+      if (useJIT) vm.enableJIT();
+      const start = performance.now();
       vm.run();
+      const elapsed = performance.now() - start;
+
+      if (traceInfo && vm.jit) {
+        const stats = vm.jit.getStats();
+        const diagInfo = {
+          engine: useJIT ? 'jit' : 'vm',
+          elapsed_ms: Math.round(elapsed * 100) / 100,
+          traces: stats.rootTraces,
+          side_traces: stats.sideTraces,
+          total_ir: stats.totalIR,
+          total_guards: stats.totalGuards,
+          hot_sites: stats.hotSites,
+          blacklisted: stats.blacklisted,
+          aborts: stats.aborts,
+          trace_details: stats.traces.map(t => ({
+            key: t.key,
+            ir_ops: t.irCount,
+            guards: t.guardCount,
+            side_traces: t.sideTraces,
+            compiled: t.hasCompiled
+          }))
+        };
+        console.error(JSON.stringify(diagInfo));
+      }
+
+      if (diffTest) {
+        console.log = origLog;
+        const jitOutput = output.join('\n');
+
+        // Now run with interpreter
+        const output2 = [];
+        console.log = (...args) => output2.push(args.join(' '));
+
+        const l2 = new Lexer(STDLIB_SOURCE + '\n' + source);
+        const p2 = new Parser(l2);
+        const prog2 = p2.parseProgram();
+        const evalResult = monkeyEval(prog2, new Environment());
+
+        console.log = origLog;
+        const evalOutput = output2.join('\n');
+
+        const match = jitOutput === evalOutput;
+        const result = {
+          match,
+          jit_output: jitOutput,
+          eval_output: evalOutput,
+          elapsed_ms: Math.round(elapsed * 100) / 100
+        };
+        if (vm.jit) {
+          const stats = vm.jit.getStats();
+          result.traces = stats.rootTraces;
+          result.aborts = stats.aborts;
+        }
+        console.error(JSON.stringify(result));
+        process.exit(match ? 0 : 1);
+      }
+
       process.exit(0);
     }
   } catch (e) {
