@@ -78,8 +78,10 @@ describe('Builtin functions (comprehensive)', () => {
     it('array type', () => assert.equal(both('type([])').value, 'ARRAY'));
     it('null type', () => assert.equal(both('type(if (false) { 1 })').value, 'NULL'));
     it('function type', () => {
-      const r = both('type(fn() { 1 })');
-      assert.ok(r.value === 'CLOSURE' || r.value === 'FUNCTION');
+      const interp = runInterp('type(fn() { 1 })');
+      const vm = runVM('type(fn() { 1 })');
+      assert.ok(interp.value === 'FUNCTION');
+      assert.ok(vm.value === 'CLOSURE');
     });
   });
 

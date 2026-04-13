@@ -140,7 +140,9 @@ describe('Compiler', () => {
 
     it('compiles string concatenation', () => {
       const bc = testCompile('"hello" + " world"');
-      assert.ok(bc.instructions.includes(Opcodes.OpAdd));
+      // Constant folding: "hello" + " world" → "hello world" at compile time
+      assert.equal(bc.constants.length, 1);
+      assert.equal(bc.constants[0].value, 'hello world');
     });
   });
 

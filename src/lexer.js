@@ -118,14 +118,26 @@ export class Lexer {
   }
 
   readString() {
-    const start = this.position + 1;
     this.readChar(); // skip opening quote
+    let result = '';
     while (this.ch !== null && this.ch !== '"') {
+      if (this.ch === '\\') {
+        this.readChar();
+        switch (this.ch) {
+          case 'n': result += '\n'; break;
+          case 't': result += '\t'; break;
+          case 'r': result += '\r'; break;
+          case '\\': result += '\\'; break;
+          case '"': result += '"'; break;
+          default: result += '\\' + this.ch; break;
+        }
+      } else {
+        result += this.ch;
+      }
       this.readChar();
     }
-    const str = this.input.slice(start, this.position);
     this.readChar(); // skip closing quote
-    return str;
+    return result;
   }
 
   nextToken() {
