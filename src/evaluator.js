@@ -7,6 +7,9 @@ import {
 } from './object.js';
 
 import * as AST from './ast.js';
+import { STDLIB } from './stdlib.js';
+import { Lexer } from './lexer.js';
+import { Parser } from './parser.js';
 
 // --- Builtins ---
 
@@ -220,6 +223,20 @@ const builtins = new Map([
     }
     return new MonkeyArray(sorted);
   })],
+  // import(module_name) — loads a standard library module
+  ['import', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError(`wrong number of arguments to import. got=${args.length}, want=1`);
+    if (!(args[0] instanceof MonkeyString)) return newError(`argument to import must be STRING, got ${args[0].type()}`);
+    const name = args[0].value;
+    const source = STDLIB[name];
+    if (!source) return newError(`module not found: ${name}`);
+    const l = new Lexer(source);
+    const p = new Parser(l);
+    const program = p.parseProgram();
+    const env = new Environment();
+    for (const [k, v] of builtins) env.set(k, v);
+    return monkeyEval(program, env);
+  })],
 ]);
 
 // --- Helpers ---
@@ -383,6 +400,12 @@ function evalInfixExpression(op, left, right) {
   }
   if (left.type() === OBJ.STRING && right.type() === OBJ.STRING) {
     if (op === '+') return new MonkeyString(left.value + right.value);
+    if (op === '==') return nativeBoolToBooleanObject(left.value === right.value);
+    if (op === '!=') return nativeBoolToBooleanObject(left.value !== right.value);
+    if (op === '<') return nativeBoolToBooleanObject(left.value < right.value);
+    if (op === '>') return nativeBoolToBooleanObject(left.value > right.value);
+    if (op === '<=') return nativeBoolToBooleanObject(left.value <= right.value);
+    if (op === '>=') return nativeBoolToBooleanObject(left.value >= right.value);
     return newError(`unknown operator: ${left.type()} ${op} ${right.type()}`);
   }
   if (op === '==') return nativeBoolToBooleanObject(left === right);
