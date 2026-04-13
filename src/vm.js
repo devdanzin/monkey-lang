@@ -319,6 +319,36 @@ export class VM {
           break;
         }
 
+        case Opcodes.OpTailCall: {
+          const numArgs = instructions[ip + 1];
+          this.currentFrame().ip += 1;
+          const callee = this.stack[this.sp - 1 - numArgs];
+
+          if (callee instanceof Closure) {
+            if (numArgs !== callee.fn.numParameters) {
+              throw new Error(`wrong number of arguments: want=${callee.fn.numParameters}, got=${numArgs}`);
+            }
+            // Tail call optimization: reuse current frame
+            const frame = this.currentFrame();
+            // Move arguments to current frame's base position
+            const argStart = this.sp - numArgs;
+            for (let i = 0; i < numArgs; i++) {
+              this.stack[frame.basePointer + i] = this.stack[argStart + i];
+            }
+            // Reset stack pointer to base + numLocals
+            this.sp = frame.basePointer + callee.fn.numLocals;
+            // Update frame to point to new closure
+            frame.closure = callee;
+            frame.ip = -1; // Will be incremented to 0 by main loop
+          } else if (callee instanceof MonkeyBuiltin) {
+            // Builtins can't be tail-call optimized, fall through to normal call
+            this.callBuiltin(callee, numArgs);
+          } else {
+            throw new Error(`calling non-function: ${callee?.type?.() || typeof callee}`);
+          }
+          break;
+        }
+
         case Opcodes.OpCurrentClosure: {
           this.push(this.currentFrame().closure);
           break;

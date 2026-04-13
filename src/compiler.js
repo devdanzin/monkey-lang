@@ -122,6 +122,7 @@ export class Compiler {
     this.symbolTable = new SymbolTable();
     this.scopes = [new CompilationScope()];
     this.scopeIndex = 0;
+    this.inFunction = false; // Track if we're compiling inside a function body
 
     // Register builtins
     for (let i = 0; i < builtinNames.length; i++) {
@@ -256,6 +257,9 @@ export class Compiler {
       const numLocals = this.symbolTable.numDefinitions;
       const instructions = this.leaveScope();
 
+      // Peephole optimization: replace OpCall + OpReturnValue with OpTailCall + OpReturnValue
+      this.optimizeTailCalls(instructions);
+
       for (const sym of freeSymbols) {
         this.loadSymbol(sym);
       }
@@ -353,6 +357,18 @@ export class Compiler {
     this.scopeIndex--;
     this.symbolTable = this.symbolTable.outer;
     return instructions;
+  }
+
+  /**
+   * Peephole optimization: replace OpCall + OpReturnValue with OpTailCall + OpReturnValue.
+   * This enables the VM to reuse the current frame instead of pushing a new one.
+   */
+  optimizeTailCalls(instructions) {
+    for (let i = 0; i < instructions.length - 2; i++) {
+      if (instructions[i] === Opcodes.OpCall && instructions[i + 2] === Opcodes.OpReturnValue) {
+        instructions[i] = Opcodes.OpTailCall;
+      }
+    }
   }
 
   loadSymbol(sym) {
