@@ -257,6 +257,16 @@ const builtins = [
       return new MonkeyError('endsWith: expected 2 string arguments');
     return args[0].value.endsWith(args[1].value) ? TRUE : FALSE;
   }),
+  // char
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyInteger)) return new MonkeyError('char: expected 1 integer');
+    return new MonkeyString(String.fromCharCode(args[0].value));
+  }),
+  // ord
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyString)) return new MonkeyError('ord: expected 1 string');
+    return new MonkeyInteger(args[0].value.charCodeAt(0));
+  }),
   // keys (VM hash format: Map<key, value>)
   new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return new MonkeyError(`wrong number of arguments to keys. got=${args.length}, want=1`);
