@@ -278,6 +278,42 @@ const builtins = new Map([
     }
     return new MonkeyArray(sorted);
   })],
+  // find(arr, fn) — first element matching predicate (evaluator only)
+  ['find', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError(`wrong number of arguments to find. got=${args.length}, want=2`);
+    if (!(args[0] instanceof MonkeyArray)) return newError(`first argument to find must be ARRAY`);
+    const fn = args[1];
+    for (const el of args[0].elements) {
+      const result = applyFunction(fn, [el]);
+      if (isError(result)) return result;
+      if (isTruthy(result)) return el;
+    }
+    return NULL;
+  })],
+  // every(arr, fn) — true if all elements match predicate
+  ['every', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError(`wrong number of arguments to every. got=${args.length}, want=2`);
+    if (!(args[0] instanceof MonkeyArray)) return newError(`first argument to every must be ARRAY`);
+    const fn = args[1];
+    for (const el of args[0].elements) {
+      const result = applyFunction(fn, [el]);
+      if (isError(result)) return result;
+      if (!isTruthy(result)) return FALSE;
+    }
+    return TRUE;
+  })],
+  // some(arr, fn) — true if any element matches predicate
+  ['some', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError(`wrong number of arguments to some. got=${args.length}, want=2`);
+    if (!(args[0] instanceof MonkeyArray)) return newError(`first argument to some must be ARRAY`);
+    const fn = args[1];
+    for (const el of args[0].elements) {
+      const result = applyFunction(fn, [el]);
+      if (isError(result)) return result;
+      if (isTruthy(result)) return TRUE;
+    }
+    return FALSE;
+  })],
   // import(module_name) — loads a standard library module
   ['import', new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return newError(`wrong number of arguments to import. got=${args.length}, want=1`);
