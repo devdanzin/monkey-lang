@@ -667,6 +667,20 @@ function evalMinusPrefix(right) {
 }
 
 function evalInfixExpression(op, left, right) {
+  // Range operator
+  if (op === '..') {
+    if (left.type() === OBJ.INTEGER && right.type() === OBJ.INTEGER) {
+      const elements = [];
+      const start = left.value, end = right.value;
+      if (start <= end) {
+        for (let i = start; i <= end; i++) elements.push(new MonkeyInteger(i));
+      } else {
+        for (let i = start; i >= end; i--) elements.push(new MonkeyInteger(i));
+      }
+      return new MonkeyArray(elements);
+    }
+    return newError(`range operator requires integers, got ${left.type()} and ${right.type()}`);
+  }
   if (left.type() === OBJ.INTEGER && right.type() === OBJ.INTEGER) {
     return evalIntegerInfix(op, left, right);
   }

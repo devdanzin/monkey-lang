@@ -5,6 +5,7 @@ export const TokenType = {
   // Literals
   INT: 'INT',
   FSTRING: 'FSTRING',
+  DOTDOT: '..',
   FLOAT: 'FLOAT',
   STRING: 'STRING',
   FSTRING: 'FSTRING',
