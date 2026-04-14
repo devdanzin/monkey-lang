@@ -335,6 +335,9 @@ export class Compiler {
       this.compile(node.consequence);
       if (this.lastInstructionIs(Opcodes.OpPop)) {
         this.removeLastPop();
+      } else if (!this.lastInstructionIs(Opcodes.OpReturnValue) && !this.lastInstructionIs(Opcodes.OpReturn)) {
+        // Consequence didn't leave a value (e.g., set statement) — push null
+        this.emit(Opcodes.OpNull);
       }
       // Emit jump to skip alternative
       const jumpPos = this.emit(Opcodes.OpJump, 9999);
@@ -344,6 +347,9 @@ export class Compiler {
         this.compile(node.alternative);
         if (this.lastInstructionIs(Opcodes.OpPop)) {
           this.removeLastPop();
+        } else if (!this.lastInstructionIs(Opcodes.OpReturnValue) && !this.lastInstructionIs(Opcodes.OpReturn)) {
+          // Alternative didn't leave a value — push null
+          this.emit(Opcodes.OpNull);
         }
       } else {
         this.emit(Opcodes.OpNull);
