@@ -129,6 +129,22 @@ export class Lexer {
     return this.input.slice(start, this.position);
   }
 
+  readTripleQuoteString() {
+    // Skip opening """
+    this.readChar(); this.readChar(); this.readChar();
+    let result = '';
+    while (this.ch !== null) {
+      if (this.ch === '"' && this.peekChar() === '"' && this.input[this.position + 2] === '"') {
+        // Skip closing """
+        this.readChar(); this.readChar(); this.readChar();
+        return result;
+      }
+      result += this.ch;
+      this.readChar();
+    }
+    return result;
+  }
+
   readString() {
     this.readChar(); // skip opening quote
     let result = '';
@@ -204,6 +220,9 @@ export class Lexer {
       case '[': tok = new Token(TokenType.LBRACKET, '['); break;
       case ']': tok = new Token(TokenType.RBRACKET, ']'); break;
       case '"':
+        if (this.peekChar() === '"' && this.input[this.position + 2] === '"') {
+          return new Token(TokenType.STRING, this.readTripleQuoteString());
+        }
         return new Token(TokenType.STRING, this.readString());
       case null:
         return new Token(TokenType.EOF, '');
