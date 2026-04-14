@@ -366,12 +366,19 @@ export function monkeyEval(node, env) {
   if (node instanceof AST.LetStatement) {
     const val = monkeyEval(node.value, env);
     if (isError(val)) return val;
-    env.set(node.name.value, val);
+    if (node.isConst) {
+      env.setConst(node.name.value, val);
+    } else {
+      env.set(node.name.value, val);
+    }
     return undefined;
   }
   if (node instanceof AST.SetStatement) {
     const val = monkeyEval(node.value, env);
     if (isError(val)) return val;
+    if (env.isConst(node.name.value)) {
+      return newError(`Cannot reassign const binding '${node.name.value}'`);
+    }
     env.update(node.name.value, val);
     return undefined;
   }

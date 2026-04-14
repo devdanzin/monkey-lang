@@ -145,6 +145,7 @@ export class Parser {
   parseStatement() {
     switch (this.curToken.type) {
       case TokenType.LET: return this.parseLetStatement();
+      case TokenType.CONST: return this.parseConstStatement();
       case TokenType.SET: return this.parseSetStatement();
       case TokenType.RETURN: return this.parseReturnStatement();
       default: return this.parseExpressionStatement();
@@ -159,7 +160,7 @@ export class Parser {
     this.nextToken();
     const value = this.parseExpression(Precedence.LOWEST);
     if (this.peekTokenIs(TokenType.SEMICOLON)) this.nextToken();
-    return new ast.ConstStatement(token, name, value);
+    return new ast.LetStatement(token, name, value);
   }
 
   parseLetStatement() {

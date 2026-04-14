@@ -89,6 +89,7 @@ export class MonkeyBuiltin {
 export class Environment {
   constructor(outer = null) {
     this.store = new Map();
+    this.constBindings = new Set();
     this.outer = outer;
   }
   get(name) {
@@ -101,9 +102,22 @@ export class Environment {
     this.store.set(name, val);
     return val;
   }
+  setConst(name, val) {
+    this.store.set(name, val);
+    this.constBindings.add(name);
+    return val;
+  }
+  isConst(name) {
+    if (this.constBindings.has(name)) return true;
+    if (this.outer) return this.outer.isConst(name);
+    return false;
+  }
   update(name, val) {
     // Update existing binding in the nearest scope that has it
     if (this.store.has(name)) {
+      if (this.constBindings.has(name)) {
+        return null; // Signal const violation
+      }
       this.store.set(name, val);
       return val;
     }
