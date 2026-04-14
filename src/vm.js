@@ -664,6 +664,14 @@ export class VM {
           break;
         }
 
+        case Opcodes.OpGetLocalRaw: {
+          // Get local without Cell deref (for closure capture)
+          const localIndex = instructions[ip + 1];
+          this.currentFrame().ip += 1;
+          this.push(this.stack[this.currentFrame().basePointer + localIndex]);
+          break;
+        }
+
         case Opcodes.OpTailCall: {
           const numArgs = instructions[ip + 1];
           this.currentFrame().ip += 1;
@@ -873,7 +881,11 @@ export class VM {
 
     const frame = new Frame(closure, this.sp - numArgs);
     this.pushFrame(frame);
-    // Allocate space for locals
+    // Allocate and initialize space for locals (clear stale values)
+    const base = frame.basePointer;
+    for (let i = numArgs; i < closure.fn.numLocals; i++) {
+      this.stack[base + i] = null;
+    }
     this.sp = frame.basePointer + closure.fn.numLocals;
   }
 

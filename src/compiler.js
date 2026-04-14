@@ -118,6 +118,99 @@ const builtinNames = ['len', 'first', 'last', 'rest', 'push', 'puts', 'print', '
  * Compiler: walks the AST and produces Bytecode.
  */
 export class Compiler {
+  // Pre-scan: find locals that are captured by nested functions AND modified via set
+  // Returns a Set of variable names that need Cell wrapping
+  static _findMutableCaptures(body, params = []) {
+    const locals = new Set(params);  // Track locally-defined names
+    const captured = new Set();       // Names captured by nested functions
+    const mutatedInNested = new Set(); // Names set inside nested functions
+    
+    // Walk the body to find let bindings and nested functions
+    const walkStmts = (stmts, isNested) => {
+      if (!stmts) return;
+      for (const stmt of stmts) {
+        walkNode(stmt, isNested);
+      }
+    };
+    
+    const walkNode = (node, isNested) => {
+      if (!node) return;
+      
+      // Track let bindings at the current (non-nested) level
+      if (node instanceof AST.LetStatement && !isNested) {
+        locals.add(node.name.value);
+        walkNode(node.value, isNested);
+        return;
+      }
+      
+      // Track set statements
+      if (node instanceof AST.SetStatement) {
+        if (isNested && locals.has(node.name.value)) {
+          mutatedInNested.add(node.name.value);
+        }
+        walkNode(node.value, isNested);
+        return;
+      }
+      
+      // Nested function: walk its body as nested
+      if (node instanceof AST.FunctionLiteral) {
+        // Find identifiers referenced in this nested function
+        const walkForCaptures = (n) => {
+          if (!n) return;
+          if (n instanceof AST.Identifier) {
+            if (locals.has(n.value)) {
+              captured.add(n.value);
+            }
+          }
+          if (n instanceof AST.SetStatement) {
+            if (locals.has(n.name.value)) {
+              mutatedInNested.add(n.name.value);
+            }
+            walkForCaptures(n.value);
+            return;
+          }
+          if (n instanceof AST.FunctionLiteral) {
+            // Walk into nested-nested functions too
+            walkForCaptures(n.body);
+            return;
+          }
+          // Walk children
+          for (const key of Object.keys(n)) {
+            if (key === 'token') continue;
+            const child = n[key];
+            if (child && typeof child === 'object') {
+              if (Array.isArray(child)) child.forEach(c => walkForCaptures(c));
+              else if (child.constructor?.name !== 'Token') walkForCaptures(child);
+            }
+          }
+        };
+        walkForCaptures(node.body);
+        return;
+      }
+      
+      // Walk children
+      for (const key of Object.keys(node)) {
+        if (key === 'token') continue;
+        const child = node[key];
+        if (child && typeof child === 'object') {
+          if (Array.isArray(child)) child.forEach(c => walkNode(c, isNested));
+          else if (child.constructor?.name !== 'Token') walkNode(child, isNested);
+        }
+      }
+    };
+    
+    walkStmts(body.statements, false);
+    
+    // Return locals that are both captured AND mutated in nested functions
+    const result = new Set();
+    for (const name of mutatedInNested) {
+      if (captured.has(name) || mutatedInNested.has(name)) {
+        result.add(name);
+      }
+    }
+    return result;
+  }
+  
   constructor() {
     this.constants = [];
     this.symbolTable = new SymbolTable();
@@ -573,8 +666,20 @@ export class Compiler {
       const sym = this.symbolTable.define(node.name.value, node.isConst || false);
       if (sym.scope === SymbolScopes.GLOBAL) {
         this.emit(Opcodes.OpSetGlobal, sym.index);
+        // Wrap in Cell if this local needs mutable sharing across closures
+        if (this._mutableCaptures?.has(node.name.value)) {
+          this.emit(Opcodes.OpGetGlobal, sym.index);
+          this.emit(Opcodes.OpMakeCell);
+          this.emit(Opcodes.OpSetGlobal, sym.index);
+        }
       } else {
         this.emit(Opcodes.OpSetLocal, sym.index);
+        // Wrap in Cell if this local needs mutable sharing across closures
+        if (this._mutableCaptures?.has(node.name.value)) {
+          this.emit(Opcodes.OpGetLocal, sym.index);
+          this.emit(Opcodes.OpMakeCell);
+          this.emit(Opcodes.OpSetLocal, sym.index);
+        }
       }
     } else if (node instanceof AST.SetStatement) {
       // Set mutates an existing variable
@@ -613,6 +718,13 @@ export class Compiler {
       this.compile(node.index);
       this.emit(Opcodes.OpIndex);
     } else if (node instanceof AST.FunctionLiteral) {
+      // Pre-scan for mutable captures (locals set from nested functions)
+      const paramNames = node.parameters.map(p => p.value);
+      const mutableCaptures = Compiler._findMutableCaptures(node.body, paramNames);
+      
+      const prevMutableCaptures = this._mutableCaptures;
+      this._mutableCaptures = mutableCaptures;
+      
       this.enterScope();
       if (node.name) {
         this.symbolTable.defineFunctionName(node.name);
@@ -630,12 +742,15 @@ export class Compiler {
       const freeSymbols = this.symbolTable.freeSymbols;
       const numLocals = this.symbolTable.numDefinitions;
       const instructions = this.leaveScope();
+      
+      this._mutableCaptures = prevMutableCaptures;
 
       // Peephole optimization: replace OpCall + OpReturnValue with OpTailCall + OpReturnValue
       this.optimizeTailCalls(instructions);
 
       for (const sym of freeSymbols) {
-        this.loadSymbol(sym);
+        // Use raw load for locals to preserve Cell references for shared mutable closures
+        this.loadSymbol(sym, sym.scope === SymbolScopes.LOCAL);
       }
 
       const compiledFn = new CompiledFunction(instructions, numLocals, node.parameters.length);
@@ -745,10 +860,16 @@ export class Compiler {
     }
   }
 
-  loadSymbol(sym) {
+  loadSymbol(sym, raw = false) {
     switch (sym.scope) {
       case SymbolScopes.GLOBAL: this.emit(Opcodes.OpGetGlobal, sym.index); break;
-      case SymbolScopes.LOCAL: this.emit(Opcodes.OpGetLocal, sym.index); break;
+      case SymbolScopes.LOCAL: 
+        if (raw) {
+          this.emit(Opcodes.OpGetLocalRaw, sym.index);
+        } else {
+          this.emit(Opcodes.OpGetLocal, sym.index);
+        }
+        break;
       case SymbolScopes.BUILTIN: this.emit(Opcodes.OpGetBuiltin, sym.index); break;
       case SymbolScopes.FREE: this.emit(Opcodes.OpGetFree, sym.index); break;
       case SymbolScopes.FUNCTION: this.emit(Opcodes.OpCurrentClosure); break;
