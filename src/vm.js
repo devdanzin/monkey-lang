@@ -306,6 +306,16 @@ const builtins = [
     }
     return new MonkeyInteger(total);
   }),
+  // count (string occurrences)
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 2 || !(args[0] instanceof MonkeyString) || !(args[1] instanceof MonkeyString))
+      return new MonkeyError('count: expected (string, substring)');
+    const str = args[0].value, sub = args[1].value;
+    if (!sub) return new MonkeyInteger(0);
+    let count = 0, pos = 0;
+    while ((pos = str.indexOf(sub, pos)) !== -1) { count++; pos += sub.length; }
+    return new MonkeyInteger(count);
+  }),
   // keys (VM hash format: Map<key, value>)
   new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return new MonkeyError(`wrong number of arguments to keys. got=${args.length}, want=1`);
