@@ -745,6 +745,33 @@ export class Compiler {
         if (!loopCtx.continueJumps) loopCtx.continueJumps = [];
         loopCtx.continueJumps.push(contPos);
       }
+    } else if (node instanceof AST.DestructureLetStatement) {
+      // let [a, b, c] = expr
+      // Compile value, store in hidden local, then index into it for each name
+      this.compile(node.value);
+      const arrSym = this.symbolTable.define('__destructure_arr__');
+      if (arrSym.scope === SymbolScopes.GLOBAL) {
+        this.emit(Opcodes.OpSetGlobal, arrSym.index);
+      } else {
+        this.emit(Opcodes.OpSetLocal, arrSym.index);
+      }
+      for (let i = 0; i < node.names.length; i++) {
+        // arr[i]
+        if (arrSym.scope === SymbolScopes.GLOBAL) {
+          this.emit(Opcodes.OpGetGlobal, arrSym.index);
+        } else {
+          this.emit(Opcodes.OpGetLocal, arrSym.index);
+        }
+        this.emit(Opcodes.OpConstant, this.addConstant(new MonkeyInteger(i)));
+        this.emit(Opcodes.OpIndex);
+        // Store in named local
+        const nameSym = this.symbolTable.define(node.names[i].value);
+        if (nameSym.scope === SymbolScopes.GLOBAL) {
+          this.emit(Opcodes.OpSetGlobal, nameSym.index);
+        } else {
+          this.emit(Opcodes.OpSetLocal, nameSym.index);
+        }
+      }
     } else if (node instanceof AST.LetStatement) {
       // Compile value BEFORE defining symbol, so RHS references resolve
       // to outer scope (not the new binding being created).
