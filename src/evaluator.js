@@ -249,6 +249,24 @@ const builtins = new Map([
     for (const [k, v] of args[1].pairs) pairs.set(k, v);
     return new MonkeyHash(pairs);
   })],
+  ['flatten', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError('flatten: expected 1 argument');
+    if (!(args[0] instanceof MonkeyArray)) return newError('flatten: argument must be an array');
+    function flat(arr) {
+      const result = [];
+      for (const elem of arr.elements) {
+        if (elem instanceof MonkeyArray) result.push(...flat(elem));
+        else result.push(elem);
+      }
+      return result;
+    }
+    return new MonkeyArray(flat(args[0]));
+  })],
+  ['enumerate', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError('enumerate: expected 1 argument');
+    if (!(args[0] instanceof MonkeyArray)) return newError('enumerate: argument must be an array');
+    return new MonkeyArray(args[0].elements.map((elem, i) => new MonkeyArray([new MonkeyInteger(i), elem])));
+  })],
   ['min', new MonkeyBuiltin((...args) => {
     if (args.length < 2) return newError('min: expected at least 2 arguments');
     let result = args[0].value;
