@@ -561,6 +561,8 @@ export class VM {
       this.push(new MonkeyString(left.value.repeat(Math.max(0, right.value))));
     } else if (left instanceof MonkeyInteger && right instanceof MonkeyString && op === Opcodes.OpMul) {
       this.push(new MonkeyString(right.value.repeat(Math.max(0, left.value))));
+    } else if (left instanceof MonkeyArray && right instanceof MonkeyArray && op === Opcodes.OpAdd) {
+      this.push(new MonkeyArray([...left.elements, ...right.elements]));
     } else {
       throw new Error(`unsupported types for binary operation: ${left.type()} ${right.type()}`);
     }

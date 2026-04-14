@@ -552,6 +552,10 @@ function evalInfixExpression(op, left, right) {
   if (left.type() === OBJ.INTEGER && right.type() === OBJ.STRING && op === '*') {
     return new MonkeyString(right.value.repeat(Math.max(0, left.value)));
   }
+  // Array + Array = concat
+  if (left.type() === OBJ.ARRAY && right.type() === OBJ.ARRAY && op === '+') {
+    return new MonkeyArray([...left.elements, ...right.elements]);
+  }
   if (op === '==') return nativeBoolToBooleanObject(left === right);
   if (op === '!=') return nativeBoolToBooleanObject(left !== right);
   if (left.type() !== right.type()) {
