@@ -520,7 +520,7 @@ export function monkeyEval(node, env) {
     let result = NULL;
     for (const item of items) {
       const loopEnv = new Environment(env);
-      loopEnv.set(node.ident, item);
+      loopEnv.set(node.variable, item);
       result = monkeyEval(node.body, loopEnv);
       if (result === BREAK_SIGNAL) break;
       if (result === CONTINUE_SIGNAL) continue;
