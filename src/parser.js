@@ -167,6 +167,49 @@ export class Parser {
 
   parseLetStatement() {
     const token = this.curToken;
+    
+    // Array destructuring: let [a, b, c] = expr
+    if (this.peekTokenIs(TokenType.LBRACKET)) {
+      this.nextToken(); // consume [
+      const names = [];
+      if (!this.curTokenIs(TokenType.RBRACKET)) {
+        this.nextToken(); // first ident
+        names.push(new ast.Identifier(this.curToken, this.curToken.literal));
+        while (this.peekTokenIs(TokenType.COMMA)) {
+          this.nextToken(); // comma
+          this.nextToken(); // next ident
+          names.push(new ast.Identifier(this.curToken, this.curToken.literal));
+        }
+      }
+      if (!this.expectPeek(TokenType.RBRACKET)) return null;
+      if (!this.expectPeek(TokenType.ASSIGN)) return null;
+      this.nextToken();
+      const value = this.parseExpression(Precedence.LOWEST);
+      if (this.peekTokenIs(TokenType.SEMICOLON)) this.nextToken();
+      return new ast.DestructureLetStatement(token, names, value, token.type === 'CONST');
+    }
+    
+    // Hash destructuring: let {a, b} = expr  
+    if (this.peekTokenIs(TokenType.LBRACE)) {
+      this.nextToken(); // consume {
+      const names = [];
+      if (!this.curTokenIs(TokenType.RBRACE)) {
+        this.nextToken(); // first ident
+        names.push(new ast.Identifier(this.curToken, this.curToken.literal));
+        while (this.peekTokenIs(TokenType.COMMA)) {
+          this.nextToken(); // comma
+          this.nextToken(); // next ident
+          names.push(new ast.Identifier(this.curToken, this.curToken.literal));
+        }
+      }
+      if (!this.expectPeek(TokenType.RBRACE)) return null;
+      if (!this.expectPeek(TokenType.ASSIGN)) return null;
+      this.nextToken();
+      const value = this.parseExpression(Precedence.LOWEST);
+      if (this.peekTokenIs(TokenType.SEMICOLON)) this.nextToken();
+      return new ast.DestructureHashLetStatement(token, names, value, token.type === 'CONST');
+    }
+    
     if (!this.expectPeek(TokenType.IDENT)) return null;
     const name = new ast.Identifier(this.curToken, this.curToken.literal);
     if (!this.expectPeek(TokenType.ASSIGN)) return null;

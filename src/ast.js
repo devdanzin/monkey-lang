@@ -591,3 +591,31 @@ export class ThrowExpression {
   tokenLiteral() { return this.token.literal; }
   toString() { return `throw ${this.value}`; }
 }
+
+export class DestructureLetStatement {
+  constructor(token, names, value, isConst = false) {
+    this.token = token;
+    this.names = names; // Array of Identifiers
+    this.value = value;
+    this.isConst = isConst;
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() {
+    const kw = this.isConst ? 'const' : 'let';
+    return `${kw} [${this.names.map(n => n.toString()).join(', ')}] = ${this.value.toString()};`;
+  }
+}
+
+export class DestructureHashLetStatement {
+  constructor(token, names, value, isConst = false) {
+    this.token = token;
+    this.names = names; // Array of Identifiers
+    this.value = value;
+    this.isConst = isConst;
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() {
+    const kw = this.isConst ? 'const' : 'let';
+    return `${kw} {${this.names.map(n => n.toString()).join(', ')}} = ${this.value.toString()};`;
+  }
+}

@@ -385,6 +385,30 @@ export function monkeyEval(node, env) {
     }
     return undefined;
   }
+  if (node instanceof AST.DestructureLetStatement) {
+    const val = monkeyEval(node.value, env);
+    if (isError(val)) return val;
+    if (!(val instanceof MonkeyArray)) return newError('destructuring requires an array value');
+    for (let i = 0; i < node.names.length; i++) {
+      const v = i < val.elements.length ? val.elements[i] : NULL;
+      if (node.isConst) env.setConst(node.names[i].value, v);
+      else env.set(node.names[i].value, v);
+    }
+    return undefined;
+  }
+  if (node instanceof AST.DestructureHashLetStatement) {
+    const val = monkeyEval(node.value, env);
+    if (isError(val)) return val;
+    if (!(val instanceof MonkeyHash)) return newError('hash destructuring requires a hash value');
+    for (const name of node.names) {
+      const key = new MonkeyString(name.value).hashKey();
+      const pair = val.pairs.get(key);
+      const v = pair ? pair.value : NULL;
+      if (node.isConst) env.setConst(name.value, v);
+      else env.set(name.value, v);
+    }
+    return undefined;
+  }
   if (node instanceof AST.SetStatement) {
     const val = monkeyEval(node.value, env);
     if (isError(val)) return val;
