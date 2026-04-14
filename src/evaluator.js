@@ -314,6 +314,12 @@ export function monkeyEval(node, env) {
   if (node instanceof AST.DoWhileExpression) return evalDoWhileExpression(node, env);
   if (node instanceof AST.BreakStatement) return BREAK_SIGNAL;
   if (node instanceof AST.ContinueStatement) return CONTINUE_SIGNAL;
+  if (node instanceof AST.TernaryExpression) {
+    const cond = monkeyEval(node.condition, env);
+    if (isError(cond)) return cond;
+    if (isTruthy(cond)) return monkeyEval(node.consequence, env);
+    return monkeyEval(node.alternative, env);
+  }
   if (node instanceof AST.SwitchExpression) {
     const switchVal = monkeyEval(node.value, env);
     if (isError(switchVal)) return switchVal;

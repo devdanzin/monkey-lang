@@ -252,3 +252,14 @@ export class SwitchExpression {
   tokenLiteral() { return this.token.literal; }
   toString() { return `switch (${this.value}) { ... }`; }
 }
+
+export class TernaryExpression {
+  constructor(token, condition, consequence, alternative) {
+    this.token = token;
+    this.condition = condition;
+    this.consequence = consequence;
+    this.alternative = alternative;
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return `(${this.condition} ? ${this.consequence} : ${this.alternative})`; }
+}

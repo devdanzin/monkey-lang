@@ -5,8 +5,9 @@ import * as ast from './ast.js';
 
 const Precedence = {
   LOWEST: 1,
-  LOGICAL_OR: 2,   // ||
-  LOGICAL_AND: 3,  // &&
+  TERNARY: 2,      // ?:
+  LOGICAL_OR: 3,   // ||
+  LOGICAL_AND: 4,  // &&
   EQUALS: 4,       // ==
   LESSGREATER: 5,   // > or <
   SUM: 6,          // +
@@ -17,6 +18,7 @@ const Precedence = {
 };
 
 const TOKEN_PRECEDENCE = {
+  [TokenType.QUESTION]: Precedence.TERNARY,
   [TokenType.OR]: Precedence.LOGICAL_OR,
   [TokenType.AND]: Precedence.LOGICAL_AND,
   [TokenType.EQ]: Precedence.EQUALS,
@@ -71,6 +73,17 @@ export class Parser {
       TokenType.AND, TokenType.OR]) {
       this.registerInfix(op, (left) => this.parseInfixExpression(left));
     }
+    
+    // Ternary operator
+    this.registerInfix(TokenType.QUESTION, (condition) => {
+      const token = this.curToken;
+      this.nextToken();
+      const consequence = this.parseExpression(Precedence.TERNARY);
+      if (!this.expectPeek(TokenType.COLON)) return null;
+      this.nextToken();
+      const alternative = this.parseExpression(Precedence.TERNARY);
+      return new ast.TernaryExpression(token, condition, consequence, alternative);
+    });
     this.registerInfix(TokenType.LPAREN, (left) => this.parseCallExpression(left));
     this.registerInfix(TokenType.LBRACKET, (left) => this.parseIndexExpression(left));
 
