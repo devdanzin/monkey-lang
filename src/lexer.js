@@ -45,6 +45,7 @@ export const TokenType = {
   // Keywords
   FUNCTION: 'FUNCTION',
   LET: 'LET',
+  CONST: 'CONST',
   SET: 'SET',
   FOR: 'FOR',
   TRUE: 'TRUE',
@@ -72,6 +73,7 @@ export const TokenType = {
 const KEYWORDS = {
   fn: TokenType.FUNCTION,
   let: TokenType.LET,
+  const: TokenType.CONST,
   set: TokenType.SET,
   for: TokenType.FOR,
   true: TokenType.TRUE,

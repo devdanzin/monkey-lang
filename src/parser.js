@@ -151,6 +151,17 @@ export class Parser {
     }
   }
 
+  parseConstStatement() {
+    const token = this.curToken;
+    if (!this.expectPeek(TokenType.IDENT)) return null;
+    const name = new ast.Identifier(this.curToken, this.curToken.literal);
+    if (!this.expectPeek(TokenType.ASSIGN)) return null;
+    this.nextToken();
+    const value = this.parseExpression(Precedence.LOWEST);
+    if (this.peekTokenIs(TokenType.SEMICOLON)) this.nextToken();
+    return new ast.ConstStatement(token, name, value);
+  }
+
   parseLetStatement() {
     const token = this.curToken;
     if (!this.expectPeek(TokenType.IDENT)) return null;
