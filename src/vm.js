@@ -273,6 +273,20 @@ const builtins = [
       return new MonkeyError('repeat: expected (string, int)');
     return new MonkeyString(args[0].value.repeat(args[1].value));
   }),
+  // enumerate
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyArray)) return new MonkeyError('enumerate: expected 1 array');
+    return new MonkeyArray(args[0].elements.map((el, i) => new MonkeyArray([new MonkeyInteger(i), el])));
+  }),
+  // zip
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 2 || !(args[0] instanceof MonkeyArray) || !(args[1] instanceof MonkeyArray))
+      return new MonkeyError('zip: expected 2 arrays');
+    const len = Math.min(args[0].elements.length, args[1].elements.length);
+    const result = [];
+    for (let i = 0; i < len; i++) result.push(new MonkeyArray([args[0].elements[i], args[1].elements[i]]));
+    return new MonkeyArray(result);
+  }),
   // keys (VM hash format: Map<key, value>)
   new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return new MonkeyError(`wrong number of arguments to keys. got=${args.length}, want=1`);
