@@ -597,14 +597,21 @@ export class VM {
         case Opcodes.OpSetLocal: {
           const localIndex = instructions[ip + 1];
           this.currentFrame().ip += 1;
-          this.stack[this.currentFrame().basePointer + localIndex] = this.pop();
+          const val = this.pop();
+          const slot = this.stack[this.currentFrame().basePointer + localIndex];
+          if (slot instanceof Cell) {
+            slot.value = val;
+          } else {
+            this.stack[this.currentFrame().basePointer + localIndex] = val;
+          }
           break;
         }
 
         case Opcodes.OpGetLocal: {
           const localIndex = instructions[ip + 1];
           this.currentFrame().ip += 1;
-          this.push(this.stack[this.currentFrame().basePointer + localIndex]);
+          const slot = this.stack[this.currentFrame().basePointer + localIndex];
+          this.push(slot instanceof Cell ? slot.value : slot);
           break;
         }
 
@@ -647,6 +654,13 @@ export class VM {
           } else {
             this.currentFrame().closure.free[freeIndex] = val;
           }
+          break;
+        }
+
+        case Opcodes.OpMakeCell: {
+          // Wrap TOS value in a Cell
+          const val = this.pop();
+          this.push(new Cell(val));
           break;
         }
 

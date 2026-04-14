@@ -34,6 +34,7 @@ export const Opcodes = {
   OpClosure:         0x1B, // Create closure: OpClosure <uint16> <uint8> (const idx, num free vars)
   OpGetFree:         0x1C, // Load free variable: OpGetFree <uint8>
   OpSetFree:         0x20, // Store to free variable: OpSetFree <uint8>
+  OpMakeCell:        0x21, // Wrap TOS in a Cell: OpMakeCell (no operands)
   OpCurrentClosure:  0x1D, // Push current closure (for recursion)
   OpTailCall:        0x1E, // Tail call: OpTailCall <uint8> (num args) — reuses frame
 };
@@ -72,6 +73,7 @@ const definitions = new Map([
   [Opcodes.OpClosure,        { name: 'OpClosure',        operandWidths: [2, 1] }],
   [Opcodes.OpGetFree,        { name: 'OpGetFree',        operandWidths: [1] }],
   [Opcodes.OpSetFree,        { name: 'OpSetFree',        operandWidths: [1] }],
+  [Opcodes.OpMakeCell,       { name: 'OpMakeCell',       operandWidths: [] }],
   [Opcodes.OpCurrentClosure, { name: 'OpCurrentClosure', operandWidths: [] }],
   [Opcodes.OpTailCall,       { name: 'OpTailCall',       operandWidths: [1] }],
 ]);
