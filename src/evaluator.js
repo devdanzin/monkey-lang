@@ -431,6 +431,34 @@ const builtins = new Map([
     for (let i = 0; i < args[1].value; i++) result.push(args[0]);
     return new MonkeyArray(result);
   })],
+  ['compose', new MonkeyBuiltin((...fns) => {
+    // compose(f, g, h)(x) = f(g(h(x)))
+    return new MonkeyBuiltin((...args) => {
+      let result = applyFunction(fns[fns.length - 1], args);
+      if (isError(result)) return result;
+      for (let i = fns.length - 2; i >= 0; i--) {
+        result = applyFunction(fns[i], [result]);
+        if (isError(result)) return result;
+      }
+      return result;
+    });
+  })],
+  ['pipe_fn', new MonkeyBuiltin((...fns) => {
+    // pipe_fn(f, g, h)(x) = h(g(f(x)))
+    return new MonkeyBuiltin((...args) => {
+      let result = applyFunction(fns[0], args);
+      if (isError(result)) return result;
+      for (let i = 1; i < fns.length; i++) {
+        result = applyFunction(fns[i], [result]);
+        if (isError(result)) return result;
+      }
+      return result;
+    });
+  })],
+  ['identity', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError('identity: expected 1 argument');
+    return args[0];
+  })],
   ['min', new MonkeyBuiltin((...args) => {
     if (args.length < 2) return newError('min: expected at least 2 arguments');
     let result = args[0].value;
