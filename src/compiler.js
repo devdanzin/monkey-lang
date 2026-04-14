@@ -124,6 +124,7 @@ export class Compiler {
     this.scopes = [new CompilationScope()];
     this.scopeIndex = 0;
     this.inFunction = false; // Track if we're compiling inside a function body
+    this.loopStack = []; // Stack of { breakJumps: [], continueTarget: number }
 
     // Register builtins
     for (let i = 0; i < builtinNames.length; i++) {
@@ -266,6 +267,8 @@ export class Compiler {
       }
     } else if (node instanceof AST.WhileExpression) {
       const loopStart = this.currentInstructions().length;
+      const loopCtx = { breakJumps: [], continueTarget: loopStart };
+      this.loopStack.push(loopCtx);
       this.compile(node.condition);
       const exitJump = this.emit(Opcodes.OpJumpNotTruthy, 9999);
       this.compile(node.body);
@@ -278,11 +281,26 @@ export class Compiler {
       this.changeOperand(exitJump, this.currentInstructions().length);
       // While loop evaluates to null when condition is false
       this.emit(Opcodes.OpNull);
+      // Patch break jumps to after the OpNull
+      for (const bj of loopCtx.breakJumps) {
+        this.changeOperand(bj, this.currentInstructions().length);
+      }
+      this.loopStack.pop();
     } else if (node instanceof AST.DoWhileExpression) {
       const loopStart = this.currentInstructions().length;
+      const loopCtx = { breakJumps: [], continueTarget: -1 };
+      this.loopStack.push(loopCtx);
       this.compile(node.body);
       if (this.lastInstructionIs(Opcodes.OpPop)) {
         this.removeLastPop();
+      }
+      // Continue target is the condition check
+      loopCtx.continueTarget = this.currentInstructions().length;
+      // Patch any deferred continue jumps
+      if (loopCtx.continueJumps) {
+        for (const cj of loopCtx.continueJumps) {
+          this.changeOperand(cj, loopCtx.continueTarget);
+        }
       }
       // Condition at end
       this.compile(node.condition);
@@ -291,6 +309,11 @@ export class Compiler {
       this.emit(Opcodes.OpJump, loopStart);
       // Evaluate to null
       this.emit(Opcodes.OpNull);
+      // Patch break jumps
+      for (const bj of loopCtx.breakJumps) {
+        this.changeOperand(bj, this.currentInstructions().length);
+      }
+      this.loopStack.pop();
     } else if (node instanceof AST.ForExpression) {
       // Compile init
       this.compile(node.init);
@@ -298,10 +321,21 @@ export class Compiler {
       // Compile condition
       this.compile(node.condition);
       const exitJump = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+      // Continue target is the update, which we'll set after body
+      const loopCtx = { breakJumps: [], continueTarget: -1 };
+      this.loopStack.push(loopCtx);
       // Compile body
       this.compile(node.body);
       if (this.lastInstructionIs(Opcodes.OpPop)) {
         this.removeLastPop();
+      }
+      // Continue jumps here (to update)
+      loopCtx.continueTarget = this.currentInstructions().length;
+      // Patch any deferred continue jumps from body
+      if (loopCtx.continueJumps) {
+        for (const cj of loopCtx.continueJumps) {
+          this.changeOperand(cj, loopCtx.continueTarget);
+        }
       }
       // Compile update
       this.compile(node.update);
@@ -310,6 +344,36 @@ export class Compiler {
       // Patch exit
       this.changeOperand(exitJump, this.currentInstructions().length);
       this.emit(Opcodes.OpNull);
+      // Patch break jumps
+      for (const bj of loopCtx.breakJumps) {
+        this.changeOperand(bj, this.currentInstructions().length);
+      }
+      this.loopStack.pop();
+    } else if (node instanceof AST.ForInExpression) {
+      // TODO: implement in next task
+      this.emit(Opcodes.OpNull);
+    } else if (node instanceof AST.BreakStatement) {
+      if (this.loopStack.length === 0) {
+        throw new Error('break outside of loop');
+      }
+      const loopCtx = this.loopStack[this.loopStack.length - 1];
+      // Push null as the loop's return value when breaking
+      this.emit(Opcodes.OpNull);
+      const breakPos = this.emit(Opcodes.OpJump, 9999);
+      loopCtx.breakJumps.push(breakPos);
+    } else if (node instanceof AST.ContinueStatement) {
+      if (this.loopStack.length === 0) {
+        throw new Error('continue outside of loop');
+      }
+      const loopCtx = this.loopStack[this.loopStack.length - 1];
+      if (loopCtx.continueTarget >= 0) {
+        this.emit(Opcodes.OpJump, loopCtx.continueTarget);
+      } else {
+        // For do-while where continue target isn't known yet, use a placeholder
+        const contPos = this.emit(Opcodes.OpJump, 9999);
+        if (!loopCtx.continueJumps) loopCtx.continueJumps = [];
+        loopCtx.continueJumps.push(contPos);
+      }
     } else if (node instanceof AST.LetStatement) {
       // Compile value BEFORE defining symbol, so RHS references resolve
       // to outer scope (not the new binding being created).
