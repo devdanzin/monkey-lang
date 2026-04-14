@@ -56,6 +56,7 @@ export const TokenType = {
   TRY: 'TRY',
   CATCH: 'CATCH',
   THROW: 'THROW',
+  IN: 'IN',
 
   // Special
   EOF: 'EOF',
@@ -82,6 +83,7 @@ const KEYWORDS = {
   try: TokenType.TRY,
   catch: TokenType.CATCH,
   throw: TokenType.THROW,
+  in: TokenType.IN,
 };
 
 export class Token {

@@ -382,6 +382,30 @@ export function monkeyEval(node, env) {
     return newError(`slice operator not supported: ${left.type()}`);
   }
   if (node instanceof AST.ForExpression) return evalForExpression(node, env);
+  if (node instanceof AST.ForInExpression) {
+    const iterable = monkeyEval(node.iterable, env);
+    if (isError(iterable)) return iterable;
+    let items;
+    if (iterable instanceof MonkeyArray) {
+      items = iterable.elements;
+    } else if (iterable instanceof MonkeyHash) {
+      items = [];
+      for (const [, { key }] of iterable.pairs) items.push(key);
+    } else {
+      return newError(`for-in: expected ARRAY or HASH, got ${iterable.type()}`);
+    }
+    let result = NULL;
+    for (const item of items) {
+      const loopEnv = new Environment(env);
+      loopEnv.set(node.ident, item);
+      result = monkeyEval(node.body, loopEnv);
+      if (result === BREAK_SIGNAL) break;
+      if (result === CONTINUE_SIGNAL) continue;
+      if (isError(result)) return result;
+      if (result instanceof MonkeyReturnValue) return result;
+    }
+    return result === BREAK_SIGNAL || result === CONTINUE_SIGNAL ? NULL : result;
+  }
 
   if (node instanceof AST.Identifier) return evalIdentifier(node, env);
 

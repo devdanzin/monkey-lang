@@ -283,3 +283,14 @@ export class ThrowExpression {
   tokenLiteral() { return this.token.literal; }
   toString() { return `throw ${this.value}`; }
 }
+
+export class ForInExpression {
+  constructor(token, ident, iterable, body) {
+    this.token = token;
+    this.ident = ident; // loop variable name
+    this.iterable = iterable; // expression that produces array/hash
+    this.body = body; // block statement
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return `for (${this.ident} in ${this.iterable}) ${this.body}`; }
+}
