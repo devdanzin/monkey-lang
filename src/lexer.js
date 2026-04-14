@@ -5,6 +5,7 @@ export const TokenType = {
   // Literals
   INT: 'INT',
   FSTRING: 'FSTRING',
+  PIPE: '|>',
   DOTDOT: '..',
   FLOAT: 'FLOAT',
   STRING: 'STRING',
@@ -252,6 +253,7 @@ export class Lexer {
         break;
       case '|':
         if (this.peekChar() === '|') { this.readChar(); tok = new Token(TokenType.OR, '||'); }
+        else if (this.peekChar() === '>') { this.readChar(); tok = new Token(TokenType.PIPE, '|>'); }
         else { tok = new Token(TokenType.ILLEGAL, ch); }
         break;
       case '<':
@@ -282,20 +284,23 @@ export class Lexer {
         return new Token(TokenType.STRING, this.readString());
       case null:
         return new Token(TokenType.EOF, '');
-      default:
-        if (this.ch === 'f' && this.peekChar() === '"') {
-          this.readChar(); // skip 'f', now at '"'
-          return new Token(TokenType.FSTRING, this.readString());
+      case '.':
+        if (this.peekChar() === '.') {
+          this.readChar();
+          tok = new Token(TokenType.DOTDOT, '..');
+        } else {
+          tok = new Token(TokenType.ILLEGAL, '.');
         }
+        break;
+      default:
         if (isLetter(this.ch)) {
           // Check for f-string: f"..."
           if (this.ch === 'f' && this.peekChar() === '"') {
             this.readChar(); // consume 'f'
             this.readChar(); // consume '"'
-            // Read until closing "
             const start = this.position;
             while (this.ch && this.ch !== '"') {
-              if (this.ch === '\\') this.readChar(); // skip escaped chars
+              if (this.ch === '\\') this.readChar();
               this.readChar();
             }
             const str = this.input.slice(start, this.position);

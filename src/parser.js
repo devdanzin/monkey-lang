@@ -6,19 +6,22 @@ import * as ast from './ast.js';
 
 const Precedence = {
   LOWEST: 1,
-  TERNARY: 2,      // ?:
-  LOGICAL_OR: 3,   // ||
-  LOGICAL_AND: 4,  // &&
-  EQUALS: 4,       // ==
-  LESSGREATER: 5,   // > or <
-  SUM: 6,          // +
-  PRODUCT: 7,      // *
-  PREFIX: 8,       // -X or !X
-  CALL: 9,         // myFunction(X)
-  INDEX: 10,       // array[index]
+  PIPE: 2,         // |>
+  TERNARY: 3,      // ?:
+  LOGICAL_OR: 4,   // ||
+  LOGICAL_AND: 5,  // &&
+  EQUALS: 5,       // ==
+  LESSGREATER: 6,   // > or <
+  RANGE: 7,        // ..
+  SUM: 8,          // +
+  PRODUCT: 9,      // *
+  PREFIX: 10,      // -X or !X
+  CALL: 11,        // myFunction(X)
+  INDEX: 12,       // array[index]
 };
 
 const TOKEN_PRECEDENCE = {
+  [TokenType.PIPE]: Precedence.PIPE,
   [TokenType.QUESTION]: Precedence.TERNARY,
   [TokenType.NULLISH]: Precedence.TERNARY,
   [TokenType.OR]: Precedence.LOGICAL_OR,
@@ -29,6 +32,7 @@ const TOKEN_PRECEDENCE = {
   [TokenType.GT]: Precedence.LESSGREATER,
   [TokenType.LTE]: Precedence.LESSGREATER,
   [TokenType.GTE]: Precedence.LESSGREATER,
+  [TokenType.DOTDOT]: Precedence.RANGE,
   [TokenType.PLUS]: Precedence.SUM,
   [TokenType.MINUS]: Precedence.SUM,
   [TokenType.SLASH]: Precedence.PRODUCT,
@@ -81,9 +85,12 @@ export class Parser {
     for (const op of [TokenType.PLUS, TokenType.MINUS, TokenType.SLASH, TokenType.PERCENT,
       TokenType.ASTERISK, TokenType.EQ, TokenType.NOT_EQ,
       TokenType.LT, TokenType.GT, TokenType.LTE, TokenType.GTE,
-      TokenType.AND, TokenType.OR, TokenType.NULLISH]) {
+      TokenType.AND, TokenType.OR, TokenType.NULLISH, TokenType.DOTDOT]) {
       this.registerInfix(op, (left) => this.parseInfixExpression(left));
     }
+    
+    // Pipe operator: left |> fn  →  fn(left)
+    this.registerInfix(TokenType.PIPE, (left) => this.parsePipeExpression(left));
     
     // Ternary operator
     this.registerInfix(TokenType.QUESTION, (condition) => {
@@ -400,6 +407,15 @@ export class Parser {
     this.nextToken();
     const right = this.parseExpression(precedence);
     return new ast.InfixExpression(token, left, operator, right);
+  }
+
+  parsePipeExpression(left) {
+    const token = this.curToken;
+    const precedence = this.curPrecedence();
+    this.nextToken();
+    const right = this.parseExpression(precedence);
+    // Transform: left |> fn  →  CallExpression(fn, [left])
+    return new ast.CallExpression(token, right, [left]);
   }
 
   parseGroupedExpression() {
