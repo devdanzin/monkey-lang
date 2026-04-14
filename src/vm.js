@@ -2,7 +2,7 @@
 // Executes bytecode produced by the compiler.
 
 import { Opcodes, lookup, readOperands } from './code.js';
-import { CompiledFunction, Closure } from './compiler.js';
+import { CompiledFunction, Closure, Cell } from './compiler.js';
 import {
     MonkeyInteger, MonkeyFloat, MonkeyString, MonkeyBoolean, MonkeyArray, MonkeyHash,
   MonkeyNull, MonkeyError, MonkeyBuiltin,
@@ -632,14 +632,21 @@ export class VM {
         case Opcodes.OpGetFree: {
           const freeIndex = instructions[ip + 1];
           this.currentFrame().ip += 1;
-          this.push(this.currentFrame().closure.free[freeIndex]);
+          const freeVal = this.currentFrame().closure.free[freeIndex];
+          this.push(freeVal instanceof Cell ? freeVal.value : freeVal);
           break;
         }
 
         case Opcodes.OpSetFree: {
           const freeIndex = instructions[ip + 1];
           this.currentFrame().ip += 1;
-          this.currentFrame().closure.free[freeIndex] = this.pop();
+          const val = this.pop();
+          const freeSlot = this.currentFrame().closure.free[freeIndex];
+          if (freeSlot instanceof Cell) {
+            freeSlot.value = val;
+          } else {
+            this.currentFrame().closure.free[freeIndex] = val;
+          }
           break;
         }
 

@@ -143,11 +143,29 @@ describe('Loop Parity — Closures and Loops', () => {
     bothMatch('let fns = []; for (x in [10,20,30]) { let v = x; set fns = push(fns, fn() { v }); } fns[2]()');
   });
 
-  // Note: 'set' on free (closure) variables is not supported in VM compiler yet
-  // The evaluator handles it, but the compiler throws "cannot set FREE variable"
-  // This is a known limitation tracked for future work
+  // Note: 'set' on free (closure) variables is supported for single closures (OpSetFree)
+  // Multi-closure sharing (two closures mutating same var) needs Cell objects (not yet implemented)
+  it('single closure mutable counter', () => {
+    bothMatch('let f = fn() { let count = 0; let inc = fn() { set count = count + 1; count }; inc(); inc(); inc() }; f()');
+  });
+
   it('closure reads captured variable', () => {
     bothMatch('let f = fn() { let x = 42; let g = fn() { x }; g() }; f()');
+  });
+
+  it('closure set and read back', () => {
+    bothMatch('let f = fn() { let x = 0; let g = fn() { set x = 10; x }; g() }; f()');
+  });
+
+  it('make_counter factory pattern', () => {
+    bothMatch(`
+      let make_counter = fn() {
+        let n = 0;
+        fn() { set n = n + 1; n }
+      };
+      let c = make_counter();
+      c(); c(); c(); c(); c()
+    `);
   });
 });
 

@@ -833,6 +833,12 @@ export class CompiledFunction {
 /**
  * Closure: wraps a CompiledFunction with its free variables.
  */
+export class Cell {
+  constructor(value) { this.value = value; }
+  type() { return 'CELL'; }
+  inspect() { return `Cell(${this.value?.inspect?.() ?? String(this.value)})`; }
+}
+
 export class Closure {
   constructor(fn, free = []) {
     this.fn = fn;
