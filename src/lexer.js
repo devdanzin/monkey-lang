@@ -111,6 +111,10 @@ export class Lexer {
   }
 
   readChar() {
+    this.ch = this.readPosition >= this.input.length
+      ? null
+      : this.input[this.readPosition];
+    this.position = this.readPosition;
     this.readPosition++;
   }
 
@@ -194,8 +198,14 @@ export class Lexer {
           tok = new Token(TokenType.ASSIGN, '=');
         }
         break;
-      case '+': tok = new Token(TokenType.PLUS, '+'); break;
-      case '-': tok = new Token(TokenType.MINUS, '-'); break;
+      case '+':
+        if (this.peekChar() === '=') { this.readChar(); tok = new Token(TokenType.PLUS_ASSIGN, '+='); }
+        else { tok = new Token(TokenType.PLUS, '+'); }
+        break;
+      case '-':
+        if (this.peekChar() === '=') { this.readChar(); tok = new Token(TokenType.MINUS_ASSIGN, '-='); }
+        else { tok = new Token(TokenType.MINUS, '-'); }
+        break;
       case '!':
         if (this.peekChar() === '=') {
           this.readChar();
@@ -204,8 +214,14 @@ export class Lexer {
           tok = new Token(TokenType.BANG, '!');
         }
         break;
-      case '*': tok = new Token(TokenType.ASTERISK, '*'); break;
-      case '/': tok = new Token(TokenType.SLASH, '/'); break;
+      case '*':
+        if (this.peekChar() === '=') { this.readChar(); tok = new Token(TokenType.ASTERISK_ASSIGN, '*='); }
+        else { tok = new Token(TokenType.ASTERISK, '*'); }
+        break;
+      case '/':
+        if (this.peekChar() === '=') { this.readChar(); tok = new Token(TokenType.SLASH_ASSIGN, '/='); }
+        else { tok = new Token(TokenType.SLASH, '/'); }
+        break;
       case '%': tok = new Token(TokenType.PERCENT, '%'); break;
       case '&':
         if (this.peekChar() === '&') { this.readChar(); tok = new Token(TokenType.AND, '&&'); }
