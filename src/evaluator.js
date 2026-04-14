@@ -472,6 +472,19 @@ const builtins = new Map([
       return result;
     });
   })],
+  ['partial', new MonkeyBuiltin((...args) => {
+    if (args.length < 2) return newError('partial: expected at least 2 arguments (fn, ...partial_args)');
+    const fn = args[0];
+    const partialArgs = args.slice(1);
+    return new MonkeyBuiltin((...callArgs) => {
+      return applyFunction(fn, [...partialArgs, ...callArgs]);
+    });
+  })],
+  ['constantly', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError('constantly: expected 1 argument');
+    const val = args[0];
+    return new MonkeyBuiltin(() => val);
+  })],
   ['min', new MonkeyBuiltin((...args) => {
     if (args.length < 2) return newError('min: expected at least 2 arguments');
     let result = args[0].value;
