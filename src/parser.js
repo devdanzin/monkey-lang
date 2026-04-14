@@ -51,6 +51,7 @@ export class Parser {
     // Register prefix parsers
     this.registerPrefix(TokenType.IDENT, () => this.parseIdentifier());
     this.registerPrefix(TokenType.INT, () => this.parseIntegerLiteral());
+    this.registerPrefix(TokenType.FLOAT, () => this.parseFloatLiteral());
     this.registerPrefix(TokenType.STRING, () => this.parseStringLiteral());
     this.registerPrefix(TokenType.FSTRING, () => this.parseFString());
     this.registerPrefix(TokenType.TRUE, () => this.parseBooleanLiteral());
@@ -259,6 +260,15 @@ export class Parser {
       return null;
     }
     return new ast.IntegerLiteral(this.curToken, value);
+  }
+
+  parseFloatLiteral() {
+    const value = parseFloat(this.curToken.literal);
+    if (isNaN(value)) {
+      this.errors.push(`could not parse ${this.curToken.literal} as float`);
+      return null;
+    }
+    return new ast.FloatLiteral(this.curToken, value);
   }
 
   parseStringLiteral() {

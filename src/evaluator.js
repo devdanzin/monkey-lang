@@ -1,7 +1,7 @@
 // Monkey Language Tree-Walking Evaluator
 
 import {
-  MonkeyInteger, MonkeyString, MonkeyReturnValue, MonkeyError,
+  MonkeyInteger, MonkeyFloat, MonkeyString, MonkeyReturnValue, MonkeyError,
   MonkeyFunction, MonkeyArray, MonkeyHash, MonkeyBuiltin,
   Environment, TRUE, FALSE, NULL, OBJ, BREAK_SIGNAL, CONTINUE_SIGNAL,
 } from './object.js';
@@ -390,6 +390,7 @@ export function monkeyEval(node, env) {
 
   // Expressions
   if (node instanceof AST.IntegerLiteral) return new MonkeyInteger(node.value);
+  if (node instanceof AST.FloatLiteral) return new MonkeyFloat(node.value);
   if (node instanceof AST.StringLiteral) return new MonkeyString(node.value);
   if (node instanceof AST.BooleanLiteral) return nativeBoolToBooleanObject(node.value);
 
@@ -611,13 +612,19 @@ function evalBangOperator(right) {
 }
 
 function evalMinusPrefix(right) {
-  if (right.type() !== OBJ.INTEGER) return newError(`unknown operator: -${right.type()}`);
-  return new MonkeyInteger(-right.value);
+  if (right.type() === OBJ.INTEGER) return new MonkeyInteger(-right.value);
+  if (right.type() === OBJ.FLOAT) return new MonkeyFloat(-right.value);
+  return newError(`unknown operator: -${right.type()}`);
 }
 
 function evalInfixExpression(op, left, right) {
   if (left.type() === OBJ.INTEGER && right.type() === OBJ.INTEGER) {
     return evalIntegerInfix(op, left, right);
+  }
+  // Float arithmetic (including mixed int/float)
+  if ((left.type() === OBJ.FLOAT || left.type() === OBJ.INTEGER) &&
+      (right.type() === OBJ.FLOAT || right.type() === OBJ.INTEGER)) {
+    return evalFloatInfix(op, left, right);
   }
   if (left.type() === OBJ.STRING && right.type() === OBJ.STRING) {
     if (op === '+') return new MonkeyString(left.value + right.value);
@@ -656,6 +663,24 @@ function evalIntegerInfix(op, left, right) {
     case '*': return new MonkeyInteger(l * r);
     case '/': return new MonkeyInteger(Math.trunc(l / r));
     case '%': return new MonkeyInteger(l % r);
+    case '<': return nativeBoolToBooleanObject(l < r);
+    case '>': return nativeBoolToBooleanObject(l > r);
+    case '<=': return nativeBoolToBooleanObject(l <= r);
+    case '>=': return nativeBoolToBooleanObject(l >= r);
+    case '==': return nativeBoolToBooleanObject(l === r);
+    case '!=': return nativeBoolToBooleanObject(l !== r);
+    default: return newError(`unknown operator: ${left.type()} ${op} ${right.type()}`);
+  }
+}
+
+function evalFloatInfix(op, left, right) {
+  const l = left.value, r = right.value;
+  switch (op) {
+    case '+': return new MonkeyFloat(l + r);
+    case '-': return new MonkeyFloat(l - r);
+    case '*': return new MonkeyFloat(l * r);
+    case '/': return new MonkeyFloat(l / r);
+    case '%': return new MonkeyFloat(l % r);
     case '<': return nativeBoolToBooleanObject(l < r);
     case '>': return nativeBoolToBooleanObject(l > r);
     case '<=': return nativeBoolToBooleanObject(l <= r);

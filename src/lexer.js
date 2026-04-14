@@ -4,6 +4,7 @@
 export const TokenType = {
   // Literals
   INT: 'INT',
+  FLOAT: 'FLOAT',
   STRING: 'STRING',
   FSTRING: 'FSTRING',
   IDENT: 'IDENT',
@@ -140,10 +141,19 @@ export class Lexer {
 
   readNumber() {
     const start = this.position;
+    let isFloat = false;
     while (this.ch && isDigit(this.ch)) {
       this.readChar();
     }
-    return this.input.slice(start, this.position);
+    // Check for decimal point
+    if (this.ch === '.' && isDigit(this.peekChar())) {
+      isFloat = true;
+      this.readChar(); // consume '.'
+      while (this.ch && isDigit(this.ch)) {
+        this.readChar();
+      }
+    }
+    return { value: this.input.slice(start, this.position), isFloat };
   }
 
   readTripleQuoteString() {
@@ -269,7 +279,8 @@ export class Lexer {
           const type = KEYWORDS[ident] || TokenType.IDENT;
           return new Token(type, ident);
         } else if (isDigit(this.ch)) {
-          return new Token(TokenType.INT, this.readNumber());
+          const num = this.readNumber();
+          return new Token(num.isFloat ? TokenType.FLOAT : TokenType.INT, num.value);
         } else {
           tok = new Token(TokenType.ILLEGAL, this.ch);
         }

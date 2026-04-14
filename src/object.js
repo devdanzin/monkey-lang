@@ -2,6 +2,7 @@
 
 export const OBJ = {
   INTEGER: 'INTEGER',
+  FLOAT: 'FLOAT',
   BOOLEAN: 'BOOLEAN',
   NULL: 'NULL',
   STRING: 'STRING',
@@ -18,6 +19,13 @@ export class MonkeyInteger {
   type() { return OBJ.INTEGER; }
   inspect() { return String(this.value); }
   hashKey() { return `int:${this.value}`; }
+}
+
+export class MonkeyFloat {
+  constructor(value) { this.value = value; }
+  type() { return OBJ.FLOAT; }
+  inspect() { return String(this.value); }
+  hashKey() { return `float:${this.value}`; }
 }
 
 export class MonkeyBoolean {
