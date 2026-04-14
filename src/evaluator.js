@@ -602,8 +602,19 @@ export function monkeyEval(node, env) {
   }
 
   if (node instanceof AST.ArrayLiteral) {
-    const elements = evalExpressions(node.elements, env);
-    if (elements.length === 1 && isError(elements[0])) return elements[0];
+    const elements = [];
+    for (const elem of node.elements) {
+      if (elem instanceof AST.SpreadExpression) {
+        const val = monkeyEval(elem.value, env);
+        if (isError(val)) return val;
+        if (!(val instanceof MonkeyArray)) return newError('spread requires array');
+        elements.push(...val.elements);
+      } else {
+        const val = monkeyEval(elem, env);
+        if (isError(val)) return val;
+        elements.push(val);
+      }
+    }
     return new MonkeyArray(elements);
   }
   if (node instanceof AST.ArrayComprehension) {
@@ -853,9 +864,16 @@ function evalIdentifier(node, env) {
 function evalExpressions(exps, env) {
   const result = [];
   for (const exp of exps) {
-    const val = monkeyEval(exp, env);
-    if (isError(val)) return [val];
-    result.push(val);
+    if (exp instanceof AST.SpreadExpression) {
+      const val = monkeyEval(exp.value, env);
+      if (isError(val)) return [val];
+      if (!(val instanceof MonkeyArray)) return [newError('spread requires array')];
+      result.push(...val.elements);
+    } else {
+      const val = monkeyEval(exp, env);
+      if (isError(val)) return [val];
+      result.push(val);
+    }
   }
   return result;
 }

@@ -64,6 +64,7 @@ export class Parser {
     this.registerPrefix(TokenType.FALSE, () => this.parseBooleanLiteral());
     this.registerPrefix(TokenType.BANG, () => this.parsePrefixExpression());
     this.registerPrefix(TokenType.MINUS, () => this.parsePrefixExpression());
+    this.registerPrefix(TokenType.SPREAD, () => this.parseSpreadExpression());
     this.registerPrefix(TokenType.LPAREN, () => this.parseGroupedExpression());
     this.registerPrefix(TokenType.IF, () => this.parseIfExpression());
     this.registerPrefix(TokenType.WHILE, () => this.parseWhileExpression());
@@ -402,6 +403,13 @@ export class Parser {
     this.nextToken();
     const right = this.parseExpression(Precedence.PREFIX);
     return new ast.PrefixExpression(token, operator, right);
+  }
+
+  parseSpreadExpression() {
+    const token = this.curToken;
+    this.nextToken();
+    const value = this.parseExpression(Precedence.PREFIX);
+    return new ast.SpreadExpression(token, value);
   }
 
   parseInfixExpression(left) {

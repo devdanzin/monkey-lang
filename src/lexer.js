@@ -7,6 +7,7 @@ export const TokenType = {
   FSTRING: 'FSTRING',
   PIPE: '|>',
   ARROW: '=>',
+  SPREAD: '...',
   DOT: '.',
   DOTDOT: '..',
   FLOAT: 'FLOAT',
@@ -290,7 +291,10 @@ export class Lexer {
       case null:
         return new Token(TokenType.EOF, '');
       case '.':
-        if (this.peekChar() === '.') {
+        if (this.peekChar() === '.' && this.input[this.readPosition + 1] === '.') {
+          this.readChar(); this.readChar();
+          tok = new Token(TokenType.SPREAD, '...');
+        } else if (this.peekChar() === '.') {
           this.readChar();
           tok = new Token(TokenType.DOTDOT, '..');
         } else {

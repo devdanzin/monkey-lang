@@ -619,3 +619,12 @@ export class DestructureHashLetStatement {
     return `${kw} {${this.names.map(n => n.toString()).join(', ')}} = ${this.value.toString()};`;
   }
 }
+
+export class SpreadExpression {
+  constructor(token, value) {
+    this.token = token;
+    this.value = value;
+  }
+  tokenLiteral() { return '...'; }
+  toString() { return `...${this.value.toString()}`; }
+}
