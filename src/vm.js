@@ -316,6 +316,11 @@ const builtins = [
     while ((pos = str.indexOf(sub, pos)) !== -1) { count++; pos += sub.length; }
     return new MonkeyInteger(count);
   }),
+  // compact (remove nulls)
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyArray)) return new MonkeyError('compact: expected 1 array');
+    return new MonkeyArray(args[0].elements.filter(el => el !== NULL));
+  }),
   // keys (VM hash format: Map<key, value>)
   new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return new MonkeyError(`wrong number of arguments to keys. got=${args.length}, want=1`);
