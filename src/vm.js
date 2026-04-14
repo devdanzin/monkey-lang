@@ -332,6 +332,14 @@ const builtins = [
     }
     return new MonkeyArray(result);
   }),
+  // isEmpty
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyError('isEmpty: expected 1 argument');
+    if (args[0] instanceof MonkeyString) return args[0].value.length === 0 ? TRUE : FALSE;
+    if (args[0] instanceof MonkeyArray) return args[0].elements.length === 0 ? TRUE : FALSE;
+    if (args[0] === NULL) return TRUE;
+    return FALSE;
+  }),
   // keys (VM hash format: Map<key, value>)
   new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return new MonkeyError(`wrong number of arguments to keys. got=${args.length}, want=1`);
