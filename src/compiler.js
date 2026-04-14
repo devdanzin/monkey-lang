@@ -211,6 +211,83 @@ export class Compiler {
     return result;
   }
   
+  // Constant folding: evaluate constant expressions at compile time
+  static foldConstants(node) {
+    if (!node) return node;
+    
+    if (node instanceof AST.InfixExpression) {
+      node.left = Compiler.foldConstants(node.left);
+      node.right = Compiler.foldConstants(node.right);
+      
+      if (node.left instanceof AST.IntegerLiteral && node.right instanceof AST.IntegerLiteral) {
+        const l = node.left.value, r = node.right.value;
+        let result;
+        switch (node.operator) {
+          case '+': result = l + r; break;
+          case '-': result = l - r; break;
+          case '*': result = l * r; break;
+          case '/': result = r !== 0 ? Math.trunc(l / r) : null; break;
+          case '%': result = r !== 0 ? l % r : null; break;
+        }
+        if (result !== null && result !== undefined) {
+          return new AST.IntegerLiteral(node.token, result);
+        }
+        let boolResult;
+        switch (node.operator) {
+          case '<': boolResult = l < r; break;
+          case '>': boolResult = l > r; break;
+          case '==': boolResult = l === r; break;
+          case '!=': boolResult = l !== r; break;
+          case '<=': boolResult = l <= r; break;
+          case '>=': boolResult = l >= r; break;
+        }
+        if (boolResult !== undefined) {
+          return new AST.BooleanLiteral(node.token, boolResult);
+        }
+      }
+      
+      if (node.left instanceof AST.StringLiteral && node.right instanceof AST.StringLiteral) {
+        if (node.operator === '+') {
+          return new AST.StringLiteral(node.token, node.left.value + node.right.value);
+        }
+      }
+      return node;
+    }
+    
+    if (node instanceof AST.PrefixExpression) {
+      node.right = Compiler.foldConstants(node.right);
+      if (node.right instanceof AST.IntegerLiteral && node.operator === '-') {
+        return new AST.IntegerLiteral(node.token, -node.right.value);
+      }
+      if (node.right instanceof AST.BooleanLiteral && node.operator === '!') {
+        return new AST.BooleanLiteral(node.token, !node.right.value);
+      }
+      return node;
+    }
+    
+    // Recursively fold child nodes
+    if (node instanceof AST.Program) { node.statements = node.statements.map(s => Compiler.foldConstants(s)); return node; }
+    if (node instanceof AST.ExpressionStatement) { node.expression = Compiler.foldConstants(node.expression); return node; }
+    if (node instanceof AST.LetStatement) { node.value = Compiler.foldConstants(node.value); return node; }
+    if (node instanceof AST.SetStatement) { node.value = Compiler.foldConstants(node.value); return node; }
+    if (node instanceof AST.ReturnStatement) { node.returnValue = Compiler.foldConstants(node.returnValue); return node; }
+    if (node instanceof AST.BlockStatement) { node.statements = node.statements.map(s => Compiler.foldConstants(s)); return node; }
+    if (node instanceof AST.IfExpression) {
+      node.condition = Compiler.foldConstants(node.condition);
+      node.consequence = Compiler.foldConstants(node.consequence);
+      if (node.alternative) node.alternative = Compiler.foldConstants(node.alternative);
+      return node;
+    }
+    if (node instanceof AST.FunctionLiteral) { node.body = Compiler.foldConstants(node.body); return node; }
+    if (node instanceof AST.CallExpression) { node.arguments = node.arguments.map(a => Compiler.foldConstants(a)); return node; }
+    if (node instanceof AST.ArrayLiteral) { node.elements = node.elements.map(e => Compiler.foldConstants(e)); return node; }
+    if (node instanceof AST.IndexExpression) { node.left = Compiler.foldConstants(node.left); node.index = Compiler.foldConstants(node.index); return node; }
+    if (node instanceof AST.ForExpression) { node.init = Compiler.foldConstants(node.init); node.condition = Compiler.foldConstants(node.condition); node.update = Compiler.foldConstants(node.update); node.body = Compiler.foldConstants(node.body); return node; }
+    if (node instanceof AST.WhileExpression) { node.condition = Compiler.foldConstants(node.condition); node.body = Compiler.foldConstants(node.body); return node; }
+    
+    return node;
+  }
+
   constructor() {
     this.constants = [];
     this.symbolTable = new SymbolTable();
@@ -230,6 +307,8 @@ export class Compiler {
    */
   compile(node) {
     if (node instanceof AST.Program) {
+      // Apply constant folding optimization
+      Compiler.foldConstants(node);
       for (const stmt of node.statements) {
         this.compile(stmt);
       }

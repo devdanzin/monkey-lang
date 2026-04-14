@@ -75,31 +75,30 @@ describe('Compiler', () => {
       assert.ok(bc.instructions.includes(Opcodes.OpFalse));
     });
 
-    it('compiles 1 > 2', () => {
+    it('compiles 1 > 2 (constant-folded to false)', () => {
       const bc = testCompile('1 > 2');
-      assert.ok(bc.instructions.includes(Opcodes.OpGreaterThan));
+      // Constant folding reduces 1 > 2 to false at compile time
+      assert.ok(bc.instructions.includes(Opcodes.OpFalse));
     });
 
-    it('compiles 1 < 2 (as reversed >)', () => {
+    it('compiles 1 < 2 (constant-folded to true)', () => {
       const bc = testCompile('1 < 2');
-      // < is compiled as >, reversed operands — but both are constants
-      // so the comparison still works (not folded since result is boolean)
-      assert.ok(bc.instructions.includes(Opcodes.OpGreaterThan));
+      assert.ok(bc.instructions.includes(Opcodes.OpTrue));
     });
 
-    it('compiles 1 == 2', () => {
+    it('compiles 1 == 2 (constant-folded to false)', () => {
       const bc = testCompile('1 == 2');
-      assert.ok(bc.instructions.includes(Opcodes.OpEqual));
+      assert.ok(bc.instructions.includes(Opcodes.OpFalse));
     });
 
-    it('compiles 1 != 2', () => {
+    it('compiles 1 != 2 (constant-folded to true)', () => {
       const bc = testCompile('1 != 2');
-      assert.ok(bc.instructions.includes(Opcodes.OpNotEqual));
+      assert.ok(bc.instructions.includes(Opcodes.OpTrue));
     });
 
-    it('compiles !true', () => {
+    it('compiles !true (constant-folded to false)', () => {
       const bc = testCompile('!true');
-      assert.ok(bc.instructions.includes(Opcodes.OpBang));
+      assert.ok(bc.instructions.includes(Opcodes.OpFalse));
     });
   });
 
