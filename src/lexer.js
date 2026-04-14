@@ -4,6 +4,7 @@
 export const TokenType = {
   // Literals
   INT: 'INT',
+  FSTRING: 'FSTRING',
   FLOAT: 'FLOAT',
   STRING: 'STRING',
   FSTRING: 'FSTRING',
@@ -286,6 +287,20 @@ export class Lexer {
           return new Token(TokenType.FSTRING, this.readString());
         }
         if (isLetter(this.ch)) {
+          // Check for f-string: f"..."
+          if (this.ch === 'f' && this.peekChar() === '"') {
+            this.readChar(); // consume 'f'
+            this.readChar(); // consume '"'
+            // Read until closing "
+            const start = this.position;
+            while (this.ch && this.ch !== '"') {
+              if (this.ch === '\\') this.readChar(); // skip escaped chars
+              this.readChar();
+            }
+            const str = this.input.slice(start, this.position);
+            this.readChar(); // consume closing "
+            return new Token(TokenType.FSTRING, str);
+          }
           const ident = this.readIdentifier();
           const type = KEYWORDS[ident] || TokenType.IDENT;
           return new Token(type, ident);

@@ -53,6 +53,7 @@ export class Parser {
     this.registerPrefix(TokenType.INT, () => this.parseIntegerLiteral());
     this.registerPrefix(TokenType.FLOAT, () => this.parseFloatLiteral());
     this.registerPrefix(TokenType.STRING, () => this.parseStringLiteral());
+    this.registerPrefix(TokenType.FSTRING, () => this.parseFStringLiteral());
     this.registerPrefix(TokenType.FSTRING, () => this.parseFString());
     this.registerPrefix(TokenType.TRUE, () => this.parseBooleanLiteral());
     this.registerPrefix(TokenType.FALSE, () => this.parseBooleanLiteral());
@@ -273,6 +274,36 @@ export class Parser {
 
   parseStringLiteral() {
     return new ast.StringLiteral(this.curToken, this.curToken.literal);
+  }
+
+  parseFStringLiteral() {
+    const token = this.curToken;
+    const raw = token.literal;
+    const segments = [];
+    let i = 0;
+    while (i < raw.length) {
+      if (raw[i] === '{') {
+        let depth = 1;
+        let j = i + 1;
+        while (j < raw.length && depth > 0) {
+          if (raw[j] === '{') depth++;
+          if (raw[j] === '}') depth--;
+          j++;
+        }
+        const exprStr = raw.slice(i + 1, j - 1);
+        const l = new Lexer(exprStr);
+        const p = new Parser(l);
+        const expr = p.parseExpression(Precedence.LOWEST);
+        segments.push({ type: 'expr', expr });
+        i = j;
+      } else {
+        let j = i;
+        while (j < raw.length && raw[j] !== '{') j++;
+        segments.push({ type: 'text', value: raw.slice(i, j) });
+        i = j;
+      }
+    }
+    return new ast.FStringExpression(token, segments);
   }
 
   parseFString() {

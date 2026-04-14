@@ -404,6 +404,19 @@ export function monkeyEval(node, env) {
   if (node instanceof AST.IntegerLiteral) return new MonkeyInteger(node.value);
   if (node instanceof AST.FloatLiteral) return new MonkeyFloat(node.value);
   if (node instanceof AST.StringLiteral) return new MonkeyString(node.value);
+  if (node instanceof AST.FStringExpression) {
+    let result = '';
+    for (const seg of node.segments) {
+      if (seg.type === 'text') {
+        result += seg.value;
+      } else {
+        const val = monkeyEval(seg.expr, env);
+        if (isError(val)) return val;
+        result += val.inspect();
+      }
+    }
+    return new MonkeyString(result);
+  }
   if (node instanceof AST.BooleanLiteral) return nativeBoolToBooleanObject(node.value);
 
   if (node instanceof AST.PrefixExpression) {
