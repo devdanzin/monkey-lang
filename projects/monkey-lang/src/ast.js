@@ -1,5 +1,50 @@
 // Monkey Language AST Nodes
 
+// --- Helpers ---
+
+// Escape a JavaScript string for safe inclusion inside a Monkey "..."
+// string literal. Mirrors the lexer's readString() escape table:
+// backslash, double-quote, newline, tab, carriage return, NUL.
+function escapeString(s) {
+  let out = '';
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (c === '\\') out += '\\\\';
+    else if (c === '"') out += '\\"';
+    else if (c === '\n') out += '\\n';
+    else if (c === '\t') out += '\\t';
+    else if (c === '\r') out += '\\r';
+    else if (c === '\0') out += '\\0';
+    else out += c;
+  }
+  return out;
+}
+
+// Escape a string for the literal-text portion of a backtick template.
+// Mirrors readTemplateString(): backslash, backtick, dollar (only when
+// followed by `{`), and the standard whitespace escapes.
+function escapeTemplateText(s) {
+  let out = '';
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (c === '\\') out += '\\\\';
+    else if (c === '`') out += '\\`';
+    else if (c === '$' && s[i + 1] === '{') out += '\\$';
+    else if (c === '\n') out += '\\n';
+    else if (c === '\t') out += '\\t';
+    else if (c === '\r') out += '\\r';
+    else out += c;
+  }
+  return out;
+}
+
+// Render a list of statements as the inside of a block, joining with a
+// single space. Every statement type self-terminates with ';' or '}', so
+// no extra separator is needed. The space exists only for readability.
+function joinStatements(statements) {
+  return statements.map(s => s.toString()).filter(s => s.length > 0).join(' ');
+}
+
 // --- Statements ---
 
 export class Program {
@@ -10,7 +55,8 @@ export class Program {
     return this.statements.length > 0 ? this.statements[0].tokenLiteral() : '';
   }
   toString() {
-    return this.statements.map(s => s.toString()).join('');
+    // Top-level: one statement per line. Every statement self-terminates.
+    return this.statements.map(s => s.toString()).filter(s => s.length > 0).join('\n');
   }
 }
 
@@ -59,7 +105,15 @@ export class ExpressionStatement {
     this.expression = expression;
   }
   tokenLiteral() { return this.token.literal; }
-  toString() { return this.expression ? this.expression.toString() : ''; }
+  // Always append ';' so adjacent expression statements can't fuse — e.g.
+  // `if (c) { ... }` followed by `(call())` would otherwise re-parse as
+  // an indexed call on the if-expression's result. The trailing ';' is
+  // optional in the surface grammar but unambiguously terminates the
+  // previous expression for the Pratt parser.
+  toString() {
+    if (!this.expression) return '';
+    return this.expression.toString() + ';';
+  }
 }
 
 export class BlockStatement {
@@ -68,7 +122,10 @@ export class BlockStatement {
     this.statements = statements;
   }
   tokenLiteral() { return this.token.literal; }
-  toString() { return this.statements.map(s => s.toString()).join(''); }
+  toString() {
+    if (this.statements.length === 0) return '{ }';
+    return `{ ${joinStatements(this.statements)} }`;
+  }
 }
 
 // --- Expressions ---
@@ -88,7 +145,10 @@ export class IntegerLiteral {
     this.value = value;
   }
   tokenLiteral() { return this.token.literal; }
-  toString() { return this.token.literal; }
+  // Use the semantic value, not token.literal, because some parser paths
+  // (notably postfix `i++` desugaring) construct a synthetic IntegerLiteral
+  // whose token still points at the '++' operator.
+  toString() { return String(this.value); }
 }
 
 export class FloatLiteral {
@@ -97,7 +157,7 @@ export class FloatLiteral {
     this.value = value;
   }
   tokenLiteral() { return this.token.literal; }
-  toString() { return this.token.literal; }
+  toString() { return String(this.value); }
 }
 
 export class StringLiteral {
@@ -106,7 +166,7 @@ export class StringLiteral {
     this.value = value;
   }
   tokenLiteral() { return this.token.literal; }
-  toString() { return `"${this.value}"`; }
+  toString() { return `"${escapeString(this.value)}"`; }
 }
 
 export class BooleanLiteral {
@@ -148,8 +208,8 @@ export class IfExpression {
   }
   tokenLiteral() { return this.token.literal; }
   toString() {
-    let s = `if${this.condition} ${this.consequence}`;
-    if (this.alternative) s += `else ${this.alternative}`;
+    let s = `if (${this.condition}) ${this.consequence}`;
+    if (this.alternative) s += ` else ${this.alternative}`;
     return s;
   }
 }
@@ -257,7 +317,7 @@ export class WhileExpression {
     this.body = body;             // BlockStatement
   }
   tokenLiteral() { return this.token.literal; }
-  toString() { return `while(${this.condition}) ${this.body}`; }
+  toString() { return `while (${this.condition}) ${this.body}`; }
 }
 
 export class AssignExpression {
@@ -279,7 +339,14 @@ export class ForExpression {
     this.body = body;           // BlockStatement
   }
   tokenLiteral() { return this.token.literal; }
-  toString() { return `for (...) { ... }`; }
+  toString() {
+    // init is a LetStatement (already ends in ';') or an ExpressionStatement
+    // (no trailing ';'). Strip the trailing ';' from let so we can re-emit
+    // a single one in the canonical `for (init; cond; update)` form.
+    let initStr = this.init.toString();
+    if (initStr.endsWith(';')) initStr = initStr.slice(0, -1);
+    return `for (${initStr}; ${this.condition}; ${this.update}) ${this.body}`;
+  }
 }
 
 export class ForInExpression {
@@ -290,12 +357,15 @@ export class ForInExpression {
     this.body = body;            // BlockStatement
   }
   tokenLiteral() { return this.token.literal; }
-  toString() { return `for (${this.variable} in ...) { ... }`; }
+  toString() { return `for (${this.variable} in ${this.iterable}) ${this.body}`; }
 }
 
 export class BreakStatement {
   constructor(token) { this.token = token; }
   tokenLiteral() { return this.token.literal; }
+  // No trailing ';' — the surrounding ExpressionStatement adds one. Despite
+  // the class name, break/continue are parsed as prefix expressions by the
+  // Pratt parser, so they always live inside an ExpressionStatement.
   toString() { return 'break'; }
 }
 
@@ -321,7 +391,18 @@ export class TemplateLiteral {
     this.parts = parts; // Array of StringLiteral or Expression nodes
   }
   tokenLiteral() { return this.token.literal; }
-  toString() { return '`...`'; }
+  toString() {
+    let s = '`';
+    for (const part of this.parts) {
+      if (part instanceof StringLiteral) {
+        s += escapeTemplateText(part.value);
+      } else {
+        s += `\${${part}}`;
+      }
+    }
+    s += '`';
+    return s;
+  }
 }
 
 export class IndexAssignExpression {
@@ -349,7 +430,11 @@ export class SliceExpression {
     this.end = end;      // Expression or null (end of slice)
   }
   tokenLiteral() { return this.token.literal; }
-  toString() { return `${this.left}[${this.start}:${this.end}]`; }
+  toString() {
+    const startStr = this.start !== null ? this.start.toString() : '';
+    const endStr = this.end !== null ? this.end.toString() : '';
+    return `${this.left}[${startStr}:${endStr}]`;
+  }
 }
 
 export class TernaryExpression {
@@ -360,17 +445,27 @@ export class TernaryExpression {
     this.alternative = alternative;
   }
   tokenLiteral() { return this.token.literal; }
-  toString() { return `${this.condition} ? ${this.consequence} : ${this.alternative}`; }
+  // Wrap in parens because ternary has lower precedence than most operators;
+  // serializing `a + (b ? c : d)` as `a + b ? c : d` would re-parse with the
+  // wrong grouping.
+  toString() { return `(${this.condition} ? ${this.consequence} : ${this.alternative})`; }
 }
 
 export class MatchExpression {
   constructor(token, subject, arms) {
     this.token = token;
     this.subject = subject;   // Expression to match against
-    this.arms = arms;         // Array of { pattern, value } where pattern is Expression, TypePattern, or null (wildcard)
+    this.arms = arms;         // Array of { pattern, value, guard? } where pattern is Expression, TypePattern, OrPattern, or null (wildcard)
   }
   tokenLiteral() { return this.token.literal; }
-  toString() { return 'match { ... }'; }
+  toString() {
+    const armParts = this.arms.map(arm => {
+      const pat = arm.pattern === null ? '_' : arm.pattern.toString();
+      const guard = arm.guard ? ` when ${arm.guard}` : '';
+      return `${pat}${guard} => ${arm.value}`;
+    });
+    return `match (${this.subject}) { ${armParts.join(', ')} }`;
+  }
 }
 
 export class TypePattern {
@@ -395,7 +490,10 @@ export class DestructuringLet {
     this.value = value;   // Expression
   }
   tokenLiteral() { return this.token.literal; }
-  toString() { return `let [${this.names.map(n => n ? n.value : '_').join(', ')}] = ...`; }
+  toString() {
+    const nameStrs = this.names.map(n => n ? n.value : '_').join(', ');
+    return `let [${nameStrs}] = ${this.value};`;
+  }
 }
 
 export class HashDestructuringLet {
@@ -405,7 +503,10 @@ export class HashDestructuringLet {
     this.value = value;   // Expression
   }
   tokenLiteral() { return this.token.literal; }
-  toString() { return `let {${this.names.map(n => n.value).join(', ')}} = ...`; }
+  toString() {
+    const nameStrs = this.names.map(n => n.value).join(', ');
+    return `let {${nameStrs}} = ${this.value};`;
+  }
 }
 
 export class DoWhileExpression {
@@ -415,7 +516,7 @@ export class DoWhileExpression {
     this.condition = condition;
   }
   tokenLiteral() { return this.token.literal; }
-  toString() { return 'do { ... } while (...)'; }
+  toString() { return `do ${this.body} while (${this.condition})`; }
 }
 
 export class RangeExpression {

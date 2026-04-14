@@ -123,7 +123,7 @@ describe('Evaluator', () => {
     const result = testEval('fn(x) { x + 2; };');
     assert.equal(result.parameters.length, 1);
     assert.equal(result.parameters[0].toString(), 'x');
-    assert.equal(result.body.toString(), '(x + 2)');
+    assert.equal(result.body.toString(), '{ (x + 2); }');
   });
 
   it('function application', () => {
