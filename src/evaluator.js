@@ -177,6 +177,22 @@ const builtins = new Map([
     if (args[0] instanceof MonkeyString) return new MonkeyString([...args[0].value].reverse().join(''));
     return newError(`reverse: unsupported type ${args[0].type()}`);
   })],
+  ['abs', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyInteger)) return newError('abs: expected 1 integer');
+    return new MonkeyInteger(Math.abs(args[0].value));
+  })],
+  ['min', new MonkeyBuiltin((...args) => {
+    if (args.length < 2) return newError('min: expected at least 2 arguments');
+    let result = args[0].value;
+    for (let i = 1; i < args.length; i++) result = Math.min(result, args[i].value);
+    return new MonkeyInteger(result);
+  })],
+  ['max', new MonkeyBuiltin((...args) => {
+    if (args.length < 2) return newError('max: expected at least 2 arguments');
+    let result = args[0].value;
+    for (let i = 1; i < args.length; i++) result = Math.max(result, args[i].value);
+    return new MonkeyInteger(result);
+  })],
   // Hash iteration
   ['keys', new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return newError(`wrong number of arguments to keys. got=${args.length}, want=1`);
