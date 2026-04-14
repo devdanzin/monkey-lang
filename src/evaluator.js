@@ -319,6 +319,40 @@ const builtins = new Map([
     }
     return new MonkeyArray(result);
   })],
+  ['group_by', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError('group_by: expected 2 arguments (array, fn)');
+    if (!(args[0] instanceof MonkeyArray)) return newError('group_by: first argument must be an array');
+    const groups = new Map();
+    for (const elem of args[0].elements) {
+      const key = applyFunction(args[1], [elem]);
+      if (isError(key)) return key;
+      const hashKey = key.hashKey ? key.hashKey() : key.inspect();
+      if (!groups.has(hashKey)) {
+        groups.set(hashKey, { key, elements: [] });
+      }
+      groups.get(hashKey).elements.push(elem);
+    }
+    const pairs = new Map();
+    for (const { key, elements } of groups.values()) {
+      const hk = key.hashKey ? key.hashKey() : key.inspect();
+      pairs.set(hk, { key, value: new MonkeyArray(elements) });
+    }
+    return new MonkeyHash(pairs);
+  })],
+  ['unique', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError('unique: expected 1 argument');
+    if (!(args[0] instanceof MonkeyArray)) return newError('unique: argument must be an array');
+    const seen = new Set();
+    const result = [];
+    for (const elem of args[0].elements) {
+      const key = elem.inspect();
+      if (!seen.has(key)) {
+        seen.add(key);
+        result.push(elem);
+      }
+    }
+    return new MonkeyArray(result);
+  })],
   ['min', new MonkeyBuiltin((...args) => {
     if (args.length < 2) return newError('min: expected at least 2 arguments');
     let result = args[0].value;
