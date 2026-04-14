@@ -17,13 +17,18 @@ A complete implementation of the Monkey programming language from [Writing An In
 - **While loops** — `while (x < 10) { set x = x + 1; }`
 - **For loops** — `for (let i = 0; i < 10; set i = i + 1) { ... }`
 - **Do/While loops** — `do { ... } while (condition)`
+- **For-in loops** — `for (x in [1, 2, 3]) { ... }` (arrays and hash keys)
 - **Set (mutation)** — `set x = x + 1;`
 - **Modulo operator** — `x % 2`
 - **Comparison operators** — `<`, `>`, `<=`, `>=`, `==`, `!=`
 - **Logical operators** — `&&` (short-circuit AND), `||` (short-circuit OR)
 - **String indexing** — `"hello"[1]` → `"e"`
 - **String escape sequences** — `\n`, `\t`, `\\`, `\"`
-- **Break/Continue** — loop control flow (evaluator)
+- **Break/Continue** — loop control flow
+- **Ternary operator** — `cond ? a : b`
+- **Switch/Case** — `switch (x) { case 1: { ... } default: { ... } }`
+- **Try/Catch/Throw** — `try { ... } catch (e) { ... }` + `throw "error"`
+- **Array/String slicing** — `arr[1:3]`, `arr[:2]`, `arr[-2:]`
 - **Alphanumeric identifiers** — `myVar2`, `is_valid`
 
 ### Builtins (19 total)
@@ -46,6 +51,7 @@ A complete implementation of the Monkey programming language from [Writing An In
 | `upper(str)` / `lower(str)` | Case conversion |
 | `keys(hash)` / `values(hash)` | Hash iteration |
 | `sort(arr)` | Sort array (ascending) |
+| `import(name)` | Load stdlib module |
 | `map(arr, fn)` | Transform elements (evaluator) |
 | `filter(arr, fn)` | Filter elements (evaluator) |
 | `reduce(arr, init, fn)` | Fold array (evaluator) |
@@ -71,7 +77,7 @@ src/
 └── repl.js        # Interactive REPL (119 lines)
 ```
 
-**Total: ~5,500 lines** | **334 tests** | **31 opcodes**
+**Total: ~6,000 lines** | **387 tests** | **31 opcodes**
 
 ## Quick Start
 
