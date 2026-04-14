@@ -296,6 +296,16 @@ const builtins = [
     if (args[0] instanceof MonkeyArray) return new MonkeyArray(args[0].elements.slice(start, end));
     return new MonkeyError('slice: first argument must be string or array');
   }),
+  // sum
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyArray)) return new MonkeyError('sum: expected 1 array');
+    let total = 0;
+    for (const el of args[0].elements) {
+      if (el instanceof MonkeyInteger) total += el.value;
+      else return new MonkeyError('sum: all elements must be integers');
+    }
+    return new MonkeyInteger(total);
+  }),
   // keys (VM hash format: Map<key, value>)
   new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return new MonkeyError(`wrong number of arguments to keys. got=${args.length}, want=1`);
