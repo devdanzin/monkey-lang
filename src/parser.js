@@ -191,6 +191,7 @@ export class Parser {
       const right = this.parseExpression(Precedence.LOWEST);
       // Desugar: set x += 5 → set x = x + 5
       const value = new ast.InfixExpression(this.curToken, name, op, right);
+      if (this.peekTokenIs(TokenType.SEMICOLON)) this.nextToken();
       return new ast.SetStatement(token, name, value);
     }
     
