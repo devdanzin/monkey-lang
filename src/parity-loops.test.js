@@ -149,6 +149,37 @@ describe('Loop Parity — Closures and Loops', () => {
     bothMatch('let f = fn() { let count = 0; let inc = fn() { set count = count + 1; count }; inc(); inc(); inc() }; f()');
   });
 
+  it('multi-closure shared state: inc and get', () => {
+    bothMatch(`
+      let f = fn() {
+        let x = 0;
+        let inc = fn() { set x = x + 1; x };
+        let get = fn() { x };
+        [inc, get]
+      };
+      let pair = f();
+      let inc = pair[0];
+      let get = pair[1];
+      inc();
+      inc();
+      get()
+    `);
+  });
+
+  it('make_counter factory: independent counters', () => {
+    bothMatch(`
+      let make_counter = fn() {
+        let n = 0;
+        fn() { set n = n + 1; n }
+      };
+      let a = make_counter();
+      let b = make_counter();
+      a(); a(); a();
+      b(); b();
+      a() + b()
+    `);
+  });
+
   it('closure reads captured variable', () => {
     bothMatch('let f = fn() { let x = 42; let g = fn() { x }; g() }; f()');
   });
@@ -165,6 +196,25 @@ describe('Loop Parity — Closures and Loops', () => {
       };
       let c = make_counter();
       c(); c(); c(); c(); c()
+    `);
+  });
+
+  it('multi-closure: inc, dec, and get', () => {
+    bothMatch(`
+      let f = fn() {
+        let x = 10;
+        let inc = fn() { set x = x + 1; x };
+        let dec = fn() { set x = x - 1; x };
+        let get = fn() { x };
+        [inc, dec, get]
+      };
+      let ops = f();
+      let inc = ops[0];
+      let dec = ops[1];
+      let get = ops[2];
+      inc(); inc(); inc();
+      dec();
+      get()
     `);
   });
 });
