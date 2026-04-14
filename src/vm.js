@@ -245,6 +245,18 @@ const builtins = [
     for (let i = 1; i < args.length; i++) result = Math.max(result, args[i].value);
     return new MonkeyInteger(result);
   }),
+  // startsWith
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 2 || !(args[0] instanceof MonkeyString) || !(args[1] instanceof MonkeyString))
+      return new MonkeyError('startsWith: expected 2 string arguments');
+    return args[0].value.startsWith(args[1].value) ? TRUE : FALSE;
+  }),
+  // endsWith
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 2 || !(args[0] instanceof MonkeyString) || !(args[1] instanceof MonkeyString))
+      return new MonkeyError('endsWith: expected 2 string arguments');
+    return args[0].value.endsWith(args[1].value) ? TRUE : FALSE;
+  }),
   // keys (VM hash format: Map<key, value>)
   new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return new MonkeyError(`wrong number of arguments to keys. got=${args.length}, want=1`);
