@@ -593,39 +593,53 @@ export class Parser {
 
   parseFunctionLiteral() {    const token = this.curToken;
     if (!this.expectPeek(TokenType.LPAREN)) return null;
-    const parameters = this.parseFunctionParameters();
+    const { params: parameters, restParam } = this.parseFunctionParameters();
     
     // Arrow function: fn(x) => expr
     if (this.peekTokenIs(TokenType.ARROW)) {
       this.nextToken(); // consume =>
       this.nextToken(); // move to expression
       const expr = this.parseExpression(Precedence.LOWEST);
-      // Wrap in a return statement + block
       const returnStmt = new ast.ReturnStatement(token, expr);
       const body = new ast.BlockStatement(token, [returnStmt]);
-      return new ast.FunctionLiteral(token, parameters, body);
+      const fn = new ast.FunctionLiteral(token, parameters, body);
+      fn.restParam = restParam;
+      return fn;
     }
     
     if (!this.expectPeek(TokenType.LBRACE)) return null;
     const body = this.parseBlockStatement();
-    return new ast.FunctionLiteral(token, parameters, body);
+    const fn = new ast.FunctionLiteral(token, parameters, body);
+    fn.restParam = restParam;
+    return fn;
   }
 
   parseFunctionParameters() {
     const params = [];
+    let restParam = null;
     if (this.peekTokenIs(TokenType.RPAREN)) {
       this.nextToken();
-      return params;
+      return { params, restParam };
     }
     this.nextToken();
-    params.push(new ast.Identifier(this.curToken, this.curToken.literal));
+    if (this.curTokenIs(TokenType.SPREAD)) {
+      this.nextToken();
+      restParam = new ast.Identifier(this.curToken, this.curToken.literal);
+    } else {
+      params.push(new ast.Identifier(this.curToken, this.curToken.literal));
+    }
     while (this.peekTokenIs(TokenType.COMMA)) {
       this.nextToken();
       this.nextToken();
-      params.push(new ast.Identifier(this.curToken, this.curToken.literal));
+      if (this.curTokenIs(TokenType.SPREAD)) {
+        this.nextToken();
+        restParam = new ast.Identifier(this.curToken, this.curToken.literal);
+      } else {
+        params.push(new ast.Identifier(this.curToken, this.curToken.literal));
+      }
     }
     if (!this.expectPeek(TokenType.RPAREN)) return null;
-    return params;
+    return { params, restParam };
   }
 
   parseCallExpression(fn) {

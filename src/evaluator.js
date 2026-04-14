@@ -590,7 +590,9 @@ export function monkeyEval(node, env) {
   if (node instanceof AST.Identifier) return evalIdentifier(node, env);
 
   if (node instanceof AST.FunctionLiteral) {
-    return new MonkeyFunction(node.parameters, node.body, env);
+    const fn = new MonkeyFunction(node.parameters, node.body, env);
+    fn.restParam = node.restParam?.value || null;
+    return fn;
   }
 
   if (node instanceof AST.CallExpression) {
@@ -883,6 +885,11 @@ function applyFunction(fn, args) {
     const extendedEnv = new Environment(fn.env);
     for (let i = 0; i < fn.parameters.length; i++) {
       extendedEnv.set(fn.parameters[i].value, args[i]);
+    }
+    // Rest parameter: collect remaining args into array
+    if (fn.restParam) {
+      const rest = args.slice(fn.parameters.length);
+      extendedEnv.set(fn.restParam, new MonkeyArray(rest));
     }
     const result = monkeyEval(fn.body, extendedEnv);
     if (result instanceof MonkeyReturnValue) return result.value;
