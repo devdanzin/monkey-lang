@@ -62,6 +62,7 @@ export class Parser {
     this.registerPrefix(TokenType.FSTRING, () => this.parseFString());
     this.registerPrefix(TokenType.TRUE, () => this.parseBooleanLiteral());
     this.registerPrefix(TokenType.FALSE, () => this.parseBooleanLiteral());
+    this.registerPrefix(TokenType.NULL, () => new ast.NullLiteral(this.curToken));
     this.registerPrefix(TokenType.BANG, () => this.parsePrefixExpression());
     this.registerPrefix(TokenType.MINUS, () => this.parsePrefixExpression());
     this.registerPrefix(TokenType.SPREAD, () => this.parseSpreadExpression());

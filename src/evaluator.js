@@ -442,6 +442,7 @@ export function monkeyEval(node, env) {
     return new MonkeyString(result);
   }
   if (node instanceof AST.BooleanLiteral) return nativeBoolToBooleanObject(node.value);
+  if (node instanceof AST.NullLiteral) return NULL;
 
   if (node instanceof AST.PrefixExpression) {
     const right = monkeyEval(node.right, env);

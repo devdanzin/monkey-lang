@@ -4,16 +4,18 @@
 export const TokenType = {
   // Literals
   INT: 'INT',
+  FLOAT: 'FLOAT',
+  STRING: 'STRING',
   FSTRING: 'FSTRING',
+  IDENT: 'IDENT',
+  NULL: 'NULL',
+  
+  // Multi-char operators
   PIPE: '|>',
   ARROW: '=>',
   SPREAD: '...',
   DOT: '.',
   DOTDOT: '..',
-  FLOAT: 'FLOAT',
-  STRING: 'STRING',
-  FSTRING: 'FSTRING',
-  IDENT: 'IDENT',
 
   // Operators
   ASSIGN: '=',
@@ -98,6 +100,7 @@ const KEYWORDS = {
   try: TokenType.TRY,
   catch: TokenType.CATCH,
   throw: TokenType.THROW,
+  null: TokenType.NULL,
   in: TokenType.IN,
 };
 
