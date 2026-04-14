@@ -353,6 +353,41 @@ const builtins = new Map([
     }
     return new MonkeyArray(result);
   })],
+  ['zip_with', new MonkeyBuiltin((...args) => {
+    if (args.length !== 3) return newError('zip_with: expected 3 arguments (arr1, arr2, fn)');
+    if (!(args[0] instanceof MonkeyArray) || !(args[1] instanceof MonkeyArray))
+      return newError('zip_with: first two arguments must be arrays');
+    const len = Math.min(args[0].elements.length, args[1].elements.length);
+    const result = [];
+    for (let i = 0; i < len; i++) {
+      const val = applyFunction(args[2], [args[0].elements[i], args[1].elements[i]]);
+      if (isError(val)) return val;
+      result.push(val);
+    }
+    return new MonkeyArray(result);
+  })],
+  ['flat_map', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError('flat_map: expected 2 arguments (array, fn)');
+    if (!(args[0] instanceof MonkeyArray)) return newError('flat_map: first argument must be an array');
+    const result = [];
+    for (const elem of args[0].elements) {
+      const val = applyFunction(args[1], [elem]);
+      if (isError(val)) return val;
+      if (val instanceof MonkeyArray) result.push(...val.elements);
+      else result.push(val);
+    }
+    return new MonkeyArray(result);
+  })],
+  ['chunk', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError('chunk: expected 2 arguments (array, size)');
+    if (!(args[0] instanceof MonkeyArray)) return newError('chunk: first argument must be an array');
+    const size = args[1].value;
+    const result = [];
+    for (let i = 0; i < args[0].elements.length; i += size) {
+      result.push(new MonkeyArray(args[0].elements.slice(i, i + size)));
+    }
+    return new MonkeyArray(result);
+  })],
   ['min', new MonkeyBuiltin((...args) => {
     if (args.length < 2) return newError('min: expected at least 2 arguments');
     let result = args[0].value;
