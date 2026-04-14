@@ -1771,12 +1771,17 @@ export class WasmCompiler {
   // Check if a function literal has free variables (references to non-param, non-global names)
   _hasFreeVariables(funcLit, params, topLevelFuncNames = new Set()) {
     let hasFree = false;
+    const locals = new Set(params); // Track locally-defined names
     const walk = (node) => {
       if (!node || hasFree) return;
       if (node instanceof ast.FunctionLiteral) return; // Don't walk into nested functions
+      // Track let bindings as local
+      if (node instanceof ast.LetStatement && node.name) {
+        locals.add(node.name.value);
+      }
       if (node instanceof ast.Identifier) {
         const name = node.value;
-        if (!params.has(name) && !topLevelFuncNames.has(name)) {
+        if (!locals.has(name) && !topLevelFuncNames.has(name)) {
           const binding = this.globalScope.resolve(name);
           if (!binding) hasFree = true;
         }
