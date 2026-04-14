@@ -593,7 +593,7 @@ export class Parser {
 
   parseFunctionLiteral() {    const token = this.curToken;
     if (!this.expectPeek(TokenType.LPAREN)) return null;
-    const { params: parameters, restParam } = this.parseFunctionParameters();
+    const { params: parameters, defaults, restParam } = this.parseFunctionParameters();
     
     // Arrow function: fn(x) => expr
     if (this.peekTokenIs(TokenType.ARROW)) {
@@ -604,6 +604,7 @@ export class Parser {
       const body = new ast.BlockStatement(token, [returnStmt]);
       const fn = new ast.FunctionLiteral(token, parameters, body);
       fn.restParam = restParam;
+      fn.defaults = defaults;
       return fn;
     }
     
@@ -611,15 +612,17 @@ export class Parser {
     const body = this.parseBlockStatement();
     const fn = new ast.FunctionLiteral(token, parameters, body);
     fn.restParam = restParam;
+    fn.defaults = defaults;
     return fn;
   }
 
   parseFunctionParameters() {
     const params = [];
+    const defaults = [];
     let restParam = null;
     if (this.peekTokenIs(TokenType.RPAREN)) {
       this.nextToken();
-      return { params, restParam };
+      return { params, defaults, restParam };
     }
     this.nextToken();
     if (this.curTokenIs(TokenType.SPREAD)) {
@@ -627,6 +630,13 @@ export class Parser {
       restParam = new ast.Identifier(this.curToken, this.curToken.literal);
     } else {
       params.push(new ast.Identifier(this.curToken, this.curToken.literal));
+      if (this.peekTokenIs(TokenType.ASSIGN)) {
+        this.nextToken(); // =
+        this.nextToken();
+        defaults.push(this.parseExpression(Precedence.LOWEST));
+      } else {
+        defaults.push(null);
+      }
     }
     while (this.peekTokenIs(TokenType.COMMA)) {
       this.nextToken();
@@ -636,10 +646,17 @@ export class Parser {
         restParam = new ast.Identifier(this.curToken, this.curToken.literal);
       } else {
         params.push(new ast.Identifier(this.curToken, this.curToken.literal));
+        if (this.peekTokenIs(TokenType.ASSIGN)) {
+          this.nextToken(); // =
+          this.nextToken();
+          defaults.push(this.parseExpression(Precedence.LOWEST));
+        } else {
+          defaults.push(null);
+        }
       }
     }
     if (!this.expectPeek(TokenType.RPAREN)) return null;
-    return { params, restParam };
+    return { params, defaults, restParam };
   }
 
   parseCallExpression(fn) {

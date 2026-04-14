@@ -592,6 +592,7 @@ export function monkeyEval(node, env) {
   if (node instanceof AST.FunctionLiteral) {
     const fn = new MonkeyFunction(node.parameters, node.body, env);
     fn.restParam = node.restParam?.value || null;
+    fn.defaults = node.defaults || [];
     return fn;
   }
 
@@ -884,7 +885,15 @@ function applyFunction(fn, args) {
   if (fn instanceof MonkeyFunction) {
     const extendedEnv = new Environment(fn.env);
     for (let i = 0; i < fn.parameters.length; i++) {
-      extendedEnv.set(fn.parameters[i].value, args[i]);
+      if (i < args.length) {
+        extendedEnv.set(fn.parameters[i].value, args[i]);
+      } else if (fn.defaults && fn.defaults[i]) {
+        // Evaluate default in the function's closure environment
+        const defaultVal = monkeyEval(fn.defaults[i], extendedEnv);
+        extendedEnv.set(fn.parameters[i].value, defaultVal);
+      } else {
+        extendedEnv.set(fn.parameters[i].value, NULL);
+      }
     }
     // Rest parameter: collect remaining args into array
     if (fn.restParam) {
