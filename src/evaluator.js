@@ -388,6 +388,31 @@ const builtins = new Map([
     }
     return new MonkeyArray(result);
   })],
+  ['sum', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError('sum: expected 1 argument (array)');
+    if (!(args[0] instanceof MonkeyArray)) return newError('sum: argument must be an array');
+    let total = 0;
+    for (const elem of args[0].elements) total += elem.value;
+    return Number.isInteger(total) ? new MonkeyInteger(total) : new MonkeyFloat(total);
+  })],
+  ['product', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError('product: expected 1 argument (array)');
+    if (!(args[0] instanceof MonkeyArray)) return newError('product: argument must be an array');
+    let total = 1;
+    for (const elem of args[0].elements) total *= elem.value;
+    return Number.isInteger(total) ? new MonkeyInteger(total) : new MonkeyFloat(total);
+  })],
+  ['count', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError('count: expected 2 arguments (array, fn)');
+    if (!(args[0] instanceof MonkeyArray)) return newError('count: first argument must be an array');
+    let n = 0;
+    for (const elem of args[0].elements) {
+      const r = applyFunction(args[1], [elem]);
+      if (isError(r)) return r;
+      if (isTruthy(r)) n++;
+    }
+    return new MonkeyInteger(n);
+  })],
   ['min', new MonkeyBuiltin((...args) => {
     if (args.length < 2) return newError('min: expected at least 2 arguments');
     let result = args[0].value;
