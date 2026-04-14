@@ -153,6 +153,17 @@ export class Lexer {
         this.readChar();
       }
     }
+    // Check for scientific notation (e.g., 1e10, 1.5e-3)
+    if (this.ch === 'e' || this.ch === 'E') {
+      isFloat = true;
+      this.readChar(); // consume 'e'/'E'
+      if (this.ch === '+' || this.ch === '-') {
+        this.readChar(); // consume sign
+      }
+      while (this.ch && isDigit(this.ch)) {
+        this.readChar();
+      }
+    }
     return { value: this.input.slice(start, this.position), isFloat };
   }
 
