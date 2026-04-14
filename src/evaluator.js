@@ -314,6 +314,19 @@ const builtins = new Map([
     }
     return FALSE;
   })],
+  ['flat', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError(`wrong number of arguments to flat. got=${args.length}, want=1`);
+    if (!(args[0] instanceof MonkeyArray)) return newError(`argument to flat must be ARRAY`);
+    const result = [];
+    for (const el of args[0].elements) {
+      if (el instanceof MonkeyArray) {
+        result.push(...el.elements);
+      } else {
+        result.push(el);
+      }
+    }
+    return new MonkeyArray(result);
+  })],
   // import(module_name) — loads a standard library module
   ['import', new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return newError(`wrong number of arguments to import. got=${args.length}, want=1`);
