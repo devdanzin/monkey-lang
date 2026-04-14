@@ -459,6 +459,19 @@ const builtins = new Map([
     if (args.length !== 1) return newError('identity: expected 1 argument');
     return args[0];
   })],
+  ['memoize', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError('memoize: expected 1 argument (function)');
+    const fn = args[0];
+    const cache = new Map();
+    return new MonkeyBuiltin((...callArgs) => {
+      const key = callArgs.map(a => a.inspect()).join(',');
+      if (cache.has(key)) return cache.get(key);
+      const result = applyFunction(fn, callArgs);
+      if (isError(result)) return result;
+      cache.set(key, result);
+      return result;
+    });
+  })],
   ['min', new MonkeyBuiltin((...args) => {
     if (args.length < 2) return newError('min: expected at least 2 arguments');
     let result = args[0].value;
