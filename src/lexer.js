@@ -10,6 +10,10 @@ export const TokenType = {
 
   // Operators
   ASSIGN: '=',
+  PLUS_ASSIGN: '+=',
+  MINUS_ASSIGN: '-=',
+  ASTERISK_ASSIGN: '*=',
+  SLASH_ASSIGN: '/=',
   PLUS: '+',
   MINUS: '-',
   BANG: '!',
@@ -105,10 +109,6 @@ export class Lexer {
   }
 
   readChar() {
-    this.ch = this.readPosition >= this.input.length
-      ? null
-      : this.input[this.readPosition];
-    this.position = this.readPosition;
     this.readPosition++;
   }
 

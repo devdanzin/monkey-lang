@@ -166,6 +166,23 @@ export class Parser {
     const token = this.curToken;
     if (!this.expectPeek(TokenType.IDENT)) return null;
     const name = new ast.Identifier(this.curToken, this.curToken.literal);
+    
+    // Handle compound assignment: +=, -=, *=, /=
+    let op = null;
+    if (this.peekTokenIs(TokenType.PLUS_ASSIGN)) { op = '+'; }
+    else if (this.peekTokenIs(TokenType.MINUS_ASSIGN)) { op = '-'; }
+    else if (this.peekTokenIs(TokenType.ASTERISK_ASSIGN)) { op = '*'; }
+    else if (this.peekTokenIs(TokenType.SLASH_ASSIGN)) { op = '/'; }
+    
+    if (op) {
+      this.nextToken(); // consume +=/-=/etc
+      this.nextToken();
+      const right = this.parseExpression(Precedence.LOWEST);
+      // Desugar: set x += 5 → set x = x + 5
+      const value = new ast.InfixExpression(this.curToken, name, op, right);
+      return new ast.SetStatement(token, name, value);
+    }
+    
     if (!this.expectPeek(TokenType.ASSIGN)) return null;
     this.nextToken();
     const value = this.parseExpression(Precedence.LOWEST);
