@@ -606,6 +606,25 @@ export function monkeyEval(node, env) {
     if (elements.length === 1 && isError(elements[0])) return elements[0];
     return new MonkeyArray(elements);
   }
+  if (node instanceof AST.ArrayComprehension) {
+    const iterable = monkeyEval(node.iterable, env);
+    if (isError(iterable)) return iterable;
+    if (!(iterable instanceof MonkeyArray)) return newError('comprehension requires array iterable');
+    const result = [];
+    for (const elem of iterable.elements) {
+      const innerEnv = new Environment(env);
+      innerEnv.set(node.variable.value, elem);
+      if (node.condition) {
+        const cond = monkeyEval(node.condition, innerEnv);
+        if (isError(cond)) return cond;
+        if (!isTruthy(cond)) continue;
+      }
+      const val = monkeyEval(node.body, innerEnv);
+      if (isError(val)) return val;
+      result.push(val);
+    }
+    return new MonkeyArray(result);
+  }
 
   if (node instanceof AST.IndexExpression) {
     const left = monkeyEval(node.left, env);

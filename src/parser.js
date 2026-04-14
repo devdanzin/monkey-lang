@@ -606,7 +606,51 @@ export class Parser {
 
   parseArrayLiteral() {
     const token = this.curToken;
-    const elements = this.parseExpressionList(TokenType.RBRACKET);
+    
+    // Check for empty array
+    if (this.peekTokenIs(TokenType.RBRACKET)) {
+      this.nextToken();
+      return new ast.ArrayLiteral(token, []);
+    }
+    
+    // Parse first expression
+    this.nextToken();
+    const firstExpr = this.parseExpression(Precedence.LOWEST);
+    
+    // Check for comprehension: [expr for x in iterable]
+    if (this.peekToken.literal === 'for') {
+      this.nextToken(); // consume 'for'
+      this.nextToken(); // variable name
+      const variable = new ast.Identifier(this.curToken, this.curToken.literal);
+      
+      if (this.peekToken.literal !== 'in') {
+        this.errors.push('expected "in" in array comprehension');
+        return null;
+      }
+      this.nextToken(); // consume 'in'
+      this.nextToken(); // start of iterable
+      const iterable = this.parseExpression(Precedence.LOWEST);
+      
+      // Optional: if condition
+      let condition = null;
+      if (this.peekToken.literal === 'if') {
+        this.nextToken(); // consume 'if'
+        this.nextToken();
+        condition = this.parseExpression(Precedence.LOWEST);
+      }
+      
+      if (!this.expectPeek(TokenType.RBRACKET)) return null;
+      return new ast.ArrayComprehension(token, firstExpr, variable, iterable, condition);
+    }
+    
+    // Normal array literal
+    const elements = [firstExpr];
+    while (this.peekTokenIs(TokenType.COMMA)) {
+      this.nextToken();
+      this.nextToken();
+      elements.push(this.parseExpression(Precedence.LOWEST));
+    }
+    if (!this.expectPeek(TokenType.RBRACKET)) return null;
     return new ast.ArrayLiteral(token, elements);
   }
 
