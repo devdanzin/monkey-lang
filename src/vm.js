@@ -356,6 +356,19 @@ const builtins = [
     if (args[0] === NULL) return TRUE;
     return FALSE;
   }),
+  // flatten (deep recursive)
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyArray)) return new MonkeyError('flatten: expected 1 array');
+    function flatDeep(arr) {
+      const result = [];
+      for (const el of arr.elements) {
+        if (el instanceof MonkeyArray) result.push(...flatDeep(el));
+        else result.push(el);
+      }
+      return result;
+    }
+    return new MonkeyArray(flatDeep(args[0]));
+  }),
   // keys (VM hash format: Map<key, value>)
   new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return new MonkeyError(`wrong number of arguments to keys. got=${args.length}, want=1`);
