@@ -1,6 +1,7 @@
 // Monkey Language Parser — Pratt (Top-Down Operator Precedence)
 
 import { TokenType } from './lexer.js';
+import { Lexer } from './lexer.js';
 import * as ast from './ast.js';
 
 const Precedence = {
@@ -50,6 +51,7 @@ export class Parser {
     this.registerPrefix(TokenType.IDENT, () => this.parseIdentifier());
     this.registerPrefix(TokenType.INT, () => this.parseIntegerLiteral());
     this.registerPrefix(TokenType.STRING, () => this.parseStringLiteral());
+    this.registerPrefix(TokenType.FSTRING, () => this.parseFString());
     this.registerPrefix(TokenType.TRUE, () => this.parseBooleanLiteral());
     this.registerPrefix(TokenType.FALSE, () => this.parseBooleanLiteral());
     this.registerPrefix(TokenType.BANG, () => this.parsePrefixExpression());
@@ -230,6 +232,38 @@ export class Parser {
 
   parseStringLiteral() {
     return new ast.StringLiteral(this.curToken, this.curToken.literal);
+  }
+
+  parseFString() {
+    const token = this.curToken;
+    const raw = token.literal;
+    const segments = [];
+    let i = 0;
+    let text = '';
+    while (i < raw.length) {
+      if (raw[i] === '{' && raw[i+1] !== '{') {
+        if (text) { segments.push({type: 'text', value: text}); text = ''; }
+        let depth = 1; let exprStr = ''; i++;
+        while (i < raw.length && depth > 0) {
+          if (raw[i] === '{') depth++;
+          else if (raw[i] === '}') { depth--; if (depth === 0) break; }
+          exprStr += raw[i]; i++;
+        }
+        i++; // skip closing }
+        // Parse the expression string
+        const subLexer = new Lexer(exprStr);
+        const subParser = new Parser(subLexer);
+        segments.push({type: 'expr', expr: subParser.parseExpression(Precedence.LOWEST)});
+      } else if (raw[i] === '{' && raw[i+1] === '{') {
+        text += '{'; i += 2; // escaped {
+      } else if (raw[i] === '}' && raw[i+1] === '}') {
+        text += '}'; i += 2; // escaped }
+      } else {
+        text += raw[i]; i++;
+      }
+    }
+    if (text) segments.push({type: 'text', value: text});
+    return new ast.FStringExpression(token, segments);
   }
 
   parseBooleanLiteral() {

@@ -5,6 +5,7 @@ export const TokenType = {
   // Literals
   INT: 'INT',
   STRING: 'STRING',
+  FSTRING: 'FSTRING',
   IDENT: 'IDENT',
 
   // Operators
@@ -237,6 +238,10 @@ export class Lexer {
       case null:
         return new Token(TokenType.EOF, '');
       default:
+        if (this.ch === 'f' && this.peekChar() === '"') {
+          this.readChar(); // skip 'f', now at '"'
+          return new Token(TokenType.FSTRING, this.readString());
+        }
         if (isLetter(this.ch)) {
           const ident = this.readIdentifier();
           const type = KEYWORDS[ident] || TokenType.IDENT;

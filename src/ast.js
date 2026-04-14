@@ -294,3 +294,12 @@ export class ForInExpression {
   tokenLiteral() { return this.token.literal; }
   toString() { return `for (${this.ident} in ${this.iterable}) ${this.body}`; }
 }
+
+export class FStringExpression {
+  constructor(token, segments) {
+    this.token = token;
+    this.segments = segments; // [{type: 'text', value: '...'}, {type: 'expr', expr: AST}]
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return `f"..."`; }
+}
