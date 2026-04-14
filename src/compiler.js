@@ -350,8 +350,118 @@ export class Compiler {
       }
       this.loopStack.pop();
     } else if (node instanceof AST.ForInExpression) {
-      // TODO: implement in next task
+      // Compile for-in as a counter-based loop
+      // for (x in iter) { body } =>
+      //   __iter = iter; __idx = 0;
+      //   while (__idx < len(__iter)) { x = __iter[__idx]; body; __idx++ }
+      
+      // 1. Store iterable in hidden local
+      this.compile(node.iterable);
+      const iterSym = this.symbolTable.define('__forin_iter__');
+      if (iterSym.scope === SymbolScopes.GLOBAL) {
+        this.emit(Opcodes.OpSetGlobal, iterSym.index);
+      } else {
+        this.emit(Opcodes.OpSetLocal, iterSym.index);
+      }
+      
+      // 2. Init counter to 0
+      this.emit(Opcodes.OpConstant, this.addConstant(new MonkeyInteger(0)));
+      const idxSym = this.symbolTable.define('__forin_idx__');
+      if (idxSym.scope === SymbolScopes.GLOBAL) {
+        this.emit(Opcodes.OpSetGlobal, idxSym.index);
+      } else {
+        this.emit(Opcodes.OpSetLocal, idxSym.index);
+      }
+      
+      // 3. Define iteration variable
+      const varName = typeof node.variable === 'string' ? node.variable : node.variable.value;
+      this.emit(Opcodes.OpNull); // placeholder value
+      const varSym = this.symbolTable.define(varName);
+      if (varSym.scope === SymbolScopes.GLOBAL) {
+        this.emit(Opcodes.OpSetGlobal, varSym.index);
+      } else {
+        this.emit(Opcodes.OpSetLocal, varSym.index);
+      }
+      
+      // 4. Loop start
+      const loopStart = this.currentInstructions().length;
+      const loopCtx = { breakJumps: [], continueTarget: -1, continueJumps: [] };
+      this.loopStack.push(loopCtx);
+      
+      // 5. Condition: idx < len(iter) → compile as len(iter), idx, OpGreaterThan
+      // Push len(iter) first (will be "left" = second-popped)
+      this.emit(Opcodes.OpGetBuiltin, builtinNames.indexOf('len'));
+      if (iterSym.scope === SymbolScopes.GLOBAL) {
+        this.emit(Opcodes.OpGetGlobal, iterSym.index);
+      } else {
+        this.emit(Opcodes.OpGetLocal, iterSym.index);
+      }
+      this.emit(Opcodes.OpCall, 1); // len(iter) on stack
+      // Push idx (will be "right" = first-popped)
+      if (idxSym.scope === SymbolScopes.GLOBAL) {
+        this.emit(Opcodes.OpGetGlobal, idxSym.index);
+      } else {
+        this.emit(Opcodes.OpGetLocal, idxSym.index);
+      }
+      this.emit(Opcodes.OpGreaterThan); // len(iter) > idx = idx < len(iter)
+      const exitJump = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+      
+      // 6. Set x = iter[idx]
+      if (iterSym.scope === SymbolScopes.GLOBAL) {
+        this.emit(Opcodes.OpGetGlobal, iterSym.index);
+      } else {
+        this.emit(Opcodes.OpGetLocal, iterSym.index);
+      }
+      if (idxSym.scope === SymbolScopes.GLOBAL) {
+        this.emit(Opcodes.OpGetGlobal, idxSym.index);
+      } else {
+        this.emit(Opcodes.OpGetLocal, idxSym.index);
+      }
+      this.emit(Opcodes.OpIndex); // iter[idx]
+      if (varSym.scope === SymbolScopes.GLOBAL) {
+        this.emit(Opcodes.OpSetGlobal, varSym.index);
+      } else {
+        this.emit(Opcodes.OpSetLocal, varSym.index);
+      }
+      
+      // 7. Compile body
+      this.compile(node.body);
+      if (this.lastInstructionIs(Opcodes.OpPop)) {
+        this.removeLastPop();
+      }
+      
+      // 8. Continue target: increment idx
+      loopCtx.continueTarget = this.currentInstructions().length;
+      for (const cj of loopCtx.continueJumps) {
+        this.changeOperand(cj, loopCtx.continueTarget);
+      }
+      
+      // idx = idx + 1
+      if (idxSym.scope === SymbolScopes.GLOBAL) {
+        this.emit(Opcodes.OpGetGlobal, idxSym.index);
+      } else {
+        this.emit(Opcodes.OpGetLocal, idxSym.index);
+      }
+      this.emit(Opcodes.OpConstant, this.addConstant(new MonkeyInteger(1)));
+      this.emit(Opcodes.OpAdd);
+      if (idxSym.scope === SymbolScopes.GLOBAL) {
+        this.emit(Opcodes.OpSetGlobal, idxSym.index);
+      } else {
+        this.emit(Opcodes.OpSetLocal, idxSym.index);
+      }
+      
+      // 9. Jump back to condition
+      this.emit(Opcodes.OpJump, loopStart);
+      
+      // 10. Exit: push null as loop value
+      this.changeOperand(exitJump, this.currentInstructions().length);
       this.emit(Opcodes.OpNull);
+      
+      // Patch break jumps
+      for (const bj of loopCtx.breakJumps) {
+        this.changeOperand(bj, this.currentInstructions().length);
+      }
+      this.loopStack.pop();
     } else if (node instanceof AST.BreakStatement) {
       if (this.loopStack.length === 0) {
         throw new Error('break outside of loop');
