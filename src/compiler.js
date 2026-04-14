@@ -586,6 +586,8 @@ export class Compiler {
         this.emit(Opcodes.OpSetGlobal, sym.index);
       } else if (sym.scope === SymbolScopes.LOCAL) {
         this.emit(Opcodes.OpSetLocal, sym.index);
+      } else if (sym.scope === SymbolScopes.FREE) {
+        this.emit(Opcodes.OpSetFree, sym.index);
       } else {
         throw new Error(`cannot set ${sym.scope} variable: ${node.name.value}`);
       }

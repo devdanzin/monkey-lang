@@ -636,6 +636,13 @@ export class VM {
           break;
         }
 
+        case Opcodes.OpSetFree: {
+          const freeIndex = instructions[ip + 1];
+          this.currentFrame().ip += 1;
+          this.currentFrame().closure.free[freeIndex] = this.pop();
+          break;
+        }
+
         case Opcodes.OpTailCall: {
           const numArgs = instructions[ip + 1];
           this.currentFrame().ip += 1;
