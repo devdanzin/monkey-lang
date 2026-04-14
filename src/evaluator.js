@@ -267,6 +267,36 @@ const builtins = new Map([
     if (!(args[0] instanceof MonkeyArray)) return newError('enumerate: argument must be an array');
     return new MonkeyArray(args[0].elements.map((elem, i) => new MonkeyArray([new MonkeyInteger(i), elem])));
   })],
+  ['any', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError('any: expected 2 arguments (array, fn)');
+    if (!(args[0] instanceof MonkeyArray)) return newError('any: first argument must be an array');
+    for (const elem of args[0].elements) {
+      const result = applyFunction(args[1], [elem]);
+      if (isError(result)) return result;
+      if (isTruthy(result)) return TRUE;
+    }
+    return FALSE;
+  })],
+  ['all', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError('all: expected 2 arguments (array, fn)');
+    if (!(args[0] instanceof MonkeyArray)) return newError('all: first argument must be an array');
+    for (const elem of args[0].elements) {
+      const result = applyFunction(args[1], [elem]);
+      if (isError(result)) return result;
+      if (!isTruthy(result)) return FALSE;
+    }
+    return TRUE;
+  })],
+  ['find', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError('find: expected 2 arguments (array, fn)');
+    if (!(args[0] instanceof MonkeyArray)) return newError('find: first argument must be an array');
+    for (const elem of args[0].elements) {
+      const result = applyFunction(args[1], [elem]);
+      if (isError(result)) return result;
+      if (isTruthy(result)) return elem;
+    }
+    return NULL;
+  })],
   ['min', new MonkeyBuiltin((...args) => {
     if (args.length < 2) return newError('min: expected at least 2 arguments');
     let result = args[0].value;
