@@ -170,6 +170,50 @@ export class Parser {
 
   parseConstStatement() {
     const token = this.curToken;
+    
+    // Reuse let destructuring with isConst flag
+    // Array destructuring: const [a, b, c] = expr
+    if (this.peekTokenIs(TokenType.LBRACKET)) {
+      this.nextToken(); // consume [
+      const names = [];
+      if (!this.curTokenIs(TokenType.RBRACKET)) {
+        this.nextToken();
+        names.push(new ast.Identifier(this.curToken, this.curToken.literal));
+        while (this.peekTokenIs(TokenType.COMMA)) {
+          this.nextToken();
+          this.nextToken();
+          names.push(new ast.Identifier(this.curToken, this.curToken.literal));
+        }
+      }
+      if (!this.expectPeek(TokenType.RBRACKET)) return null;
+      if (!this.expectPeek(TokenType.ASSIGN)) return null;
+      this.nextToken();
+      const value = this.parseExpression(Precedence.LOWEST);
+      if (this.peekTokenIs(TokenType.SEMICOLON)) this.nextToken();
+      return new ast.DestructureLetStatement(token, names, value, true);
+    }
+    
+    // Hash destructuring: const {a, b} = expr
+    if (this.peekTokenIs(TokenType.LBRACE)) {
+      this.nextToken();
+      const names = [];
+      if (!this.curTokenIs(TokenType.RBRACE)) {
+        this.nextToken();
+        names.push(new ast.Identifier(this.curToken, this.curToken.literal));
+        while (this.peekTokenIs(TokenType.COMMA)) {
+          this.nextToken();
+          this.nextToken();
+          names.push(new ast.Identifier(this.curToken, this.curToken.literal));
+        }
+      }
+      if (!this.expectPeek(TokenType.RBRACE)) return null;
+      if (!this.expectPeek(TokenType.ASSIGN)) return null;
+      this.nextToken();
+      const value = this.parseExpression(Precedence.LOWEST);
+      if (this.peekTokenIs(TokenType.SEMICOLON)) this.nextToken();
+      return new ast.DestructureHashLetStatement(token, names, value, true);
+    }
+    
     if (!this.expectPeek(TokenType.IDENT)) return null;
     const name = new ast.Identifier(this.curToken, this.curToken.literal);
     if (!this.expectPeek(TokenType.ASSIGN)) return null;

@@ -183,6 +183,25 @@ const builtins = new Map([
       return newError('replace: all arguments must be STRING');
     return new MonkeyString(args[0].value.split(args[1].value).join(args[2].value));
   })],
+  ['starts_with', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError('wrong number of arguments');
+    return nativeBoolToBooleanObject(String(args[0].value).startsWith(String(args[1].value)));
+  })],
+  ['ends_with', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError('wrong number of arguments');
+    return nativeBoolToBooleanObject(String(args[0].value).endsWith(String(args[1].value)));
+  })],
+  ['slice', new MonkeyBuiltin((...args) => {
+    if (args.length < 2 || args.length > 3) return newError('wrong number of arguments');
+    const s = String(args[0].value);
+    const start = args[1].value;
+    const end = args.length === 3 ? args[2].value : undefined;
+    return new MonkeyString(s.slice(start, end));
+  })],
+  ['chars', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError('wrong number of arguments');
+    return new MonkeyArray(String(args[0].value).split('').map(c => new MonkeyString(c)));
+  })],
   ['reverse', new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return newError(`wrong number of arguments to reverse. got=${args.length}, want=1`);
     if (args[0] instanceof MonkeyArray) return new MonkeyArray([...args[0].elements].reverse());
@@ -190,9 +209,38 @@ const builtins = new Map([
     return newError(`reverse: unsupported type ${args[0].type()}`);
   })],
   ['abs', new MonkeyBuiltin((...args) => {
-    if (args.length !== 1 || !(args[0] instanceof MonkeyInteger)) return newError('abs: expected 1 integer');
-    return new MonkeyInteger(Math.abs(args[0].value));
+    if (args.length !== 1) return newError('abs: expected 1 argument');
+    const v = args[0].value;
+    return Number.isInteger(Math.abs(v)) ? new MonkeyInteger(Math.abs(v)) : new MonkeyFloat(Math.abs(v));
   })],
+  ['sqrt', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError('sqrt: expected 1 argument');
+    const v = Math.sqrt(args[0].value);
+    return Number.isInteger(v) ? new MonkeyInteger(v) : new MonkeyFloat(v);
+  })],
+  ['pow', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError('pow: expected 2 arguments');
+    const v = Math.pow(args[0].value, args[1].value);
+    return Number.isInteger(v) ? new MonkeyInteger(v) : new MonkeyFloat(v);
+  })],
+  ['sin', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError('sin: expected 1 argument');
+    return new MonkeyFloat(Math.sin(args[0].value));
+  })],
+  ['cos', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError('cos: expected 1 argument');
+    return new MonkeyFloat(Math.cos(args[0].value));
+  })],
+  ['floor', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError('floor: expected 1 argument');
+    return new MonkeyInteger(Math.floor(args[0].value));
+  })],
+  ['ceil', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError('ceil: expected 1 argument');
+    return new MonkeyInteger(Math.ceil(args[0].value));
+  })],
+  ['PI', new MonkeyFloat(Math.PI)],
+  ['E', new MonkeyFloat(Math.E)],
   ['min', new MonkeyBuiltin((...args) => {
     if (args.length < 2) return newError('min: expected at least 2 arguments');
     let result = args[0].value;
