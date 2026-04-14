@@ -297,6 +297,28 @@ const builtins = new Map([
     }
     return NULL;
   })],
+  ['take', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError('take: expected 2 arguments (array, n)');
+    if (!(args[0] instanceof MonkeyArray)) return newError('take: first argument must be an array');
+    return new MonkeyArray(args[0].elements.slice(0, args[1].value));
+  })],
+  ['drop', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError('drop: expected 2 arguments (array, n)');
+    if (!(args[0] instanceof MonkeyArray)) return newError('drop: first argument must be an array');
+    return new MonkeyArray(args[0].elements.slice(args[1].value));
+  })],
+  ['take_while', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError('take_while: expected 2 arguments (array, fn)');
+    if (!(args[0] instanceof MonkeyArray)) return newError('take_while: first argument must be an array');
+    const result = [];
+    for (const elem of args[0].elements) {
+      const r = applyFunction(args[1], [elem]);
+      if (isError(r)) return r;
+      if (!isTruthy(r)) break;
+      result.push(elem);
+    }
+    return new MonkeyArray(result);
+  })],
   ['min', new MonkeyBuiltin((...args) => {
     if (args.length < 2) return newError('min: expected at least 2 arguments');
     let result = args[0].value;
