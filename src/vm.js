@@ -321,6 +321,17 @@ const builtins = [
     if (args.length !== 1 || !(args[0] instanceof MonkeyArray)) return new MonkeyError('compact: expected 1 array');
     return new MonkeyArray(args[0].elements.filter(el => el !== NULL));
   }),
+  // unique (deduplicate)
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1 || !(args[0] instanceof MonkeyArray)) return new MonkeyError('unique: expected 1 array');
+    const seen = new Set();
+    const result = [];
+    for (const el of args[0].elements) {
+      const key = el.inspect();
+      if (!seen.has(key)) { seen.add(key); result.push(el); }
+    }
+    return new MonkeyArray(result);
+  }),
   // keys (VM hash format: Map<key, value>)
   new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return new MonkeyError(`wrong number of arguments to keys. got=${args.length}, want=1`);
