@@ -564,6 +564,18 @@ export class Parser {
   parseFunctionLiteral() {    const token = this.curToken;
     if (!this.expectPeek(TokenType.LPAREN)) return null;
     const parameters = this.parseFunctionParameters();
+    
+    // Arrow function: fn(x) => expr
+    if (this.peekTokenIs(TokenType.ARROW)) {
+      this.nextToken(); // consume =>
+      this.nextToken(); // move to expression
+      const expr = this.parseExpression(Precedence.LOWEST);
+      // Wrap in a return statement + block
+      const returnStmt = new ast.ReturnStatement(token, expr);
+      const body = new ast.BlockStatement(token, [returnStmt]);
+      return new ast.FunctionLiteral(token, parameters, body);
+    }
+    
     if (!this.expectPeek(TokenType.LBRACE)) return null;
     const body = this.parseBlockStatement();
     return new ast.FunctionLiteral(token, parameters, body);

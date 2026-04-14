@@ -6,6 +6,7 @@ export const TokenType = {
   INT: 'INT',
   FSTRING: 'FSTRING',
   PIPE: '|>',
+  ARROW: '=>',
   DOTDOT: '..',
   FLOAT: 'FLOAT',
   STRING: 'STRING',
@@ -218,6 +219,9 @@ export class Lexer {
         if (this.peekChar() === '=') {
           this.readChar();
           tok = new Token(TokenType.EQ, '==');
+        } else if (this.peekChar() === '>') {
+          this.readChar();
+          tok = new Token(TokenType.ARROW, '=>');
         } else {
           tok = new Token(TokenType.ASSIGN, '=');
         }
