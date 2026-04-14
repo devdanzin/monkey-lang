@@ -314,6 +314,24 @@ export function monkeyEval(node, env) {
   if (node instanceof AST.DoWhileExpression) return evalDoWhileExpression(node, env);
   if (node instanceof AST.BreakStatement) return BREAK_SIGNAL;
   if (node instanceof AST.ContinueStatement) return CONTINUE_SIGNAL;
+  if (node instanceof AST.SwitchExpression) {
+    const switchVal = monkeyEval(node.value, env);
+    if (isError(switchVal)) return switchVal;
+    for (const c of node.cases) {
+      const caseVal = monkeyEval(c.value, env);
+      if (isError(caseVal)) return caseVal;
+      // Value comparison
+      let match = false;
+      if (switchVal.value !== undefined && caseVal.value !== undefined) {
+        match = switchVal.value === caseVal.value;
+      } else {
+        match = switchVal === caseVal;
+      }
+      if (match) return monkeyEval(c.body, env);
+    }
+    if (node.defaultCase) return monkeyEval(node.defaultCase, env);
+    return NULL;
+  }
   if (node instanceof AST.SliceExpression) {
     const left = monkeyEval(node.left, env);
     if (isError(left)) return left;

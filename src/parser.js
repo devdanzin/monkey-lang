@@ -58,6 +58,7 @@ export class Parser {
     this.registerPrefix(TokenType.DO, () => this.parseDoWhileExpression());
     this.registerPrefix(TokenType.BREAK, () => new ast.BreakStatement(this.curToken));
     this.registerPrefix(TokenType.CONTINUE, () => new ast.ContinueStatement(this.curToken));
+    this.registerPrefix(TokenType.SWITCH, () => this.parseSwitchExpression());
     this.registerPrefix(TokenType.FOR, () => this.parseForExpression());
     this.registerPrefix(TokenType.FUNCTION, () => this.parseFunctionLiteral());
     this.registerPrefix(TokenType.LBRACKET, () => this.parseArrayLiteral());
@@ -278,6 +279,37 @@ export class Parser {
     const condition = this.parseExpression(Precedence.LOWEST);
     if (!this.expectPeek(TokenType.RPAREN)) return null;
     return new ast.DoWhileExpression(token, body, condition);
+  }
+
+  parseSwitchExpression() {
+    const token = this.curToken;
+    if (!this.expectPeek(TokenType.LPAREN)) return null;
+    this.nextToken();
+    const value = this.parseExpression(Precedence.LOWEST);
+    if (!this.expectPeek(TokenType.RPAREN)) return null;
+    if (!this.expectPeek(TokenType.LBRACE)) return null;
+    
+    const cases = [];
+    let defaultCase = null;
+    
+    while (!this.peekTokenIs(TokenType.RBRACE)) {
+      this.nextToken();
+      if (this.curTokenIs(TokenType.CASE)) {
+        this.nextToken();
+        const caseValue = this.parseExpression(Precedence.LOWEST);
+        if (!this.expectPeek(TokenType.COLON)) return null;
+        if (!this.expectPeek(TokenType.LBRACE)) return null;
+        const body = this.parseBlockStatement();
+        cases.push({ value: caseValue, body });
+      } else if (this.curTokenIs(TokenType.DEFAULT)) {
+        if (!this.expectPeek(TokenType.COLON)) return null;
+        if (!this.expectPeek(TokenType.LBRACE)) return null;
+        defaultCase = this.parseBlockStatement();
+      }
+    }
+    
+    if (!this.expectPeek(TokenType.RBRACE)) return null;
+    return new ast.SwitchExpression(token, value, cases, defaultCase);
   }
 
   parseForExpression() {

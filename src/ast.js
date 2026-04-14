@@ -241,3 +241,14 @@ export class ForExpression {
   tokenLiteral() { return this.token.literal; }
   toString() { return `for (${this.init}; ${this.condition}; ${this.update}) ${this.body}`; }
 }
+
+export class SwitchExpression {
+  constructor(token, value, cases, defaultCase) {
+    this.token = token;
+    this.value = value;
+    this.cases = cases;
+    this.defaultCase = defaultCase;
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return `switch (${this.value}) { ... }`; }
+}

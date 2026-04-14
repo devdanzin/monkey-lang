@@ -49,6 +49,9 @@ export const TokenType = {
   DO: 'DO',
   BREAK: 'BREAK',
   CONTINUE: 'CONTINUE',
+  SWITCH: 'SWITCH',
+  CASE: 'CASE',
+  DEFAULT: 'DEFAULT',
 
   // Special
   EOF: 'EOF',
@@ -69,6 +72,9 @@ const KEYWORDS = {
   do: TokenType.DO,
   break: TokenType.BREAK,
   continue: TokenType.CONTINUE,
+  switch: TokenType.SWITCH,
+  case: TokenType.CASE,
+  default: TokenType.DEFAULT,
 };
 
 export class Token {
