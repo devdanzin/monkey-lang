@@ -279,7 +279,7 @@ export class Compiler {
       return node;
     }
     if (node instanceof AST.FunctionLiteral) { node.body = Compiler.foldConstants(node.body); return node; }
-    if (node instanceof AST.CallExpression) { node.arguments = node.arguments.map(a => Compiler.foldConstants(a)); return node; }
+    if (node instanceof AST.CallExpression) { if (node.arguments) node.arguments = node.arguments.map(a => Compiler.foldConstants(a)); return node; }
     if (node instanceof AST.ArrayLiteral) { node.elements = node.elements.map(e => Compiler.foldConstants(e)); return node; }
     if (node instanceof AST.IndexExpression) { node.left = Compiler.foldConstants(node.left); node.index = Compiler.foldConstants(node.index); return node; }
     if (node instanceof AST.ForExpression) { node.init = Compiler.foldConstants(node.init); node.condition = Compiler.foldConstants(node.condition); node.update = Compiler.foldConstants(node.update); node.body = Compiler.foldConstants(node.body); return node; }
