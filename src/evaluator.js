@@ -241,6 +241,14 @@ const builtins = new Map([
   })],
   ['PI', new MonkeyFloat(Math.PI)],
   ['E', new MonkeyFloat(Math.E)],
+  ['merge', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError('merge: expected 2 arguments');
+    if (!(args[0] instanceof MonkeyHash) || !(args[1] instanceof MonkeyHash))
+      return newError('merge: both arguments must be hashes');
+    const pairs = new Map(args[0].pairs);
+    for (const [k, v] of args[1].pairs) pairs.set(k, v);
+    return new MonkeyHash(pairs);
+  })],
   ['min', new MonkeyBuiltin((...args) => {
     if (args.length < 2) return newError('min: expected at least 2 arguments');
     let result = args[0].value;
