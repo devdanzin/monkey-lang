@@ -454,6 +454,13 @@ function evalInfixExpression(op, left, right) {
     if (op === '>=') return nativeBoolToBooleanObject(left.value >= right.value);
     return newError(`unknown operator: ${left.type()} ${op} ${right.type()}`);
   }
+  // String * Integer = repeat
+  if (left.type() === OBJ.STRING && right.type() === OBJ.INTEGER && op === '*') {
+    return new MonkeyString(left.value.repeat(Math.max(0, right.value)));
+  }
+  if (left.type() === OBJ.INTEGER && right.type() === OBJ.STRING && op === '*') {
+    return new MonkeyString(right.value.repeat(Math.max(0, left.value)));
+  }
   if (op === '==') return nativeBoolToBooleanObject(left === right);
   if (op === '!=') return nativeBoolToBooleanObject(left !== right);
   if (left.type() !== right.type()) {

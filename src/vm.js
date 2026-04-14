@@ -529,6 +529,10 @@ export class VM {
       } else {
         throw new Error(`unknown string operator: ${op}`);
       }
+    } else if (left instanceof MonkeyString && right instanceof MonkeyInteger && op === Opcodes.OpMul) {
+      this.push(new MonkeyString(left.value.repeat(Math.max(0, right.value))));
+    } else if (left instanceof MonkeyInteger && right instanceof MonkeyString && op === Opcodes.OpMul) {
+      this.push(new MonkeyString(right.value.repeat(Math.max(0, left.value))));
     } else {
       throw new Error(`unsupported types for binary operation: ${left.type()} ${right.type()}`);
     }
