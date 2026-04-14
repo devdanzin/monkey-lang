@@ -283,13 +283,14 @@ export class Compiler {
       this.compile(node.body);
       if (this.lastInstructionIs(Opcodes.OpPop)) {
         this.removeLastPop();
+        // Body left a value — store in accumulator
+        if (resultSym.scope === SymbolScopes.GLOBAL) {
+          this.emit(Opcodes.OpSetGlobal, resultSym.index);
+        } else {
+          this.emit(Opcodes.OpSetLocal, resultSym.index);
+        }
       }
-      // Store body result
-      if (resultSym.scope === SymbolScopes.GLOBAL) {
-        this.emit(Opcodes.OpSetGlobal, resultSym.index);
-      } else {
-        this.emit(Opcodes.OpSetLocal, resultSym.index);
-      }
+      // If body's last stmt was set/let, no value on stack — skip store
       // Jump back to loop start
       this.emit(Opcodes.OpJump, loopStart);
       // Patch exit jump
@@ -321,12 +322,12 @@ export class Compiler {
       this.compile(node.body);
       if (this.lastInstructionIs(Opcodes.OpPop)) {
         this.removeLastPop();
-      }
-      // Store body result
-      if (resultSym.scope === SymbolScopes.GLOBAL) {
-        this.emit(Opcodes.OpSetGlobal, resultSym.index);
-      } else {
-        this.emit(Opcodes.OpSetLocal, resultSym.index);
+        // Body left a value — store in accumulator
+        if (resultSym.scope === SymbolScopes.GLOBAL) {
+          this.emit(Opcodes.OpSetGlobal, resultSym.index);
+        } else {
+          this.emit(Opcodes.OpSetLocal, resultSym.index);
+        }
       }
       // Continue target is the condition check
       loopCtx.continueTarget = this.currentInstructions().length;
@@ -376,12 +377,12 @@ export class Compiler {
       this.compile(node.body);
       if (this.lastInstructionIs(Opcodes.OpPop)) {
         this.removeLastPop();
-      }
-      // Store body result
-      if (resultSym.scope === SymbolScopes.GLOBAL) {
-        this.emit(Opcodes.OpSetGlobal, resultSym.index);
-      } else {
-        this.emit(Opcodes.OpSetLocal, resultSym.index);
+        // Body left a value — store in accumulator
+        if (resultSym.scope === SymbolScopes.GLOBAL) {
+          this.emit(Opcodes.OpSetGlobal, resultSym.index);
+        } else {
+          this.emit(Opcodes.OpSetLocal, resultSym.index);
+        }
       }
       // Continue jumps here (to update)
       loopCtx.continueTarget = this.currentInstructions().length;
@@ -494,12 +495,12 @@ export class Compiler {
       this.compile(node.body);
       if (this.lastInstructionIs(Opcodes.OpPop)) {
         this.removeLastPop();
-      }
-      // Store body result
-      if (forinResultSym.scope === SymbolScopes.GLOBAL) {
-        this.emit(Opcodes.OpSetGlobal, forinResultSym.index);
-      } else {
-        this.emit(Opcodes.OpSetLocal, forinResultSym.index);
+        // Body left a value — store in accumulator
+        if (forinResultSym.scope === SymbolScopes.GLOBAL) {
+          this.emit(Opcodes.OpSetGlobal, forinResultSym.index);
+        } else {
+          this.emit(Opcodes.OpSetLocal, forinResultSym.index);
+        }
       }
       
       // 8. Continue target: increment idx
