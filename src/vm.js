@@ -110,6 +110,17 @@ const builtins = [
     }
     return NULL;
   }),
+  // bool
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyError('bool: expected 1 argument');
+    const a = args[0];
+    if (a === NULL || a === FALSE) return FALSE;
+    if (a === TRUE) return TRUE;
+    if (a instanceof MonkeyInteger) return a.value !== 0 ? TRUE : FALSE;
+    if (a instanceof MonkeyString) return a.value.length > 0 ? TRUE : FALSE;
+    if (a instanceof MonkeyArray) return a.elements.length > 0 ? TRUE : FALSE;
+    return TRUE;
+  }),
   // format (string formatting)
   new MonkeyBuiltin((...args) => {
     if (args.length < 1) return new MonkeyError(`format requires at least 1 argument`);
