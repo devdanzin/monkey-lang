@@ -184,6 +184,34 @@ const builtins = [
     if (!(args[0] instanceof MonkeyString)) return new MonkeyError(`argument to lower must be STRING, got ${args[0].type()}`);
     return new MonkeyString(args[0].value.toLowerCase());
   }),
+  // contains
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return new MonkeyError(`wrong number of arguments to contains`);
+    if (args[0] instanceof MonkeyString && args[1] instanceof MonkeyString) {
+      return args[0].value.includes(args[1].value) ? TRUE : FALSE;
+    }
+    if (args[0] instanceof MonkeyArray) {
+      for (const el of args[0].elements) {
+        if (el.value !== undefined && args[1].value !== undefined && el.value === args[1].value) return TRUE;
+      }
+      return FALSE;
+    }
+    return new MonkeyError(`contains: unsupported types`);
+  }),
+  // indexOf
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return new MonkeyError(`wrong number of arguments to indexOf`);
+    if (args[0] instanceof MonkeyString && args[1] instanceof MonkeyString) {
+      return new MonkeyInteger(args[0].value.indexOf(args[1].value));
+    }
+    if (args[0] instanceof MonkeyArray) {
+      for (let i = 0; i < args[0].elements.length; i++) {
+        if (args[0].elements[i].value !== undefined && args[1].value !== undefined && args[0].elements[i].value === args[1].value) return new MonkeyInteger(i);
+      }
+      return new MonkeyInteger(-1);
+    }
+    return new MonkeyError(`indexOf: unsupported types`);
+  }),
   // keys (VM hash format: Map<key, value>)
   new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return new MonkeyError(`wrong number of arguments to keys. got=${args.length}, want=1`);
