@@ -44,10 +44,11 @@ export const SymbolScopes = {
  * Symbol: represents a named binding.
  */
 export class Symbol {
-  constructor(name, scope, index) {
+  constructor(name, scope, index, isConst = false) {
     this.name = name;
     this.scope = scope;
     this.index = index;
+    this.isConst = isConst;
   }
 }
 
@@ -62,9 +63,9 @@ export class SymbolTable {
     this.freeSymbols = [];
   }
 
-  define(name) {
+  define(name, isConst = false) {
     const scope = this.outer ? SymbolScopes.LOCAL : SymbolScopes.GLOBAL;
-    const sym = new Symbol(name, scope, this.numDefinitions);
+    const sym = new Symbol(name, scope, this.numDefinitions, isConst);
     this.store.set(name, sym);
     this.numDefinitions++;
     return sym;
@@ -315,7 +316,7 @@ export class Compiler {
         node.value.name = node.name.value;
       }
       this.compile(node.value);
-      const sym = this.symbolTable.define(node.name.value);
+      const sym = this.symbolTable.define(node.name.value, node.isConst || false);
       if (sym.scope === SymbolScopes.GLOBAL) {
         this.emit(Opcodes.OpSetGlobal, sym.index);
       } else {
@@ -325,6 +326,7 @@ export class Compiler {
       // Set mutates an existing variable
       const sym = this.symbolTable.resolve(node.name.value);
       if (!sym) throw new Error(`undefined variable: ${node.name.value}`);
+      if (sym.isConst) throw new Error(`Cannot reassign const binding '${node.name.value}'`);
       this.compile(node.value);
       if (sym.scope === SymbolScopes.GLOBAL) {
         this.emit(Opcodes.OpSetGlobal, sym.index);
