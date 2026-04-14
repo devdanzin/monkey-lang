@@ -302,6 +302,12 @@ export function monkeyEval(node, env) {
       if (isTruthy(left)) return left;
       return monkeyEval(node.right, env);
     }
+    if (node.operator === '??') {
+      const left = monkeyEval(node.left, env);
+      if (isError(left)) return left;
+      if (left !== NULL) return left;
+      return monkeyEval(node.right, env);
+    }
     const left = monkeyEval(node.left, env);
     if (isError(left)) return left;
     const right = monkeyEval(node.right, env);

@@ -20,6 +20,7 @@ const Precedence = {
 
 const TOKEN_PRECEDENCE = {
   [TokenType.QUESTION]: Precedence.TERNARY,
+  [TokenType.NULLISH]: Precedence.TERNARY,
   [TokenType.OR]: Precedence.LOGICAL_OR,
   [TokenType.AND]: Precedence.LOGICAL_AND,
   [TokenType.EQ]: Precedence.EQUALS,
@@ -78,7 +79,7 @@ export class Parser {
     for (const op of [TokenType.PLUS, TokenType.MINUS, TokenType.SLASH, TokenType.PERCENT,
       TokenType.ASTERISK, TokenType.EQ, TokenType.NOT_EQ,
       TokenType.LT, TokenType.GT, TokenType.LTE, TokenType.GTE,
-      TokenType.AND, TokenType.OR]) {
+      TokenType.AND, TokenType.OR, TokenType.NULLISH]) {
       this.registerInfix(op, (left) => this.parseInfixExpression(left));
     }
     
