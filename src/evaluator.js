@@ -59,9 +59,21 @@ const builtins = new Map([
     if (args.length !== 1) return newError(`wrong number of arguments. got=${args.length}, want=1`);
     const arg = args[0];
     if (arg instanceof MonkeyInteger) return arg;
+    if (arg instanceof MonkeyFloat) return new MonkeyInteger(Math.trunc(arg.value));
     if (arg instanceof MonkeyString) {
       const n = parseInt(arg.value, 10);
       return isNaN(n) ? NULL : new MonkeyInteger(n);
+    }
+    return NULL;
+  })],
+  ['float', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError(`wrong number of arguments. got=${args.length}, want=1`);
+    const arg = args[0];
+    if (arg instanceof MonkeyFloat) return arg;
+    if (arg instanceof MonkeyInteger) return new MonkeyFloat(arg.value);
+    if (arg instanceof MonkeyString) {
+      const n = parseFloat(arg.value);
+      return isNaN(n) ? NULL : new MonkeyFloat(n);
     }
     return NULL;
   })],
