@@ -84,6 +84,11 @@ const builtins = [
     for (const arg of args) console.log(arg.inspect());
     return NULL;
   }),
+  // print (no newline)
+  new MonkeyBuiltin((...args) => {
+    process.stdout.write(args.map(a => a.inspect()).join(''));
+    return NULL;
+  }),
   // type
   new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return new MonkeyError(`wrong number of arguments. got=${args.length}, want=1`);
