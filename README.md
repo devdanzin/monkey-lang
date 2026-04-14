@@ -31,23 +31,19 @@ A complete implementation of the Monkey programming language from [Writing An In
 - **Array/String slicing** — `arr[1:3]`, `arr[:2]`, `arr[-2:]`
 - **Alphanumeric identifiers** — `myVar2`, `is_valid`
 
-### Builtins (19 total)
-| Builtin | Description |
-|---------|-------------|
-| `len(x)` | Length of string or array |
-| `first(arr)` | First element |
-| `last(arr)` | Last element |
-| `rest(arr)` | All but first element |
-| `push(arr, val)` | Append to array (immutable) |
-| `puts(...)` | Print to stdout |
-| `type(x)` | Type name as string |
-| `str(x)` | Convert to string |
-| `int(x)` | Parse string to integer |
-| `format(fmt, ...)` | Printf-style formatting |
-| `range(n)` / `range(start, end, step)` | Generate integer array |
-| `split(str, sep)` | Split string into array |
-| `join(arr, sep)` | Join array into string |
-| `trim(str)` | Strip whitespace |
+### Builtins (45+)
+
+**Collections:** `len`, `first`, `last`, `rest`, `push`, `keys`, `values`, `sort`, `reverse`, `flat`, `compact`, `unique`, `slice`, `enumerate`, `zip`, `sum`
+
+**Higher-Order:** `map`, `filter`, `reduce`, `find`, `every`, `some` (evaluator-only, closure callbacks)
+
+**Strings:** `split`, `join`, `trim`, `upper`, `lower`, `replace`, `contains`, `indexOf`, `startsWith`, `endsWith`, `padStart`, `padEnd`, `repeat`, `count`
+
+**Type/Conversion:** `type`, `str`, `int`, `format`, `char`, `ord`
+
+**Math:** `abs`, `min`, `max`, `range`
+
+**I/O:** `puts`
 | `upper(str)` / `lower(str)` | Case conversion |
 | `keys(hash)` / `values(hash)` | Hash iteration |
 | `sort(arr)` | Sort array (ascending) |
