@@ -749,8 +749,10 @@ export class Compiler {
       this.optimizeTailCalls(instructions);
 
       for (const sym of freeSymbols) {
-        // Use raw load for locals to preserve Cell references for shared mutable closures
-        this.loadSymbol(sym, sym.scope === SymbolScopes.LOCAL);
+        // Use raw load to preserve Cell references for shared mutable closures
+        // Applies to LOCAL and FREE (Cell passed through intermediate scopes)
+        const needsRaw = sym.scope === SymbolScopes.LOCAL || sym.scope === SymbolScopes.FREE;
+        this.loadSymbol(sym, needsRaw);
       }
 
       const compiledFn = new CompiledFunction(instructions, numLocals, node.parameters.length);
@@ -871,7 +873,13 @@ export class Compiler {
         }
         break;
       case SymbolScopes.BUILTIN: this.emit(Opcodes.OpGetBuiltin, sym.index); break;
-      case SymbolScopes.FREE: this.emit(Opcodes.OpGetFree, sym.index); break;
+      case SymbolScopes.FREE: 
+        if (raw) {
+          this.emit(Opcodes.OpGetFreeRaw, sym.index);
+        } else {
+          this.emit(Opcodes.OpGetFree, sym.index);
+        }
+        break;
       case SymbolScopes.FUNCTION: this.emit(Opcodes.OpCurrentClosure); break;
     }
   }

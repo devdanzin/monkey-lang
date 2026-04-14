@@ -672,6 +672,14 @@ export class VM {
           break;
         }
 
+        case Opcodes.OpGetFreeRaw: {
+          // Get free without Cell deref (for re-capture in nested closures)
+          const freeIndex = instructions[ip + 1];
+          this.currentFrame().ip += 1;
+          this.push(this.currentFrame().closure.free[freeIndex]);
+          break;
+        }
+
         case Opcodes.OpTailCall: {
           const numArgs = instructions[ip + 1];
           this.currentFrame().ip += 1;
@@ -687,6 +695,10 @@ export class VM {
             const argStart = this.sp - numArgs;
             for (let i = 0; i < numArgs; i++) {
               this.stack[frame.basePointer + i] = this.stack[argStart + i];
+            }
+            // Clear non-argument locals to prevent stale Cell contamination
+            for (let i = numArgs; i < callee.fn.numLocals; i++) {
+              this.stack[frame.basePointer + i] = null;
             }
             // Reset stack pointer to base + numLocals
             this.sp = frame.basePointer + callee.fn.numLocals;

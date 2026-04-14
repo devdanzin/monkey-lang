@@ -217,6 +217,21 @@ describe('Loop Parity — Closures and Loops', () => {
       get()
     `);
   });
+
+  it('3-level nested mutable closure', () => {
+    bothMatch(`
+      let f = fn() {
+        let x = 0;
+        let g = fn() {
+          let y = 0;
+          let h = fn() { set x = x + 1; set y = y + 10; x + y };
+          h(); h()
+        };
+        g()
+      };
+      f()
+    `);
+  });
 });
 
 describe('Loop Parity — Return Values', () => {

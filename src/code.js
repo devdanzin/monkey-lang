@@ -36,6 +36,7 @@ export const Opcodes = {
   OpSetFree:         0x20, // Store to free variable: OpSetFree <uint8>
   OpMakeCell:        0x21, // Wrap TOS in a Cell: OpMakeCell (no operands)
   OpGetLocalRaw:     0x22, // Get local without Cell deref: OpGetLocalRaw <uint8>
+  OpGetFreeRaw:      0x23, // Get free without Cell deref: OpGetFreeRaw <uint8>
   OpCurrentClosure:  0x1D, // Push current closure (for recursion)
   OpTailCall:        0x1E, // Tail call: OpTailCall <uint8> (num args) — reuses frame
 };
@@ -76,6 +77,7 @@ const definitions = new Map([
   [Opcodes.OpSetFree,        { name: 'OpSetFree',        operandWidths: [1] }],
   [Opcodes.OpMakeCell,       { name: 'OpMakeCell',       operandWidths: [] }],
   [Opcodes.OpGetLocalRaw,   { name: 'OpGetLocalRaw',   operandWidths: [1] }],
+  [Opcodes.OpGetFreeRaw,    { name: 'OpGetFreeRaw',    operandWidths: [1] }],
   [Opcodes.OpCurrentClosure, { name: 'OpCurrentClosure', operandWidths: [] }],
   [Opcodes.OpTailCall,       { name: 'OpTailCall',       operandWidths: [1] }],
 ]);
