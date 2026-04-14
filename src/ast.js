@@ -263,3 +263,23 @@ export class TernaryExpression {
   tokenLiteral() { return this.token.literal; }
   toString() { return `(${this.condition} ? ${this.consequence} : ${this.alternative})`; }
 }
+
+export class TryCatchExpression {
+  constructor(token, tryBody, errorIdent, catchBody) {
+    this.token = token;
+    this.tryBody = tryBody;
+    this.errorIdent = errorIdent; // name for caught error
+    this.catchBody = catchBody;
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return `try ${this.tryBody} catch (${this.errorIdent}) ${this.catchBody}`; }
+}
+
+export class ThrowExpression {
+  constructor(token, value) {
+    this.token = token;
+    this.value = value;
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return `throw ${this.value}`; }
+}

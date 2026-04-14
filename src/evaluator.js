@@ -314,6 +314,21 @@ export function monkeyEval(node, env) {
   if (node instanceof AST.DoWhileExpression) return evalDoWhileExpression(node, env);
   if (node instanceof AST.BreakStatement) return BREAK_SIGNAL;
   if (node instanceof AST.ContinueStatement) return CONTINUE_SIGNAL;
+  if (node instanceof AST.ThrowExpression) {
+    const val = monkeyEval(node.value, env);
+    if (isError(val)) return val;
+    return new MonkeyError(val instanceof MonkeyString ? val.value : val.inspect());
+  }
+  if (node instanceof AST.TryCatchExpression) {
+    const result = monkeyEval(node.tryBody, env);
+    if (isError(result)) {
+      // Caught! Bind error to the catch variable
+      const catchEnv = new Environment(env);
+      catchEnv.set(node.errorIdent, new MonkeyString(result.message));
+      return monkeyEval(node.catchBody, catchEnv);
+    }
+    return result;
+  }
   if (node instanceof AST.TernaryExpression) {
     const cond = monkeyEval(node.condition, env);
     if (isError(cond)) return cond;

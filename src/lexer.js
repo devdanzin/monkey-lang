@@ -53,6 +53,9 @@ export const TokenType = {
   SWITCH: 'SWITCH',
   CASE: 'CASE',
   DEFAULT: 'DEFAULT',
+  TRY: 'TRY',
+  CATCH: 'CATCH',
+  THROW: 'THROW',
 
   // Special
   EOF: 'EOF',
@@ -76,6 +79,9 @@ const KEYWORDS = {
   switch: TokenType.SWITCH,
   case: TokenType.CASE,
   default: TokenType.DEFAULT,
+  try: TokenType.TRY,
+  catch: TokenType.CATCH,
+  throw: TokenType.THROW,
 };
 
 export class Token {

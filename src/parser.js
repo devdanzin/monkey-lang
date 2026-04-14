@@ -61,6 +61,12 @@ export class Parser {
     this.registerPrefix(TokenType.BREAK, () => new ast.BreakStatement(this.curToken));
     this.registerPrefix(TokenType.CONTINUE, () => new ast.ContinueStatement(this.curToken));
     this.registerPrefix(TokenType.SWITCH, () => this.parseSwitchExpression());
+    this.registerPrefix(TokenType.TRY, () => this.parseTryCatchExpression());
+    this.registerPrefix(TokenType.THROW, () => {
+      const token = this.curToken;
+      this.nextToken();
+      return new ast.ThrowExpression(token, this.parseExpression(Precedence.LOWEST));
+    });
     this.registerPrefix(TokenType.FOR, () => this.parseForExpression());
     this.registerPrefix(TokenType.FUNCTION, () => this.parseFunctionLiteral());
     this.registerPrefix(TokenType.LBRACKET, () => this.parseArrayLiteral());
@@ -292,6 +298,20 @@ export class Parser {
     const condition = this.parseExpression(Precedence.LOWEST);
     if (!this.expectPeek(TokenType.RPAREN)) return null;
     return new ast.DoWhileExpression(token, body, condition);
+  }
+
+  parseTryCatchExpression() {
+    const token = this.curToken;
+    if (!this.expectPeek(TokenType.LBRACE)) return null;
+    const tryBody = this.parseBlockStatement();
+    if (!this.expectPeek(TokenType.CATCH)) return null;
+    if (!this.expectPeek(TokenType.LPAREN)) return null;
+    if (!this.expectPeek(TokenType.IDENT)) return null;
+    const errorIdent = this.curToken.literal;
+    if (!this.expectPeek(TokenType.RPAREN)) return null;
+    if (!this.expectPeek(TokenType.LBRACE)) return null;
+    const catchBody = this.parseBlockStatement();
+    return new ast.TryCatchExpression(token, tryBody, errorIdent, catchBody);
   }
 
   parseSwitchExpression() {
