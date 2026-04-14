@@ -3,7 +3,7 @@
 
 import { Opcodes, make } from './code.js';
 import * as AST from './ast.js';
-import { MonkeyInteger, MonkeyString } from './object.js';
+import { MonkeyInteger, MonkeyFloat, MonkeyString } from './object.js';
 
 /**
  * Bytecode: the output of the compiler.
@@ -226,6 +226,9 @@ export class Compiler {
     } else if (node instanceof AST.IntegerLiteral) {
       const integer = new MonkeyInteger(node.value);
       this.emit(Opcodes.OpConstant, this.addConstant(integer));
+    } else if (node instanceof AST.FloatLiteral) {
+      const float = new MonkeyFloat(node.value);
+      this.emit(Opcodes.OpConstant, this.addConstant(float));
     } else if (node instanceof AST.BooleanLiteral) {
       this.emit(node.value ? Opcodes.OpTrue : Opcodes.OpFalse);
     } else if (node instanceof AST.StringLiteral) {

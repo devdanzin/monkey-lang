@@ -4,7 +4,7 @@
 import { Opcodes, lookup, readOperands } from './code.js';
 import { CompiledFunction, Closure } from './compiler.js';
 import {
-  MonkeyInteger, MonkeyString, MonkeyBoolean, MonkeyArray, MonkeyHash,
+    MonkeyInteger, MonkeyFloat, MonkeyString, MonkeyBoolean, MonkeyArray, MonkeyHash,
   MonkeyNull, MonkeyError, MonkeyBuiltin,
   TRUE, FALSE, NULL, OBJ,
 } from './object.js';
@@ -480,10 +480,13 @@ export class VM {
 
         case Opcodes.OpMinus: {
           const operand = this.pop();
-          if (!(operand instanceof MonkeyInteger)) {
+          if (operand instanceof MonkeyInteger) {
+            this.push(cachedInteger(-operand.value));
+          } else if (operand instanceof MonkeyFloat) {
+            this.push(new MonkeyFloat(-operand.value));
+          } else {
             throw new Error(`unsupported type for negation: ${operand.type()}`);
           }
-          this.push(cachedInteger(-operand.value));
           break;
         }
 
@@ -708,6 +711,9 @@ export class VM {
 
     if (left instanceof MonkeyInteger && right instanceof MonkeyInteger) {
       this.executeBinaryIntegerOperation(op, left, right);
+    } else if ((left instanceof MonkeyFloat || left instanceof MonkeyInteger) &&
+               (right instanceof MonkeyFloat || right instanceof MonkeyInteger)) {
+      this.executeBinaryFloatOperation(op, left, right);
     } else if (left instanceof MonkeyString && right instanceof MonkeyString) {
       if (op === Opcodes.OpAdd) {
         this.push(new MonkeyString(left.value + right.value));
@@ -738,11 +744,31 @@ export class VM {
     this.push(cachedInteger(result));
   }
 
+  executeBinaryFloatOperation(op, left, right) {
+    let result;
+    switch (op) {
+      case Opcodes.OpAdd: result = left.value + right.value; break;
+      case Opcodes.OpSub: result = left.value - right.value; break;
+      case Opcodes.OpMul: result = left.value * right.value; break;
+      case Opcodes.OpDiv: result = left.value / right.value; break;
+      case Opcodes.OpMod: result = left.value % right.value; break;
+      default: throw new Error(`unknown float operator: ${op}`);
+    }
+    this.push(new MonkeyFloat(result));
+  }
+
   executeComparison(op) {
     const right = this.pop();
     const left = this.pop();
 
     if (left instanceof MonkeyInteger && right instanceof MonkeyInteger) {
+      switch (op) {
+        case Opcodes.OpEqual: this.push(left.value === right.value ? TRUE : FALSE); break;
+        case Opcodes.OpNotEqual: this.push(left.value !== right.value ? TRUE : FALSE); break;
+        case Opcodes.OpGreaterThan: this.push(left.value > right.value ? TRUE : FALSE); break;
+      }
+    } else if ((left instanceof MonkeyFloat || left instanceof MonkeyInteger) &&
+               (right instanceof MonkeyFloat || right instanceof MonkeyInteger)) {
       switch (op) {
         case Opcodes.OpEqual: this.push(left.value === right.value ? TRUE : FALSE); break;
         case Opcodes.OpNotEqual: this.push(left.value !== right.value ? TRUE : FALSE); break;
