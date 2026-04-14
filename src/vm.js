@@ -287,6 +287,15 @@ const builtins = [
     for (let i = 0; i < len; i++) result.push(new MonkeyArray([args[0].elements[i], args[1].elements[i]]));
     return new MonkeyArray(result);
   }),
+  // slice
+  new MonkeyBuiltin((...args) => {
+    if (args.length < 2 || args.length > 3) return new MonkeyError('slice: expected 2-3 arguments');
+    const start = args[1] instanceof MonkeyInteger ? args[1].value : 0;
+    const end = args.length > 2 && args[2] instanceof MonkeyInteger ? args[2].value : undefined;
+    if (args[0] instanceof MonkeyString) return new MonkeyString(args[0].value.slice(start, end));
+    if (args[0] instanceof MonkeyArray) return new MonkeyArray(args[0].elements.slice(start, end));
+    return new MonkeyError('slice: first argument must be string or array');
+  }),
   // keys (VM hash format: Map<key, value>)
   new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return new MonkeyError(`wrong number of arguments to keys. got=${args.length}, want=1`);
