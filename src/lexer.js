@@ -101,6 +101,7 @@ const KEYWORDS = {
   catch: TokenType.CATCH,
   throw: TokenType.THROW,
   null: TokenType.NULL,
+  match: 'MATCH',
   in: TokenType.IN,
 };
 

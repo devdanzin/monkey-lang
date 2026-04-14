@@ -443,6 +443,25 @@ export function monkeyEval(node, env) {
   }
   if (node instanceof AST.BooleanLiteral) return nativeBoolToBooleanObject(node.value);
   if (node instanceof AST.NullLiteral) return NULL;
+  if (node instanceof AST.MatchExpression) {
+    const subject = monkeyEval(node.subject, env);
+    if (isError(subject)) return subject;
+    
+    for (const arm of node.arms) {
+      if (arm.pattern === null) {
+        // Default arm
+        return monkeyEval(arm.body, env);
+      }
+      const pattern = monkeyEval(arm.pattern, env);
+      if (isError(pattern)) return pattern;
+      
+      // Compare subject == pattern
+      if (subject.type() === pattern.type() && subject.inspect() === pattern.inspect()) {
+        return monkeyEval(arm.body, env);
+      }
+    }
+    return NULL; // No match, no default
+  }
 
   if (node instanceof AST.PrefixExpression) {
     const right = monkeyEval(node.right, env);

@@ -63,6 +63,7 @@ export class Parser {
     this.registerPrefix(TokenType.TRUE, () => this.parseBooleanLiteral());
     this.registerPrefix(TokenType.FALSE, () => this.parseBooleanLiteral());
     this.registerPrefix(TokenType.NULL, () => new ast.NullLiteral(this.curToken));
+    this.registerPrefix('MATCH', () => this.parseMatchExpression());
     this.registerPrefix(TokenType.BANG, () => this.parsePrefixExpression());
     this.registerPrefix(TokenType.MINUS, () => this.parsePrefixExpression());
     this.registerPrefix(TokenType.SPREAD, () => this.parseSpreadExpression());
@@ -411,6 +412,38 @@ export class Parser {
     this.nextToken();
     const value = this.parseExpression(Precedence.PREFIX);
     return new ast.SpreadExpression(token, value);
+  }
+
+  parseMatchExpression() {
+    const token = this.curToken;
+    this.nextToken();
+    const subject = this.parseExpression(Precedence.LOWEST);
+    if (!this.expectPeek(TokenType.LBRACE)) return null;
+    
+    const arms = [];
+    while (!this.peekTokenIs(TokenType.RBRACE) && !this.peekTokenIs(TokenType.EOF)) {
+      this.nextToken();
+      
+      // Default arm: _ => expr
+      if (this.curToken.literal === '_') {
+        if (!this.expectPeek(TokenType.ARROW)) return null;
+        this.nextToken();
+        const body = this.parseExpression(Precedence.LOWEST);
+        arms.push({ pattern: null, body }); // null pattern = default
+        if (this.peekTokenIs(TokenType.COMMA)) this.nextToken();
+        continue;
+      }
+      
+      const pattern = this.parseExpression(Precedence.LOWEST);
+      if (!this.expectPeek(TokenType.ARROW)) return null;
+      this.nextToken();
+      const body = this.parseExpression(Precedence.LOWEST);
+      arms.push({ pattern, body });
+      if (this.peekTokenIs(TokenType.COMMA)) this.nextToken();
+    }
+    
+    if (!this.expectPeek(TokenType.RBRACE)) return null;
+    return new ast.MatchExpression(token, subject, arms);
   }
 
   parseInfixExpression(left) {
