@@ -219,6 +219,13 @@ const builtins = [
       return new MonkeyError('replace: all arguments must be STRING');
     return new MonkeyString(args[0].value.split(args[1].value).join(args[2].value));
   }),
+  // reverse
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return new MonkeyError('wrong number of arguments to reverse');
+    if (args[0] instanceof MonkeyArray) return new MonkeyArray([...args[0].elements].reverse());
+    if (args[0] instanceof MonkeyString) return new MonkeyString([...args[0].value].reverse().join(''));
+    return new MonkeyError(`reverse: unsupported type ${args[0].type()}`);
+  }),
   // keys (VM hash format: Map<key, value>)
   new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return new MonkeyError(`wrong number of arguments to keys. got=${args.length}, want=1`);
