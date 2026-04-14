@@ -39,6 +39,7 @@ const TOKEN_PRECEDENCE = {
   [TokenType.PERCENT]: Precedence.PRODUCT,
   [TokenType.ASTERISK]: Precedence.PRODUCT,
   [TokenType.LPAREN]: Precedence.CALL,
+  [TokenType.DOT]: Precedence.CALL,
   [TokenType.LBRACKET]: Precedence.INDEX,
 };
 
@@ -91,6 +92,9 @@ export class Parser {
     
     // Pipe operator: left |> fn  →  fn(left)
     this.registerInfix(TokenType.PIPE, (left) => this.parsePipeExpression(left));
+    
+    // Method call: obj.method(args)  →  method(obj, args)
+    this.registerInfix(TokenType.DOT, (left) => this.parseMethodCall(left));
     
     // Ternary operator
     this.registerInfix(TokenType.QUESTION, (condition) => {
@@ -416,6 +420,24 @@ export class Parser {
     const right = this.parseExpression(precedence);
     // Transform: left |> fn  →  CallExpression(fn, [left])
     return new ast.CallExpression(token, right, [left]);
+  }
+
+  parseMethodCall(left) {
+    // obj.method(args) → method(obj, args)
+    // obj.prop → prop(obj) (property access as function call)
+    const token = this.curToken; // DOT
+    this.nextToken(); // method name
+    const methodName = new ast.Identifier(this.curToken, this.curToken.literal);
+    
+    if (this.peekTokenIs(TokenType.LPAREN)) {
+      // obj.method(args) → method(obj, arg1, arg2, ...)
+      this.nextToken(); // consume (
+      const args = this.parseExpressionList(TokenType.RPAREN);
+      return new ast.CallExpression(token, methodName, [left, ...args]);
+    }
+    
+    // obj.prop → prop(obj) (no-arg call)
+    return new ast.CallExpression(token, methodName, [left]);
   }
 
   parseGroupedExpression() {

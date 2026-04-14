@@ -7,6 +7,7 @@ export const TokenType = {
   FSTRING: 'FSTRING',
   PIPE: '|>',
   ARROW: '=>',
+  DOT: '.',
   DOTDOT: '..',
   FLOAT: 'FLOAT',
   STRING: 'STRING',
@@ -293,7 +294,7 @@ export class Lexer {
           this.readChar();
           tok = new Token(TokenType.DOTDOT, '..');
         } else {
-          tok = new Token(TokenType.ILLEGAL, '.');
+          tok = new Token(TokenType.DOT, '.');
         }
         break;
       default:
