@@ -413,6 +413,24 @@ const builtins = new Map([
     }
     return new MonkeyInteger(n);
   })],
+  ['scan', new MonkeyBuiltin((...args) => {
+    if (args.length !== 3) return newError('scan: expected 3 arguments (array, initial, fn)');
+    if (!(args[0] instanceof MonkeyArray)) return newError('scan: first argument must be an array');
+    let acc = args[1];
+    const result = [acc];
+    for (const elem of args[0].elements) {
+      acc = applyFunction(args[2], [acc, elem]);
+      if (isError(acc)) return acc;
+      result.push(acc);
+    }
+    return new MonkeyArray(result);
+  })],
+  ['repeat', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError('repeat: expected 2 arguments (value, n)');
+    const result = [];
+    for (let i = 0; i < args[1].value; i++) result.push(args[0]);
+    return new MonkeyArray(result);
+  })],
   ['min', new MonkeyBuiltin((...args) => {
     if (args.length < 2) return newError('min: expected at least 2 arguments');
     let result = args[0].value;
