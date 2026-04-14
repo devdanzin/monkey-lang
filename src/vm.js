@@ -267,6 +267,12 @@ const builtins = [
     if (args.length !== 1 || !(args[0] instanceof MonkeyString)) return new MonkeyError('ord: expected 1 string');
     return new MonkeyInteger(args[0].value.charCodeAt(0));
   }),
+  // repeat
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 2 || !(args[0] instanceof MonkeyString) || !(args[1] instanceof MonkeyInteger))
+      return new MonkeyError('repeat: expected (string, int)');
+    return new MonkeyString(args[0].value.repeat(args[1].value));
+  }),
   // keys (VM hash format: Map<key, value>)
   new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return new MonkeyError(`wrong number of arguments to keys. got=${args.length}, want=1`);
