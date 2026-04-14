@@ -165,6 +165,12 @@ const builtins = new Map([
     }
     return newError(`indexOf: unsupported types ${args[0].type()}, ${args[1].type()}`);
   })],
+  ['replace', new MonkeyBuiltin((...args) => {
+    if (args.length !== 3) return newError(`wrong number of arguments to replace. got=${args.length}, want=3`);
+    if (!(args[0] instanceof MonkeyString) || !(args[1] instanceof MonkeyString) || !(args[2] instanceof MonkeyString))
+      return newError('replace: all arguments must be STRING');
+    return new MonkeyString(args[0].value.split(args[1].value).join(args[2].value));
+  })],
   // Hash iteration
   ['keys', new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return newError(`wrong number of arguments to keys. got=${args.length}, want=1`);

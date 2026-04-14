@@ -212,6 +212,13 @@ const builtins = [
     }
     return new MonkeyError(`indexOf: unsupported types`);
   }),
+  // replace
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 3) return new MonkeyError('wrong number of arguments to replace');
+    if (!(args[0] instanceof MonkeyString) || !(args[1] instanceof MonkeyString) || !(args[2] instanceof MonkeyString))
+      return new MonkeyError('replace: all arguments must be STRING');
+    return new MonkeyString(args[0].value.split(args[1].value).join(args[2].value));
+  }),
   // keys (VM hash format: Map<key, value>)
   new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return new MonkeyError(`wrong number of arguments to keys. got=${args.length}, want=1`);
