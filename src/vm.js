@@ -867,8 +867,8 @@ export class VM {
       }
     } else {
       switch (op) {
-        case Opcodes.OpEqual: this.push(left === right ? TRUE : FALSE); break;
-        case Opcodes.OpNotEqual: this.push(left !== right ? TRUE : FALSE); break;
+        case Opcodes.OpEqual: this.push(this._deepEqual(left, right) ? TRUE : FALSE); break;
+        case Opcodes.OpNotEqual: this.push(!this._deepEqual(left, right) ? TRUE : FALSE); break;
         default: throw new Error(`unknown operator: ${op} (${left.type()} ${right.type()})`);
       }
     }

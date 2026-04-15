@@ -164,3 +164,52 @@ describe('Match Expression', () => {
     });
   });
 });
+
+describe('Deep Equality Operator (==)', () => {
+  it('arrays equal by value', () => {
+    assert.strictEqual(run('[1, 2, 3] == [1, 2, 3]'), TRUE);
+  });
+
+  it('arrays not equal', () => {
+    assert.strictEqual(run('[1, 2, 3] == [1, 2, 4]'), FALSE);
+  });
+
+  it('nested arrays equal', () => {
+    assert.strictEqual(run('[1, [2, 3]] == [1, [2, 3]]'), TRUE);
+  });
+
+  it('empty arrays equal', () => {
+    assert.strictEqual(run('[] == []'), TRUE);
+  });
+
+  it('different length arrays not equal', () => {
+    assert.strictEqual(run('[1, 2] == [1, 2, 3]'), FALSE);
+  });
+
+  it('arrays not-equal operator', () => {
+    assert.strictEqual(run('[1] != [2]'), TRUE);
+    assert.strictEqual(run('[1] != [1]'), FALSE);
+  });
+
+  it('mixed types in arrays', () => {
+    assert.strictEqual(run('[1, "two", true] == [1, "two", true]'), TRUE);
+    assert.strictEqual(run('[1, "two", true] == [1, "two", false]'), FALSE);
+  });
+
+  it('null arrays', () => {
+    assert.strictEqual(run('[null] == [null]'), TRUE);
+  });
+
+  it('primitives still work', () => {
+    assert.strictEqual(run('1 == 1'), TRUE);
+    assert.strictEqual(run('"hello" == "hello"'), TRUE);
+    assert.strictEqual(run('true == true'), TRUE);
+    assert.strictEqual(run('null == null'), TRUE);
+    assert.strictEqual(run('1 == 2'), FALSE);
+  });
+
+  it('deep equality in conditions', () => {
+    assert.equal(run('if ([1, 2] == [1, 2]) { "same" } else { "diff" }').value, 'same');
+    assert.equal(run('if ([1, 2] == [3, 4]) { "same" } else { "diff" }').value, 'diff');
+  });
+});
