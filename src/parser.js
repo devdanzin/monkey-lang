@@ -101,6 +101,9 @@ export class Parser {
     this.registerInfix('++', (left) => this.parsePostfixExpression(left, '+'));
     this.registerInfix('--', (left) => this.parsePostfixExpression(left, '-'));
     this.registerInfix('?.', (left) => this.parseOptionalChainExpression(left));
+    // Arrow function: x => expr — only valid when left is a plain identifier
+    // NOT registered as infix because it conflicts with match expression (1 => "one")
+    // Instead, handled via parseExpressionStatement looking ahead
     
     // Method call: obj.method(args)  →  method(obj, args)
     this.registerInfix(TokenType.DOT, (left) => this.parseMethodCall(left));
@@ -359,6 +362,21 @@ export class Parser {
   }
 
   parseIdentifier() {
+    // Check for arrow function: x => expr
+    if (this.peekTokenIs(TokenType.ARROW)) {
+      const ident = new ast.Identifier(this.curToken, this.curToken.literal);
+      this.nextToken(); // consume =>
+      this.nextToken(); // move to body
+      let body;
+      if (this.curTokenIs(TokenType.LBRACE)) {
+        body = this.parseBlockStatement();
+      } else {
+        const expr = this.parseExpression(Precedence.LOWEST);
+        const returnStmt = new ast.ReturnStatement(this.curToken, expr);
+        body = new ast.BlockStatement(this.curToken, [returnStmt]);
+      }
+      return new ast.FunctionLiteral(this.curToken, [ident], body);
+    }
     return new ast.Identifier(this.curToken, this.curToken.literal);
   }
 
@@ -594,6 +612,26 @@ export class Parser {
     if (!this.expectPeek(TokenType.LBRACE)) return null;
     const catchBody = this.parseBlockStatement();
     return new ast.TryCatchExpression(token, tryBody, errorIdent, catchBody);
+  }
+
+  parseArrowExpression(left) {
+    // x => expr — left must be identifier
+    if (!(left instanceof ast.Identifier)) {
+      this.errors.push(`expected identifier before '=>', got ${left.constructor.name}`);
+      return null;
+    }
+    const token = this.curToken;
+    const params = [left];
+    this.nextToken(); // move to body
+    let body;
+    if (this.curTokenIs(TokenType.LBRACE)) {
+      body = this.parseBlockStatement();
+    } else {
+      const expr = this.parseExpression(Precedence.LOWEST);
+      const returnStmt = new ast.ReturnStatement(token, expr);
+      body = new ast.BlockStatement(token, [returnStmt]);
+    }
+    return new ast.FunctionLiteral(token, params, body);
   }
 
   parseOptionalChainExpression(left) {
