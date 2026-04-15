@@ -395,3 +395,49 @@ describe('objectKeyString', () => {
     assert.equal(objectKeyString(new MonkeyBoolean(true)), 'bool:true');
   });
 });
+
+describe('IC stats — monomorphic hit rate', () => {
+  it('achieves high hit rate on repeated access', () => {
+    const result = runVM(`
+      let h = {"x": 1, "y": 2}
+      let sum = 0
+      let i = 0
+      while (i < 50) {
+        set sum = sum + h["x"]
+        set i = i + 1
+      }
+      sum
+    `);
+    assert.equal(result.value, 50);
+  });
+
+  it('handles hash as function argument', () => {
+    const result = runVM(`
+      let get = fn(h, k) { h[k] }
+      let h = {"a": 10, "b": 20}
+      get(h, "a") + get(h, "b")
+    `);
+    assert.equal(result.value, 30);
+  });
+
+  it('dot access on hash works', () => {
+    const result = runVM(`
+      let h = {"name": "Alice"}
+      h.name
+    `);
+    assert.equal(result.value, 'Alice');
+  });
+
+  it('handles empty hash access gracefully', () => {
+    const result = runVM('{}["x"]');
+    assert.equal(result.type(), 'NULL');
+  });
+
+  it('large hash with many keys', () => {
+    const result = runVM(`
+      let h = {"a": 1, "b": 2, "c": 3, "d": 4, "e": 5, "f": 6, "g": 7, "h": 8}
+      h["a"] + h["d"] + h["h"]
+    `);
+    assert.equal(result.value, 13);
+  });
+});
