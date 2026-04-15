@@ -290,6 +290,11 @@ export class MonkeyInstance {
   }
   type() { return 'INSTANCE'; }
   inspect() {
+    // If the class has a toString method, use it
+    const toStr = this.get('toString');
+    if (toStr && typeof toStr.body !== 'undefined') {
+      // Can't call the method here (no evaluator access), fall through to default
+    }
     const entries = [];
     for (const [k, v] of this.fields) {
       entries.push(`${k}: ${v.inspect()}`);

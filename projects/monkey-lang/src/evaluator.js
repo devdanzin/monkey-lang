@@ -46,7 +46,17 @@ const builtins = new Map([
     return new MonkeyArray([...args[0].elements, args[1]]);
   })],
   ['puts', new MonkeyBuiltin((...args) => {
-    for (const arg of args) console.log(arg.inspect());
+    for (const arg of args) {
+      if (arg instanceof MonkeyInstance) {
+        const toStringFn = arg.get('toString');
+        if (toStringFn && toStringFn instanceof MonkeyFunction) {
+          const result = callMethod(arg, toStringFn, []);
+          console.log(result instanceof MonkeyString ? result.value : result.inspect());
+          continue;
+        }
+      }
+      console.log(arg.inspect());
+    }
     return NULL;
   })],
   ['split', new MonkeyBuiltin((...args) => {
@@ -100,6 +110,15 @@ const builtins = new Map([
   ['str', new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return newError(`wrong number of arguments. got=${args.length}, want=1`);
     if (args[0] instanceof MonkeyString) return args[0];
+    // Check for toString method on instances
+    if (args[0] instanceof MonkeyInstance) {
+      const toStringFn = args[0].get('toString');
+      if (toStringFn && toStringFn instanceof MonkeyFunction) {
+        const result = callMethod(args[0], toStringFn, []);
+        if (result instanceof MonkeyString) return result;
+        return new MonkeyString(result.inspect());
+      }
+    }
     return new MonkeyString(args[0].inspect());
   })],
   ['type', new MonkeyBuiltin((...args) => {
