@@ -1344,7 +1344,21 @@ function evalIndexExpression(left, index) {
       });
       return boundMethod;
     }
-    return value || NULL;
+    if (value !== null) return value;
+    // __getitem__ fallback
+    const getitem = left.get('__getitem__');
+    if (getitem && getitem instanceof MonkeyFunction) {
+      return callMethod(left, getitem, [index]);
+    }
+    return NULL;
+  }
+  // Also handle non-string index on instances via __getitem__
+  if (left instanceof MonkeyInstance) {
+    const getitem = left.get('__getitem__');
+    if (getitem && getitem instanceof MonkeyFunction) {
+      return callMethod(left, getitem, [index]);
+    }
+    return NULL;
   }
   // Class static method access
   if (left instanceof MonkeyClass && index instanceof MonkeyString) {
