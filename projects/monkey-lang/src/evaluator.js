@@ -1061,8 +1061,28 @@ function callGenerator(genDef, args) {
 function constructInstance(klass, args) {
   const instance = new MonkeyInstance(klass);
   
-  // Call init method if present
-  const initFn = klass.methods.get('init');
+  // Also initialize parent fields
+  let parent = klass.superClass;
+  while (parent) {
+    for (const f of parent.fields) {
+      if (!instance.fields.has(f)) {
+        instance.fields.set(f, NULL);
+      }
+    }
+    parent = parent.superClass;
+  }
+  
+  // Find init method (may be inherited)
+  let initFn = null;
+  let cls = klass;
+  while (cls) {
+    if (cls.methods.has('init')) {
+      initFn = cls.methods.get('init');
+      break;
+    }
+    cls = cls.superClass;
+  }
+  
   if (initFn) {
     callMethod(instance, initFn, args);
   }
