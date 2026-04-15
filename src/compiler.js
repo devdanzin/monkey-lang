@@ -285,6 +285,7 @@ export class Compiler {
     if (node instanceof AST.ForExpression) { node.init = Compiler.foldConstants(node.init); node.condition = Compiler.foldConstants(node.condition); node.update = Compiler.foldConstants(node.update); node.body = Compiler.foldConstants(node.body); return node; }
     if (node instanceof AST.WhileExpression) { node.condition = Compiler.foldConstants(node.condition); node.body = Compiler.foldConstants(node.body); return node; }
     if (node instanceof AST.SwitchExpression) { node.value = Compiler.foldConstants(node.value); node.cases = node.cases.map(c => ({ ...c, value: Compiler.foldConstants(c.value), body: Compiler.foldConstants(c.body) })); if (node.defaultCase) node.defaultCase = Compiler.foldConstants(node.defaultCase); return node; }
+    if (node instanceof AST.FStringExpression) { node.segments = node.segments.map(s => s.type === 'expr' ? { ...s, expr: Compiler.foldConstants(s.expr) } : s); return node; }
     
     return node;
   }
@@ -885,6 +886,20 @@ export class Compiler {
         this.compile(arg);
       }
       this.emit(Opcodes.OpCall, node.arguments.length);
+    } else if (node instanceof AST.FStringExpression) {
+      // Compile f-string by converting each segment to a string and concatenating
+      if (node.segments.length === 0) {
+        this.emit(Opcodes.OpConstant, this.addConstant(new MonkeyString('')));
+      } else {
+        const strIdx = builtinNames.indexOf('str');
+        // Compile first segment
+        this._compileFStringSegment(node.segments[0], strIdx);
+        // Concatenate remaining segments
+        for (let i = 1; i < node.segments.length; i++) {
+          this._compileFStringSegment(node.segments[i], strIdx);
+          this.emit(Opcodes.OpAdd);
+        }
+      }
     } else if (node instanceof AST.SwitchExpression) {
       const jumpToEndPositions = [];
       
@@ -920,6 +935,20 @@ export class Compiler {
       for (const pos of jumpToEndPositions) {
         this.changeOperand(pos, endPos);
       }
+    }
+  }
+
+  /**
+   * Compile a single f-string segment (text or expression).
+   */
+  _compileFStringSegment(seg, strBuiltinIdx) {
+    if (seg.type === 'text') {
+      this.emit(Opcodes.OpConstant, this.addConstant(new MonkeyString(seg.value)));
+    } else {
+      // Expression: call str(expr) to convert to string
+      this.emit(Opcodes.OpGetBuiltin, strBuiltinIdx);
+      this.compile(seg.expr);
+      this.emit(Opcodes.OpCall, 1);
     }
   }
 
