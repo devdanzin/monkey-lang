@@ -409,6 +409,8 @@ export class Compiler {
     } else if (node instanceof AST.StringLiteral) {
       const str = new MonkeyString(node.value);
       this.emit(Opcodes.OpConstant, this.addConstant(str));
+    } else if (node instanceof AST.NullLiteral) {
+      this.emit(Opcodes.OpNull);
     } else if (node instanceof AST.IfExpression) {
       this.compile(node.condition);
       // Emit jump-not-truthy with placeholder offset
