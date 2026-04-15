@@ -9,7 +9,7 @@ import {
   MonkeyResult, MonkeyEnum,
   TRUE, FALSE, NULL, cachedInteger, internString,
 } from './object.js';
-import { IR, JIT, TraceRecorder } from './jit.js';
+import { IR, JIT, TraceRecorder, JIT_EVENTS_FULL } from './jit.js';
 
 const STACK_SIZE = 2048;
 const GLOBALS_SIZE = 65536;
@@ -502,7 +502,7 @@ export class VM {
 
       // Abort recording on too many instructions
       if (recording() && ++this.recorder.instrCount > 200) {
-        this._abortRecording();
+        this._abortRecording('instr_count_max');
       }
 
       switch (op) {
@@ -557,7 +557,7 @@ export class VM {
                      (left instanceof MonkeyInteger || left instanceof MonkeyFloat) &&
                      (right instanceof MonkeyInteger || right instanceof MonkeyFloat)) {
             // Float arithmetic
-            if (recording()) { this._abortRecording(); }
+            if (recording()) { this._abortRecording('float_arith'); }
             let result;
             switch (op) {
               case Opcodes.OpAdd: result = left.value + right.value; break;
@@ -658,7 +658,7 @@ export class VM {
             }
             this.push(result ? TRUE : FALSE);
           } else if (left2 instanceof MonkeyBoolean && right2 instanceof MonkeyBoolean) {
-            if (recording()) { this._abortRecording(); }
+            if (recording()) { this._abortRecording('bool_compare'); }
             let result;
             switch (op) {
               case Opcodes.OpEqual: result = left2.value === right2.value; break;
@@ -669,7 +669,7 @@ export class VM {
           } else if ((left2 instanceof MonkeyFloat || right2 instanceof MonkeyFloat) &&
                      (left2 instanceof MonkeyInteger || left2 instanceof MonkeyFloat) &&
                      (right2 instanceof MonkeyInteger || right2 instanceof MonkeyFloat)) {
-            if (recording()) { this._abortRecording(); }
+            if (recording()) { this._abortRecording('mixed_numeric_compare'); }
             let result;
             switch (op) {
               case Opcodes.OpEqual: result = left2.value === right2.value; break;
@@ -678,7 +678,7 @@ export class VM {
             }
             this.push(result ? TRUE : FALSE);
           } else if (left2 instanceof MonkeyString && right2 instanceof MonkeyString) {
-            if (recording()) { this._abortRecording(); }
+            if (recording()) { this._abortRecording('string_compare'); }
             let result;
             switch (op) {
               case Opcodes.OpEqual: result = left2.value === right2.value; break;
@@ -688,11 +688,11 @@ export class VM {
             this.push(result ? TRUE : FALSE);
           } else if (left2 === NULL || right2 === NULL) {
             // Null comparison: null == null is true, null == anything_else is false
-            if (recording()) { this._abortRecording(); }
+            if (recording()) { this._abortRecording('null_compare'); }
             const result = op === Opcodes.OpEqual ? (left2 === right2) : (left2 !== right2);
             this.push(result ? TRUE : FALSE);
           } else if (left2 instanceof MonkeyEnum && right2 instanceof MonkeyEnum) {
-            if (recording()) { this._abortRecording(); }
+            if (recording()) { this._abortRecording('enum_compare'); }
             const eq = left2.enumName === right2.enumName && left2.variant === right2.variant;
             const result = op === Opcodes.OpEqual ? eq : !eq;
             this.push(result ? TRUE : FALSE);
@@ -705,7 +705,7 @@ export class VM {
         case Opcodes.OpMinus: {
           const operand = this.pop();
           if (operand instanceof MonkeyFloat) {
-            if (recording()) { this._abortRecording(); }
+            if (recording()) { this._abortRecording('float_negate'); }
             this.push(new MonkeyFloat(-operand.value));
             break;
           }
@@ -885,7 +885,7 @@ export class VM {
         }
 
         case Opcodes.OpArray: {
-          if (recording()) { this._abortRecording(); }
+          if (recording()) { this._abortRecording('array_lit'); }
           const numElements = (ins[ip + 1] << 8) | ins[ip + 2];
           frame.ip += 2;
           const elements = this.stack.slice(this.sp - numElements, this.sp);
@@ -895,7 +895,7 @@ export class VM {
         }
 
         case Opcodes.OpHash: {
-          if (recording()) { this._abortRecording(); }
+          if (recording()) { this._abortRecording('hash_lit'); }
           const numPairs = (ins[ip + 1] << 8) | ins[ip + 2];
           frame.ip += 2;
           const pairs = new Map();
@@ -959,7 +959,7 @@ export class VM {
               this.recorder.typeMap.set(resultRef, 'object');
               this.recorder.pushRef(resultRef);
             } else {
-              this._abortRecording();
+              this._abortRecording('index_unsupported');
             }
           }
           if (left3 instanceof MonkeyArray && index instanceof MonkeyInteger) {
@@ -1116,11 +1116,11 @@ export class VM {
 
               if (!this.recorder.enterInlineFrame(baseOffset, callee.fn.numLocals, ip)) {
                 // Too deep — abort recording
-                this._abortRecording();
+                this._abortRecording('inline_too_deep');
               } else if (this._hasBackwardJump(callee.fn.instructions)) {
                 // Function contains a loop — don't inline, too complex
                 this.recorder.leaveInlineFrame();
-                this._abortRecording();
+                this._abortRecording('inline_callee_has_loop');
               } else {
                 // Map the argument IR refs to the inlined frame's local slots
                 // so that LOAD_LOCAL in the callee picks them up directly
@@ -1181,7 +1181,7 @@ export class VM {
               this.sp = this.sp - numArgs - 1;
               this.push(result !== undefined ? result : NULL);
             } else {
-              if (recording()) { this._abortRecording(); }
+              if (recording()) { this._abortRecording('builtin_call'); }
               const args = this.stack.slice(this.sp - numArgs, this.sp);
               const result = callee.fn(...args);
               this.sp = this.sp - numArgs - 1;
@@ -1646,7 +1646,7 @@ export class VM {
             }
             this.push(cachedInteger(result));
           } else if (leftVal instanceof MonkeyString && rightVal instanceof MonkeyString && op === Opcodes.OpGetLocalAddConst) {
-            if (recording()) { this._abortRecording(); }
+            if (recording()) { this._abortRecording('string_concat_localconst'); }
             this.push(new MonkeyString(leftVal.value + rightVal.value));
           } else {
             throw new Error(`unsupported types for local+const op: ${leftVal.type()} and ${rightVal.type()}`);
@@ -1943,6 +1943,7 @@ export class VM {
 
       if (!result) return false;
 
+      const traceKey = `${trace.frameId}:${trace.startIp}`;
       switch (result.exit) {
         case 'guard_falsy':
         case 'guard_truthy':
@@ -1967,14 +1968,30 @@ export class VM {
             }
           }
 
-          trace.sideExits.set(result.guardIdx,
-            (trace.sideExits.get(result.guardIdx) || 0) + 1);
+          {
+            const newCount = (trace.sideExits.get(result.guardIdx) || 0) + 1;
+            trace.sideExits.set(result.guardIdx, newCount);
+            if (JIT_EVENTS_FULL) {
+              process.stderr.write(JSON.stringify({
+                v: 1, t: 'trace_exit', key: traceKey, exit: result.exit,
+                guard_idx: result.guardIdx, side_exit_count: newCount,
+              }) + '\n');
+            }
+          }
 
           if (this.jit && !this.recorder && this.jit.shouldRecordSideTrace(trace, result.guardIdx)) {
+            if (JIT_EVENTS_FULL) {
+              process.stderr.write(JSON.stringify({
+                v: 1, t: 'side_trace_promote', parent: traceKey, guard_idx: result.guardIdx,
+              }) + '\n');
+            }
             this._startSideTraceRecording(trace, result.guardIdx, result.ip);
           }
           return true;
         case 'loop_back':
+          if (JIT_EVENTS_FULL) {
+            process.stderr.write(JSON.stringify({ v: 1, t: 'trace_exit', key: traceKey, exit: 'loop_back' }) + '\n');
+          }
           return true;
         case 'invalidate':
           // Guard closure mismatch — delete this trace so a new one will be recorded
@@ -1983,12 +2000,21 @@ export class VM {
             if (t === trace) { this.jit.traces.delete(key); break; }
           }
           frame.ip = trace.startIp - 1;
+          if (JIT_EVENTS_FULL) {
+            process.stderr.write(JSON.stringify({ v: 1, t: 'trace_invalidate', key: traceKey }) + '\n');
+          }
           return true;
         case 'max_iter':
           frame.ip = trace.startIp - 1;
+          if (JIT_EVENTS_FULL) {
+            process.stderr.write(JSON.stringify({ v: 1, t: 'trace_exit', key: traceKey, exit: 'max_iter' }) + '\n');
+          }
           return true;
         case 'call':
           frame.ip = trace.startIp - 1;
+          if (JIT_EVENTS_FULL) {
+            process.stderr.write(JSON.stringify({ v: 1, t: 'trace_exit', key: traceKey, exit: 'call' }) + '\n');
+          }
           return true;
         default:
           return true;
@@ -2002,11 +2028,11 @@ export class VM {
     this.recorder.start(this._closureId(), ip);
   }
 
-  _abortRecording() {
+  _abortRecording(reason = 'unknown') {
     if (this.recorder && this.jit) {
       this.jit.recordAbort(this.recorder.trace?.frameId ?? this._closureId(), this.recorder.startIp);
     }
-    if (this.recorder) this.recorder.abort();
+    if (this.recorder) this.recorder.abort(reason);
     this.recorder = null;
   }
 
@@ -2127,7 +2153,7 @@ export class VM {
 
     // Abort on too many instructions
     if (++this.recorder.instrCount > 200) {
-      this._abortRecording();
+      this._abortRecording('instr_count_max_func');
       return;
     }
   }

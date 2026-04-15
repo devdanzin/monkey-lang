@@ -11,7 +11,7 @@ import { Parser } from './parser.js';
 import { monkeyEval } from './evaluator.js';
 import { Compiler } from './compiler.js';
 import { VM } from './vm.js';
-import { IR } from './jit.js';
+import { IR, JIT_EVENTS_FULL, JIT_EVENTS_SUMMARY, JIT_EVENTS_SCHEMA_VERSION } from './jit.js';
 import { Environment, NULL } from './object.js';
 import { STDLIB_SOURCE } from './stdlib.js';
 import { compileAndRun as wasmCompileAndRun, WasmCompiler, formatWasmValue } from './wasm-compiler.js';
@@ -323,7 +323,10 @@ if (fileArg) {
       // Determine engine from flags
       const engineArg = process.argv.find(a => a.startsWith('--engine='));
       const engineName = engineArg ? engineArg.split('=')[1] : 'vm';
-      const traceInfo = process.argv.includes('--trace-info');
+      // --trace-info CLI flag and JIT_EVENTS env var both request JIT activity.
+      // JIT_EVENTS=summary mirrors --trace-info; JIT_EVENTS=full additionally
+      // emits a per-event JSON Lines stream (see JIT_EVENTS_SCHEMA.md).
+      const traceInfo = process.argv.includes('--trace-info') || JIT_EVENTS_SUMMARY;
       const diffTest = process.argv.includes('--diff-test');
       const useJIT = traceInfo || diffTest || engineName === 'jit';
 
@@ -359,6 +362,7 @@ if (fileArg) {
       if (traceInfo && vm.jit) {
         const stats = vm.jit.getStats();
         const diagInfo = {
+          v: JIT_EVENTS_SCHEMA_VERSION,
           engine: useJIT ? 'jit' : 'vm',
           elapsed_ms: Math.round(elapsed * 100) / 100,
           traces: stats.rootTraces,

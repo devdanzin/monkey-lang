@@ -12,6 +12,13 @@
 // But we CAN generate optimized JS that V8/SpiderMonkey will JIT-compile.
 // This eliminates: dispatch overhead, stack push/pop, object wrapping.
 // The generated JS operates on raw values where possible.
+//
+// --- JIT event instrumentation ---
+// When JIT_EVENTS=full is set in the environment, the JIT emits one JSON
+// line per event to stderr (versioned schema, "v":1). When unset or set
+// to anything other than "full", emission is disabled and the cost is a
+// single branch check at each emit site. See JIT_EVENTS_SCHEMA.md for
+// the event vocabulary.
 
 import { Opcodes, lookup } from './code.js';
 import {
@@ -20,6 +27,21 @@ import {
   TRUE, FALSE, NULL, cachedInteger,
 } from './object.js';
 import { CompiledFunction } from './compiler.js';
+
+// --- JIT event instrumentation ---
+const JIT_EVENTS_MODE = (typeof process !== 'undefined' && process.env && process.env.JIT_EVENTS) || 'off';
+export const JIT_EVENTS_FULL = JIT_EVENTS_MODE === 'full';
+export const JIT_EVENTS_SUMMARY = JIT_EVENTS_MODE === 'summary' || JIT_EVENTS_FULL;
+export const JIT_EVENTS_SCHEMA_VERSION = 1;
+
+// Emit a single event as a JSON line on stderr.
+// Caller MUST gate on JIT_EVENTS_FULL before calling — this function
+// assumes emission is desired and skips the early-out check so the
+// hot-path uop emitter doesn't pay for two checks.
+function emitEvent(event) {
+  event.v = JIT_EVENTS_SCHEMA_VERSION;
+  process.stderr.write(JSON.stringify(event) + '\n');
+}
 
 // --- Configuration ---
 const HOT_LOOP_THRESHOLD = 16;   // iterations before tracing starts
@@ -147,6 +169,16 @@ export class Trace {
     const inst = new IRInst(op, operands);
     inst.id = this.ir.length;
     this.ir.push(inst);
+    if (JIT_EVENTS_FULL) {
+      // Minimal payload: opcode + the most useful operand identifiers,
+      // skipping bulky values. This is the highest-volume event type.
+      const ev = { t: 'uop', key: `${this.frameId}:${this.startIp}`, op };
+      if (operands.slot !== undefined) ev.slot = operands.slot;
+      if (operands.index !== undefined) ev.index = operands.index;
+      if (operands.constIdx !== undefined) ev.const_idx = operands.constIdx;
+      if (operands.ref !== undefined) ev.ref = operands.ref;
+      emitEvent(ev);
+    }
     return inst.id;
   }
 }
@@ -207,6 +239,10 @@ export class TraceRecorder {
     this.parentTrace = null;
     this.parentGuardIdx = -1;
 
+    if (JIT_EVENTS_FULL) {
+      emitEvent({ t: 'trace_start', key: `${frameId}:${ip}`, kind: 'loop' });
+    }
+
     // Record loop start marker
     this.trace.addInst(IR.LOOP_START);
   }
@@ -230,6 +266,16 @@ export class TraceRecorder {
     this.trustedTypes.clear();
     this.parentTrace = parentTrace;
     this.parentGuardIdx = guardIdx;
+
+    if (JIT_EVENTS_FULL) {
+      emitEvent({
+        t: 'trace_start',
+        key: `${frameId}:${exitIp}`,
+        kind: 'side',
+        parent: `${parentTrace.frameId}:${parentTrace.startIp}`,
+        guard_idx: guardIdx,
+      });
+    }
 
     // No LOOP_START for side traces — they're linear paths
     // that end at the parent's loop header
@@ -256,6 +302,10 @@ export class TraceRecorder {
     this.isFuncTrace = true;
     this.tracedFn = fn;
 
+    if (JIT_EVENTS_FULL) {
+      emitEvent({ t: 'trace_start', key: `${frameId}:0`, kind: 'func', num_args: numArgs });
+    }
+
     // Load args as LOAD_LOCAL with guard
     for (let i = 0; i < numArgs; i++) {
       const ref = this.trace.addInst(IR.LOAD_LOCAL, { slot: i });
@@ -277,6 +327,14 @@ export class TraceRecorder {
     }
     const trace = this.trace;
     this.trace = null;
+    if (JIT_EVENTS_FULL) {
+      emitEvent({
+        t: 'trace_complete',
+        key: `${trace.frameId}:${trace.startIp}`,
+        ir: trace.ir.length,
+        guards: trace.guardCount,
+      });
+    }
     return trace;
   }
 
@@ -286,7 +344,15 @@ export class TraceRecorder {
     return ip === this.parentTrace.startIp && frameIndex === this.startFrame;
   }
 
-  abort() {
+  abort(reason = 'unknown') {
+    if (JIT_EVENTS_FULL && this.trace) {
+      emitEvent({
+        t: 'trace_abort',
+        key: `${this.trace.frameId}:${this.trace.startIp}`,
+        reason,
+        ir: this.trace.ir.length,
+      });
+    }
     this.recording = false;
     this.trace = null;
     this.irStack = [];
@@ -299,7 +365,16 @@ export class TraceRecorder {
   // numLocals: callee's numLocals (to know the stack layout)
   // callSiteIp: the IP in the caller frame right after the OpCall (for guard exit fallback)
   enterInlineFrame(baseOffset, numLocals, callSiteIp) {
-    if (this.inlineDepth >= MAX_INLINE_DEPTH) return false;
+    if (this.inlineDepth >= MAX_INLINE_DEPTH) {
+      if (JIT_EVENTS_FULL && this.trace) {
+        emitEvent({
+          t: 'inline_max_depth',
+          key: `${this.trace.frameId}:${this.trace.startIp}`,
+          depth: this.inlineDepth,
+        });
+      }
+      return false;
+    }
     this.inlineFrames.push({
       baseOffset,
       numLocals,
@@ -307,6 +382,14 @@ export class TraceRecorder {
       callSiteIp,  // used for guard exits inside the inlined function
     });
     this.inlineDepth++;
+    if (JIT_EVENTS_FULL && this.trace) {
+      emitEvent({
+        t: 'inline_enter',
+        key: `${this.trace.frameId}:${this.trace.startIp}`,
+        depth: this.inlineDepth,
+        call_site_ip: callSiteIp,
+      });
+    }
     return true;
   }
 
@@ -319,6 +402,13 @@ export class TraceRecorder {
       this.inlineSlotRefs.delete(frame.baseOffset + i);
     }
     this.inlineDepth--;
+    if (JIT_EVENTS_FULL && this.trace) {
+      emitEvent({
+        t: 'inline_leave',
+        key: `${this.trace.frameId}:${this.trace.startIp}`,
+        depth: this.inlineDepth,
+      });
+    }
   }
 
   // Get the current base offset for local variable addressing
@@ -385,6 +475,18 @@ export class TraceRecorder {
     const gid = this.trace.addInst(op, operands);
     const inst = this.trace.ir[gid];
     inst.snapshot = this.captureSnapshot();
+    if (JIT_EVENTS_FULL) {
+      // Tag the guard subset specifically — addInst already emitted a uop event
+      // for it; this gives mimule's coverage manager a separate guard channel.
+      const ev = {
+        t: 'guard',
+        key: `${this.trace.frameId}:${this.trace.startIp}`,
+        op,
+        guard_idx: gid,
+      };
+      if (operands.ref !== undefined) ev.ref = operands.ref;
+      emitEvent(ev);
+    }
     return gid;
   }
 
@@ -563,6 +665,9 @@ export class JIT {
     if (this.blacklisted.has(key)) return false;
     const count = (this.hotCounts.get(key) || 0) + 1;
     this.hotCounts.set(key, count);
+    if (JIT_EVENTS_FULL && count === HOT_LOOP_THRESHOLD) {
+      emitEvent({ t: 'loop_hot', key, count });
+    }
     return count >= HOT_LOOP_THRESHOLD;
   }
 
@@ -571,8 +676,11 @@ export class JIT {
     const key = this.traceKey(closureId, ip);
     const count = (this.abortCounts.get(key) || 0) + 1;
     this.abortCounts.set(key, count);
-    if (count >= 3) {
+    if (count >= 3 && !this.blacklisted.has(key)) {
       this.blacklisted.add(key);
+      if (JIT_EVENTS_FULL) {
+        emitEvent({ t: 'blacklisted', key, abort_count: count });
+      }
     }
   }
 
@@ -606,7 +714,16 @@ export class JIT {
     try {
       const compiler = new TraceCompiler(parentTrace);
       const newCompiled = compiler.compile();
-      if (newCompiled) parentTrace.compiled = newCompiled;
+      if (newCompiled) {
+        parentTrace.compiled = newCompiled;
+        if (JIT_EVENTS_FULL) {
+          emitEvent({
+            t: 'recompile_inline',
+            key: `${parentTrace.frameId}:${parentTrace.startIp}`,
+            side_traces: parentTrace._sideTraceCount,
+          });
+        }
+      }
     } catch (e) {
       // If recompilation fails, keep the old compiled function
     }
@@ -625,6 +742,9 @@ export class JIT {
   countFuncCall(fn) {
     const count = (this.funcCallCounts.get(fn) || 0) + 1;
     this.funcCallCounts.set(fn, count);
+    if (JIT_EVENTS_FULL && count === HOT_FUNC_THRESHOLD) {
+      emitEvent({ t: 'func_hot', fn_id: fn.id, count });
+    }
     return count >= HOT_FUNC_THRESHOLD;
   }
 
@@ -672,7 +792,18 @@ export class JIT {
 
     const compiler = new TraceCompiler(trace, vm);
     trace.compiled = compiler.compile();
-    return trace.compiled !== null;
+    const ok = trace.compiled !== null;
+    if (JIT_EVENTS_FULL) {
+      emitEvent({
+        t: 'compile',
+        key: `${trace.frameId}:${trace.startIp}`,
+        ok,
+        ir: trace.ir.length,
+        guards: trace.guardCount,
+        kind: trace.isFuncTrace ? 'func' : (trace.isSideTrace ? 'side' : 'loop'),
+      });
+    }
+    return ok;
   }
 
   // Get JIT statistics for diagnostics
@@ -699,6 +830,7 @@ export class JIT {
     }
 
     return {
+      v: JIT_EVENTS_SCHEMA_VERSION,
       enabled: this.enabled,
       rootTraces,
       sideTraces: sideTraceCount,
