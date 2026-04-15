@@ -2,7 +2,7 @@
 import { describe, it, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { Shape, getShape, EMPTY_SHAPE, InlineCache, resetShapes, getShapeStats, createICTable, getIC, keyToString } from './shape.js';
-import { ShapedHash, MonkeyInteger, MonkeyString, MonkeyBoolean, objectKeyString, MonkeyHash } from './object.js';
+import { ShapedHash, MonkeyInteger, MonkeyString, MonkeyBoolean, objectKeyString, MonkeyHash, internString, resetInternTable, getInternStats } from './object.js';
 import { Lexer } from './lexer.js';
 import { Parser } from './parser.js';
 import { Compiler } from './compiler.js';
@@ -534,6 +534,45 @@ describe('IC stress — polymorphic patterns', () => {
   it('hash equality with shaped hashes', () => {
     const result = runVM(`
       {"x": 1, "y": 2} == {"x": 1, "y": 2}
+    `);
+    assert.equal(result.value, true);
+  });
+});
+
+describe('String interning', () => {
+  it('same string returns same object', () => {
+    resetInternTable();
+    const s1 = internString('hello');
+    const s2 = internString('hello');
+    assert.equal(s1, s2); // Same reference
+    assert.equal(s1.value, 'hello');
+  });
+
+  it('different strings return different objects', () => {
+    resetInternTable();
+    const s1 = internString('hello');
+    const s2 = internString('world');
+    assert.notEqual(s1, s2);
+  });
+
+  it('intern table tracks size', () => {
+    resetInternTable();
+    internString('a');
+    internString('b');
+    internString('a'); // duplicate
+    assert.equal(getInternStats().size, 2);
+  });
+
+  it('VM uses interned strings', () => {
+    const result = runVM('"hello" == "hello"');
+    assert.equal(result.value, true);
+  });
+
+  it('string concat produces internable result', () => {
+    const result = runVM(`
+      let a = "hel" + "lo"
+      let b = "hello"
+      a == b
     `);
     assert.equal(result.value, true);
   });

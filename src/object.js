@@ -170,6 +170,37 @@ export function objectKeyString(obj) {
   return String(obj);
 }
 
+// --- String Interning ---
+
+/** Global string intern table */
+const stringInternTable = new Map();
+
+/**
+ * Get or create an interned MonkeyString.
+ * Identical string values share the same object instance.
+ * This enables O(1) string equality via reference comparison.
+ * 
+ * @param {string} value - The string value
+ * @returns {MonkeyString} The interned string object
+ */
+export function internString(value) {
+  let existing = stringInternTable.get(value);
+  if (existing) return existing;
+  const str = new MonkeyString(value);
+  stringInternTable.set(value, str);
+  return str;
+}
+
+/** Get string intern table stats */
+export function getInternStats() {
+  return { size: stringInternTable.size };
+}
+
+/** Reset string intern table (for testing) */
+export function resetInternTable() {
+  stringInternTable.clear();
+}
+
 export class MonkeyEnum {
   constructor(enumName, variant, ordinal) {
     this.enumName = enumName;

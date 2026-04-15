@@ -5,7 +5,7 @@ import { Opcodes, lookup, readOperands } from './code.js';
 import { CompiledFunction, Closure, Cell } from './compiler.js';
 import {
     MonkeyInteger, MonkeyFloat, MonkeyString, MonkeyBoolean, MonkeyArray, MonkeyHash,
-  MonkeyNull, MonkeyError, MonkeyBuiltin, ShapedHash, objectKeyString,
+  MonkeyNull, MonkeyError, MonkeyBuiltin, ShapedHash, objectKeyString, internString,
   TRUE, FALSE, NULL, OBJ,
 } from './object.js';
 import { getShape, getIC, createICTable } from './shape.js';
@@ -95,12 +95,12 @@ export const builtins = [
   // type
   new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return new MonkeyError(`wrong number of arguments. got=${args.length}, want=1`);
-    return new MonkeyString(args[0].type());
+    return internString(args[0].type());
   }),
   // str (convert to string)
   new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return new MonkeyError(`wrong number of arguments. got=${args.length}, want=1`);
-    return new MonkeyString(args[0].inspect());
+    return internString(args[0].inspect());
   }),
   // int (convert to integer)
   new MonkeyBuiltin((...args) => {
@@ -147,7 +147,7 @@ export const builtins = [
         result += template[i];
       }
     }
-    return new MonkeyString(result);
+    return internString(result);
   }),
   // range
   new MonkeyBuiltin((...args) => {
@@ -175,7 +175,7 @@ export const builtins = [
     if (!(args[0] instanceof MonkeyString)) return new MonkeyError(`argument to split must be STRING, got ${args[0].type()}`);
     const sep = args.length === 2 && args[1] instanceof MonkeyString ? args[1].value : '';
     const parts = sep === '' ? [...args[0].value] : args[0].value.split(sep);
-    return new MonkeyArray(parts.map(s => new MonkeyString(s)));
+    return new MonkeyArray(parts.map(s => internString(s)));
   }),
   // join
   new MonkeyBuiltin((...args) => {
@@ -183,25 +183,25 @@ export const builtins = [
     if (!(args[0] instanceof MonkeyArray)) return new MonkeyError(`first argument to join must be ARRAY, got ${args[0].type()}`);
     const sep = args.length === 2 && args[1] instanceof MonkeyString ? args[1].value : '';
     const strs = args[0].elements.map(e => e.inspect ? e.inspect() : String(e));
-    return new MonkeyString(strs.join(sep));
+    return internString(strs.join(sep));
   }),
   // trim
   new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return new MonkeyError(`wrong number of arguments to trim. got=${args.length}, want=1`);
     if (!(args[0] instanceof MonkeyString)) return new MonkeyError(`argument to trim must be STRING, got ${args[0].type()}`);
-    return new MonkeyString(args[0].value.trim());
+    return internString(args[0].value.trim());
   }),
   // upper
   new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return new MonkeyError(`wrong number of arguments to upper. got=${args.length}, want=1`);
     if (!(args[0] instanceof MonkeyString)) return new MonkeyError(`argument to upper must be STRING, got ${args[0].type()}`);
-    return new MonkeyString(args[0].value.toUpperCase());
+    return internString(args[0].value.toUpperCase());
   }),
   // lower
   new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return new MonkeyError(`wrong number of arguments to lower. got=${args.length}, want=1`);
     if (!(args[0] instanceof MonkeyString)) return new MonkeyError(`argument to lower must be STRING, got ${args[0].type()}`);
-    return new MonkeyString(args[0].value.toLowerCase());
+    return internString(args[0].value.toLowerCase());
   }),
   // contains
   new MonkeyBuiltin((...args) => {
@@ -236,13 +236,13 @@ export const builtins = [
     if (args.length !== 3) return new MonkeyError('wrong number of arguments to replace');
     if (!(args[0] instanceof MonkeyString) || !(args[1] instanceof MonkeyString) || !(args[2] instanceof MonkeyString))
       return new MonkeyError('replace: all arguments must be STRING');
-    return new MonkeyString(args[0].value.split(args[1].value).join(args[2].value));
+    return internString(args[0].value.split(args[1].value).join(args[2].value));
   }),
   // reverse
   new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return new MonkeyError('wrong number of arguments to reverse');
     if (args[0] instanceof MonkeyArray) return new MonkeyArray([...args[0].elements].reverse());
-    if (args[0] instanceof MonkeyString) return new MonkeyString([...args[0].value].reverse().join(''));
+    if (args[0] instanceof MonkeyString) return internString([...args[0].value].reverse().join(''));
     return new MonkeyError(`reverse: unsupported type ${args[0].type()}`);
   }),
   // abs
@@ -279,7 +279,7 @@ export const builtins = [
   // char
   new MonkeyBuiltin((...args) => {
     if (args.length !== 1 || !(args[0] instanceof MonkeyInteger)) return new MonkeyError('char: expected 1 integer');
-    return new MonkeyString(String.fromCharCode(args[0].value));
+    return internString(String.fromCharCode(args[0].value));
   }),
   // ord
   new MonkeyBuiltin((...args) => {
@@ -290,7 +290,7 @@ export const builtins = [
   new MonkeyBuiltin((...args) => {
     if (args.length !== 2 || !(args[0] instanceof MonkeyString) || !(args[1] instanceof MonkeyInteger))
       return new MonkeyError('repeat: expected (string, int)');
-    return new MonkeyString(args[0].value.repeat(args[1].value));
+    return internString(args[0].value.repeat(args[1].value));
   }),
   // enumerate
   new MonkeyBuiltin((...args) => {
@@ -311,7 +311,7 @@ export const builtins = [
     if (args.length < 2 || args.length > 3) return new MonkeyError('slice: expected 2-3 arguments');
     const start = args[1] instanceof MonkeyInteger ? args[1].value : 0;
     const end = args.length > 2 && args[2] instanceof MonkeyInteger ? args[2].value : undefined;
-    if (args[0] instanceof MonkeyString) return new MonkeyString(args[0].value.slice(start, end));
+    if (args[0] instanceof MonkeyString) return internString(args[0].value.slice(start, end));
     if (args[0] instanceof MonkeyArray) return new MonkeyArray(args[0].elements.slice(start, end));
     return new MonkeyError('slice: first argument must be string or array');
   }),
@@ -814,14 +814,14 @@ export class VM {
       this.executeBinaryFloatOperation(op, left, right);
     } else if (left instanceof MonkeyString && right instanceof MonkeyString) {
       if (op === Opcodes.OpAdd) {
-        this.push(this._track(new MonkeyString(left.value + right.value)));
+        this.push(this._track(internString(left.value + right.value)));
       } else {
         throw new Error(`unknown string operator: ${op}`);
       }
     } else if (left instanceof MonkeyString && right instanceof MonkeyInteger && op === Opcodes.OpMul) {
-      this.push(this._track(new MonkeyString(left.value.repeat(Math.max(0, right.value)))));
+      this.push(this._track(internString(left.value.repeat(Math.max(0, right.value)))));
     } else if (left instanceof MonkeyInteger && right instanceof MonkeyString && op === Opcodes.OpMul) {
-      this.push(this._track(new MonkeyString(right.value.repeat(Math.max(0, left.value)))));
+      this.push(this._track(internString(right.value.repeat(Math.max(0, left.value)))));
     } else if (left instanceof MonkeyArray && right instanceof MonkeyArray && op === Opcodes.OpAdd) {
       this.push(this._track(new MonkeyArray([...left.elements, ...right.elements])));
     } else {
@@ -914,7 +914,7 @@ export class VM {
       if (idx < 0 || idx >= left.value.length) {
         this.push(NULL);
       } else {
-        this.push(this._track(new MonkeyString(left.value[idx])));
+        this.push(this._track(internString(left.value[idx])));
       }
     } else if (left instanceof MonkeyString && index instanceof MonkeyArray) {
       // Range/array slice for strings: "hello"[1..3] → "el"
@@ -922,7 +922,7 @@ export class VM {
       if (indices.length >= 2) {
         const start = Math.max(0, indices[0].value);
         const end = Math.min(left.value.length, indices[indices.length - 1].value + 1);
-        this.push(this._track(new MonkeyString(left.value.slice(start, end))));
+        this.push(this._track(internString(left.value.slice(start, end))));
       } else {
         this.push(NULL);
       }
