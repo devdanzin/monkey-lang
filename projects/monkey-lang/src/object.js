@@ -266,3 +266,50 @@ export class MonkeyYield {
   type() { return 'YIELD_VALUE'; }
   inspect() { return `yield(${this.value.inspect()})`; }
 }
+
+export class MonkeyClass {
+  constructor(name, methods, fields, superClass, env) {
+    this.name = name;             // string
+    this.methods = methods;       // Map<string, {params, body, env}>
+    this.fields = fields;         // [string]
+    this.superClass = superClass; // MonkeyClass or null
+    this.env = env;               // closure environment
+  }
+  type() { return 'CLASS'; }
+  inspect() { return `<class ${this.name}>`; }
+}
+
+export class MonkeyInstance {
+  constructor(klass) {
+    this.klass = klass;           // MonkeyClass
+    this.fields = new Map();       // Map<string, MonkeyObject>
+    // Initialize all declared fields to null
+    for (const f of klass.fields) {
+      this.fields.set(f, NULL);
+    }
+  }
+  type() { return 'INSTANCE'; }
+  inspect() {
+    const entries = [];
+    for (const [k, v] of this.fields) {
+      entries.push(`${k}: ${v.inspect()}`);
+    }
+    return `<${this.klass.name} {${entries.join(', ')}}>`;
+  }
+  
+  // Get a field or method
+  get(name) {
+    if (this.fields.has(name)) return this.fields.get(name);
+    // Look up method in class chain
+    let klass = this.klass;
+    while (klass) {
+      if (klass.methods.has(name)) return klass.methods.get(name);
+      klass = klass.superClass;
+    }
+    return null;
+  }
+  
+  set(name, value) {
+    this.fields.set(name, value);
+  }
+}

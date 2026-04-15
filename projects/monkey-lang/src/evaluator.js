@@ -5,6 +5,7 @@ import {
   MonkeyFunction, MonkeyArray, MonkeyHash, MonkeyBuiltin, MonkeyThrown,
   MonkeyBreak, MonkeyContinue, MonkeyResult, MonkeyEnum,
   MonkeyGeneratorDef, MonkeyGenerator, MonkeyYield,
+  MonkeyClass, MonkeyInstance,
   Environment, TRUE, FALSE, NULL, OBJ, internString,
 } from './object.js';
 
@@ -551,6 +552,22 @@ export function monkeyEval(node, env) {
     return new MonkeyGeneratorDef(node.parameters, node.body, env);
   }
 
+  if (node instanceof AST.ClassStatement) {
+    const methods = new Map();
+    for (const m of node.methods) {
+      const fn = new MonkeyFunction(m.params, m.body, env);
+      methods.set(m.name, fn);
+    }
+    const superClass = node.superClass ? env.get(node.superClass) : null;
+    return new MonkeyClass(node.name, methods, node.fields, superClass, env);
+  }
+
+  if (node instanceof AST.SelfExpression) {
+    const self = env.get('self');
+    if (!self) return newError('self outside of method');
+    return self;
+  }
+
   if (node instanceof AST.YieldExpression) {
     const val = monkeyEval(node.value, env);
     if (isError(val)) return val;
@@ -633,6 +650,8 @@ export function monkeyEval(node, env) {
       if (index.fastHashKey) {
         obj.pairs.set(index.fastHashKey(), { key: index, value: val });
       }
+    } else if (obj instanceof MonkeyInstance && index instanceof MonkeyString) {
+      obj.set(index.value, val);
     }
     return val;
   }
@@ -947,6 +966,9 @@ function applyFunction(fn, args) {
   if (fn instanceof MonkeyGeneratorDef) {
     return callGenerator(fn, args);
   }
+  if (fn instanceof MonkeyClass) {
+    return constructInstance(fn, args);
+  }
   return newError(`not a function: ${fn.type()}`);
 }
 
@@ -985,6 +1007,19 @@ function evalIndexExpression(left, index) {
       default: return NULL;
     }
   }
+  // Instance field/method access
+  if (left instanceof MonkeyInstance && index instanceof MonkeyString) {
+    const value = left.get(index.value);
+    if (value instanceof MonkeyFunction) {
+      // Return a bound method — wrap in a closure that sets self
+      const method = value;
+      const boundMethod = new MonkeyBuiltin((...args) => {
+        return callMethod(left, method, args);
+      });
+      return boundMethod;
+    }
+    return value || NULL;
+  }
   return newError(`index operator not supported: ${left.type()}`);
 }
 
@@ -1020,4 +1055,33 @@ function callGenerator(genDef, args) {
   
   monkeyEval(genDef.body, extendedEnv);
   return new MonkeyGenerator(values);
+}
+
+// Construct a class instance: create MonkeyInstance, call init if present
+function constructInstance(klass, args) {
+  const instance = new MonkeyInstance(klass);
+  
+  // Call init method if present
+  const initFn = klass.methods.get('init');
+  if (initFn) {
+    callMethod(instance, initFn, args);
+  }
+  
+  return instance;
+}
+
+// Call a method on an instance with self binding
+function callMethod(instance, fn, args) {
+  const extendedEnv = new Environment(fn.env);
+  extendedEnv.set('self', instance);
+  for (let i = 0; i < fn.parameters.length; i++) {
+    if (i < args.length) {
+      extendedEnv.set(fn.parameters[i].value, args[i]);
+    } else {
+      extendedEnv.set(fn.parameters[i].value, NULL);
+    }
+  }
+  const result = monkeyEval(fn.body, extendedEnv);
+  if (result instanceof MonkeyReturnValue) return result.value;
+  return result;
 }
