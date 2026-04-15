@@ -1,0 +1,259 @@
+// integration.test.js — Complex integration tests combining multiple features
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
+import { Lexer } from './lexer.js';
+import { Parser } from './parser.js';
+import { Compiler } from './compiler.js';
+import { VM } from './vm.js';
+import { GarbageCollector } from './gc.js';
+import { DebugVM } from './debugger.js';
+import { optimize } from './optimizer.js';
+import { MonkeyArray, MonkeyString, MonkeyInteger } from './object.js';
+
+function run(input) {
+  const l = new Lexer(input);
+  const p = new Parser(l);
+  const prog = p.parseProgram();
+  if (p.errors.length > 0) throw new Error(`Parser errors: ${p.errors.join(', ')}`);
+  const c = new Compiler();
+  c.compile(prog);
+  const vm = new VM(c.bytecode());
+  vm.run();
+  return vm.lastPoppedStackElem();
+}
+
+function runWithGC(input, gcOpts = {}) {
+  const l = new Lexer(input);
+  const p = new Parser(l);
+  const prog = p.parseProgram();
+  if (p.errors.length > 0) throw new Error(`Parser errors: ${p.errors.join(', ')}`);
+  const c = new Compiler();
+  c.compile(prog);
+  const gc = new GarbageCollector(gcOpts);
+  const vm = new VM(c.bytecode(), gc);
+  vm.run();
+  return { result: vm.lastPoppedStackElem(), gc };
+}
+
+function runOptimized(input) {
+  const l = new Lexer(input);
+  const p = new Parser(l);
+  const prog = p.parseProgram();
+  if (p.errors.length > 0) throw new Error(`Parser errors: ${p.errors.join(', ')}`);
+  const c = new Compiler();
+  c.compile(prog);
+  const bc = c.bytecode();
+  bc.instructions = optimize(bc.instructions);
+  const vm = new VM(bc);
+  vm.run();
+  return vm.lastPoppedStackElem();
+}
+
+describe('Integration Tests', () => {
+  describe('Closures + match + comprehensions', () => {
+    it('closure factory with match dispatch', () => {
+      const result = run(`
+        let make_op = fn(name) {
+          match name {
+            "add" => fn(a, b) { a + b },
+            "mul" => fn(a, b) { a * b },
+            "sub" => fn(a, b) { a - b },
+            _ => fn(a, b) { 0 }
+          }
+        };
+        let add = make_op("add");
+        let mul = make_op("mul");
+        add(3, mul(4, 5))
+      `);
+      assert.equal(result.value, 23);
+    });
+
+    it('comprehension with closures', () => {
+      const result = run(`
+        let make_adder = fn(n) { fn(x) { x + n } };
+        let adders = [make_adder(i) for i in [1, 2, 3]];
+        [f(10) for f in adders]
+      `);
+      assert.deepEqual(result.elements.map(e => e.value), [11, 12, 13]);
+    });
+  });
+
+  describe('Mutable state + for-in + match', () => {
+    it('counter with categorization', () => {
+      const result = run(`
+        let make = fn() {
+          let n = 0;
+          let inc = fn() { set n = n + 1; n };
+          let classify = fn() {
+            match n {
+              0 => "zero",
+              1 => "one",
+              2 => "two",
+              _ => "many"
+            }
+          };
+          [inc, classify]
+        };
+        let pair = make();
+        let inc = pair[0];
+        let classify = pair[1];
+        let labels = [];
+        for (i in [1, 2, 3, 4]) {
+          inc();
+          set labels = push(labels, classify());
+        }
+        labels
+      `);
+      assert.deepEqual(result.elements.map(e => e.value), ['one', 'two', 'many', 'many']);
+    });
+  });
+
+  describe('Deep equality + spread + comprehensions', () => {
+    it('building arrays with spread and comparing', () => {
+      const result = run(`
+        let a = [1, 2, 3];
+        let b = [4, 5, 6];
+        let combined = [...a, ...b];
+        combined == [1, 2, 3, 4, 5, 6]
+      `);
+      assert.equal(result.inspect(), 'true');
+    });
+
+    it('comprehension + filter + deep equality check', () => {
+      const result = run(`
+        let evens = [x for x in 1..10 if x % 2 == 0];
+        evens == [2, 4, 6, 8, 10]
+      `);
+      assert.equal(result.inspect(), 'true');
+    });
+  });
+
+  describe('Pipe + match + f-strings', () => {
+    it('piping through classify', () => {
+      const result = run(`
+        let classify = fn(n) {
+          match n {
+            0 => "zero",
+            1 => "one",
+            _ => f"number({n})"
+          }
+        };
+        5 |> classify
+      `);
+      assert.equal(result.value, 'number(5)');
+    });
+  });
+
+  describe('Recursion + closures + GC', () => {
+    it('tree traversal with GC pressure', () => {
+      const { result, gc } = runWithGC(`
+        let make_tree = fn(depth) {
+          if (depth == 0) { [0] }
+          else { [depth, make_tree(depth - 1), make_tree(depth - 1)] }
+        };
+        let count_nodes = fn(tree) {
+          if (len(tree) == 1) { 1 }
+          else { 1 + count_nodes(tree[1]) + count_nodes(tree[2]) }
+        };
+        let tree = make_tree(5);
+        count_nodes(tree)
+      `, { threshold: 20 });
+      
+      assert.equal(result.value, 63); // 2^6 - 1
+      assert.ok(gc.stats.collections > 0, 'GC should have collected');
+    });
+  });
+
+  describe('Optimizer preserves complex programs', () => {
+    it('optimized closure + match', () => {
+      const result = runOptimized(`
+        let dispatch = fn(x) {
+          if (true) {
+            match x { 1 => "one", 2 => "two", _ => "other" }
+          } else {
+            "unreachable"
+          }
+        };
+        dispatch(2)
+      `);
+      assert.equal(result.value, 'two');
+    });
+  });
+
+  describe('Full pipeline: compile + optimize + GC + debug', () => {
+    it('debugger traces optimized GC program', () => {
+      const input = `
+        let sum = fn(arr) {
+          let total = 0;
+          for (x in arr) { set total = total + x; }
+          total
+        };
+        sum([x * x for x in 1..5])
+      `;
+      
+      const l = new Lexer(input);
+      const p = new Parser(l);
+      const prog = p.parseProgram();
+      const c = new Compiler();
+      c.compile(prog);
+      const bc = c.bytecode();
+      
+      // Optimize
+      bc.instructions = optimize(bc.instructions);
+      
+      // Run with GC through debugger
+      const gc = new GarbageCollector({ threshold: 10 });
+      const dbg = new DebugVM(bc, gc);
+      dbg.enableTrace(true);
+      
+      while (dbg.step() !== 'completed') {}
+      
+      assert.equal(dbg.result().value, 55); // 1+4+9+16+25
+      assert.ok(dbg.trace.length > 0, 'trace should record instructions');
+      assert.ok(gc.stats.totalAllocated > 0, 'GC should track allocations');
+    });
+  });
+
+  describe('Edge cases under stress', () => {
+    it('deeply nested closures with comprehensions', () => {
+      const result = run(`
+        let make = fn(a) {
+          fn(b) {
+            fn(c) {
+              [a + b + c + x for x in [0, 1, 2]]
+            }
+          }
+        };
+        make(10)(20)(30)
+      `);
+      assert.deepEqual(result.elements.map(e => e.value), [60, 61, 62]);
+    });
+
+    it('mutual state through cells', () => {
+      const result = run(`
+        let make = fn() {
+          let state = [];
+          let add = fn(x) { set state = push(state, x) };
+          let get = fn() { state };
+          [add, get]
+        };
+        let pair = make();
+        let add = pair[0];
+        let get = pair[1];
+        add(1); add(2); add(3);
+        get() == [1, 2, 3]
+      `);
+      assert.equal(result.inspect(), 'true');
+    });
+
+    it('fibonacci via comprehension + closure', () => {
+      const result = run(`
+        let fib = fn(n) {
+          if (n < 2) { n } else { fib(n - 1) + fib(n - 2) }
+        };
+        [fib(n) for n in 0..9]
+      `);
+      assert.deepEqual(result.elements.map(e => e.value), [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]);
+    });
+  });
+});
