@@ -130,13 +130,44 @@ const builtins = new Map([
     const instance = args[0];
     const klass = args[1];
     if (!(instance instanceof MonkeyInstance) || !(klass instanceof MonkeyClass)) return FALSE;
-    // Walk the class chain
     let cls = instance.klass;
     while (cls) {
       if (cls === klass) return TRUE;
       cls = cls.superClass;
     }
     return FALSE;
+  })],
+  ['hasattr', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError(`wrong number of arguments. got=${args.length}, want=2`);
+    if (!(args[0] instanceof MonkeyInstance)) return FALSE;
+    if (!(args[1] instanceof MonkeyString)) return newError('second argument must be STRING');
+    return args[0].get(args[1].value) !== null ? TRUE : FALSE;
+  })],
+  ['getattr', new MonkeyBuiltin((...args) => {
+    if (args.length < 2 || args.length > 3) return newError(`wrong number of arguments. got=${args.length}, want=2 or 3`);
+    if (!(args[0] instanceof MonkeyInstance)) return args.length === 3 ? args[2] : NULL;
+    if (!(args[1] instanceof MonkeyString)) return newError('second argument must be STRING');
+    const val = args[0].get(args[1].value);
+    if (val === null) return args.length === 3 ? args[2] : NULL;
+    if (val instanceof MonkeyFunction) {
+      const instance = args[0];
+      const method = val;
+      return new MonkeyBuiltin((...callArgs) => callMethod(instance, method, callArgs));
+    }
+    return val;
+  })],
+  ['setattr', new MonkeyBuiltin((...args) => {
+    if (args.length !== 3) return newError(`wrong number of arguments. got=${args.length}, want=3`);
+    if (!(args[0] instanceof MonkeyInstance)) return newError('first argument must be INSTANCE');
+    if (!(args[1] instanceof MonkeyString)) return newError('second argument must be STRING');
+    args[0].set(args[1].value, args[2]);
+    return NULL;
+  })],
+  ['classname', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError(`wrong number of arguments. got=${args.length}, want=1`);
+    if (args[0] instanceof MonkeyInstance) return new MonkeyString(args[0].klass.name);
+    if (args[0] instanceof MonkeyClass) return new MonkeyString(args[0].name);
+    return new MonkeyString(args[0].type());
   })],
   ['ord', new MonkeyBuiltin((...args) => {
     if (args.length !== 1 || args[0].type() !== OBJ.STRING) return newError('ord requires one string argument');
