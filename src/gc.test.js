@@ -396,3 +396,187 @@ describe('Garbage Collector', () => {
     });
   });
 });
+
+describe('GC Stress Tests', () => {
+  describe('Large allocations', () => {
+    it('handles many temporary arrays', () => {
+      const { result, gc } = compileAndRun(`
+        let total = 0;
+        for (i in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]) {
+          let temp = [i, i * 2, i * 3, i * 4, i * 5];
+          set total = total + len(temp);
+        }
+        total
+      `, { threshold: 15 });
+      
+      assert.equal(result.value, 100); // 20 * 5
+      assert.ok(gc.stats.collections > 0, 'should have collected');
+      assert.ok(gc.stats.totalFreed > 0, 'should have freed temp arrays');
+    });
+
+    it('large array creation and destruction', () => {
+      // Create a large array, then replace it — all elements should be collectible
+      const { gc } = compileAndRun(`
+        let big = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
+        set big = 0;
+        big
+      `, { threshold: 10000 });
+      
+      gc.forceCollect();
+      assert.ok(gc.stats.totalFreed > 0, 'large array should be freed');
+    });
+  });
+
+  describe('Closure chains', () => {
+    it('chain of closures with GC', () => {
+      const { result } = compileAndRun(`
+        let compose = fn(f, g) {
+          fn(x) { f(g(x)) }
+        };
+        let add1 = fn(x) { x + 1 };
+        let mul2 = fn(x) { x * 2 };
+        let add1_then_mul2 = compose(mul2, add1);
+        add1_then_mul2(5)
+      `, { threshold: 5 });
+      
+      assert.equal(result.value, 12); // (5+1)*2
+    });
+
+    it('closure factory with many instances', () => {
+      const { result, gc } = compileAndRun(`
+        let make_adder = fn(n) { fn(x) { x + n } };
+        let add1 = make_adder(1);
+        let add2 = make_adder(2);
+        let add3 = make_adder(3);
+        let add4 = make_adder(4);
+        let add5 = make_adder(5);
+        add1(10) + add2(10) + add3(10) + add4(10) + add5(10)
+      `, { threshold: 5 });
+      
+      assert.equal(result.value, 65); // 11+12+13+14+15
+      assert.ok(gc.stats.collections > 0);
+    });
+
+    it('recursive closure with accumulator', () => {
+      const { result } = compileAndRun(`
+        let sum_to = fn(n) {
+          if (n == 0) { 0 } else { n + sum_to(n - 1) }
+        };
+        sum_to(20)
+      `, { threshold: 10 });
+      
+      assert.equal(result.value, 210);
+    });
+  });
+
+  describe('GC correctness under pressure', () => {
+    it('GC does not corrupt live data', () => {
+      const { result } = compileAndRun(`
+        let data = [10, 20, 30, 40, 50];
+        for (i in [1,2,3,4,5,6,7,8,9,10]) {
+          let garbage = [i, i, i, i, i, i, i, i];
+        }
+        data[2]
+      `, { threshold: 5 });
+      
+      assert.equal(result.value, 30);
+    });
+
+    it('GC preserves hash integrity', () => {
+      const { result } = compileAndRun(`
+        let h = {"x": 10, "y": 20, "z": 30};
+        for (i in [1,2,3,4,5]) {
+          let trash = {"a": i, "b": i * 2};
+        }
+        h["y"]
+      `, { threshold: 5 });
+      
+      assert.equal(result.value, 20);
+    });
+
+    it('GC preserves closure captures', () => {
+      const { result } = compileAndRun(`
+        let make = fn() {
+          let secret = 42;
+          fn() { secret }
+        };
+        let getter = make();
+        for (i in [1,2,3,4,5,6,7,8,9,10]) {
+          let trash = [i, i, i];
+        }
+        getter()
+      `, { threshold: 5 });
+      
+      assert.equal(result.value, 42);
+    });
+
+    it('GC preserves mutable cells', () => {
+      const { result } = compileAndRun(`
+        let make = fn() {
+          let n = 0;
+          let inc = fn() { set n = n + 1; n };
+          inc
+        };
+        let counter = make();
+        counter();
+        for (i in [1,2,3,4,5,6,7,8,9,10]) {
+          let trash = [i, i, i, i, i];
+        }
+        counter();
+        counter()
+      `, { threshold: 5 });
+      
+      assert.equal(result.value, 3);
+    });
+
+    it('fibonacci under heavy GC pressure', () => {
+      const { result } = compileAndRun(`
+        let fib = fn(n) {
+          if (n < 2) { n } else { fib(n - 1) + fib(n - 2) }
+        };
+        fib(20)
+      `, { threshold: 5 });
+      
+      assert.equal(result.value, 6765);
+    });
+  });
+
+  describe('GC statistics accuracy', () => {
+    it('allocation count matches expected', () => {
+      const { gc } = compileAndRun(`
+        let a = [1, 2, 3];
+        let b = [4, 5, 6];
+        let c = [7, 8, 9];
+        0
+      `, { threshold: 10000 });
+      
+      // 9 integers + 3 arrays = 12 allocations (but integers may be cached)
+      assert.ok(gc.stats.totalAllocated >= 3, 'at least 3 arrays allocated');
+    });
+
+    it('collection reduces heap size', () => {
+      const { gc } = compileAndRun(`
+        let x = [1,2,3,4,5,6,7,8,9,10];
+        set x = 0;
+        0
+      `, { threshold: 10000 });
+      
+      const before = gc.heap.size;
+      gc.forceCollect();
+      assert.ok(gc.heap.size < before, `heap should shrink: ${gc.heap.size} < ${before}`);
+    });
+
+    it('peak live tracks maximum heap size', () => {
+      const { gc } = compileAndRun(`
+        let a = [1, 2, 3, 4, 5];
+        let b = [6, 7, 8, 9, 10];
+        set a = 0;
+        set b = 0;
+        0
+      `, { threshold: 10000 });
+      
+      gc.forceCollect();
+      assert.ok(gc.stats.peakLive > gc.heap.size, 'peak should exceed current after collection');
+    });
+  });
+});
