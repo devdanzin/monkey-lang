@@ -82,6 +82,7 @@ export const TokenType = {
   SELF: 'SELF',
   NEW: 'NEW',
   EXTENDS: 'EXTENDS',
+  SUPER: 'SUPER',
 
   // Special
   EOF: 'EOF',
@@ -116,6 +117,7 @@ const KEYWORDS = {
   self: TokenType.SELF,
   new: TokenType.NEW,
   extends: TokenType.EXTENDS,
+  super: TokenType.SUPER,
 };
 
 export class Token {

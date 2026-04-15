@@ -77,6 +77,7 @@ export class Parser {
     this.registerPrefix(TokenType.GEN, () => this.parseGeneratorLiteral());
     this.registerPrefix(TokenType.YIELD, () => this.parseYieldExpression());
     this.registerPrefix(TokenType.SELF, () => new ast.SelfExpression(this.curToken));
+    this.registerPrefix(TokenType.SUPER, () => new ast.SuperExpression(this.curToken));
     this.registerPrefix(TokenType.LBRACKET, () => this.parseArrayLiteral());
     this.registerPrefix(TokenType.LBRACE, () => this.parseHashLiteral());
     this.registerPrefix(TokenType.WHILE, () => this.parseWhileExpression());

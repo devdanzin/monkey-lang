@@ -718,6 +718,29 @@ export function monkeyEval(node, env) {
     return self;
   }
 
+  if (node instanceof AST.SuperExpression) {
+    // Return a proxy that resolves method lookups from the parent class
+    const self = env.get('self');
+    if (!self) return newError('super outside of method');
+    const klass = self.klass;
+    if (!klass.superClass) return newError(`class ${klass.name} has no superclass`);
+    // Create a proxy MonkeyInstance that looks up methods from the parent
+    const superProxy = {
+      type: () => 'SUPER_PROXY',
+      inspect: () => '<super>',
+      get: (name) => {
+        let cls = klass.superClass;
+        while (cls) {
+          if (cls.methods.has(name)) return cls.methods.get(name);
+          cls = cls.superClass;
+        }
+        return null;
+      }
+    };
+    superProxy._actualInstance = self; // for bound method calls
+    return superProxy;
+  }
+
   if (node instanceof AST.YieldExpression) {
     const val = monkeyEval(node.value, env);
     if (isError(val)) return val;
@@ -1187,6 +1210,15 @@ function evalIndexExpression(left, index) {
       case 'length': return new MonkeyInteger(left.elements.length);
       default: return NULL;
     }
+  }
+  // Super proxy method access
+  if (left && left.type && left.type() === 'SUPER_PROXY' && index instanceof MonkeyString) {
+    const method = left.get(index.value);
+    if (method && method instanceof MonkeyFunction) {
+      const instance = left._actualInstance;
+      return new MonkeyBuiltin((...args) => callMethod(instance, method, args));
+    }
+    return NULL;
   }
   // Instance field/method access
   if (left instanceof MonkeyInstance && index instanceof MonkeyString) {

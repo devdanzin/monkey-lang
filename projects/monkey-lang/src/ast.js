@@ -491,3 +491,9 @@ export class SelfExpression {
   tokenLiteral() { return 'self'; }
   toString() { return 'self'; }
 }
+
+export class SuperExpression {
+  constructor(token) { this.token = token; }
+  tokenLiteral() { return 'super'; }
+  toString() { return 'super'; }
+}
