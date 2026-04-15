@@ -1013,6 +1013,10 @@ export class Compiler {
       for (const param of node.parameters) {
         this.symbolTable.define(param.value);
       }
+      // Rest parameter gets defined as the next local after regular params
+      if (node.restParam) {
+        this.symbolTable.define(node.restParam.value);
+      }
       this.compile(node.body);
       if (this.lastInstructionIs(Opcodes.OpPop)) {
         this.replaceLastPopWithReturn();
@@ -1036,7 +1040,7 @@ export class Compiler {
         this.loadSymbol(sym, needsRaw);
       }
 
-      const compiledFn = new CompiledFunction(instructions, numLocals, node.parameters.length);
+      const compiledFn = new CompiledFunction(instructions, numLocals, node.parameters.length, !!node.restParam);
       this.emit(Opcodes.OpClosure, this.addConstant(compiledFn), freeSymbols.length);
     } else if (node instanceof AST.ReturnStatement) {
       this.compile(node.returnValue);
@@ -1420,10 +1424,11 @@ export class Compiler {
  * CompiledFunction: a compiled function body (used as a constant).
  */
 export class CompiledFunction {
-  constructor(instructions, numLocals = 0, numParameters = 0) {
+  constructor(instructions, numLocals = 0, numParameters = 0, hasRestParam = false) {
     this.instructions = instructions;
     this.numLocals = numLocals;
     this.numParameters = numParameters;
+    this.hasRestParam = hasRestParam;
   }
 
   type() { return 'COMPILED_FUNCTION'; }

@@ -924,18 +924,48 @@ export class VM {
   }
 
   callClosure(closure, numArgs) {
-    if (numArgs !== closure.fn.numParameters) {
-      throw new Error(`wrong number of arguments: want=${closure.fn.numParameters}, got=${numArgs}`);
-    }
+    const numParams = closure.fn.numParameters;
+    
+    if (closure.fn.hasRestParam) {
+      // Rest param: need at least numParams regular args
+      if (numArgs < numParams) {
+        throw new Error(`wrong number of arguments: want>=${numParams}, got=${numArgs}`);
+      }
+      
+      // Pack extra args into an array for the rest param
+      const restStart = this.sp - numArgs + numParams;
+      const restEnd = this.sp;
+      const restElements = [];
+      for (let i = restStart; i < restEnd; i++) {
+        restElements.push(this.stack[i]);
+      }
+      const restArray = this._track(new MonkeyArray(restElements));
+      
+      // Rewrite stack: regular params + rest array
+      this.sp = this.sp - numArgs + numParams;
+      this.stack[this.sp] = restArray;
+      this.sp++;
+      
+      const frame = new Frame(closure, this.sp - numParams - 1);
+      this.pushFrame(frame);
+      const base = frame.basePointer;
+      for (let i = numParams + 1; i < closure.fn.numLocals; i++) {
+        this.stack[base + i] = null;
+      }
+      this.sp = frame.basePointer + closure.fn.numLocals;
+    } else {
+      if (numArgs !== numParams) {
+        throw new Error(`wrong number of arguments: want=${numParams}, got=${numArgs}`);
+      }
 
-    const frame = new Frame(closure, this.sp - numArgs);
-    this.pushFrame(frame);
-    // Allocate and initialize space for locals (clear stale values)
-    const base = frame.basePointer;
-    for (let i = numArgs; i < closure.fn.numLocals; i++) {
-      this.stack[base + i] = null;
+      const frame = new Frame(closure, this.sp - numArgs);
+      this.pushFrame(frame);
+      const base = frame.basePointer;
+      for (let i = numArgs; i < closure.fn.numLocals; i++) {
+        this.stack[base + i] = null;
+      }
+      this.sp = frame.basePointer + closure.fn.numLocals;
     }
-    this.sp = frame.basePointer + closure.fn.numLocals;
   }
 
   callBuiltin(builtin, numArgs) {

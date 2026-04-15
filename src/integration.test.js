@@ -343,3 +343,48 @@ describe('Hash Destructuring', () => {
     assert.equal(result.value, 25);
   });
 });
+
+describe('Rest Parameters', () => {
+  it('collects extra args', () => {
+    const result = run('let f = fn(a, ...rest) { rest }; f(1, 2, 3)');
+    assert.deepEqual(result.elements.map(e => e.value), [2, 3]);
+  });
+
+  it('first param works normally', () => {
+    assert.equal(run('let f = fn(a, ...rest) { a }; f(1, 2, 3)').value, 1);
+  });
+
+  it('rest is empty when no extra args', () => {
+    const result = run('let f = fn(a, ...rest) { rest }; f(1)');
+    assert.equal(result.elements.length, 0);
+  });
+
+  it('all args as rest', () => {
+    const result = run('let f = fn(...args) { args }; f(1, 2, 3)');
+    assert.deepEqual(result.elements.map(e => e.value), [1, 2, 3]);
+  });
+
+  it('rest with len', () => {
+    assert.equal(run('let f = fn(a, ...rest) { len(rest) }; f(1, 2, 3, 4, 5)').value, 4);
+  });
+
+  it('rest with sum', () => {
+    assert.equal(run(`
+      let sum_all = fn(...nums) {
+        let total = 0;
+        for (n in nums) { set total = total + n; }
+        total
+      };
+      sum_all(1, 2, 3, 4, 5)
+    `).value, 15);
+  });
+
+  it('rest with spread roundtrip', () => {
+    const result = run(`
+      let collect = fn(...args) { args };
+      let arr = collect(10, 20, 30);
+      [...arr, 40]
+    `);
+    assert.deepEqual(result.elements.map(e => e.value), [10, 20, 30, 40]);
+  });
+});
