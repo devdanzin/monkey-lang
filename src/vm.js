@@ -886,6 +886,16 @@ export class VM {
       } else {
         this.push(left.elements[idx]);
       }
+    } else if (left instanceof MonkeyArray && index instanceof MonkeyArray) {
+      // Range/array slice: arr[start..end] → arr[start], arr[start+1], ..., arr[end]
+      const indices = index.elements;
+      if (indices.length >= 2) {
+        const start = Math.max(0, indices[0].value);
+        const end = Math.min(left.elements.length, indices[indices.length - 1].value + 1);
+        this.push(this._track(new MonkeyArray(left.elements.slice(start, end))));
+      } else {
+        this.push(NULL);
+      }
     } else if (left instanceof MonkeyString && index instanceof MonkeyInteger) {
       let idx = index.value;
       if (idx < 0) idx = left.value.length + idx; // negative indexing
@@ -893,6 +903,16 @@ export class VM {
         this.push(NULL);
       } else {
         this.push(this._track(new MonkeyString(left.value[idx])));
+      }
+    } else if (left instanceof MonkeyString && index instanceof MonkeyArray) {
+      // Range/array slice for strings: "hello"[1..3] → "el"
+      const indices = index.elements;
+      if (indices.length >= 2) {
+        const start = Math.max(0, indices[0].value);
+        const end = Math.min(left.value.length, indices[indices.length - 1].value + 1);
+        this.push(this._track(new MonkeyString(left.value.slice(start, end))));
+      } else {
+        this.push(NULL);
       }
     } else if (left instanceof MonkeyHash) {
       const key = left.pairs.get(index) || 

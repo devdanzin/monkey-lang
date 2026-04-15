@@ -509,3 +509,23 @@ describe('Combined Features Stress Tests', () => {
     assert.equal(result.inspect(), 'true');
   });
 });
+
+describe('Range Slicing', () => {
+  it('array range slice', () => {
+    const result = run('[10, 20, 30, 40, 50][1..3]');
+    assert.deepEqual(result.elements.map(e => e.value), [20, 30, 40]);
+  });
+
+  it('string range slice', () => {
+    assert.equal(run('"hello"[1..3]').value, 'ell');
+  });
+
+  it('full string slice', () => {
+    assert.equal(run('"hello"[0..4]').value, 'hello');
+  });
+
+  it('array slice with variable', () => {
+    const result = run('let arr = [1,2,3,4,5]; arr[2..4]');
+    assert.deepEqual(result.elements.map(e => e.value), [3, 4, 5]);
+  });
+});
