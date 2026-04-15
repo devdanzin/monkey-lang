@@ -282,6 +282,7 @@ export class Lexer {
       case ':': tok = new Token(TokenType.COLON, ':'); break;
       case '?':
         if (this.peekChar() === '?') { this.readChar(); tok = new Token(TokenType.NULLISH, '??'); }
+        else if (this.peekChar() === '.') { this.readChar(); tok = new Token('?.', '?.'); }
         else { tok = new Token(TokenType.QUESTION, '?'); }
         break;
       case '(': tok = new Token(TokenType.LPAREN, '('); break;

@@ -899,6 +899,22 @@ export class Compiler {
         this.compile(arg);
       }
       this.emit(Opcodes.OpCall, node.arguments.length);
+    } else if (node instanceof AST.OptionalChainExpression) {
+      // left?.key → if left is null, return null, else left[key]
+      this.compile(node.left);
+      // Check if null: emit OpNull, OpEqual, JumpNotTruthy
+      this.emit(Opcodes.OpNull);
+      this.emit(Opcodes.OpEqual);
+      const jumpNotNullPos = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+      // Is null → push null
+      this.emit(Opcodes.OpNull);
+      const jumpEndPos = this.emit(Opcodes.OpJump, 9999);
+      // Not null → re-compile left, compile index, emit OpIndex
+      this.changeOperand(jumpNotNullPos, this.currentInstructions().length);
+      this.compile(node.left);
+      this.compile(node.index);
+      this.emit(Opcodes.OpIndex);
+      this.changeOperand(jumpEndPos, this.currentInstructions().length);
     } else if (node instanceof AST.EnumStatement) {
       // Create enum as a hash: { "Red": Enum(Color, Red, 0), "Green": Enum(Color, Green, 1), ... }
       // For the VM, we represent each variant as a string "EnumName.VariantName"

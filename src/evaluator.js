@@ -827,6 +827,14 @@ export function monkeyEval(node, env) {
     if (isTruthy(cond)) return monkeyEval(node.consequence, env);
     return monkeyEval(node.alternative, env);
   }
+  if (node instanceof AST.OptionalChainExpression) {
+    const left = monkeyEval(node.left, env);
+    if (isError(left)) return left;
+    if (left === NULL || left === undefined) return NULL;
+    const index = monkeyEval(node.index, env);
+    if (isError(index)) return index;
+    return evalIndexExpression(left, index) || NULL;
+  }
   if (node instanceof AST.EnumStatement) {
     const pairs = new Map();
     for (let i = 0; i < node.variants.length; i++) {

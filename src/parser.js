@@ -40,6 +40,7 @@ const TOKEN_PRECEDENCE = {
   [TokenType.ASTERISK]: Precedence.PRODUCT,
   ['++']:  Precedence.CALL,
   ['--']:  Precedence.CALL,
+  ['?.']:  Precedence.CALL,
   [TokenType.LPAREN]: Precedence.CALL,
   [TokenType.DOT]: Precedence.CALL,
   [TokenType.LBRACKET]: Precedence.INDEX,
@@ -99,6 +100,7 @@ export class Parser {
     this.registerInfix(TokenType.PIPE, (left) => this.parsePipeExpression(left));
     this.registerInfix('++', (left) => this.parsePostfixExpression(left, '+'));
     this.registerInfix('--', (left) => this.parsePostfixExpression(left, '-'));
+    this.registerInfix('?.', (left) => this.parseOptionalChainExpression(left));
     
     // Method call: obj.method(args)  →  method(obj, args)
     this.registerInfix(TokenType.DOT, (left) => this.parseMethodCall(left));
@@ -592,6 +594,24 @@ export class Parser {
     if (!this.expectPeek(TokenType.LBRACE)) return null;
     const catchBody = this.parseBlockStatement();
     return new ast.TryCatchExpression(token, tryBody, errorIdent, catchBody);
+  }
+
+  parseOptionalChainExpression(left) {
+    const token = this.curToken;
+    if (this.peekToken.type === TokenType.LBRACKET) {
+      this.nextToken(); // consume [
+      this.nextToken();
+      const index = this.parseExpression(Precedence.LOWEST);
+      if (!this.expectPeek(TokenType.RBRACKET)) return null;
+      return new ast.OptionalChainExpression(token, left, index);
+    } else if (this.peekToken.type === TokenType.IDENT) {
+      this.nextToken();
+      const key = new ast.StringLiteral(this.curToken, this.curToken.literal);
+      return new ast.OptionalChainExpression(token, left, key);
+    } else {
+      this.errors.push(`expected [ or identifier after ?., got ${this.peekToken.type}`);
+      return left;
+    }
   }
 
   parsePostfixExpression(left, op) {
