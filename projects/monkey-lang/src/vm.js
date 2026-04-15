@@ -404,6 +404,9 @@ export class VM {
     this.jit = null;
     this.recorder = null;
     this._traceConsts = [];    // extra constants referenced by traces (closures, etc.)
+
+    // Exception handling
+    this.handlerStack = [];
   }
 
   enableJIT() {
@@ -1487,6 +1490,47 @@ export class VM {
           break;
         }
 
+        case Opcodes.OpTry: {
+          const catchAddr = (ins[ip + 1] << 8) | ins[ip + 2];
+          const finallyAddr = (ins[ip + 3] << 8) | ins[ip + 4];
+          frame.ip += 4;
+          // Push an exception handler onto the handler stack
+          if (!this.handlerStack) this.handlerStack = [];
+          this.handlerStack.push({
+            frameIndex: this.framesIndex - 1,
+            catchAddr,
+            finallyAddr,
+            sp: this.sp,
+          });
+          break;
+        }
+
+        case Opcodes.OpPopHandler: {
+          if (this.handlerStack && this.handlerStack.length > 0) {
+            this.handlerStack.pop();
+          }
+          break;
+        }
+
+        case Opcodes.OpThrow: {
+          const thrownValue = this.pop();
+          if (this.handlerStack && this.handlerStack.length > 0) {
+            const handler = this.handlerStack.pop();
+            this.framesIndex = handler.frameIndex + 1;
+            this.sp = handler.sp;
+            this.push(thrownValue);
+            frame = this.frames[this.framesIndex - 1];
+            frame.ip = handler.catchAddr - 1;
+          } else {
+            const msg = thrownValue instanceof MonkeyString ? thrownValue.value
+              : thrownValue instanceof MonkeyError ? thrownValue.message
+              : (thrownValue && thrownValue.value !== undefined) ? String(thrownValue.value)
+              : String(thrownValue);
+            throw new Error(`Uncaught exception: ${msg}`);
+          }
+          break;
+        }
+
         case Opcodes.OpCurrentClosure:
           this.push(frame.closure);
           if (recording()) {
@@ -2034,6 +2078,33 @@ export class VM {
     }
     if (this.recorder) this.recorder.abort(reason);
     this.recorder = null;
+  }
+
+  _handleThrow(thrownValue) {
+    // Look for a handler on the handler stack
+    if (this.handlerStack && this.handlerStack.length > 0) {
+      const handler = this.handlerStack.pop();
+
+      // Unwind call frames back to the handler's frame
+      this.framesIndex = handler.frameIndex + 1;
+
+      // Restore stack pointer
+      this.sp = handler.sp;
+
+      // Push the thrown value onto the stack (for the catch param)
+      this.push(thrownValue);
+
+      // Jump to catch handler
+      const frame = this.frames[this.framesIndex - 1];
+      frame.ip = handler.catchAddr - 1; // -1 because loop will increment
+    } else {
+      // No handler — convert to a runtime error
+      const msg = thrownValue instanceof MonkeyString ? thrownValue.value
+        : thrownValue instanceof MonkeyError ? thrownValue.message
+        : (thrownValue && thrownValue.value !== undefined) ? String(thrownValue.value)
+        : String(thrownValue);
+      throw new Error(`Uncaught exception: ${msg}`);
+    }
   }
 
   // Get or create quickening counters for a bytecode array.

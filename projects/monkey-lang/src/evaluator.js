@@ -2,7 +2,7 @@
 
 import {
   MonkeyInteger, MonkeyFloat, MonkeyString, MonkeyBoolean, MonkeyReturnValue, MonkeyError,
-  MonkeyFunction, MonkeyArray, MonkeyHash, MonkeyBuiltin,
+  MonkeyFunction, MonkeyArray, MonkeyHash, MonkeyBuiltin, MonkeyThrown,
   MonkeyBreak, MonkeyContinue, MonkeyResult, MonkeyEnum,
   Environment, TRUE, FALSE, NULL, OBJ, internString,
 } from './object.js';
@@ -258,7 +258,7 @@ const builtins = new Map([
 // --- Helpers ---
 
 function newError(msg) { return new MonkeyError(msg); }
-function isError(obj) { return obj && obj.type() === OBJ.ERROR; }
+function isError(obj) { return obj && (obj.type() === OBJ.ERROR || obj instanceof MonkeyThrown); }
 function nativeBoolToBooleanObject(val) { return val ? TRUE : FALSE; }
 function isTruthy(obj) {
   if (obj === NULL || obj === FALSE) return false;
@@ -420,6 +420,14 @@ export function monkeyEval(node, env) {
   if (node instanceof AST.BreakStatement) return new MonkeyBreak();
   if (node instanceof AST.ContinueStatement) return new MonkeyContinue();
   if (node instanceof AST.NullLiteral) return NULL;
+  if (node instanceof AST.ThrowExpression) {
+    const val = monkeyEval(node.value, env);
+    if (isError(val)) return val;
+    return new MonkeyThrown(val);
+  }
+  if (node instanceof AST.TryExpression) {
+    return evalTryExpression(node, env);
+  }
   if (node instanceof AST.TernaryExpression) {
     const condition = monkeyEval(node.condition, env);
     if (isError(condition)) return condition;
@@ -657,10 +665,45 @@ function evalBlockStatement(stmts, env) {
     if (result) {
       const rt = result.type();
       if (rt === OBJ.RETURN || rt === OBJ.ERROR) return result;
+      if (result instanceof MonkeyThrown) return result;
       if (result instanceof MonkeyBreak || result instanceof MonkeyContinue) return result;
     }
   }
   return result;
+}
+
+function evalTryExpression(node, env) {
+  const tryResult = monkeyEval(node.tryBlock, env);
+  let result = tryResult;
+
+  // Check if an exception was thrown (MonkeyThrown) or error occurred (MonkeyError)
+  const isThrown = tryResult instanceof MonkeyThrown;
+  const isTryError = tryResult instanceof MonkeyError;
+
+  if ((isThrown || isTryError) && node.catchBlock) {
+    // Bind the error value to the catch parameter in the current env
+    if (node.catchParam) {
+      const errorVal = isThrown ? tryResult.value : new MonkeyString(tryResult.message);
+      env.set(node.catchParam.value, errorVal);
+    }
+    result = monkeyEval(node.catchBlock, env);
+  }
+
+  // Execute finally block if present (always runs)
+  if (node.finallyBlock) {
+    const finallyResult = monkeyEval(node.finallyBlock, env);
+    // Finally doesn't override the result unless it throws/returns
+    if (finallyResult instanceof MonkeyThrown || finallyResult instanceof MonkeyError || finallyResult instanceof MonkeyReturnValue) {
+      return finallyResult;
+    }
+  }
+
+  // If error wasn't caught, propagate it
+  if ((isThrown || isTryError) && !node.catchBlock) {
+    return tryResult;
+  }
+
+  return result !== undefined ? result : NULL;
 }
 
 function evalPrefixExpression(op, right) {

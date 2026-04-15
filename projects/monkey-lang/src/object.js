@@ -83,6 +83,13 @@ export class MonkeyError {
   inspect() { return `ERROR: ${this.message}`; }
 }
 
+// Represents a value thrown by the `throw` keyword — propagates up until caught by try/catch
+export class MonkeyThrown {
+  constructor(value) { this.value = value; }
+  type() { return 'THROWN'; }
+  inspect() { return `THROWN: ${this.value?.inspect ? this.value.inspect() : String(this.value)}`; }
+}
+
 export class MonkeyFunction {
   constructor(parameters, body, env) {
     this.parameters = parameters;

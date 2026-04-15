@@ -454,6 +454,12 @@ export class Compiler {
       return this.compileWhileExpression(node);
     } else if (node instanceof ast.DoWhileExpression) {
       return this.compileDoWhileExpression(node);
+    } else if (node instanceof ast.TryExpression) {
+      return this.compileTryExpression(node);
+    } else if (node instanceof ast.ThrowExpression) {
+      const err = this.compile(node.value);
+      if (err) return err;
+      this.emit(Opcodes.OpThrow);
     } else if (node instanceof ast.ForExpression) {
       return this.compileForExpression(node);
     } else if (node instanceof ast.ForInExpression) {
@@ -760,6 +766,61 @@ export class Compiler {
 
     this.emit(Opcodes.OpNull);
     this.resetIntStack();
+    return null;
+  }
+
+  compileTryExpression(node) {
+    // Emit OpTry with placeholder addresses for catch and finally
+    const tryPos = this.emit(Opcodes.OpTry, 9999, 9999);
+
+    // Compile try body
+    let err = this.compile(node.tryBlock);
+    if (err) return err;
+
+    // Pop the handler after try body completes normally
+    this.emit(Opcodes.OpPopHandler);
+
+    // Jump over the catch block (to finally or end)
+    const jumpOverCatch = this.emit(Opcodes.OpJump, 9999);
+
+    // Catch block starts here
+    const catchAddr = this.currentInstructions().length;
+    if (node.catchBlock) {
+      // If there's a catch parameter, the error value is on the stack
+      if (node.catchParam) {
+        const sym = this.symbolTable.define(node.catchParam.value);
+        const op = sym.scope === SCOPE.GLOBAL ? Opcodes.OpSetGlobal : Opcodes.OpSetLocal;
+        this.emit(op, sym.index);
+      } else {
+        this.emit(Opcodes.OpPop); // discard error value
+      }
+      err = this.compile(node.catchBlock);
+      if (err) return err;
+    }
+
+    // Finally block (or end)
+    const finallyAddr = this.currentInstructions().length;
+    this.changeOperand(jumpOverCatch, finallyAddr);
+
+    if (node.finallyBlock) {
+      err = this.compile(node.finallyBlock);
+      if (err) return err;
+    }
+
+    const endAddr = this.currentInstructions().length;
+
+    // Patch OpTry operands
+    const ins = this.currentInstructions();
+    // catchAddr (2 bytes at tryPos+1)
+    ins[tryPos + 1] = (catchAddr >> 8) & 0xFF;
+    ins[tryPos + 2] = catchAddr & 0xFF;
+    // finallyAddr (2 bytes at tryPos+3)
+    const fAddr = node.finallyBlock ? finallyAddr : endAddr;
+    ins[tryPos + 3] = (fAddr >> 8) & 0xFF;
+    ins[tryPos + 4] = fAddr & 0xFF;
+
+    // try/catch produces null by default as an expression
+    this.emit(Opcodes.OpNull);
     return null;
   }
 

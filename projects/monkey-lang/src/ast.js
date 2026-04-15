@@ -427,3 +427,29 @@ export class RangeExpression {
   tokenLiteral() { return this.token.literal; }
   toString() { return `${this.start}..${this.end}`; }
 }
+
+export class TryExpression {
+  constructor(token, tryBlock, catchParam, catchBlock, finallyBlock) {
+    this.token = token;          // TRY token
+    this.tryBlock = tryBlock;    // BlockStatement
+    this.catchParam = catchParam; // Identifier (the error variable name) or null
+    this.catchBlock = catchBlock; // BlockStatement or null
+    this.finallyBlock = finallyBlock; // BlockStatement or null
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() {
+    let s = `try { ... }`;
+    if (this.catchBlock) s += ` catch(${this.catchParam}) { ... }`;
+    if (this.finallyBlock) s += ` finally { ... }`;
+    return s;
+  }
+}
+
+export class ThrowExpression {
+  constructor(token, value) {
+    this.token = token;  // THROW token
+    this.value = value;  // Expression — the value being thrown
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return `throw ${this.value}`; }
+}

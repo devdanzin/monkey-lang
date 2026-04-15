@@ -72,6 +72,10 @@ export const TokenType = {
   UNDERSCORE: '_',
   IMPORT: 'IMPORT',
   ENUM: 'ENUM',
+  TRY: 'TRY',
+  CATCH: 'CATCH',
+  THROW: 'THROW',
+  FINALLY: 'FINALLY',
 
   // Special
   EOF: 'EOF',
@@ -96,6 +100,10 @@ const KEYWORDS = {
   do: TokenType.DO,
   import: TokenType.IMPORT,
   enum: TokenType.ENUM,
+  try: TokenType.TRY,
+  catch: TokenType.CATCH,
+  throw: TokenType.THROW,
+  finally: TokenType.FINALLY,
 };
 
 export class Token {

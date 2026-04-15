@@ -83,6 +83,7 @@ export class Parser {
     this.registerPrefix(TokenType.NULL_LIT, () => new ast.NullLiteral(this.curToken));
     this.registerPrefix(TokenType.MATCH, () => this.parseMatchExpression());
     this.registerPrefix(TokenType.DO, () => this.parseDoWhileExpression());
+    this.registerPrefix(TokenType.TRY, () => this.parseTryExpression());
 
     // Register infix parsers
     for (const op of [TokenType.PLUS, TokenType.MINUS, TokenType.SLASH,
@@ -159,6 +160,7 @@ export class Parser {
       case TokenType.RETURN: return this.parseReturnStatement();
       case TokenType.IMPORT: return this.parseImportStatement();
       case TokenType.ENUM: return this.parseEnumStatement();
+      case TokenType.THROW: return this.parseThrowStatement();
       default: return this.parseExpressionStatement();
     }
   }
@@ -921,6 +923,49 @@ export class Parser {
     const condition = this.parseExpression(Precedence.LOWEST);
     if (!this.expectPeek(TokenType.RPAREN)) return null;
     return new ast.DoWhileExpression(token, body, condition);
+  }
+
+  parseTryExpression() {
+    const token = this.curToken; // 'try'
+    if (!this.expectPeek(TokenType.LBRACE)) return null;
+    const tryBlock = this.parseBlockStatement();
+
+    let catchParam = null;
+    let catchBlock = null;
+    let finallyBlock = null;
+
+    if (this.peekTokenIs(TokenType.CATCH)) {
+      this.nextToken(); // consume 'catch'
+      if (this.peekTokenIs(TokenType.LPAREN)) {
+        this.nextToken(); // consume '('
+        if (!this.expectPeek(TokenType.IDENT)) return null;
+        catchParam = new ast.Identifier(this.curToken, this.curToken.literal);
+        if (!this.expectPeek(TokenType.RPAREN)) return null;
+      }
+      if (!this.expectPeek(TokenType.LBRACE)) return null;
+      catchBlock = this.parseBlockStatement();
+    }
+
+    if (this.peekTokenIs(TokenType.FINALLY)) {
+      this.nextToken(); // consume 'finally'
+      if (!this.expectPeek(TokenType.LBRACE)) return null;
+      finallyBlock = this.parseBlockStatement();
+    }
+
+    if (!catchBlock && !finallyBlock) {
+      this.errors.push('try must have either catch or finally');
+      return null;
+    }
+
+    return new ast.TryExpression(token, tryBlock, catchParam, catchBlock, finallyBlock);
+  }
+
+  parseThrowStatement() {
+    const token = this.curToken; // 'throw'
+    this.nextToken();
+    const value = this.parseExpression(Precedence.LOWEST);
+    if (this.peekTokenIs(TokenType.SEMICOLON)) this.nextToken();
+    return new ast.ExpressionStatement(token, new ast.ThrowExpression(token, value));
   }
 
   parsePostfixExpression(left, op) {

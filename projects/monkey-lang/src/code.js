@@ -94,6 +94,9 @@ export const Opcodes = {
   OpTypeCheck:      0x38, // Type check: local(1) typeConstIdx(2) — validates param type
   OpTypeIs:         0x39, // Type check: pops value, pushes bool (typeConstIdx(2))
   OpResultValue:    0x3A, // Pop Result, push its inner .value
+  OpTry:            0x3B, // Push exception handler: operand = catch handler address (2 bytes), finally address (2 bytes)
+  OpThrow:          0x3C, // Throw: pop value from stack, unwind to nearest handler
+  OpPopHandler:     0x3D, // Pop the current exception handler (try block completed normally)
 };
 
 // Opcode definitions: [name, ...operandWidths]
@@ -156,6 +159,9 @@ const definitions = {
   [Opcodes.OpTypeCheck]:        ['OpTypeCheck', 1, 2], // localSlot (1), typeNameConstIdx (2)
   [Opcodes.OpTypeIs]:           ['OpTypeIs', 2],       // typeNameConstIdx (2) — pops value, pushes bool
   [Opcodes.OpResultValue]:      ['OpResultValue'],     // Pop Result, push its .value
+  [Opcodes.OpTry]:              ['OpTry', 2, 2],       // catchAddr (2), finallyAddr (2)
+  [Opcodes.OpThrow]:            ['OpThrow'],            // Pop value, throw
+  [Opcodes.OpPopHandler]:       ['OpPopHandler'],       // Remove current handler
 };
 
 /**
