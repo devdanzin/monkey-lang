@@ -975,7 +975,8 @@ export class VM {
             }
           } else if (left3 instanceof MonkeyHash) {
             if (!index.fastHashKey) throw new Error(`unusable as hash key: ${index.type()}`);
-            const pair = left3.pairs.get(index.fastHashKey());
+            const hk = index.fastHashKey();
+            const pair = left3.pairs.get(hk);
             this.push(pair ? pair.value : NULL);
           } else if (left3 instanceof MonkeyString && index instanceof MonkeyInteger) {
             let i = index.value;

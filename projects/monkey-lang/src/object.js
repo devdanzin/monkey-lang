@@ -107,7 +107,10 @@ export class MonkeyArray {
 }
 
 export class MonkeyHash {
-  constructor(pairs) { this.pairs = pairs; } // Map<fastHashKey, {key, value}>
+  constructor(pairs) { 
+    this.pairs = pairs; // Map<fastHashKey, {key, value}>
+    this._shapeId = null; // Lazy-computed shape identifier
+  }
   type() { return OBJ.HASH; }
   inspect() {
     const entries = [];
@@ -115,6 +118,25 @@ export class MonkeyHash {
       entries.push(`${key.inspect()}: ${value.inspect()}`);
     }
     return `{${entries.join(', ')}}`;
+  }
+  // Shape ID: identifies the set of keys in this hash.
+  // Two hashes with the same keys (same shape) get the same shapeId.
+  // Invalidated on key addition/removal.
+  get shapeId() {
+    if (this._shapeId === null) {
+      // Sort keys for deterministic shape identification
+      const keys = [];
+      for (const k of this.pairs.keys()) {
+        keys.push(k);
+      }
+      keys.sort();
+      this._shapeId = keys.join('\0');
+    }
+    return this._shapeId;
+  }
+  // Call when keys change (set/delete) to invalidate cached shape
+  invalidateShape() {
+    this._shapeId = null;
   }
 }
 
