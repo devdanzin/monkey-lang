@@ -559,3 +559,29 @@ describe('Negative Indexing', () => {
     assert.equal(run('"hello"[-1]').value, 'o');
   });
 });
+
+describe('Nullish Coalescing (??)', () => {
+  it('returns value when not null', () => {
+    assert.equal(run('let x = 42; x ?? 0').value, 42);
+  });
+
+  it('returns default when null', () => {
+    assert.equal(run('let x = null; x ?? 99').value, 99);
+  });
+
+  it('chains correctly', () => {
+    assert.equal(run('null ?? null ?? 5').value, 5);
+  });
+
+  it('works with strings', () => {
+    assert.equal(run('let name = null; name ?? "anonymous"').value, 'anonymous');
+  });
+
+  it('false is not null', () => {
+    assert.equal(run('false ?? true').inspect(), 'false');
+  });
+
+  it('zero is not null', () => {
+    assert.equal(run('0 ?? 42').value, 0);
+  });
+});

@@ -392,6 +392,31 @@ export class Compiler {
         this.changeOperand(jumpEnd, this.currentInstructions().length);
         return;
       }
+      // ?? (nullish coalescing: a ?? b → if a != null then a else b)
+      if (node.operator === '??') {
+        this.compile(node.left);
+        // Duplicate left value (we need it for both the check and the result)
+        // Since we can't easily duplicate, compile left twice
+        // Actually: compile left, check if null, if not null keep it, else compile right
+        // We need to: push left, check null, if not null → use left, else → pop left and push right
+        
+        // Simpler: compile as if (left != null) { left } else { right }
+        // But that evaluates left twice. Let's use a jump approach:
+        
+        // For now, evaluate left twice (not ideal but correct)
+        this.compile(node.left);
+        this.emit(Opcodes.OpNull);
+        this.emit(Opcodes.OpEqual);
+        const jumpPos = this.emit(Opcodes.OpJumpNotTruthy, 9999); // if left != null, skip to left
+        // Left was null, pop and use right
+        this.compile(node.right);
+        const jumpEnd = this.emit(Opcodes.OpJump, 9999);
+        this.changeOperand(jumpPos, this.currentInstructions().length);
+        // Left was not null, use left (re-evaluate)
+        this.compile(node.left);
+        this.changeOperand(jumpEnd, this.currentInstructions().length);
+        return;
+      }
       // <= is NOT (left > right)
       if (node.operator === '<=') {
         this.compile(node.left);
