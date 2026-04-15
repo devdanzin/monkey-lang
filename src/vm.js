@@ -397,6 +397,18 @@ const builtins = [
     });
     return new MonkeyArray(sorted);
   }),
+  // __range_inclusive: a..b → [a, a+1, ..., b] or [a, a-1, ..., b]
+  new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return new MonkeyError(`wrong number of arguments to __range_inclusive. got=${args.length}`);
+    const start = args[0].value, end = args[1].value;
+    const elements = [];
+    if (start <= end) {
+      for (let i = start; i <= end; i++) elements.push(cachedInteger(i));
+    } else {
+      for (let i = start; i >= end; i--) elements.push(cachedInteger(i));
+    }
+    return new MonkeyArray(elements);
+  }),
 ];
 
 /**

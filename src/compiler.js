@@ -112,7 +112,7 @@ export class SymbolTable {
 }
 
 // Builtin function names (must match evaluator's builtin order)
-const builtinNames = ['len', 'first', 'last', 'rest', 'push', 'puts', 'print', 'type', 'str', 'int', 'bool', 'format', 'range', 'split', 'join', 'trim', 'upper', 'lower', 'contains', 'indexOf', 'replace', 'reverse', 'abs', 'min', 'max', 'startsWith', 'endsWith', 'char', 'ord', 'repeat', 'enumerate', 'zip', 'slice', 'sum', 'count', 'compact', 'unique', 'isEmpty', 'flatten', 'keys', 'values', 'sort'];
+const builtinNames = ['len', 'first', 'last', 'rest', 'push', 'puts', 'print', 'type', 'str', 'int', 'bool', 'format', 'range', 'split', 'join', 'trim', 'upper', 'lower', 'contains', 'indexOf', 'replace', 'reverse', 'abs', 'min', 'max', 'startsWith', 'endsWith', 'char', 'ord', 'repeat', 'enumerate', 'zip', 'slice', 'sum', 'count', 'compact', 'unique', 'isEmpty', 'flatten', 'keys', 'values', 'sort', '__range_inclusive'];
 
 /**
  * Compiler: walks the AST and produces Bytecode.
@@ -287,6 +287,7 @@ export class Compiler {
     if (node instanceof AST.SwitchExpression) { node.value = Compiler.foldConstants(node.value); node.cases = node.cases.map(c => ({ ...c, value: Compiler.foldConstants(c.value), body: Compiler.foldConstants(c.body) })); if (node.defaultCase) node.defaultCase = Compiler.foldConstants(node.defaultCase); return node; }
     if (node instanceof AST.FStringExpression) { node.segments = node.segments.map(s => s.type === 'expr' ? { ...s, expr: Compiler.foldConstants(s.expr) } : s); return node; }
     if (node instanceof AST.TernaryExpression) { node.condition = Compiler.foldConstants(node.condition); node.consequence = Compiler.foldConstants(node.consequence); node.alternative = Compiler.foldConstants(node.alternative); return node; }
+    if (node instanceof AST.RangeExpression) { node.start = Compiler.foldConstants(node.start); node.end = Compiler.foldConstants(node.end); return node; }
     
     return node;
   }
@@ -338,6 +339,15 @@ export class Compiler {
         this.compile(node.left);
         this.emit(Opcodes.OpGreaterThan);
         this.emit(Opcodes.OpBang);
+        return;
+      }
+      // .. (range operator: a..b → [a, a±1, ..., b])
+      if (node.operator === '..') {
+        const rangeIdx = builtinNames.indexOf('__range_inclusive');
+        this.emit(Opcodes.OpGetBuiltin, rangeIdx);
+        this.compile(node.left);
+        this.compile(node.right);
+        this.emit(Opcodes.OpCall, 2);
         return;
       }
       // && (logical AND with short-circuit)
@@ -903,6 +913,13 @@ export class Compiler {
           this.emit(Opcodes.OpAdd);
         }
       }
+    } else if (node instanceof AST.RangeExpression) {
+      // Compile a..b as __range_inclusive(a, b)
+      const idx = builtinNames.indexOf('__range_inclusive');
+      this.emit(Opcodes.OpGetBuiltin, idx);
+      this.compile(node.start);
+      this.compile(node.end);
+      this.emit(Opcodes.OpCall, 2);
     } else if (node instanceof AST.TernaryExpression) {
       // condition ? consequence : alternative
       // Same as IfExpression: compile condition, JumpNotTruthy, consequence, Jump, alternative
