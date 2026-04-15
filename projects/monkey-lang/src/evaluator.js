@@ -125,6 +125,19 @@ const builtins = new Map([
     if (args.length !== 1) return newError(`wrong number of arguments. got=${args.length}, want=1`);
     return new MonkeyString(args[0].type());
   })],
+  ['isinstance', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError(`wrong number of arguments. got=${args.length}, want=2`);
+    const instance = args[0];
+    const klass = args[1];
+    if (!(instance instanceof MonkeyInstance) || !(klass instanceof MonkeyClass)) return FALSE;
+    // Walk the class chain
+    let cls = instance.klass;
+    while (cls) {
+      if (cls === klass) return TRUE;
+      cls = cls.superClass;
+    }
+    return FALSE;
+  })],
   ['ord', new MonkeyBuiltin((...args) => {
     if (args.length !== 1 || args[0].type() !== OBJ.STRING) return newError('ord requires one string argument');
     return new MonkeyInteger(args[0].value.charCodeAt(0));
