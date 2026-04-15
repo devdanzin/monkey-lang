@@ -441,3 +441,100 @@ describe('IC stats — monomorphic hit rate', () => {
     assert.equal(result.value, 13);
   });
 });
+
+describe('IC stress — polymorphic patterns', () => {
+  it('handles 3 shapes at same access site', () => {
+    const result = runVM(`
+      let get_x = fn(h) { h["x"] }
+      let a = get_x({"x": 1})
+      let b = get_x({"x": 2, "y": 3})
+      let c = get_x({"x": 4, "y": 5, "z": 6})
+      a + b + c
+    `);
+    assert.equal(result.value, 7);
+  });
+
+  it('handles 5+ shapes (megamorphic)', () => {
+    const result = runVM(`
+      let get_x = fn(h) { h["x"] }
+      let a = get_x({"x": 1})
+      let b = get_x({"x": 2, "a": 0})
+      let c = get_x({"x": 3, "b": 0})
+      let d = get_x({"x": 4, "c": 0})
+      let e = get_x({"x": 5, "d": 0})
+      a + b + c + d + e
+    `);
+    assert.equal(result.value, 15);
+  });
+
+  it('monomorphic loop access (100 iterations)', () => {
+    const result = runVM(`
+      let h = {"count": 0}
+      let i = 0
+      while (i < 100) {
+        set i = i + h["count"] + 1
+      }
+      i
+    `);
+    assert.equal(result.value, 100);
+  });
+
+  it('shape transition during runtime', () => {
+    const result = runVM(`
+      let h = {"a": 1}
+      let x = h["a"]
+      x
+    `);
+    assert.equal(result.value, 1);
+  });
+
+  it('access on objects with same keys returns same shape', () => {
+    const result = runVM(`
+      let make = fn(v) { {"key": v} }
+      let a = make(10)
+      let b = make(20)
+      a["key"] + b["key"]
+    `);
+    assert.equal(result.value, 30);
+  });
+
+  it('nested hash access', () => {
+    const result = runVM(`
+      let outer = {"inner": {"val": 42}}
+      outer["inner"]["val"]
+    `);
+    assert.equal(result.value, 42);
+  });
+
+  it('hash with boolean keys', () => {
+    const result = runVM(`
+      let h = {true: 1, false: 0}
+      h[true] + h[false]
+    `);
+    assert.equal(result.value, 1);
+  });
+
+  it('hash keys builtin with shaped hash', () => {
+    const result = runVM(`
+      let h = {"x": 1, "y": 2, "z": 3}
+      len(keys(h))
+    `);
+    assert.equal(result.value, 3);
+  });
+
+  it('values builtin with shaped hash', () => {
+    const result = runVM(`
+      let h = {"a": 10, "b": 20}
+      let v = values(h)
+      v[0] + v[1]
+    `);
+    assert.equal(result.value, 30);
+  });
+
+  it('hash equality with shaped hashes', () => {
+    const result = runVM(`
+      {"x": 1, "y": 2} == {"x": 1, "y": 2}
+    `);
+    assert.equal(result.value, true);
+  });
+});
