@@ -882,6 +882,23 @@ export class Compiler {
           this.emit(Opcodes.OpSetLocal, nameSym.index);
         }
       }
+    } else if (node instanceof AST.DestructureHashLetStatement) {
+      // let {a, b} = expr
+      // Compile value, store in hidden local, then index by key name
+      this.compile(node.value);
+      const hashSym = this.symbolTable.define('__destructure_hash__');
+      this._emitSet(hashSym);
+      
+      for (let i = 0; i < node.names.length; i++) {
+        const name = node.names[i].value;
+        // hash["name"]
+        this._emitGet(hashSym);
+        this.emit(Opcodes.OpConstant, this.addConstant(new MonkeyString(name)));
+        this.emit(Opcodes.OpIndex);
+        // Store in named local
+        const nameSym = this.symbolTable.define(name);
+        this._emitSet(nameSym);
+      }
     } else if (node instanceof AST.LetStatement) {
       // Compile value BEFORE defining symbol, so RHS references resolve
       // to outer scope (not the new binding being created).

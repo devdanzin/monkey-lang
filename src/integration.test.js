@@ -313,3 +313,33 @@ describe('Type-based dispatch', () => {
     assert.deepEqual(result.elements.map(e => e.value), ['int', 'str', 'arr', 'other']);
   });
 });
+
+describe('Hash Destructuring', () => {
+  it('basic hash destructuring', () => {
+    const result = run('let {x, y} = {"x": 10, "y": 20}; x + y');
+    assert.equal(result.value, 30);
+  });
+
+  it('string values', () => {
+    const result = run('let {name, role} = {"name": "Alice", "role": "admin"}; name');
+    assert.equal(result.value, 'Alice');
+  });
+
+  it('combined with array destructuring', () => {
+    const result = run('let [a, b] = [1, 2]; let {c, d} = {"c": 3, "d": 4}; a + b + c + d');
+    assert.equal(result.value, 10);
+  });
+
+  it('with f-string', () => {
+    const result = run('let {name, age} = {"name": "Bob", "age": 25}; f"{name} is {age}"');
+    assert.equal(result.value, 'Bob is 25');
+  });
+
+  it('inside function', () => {
+    const result = run(`
+      let parse_point = fn(p) { let {x, y} = p; x * x + y * y };
+      parse_point({"x": 3, "y": 4})
+    `);
+    assert.equal(result.value, 25);
+  });
+});
