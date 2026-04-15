@@ -1060,8 +1060,23 @@ function evalForInExpression(node, env) {
     elements = iterable.value.split('').map(c => new MonkeyString(c));
   } else if (iterable instanceof MonkeyGenerator) {
     elements = iterable.values;
+  } else if (iterable instanceof MonkeyInstance) {
+    // Check for __iter__ protocol
+    const iterFn = iterable.get('__iter__');
+    if (iterFn && iterFn instanceof MonkeyFunction) {
+      const result = callMethod(iterable, iterFn, []);
+      if (result instanceof MonkeyArray) {
+        elements = result.elements;
+      } else if (result instanceof MonkeyGenerator) {
+        elements = result.values;
+      } else {
+        return new MonkeyError(`__iter__ must return ARRAY or GENERATOR, got ${result.type()}`);
+      }
+    } else {
+      return new MonkeyError(`for-in: INSTANCE does not implement __iter__`);
+    }
   } else {
-    return new MonkeyError(`for-in: expected ARRAY, STRING, or GENERATOR, got ${iterable.type()}`);
+    return new MonkeyError(`for-in: expected ARRAY, STRING, GENERATOR, or iterable INSTANCE, got ${iterable.type()}`);
   }
 
   for (const elem of elements) {
