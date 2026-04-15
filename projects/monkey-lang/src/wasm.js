@@ -194,6 +194,7 @@ export class FuncBodyBuilder {
     this.locals = [];    // [{type, count}]
     this.code = [];      // raw bytes
     this.sourceMap = [];  // [{offset, line}] — source line tracking
+    this.callSites = [];  // [{offset, kind}] — tracks positions of call/call_indirect instructions
     this._currentLine = 0;
   }
 
@@ -236,10 +237,18 @@ export class FuncBodyBuilder {
   globalGet(index) { return this.emit(Op.global_get, ...encodeULEB128(index)); }
   globalSet(index) { return this.emit(Op.global_set, ...encodeULEB128(index)); }
 
-  call(funcIndex) { return this.emit(Op.call, ...encodeULEB128(funcIndex)); }
+  call(funcIndex) {
+    const offset = this.code.length;
+    this.emit(Op.call, ...encodeULEB128(funcIndex));
+    this.callSites.push({ offset, kind: 'call' });
+    return this;
+  }
 
   callIndirect(typeIndex, tableIndex = 0) {
-    return this.emit(Op.call_indirect, ...encodeULEB128(typeIndex), ...encodeULEB128(tableIndex));
+    const offset = this.code.length;
+    this.emit(Op.call_indirect, ...encodeULEB128(typeIndex), ...encodeULEB128(tableIndex));
+    this.callSites.push({ offset, kind: 'call_indirect' });
+    return this;
   }
 
   // Control flow helpers
@@ -366,8 +375,122 @@ export class WasmModuleBuilder {
     this.dataSegments.push({ offset, bytes: Array.isArray(bytes) ? bytes : [...bytes] });
   }
 
+  // Remove unused imports and renumber all function references.
+  stripUnusedImports() {
+    if (this.imports.length === 0) return;
+
+    const numImports = this.imports.length;
+    const usedImports = new Set();
+
+    // Helper: decode ULEB128 at position in bytes array, return { value, bytesRead }
+    function decodeULEB128(bytes, pos) {
+      let result = 0, shift = 0, byte;
+      let bytesRead = 0;
+      do {
+        byte = bytes[pos + bytesRead];
+        result |= (byte & 0x7f) << shift;
+        shift += 7;
+        bytesRead++;
+      } while (byte & 0x80);
+      return { value: result, bytesRead };
+    }
+
+    // Scan all function bodies for call instructions using tracked callSites
+    for (const func of this.functions) {
+      const bytes = func.body.code;
+      for (const site of func.body.callSites) {
+        if (site.kind === 'call') {
+          const { value: funcIdx } = decodeULEB128(bytes, site.offset + 1);
+          if (funcIdx < numImports) {
+            usedImports.add(funcIdx);
+          }
+        }
+      }
+    }
+
+    // Check exports
+    for (const exp of this.exports) {
+      if (exp.kind === ExportKind.Func && exp.index < numImports) {
+        usedImports.add(exp.index);
+      }
+    }
+
+    // Check element segments
+    for (const elem of this.elements) {
+      for (const idx of elem.funcIndices) {
+        if (idx < numImports) {
+          usedImports.add(idx);
+        }
+      }
+    }
+
+    // Build remap table: old index → new index
+    const remap = new Array(numImports + this.functions.length);
+    const keptImports = [];
+    let newImportIdx = 0;
+    for (let i = 0; i < numImports; i++) {
+      if (usedImports.has(i)) {
+        remap[i] = newImportIdx;
+        keptImports.push(this.imports[i]);
+        newImportIdx++;
+      } else {
+        remap[i] = -1; // removed
+      }
+    }
+
+    // Renumber local functions
+    for (let i = 0; i < this.functions.length; i++) {
+      remap[numImports + i] = newImportIdx + i;
+    }
+
+    if (keptImports.length === numImports) return; // nothing to strip
+
+    // Update imports
+    this.imports = keptImports;
+
+    // Renumber call targets in all function bodies using tracked callSites
+    // Process sites in reverse order so earlier offsets remain valid
+    for (const func of this.functions) {
+      const code = func.body.code;
+      // Sort callSites by offset descending for safe in-place replacement
+      const sites = [...func.body.callSites].sort((a, b) => b.offset - a.offset);
+      for (const site of sites) {
+        if (site.kind === 'call') {
+          const { value: funcIdx, bytesRead } = decodeULEB128(code, site.offset + 1);
+          const newIdx = remap[funcIdx];
+          const newEncoded = encodeULEB128(newIdx !== undefined ? newIdx : funcIdx);
+          code.splice(site.offset + 1, bytesRead, ...newEncoded);
+        } else if (site.kind === 'call_indirect') {
+          // call_indirect operands: typeIndex (unchanged), tableIndex (unchanged)
+          // But function references in call_indirect are via table, not direct — no renumbering needed
+        }
+      }
+      // Update callSite offsets (rebuild from scratch since splicing may have shifted them)
+      // We don't need to update them since we won't scan again, but clear them to be safe
+    }
+
+    // Renumber exports
+    for (const exp of this.exports) {
+      if (exp.kind === ExportKind.Func) {
+        const newIdx = remap[exp.index];
+        if (newIdx !== undefined && newIdx >= 0) exp.index = newIdx;
+      }
+    }
+
+    // Renumber element segments
+    for (const elem of this.elements) {
+      elem.funcIndices = elem.funcIndices.map(idx => {
+        const newIdx = remap[idx];
+        return (newIdx !== undefined && newIdx >= 0) ? newIdx : idx;
+      });
+    }
+  }
+
   // Build the complete WASM binary.
   build() {
+    // Strip unused imports to reduce binary size
+    this.stripUnusedImports();
+
     const sections = [];
 
     // Type section

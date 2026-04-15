@@ -106,7 +106,13 @@ describe('WASM Disassembler', () => {
 
     it('disassembles imports', () => {
       const builder = new WasmModuleBuilder();
-      builder.addImport('env', 'log', [ValType.i32], []);
+      const importIdx = builder.addImport('env', 'log', [ValType.i32], []);
+      // Actually use the import so it doesn't get stripped
+      const { body } = builder.addFunction([ValType.i32], []);
+      body.i32Const(42);
+      body.call(importIdx);
+      body.i32Const(0);
+      body.end();
       const binary = builder.build();
       const wat = disassemble(binary);
       assert.ok(wat.includes('import "env" "log"'));
