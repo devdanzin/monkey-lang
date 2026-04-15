@@ -529,3 +529,33 @@ describe('Range Slicing', () => {
     assert.deepEqual(result.elements.map(e => e.value), [3, 4, 5]);
   });
 });
+
+describe('Pipe Chains', () => {
+  it('sort + reverse + first', () => {
+    assert.equal(run('[5,3,1,4,2] |> sort |> reverse |> first').value, 5);
+  });
+
+  it('range + comprehension via pipe', () => {
+    const result = run(`
+      let double = fn(arr) { [x * 2 for x in arr] };
+      let keep_big = fn(arr) { [x for x in arr if x > 5] };
+      [1,2,3,4,5] |> double |> keep_big
+    `);
+    assert.deepEqual(result.elements.map(e => e.value), [6, 8, 10]);
+  });
+
+  it('string processing pipeline', () => {
+    assert.equal(run('"  Hello World  " |> trim |> upper').value, 'HELLO WORLD');
+  });
+});
+
+describe('Negative Indexing', () => {
+  it('array negative index', () => {
+    assert.equal(run('[10, 20, 30, 40, 50][-1]').value, 50);
+    assert.equal(run('[10, 20, 30, 40, 50][-2]').value, 40);
+  });
+
+  it('string negative index', () => {
+    assert.equal(run('"hello"[-1]').value, 'o');
+  });
+});
