@@ -9,6 +9,7 @@ import {
 
 import * as AST from './ast.js';
 import { getModule } from './modules.js';
+import { ModuleLoader, getModuleLoader } from './module-loader.js';
 
 // --- Builtins ---
 
@@ -313,8 +314,24 @@ export function monkeyEval(node, env) {
   }
 
   if (node instanceof AST.ImportStatement) {
-    const mod = getModule(node.moduleName);
-    if (!mod) return newError(`unknown module: ${node.moduleName}`);
+    let mod;
+    
+    if (ModuleLoader.isFilePath(node.moduleName)) {
+      // File-based import — resolve relative to current file
+      const loader = getModuleLoader();
+      const fileObj = env.get('__file__');
+      const fromFile = fileObj ? fileObj.value : null;
+      const result = loader.load(node.moduleName, fromFile, (prog, modEnv) => {
+        return monkeyEval(prog, modEnv);
+      });
+      if (result && result.error) return newError(result.error);
+      mod = result;
+    } else {
+      // Built-in module
+      mod = getModule(node.moduleName);
+      if (!mod) return newError(`unknown module: ${node.moduleName}`);
+    }
+    
     if (node.bindings) {
       // Selective import: bind specific names
       for (const name of node.bindings) {
