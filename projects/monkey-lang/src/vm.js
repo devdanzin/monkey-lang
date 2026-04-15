@@ -7,6 +7,7 @@ import {
   MonkeyInteger, MonkeyFloat, MonkeyBoolean, MonkeyString, MonkeyNull,
   MonkeyArray, MonkeyHash, MonkeyBuiltin, MonkeyError,
   MonkeyResult, MonkeyEnum, MonkeyGenerator,
+  MonkeyClass, MonkeyInstance, MonkeyBoundMethod,
   TRUE, FALSE, NULL, cachedInteger, internString,
 } from './object.js';
 import { IR, JIT, TraceRecorder, JIT_EVENTS_FULL } from './jit.js';
@@ -1008,6 +1009,15 @@ export class VM {
             } else {
               this.push(left3.values[i]);
             }
+          } else if (left3 instanceof MonkeyInstance && index instanceof MonkeyString) {
+            // Instance field/method access
+            const fieldOrMethod = left3.get(index.value);
+            if (fieldOrMethod instanceof Closure) {
+              // Return bound method
+              this.push(new MonkeyBoundMethod(left3, fieldOrMethod));
+            } else {
+              this.push(fieldOrMethod || NULL);
+            }
           } else {
             throw new Error(`index operator not supported: ${left3.type()}`);
           }
@@ -1169,6 +1179,54 @@ export class VM {
                 }
               }
             }
+          } else if (callee instanceof MonkeyBoundMethod) {
+            // Bound method call: set up closure call with self as first arg
+            const args = this.stack.slice(this.sp - numArgs, this.sp);
+            this.sp = this.sp - numArgs - 1; // pop args + callee
+            this.push(callee.closure);        // push actual closure
+            this.push(callee.instance);       // push self
+            for (const arg of args) this.push(arg); // push original args
+            
+            const callFrame = new Frame(callee.closure, this.sp - numArgs - 1); // -1 for self
+            this.pushFrame(callFrame);
+            this.sp = callFrame.basePointer + callee.closure.fn.numLocals;
+            frame = callFrame;
+          } else if (callee instanceof MonkeyClass) {
+            const instance = new MonkeyInstance(callee);
+            // Initialize parent fields
+            let parent = callee.superClass;
+            while (parent) {
+              for (const f of parent.fields) {
+                if (!instance.fields.has(f)) instance.fields.set(f, NULL);
+              }
+              parent = parent.superClass;
+            }
+            
+            // Find init method
+            let initMethod = callee.methods.get('init');
+            if (initMethod) {
+              // Call init with self as first arg
+              // Stack: [class, arg1, arg2, ...]
+              // We need: [closure, self, arg1, arg2, ...]
+              const args = this.stack.slice(this.sp - numArgs, this.sp);
+              this.sp = this.sp - numArgs - 1; // pop args + class
+              this.push(initMethod); // push closure
+              this.push(instance);   // push self
+              for (const arg of args) this.push(arg); // push original args
+              
+              // Call the init closure
+              if (initMethod instanceof Closure) {
+                const callFrame = new Frame(initMethod, this.sp - numArgs - 1); // -1 for self
+                callFrame._classInstance = instance; // so OpReturn knows to return instance
+                this.pushFrame(callFrame);
+                this.sp = callFrame.basePointer + initMethod.fn.numLocals;
+                frame = callFrame;
+              }
+            } else {
+              // No init — just return instance
+              this.sp = this.sp - numArgs - 1;
+              this.push(instance);
+            }
           } else if (callee instanceof MonkeyBuiltin) {
             // Identify which builtin this is
             const builtinIdx = BUILTINS.indexOf(callee);
@@ -1271,6 +1329,9 @@ export class VM {
           // If returning from a generator, push MonkeyGenerator instead of return value
           if (retFrame._generatorValues) {
             this.push(new MonkeyGenerator(retFrame._generatorValues));
+          } else if (retFrame._classInstance) {
+            // Returning from init — push the instance, not the return value
+            this.push(retFrame._classInstance);
           } else {
             this.push(returnValue);
           }
@@ -1330,6 +1391,8 @@ export class VM {
           this.sp = frame2.basePointer - 1;
           if (frame2._generatorValues) {
             this.push(new MonkeyGenerator(frame2._generatorValues));
+          } else if (frame2._classInstance) {
+            this.push(frame2._classInstance);
           } else {
             this.push(NULL);
           }
@@ -1408,6 +1471,8 @@ export class VM {
             if (index.fastHashKey) {
               obj.pairs.set(index.fastHashKey(), { key: index, value: val });
             }
+          } else if (obj instanceof MonkeyInstance && index instanceof MonkeyString) {
+            obj.set(index.value, val);
           }
           this.push(val);
           if (recording()) {
@@ -1562,6 +1627,36 @@ export class VM {
           const genClosure = this.pop();
           genClosure._isGenerator = true;
           this.push(genClosure);
+          break;
+        }
+
+        case Opcodes.OpClass: {
+          const numMethods = (ins[ip + 1] << 8) | ins[ip + 2];
+          const numFields = (ins[ip + 3] << 8) | ins[ip + 4];
+          frame.ip += 4;
+          
+          // Pop methods (name + closure pairs) in reverse
+          const methods = new Map();
+          for (let i = 0; i < numMethods; i++) {
+            const closure = this.stack[this.sp - 1 - i * 2];
+            const methodName = this.stack[this.sp - 2 - i * 2];
+            methods.set(methodName.value, closure);
+          }
+          this.sp -= numMethods * 2;
+          
+          // Pop field names in reverse
+          const fields = [];
+          for (let i = 0; i < numFields; i++) {
+            fields.unshift(this.stack[this.sp - 1 - i].value);
+          }
+          this.sp -= numFields;
+          
+          // Pop class name
+          const className = this.pop();
+          
+          // Create MonkeyClass (no super class support in VM yet)
+          const klass = new MonkeyClass(className.value, methods, fields, null, null);
+          this.push(klass);
           break;
         }
 

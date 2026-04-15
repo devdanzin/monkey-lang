@@ -655,6 +655,13 @@ export class Compiler {
       return this.compileFunctionLiteral(node);
     } else if (node instanceof ast.GeneratorLiteral) {
       return this.compileGeneratorLiteral(node);
+    } else if (node instanceof ast.ClassStatement) {
+      return this.compileClassStatement(node);
+    } else if (node instanceof ast.SelfExpression) {
+      // self is stored as a local variable named 'self'
+      const sym = this.symbolTable.resolve('self');
+      if (sym) this.loadSymbol(sym);
+      else return 'self outside of method';
     } else if (node instanceof ast.YieldExpression) {
       const err = this.compile(node.value);
       if (err) return err;
@@ -1240,6 +1247,56 @@ export class Compiler {
     }
     this.resetPeepholeState();
 
+    return null;
+  }
+
+  compileClassStatement(node) {
+    // Push class name as a string constant
+    const nameIdx = this.addConstant(new MonkeyString(node.name));
+    this.emit(Opcodes.OpConstant, nameIdx);
+    
+    // Push field names as string constants
+    for (const field of node.fields) {
+      const fIdx = this.addConstant(new MonkeyString(field));
+      this.emit(Opcodes.OpConstant, fIdx);
+    }
+    
+    // Compile each method as a closure and push name + closure pairs
+    for (const method of node.methods) {
+      // Push method name
+      const mNameIdx = this.addConstant(new MonkeyString(method.name));
+      this.emit(Opcodes.OpConstant, mNameIdx);
+      
+      // Compile method body as a closure (with 'self' as first implicit param)
+      this.enterScope();
+      this.symbolTable.define('self'); // self is local 0 in methods
+      for (const param of method.params) {
+        this.symbolTable.define(param.value);
+      }
+      const err = this.compile(method.body);
+      if (err) return err;
+      // Replace last pop with return value (function body semantics)
+      if (this.lastInstructionIs(Opcodes.OpPop)) {
+        this.replaceLastPopWithReturn();
+      }
+      if (!this.lastInstructionIs(Opcodes.OpReturnValue)) {
+        this.emit(Opcodes.OpReturn);
+      }
+      const freeSymbols = this.symbolTable.freeSymbols;
+      const numLocals = this.symbolTable.numDefinitions;
+      const instructions = this.leaveScope();
+      for (const sym of freeSymbols) this.loadSymbol(sym);
+      const compiledFn = {
+        instructions,
+        numLocals,
+        numParameters: method.params.length + 1, // +1 for self
+      };
+      const fnIdx = this.addConstant(compiledFn);
+      this.emit(Opcodes.OpClosure, fnIdx, freeSymbols.length);
+    }
+    
+    // Emit OpClass with counts
+    this.emit(Opcodes.OpClass, node.methods.length, node.fields.length);
     return null;
   }
 

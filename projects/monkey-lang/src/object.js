@@ -313,3 +313,12 @@ export class MonkeyInstance {
     this.fields.set(name, value);
   }
 }
+
+export class MonkeyBoundMethod {
+  constructor(instance, closure) {
+    this.instance = instance;     // MonkeyInstance
+    this.closure = closure;       // Closure
+  }
+  type() { return 'BOUND_METHOD'; }
+  inspect() { return `<bound method>`; }
+}

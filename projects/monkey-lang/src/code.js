@@ -99,6 +99,9 @@ export const Opcodes = {
   OpPopHandler:     0x3D, // Pop the current exception handler (try block completed normally)
   OpYield:          0x3E, // Yield: pop value from stack, add to generator's collection, push null
   OpMakeGenerator:  0x3F, // Make generator: operand = closure index, wraps closure in generator factory
+  OpClass:          0x40, // Create class: operand = num methods, pops name string + methods from stack
+  OpGetField:       0x41, // Instance field get: operand = field name index in constants
+  OpSetField:       0x42, // Instance field set: operand = field name index in constants
 };
 
 // Opcode definitions: [name, ...operandWidths]
@@ -166,6 +169,9 @@ const definitions = {
   [Opcodes.OpPopHandler]:       ['OpPopHandler'],       // Remove current handler
   [Opcodes.OpYield]:            ['OpYield'],             // Pop value, add to generator collection
   [Opcodes.OpMakeGenerator]:    ['OpMakeGenerator'],     // Pop closure, wrap in generator factory
+  [Opcodes.OpClass]:            ['OpClass', 2, 2],       // operands: numMethods(2), numFields(2)
+  [Opcodes.OpGetField]:         ['OpGetField', 2],       // operand: field name constant index
+  [Opcodes.OpSetField]:         ['OpSetField', 2],       // operand: field name constant index
 };
 
 /**
