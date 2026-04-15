@@ -443,6 +443,76 @@ const builtins = new Map([
     }
     return new MonkeyArray(result);
   })],
+  ['zip', new MonkeyBuiltin((...args) => {
+    if (args.length < 2) return newError('zip requires at least 2 arguments');
+    for (const arg of args) {
+      if (!(arg instanceof MonkeyArray)) return newError('all arguments to zip must be arrays');
+    }
+    const minLen = Math.min(...args.map(a => a.elements.length));
+    const result = [];
+    for (let i = 0; i < minLen; i++) {
+      result.push(new MonkeyArray(args.map(a => a.elements[i])));
+    }
+    return new MonkeyArray(result);
+  })],
+  ['enumerate', new MonkeyBuiltin((...args) => {
+    if (args.length < 1 || args.length > 2) return newError(`wrong number of arguments. got=${args.length}, want=1 or 2`);
+    if (!(args[0] instanceof MonkeyArray)) return newError('first argument must be ARRAY');
+    const startIdx = args.length === 2 ? args[1].value : 0;
+    const result = [];
+    for (let i = 0; i < args[0].elements.length; i++) {
+      result.push(new MonkeyArray([new MonkeyInteger(i + startIdx), args[0].elements[i]]));
+    }
+    return new MonkeyArray(result);
+  })],
+  ['flatten', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError(`wrong number of arguments. got=${args.length}, want=1`);
+    if (!(args[0] instanceof MonkeyArray)) return newError('argument must be ARRAY');
+    const result = [];
+    for (const el of args[0].elements) {
+      if (el instanceof MonkeyArray) {
+        result.push(...el.elements);
+      } else {
+        result.push(el);
+      }
+    }
+    return new MonkeyArray(result);
+  })],
+  ['sum', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError(`wrong number of arguments. got=${args.length}, want=1`);
+    if (!(args[0] instanceof MonkeyArray)) return newError('argument must be ARRAY');
+    let total = 0;
+    for (const el of args[0].elements) {
+      if (el instanceof MonkeyInteger || el instanceof MonkeyFloat) total += el.value;
+    }
+    return Number.isInteger(total) ? new MonkeyInteger(total) : new MonkeyFloat(total);
+  })],
+  ['min', new MonkeyBuiltin((...args) => {
+    if (args.length === 1 && args[0] instanceof MonkeyArray) {
+      let minVal = Infinity;
+      for (const el of args[0].elements) {
+        if (el.value < minVal) minVal = el.value;
+      }
+      return Number.isInteger(minVal) ? new MonkeyInteger(minVal) : new MonkeyFloat(minVal);
+    }
+    if (args.length === 2) {
+      return args[0].value <= args[1].value ? args[0] : args[1];
+    }
+    return newError('min expects 1 array or 2 values');
+  })],
+  ['max', new MonkeyBuiltin((...args) => {
+    if (args.length === 1 && args[0] instanceof MonkeyArray) {
+      let maxVal = -Infinity;
+      for (const el of args[0].elements) {
+        if (el.value > maxVal) maxVal = el.value;
+      }
+      return Number.isInteger(maxVal) ? new MonkeyInteger(maxVal) : new MonkeyFloat(maxVal);
+    }
+    if (args.length === 2) {
+      return args[0].value >= args[1].value ? args[0] : args[1];
+    }
+    return newError('max expects 1 array or 2 values');
+  })],
 ]);
 
 // --- Helpers ---
