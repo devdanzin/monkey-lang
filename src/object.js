@@ -76,15 +76,32 @@ export class MonkeyArray {
 }
 
 export class MonkeyHash {
-  constructor(pairs) { this.pairs = pairs; } // Map<hashKey, {key, value}>
+  constructor(pairs) { this.pairs = pairs; } // Map<hashKey, {key, value}> OR Map<key, value>
   type() { return OBJ.HASH; }
   inspect() {
     const entries = [];
-    for (const [, { key, value }] of this.pairs) {
-      entries.push(`${key.inspect()}: ${value.inspect()}`);
+    for (const [k, v] of this.pairs) {
+      // Handle both formats: {key, value} objects or direct key→value
+      if (v && typeof v === 'object' && 'key' in v && 'value' in v) {
+        entries.push(`${v.key.inspect()}: ${v.value.inspect()}`);
+      } else {
+        entries.push(`${k?.inspect?.() ?? String(k)}: ${v?.inspect?.() ?? String(v)}`);
+      }
     }
     return `{${entries.join(', ')}}`;
   }
+}
+
+export class MonkeyEnum {
+  constructor(enumName, variant, ordinal) {
+    this.enumName = enumName;
+    this.variant = variant;
+    this.ordinal = ordinal;
+  }
+  type() { return 'ENUM'; }
+  inspect() { return `${this.enumName}.${this.variant}`; }
+  hashKey() { return `enum:${this.enumName}:${this.variant}`; }
+  fastHashKey() { return `enum:${this.enumName}:${this.variant}`; }
 }
 
 export class MonkeyBuiltin {

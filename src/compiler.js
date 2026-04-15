@@ -899,6 +899,24 @@ export class Compiler {
         this.compile(arg);
       }
       this.emit(Opcodes.OpCall, node.arguments.length);
+    } else if (node instanceof AST.EnumStatement) {
+      // Create enum as a hash: { "Red": Enum(Color, Red, 0), "Green": Enum(Color, Green, 1), ... }
+      // For the VM, we represent each variant as a string "EnumName.VariantName"
+      for (let i = 0; i < node.variants.length; i++) {
+        // Key
+        this.emit(Opcodes.OpConstant, this.addConstant(new MonkeyString(node.variants[i])));
+        // Value: string "EnumName.VariantName"
+        this.emit(Opcodes.OpConstant, this.addConstant(new MonkeyString(`${node.name}.${node.variants[i]}`)));
+      }
+      this.emit(Opcodes.OpHash, node.variants.length * 2);
+      
+      // Store in global scope
+      const symbol = this.symbolTable.define(node.name);
+      if (symbol.scope === SymbolScopes.GLOBAL) {
+        this.emit(Opcodes.OpSetGlobal, symbol.index);
+      } else {
+        this.emit(Opcodes.OpSetLocal, symbol.index);
+      }
     } else if (node instanceof AST.FStringExpression) {
       // Compile f-string by converting each segment to a string and concatenating
       if (node.segments.length === 0) {

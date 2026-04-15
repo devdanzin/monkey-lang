@@ -2,7 +2,7 @@
 
 import {
   MonkeyInteger, MonkeyFloat, MonkeyString, MonkeyReturnValue, MonkeyError,
-  MonkeyFunction, MonkeyArray, MonkeyHash, MonkeyBuiltin,
+  MonkeyFunction, MonkeyArray, MonkeyHash, MonkeyBuiltin, MonkeyEnum,
   Environment, TRUE, FALSE, NULL, OBJ, BREAK_SIGNAL, CONTINUE_SIGNAL,
 } from './object.js';
 
@@ -826,6 +826,17 @@ export function monkeyEval(node, env) {
     if (isError(cond)) return cond;
     if (isTruthy(cond)) return monkeyEval(node.consequence, env);
     return monkeyEval(node.alternative, env);
+  }
+  if (node instanceof AST.EnumStatement) {
+    const pairs = new Map();
+    for (let i = 0; i < node.variants.length; i++) {
+      const key = new MonkeyString(node.variants[i]);
+      const value = new MonkeyEnum(node.name, node.variants[i], i);
+      pairs.set(key.fastHashKey ? key.fastHashKey() : key.hashKey(), { key, value });
+    }
+    const enumHash = new MonkeyHash(pairs);
+    env.set(node.name, enumHash);
+    return enumHash;
   }
   if (node instanceof AST.SwitchExpression) {
     if (node.value) {

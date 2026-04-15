@@ -164,6 +164,7 @@ export class Parser {
       case TokenType.CONST: return this.parseConstStatement();
       case TokenType.SET: return this.parseSetStatement();
       case TokenType.RETURN: return this.parseReturnStatement();
+      case 'ENUM': return this.parseEnumStatement();
       default: return this.parseExpressionStatement();
     }
   }
@@ -509,21 +510,23 @@ export class Parser {
   }
 
   parseMethodCall(left) {
-    // obj.method(args) → method(obj, args)
-    // obj.prop → prop(obj) (property access as function call)
+    // obj.method(args) → method(obj, args) for function calls
+    // obj.prop → IndexExpression(obj, "prop") for property access
     const token = this.curToken; // DOT
-    this.nextToken(); // method name
-    const methodName = new ast.Identifier(this.curToken, this.curToken.literal);
+    this.nextToken(); // method/property name
+    const name = this.curToken.literal;
     
     if (this.peekTokenIs(TokenType.LPAREN)) {
       // obj.method(args) → method(obj, arg1, arg2, ...)
+      const methodName = new ast.Identifier(this.curToken, name);
       this.nextToken(); // consume (
       const args = this.parseExpressionList(TokenType.RPAREN);
       return new ast.CallExpression(token, methodName, [left, ...args]);
     }
     
-    // obj.prop → prop(obj) (no-arg call)
-    return new ast.CallExpression(token, methodName, [left]);
+    // obj.prop → IndexExpression(obj, "prop") — property/hash access
+    const key = new ast.StringLiteral(this.curToken, name);
+    return new ast.IndexExpression(token, left, key);
   }
 
   parseGroupedExpression() {
@@ -585,6 +588,31 @@ export class Parser {
     if (!this.expectPeek(TokenType.LBRACE)) return null;
     const catchBody = this.parseBlockStatement();
     return new ast.TryCatchExpression(token, tryBody, errorIdent, catchBody);
+  }
+
+  parseEnumStatement() {
+    const token = this.curToken; // 'enum'
+    this.nextToken(); // expect name
+    if (this.curToken.type !== TokenType.IDENT) {
+      this.errors.push(`expected enum name, got ${this.curToken.type}`);
+      return null;
+    }
+    const name = this.curToken.literal;
+    if (!this.expectPeek(TokenType.LBRACE)) return null;
+    
+    const variants = [];
+    while (!this.peekTokenIs(TokenType.RBRACE)) {
+      this.nextToken();
+      if (this.curToken.type !== TokenType.IDENT) {
+        this.errors.push(`expected variant name, got ${this.curToken.type}`);
+        return null;
+      }
+      variants.push(this.curToken.literal);
+      if (this.peekTokenIs(TokenType.COMMA)) this.nextToken();
+    }
+    if (!this.expectPeek(TokenType.RBRACE)) return null;
+    if (this.peekTokenIs(TokenType.SEMICOLON)) this.nextToken();
+    return new ast.EnumStatement(token, name, variants);
   }
 
   parseSwitchExpression() {
