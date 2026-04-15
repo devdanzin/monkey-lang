@@ -9,6 +9,7 @@ export const Opcodes = {
   OpMul:             0x03, // Pop two, push product
   OpDiv:             0x04, // Pop two, push quotient
   OpMod:             0x1F, // Pop two, push modulo
+  OpPower:           0x25, // Pop two, push exponentiation
   OpPop:             0x05, // Pop top of stack (expression statement cleanup)
   OpTrue:            0x06, // Push true
   OpFalse:           0x07, // Push false
@@ -81,6 +82,7 @@ const definitions = new Map([
   [Opcodes.OpGetFreeRaw,    { name: 'OpGetFreeRaw',    operandWidths: [1] }],
   [Opcodes.OpCurrentClosure, { name: 'OpCurrentClosure', operandWidths: [] }],
   [Opcodes.OpDeepEqual,      { name: 'OpDeepEqual',      operandWidths: [] }],
+  [Opcodes.OpPower,          { name: 'OpPower',          operandWidths: [] }],
   [Opcodes.OpTailCall,       { name: 'OpTailCall',       operandWidths: [1] }],
 ]);
 

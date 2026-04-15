@@ -244,6 +244,7 @@ export class Compiler {
           case '*': result = l * r; break;
           case '/': result = r !== 0 ? Math.trunc(l / r) : null; break;
           case '%': result = r !== 0 ? l % r : null; break;
+          case '**': result = l ** r; break;
         }
         if (result !== null && result !== undefined) {
           return new AST.IntegerLiteral(node.token, result);
@@ -407,6 +408,7 @@ export class Compiler {
         case '*': this.emit(Opcodes.OpMul); break;
         case '/': this.emit(Opcodes.OpDiv); break;
         case '%': this.emit(Opcodes.OpMod); break;
+        case '**': this.emit(Opcodes.OpPower); break;
         case '>': this.emit(Opcodes.OpGreaterThan); break;
         case '==': this.emit(Opcodes.OpEqual); break;
         case '!=': this.emit(Opcodes.OpNotEqual); break;
@@ -1406,6 +1408,7 @@ export class Compiler {
         case '*': result = left * right; break;
         case '/': result = right !== 0 ? Math.trunc(left / right) : null; break;
         case '%': result = right !== 0 ? left % right : null; break;
+        case '**': result = left ** right; break;
         default: return null;
       }
       return result !== null ? new MonkeyInteger(result) : null;

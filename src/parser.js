@@ -15,6 +15,7 @@ const Precedence = {
   RANGE: 7,        // ..
   SUM: 8,          // +
   PRODUCT: 9,      // *
+  POWER: 10,       // **
   PREFIX: 10,      // -X or !X
   CALL: 11,        // myFunction(X)
   INDEX: 12,       // array[index]
@@ -38,6 +39,7 @@ const TOKEN_PRECEDENCE = {
   [TokenType.SLASH]: Precedence.PRODUCT,
   [TokenType.PERCENT]: Precedence.PRODUCT,
   [TokenType.ASTERISK]: Precedence.PRODUCT,
+  [TokenType.POWER]: Precedence.POWER,
   ['++']:  Precedence.CALL,
   ['--']:  Precedence.CALL,
   ['?.']:  Precedence.CALL,
@@ -92,7 +94,7 @@ export class Parser {
     for (const op of [TokenType.PLUS, TokenType.MINUS, TokenType.SLASH, TokenType.PERCENT,
       TokenType.ASTERISK, TokenType.EQ, TokenType.NOT_EQ,
       TokenType.LT, TokenType.GT, TokenType.LTE, TokenType.GTE,
-      TokenType.AND, TokenType.OR, TokenType.NULLISH, TokenType.DOTDOT]) {
+      TokenType.AND, TokenType.OR, TokenType.NULLISH, TokenType.DOTDOT, TokenType.POWER]) {
       this.registerInfix(op, (left) => this.parseInfixExpression(left));
     }
     

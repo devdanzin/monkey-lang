@@ -480,7 +480,8 @@ export class VM {
         case Opcodes.OpSub:
         case Opcodes.OpMul:
         case Opcodes.OpDiv:
-        case Opcodes.OpMod: {
+        case Opcodes.OpMod:
+        case Opcodes.OpPower: {
           this.executeBinaryOperation(op);
           break;
         }
@@ -824,6 +825,7 @@ export class VM {
       case Opcodes.OpMul: result = left.value * right.value; break;
       case Opcodes.OpDiv: result = Math.trunc(left.value / right.value); break;
       case Opcodes.OpMod: result = left.value % right.value; break;
+      case Opcodes.OpPower: result = left.value ** right.value; break;
       default: throw new Error(`unknown integer operator: ${op}`);
     }
     this.push(cachedInteger(result));
@@ -837,6 +839,7 @@ export class VM {
       case Opcodes.OpMul: result = left.value * right.value; break;
       case Opcodes.OpDiv: result = left.value / right.value; break;
       case Opcodes.OpMod: result = left.value % right.value; break;
+      case Opcodes.OpPower: result = left.value ** right.value; break;
       default: throw new Error(`unknown float operator: ${op}`);
     }
     this.push(this._track(new MonkeyFloat(result)));

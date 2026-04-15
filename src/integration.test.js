@@ -430,3 +430,43 @@ describe('Default Parameter Values', () => {
     assert.equal(result.value, '1, 2, 3');
   });
 });
+
+describe('Exponentiation Operator (**)', () => {
+  it('integer power', () => {
+    assert.equal(run('2 ** 10').value, 1024);
+  });
+
+  it('zero power', () => {
+    assert.equal(run('5 ** 0').value, 1);
+  });
+
+  it('float power', () => {
+    const result = run('2.0 ** 0.5');
+    assert.ok(Math.abs(result.value - Math.SQRT2) < 0.0001);
+  });
+
+  it('power with other operations', () => {
+    assert.equal(run('10 ** 2 + 1').value, 101);
+  });
+
+  it('constant folded', () => {
+    assert.equal(run('3 ** 3').value, 27);
+  });
+});
+
+describe('Milestone: 800 Tests', () => {
+  it('all features work together', () => {
+    const input = [
+      'let power_map = fn(base = 2, ...exponents) {',
+      '  [base ** e for e in exponents]',
+      '};',
+      'let result = power_map(2, 0, 1, 2, 3, 4);',
+      'match result {',
+      '  [1, 2, 4, 8, 16] => "powers of 2",',
+      '  _ => "unexpected"',
+      '}'
+    ].join('\n');
+    const result = run(input);
+    assert.equal(result.value, 'powers of 2');
+  });
+});

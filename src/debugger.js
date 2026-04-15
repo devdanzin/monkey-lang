@@ -229,6 +229,7 @@ export class DebugVM {
       case Opcodes.OpMul:
       case Opcodes.OpDiv:
       case Opcodes.OpMod:
+      case Opcodes.OpPower:
         vm.executeBinaryOperation(op);
         break;
       case Opcodes.OpPop:

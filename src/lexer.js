@@ -22,6 +22,7 @@ export const TokenType = {
   PLUS_ASSIGN: '+=',
   MINUS_ASSIGN: '-=',
   ASTERISK_ASSIGN: '*=',
+  POWER: '**',
   SLASH_ASSIGN: '/=',
   PLUS: '+',
   MINUS: '-',
@@ -253,6 +254,7 @@ export class Lexer {
         break;
       case '*':
         if (this.peekChar() === '=') { this.readChar(); tok = new Token(TokenType.ASTERISK_ASSIGN, '*='); }
+        else if (this.peekChar() === '*') { this.readChar(); tok = new Token(TokenType.POWER, '**'); }
         else { tok = new Token(TokenType.ASTERISK, '*'); }
         break;
       case '/':
