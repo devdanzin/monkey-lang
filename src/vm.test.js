@@ -186,13 +186,13 @@ describe('VM', () => {
   describe('hash literals', () => {
     it('evaluates {}', () => {
       const result = runVM('{}');
-      assert.ok(result instanceof MonkeyHash);
+      assert.ok(result.type() === 'HASH');
       assert.equal(result.pairs.size, 0);
     });
 
     it('evaluates {1: 2, 3: 4}', () => {
       const result = runVM('{1: 2, 3: 4}');
-      assert.ok(result instanceof MonkeyHash);
+      assert.ok(result.type() === 'HASH');
       assert.equal(result.pairs.size, 2);
     });
   });

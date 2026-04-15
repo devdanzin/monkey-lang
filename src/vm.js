@@ -5,9 +5,12 @@ import { Opcodes, lookup, readOperands } from './code.js';
 import { CompiledFunction, Closure, Cell } from './compiler.js';
 import {
     MonkeyInteger, MonkeyFloat, MonkeyString, MonkeyBoolean, MonkeyArray, MonkeyHash,
-  MonkeyNull, MonkeyError, MonkeyBuiltin,
+  MonkeyNull, MonkeyError, MonkeyBuiltin, ShapedHash, objectKeyString,
   TRUE, FALSE, NULL, OBJ,
 } from './object.js';
+import { getShape, getIC, createICTable } from './shape.js';
+
+function isHash(obj) { return obj instanceof MonkeyHash || obj instanceof ShapedHash; }
 
 const STACK_SIZE = 8192;
 const GLOBALS_SIZE = 65536;
@@ -372,7 +375,7 @@ export const builtins = [
   // keys (VM hash format: Map<key, value>)
   new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return new MonkeyError(`wrong number of arguments to keys. got=${args.length}, want=1`);
-    if (!(args[0] instanceof MonkeyHash)) return new MonkeyError(`argument to keys must be HASH, got ${args[0].type()}`);
+    if (!isHash(args[0])) return new MonkeyError(`argument to keys must be HASH, got ${args[0].type()}`);
     const ks = [];
     for (const [k] of args[0].pairs) ks.push(k);
     return new MonkeyArray(ks);
@@ -380,7 +383,7 @@ export const builtins = [
   // values (VM hash format: Map<key, value>)
   new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return new MonkeyError(`wrong number of arguments to values. got=${args.length}, want=1`);
-    if (!(args[0] instanceof MonkeyHash)) return new MonkeyError(`argument to values must be HASH, got ${args[0].type()}`);
+    if (!isHash(args[0])) return new MonkeyError(`argument to values must be HASH, got ${args[0].type()}`);
     const vs = [];
     for (const [, v] of args[0].pairs) vs.push(v);
     return new MonkeyArray(vs);
@@ -431,6 +434,9 @@ export class VM {
     this.sp = 0; // stack pointer (points to next free slot)
 
     this.globals = new Array(GLOBALS_SIZE);
+
+    // Inline cache table for hash property access
+    this.icTable = createICTable();
 
     // Garbage collector (optional)
     this.gc = gc;
@@ -575,21 +581,27 @@ export class VM {
         case Opcodes.OpHash: {
           const numElements = (instructions[ip + 1] << 8) | instructions[ip + 2];
           this.currentFrame().ip += 2;
-          const pairs = new Map();
+          const keyStrs = [];
+          const keys = [];
+          const values = [];
           for (let i = this.sp - numElements; i < this.sp; i += 2) {
             const key = this.stack[i];
             const value = this.stack[i + 1];
-            pairs.set(key, value);
+            keyStrs.push(objectKeyString(key));
+            keys.push(key);
+            values.push(value);
           }
           this.sp -= numElements;
-          this.push(this._track(new MonkeyHash(pairs)));
+          const shape = getShape(keyStrs);
+          this.push(this._track(new ShapedHash(shape, values, keys)));
           break;
         }
 
         case Opcodes.OpIndex: {
+          const indexIp = this.currentFrame().ip; // IP for IC keying
           const index = this.pop();
           const left = this.pop();
-          this.executeIndexExpression(left, index);
+          this.executeIndexExpression(left, index, indexIp);
           break;
         }
 
@@ -877,7 +889,7 @@ export class VM {
     }
   }
 
-  executeIndexExpression(left, index) {
+  executeIndexExpression(left, index, icIp = -1) {
     if (left instanceof MonkeyArray && index instanceof MonkeyInteger) {
       let idx = index.value;
       if (idx < 0) idx = left.elements.length + idx; // negative indexing
@@ -914,7 +926,24 @@ export class VM {
       } else {
         this.push(NULL);
       }
-    } else if (left instanceof MonkeyHash) {
+    } else if (left instanceof ShapedHash) {
+      // Fast path: shaped hash with inline cache
+      const keyStr = objectKeyString(index);
+      const ic = getIC(this.icTable, icIp);
+      
+      // IC fast path
+      if (ic.shapeId === left.shape.id && ic.keyStr === keyStr) {
+        ic.hits++;
+        const val = ic.slotIndex >= 0 ? left.slots[ic.slotIndex] : undefined;
+        this.push(val !== undefined ? val : NULL);
+      } else {
+        // IC miss — do full lookup
+        const slot = left.shape.getSlot(keyStr);
+        const val = slot >= 0 ? left.slots[slot] : undefined;
+        ic.update(left.shape, keyStr, slot);
+        this.push(val !== undefined ? val : NULL);
+      }
+    } else if (isHash(left)) {
       const key = left.pairs.get(index) || 
                   // MonkeyHash uses reference keys — need value-based lookup
                   this.hashLookup(left, index);
@@ -1067,7 +1096,7 @@ export class VM {
     }
     
     // Hash comparison (recursive)
-    if (a instanceof MonkeyHash && b instanceof MonkeyHash) {
+    if (isHash(a) && isHash(b)) {
       if (a.pairs.size !== b.pairs.size) return false;
       for (const [ak, av] of a.pairs) {
         // Find matching key in b

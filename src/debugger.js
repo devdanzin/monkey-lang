@@ -17,8 +17,9 @@ import { VM, builtins } from './vm.js';
 import {
   MonkeyInteger, MonkeyFloat, MonkeyString, MonkeyBoolean,
   MonkeyArray, MonkeyHash, MonkeyNull, MonkeyError, MonkeyBuiltin,
-  TRUE, FALSE, NULL,
+  ShapedHash, objectKeyString, TRUE, FALSE, NULL,
 } from './object.js';
+import { getShape } from './shape.js';
 
 const DebugState = {
   READY: 'ready',
@@ -294,10 +295,15 @@ export class DebugVM {
       case Opcodes.OpHash: {
         const num = (instructions[ip + 1] << 8) | instructions[ip + 2];
         vm.frames[vm.framesIndex - 1].ip += 2;
-        const pairs = new Map();
-        for (let i = vm.sp - num; i < vm.sp; i += 2) pairs.set(vm.stack[i], vm.stack[i + 1]);
+        const keyStrs = [], keys = [], values = [];
+        for (let i = vm.sp - num; i < vm.sp; i += 2) {
+          keys.push(vm.stack[i]);
+          values.push(vm.stack[i + 1]);
+          keyStrs.push(objectKeyString(vm.stack[i]));
+        }
         vm.sp -= num;
-        vm.push(vm._track(new MonkeyHash(pairs)));
+        const shape = getShape(keyStrs);
+        vm.push(vm._track(new ShapedHash(shape, values, keys)));
         break;
       }
       case Opcodes.OpIndex: {

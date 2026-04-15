@@ -19,7 +19,7 @@
 import {
   MonkeyInteger, MonkeyFloat, MonkeyString, MonkeyBoolean,
   MonkeyArray, MonkeyHash, MonkeyNull, MonkeyError, MonkeyBuiltin,
-  TRUE, FALSE, NULL,
+  ShapedHash, TRUE, FALSE, NULL,
 } from './object.js';
 import { Closure, Cell, CompiledFunction } from './compiler.js';
 
@@ -89,7 +89,7 @@ export class GarbageCollector {
     if (this.immortals.has(obj)) return obj;
     
     // Only track compound objects
-    if (obj instanceof MonkeyArray || obj instanceof MonkeyHash ||
+    if (obj instanceof MonkeyArray || (obj instanceof MonkeyHash || obj instanceof ShapedHash) ||
         obj instanceof MonkeyString || obj instanceof MonkeyError ||
         obj instanceof Closure || obj instanceof Cell ||
         obj instanceof MonkeyInteger || obj instanceof MonkeyFloat) {
@@ -313,7 +313,7 @@ export class GarbageCollector {
           this._traceYoung(elem);
         }
       }
-    } else if (obj instanceof MonkeyHash) {
+    } else if ((obj instanceof MonkeyHash || obj instanceof ShapedHash)) {
       for (const [key, value] of obj.pairs) {
         if (key && this.youngGen.has(key)) { key[MARK] = true; this._traceYoung(key); }
         if (value && this.youngGen.has(value)) { value[MARK] = true; this._traceYoung(value); }
@@ -345,7 +345,7 @@ export class GarbageCollector {
       for (const elem of obj.elements) {
         this.markObject(elem);
       }
-    } else if (obj instanceof MonkeyHash) {
+    } else if ((obj instanceof MonkeyHash || obj instanceof ShapedHash)) {
       for (const [key, value] of obj.pairs) {
         this.markObject(key);
         this.markObject(value);
@@ -493,7 +493,7 @@ export class GarbageCollector {
       if (obj instanceof MonkeyFloat) return `float_${String(obj.value).replace('.', '_')}`;
       if (obj instanceof MonkeyString) return `str_${obj.value.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 20)}`;
       if (obj instanceof MonkeyArray) return `arr_${[...this.heap].indexOf(obj)}`;
-      if (obj instanceof MonkeyHash) return `hash_${[...this.heap].indexOf(obj)}`;
+      if ((obj instanceof MonkeyHash || obj instanceof ShapedHash)) return `hash_${[...this.heap].indexOf(obj)}`;
       if (obj instanceof Closure) return `closure_${[...this.heap].indexOf(obj)}`;
       if (obj instanceof Cell) return `cell_${[...this.heap].indexOf(obj)}`;
       return `obj_${[...this.heap].indexOf(obj)}`;
@@ -503,7 +503,7 @@ export class GarbageCollector {
       if (obj instanceof MonkeyFloat) return `FLOAT(${obj.value})`;
       if (obj instanceof MonkeyString) return `STR("${obj.value.slice(0, 15)}")`;
       if (obj instanceof MonkeyArray) return `ARRAY[${obj.elements.length}]`;
-      if (obj instanceof MonkeyHash) return `HASH{${obj.pairs.size}}`;
+      if ((obj instanceof MonkeyHash || obj instanceof ShapedHash)) return `HASH{${obj.pairs.size}}`;
       if (obj instanceof Closure) return `CLOSURE(${obj.fn?.numParameters || 0} params)`;
       if (obj instanceof Cell) return `CELL`;
       return `?`;
@@ -525,7 +525,7 @@ export class GarbageCollector {
             lines.push(`  ${nid} -> ${id(obj.elements[i])} [label="${i}"];`);
           }
         }
-      } else if (obj instanceof MonkeyHash) {
+      } else if ((obj instanceof MonkeyHash || obj instanceof ShapedHash)) {
         for (const [k, v] of obj.pairs) {
           if (this.heap.has(k)) lines.push(`  ${nid} -> ${id(k)} [label="key"];`);
           if (this.heap.has(v)) lines.push(`  ${nid} -> ${id(v)} [label="val"];`);

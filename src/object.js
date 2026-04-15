@@ -92,6 +92,84 @@ export class MonkeyHash {
   }
 }
 
+/**
+ * ShapedHash — VM-optimized hash using hidden classes.
+ * 
+ * Instead of a Map, stores values in a flat array indexed by shape slots.
+ * Property access: shape.getSlot(key) → slots[slot] instead of Map.get(key).
+ * 
+ * Falls back to MonkeyHash interface via .pairs getter for compatibility.
+ */
+export class ShapedHash {
+  /**
+   * @param {import('./shape.js').Shape} shape - The hidden class
+   * @param {any[]} slots - Values indexed by shape slot positions
+   * @param {any[]} keys - Original MonkeyObject keys in slot order
+   */
+  constructor(shape, slots, keys) {
+    this.shape = shape;
+    this.slots = slots;
+    this.keys = keys;    // MonkeyObject keys in slot order (for iteration)
+  }
+
+  type() { return OBJ.HASH; }
+
+  /** Get value by string key (fast path) */
+  getByString(keyStr) {
+    const slot = this.shape.getSlot(keyStr);
+    return slot >= 0 ? this.slots[slot] : undefined;
+  }
+
+  /** Get value by MonkeyObject key */
+  getByKey(keyObj) {
+    const keyStr = objectKeyString(keyObj);
+    return this.getByString(keyStr);
+  }
+
+  /** Set value by string key — mutates in place if key exists, otherwise transitions shape */
+  setByString(keyStr, value, keyObj) {
+    const slot = this.shape.getSlot(keyStr);
+    if (slot >= 0) {
+      this.slots[slot] = value;
+    } else {
+      // New key — transition to a new shape
+      const newShape = this.shape.transition(keyStr);
+      this.slots.push(value);
+      this.keys.push(keyObj);
+      this.shape = newShape;
+    }
+  }
+
+  /** Compatibility: .pairs getter returns a Map view for iteration */
+  get pairs() {
+    const map = new Map();
+    const shapeKeys = this.shape.keys();
+    for (let i = 0; i < this.slots.length; i++) {
+      map.set(this.keys[i], this.slots[i]);
+    }
+    return map;
+  }
+
+  inspect() {
+    const entries = [];
+    for (let i = 0; i < this.slots.length; i++) {
+      const k = this.keys[i];
+      const v = this.slots[i];
+      entries.push(`${k?.inspect?.() ?? String(k)}: ${v?.inspect?.() ?? String(v)}`);
+    }
+    return `{${entries.join(', ')}}`;
+  }
+}
+
+/** Convert a MonkeyObject key to its string form for shape lookup */
+export function objectKeyString(obj) {
+  if (obj instanceof MonkeyString) return `str:${obj.value}`;
+  if (obj instanceof MonkeyInteger) return `int:${obj.value}`;
+  if (obj instanceof MonkeyBoolean) return `bool:${obj.value}`;
+  if (obj && typeof obj.inspect === 'function') return obj.inspect();
+  return String(obj);
+}
+
 export class MonkeyEnum {
   constructor(enumName, variant, ordinal) {
     this.enumName = enumName;
