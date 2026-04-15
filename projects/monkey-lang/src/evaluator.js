@@ -938,7 +938,22 @@ export function monkeyEval(node, env) {
         obj.pairs.set(index.fastHashKey(), { key: index, value: val });
       }
     } else if (obj instanceof MonkeyInstance && index instanceof MonkeyString) {
+      // Check for __setitem__ protocol first for non-field keys
+      if (!obj.fields.has(index.value)) {
+        const setitem = obj.get('__setitem__');
+        if (setitem && setitem instanceof MonkeyFunction) {
+          callMethod(obj, setitem, [index, val]);
+          return val;
+        }
+      }
       obj.set(index.value, val);
+    } else if (obj instanceof MonkeyInstance) {
+      // Non-string index — use __setitem__ protocol
+      const setitem = obj.get('__setitem__');
+      if (setitem && setitem instanceof MonkeyFunction) {
+        callMethod(obj, setitem, [index, val]);
+        return val;
+      }
     }
     return val;
   }
