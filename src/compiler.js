@@ -899,6 +899,34 @@ export class Compiler {
         this.compile(arg);
       }
       this.emit(Opcodes.OpCall, node.arguments.length);
+    } else if (node instanceof AST.MatchExpression) {
+      // match subject { pattern => body, ... }
+      // Similar to switch: compile as chained equality comparisons
+      const jumpToEndPositions = [];
+      
+      for (const arm of node.arms) {
+        if (arm.pattern === null) continue; // default arm handled after
+        this.compile(node.subject);
+        this.compile(arm.pattern);
+        this.emit(Opcodes.OpEqual);
+        const jumpNotTruthyPos = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+        this._compileSwitchBody(arm.body);
+        jumpToEndPositions.push(this.emit(Opcodes.OpJump, 9999));
+        this.changeOperand(jumpNotTruthyPos, this.currentInstructions().length);
+      }
+      
+      // Default arm
+      const defaultArm = node.arms.find(a => a.pattern === null);
+      if (defaultArm) {
+        this._compileSwitchBody(defaultArm.body);
+      } else {
+        this.emit(Opcodes.OpNull);
+      }
+      
+      const endPos = this.currentInstructions().length;
+      for (const pos of jumpToEndPositions) {
+        this.changeOperand(pos, endPos);
+      }
     } else if (node instanceof AST.OptionalChainExpression) {
       // left?.key → if left is null, return null, else left[key]
       this.compile(node.left);
