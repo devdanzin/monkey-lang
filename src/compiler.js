@@ -901,14 +901,14 @@ export class Compiler {
       this.emit(Opcodes.OpCall, node.arguments.length);
     } else if (node instanceof AST.MatchExpression) {
       // match subject { pattern => body, ... }
-      // Similar to switch: compile as chained equality comparisons
+      // Uses deep equality comparison for structural matching
       const jumpToEndPositions = [];
       
       for (const arm of node.arms) {
         if (arm.pattern === null) continue; // default arm handled after
         this.compile(node.subject);
         this.compile(arm.pattern);
-        this.emit(Opcodes.OpEqual);
+        this.emit(Opcodes.OpDeepEqual);
         const jumpNotTruthyPos = this.emit(Opcodes.OpJumpNotTruthy, 9999);
         this._compileSwitchBody(arm.body);
         jumpToEndPositions.push(this.emit(Opcodes.OpJump, 9999));

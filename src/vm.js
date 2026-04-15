@@ -749,6 +749,13 @@ export class VM {
           break;
         }
 
+        case Opcodes.OpDeepEqual: {
+          const right = this.pop();
+          const left = this.pop();
+          this.push(this._deepEqual(left, right) ? TRUE : FALSE);
+          break;
+        }
+
         default:
           throw new Error(`unknown opcode: ${op}`);
       }
@@ -946,5 +953,62 @@ export class VM {
     if (obj instanceof MonkeyBoolean) return obj.value;
     if (obj === NULL) return false;
     return true; // integers are truthy
+  }
+
+  /**
+   * Deep structural equality comparison.
+   * Compares arrays/hashes by value, not reference.
+   */
+  _deepEqual(a, b) {
+    if (a === b) return true; // same reference (includes TRUE/FALSE/NULL singletons)
+    if (a === null || b === null || a === undefined || b === undefined) return false;
+    
+    // Integer/Float comparison
+    if ((a instanceof MonkeyInteger || a instanceof MonkeyFloat) &&
+        (b instanceof MonkeyInteger || b instanceof MonkeyFloat)) {
+      return a.value === b.value;
+    }
+    
+    // String comparison
+    if (a instanceof MonkeyString && b instanceof MonkeyString) {
+      return a.value === b.value;
+    }
+    
+    // Boolean comparison
+    if (a instanceof MonkeyBoolean && b instanceof MonkeyBoolean) {
+      return a.value === b.value;
+    }
+    
+    // Array comparison (recursive)
+    if (a instanceof MonkeyArray && b instanceof MonkeyArray) {
+      if (a.elements.length !== b.elements.length) return false;
+      for (let i = 0; i < a.elements.length; i++) {
+        if (!this._deepEqual(a.elements[i], b.elements[i])) return false;
+      }
+      return true;
+    }
+    
+    // Hash comparison (recursive)
+    if (a instanceof MonkeyHash && b instanceof MonkeyHash) {
+      if (a.pairs.size !== b.pairs.size) return false;
+      for (const [ak, av] of a.pairs) {
+        // Find matching key in b
+        let found = false;
+        for (const [bk, bv] of b.pairs) {
+          if (this._deepEqual(ak, bk)) {
+            if (!this._deepEqual(av, bv)) return false;
+            found = true;
+            break;
+          }
+        }
+        if (!found) return false;
+      }
+      return true;
+    }
+    
+    // Null comparison
+    if (a === NULL && b === NULL) return true;
+    
+    return false;
   }
 }

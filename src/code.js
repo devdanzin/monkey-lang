@@ -38,6 +38,7 @@ export const Opcodes = {
   OpGetLocalRaw:     0x22, // Get local without Cell deref: OpGetLocalRaw <uint8>
   OpGetFreeRaw:      0x23, // Get free without Cell deref: OpGetFreeRaw <uint8>
   OpCurrentClosure:  0x1D, // Push current closure (for recursion)
+  OpDeepEqual:       0x24, // Pop two, push deep structural equality result
   OpTailCall:        0x1E, // Tail call: OpTailCall <uint8> (num args) — reuses frame
 };
 
@@ -79,6 +80,7 @@ const definitions = new Map([
   [Opcodes.OpGetLocalRaw,   { name: 'OpGetLocalRaw',   operandWidths: [1] }],
   [Opcodes.OpGetFreeRaw,    { name: 'OpGetFreeRaw',    operandWidths: [1] }],
   [Opcodes.OpCurrentClosure, { name: 'OpCurrentClosure', operandWidths: [] }],
+  [Opcodes.OpDeepEqual,      { name: 'OpDeepEqual',      operandWidths: [] }],
   [Opcodes.OpTailCall,       { name: 'OpTailCall',       operandWidths: [1] }],
 ]);
 

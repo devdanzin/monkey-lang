@@ -423,6 +423,12 @@ export class DebugVM {
       case Opcodes.OpCurrentClosure:
         vm.push(vm.frames[vm.framesIndex - 1].closure);
         break;
+      case Opcodes.OpDeepEqual: {
+        const right = vm.pop();
+        const left = vm.pop();
+        vm.push(vm._deepEqual(left, right) ? TRUE : FALSE);
+        break;
+      }
       default:
         throw new Error(`unknown opcode: ${op}`);
     }
