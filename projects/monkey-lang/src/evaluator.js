@@ -4,6 +4,7 @@ import {
   MonkeyInteger, MonkeyFloat, MonkeyString, MonkeyBoolean, MonkeyReturnValue, MonkeyError,
   MonkeyFunction, MonkeyArray, MonkeyHash, MonkeyBuiltin, MonkeyThrown,
   MonkeyBreak, MonkeyContinue, MonkeyResult, MonkeyEnum,
+  MonkeyGeneratorDef, MonkeyGenerator, MonkeyYield,
   Environment, TRUE, FALSE, NULL, OBJ, internString,
 } from './object.js';
 
@@ -546,6 +547,25 @@ export function monkeyEval(node, env) {
     return fn;
   }
 
+  if (node instanceof AST.GeneratorLiteral) {
+    return new MonkeyGeneratorDef(node.parameters, node.body, env);
+  }
+
+  if (node instanceof AST.YieldExpression) {
+    const val = monkeyEval(node.value, env);
+    if (isError(val)) return val;
+    // Find the yield collector in the environment chain
+    let e = env;
+    while (e) {
+      if (e._yieldCollector) {
+        e._yieldCollector.push(val);
+        return NULL; // yield doesn't interrupt execution in eager mode
+      }
+      e = e.outer;
+    }
+    return newError('yield outside of generator');
+  }
+
   if (node instanceof AST.CallExpression) {
     const fn = monkeyEval(node.function, env);
     if (isError(fn)) return fn;
@@ -860,8 +880,10 @@ function evalForInExpression(node, env) {
     elements = iterable.elements;
   } else if (iterable instanceof MonkeyString) {
     elements = iterable.value.split('').map(c => new MonkeyString(c));
+  } else if (iterable instanceof MonkeyGenerator) {
+    elements = iterable.values;
   } else {
-    return new MonkeyError(`for-in: expected ARRAY or STRING, got ${iterable.type()}`);
+    return new MonkeyError(`for-in: expected ARRAY, STRING, or GENERATOR, got ${iterable.type()}`);
   }
 
   for (const elem of elements) {
@@ -922,6 +944,9 @@ function applyFunction(fn, args) {
     return result;
   }
   if (fn instanceof MonkeyBuiltin) return fn.fn(...args);
+  if (fn instanceof MonkeyGeneratorDef) {
+    return callGenerator(fn, args);
+  }
   return newError(`not a function: ${fn.type()}`);
 }
 
@@ -976,4 +1001,23 @@ function evalHashLiteral(node, env) {
     pairs.set(key.fastHashKey(), { key, value });
   }
   return new MonkeyHash(pairs);
+}
+
+// Execute a generator, eagerly collecting all yielded values
+function callGenerator(genDef, args) {
+  const extendedEnv = new Environment(genDef.env);
+  for (let i = 0; i < genDef.parameters.length; i++) {
+    if (i < args.length) {
+      extendedEnv.set(genDef.parameters[i].value, args[i]);
+    } else {
+      extendedEnv.set(genDef.parameters[i].value, NULL);
+    }
+  }
+  
+  // Install a yield collector in the environment
+  const values = [];
+  extendedEnv._yieldCollector = values;
+  
+  monkeyEval(genDef.body, extendedEnv);
+  return new MonkeyGenerator(values);
 }

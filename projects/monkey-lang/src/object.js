@@ -230,3 +230,39 @@ export class MonkeyEnum {
   hashKey() { return `enum:${this.enumName}:${this.variant}`; }
   fastHashKey() { return `enum:${this.enumName}:${this.variant}`; }
 }
+
+export class MonkeyGeneratorDef {
+  constructor(parameters, body, env) {
+    this.parameters = parameters; // [Identifier]
+    this.body = body;             // BlockStatement
+    this.env = env;               // Environment (closure)
+  }
+  type() { return 'GENERATOR_DEF'; }
+  inspect() { return `gen(${this.parameters.map(p => p.value || p).join(', ')}) { ... }`; }
+}
+
+// A "live" generator instance — holds yielded values for iteration
+export class MonkeyGenerator {
+  constructor(values) {
+    this.values = values;     // Array of MonkeyObject values (eagerly collected)
+    this._index = 0;
+  }
+  type() { return 'GENERATOR'; }
+  inspect() { return `<generator [${this.values.length} values]>`; }
+  
+  // Iterator interface
+  next() {
+    if (this._index < this.values.length) {
+      return { value: this.values[this._index++], done: false };
+    }
+    return { value: null, done: true };
+  }
+  
+  reset() { this._index = 0; }
+}
+
+export class MonkeyYield {
+  constructor(value) { this.value = value; }
+  type() { return 'YIELD_VALUE'; }
+  inspect() { return `yield(${this.value.inspect()})`; }
+}
