@@ -470,3 +470,42 @@ describe('Milestone: 800 Tests', () => {
     assert.equal(result.value, 'powers of 2');
   });
 });
+
+describe('Combined Features Stress Tests', () => {
+  it('default + rest + comprehension under GC', () => {
+    const input = [
+      'let make_fmt = fn(prefix = "[", suffix = "]") {',
+      '  fn(...items) { prefix + join([str(x) for x in items], ", ") + suffix }',
+      '};',
+      'let fmt = make_fmt();',
+      'let parens = make_fmt("(", ")");',
+      '[fmt(1, 2, 3), parens("a", "b")]'
+    ].join('\n');
+    const result = run(input);
+    assert.equal(result.elements[0].value, '[1, 2, 3]');
+    assert.equal(result.elements[1].value, '(a, b)');
+  });
+
+  it('power + comprehension + match + spread', () => {
+    const result = run(`
+      let powers = [2 ** n for n in 0..7];
+      let big = [p for p in powers if p > 10];
+      match len(big) {
+        4 => [...big],
+        _ => []
+      }
+    `);
+    assert.deepEqual(result.elements.map(e => e.value), [16, 32, 64, 128]);
+  });
+
+  it('recursive function with default + deep equal', () => {
+    const result = run(`
+      let range_collect = fn(start = 0, end = 5) {
+        if (start >= end) { [] }
+        else { [start, ...range_collect(start + 1, end)] }
+      };
+      range_collect() == [0, 1, 2, 3, 4]
+    `);
+    assert.equal(result.inspect(), 'true');
+  });
+});
