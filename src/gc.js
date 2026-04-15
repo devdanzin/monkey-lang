@@ -481,4 +481,67 @@ export class GarbageCollector {
       promotions: 0,
     };
   }
+
+  /**
+   * Generate a DOT graph of the current heap for visualization.
+   * Useful for debugging and understanding object relationships.
+   */
+  heapDot() {
+    const lines = ['digraph heap {', '  rankdir=LR;', '  node [shape=record];'];
+    const id = (obj) => {
+      if (obj instanceof MonkeyInteger) return `int_${obj.value}`;
+      if (obj instanceof MonkeyFloat) return `float_${String(obj.value).replace('.', '_')}`;
+      if (obj instanceof MonkeyString) return `str_${obj.value.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 20)}`;
+      if (obj instanceof MonkeyArray) return `arr_${[...this.heap].indexOf(obj)}`;
+      if (obj instanceof MonkeyHash) return `hash_${[...this.heap].indexOf(obj)}`;
+      if (obj instanceof Closure) return `closure_${[...this.heap].indexOf(obj)}`;
+      if (obj instanceof Cell) return `cell_${[...this.heap].indexOf(obj)}`;
+      return `obj_${[...this.heap].indexOf(obj)}`;
+    };
+    const label = (obj) => {
+      if (obj instanceof MonkeyInteger) return `INT(${obj.value})`;
+      if (obj instanceof MonkeyFloat) return `FLOAT(${obj.value})`;
+      if (obj instanceof MonkeyString) return `STR("${obj.value.slice(0, 15)}")`;
+      if (obj instanceof MonkeyArray) return `ARRAY[${obj.elements.length}]`;
+      if (obj instanceof MonkeyHash) return `HASH{${obj.pairs.size}}`;
+      if (obj instanceof Closure) return `CLOSURE(${obj.fn?.numParameters || 0} params)`;
+      if (obj instanceof Cell) return `CELL`;
+      return `?`;
+    };
+    const gen = (obj) => {
+      if (!this.generational) return '';
+      if (this.oldGen.has(obj)) return ' [color=blue]';
+      if (this.youngGen.has(obj)) return ' [color=green]';
+      return '';
+    };
+
+    for (const obj of this.heap) {
+      const nid = id(obj);
+      lines.push(`  ${nid} [label="${label(obj)}"]${gen(obj)};`);
+      
+      if (obj instanceof MonkeyArray) {
+        for (let i = 0; i < obj.elements.length; i++) {
+          if (this.heap.has(obj.elements[i])) {
+            lines.push(`  ${nid} -> ${id(obj.elements[i])} [label="${i}"];`);
+          }
+        }
+      } else if (obj instanceof MonkeyHash) {
+        for (const [k, v] of obj.pairs) {
+          if (this.heap.has(k)) lines.push(`  ${nid} -> ${id(k)} [label="key"];`);
+          if (this.heap.has(v)) lines.push(`  ${nid} -> ${id(v)} [label="val"];`);
+        }
+      } else if (obj instanceof Closure && obj.free) {
+        for (let i = 0; i < obj.free.length; i++) {
+          if (this.heap.has(obj.free[i])) {
+            lines.push(`  ${nid} -> ${id(obj.free[i])} [label="free${i}" style=dashed];`);
+          }
+        }
+      } else if (obj instanceof Cell && obj.value && this.heap.has(obj.value)) {
+        lines.push(`  ${nid} -> ${id(obj.value)} [label="value" style=dotted];`);
+      }
+    }
+    
+    lines.push('}');
+    return lines.join('\n');
+  }
 }
