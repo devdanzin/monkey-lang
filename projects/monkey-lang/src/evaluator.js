@@ -256,6 +256,130 @@ const builtins = new Map([
     if (!(args[0] instanceof MonkeyResult)) return args[0];
     return args[0].isOk ? args[0].value : args[1];
   })],
+  ['map', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError(`wrong number of arguments. got=${args.length}, want=2`);
+    const arr = args[0];
+    const fn = args[1];
+    if (!(arr instanceof MonkeyArray)) return newError(`first argument to map must be ARRAY, got ${arr.type()}`);
+    const result = new Array(arr.elements.length);
+    for (let i = 0; i < arr.elements.length; i++) {
+      result[i] = applyFunction(fn, [arr.elements[i]]);
+      if (isError(result[i])) return result[i];
+    }
+    return new MonkeyArray(result);
+  })],
+  ['filter', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError(`wrong number of arguments. got=${args.length}, want=2`);
+    const arr = args[0];
+    const fn = args[1];
+    if (!(arr instanceof MonkeyArray)) return newError(`first argument to filter must be ARRAY, got ${arr.type()}`);
+    const result = [];
+    for (const el of arr.elements) {
+      const val = applyFunction(fn, [el]);
+      if (isError(val)) return val;
+      if (isTruthy(val)) result.push(el);
+    }
+    return new MonkeyArray(result);
+  })],
+  ['reduce', new MonkeyBuiltin((...args) => {
+    if (args.length < 2 || args.length > 3) return newError(`wrong number of arguments. got=${args.length}, want=2 or 3`);
+    const arr = args[0];
+    const fn = args[1];
+    if (!(arr instanceof MonkeyArray)) return newError(`first argument to reduce must be ARRAY, got ${arr.type()}`);
+    let acc = args.length === 3 ? args[2] : (arr.elements.length > 0 ? arr.elements[0] : NULL);
+    const startIdx = args.length === 3 ? 0 : 1;
+    for (let i = startIdx; i < arr.elements.length; i++) {
+      acc = applyFunction(fn, [acc, arr.elements[i]]);
+      if (isError(acc)) return acc;
+    }
+    return acc;
+  })],
+  ['find', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError(`wrong number of arguments. got=${args.length}, want=2`);
+    const arr = args[0];
+    const fn = args[1];
+    if (!(arr instanceof MonkeyArray)) return newError(`first argument to find must be ARRAY, got ${arr.type()}`);
+    for (const el of arr.elements) {
+      const val = applyFunction(fn, [el]);
+      if (isError(val)) return val;
+      if (isTruthy(val)) return el;
+    }
+    return NULL;
+  })],
+  ['any', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError(`wrong number of arguments. got=${args.length}, want=2`);
+    const arr = args[0];
+    const fn = args[1];
+    if (!(arr instanceof MonkeyArray)) return newError(`first argument to any must be ARRAY, got ${arr.type()}`);
+    for (const el of arr.elements) {
+      const val = applyFunction(fn, [el]);
+      if (isError(val)) return val;
+      if (isTruthy(val)) return TRUE;
+    }
+    return FALSE;
+  })],
+  ['all', new MonkeyBuiltin((...args) => {
+    if (args.length !== 2) return newError(`wrong number of arguments. got=${args.length}, want=2`);
+    const arr = args[0];
+    const fn = args[1];
+    if (!(arr instanceof MonkeyArray)) return newError(`first argument to all must be ARRAY, got ${arr.type()}`);
+    for (const el of arr.elements) {
+      const val = applyFunction(fn, [el]);
+      if (isError(val)) return val;
+      if (!isTruthy(val)) return FALSE;
+    }
+    return TRUE;
+  })],
+  ['sort', new MonkeyBuiltin((...args) => {
+    if (args.length < 1 || args.length > 2) return newError(`wrong number of arguments. got=${args.length}, want=1 or 2`);
+    const arr = args[0];
+    if (!(arr instanceof MonkeyArray)) return newError(`first argument to sort must be ARRAY, got ${arr.type()}`);
+    const sorted = [...arr.elements];
+    if (args.length === 2) {
+      // Custom comparator
+      const fn = args[1];
+      sorted.sort((a, b) => {
+        const result = applyFunction(fn, [a, b]);
+        return result.value || 0;
+      });
+    } else {
+      // Default: numeric/string comparison
+      sorted.sort((a, b) => {
+        if (a.value < b.value) return -1;
+        if (a.value > b.value) return 1;
+        return 0;
+      });
+    }
+    return new MonkeyArray(sorted);
+  })],
+  ['reverse', new MonkeyBuiltin((...args) => {
+    if (args.length !== 1) return newError(`wrong number of arguments. got=${args.length}, want=1`);
+    const arr = args[0];
+    if (arr instanceof MonkeyArray) return new MonkeyArray([...arr.elements].reverse());
+    if (arr instanceof MonkeyString) return new MonkeyString(arr.value.split('').reverse().join(''));
+    return newError(`argument to reverse not supported, got ${arr.type()}`);
+  })],
+  ['range', new MonkeyBuiltin((...args) => {
+    if (args.length < 1 || args.length > 3) return newError(`wrong number of arguments. got=${args.length}, want=1-3`);
+    let start = 0, stop, step = 1;
+    if (args.length === 1) {
+      stop = args[0].value;
+    } else if (args.length === 2) {
+      start = args[0].value;
+      stop = args[1].value;
+    } else {
+      start = args[0].value;
+      stop = args[1].value;
+      step = args[2].value;
+    }
+    const result = [];
+    if (step > 0) {
+      for (let i = start; i < stop; i += step) result.push(new MonkeyInteger(i));
+    } else if (step < 0) {
+      for (let i = start; i > stop; i += step) result.push(new MonkeyInteger(i));
+    }
+    return new MonkeyArray(result);
+  })],
 ]);
 
 // --- Helpers ---
