@@ -927,6 +927,22 @@ function evalMinusPrefix(right) {
 }
 
 function evalInfixExpression(op, left, right) {
+  // Operator overloading for class instances
+  if (left instanceof MonkeyInstance) {
+    const opMap = {
+      '+': '__add__', '-': '__sub__', '*': '__mul__', '/': '__div__',
+      '%': '__mod__', '==': '__eq__', '!=': '__ne__',
+      '<': '__lt__', '>': '__gt__', '<=': '__le__', '>=': '__ge__',
+    };
+    const methodName = opMap[op];
+    if (methodName) {
+      const method = left.get(methodName);
+      if (method && method instanceof MonkeyFunction) {
+        return callMethod(left, method, [right]);
+      }
+    }
+  }
+  
   if ((left.type() === OBJ.INTEGER || left.type() === OBJ.FLOAT) && 
       (right.type() === OBJ.INTEGER || right.type() === OBJ.FLOAT)) {
     return evalNumericInfix(op, left, right);
