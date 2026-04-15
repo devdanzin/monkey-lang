@@ -207,6 +207,99 @@ describe('try/catch/throw', () => {
      x`,
     11
   );
+
+  // Edge cases
+  testBoth('throw in while loop breaks out to catch',
+    `let result = 0;
+     try {
+       let i = 0;
+       while (i < 10) {
+         if (i == 5) { throw "stopped"; }
+         i = i + 1;
+       }
+     } catch (e) {
+       result = 5;
+     }
+     result`,
+    5
+  );
+
+  testBoth('return inside try in function',
+    `let f = fn() {
+       try {
+         return 42;
+       } catch (e) {
+         return -1;
+       }
+     };
+     f()`,
+    42
+  );
+
+  testBoth('nested finally — inner finally + outer catch + outer finally',
+    `let log = 0;
+     try {
+       try {
+         throw "inner";
+       } finally {
+         log = log + 1;
+       }
+     } catch (e) {
+       log = log + 10;
+     } finally {
+       log = log + 100;
+     }
+     log`,
+    111
+  );
+
+  testBoth('triple nested rethrow chain',
+    `let result = "";
+     try {
+       try {
+         try {
+           throw "a";
+         } catch (e) {
+           throw "b";
+         }
+       } catch (e) {
+         throw "c";
+       }
+     } catch (e) {
+       result = e;
+     }
+     result`,
+    'c'
+  );
+
+  testBoth('throw propagates through finally-only block',
+    `let finallyRan = 0;
+     try {
+       try {
+         throw "err";
+       } finally {
+         finallyRan = 1;
+       }
+     } catch (e) {
+       finallyRan = finallyRan + 10;
+     }
+     finallyRan`,
+    11
+  );
+
+  testBoth('catch and finally both run on throw',
+    `let caught = 0;
+     let fin = 0;
+     try {
+       throw "x";
+     } catch(e) {
+       caught = 1;
+     } finally {
+       fin = 1;
+     }
+     caught + fin`,
+    2
+  );
 });
 
 describe('try/catch parser', () => {

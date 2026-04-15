@@ -770,7 +770,8 @@ export class Compiler {
   }
 
   compileTryExpression(node) {
-    // Emit OpTry with placeholder addresses for catch and finally
+    // OpTry format: catchAddr(2), finallyAddr(2)
+    // catchAddr=0 means no catch; finallyAddr=0 means no finally
     const tryPos = this.emit(Opcodes.OpTry, 9999, 9999);
 
     // Compile try body
@@ -780,13 +781,13 @@ export class Compiler {
     // Pop the handler after try body completes normally
     this.emit(Opcodes.OpPopHandler);
 
-    // Jump over the catch block (to finally or end)
-    const jumpOverCatch = this.emit(Opcodes.OpJump, 9999);
+    // Normal path: jump to finally (or end)
+    const jumpToFinally = this.emit(Opcodes.OpJump, 9999);
 
-    // Catch block starts here
-    const catchAddr = this.currentInstructions().length;
+    // === CATCH BLOCK (exception path) ===
+    const catchAddr = node.catchBlock ? this.currentInstructions().length : 0;
     if (node.catchBlock) {
-      // If there's a catch parameter, the error value is on the stack
+      // Error value is on the stack from the throw
       if (node.catchParam) {
         const sym = this.symbolTable.define(node.catchParam.value);
         const op = sym.scope === SCOPE.GLOBAL ? Opcodes.OpSetGlobal : Opcodes.OpSetLocal;
@@ -798,9 +799,27 @@ export class Compiler {
       if (err) return err;
     }
 
-    // Finally block (or end)
+    // After catch, jump to finally (or end)
+    const jumpAfterCatch = node.catchBlock ? this.emit(Opcodes.OpJump, 9999) : -1;
+
+    // === FINALLY-ONLY EXCEPTION PATH ===
+    // When there's no catch, on throw we jump here: run finally then rethrow
+    let finallyExceptionAddr = 0;
+    if (node.finallyBlock && !node.catchBlock) {
+      finallyExceptionAddr = this.currentInstructions().length;
+      // Error value is on the stack — keep it, compile finally, then rethrow
+      err = this.compile(node.finallyBlock);
+      if (err) return err;
+      // Re-throw the value that's still on the stack
+      this.emit(Opcodes.OpThrow);
+    }
+
+    // === FINALLY BLOCK (normal path) ===
     const finallyAddr = this.currentInstructions().length;
-    this.changeOperand(jumpOverCatch, finallyAddr);
+    this.changeOperand(jumpToFinally, finallyAddr);
+    if (node.catchBlock && jumpAfterCatch >= 0) {
+      this.changeOperand(jumpAfterCatch, finallyAddr);
+    }
 
     if (node.finallyBlock) {
       err = this.compile(node.finallyBlock);
@@ -811,11 +830,12 @@ export class Compiler {
 
     // Patch OpTry operands
     const ins = this.currentInstructions();
-    // catchAddr (2 bytes at tryPos+1)
-    ins[tryPos + 1] = (catchAddr >> 8) & 0xFF;
-    ins[tryPos + 2] = catchAddr & 0xFF;
-    // finallyAddr (2 bytes at tryPos+3)
-    const fAddr = node.finallyBlock ? finallyAddr : endAddr;
+    // For throw path: if there's a catch, go to catch. If only finally, go to finallyExceptionAddr.
+    const throwTarget = catchAddr || finallyExceptionAddr;
+    ins[tryPos + 1] = (throwTarget >> 8) & 0xFF;
+    ins[tryPos + 2] = throwTarget & 0xFF;
+    // finallyAddr for the handler (used for catch+finally case)
+    const fAddr = node.finallyBlock ? finallyAddr : 0;
     ins[tryPos + 3] = (fAddr >> 8) & 0xFF;
     ins[tryPos + 4] = fAddr & 0xFF;
 

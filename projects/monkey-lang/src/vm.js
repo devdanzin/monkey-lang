@@ -1514,20 +1514,8 @@ export class VM {
 
         case Opcodes.OpThrow: {
           const thrownValue = this.pop();
-          if (this.handlerStack && this.handlerStack.length > 0) {
-            const handler = this.handlerStack.pop();
-            this.framesIndex = handler.frameIndex + 1;
-            this.sp = handler.sp;
-            this.push(thrownValue);
-            frame = this.frames[this.framesIndex - 1];
-            frame.ip = handler.catchAddr - 1;
-          } else {
-            const msg = thrownValue instanceof MonkeyString ? thrownValue.value
-              : thrownValue instanceof MonkeyError ? thrownValue.message
-              : (thrownValue && thrownValue.value !== undefined) ? String(thrownValue.value)
-              : String(thrownValue);
-            throw new Error(`Uncaught exception: ${msg}`);
-          }
+          this._vmThrow(thrownValue);
+          frame = this.frames[this.framesIndex - 1];
           break;
         }
 
@@ -2099,6 +2087,23 @@ export class VM {
       frame.ip = handler.catchAddr - 1; // -1 because loop will increment
     } else {
       // No handler — convert to a runtime error
+      const msg = thrownValue instanceof MonkeyString ? thrownValue.value
+        : thrownValue instanceof MonkeyError ? thrownValue.message
+        : (thrownValue && thrownValue.value !== undefined) ? String(thrownValue.value)
+        : String(thrownValue);
+      throw new Error(`Uncaught exception: ${msg}`);
+    }
+  }
+
+  _vmThrow(thrownValue) {
+    if (this.handlerStack && this.handlerStack.length > 0) {
+      const handler = this.handlerStack.pop();
+      this.framesIndex = handler.frameIndex + 1;
+      this.sp = handler.sp;
+      this.push(thrownValue);
+      const f = this.frames[this.framesIndex - 1];
+      f.ip = handler.catchAddr - 1;
+    } else {
       const msg = thrownValue instanceof MonkeyString ? thrownValue.value
         : thrownValue instanceof MonkeyError ? thrownValue.message
         : (thrownValue && thrownValue.value !== undefined) ? String(thrownValue.value)
