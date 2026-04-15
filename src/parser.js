@@ -38,6 +38,8 @@ const TOKEN_PRECEDENCE = {
   [TokenType.SLASH]: Precedence.PRODUCT,
   [TokenType.PERCENT]: Precedence.PRODUCT,
   [TokenType.ASTERISK]: Precedence.PRODUCT,
+  ['++']:  Precedence.CALL,
+  ['--']:  Precedence.CALL,
   [TokenType.LPAREN]: Precedence.CALL,
   [TokenType.DOT]: Precedence.CALL,
   [TokenType.LBRACKET]: Precedence.INDEX,
@@ -95,6 +97,8 @@ export class Parser {
     
     // Pipe operator: left |> fn  →  fn(left)
     this.registerInfix(TokenType.PIPE, (left) => this.parsePipeExpression(left));
+    this.registerInfix('++', (left) => this.parsePostfixExpression(left, '+'));
+    this.registerInfix('--', (left) => this.parsePostfixExpression(left, '-'));
     
     // Method call: obj.method(args)  →  method(obj, args)
     this.registerInfix(TokenType.DOT, (left) => this.parseMethodCall(left));
@@ -588,6 +592,18 @@ export class Parser {
     if (!this.expectPeek(TokenType.LBRACE)) return null;
     const catchBody = this.parseBlockStatement();
     return new ast.TryCatchExpression(token, tryBody, errorIdent, catchBody);
+  }
+
+  parsePostfixExpression(left, op) {
+    // x++ desugars to set x = x + 1, x-- desugars to set x = x - 1
+    if (!(left instanceof ast.Identifier)) {
+      this.errors.push(`cannot use ${op}${op} on ${left.constructor.name}`);
+      return null;
+    }
+    const token = this.curToken;
+    const one = new ast.IntegerLiteral(token, 1);
+    const binExpr = new ast.InfixExpression(token, left, op, one);
+    return new ast.SetStatement(token, new ast.Identifier(token, left.value), binExpr);
   }
 
   parseEnumStatement() {
