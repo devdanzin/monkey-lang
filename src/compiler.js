@@ -606,6 +606,101 @@ export class Compiler {
         this.changeOperand(bj, this.currentInstructions().length);
       }
       this.loopStack.pop();
+    } else if (node instanceof AST.ArrayComprehension) {
+      // [body for x in iterable] or [body for x in iterable if condition]
+      // Compile as: result = []; for (x in iterable) { if (cond) { result = push(result, body) } }; result
+      
+      // 1. Create empty result array
+      this.emit(Opcodes.OpArray, 0);
+      const resultSym = this.symbolTable.define('__comp_result__');
+      if (resultSym.scope === SymbolScopes.GLOBAL) {
+        this.emit(Opcodes.OpSetGlobal, resultSym.index);
+      } else {
+        this.emit(Opcodes.OpSetLocal, resultSym.index);
+      }
+      
+      // 2. Store iterable
+      this.compile(node.iterable);
+      const iterSym = this.symbolTable.define('__comp_iter__');
+      if (iterSym.scope === SymbolScopes.GLOBAL) {
+        this.emit(Opcodes.OpSetGlobal, iterSym.index);
+      } else {
+        this.emit(Opcodes.OpSetLocal, iterSym.index);
+      }
+      
+      // 3. Init counter
+      this.emit(Opcodes.OpConstant, this.addConstant(new MonkeyInteger(0)));
+      const idxSym = this.symbolTable.define('__comp_idx__');
+      if (idxSym.scope === SymbolScopes.GLOBAL) {
+        this.emit(Opcodes.OpSetGlobal, idxSym.index);
+      } else {
+        this.emit(Opcodes.OpSetLocal, idxSym.index);
+      }
+      
+      // 4. Define iteration variable
+      const varName = typeof node.variable === 'string' ? node.variable : node.variable.value;
+      this.emit(Opcodes.OpNull);
+      const varSym = this.symbolTable.define(varName);
+      if (varSym.scope === SymbolScopes.GLOBAL) {
+        this.emit(Opcodes.OpSetGlobal, varSym.index);
+      } else {
+        this.emit(Opcodes.OpSetLocal, varSym.index);
+      }
+      
+      // 5. Loop header: check idx < len(iter) → len(iter) > idx
+      const loopStart = this.currentInstructions().length;
+      
+      // Load len(iter) first (will be left operand of >)
+      this.emit(Opcodes.OpGetBuiltin, this._builtinIndex('len'));
+      this._emitGet(iterSym);
+      this.emit(Opcodes.OpCall, 1);
+      // Load idx (will be right operand of >)
+      this._emitGet(idxSym);
+      // len > idx → continue
+      this.emit(Opcodes.OpGreaterThan);
+      const jumpExitPos = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+      
+      // 6. Load element: iter[idx]
+      this._emitGet(iterSym);
+      this._emitGet(idxSym);
+      this.emit(Opcodes.OpIndex);
+      // Set variable
+      this._emitSet(varSym);
+      
+      // 7. Optional condition check
+      let jumpSkipPos = -1;
+      if (node.condition) {
+        this.compile(node.condition);
+        jumpSkipPos = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+      }
+      
+      // 8. Evaluate body and push to result: result = push(result, body)
+      this.emit(Opcodes.OpGetBuiltin, this._builtinIndex('push'));
+      this._emitGet(resultSym);
+      this.compile(node.body);
+      this.emit(Opcodes.OpCall, 2);
+      this._emitSet(resultSym);
+      
+      // 9. Skip target (if condition was false)
+      if (jumpSkipPos >= 0) {
+        this.changeOperand(jumpSkipPos, this.currentInstructions().length);
+      }
+      
+      // 10. Increment counter: idx = idx + 1
+      this._emitGet(idxSym);
+      this.emit(Opcodes.OpConstant, this.addConstant(new MonkeyInteger(1)));
+      this.emit(Opcodes.OpAdd);
+      this._emitSet(idxSym);
+      
+      // 11. Jump back to loop header
+      this.emit(Opcodes.OpJump, loopStart);
+      
+      // 12. Loop exit
+      this.changeOperand(jumpExitPos, this.currentInstructions().length);
+      
+      // 13. Push result onto stack
+      this._emitGet(resultSym);
+      
     } else if (node instanceof AST.ForInExpression) {
       // Compile for-in as a counter-based loop
       // for (x in iter) { body } =>
@@ -1050,6 +1145,34 @@ export class Compiler {
    * Compile a switch case body — handles both BlockStatement and raw expression.
    * Ensures exactly one value is left on the stack.
    */
+  _emitGet(sym) {
+    if (sym.scope === SymbolScopes.GLOBAL) {
+      this.emit(Opcodes.OpGetGlobal, sym.index);
+    } else if (sym.scope === SymbolScopes.LOCAL) {
+      this.emit(Opcodes.OpGetLocal, sym.index);
+    } else if (sym.scope === SymbolScopes.FREE) {
+      this.emit(Opcodes.OpGetFree, sym.index);
+    }
+  }
+
+  _emitSet(sym) {
+    if (sym.scope === SymbolScopes.GLOBAL) {
+      this.emit(Opcodes.OpSetGlobal, sym.index);
+    } else if (sym.scope === SymbolScopes.LOCAL) {
+      this.emit(Opcodes.OpSetLocal, sym.index);
+    } else if (sym.scope === SymbolScopes.FREE) {
+      this.emit(Opcodes.OpSetFree, sym.index);
+    }
+  }
+
+  _builtinIndex(name) {
+    // Builtin names must match the builtins array order in vm.js
+    const names = builtinNames;
+    const idx = names.indexOf(name);
+    if (idx === -1) throw new Error(`unknown builtin: ${name}`);
+    return idx;
+  }
+
   _compileSwitchBody(body) {
     if (body instanceof AST.BlockStatement) {
       this.compile(body);

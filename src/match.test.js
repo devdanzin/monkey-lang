@@ -213,3 +213,62 @@ describe('Deep Equality Operator (==)', () => {
     assert.equal(run('if ([1, 2] == [3, 4]) { "same" } else { "diff" }').value, 'diff');
   });
 });
+
+describe('Array Comprehensions', () => {
+  it('simple map', () => {
+    const result = run('[x * 2 for x in [1, 2, 3]]');
+    assert.ok(result instanceof MonkeyArray);
+    assert.deepEqual(result.elements.map(e => e.value), [2, 4, 6]);
+  });
+
+  it('with filter', () => {
+    const result = run('[x for x in [1, 2, 3, 4, 5] if x > 2]');
+    assert.deepEqual(result.elements.map(e => e.value), [3, 4, 5]);
+  });
+
+  it('square each element', () => {
+    const result = run('[x * x for x in [1, 2, 3, 4]]');
+    assert.deepEqual(result.elements.map(e => e.value), [1, 4, 9, 16]);
+  });
+
+  it('empty input', () => {
+    const result = run('[x for x in []]');
+    assert.ok(result instanceof MonkeyArray);
+    assert.equal(result.elements.length, 0);
+  });
+
+  it('string conversion', () => {
+    const result = run('[str(x) for x in [1, 2, 3]]');
+    assert.deepEqual(result.elements.map(e => e.value), ['1', '2', '3']);
+  });
+
+  it('with variable reference', () => {
+    const result = run('let nums = [10, 20, 30]; [x + 1 for x in nums]');
+    assert.deepEqual(result.elements.map(e => e.value), [11, 21, 31]);
+  });
+
+  it('filter even numbers', () => {
+    const result = run('[x for x in [1, 2, 3, 4, 5, 6] if x % 2 == 0]');
+    assert.deepEqual(result.elements.map(e => e.value), [2, 4, 6]);
+  });
+
+  it('nested array creation', () => {
+    const result = run('[[x, x * 2] for x in [1, 2, 3]]');
+    assert.equal(result.elements.length, 3);
+    assert.deepEqual(result.elements[0].elements.map(e => e.value), [1, 2]);
+    assert.deepEqual(result.elements[2].elements.map(e => e.value), [3, 6]);
+  });
+
+  it('comprehension result usable in expressions', () => {
+    const result = run('len([x for x in [1, 2, 3, 4, 5] if x > 3])');
+    assert.equal(result.value, 2);
+  });
+
+  it('comprehension in function', () => {
+    const result = run(`
+      let double_all = fn(arr) { [x * 2 for x in arr] };
+      double_all([5, 10, 15])
+    `);
+    assert.deepEqual(result.elements.map(e => e.value), [10, 20, 30]);
+  });
+});
