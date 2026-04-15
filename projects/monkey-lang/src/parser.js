@@ -76,6 +76,7 @@ export class Parser {
     this.registerPrefix(TokenType.FUNCTION, () => this.parseFunctionLiteral());
     this.registerPrefix(TokenType.GEN, () => this.parseGeneratorLiteral());
     this.registerPrefix(TokenType.YIELD, () => this.parseYieldExpression());
+    this.registerPrefix(TokenType.SELF, () => new ast.SelfExpression(this.curToken));
     this.registerPrefix(TokenType.LBRACKET, () => this.parseArrayLiteral());
     this.registerPrefix(TokenType.LBRACE, () => this.parseHashLiteral());
     this.registerPrefix(TokenType.WHILE, () => this.parseWhileExpression());
@@ -162,6 +163,7 @@ export class Parser {
       case TokenType.RETURN: return this.parseReturnStatement();
       case TokenType.IMPORT: return this.parseImportStatement();
       case TokenType.ENUM: return this.parseEnumStatement();
+      case TokenType.CLASS: return this.parseClassStatement();
       case TokenType.THROW: return this.parseThrowStatement();
       default: return this.parseExpressionStatement();
     }
@@ -712,6 +714,59 @@ export class Parser {
     if (!this.expectPeek(TokenType.LBRACE)) return null;
     const body = this.parseBlockStatement();
     return new ast.GeneratorLiteral(token, parameters, body);
+  }
+
+  parseClassStatement() {
+    const token = this.curToken; // CLASS token
+    this.nextToken(); // move to class name
+    const name = this.curToken.literal;
+    
+    // Optional: extends SuperClass
+    let superClass = null;
+    if (this.peekTokenIs(TokenType.EXTENDS)) {
+      this.nextToken(); // consume extends
+      this.nextToken(); // move to super class name
+      superClass = this.curToken.literal;
+    }
+    
+    if (!this.expectPeek(TokenType.LBRACE)) return null;
+    
+    const methods = [];
+    const fields = [];
+    
+    this.nextToken(); // advance past {
+    
+    while (!this.curTokenIs(TokenType.RBRACE) && !this.curTokenIs(TokenType.EOF)) {
+      if (this.curTokenIs(TokenType.LET)) {
+        // Field declaration: let name;
+        this.nextToken();
+        fields.push(this.curToken.literal);
+        if (this.peekTokenIs(TokenType.SEMICOLON)) this.nextToken();
+        this.nextToken(); // advance past semicolon/field name
+      } else if (this.curTokenIs(TokenType.FUNCTION)) {
+        // Method: fn name(params) { body }
+        const fnToken = this.curToken;
+        this.nextToken(); // move to method name
+        const methodName = this.curToken.literal;
+        if (!this.expectPeek(TokenType.LPAREN)) return null;
+        const { params: parameters } = this.parseFunctionParameters();
+        if (!this.expectPeek(TokenType.LBRACE)) return null;
+        const body = this.parseBlockStatement();
+        methods.push({ name: methodName, params: parameters, body, token: fnToken });
+        // After parseBlockStatement, curToken is }, advance past it
+        if (this.peekTokenIs(TokenType.SEMICOLON)) this.nextToken();
+        this.nextToken();
+      } else {
+        this.nextToken(); // skip unknown tokens
+      }
+    }
+    
+    // Wrap in a LetStatement so it binds the class name in the environment
+    const classNode = new ast.ClassStatement(token, name, superClass, methods, fields);
+    const letToken = new Token(TokenType.LET, 'let', token.line);
+    const identifier = new ast.Identifier(letToken, name);
+    const letStmt = new ast.LetStatement(letToken, identifier, classNode);
+    return letStmt;
   }
 
   parseYieldExpression() {

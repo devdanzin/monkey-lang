@@ -78,6 +78,10 @@ export const TokenType = {
   FINALLY: 'FINALLY',
   GEN: 'GEN',
   YIELD: 'YIELD',
+  CLASS: 'CLASS',
+  SELF: 'SELF',
+  NEW: 'NEW',
+  EXTENDS: 'EXTENDS',
 
   // Special
   EOF: 'EOF',
@@ -108,6 +112,10 @@ const KEYWORDS = {
   finally: TokenType.FINALLY,
   gen: TokenType.GEN,
   yield: TokenType.YIELD,
+  class: TokenType.CLASS,
+  self: TokenType.SELF,
+  new: TokenType.NEW,
+  extends: TokenType.EXTENDS,
 };
 
 export class Token {

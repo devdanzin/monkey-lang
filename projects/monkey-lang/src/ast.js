@@ -473,3 +473,21 @@ export class YieldExpression {
   tokenLiteral() { return this.token.literal; }
   toString() { return `yield ${this.value}`; }
 }
+
+export class ClassStatement {
+  constructor(token, name, superClass, methods, fields) {
+    this.token = token;         // CLASS token
+    this.name = name;           // string
+    this.superClass = superClass; // string or null
+    this.methods = methods;     // [{name, params, body, isStatic}]
+    this.fields = fields;       // [string] — field names declared with let
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return `class ${this.name} { ... }`; }
+}
+
+export class SelfExpression {
+  constructor(token) { this.token = token; }
+  tokenLiteral() { return 'self'; }
+  toString() { return 'self'; }
+}
