@@ -589,10 +589,15 @@ export class Parser {
 
   parseSwitchExpression() {
     const token = this.curToken;
-    if (!this.expectPeek(TokenType.LPAREN)) return null;
-    this.nextToken();
-    const value = this.parseExpression(Precedence.LOWEST);
-    if (!this.expectPeek(TokenType.RPAREN)) return null;
+    let value = null;
+    
+    // Optional value: switch (expr) { ... } or switch { ... } (condition form)
+    if (this.peekTokenIs(TokenType.LPAREN)) {
+      this.nextToken(); // consume (
+      this.nextToken();
+      value = this.parseExpression(Precedence.LOWEST);
+      if (!this.expectPeek(TokenType.RPAREN)) return null;
+    }
     if (!this.expectPeek(TokenType.LBRACE)) return null;
     
     const cases = [];
@@ -604,13 +609,24 @@ export class Parser {
         this.nextToken();
         const caseValue = this.parseExpression(Precedence.LOWEST);
         if (!this.expectPeek(TokenType.COLON)) return null;
-        if (!this.expectPeek(TokenType.LBRACE)) return null;
-        const body = this.parseBlockStatement();
+        let body;
+        if (this.peekTokenIs(TokenType.LBRACE)) {
+          this.nextToken();
+          body = this.parseBlockStatement();
+        } else {
+          this.nextToken();
+          body = this.parseExpression(Precedence.LOWEST);
+        }
         cases.push({ value: caseValue, body });
       } else if (this.curTokenIs(TokenType.DEFAULT)) {
         if (!this.expectPeek(TokenType.COLON)) return null;
-        if (!this.expectPeek(TokenType.LBRACE)) return null;
-        defaultCase = this.parseBlockStatement();
+        if (this.peekTokenIs(TokenType.LBRACE)) {
+          this.nextToken();
+          defaultCase = this.parseBlockStatement();
+        } else {
+          this.nextToken();
+          defaultCase = this.parseExpression(Precedence.LOWEST);
+        }
       }
     }
     

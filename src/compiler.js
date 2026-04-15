@@ -284,6 +284,7 @@ export class Compiler {
     if (node instanceof AST.IndexExpression) { node.left = Compiler.foldConstants(node.left); node.index = Compiler.foldConstants(node.index); return node; }
     if (node instanceof AST.ForExpression) { node.init = Compiler.foldConstants(node.init); node.condition = Compiler.foldConstants(node.condition); node.update = Compiler.foldConstants(node.update); node.body = Compiler.foldConstants(node.body); return node; }
     if (node instanceof AST.WhileExpression) { node.condition = Compiler.foldConstants(node.condition); node.body = Compiler.foldConstants(node.body); return node; }
+    if (node instanceof AST.SwitchExpression) { node.value = Compiler.foldConstants(node.value); node.cases = node.cases.map(c => ({ ...c, value: Compiler.foldConstants(c.value), body: Compiler.foldConstants(c.body) })); if (node.defaultCase) node.defaultCase = Compiler.foldConstants(node.defaultCase); return node; }
     
     return node;
   }
@@ -884,6 +885,59 @@ export class Compiler {
         this.compile(arg);
       }
       this.emit(Opcodes.OpCall, node.arguments.length);
+    } else if (node instanceof AST.SwitchExpression) {
+      const jumpToEndPositions = [];
+      
+      if (node.value) {
+        // Value form: switch (expr) { case val: body ... }
+        for (const c of node.cases) {
+          this.compile(node.value);
+          this.compile(c.value);
+          this.emit(Opcodes.OpEqual);
+          const jumpNotTruthyPos = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+          this._compileSwitchBody(c.body);
+          jumpToEndPositions.push(this.emit(Opcodes.OpJump, 9999));
+          this.changeOperand(jumpNotTruthyPos, this.currentInstructions().length);
+        }
+      } else {
+        // Condition form: switch { case (cond): body ... }
+        for (const c of node.cases) {
+          this.compile(c.value);
+          const jumpNotTruthyPos = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+          this._compileSwitchBody(c.body);
+          jumpToEndPositions.push(this.emit(Opcodes.OpJump, 9999));
+          this.changeOperand(jumpNotTruthyPos, this.currentInstructions().length);
+        }
+      }
+      
+      if (node.defaultCase) {
+        this._compileSwitchBody(node.defaultCase);
+      } else {
+        this.emit(Opcodes.OpNull);
+      }
+      
+      const endPos = this.currentInstructions().length;
+      for (const pos of jumpToEndPositions) {
+        this.changeOperand(pos, endPos);
+      }
+    }
+  }
+
+  /**
+   * Compile a switch case body — handles both BlockStatement and raw expression.
+   * Ensures exactly one value is left on the stack.
+   */
+  _compileSwitchBody(body) {
+    if (body instanceof AST.BlockStatement) {
+      this.compile(body);
+      if (this.lastInstructionIs(Opcodes.OpPop)) {
+        this.removeLastPop();
+      } else if (!this.lastInstructionIs(Opcodes.OpReturnValue) && !this.lastInstructionIs(Opcodes.OpReturn)) {
+        this.emit(Opcodes.OpNull);
+      }
+    } else {
+      // Raw expression — always leaves a value on the stack
+      this.compile(body);
     }
   }
 

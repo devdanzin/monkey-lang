@@ -828,19 +828,28 @@ export function monkeyEval(node, env) {
     return monkeyEval(node.alternative, env);
   }
   if (node instanceof AST.SwitchExpression) {
-    const switchVal = monkeyEval(node.value, env);
-    if (isError(switchVal)) return switchVal;
-    for (const c of node.cases) {
-      const caseVal = monkeyEval(c.value, env);
-      if (isError(caseVal)) return caseVal;
-      // Value comparison
-      let match = false;
-      if (switchVal.value !== undefined && caseVal.value !== undefined) {
-        match = switchVal.value === caseVal.value;
-      } else {
-        match = switchVal === caseVal;
+    if (node.value) {
+      // Value form: match against switch value
+      const switchVal = monkeyEval(node.value, env);
+      if (isError(switchVal)) return switchVal;
+      for (const c of node.cases) {
+        const caseVal = monkeyEval(c.value, env);
+        if (isError(caseVal)) return caseVal;
+        let match = false;
+        if (switchVal.value !== undefined && caseVal.value !== undefined) {
+          match = switchVal.value === caseVal.value;
+        } else {
+          match = switchVal === caseVal;
+        }
+        if (match) return monkeyEval(c.body, env);
       }
-      if (match) return monkeyEval(c.body, env);
+    } else {
+      // Condition form: each case is a boolean test
+      for (const c of node.cases) {
+        const caseVal = monkeyEval(c.value, env);
+        if (isError(caseVal)) return caseVal;
+        if (isTruthy(caseVal)) return monkeyEval(c.body, env);
+      }
     }
     if (node.defaultCase) return monkeyEval(node.defaultCase, env);
     return NULL;
