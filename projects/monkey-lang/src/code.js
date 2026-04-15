@@ -97,6 +97,8 @@ export const Opcodes = {
   OpTry:            0x3B, // Push exception handler: operand = catch handler address (2 bytes), finally address (2 bytes)
   OpThrow:          0x3C, // Throw: pop value from stack, unwind to nearest handler
   OpPopHandler:     0x3D, // Pop the current exception handler (try block completed normally)
+  OpYield:          0x3E, // Yield: pop value from stack, add to generator's collection, push null
+  OpMakeGenerator:  0x3F, // Make generator: operand = closure index, wraps closure in generator factory
 };
 
 // Opcode definitions: [name, ...operandWidths]
@@ -162,6 +164,8 @@ const definitions = {
   [Opcodes.OpTry]:              ['OpTry', 2, 2],       // catchAddr (2), finallyAddr (2)
   [Opcodes.OpThrow]:            ['OpThrow'],            // Pop value, throw
   [Opcodes.OpPopHandler]:       ['OpPopHandler'],       // Remove current handler
+  [Opcodes.OpYield]:            ['OpYield'],             // Pop value, add to generator collection
+  [Opcodes.OpMakeGenerator]:    ['OpMakeGenerator'],     // Pop closure, wrap in generator factory
 };
 
 /**

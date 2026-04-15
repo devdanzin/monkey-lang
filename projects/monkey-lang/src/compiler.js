@@ -653,6 +653,12 @@ export class Compiler {
       this.resetPeepholeState();
     } else if (node instanceof ast.FunctionLiteral) {
       return this.compileFunctionLiteral(node);
+    } else if (node instanceof ast.GeneratorLiteral) {
+      return this.compileGeneratorLiteral(node);
+    } else if (node instanceof ast.YieldExpression) {
+      const err = this.compile(node.value);
+      if (err) return err;
+      this.emit(Opcodes.OpYield);
     } else if (node instanceof ast.CallExpression) {
       // Check for method call desugaring: expr.method(args) → method(expr, args)
       // But NOT when the left side is a known variable (could be a module hash)
@@ -1234,6 +1240,41 @@ export class Compiler {
     }
     this.resetPeepholeState();
 
+    return null;
+  }
+
+  compileGeneratorLiteral(node) {
+    // Compile exactly like a function, but wrap in OpMakeGenerator at the end
+    this.enterScope();
+    
+    for (const param of node.parameters) {
+      this.symbolTable.define(param.value);
+    }
+
+    const err = this.compile(node.body);
+    if (err) return err;
+
+    if (!this.lastInstructionIs(Opcodes.OpReturnValue)) {
+      this.emit(Opcodes.OpReturn);
+    }
+
+    const freeSymbols = this.symbolTable.freeSymbols;
+    const numLocals = this.symbolTable.numDefinitions;
+    const instructions = this.leaveScope();
+
+    for (const sym of freeSymbols) {
+      this.loadSymbol(sym);
+    }
+
+    const compiledFn = {
+      instructions,
+      numLocals,
+      numParameters: node.parameters.length,
+      isGenerator: true,
+    };
+    const idx = this.addConstant(compiledFn);
+    this.emit(Opcodes.OpClosure, idx, freeSymbols.length);
+    this.emit(Opcodes.OpMakeGenerator);
     return null;
   }
 

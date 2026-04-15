@@ -6,7 +6,7 @@ import { CompiledFunction } from './compiler.js';
 import {
   MonkeyInteger, MonkeyFloat, MonkeyBoolean, MonkeyString, MonkeyNull,
   MonkeyArray, MonkeyHash, MonkeyBuiltin, MonkeyError,
-  MonkeyResult, MonkeyEnum,
+  MonkeyResult, MonkeyEnum, MonkeyGenerator,
   TRUE, FALSE, NULL, cachedInteger, internString,
 } from './object.js';
 import { IR, JIT, TraceRecorder, JIT_EVENTS_FULL } from './jit.js';
@@ -64,6 +64,7 @@ const BUILTINS = [
     const arg = args[0];
     if (arg instanceof MonkeyString) return new MonkeyInteger(arg.value.length);
     if (arg instanceof MonkeyArray) return new MonkeyInteger(arg.elements.length);
+    if (arg instanceof MonkeyGenerator) return new MonkeyInteger(arg.values.length);
     return new MonkeyError(`argument to \`len\` not supported, got ${arg.type()}`);
   }),
   // puts
@@ -998,6 +999,15 @@ export class VM {
               case 'length': this.push(new MonkeyInteger(left3.elements.length)); break;
               default: this.push(NULL); break;
             }
+          } else if (left3 instanceof MonkeyGenerator && index instanceof MonkeyInteger) {
+            // Generator index access — treat like array
+            let i = index.value;
+            if (i < 0) i += left3.values.length;
+            if (i < 0 || i >= left3.values.length) {
+              this.push(NULL);
+            } else {
+              this.push(left3.values[i]);
+            }
           } else {
             throw new Error(`index operator not supported: ${left3.type()}`);
           }
@@ -1138,6 +1148,10 @@ export class VM {
             }
 
             const callFrame = new Frame(callee, this.sp - effectiveNumArgs);
+            // If this is a generator closure, set up yield collection
+            if (callee._isGenerator) {
+              callFrame._generatorValues = [];
+            }
             this.pushFrame(callFrame);
             this.sp = callFrame.basePointer + callee.fn.numLocals;
             frame = callFrame;
@@ -1254,7 +1268,12 @@ export class VM {
 
           const retFrame = this.popFrame();
           this.sp = retFrame.basePointer - 1; // -1 to also pop the function itself
-          this.push(returnValue);
+          // If returning from a generator, push MonkeyGenerator instead of return value
+          if (retFrame._generatorValues) {
+            this.push(new MonkeyGenerator(retFrame._generatorValues));
+          } else {
+            this.push(returnValue);
+          }
           frame = this.currentFrame();
           break;
         }
@@ -1309,7 +1328,11 @@ export class VM {
 
           const frame2 = this.popFrame();
           this.sp = frame2.basePointer - 1;
-          this.push(NULL);
+          if (frame2._generatorValues) {
+            this.push(new MonkeyGenerator(frame2._generatorValues));
+          } else {
+            this.push(NULL);
+          }
           frame = this.currentFrame();
           break;
         }
@@ -1517,6 +1540,28 @@ export class VM {
           const thrownValue = this.pop();
           this._vmThrow(thrownValue);
           frame = this.frames[this.framesIndex - 1];
+          break;
+        }
+
+        case Opcodes.OpYield: {
+          // Pop value from stack and add to nearest generator frame's collection
+          const yieldedValue = this.pop();
+          // Walk up the frame stack to find the generator frame
+          for (let fi = this.framesIndex - 1; fi >= 0; fi--) {
+            if (this.frames[fi]._generatorValues) {
+              this.frames[fi]._generatorValues.push(yieldedValue);
+              break;
+            }
+          }
+          this.push(NULL); // yield expression evaluates to null
+          break;
+        }
+
+        case Opcodes.OpMakeGenerator: {
+          // Pop closure from stack, mark it as a generator and push back
+          const genClosure = this.pop();
+          genClosure._isGenerator = true;
+          this.push(genClosure);
           break;
         }
 
