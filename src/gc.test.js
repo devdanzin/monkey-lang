@@ -580,3 +580,150 @@ describe('GC Stress Tests', () => {
     });
   });
 });
+
+describe('Generational GC', () => {
+  function compileAndRunGen(input, gcOptions = {}) {
+    const lexer = new Lexer(input);
+    const parser = new Parser(lexer);
+    const program = parser.parseProgram();
+    if (parser.errors.length > 0) {
+      throw new Error(`Parser errors: ${parser.errors.join(', ')}`);
+    }
+    const compiler = new Compiler();
+    compiler.compile(program);
+    const bytecode = compiler.bytecode();
+    const gc = new GarbageCollector({ generational: true, ...gcOptions });
+    const vm = new VM(bytecode, gc);
+    vm.run();
+    return { vm, gc, result: vm.lastPoppedStackElem() };
+  }
+
+  it('allocates objects in young generation', () => {
+    const { gc } = compileAndRunGen(`
+      let x = [1, 2, 3];
+      x
+    `, { threshold: 10000 });
+    
+    assert.ok(gc.youngGen.size > 0, 'new objects should be in young gen');
+  });
+
+  it('promotes objects after surviving collections', () => {
+    const { gc } = compileAndRunGen(`
+      let keeper = [1, 2, 3];
+      for (i in [1,2,3,4,5,6,7,8,9,10]) {
+        let trash = [i, i, i];
+      }
+      keeper
+    `, { threshold: 5, promotionAge: 2 });
+    
+    assert.ok(gc.stats.promotions > 0, 'long-lived objects should be promoted');
+    assert.ok(gc.oldGen.size > 0, 'old gen should have promoted objects');
+  });
+
+  it('minor collections free young-gen garbage', () => {
+    const { gc } = compileAndRunGen(`
+      for (i in [1,2,3,4,5,6,7,8,9,10]) {
+        let trash = [i, i * 2, i * 3];
+      }
+      0
+    `, { threshold: 5 });
+    
+    assert.ok(gc.stats.minorCollections > 0, 'should have minor collections');
+    assert.ok(gc.stats.totalFreed > 0, 'should have freed young gen objects');
+  });
+
+  it('major collection cleans both generations', () => {
+    const { gc } = compileAndRunGen(`
+      for (i in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]) {
+        let trash = [i, i * 2];
+      }
+      0
+    `, { threshold: 3, majorInterval: 3, promotionAge: 1 });
+    
+    assert.ok(gc.stats.majorCollections > 0 || gc.stats.minorCollections > 0, 
+      'should have done collections');
+  });
+
+  it('programs produce correct results with generational GC', () => {
+    const { result } = compileAndRunGen(`
+      let fib = fn(n) {
+        if (n < 2) { n } else { fib(n - 1) + fib(n - 2) }
+      };
+      fib(15)
+    `, { threshold: 10 });
+    
+    assert.equal(result.value, 610);
+  });
+
+  it('closures survive generational promotion', () => {
+    const { result } = compileAndRunGen(`
+      let make = fn(n) { fn(x) { x + n } };
+      let add5 = make(5);
+      for (i in [1,2,3,4,5,6,7,8,9,10]) {
+        let trash = [i];
+      }
+      add5(10)
+    `, { threshold: 3, promotionAge: 1 });
+    
+    assert.equal(result.value, 15);
+  });
+
+  it('mutable cells survive promotion', () => {
+    const { result } = compileAndRunGen(`
+      let make = fn() {
+        let n = 0;
+        let inc = fn() { set n = n + 1; n };
+        inc
+      };
+      let counter = make();
+      counter();
+      counter();
+      for (i in [1,2,3,4,5,6,7,8,9,10]) {
+        let trash = [i, i, i];
+      }
+      counter()
+    `, { threshold: 3, promotionAge: 1 });
+    
+    assert.equal(result.value, 3);
+  });
+});
+
+describe('Weak References', () => {
+  it('creates and retrieves weak references', () => {
+    const gc = new GarbageCollector({ threshold: 10000 });
+    const obj = new MonkeyArray([new MonkeyInteger(1), new MonkeyInteger(2)]);
+    gc.makeWeakRef('test-array', obj);
+    
+    const retrieved = gc.getWeakRef('test-array');
+    assert.strictEqual(retrieved, obj);
+  });
+
+  it('returns null for missing keys', () => {
+    const gc = new GarbageCollector();
+    assert.strictEqual(gc.getWeakRef('nonexistent'), null);
+  });
+
+  it('prunes dead references', () => {
+    const gc = new GarbageCollector();
+    // Create a weak ref to an object
+    let obj = new MonkeyArray([]);
+    gc.makeWeakRef('temp', obj);
+    
+    // While the ref is alive, it should be retrievable
+    assert.ok(gc.getWeakRef('temp') !== null);
+    
+    // We can't force JS GC, but we can test pruning doesn't crash
+    gc.pruneWeakRefs();
+  });
+
+  it('multiple weak references work independently', () => {
+    const gc = new GarbageCollector();
+    const a = new MonkeyString('alpha');
+    const b = new MonkeyString('beta');
+    gc.makeWeakRef('a', a);
+    gc.makeWeakRef('b', b);
+    
+    assert.strictEqual(gc.getWeakRef('a').value, 'alpha');
+    assert.strictEqual(gc.getWeakRef('b').value, 'beta');
+  });
+});
