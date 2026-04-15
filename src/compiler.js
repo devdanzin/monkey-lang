@@ -286,6 +286,7 @@ export class Compiler {
     if (node instanceof AST.WhileExpression) { node.condition = Compiler.foldConstants(node.condition); node.body = Compiler.foldConstants(node.body); return node; }
     if (node instanceof AST.SwitchExpression) { node.value = Compiler.foldConstants(node.value); node.cases = node.cases.map(c => ({ ...c, value: Compiler.foldConstants(c.value), body: Compiler.foldConstants(c.body) })); if (node.defaultCase) node.defaultCase = Compiler.foldConstants(node.defaultCase); return node; }
     if (node instanceof AST.FStringExpression) { node.segments = node.segments.map(s => s.type === 'expr' ? { ...s, expr: Compiler.foldConstants(s.expr) } : s); return node; }
+    if (node instanceof AST.TernaryExpression) { node.condition = Compiler.foldConstants(node.condition); node.consequence = Compiler.foldConstants(node.consequence); node.alternative = Compiler.foldConstants(node.alternative); return node; }
     
     return node;
   }
@@ -902,6 +903,18 @@ export class Compiler {
           this.emit(Opcodes.OpAdd);
         }
       }
+    } else if (node instanceof AST.TernaryExpression) {
+      // condition ? consequence : alternative
+      // Same as IfExpression: compile condition, JumpNotTruthy, consequence, Jump, alternative
+      this.compile(node.condition);
+      const jumpNotTruthyPos = this.emit(Opcodes.OpJumpNotTruthy, 9999);
+      this.compile(node.consequence);
+      if (this.lastInstructionIs(Opcodes.OpPop)) this.removeLastPop();
+      const jumpPos = this.emit(Opcodes.OpJump, 9999);
+      this.changeOperand(jumpNotTruthyPos, this.currentInstructions().length);
+      this.compile(node.alternative);
+      if (this.lastInstructionIs(Opcodes.OpPop)) this.removeLastPop();
+      this.changeOperand(jumpPos, this.currentInstructions().length);
     } else if (node instanceof AST.SwitchExpression) {
       const jumpToEndPositions = [];
       
