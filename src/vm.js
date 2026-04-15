@@ -925,11 +925,23 @@ export class VM {
 
   callClosure(closure, numArgs) {
     const numParams = closure.fn.numParameters;
+    const hasRest = closure.fn.hasRestParam;
+    const minParams = closure.fn.minParams !== undefined ? closure.fn.minParams : numParams;
     
-    if (closure.fn.hasRestParam) {
-      // Rest param: need at least numParams regular args
+    if (hasRest) {
+      // Rest param: need at least minParams regular args
+      if (numArgs < minParams) {
+        throw new Error(`wrong number of arguments: want>=${minParams}, got=${numArgs}`);
+      }
+      
+      // Fill in defaults for missing regular params
       if (numArgs < numParams) {
-        throw new Error(`wrong number of arguments: want>=${numParams}, got=${numArgs}`);
+        const defaults = closure.fn.defaults || [];
+        for (let i = numArgs; i < numParams; i++) {
+          this.stack[this.sp] = defaults[i] || NULL;
+          this.sp++;
+        }
+        numArgs = numParams;
       }
       
       // Pack extra args into an array for the rest param
@@ -954,7 +966,20 @@ export class VM {
       }
       this.sp = frame.basePointer + closure.fn.numLocals;
     } else {
-      if (numArgs !== numParams) {
+      // No rest param
+      if (numArgs < minParams) {
+        throw new Error(`wrong number of arguments: want=${numParams}, got=${numArgs}`);
+      }
+      
+      // Fill in defaults for missing params
+      if (numArgs < numParams) {
+        const defaults = closure.fn.defaults || [];
+        for (let i = numArgs; i < numParams; i++) {
+          this.stack[this.sp] = defaults[i] || NULL;
+          this.sp++;
+        }
+        numArgs = numParams;
+      } else if (numArgs > numParams) {
         throw new Error(`wrong number of arguments: want=${numParams}, got=${numArgs}`);
       }
 

@@ -3,7 +3,7 @@
 
 import { Opcodes, make } from './code.js';
 import * as AST from './ast.js';
-import { MonkeyInteger, MonkeyFloat, MonkeyString } from './object.js';
+import { MonkeyInteger, MonkeyFloat, MonkeyString, MonkeyArray, MonkeyBoolean, TRUE, FALSE, NULL } from './object.js';
 
 /**
  * Bytecode: the output of the compiler.
@@ -212,6 +212,22 @@ export class Compiler {
   }
   
   // Constant folding: evaluate constant expressions at compile time
+  /**
+   * Evaluate a constant expression for default parameter values.
+   */
+  static _evalConstant(node) {
+    if (node instanceof AST.IntegerLiteral) return new MonkeyInteger(node.value);
+    if (node instanceof AST.FloatLiteral) return new MonkeyFloat(node.value);
+    if (node instanceof AST.StringLiteral) return new MonkeyString(node.value);
+    if (node instanceof AST.BooleanLiteral) return node.value ? TRUE : FALSE;
+    if (node instanceof AST.NullLiteral) return NULL;
+    if (node instanceof AST.ArrayLiteral) {
+      return new MonkeyArray(node.elements.map(e => Compiler._evalConstant(e)));
+    }
+    // For complex expressions, return null (caller must handle)
+    return NULL;
+  }
+
   static foldConstants(node) {
     if (!node) return node;
     
@@ -1041,6 +1057,19 @@ export class Compiler {
       }
 
       const compiledFn = new CompiledFunction(instructions, numLocals, node.parameters.length, !!node.restParam);
+      
+      // Process default parameter values
+      if (node.defaults && node.defaults.some(d => d !== null)) {
+        compiledFn.defaults = node.defaults.map(d => {
+          if (d === null) return null;
+          // Evaluate the default value at compile time
+          // Only supports constant expressions for now
+          return Compiler._evalConstant(d);
+        });
+        // minParams = first non-null default from the end
+        compiledFn.minParams = node.defaults.findIndex(d => d !== null);
+        if (compiledFn.minParams === -1) compiledFn.minParams = node.parameters.length;
+      }
       this.emit(Opcodes.OpClosure, this.addConstant(compiledFn), freeSymbols.length);
     } else if (node instanceof AST.ReturnStatement) {
       this.compile(node.returnValue);
@@ -1429,6 +1458,8 @@ export class CompiledFunction {
     this.numLocals = numLocals;
     this.numParameters = numParameters;
     this.hasRestParam = hasRestParam;
+    this.defaults = []; // Array of MonkeyObjects (null for required params)
+    this.minParams = numParameters; // Minimum required parameters
   }
 
   type() { return 'COMPILED_FUNCTION'; }

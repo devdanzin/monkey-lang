@@ -388,3 +388,45 @@ describe('Rest Parameters', () => {
     assert.deepEqual(result.elements.map(e => e.value), [10, 20, 30, 40]);
   });
 });
+
+describe('Default Parameter Values', () => {
+  it('uses default when arg missing', () => {
+    assert.equal(run('let f = fn(x, y = 10) { x + y }; f(5)').value, 15);
+  });
+
+  it('overrides default when arg provided', () => {
+    assert.equal(run('let f = fn(x, y = 10) { x + y }; f(5, 20)').value, 25);
+  });
+
+  it('all defaults', () => {
+    assert.equal(run('let f = fn(x = 1, y = 2) { x + y }; f()').value, 3);
+  });
+
+  it('partial defaults override', () => {
+    assert.equal(run('let f = fn(x = 1, y = 2) { x + y }; f(100)').value, 102);
+  });
+
+  it('string defaults', () => {
+    assert.equal(run('let f = fn(a, b = "world") { a + " " + b }; f("hello")').value, 'hello world');
+  });
+
+  it('default in closure', () => {
+    const result = run(`
+      let make = fn(base = 0) {
+        fn(x) { x + base }
+      };
+      let f = make();
+      let g = make(10);
+      [f(5), g(5)]
+    `);
+    assert.deepEqual(result.elements.map(e => e.value), [5, 15]);
+  });
+
+  it('default with rest', () => {
+    const result = run(`
+      let f = fn(first, sep = "-", ...rest) { join([str(first), ...([str(r) for r in rest])], sep) };
+      f(1, ", ", 2, 3)
+    `);
+    assert.equal(result.value, '1, 2, 3');
+  });
+});
