@@ -257,3 +257,59 @@ describe('Integration Tests', () => {
     });
   });
 });
+
+describe('Type-based dispatch', () => {
+  it('type() + match for polymorphism', () => {
+    const result = run(`
+      let to_string = fn(x) {
+        match type(x) {
+          "INTEGER" => f"int({x})",
+          "STRING" => f"str({x})",
+          "ARRAY" => f"arr[{len(x)}]",
+          "BOOLEAN" => f"bool({x})",
+          "NULL" => "null",
+          _ => "?"
+        }
+      };
+      [to_string(42), to_string("hi"), to_string([1,2]), to_string(true), to_string(null)]
+    `);
+    assert.deepEqual(result.elements.map(e => e.value), [
+      'int(42)', 'str(hi)', 'arr[2]', 'bool(true)', 'null'
+    ]);
+  });
+
+  it('type-safe operations', () => {
+    const result = run(`
+      let safe_add = fn(a, b) {
+        if (type(a) != type(b)) { null }
+        else {
+          match type(a) {
+            "INTEGER" => a + b,
+            "STRING" => a + b,
+            "ARRAY" => [...a, ...b],
+            _ => null
+          }
+        }
+      };
+      [safe_add(1, 2), safe_add("a", "b"), safe_add([1], [2])]
+    `);
+    assert.equal(result.elements[0].value, 3);
+    assert.equal(result.elements[1].value, 'ab');
+    assert.deepEqual(result.elements[2].elements.map(e => e.value), [1, 2]);
+  });
+
+  it('recursive type dispatch', () => {
+    const result = run(`
+      let type_name = fn(x) {
+        match type(x) {
+          "ARRAY" => "arr",
+          "INTEGER" => "int",
+          "STRING" => "str",
+          _ => "other"
+        }
+      };
+      [type_name(42), type_name("hi"), type_name([1, 2]), type_name(null)]
+    `);
+    assert.deepEqual(result.elements.map(e => e.value), ['int', 'str', 'arr', 'other']);
+  });
+});
