@@ -415,7 +415,7 @@ const builtins = [
  * VM: the Monkey stack virtual machine.
  */
 export class VM {
-  constructor(bytecode) {
+  constructor(bytecode, gc = null) {
     this.constants = bytecode.constants;
 
     // Main program is wrapped in a closure/frame
@@ -431,6 +431,24 @@ export class VM {
     this.sp = 0; // stack pointer (points to next free slot)
 
     this.globals = new Array(GLOBALS_SIZE);
+
+    // Garbage collector (optional)
+    this.gc = gc;
+    if (gc) {
+      gc.attach(this);
+      // Track constants
+      for (const c of this.constants) {
+        gc.track(c);
+      }
+    }
+  }
+
+  /**
+   * Track an object with the GC (if enabled).
+   */
+  _track(obj) {
+    if (this.gc) this.gc.track(obj);
+    return obj;
   }
 
   /**
@@ -495,7 +513,7 @@ export class VM {
           if (operand instanceof MonkeyInteger) {
             this.push(cachedInteger(-operand.value));
           } else if (operand instanceof MonkeyFloat) {
-            this.push(new MonkeyFloat(-operand.value));
+            this.push(this._track(new MonkeyFloat(-operand.value)));
           } else {
             throw new Error(`unsupported type for negation: ${operand.type()}`);
           }
@@ -549,7 +567,7 @@ export class VM {
             elements.push(this.stack[i]);
           }
           this.sp -= numElements;
-          this.push(new MonkeyArray(elements));
+          this.push(this._track(new MonkeyArray(elements)));
           break;
         }
 
@@ -563,7 +581,7 @@ export class VM {
             pairs.set(key, value);
           }
           this.sp -= numElements;
-          this.push(new MonkeyHash(pairs));
+          this.push(this._track(new MonkeyHash(pairs)));
           break;
         }
 
@@ -644,7 +662,7 @@ export class VM {
             free.push(this.stack[i]);
           }
           this.sp -= numFree;
-          this.push(new Closure(fn, free));
+          this.push(this._track(new Closure(fn, free)));
           break;
         }
 
@@ -672,7 +690,7 @@ export class VM {
         case Opcodes.OpMakeCell: {
           // Wrap TOS value in a Cell
           const val = this.pop();
-          this.push(new Cell(val));
+          this.push(this._track(new Cell(val)));
           break;
         }
 
@@ -776,16 +794,16 @@ export class VM {
       this.executeBinaryFloatOperation(op, left, right);
     } else if (left instanceof MonkeyString && right instanceof MonkeyString) {
       if (op === Opcodes.OpAdd) {
-        this.push(new MonkeyString(left.value + right.value));
+        this.push(this._track(new MonkeyString(left.value + right.value)));
       } else {
         throw new Error(`unknown string operator: ${op}`);
       }
     } else if (left instanceof MonkeyString && right instanceof MonkeyInteger && op === Opcodes.OpMul) {
-      this.push(new MonkeyString(left.value.repeat(Math.max(0, right.value))));
+      this.push(this._track(new MonkeyString(left.value.repeat(Math.max(0, right.value)))));
     } else if (left instanceof MonkeyInteger && right instanceof MonkeyString && op === Opcodes.OpMul) {
-      this.push(new MonkeyString(right.value.repeat(Math.max(0, left.value))));
+      this.push(this._track(new MonkeyString(right.value.repeat(Math.max(0, left.value)))));
     } else if (left instanceof MonkeyArray && right instanceof MonkeyArray && op === Opcodes.OpAdd) {
-      this.push(new MonkeyArray([...left.elements, ...right.elements]));
+      this.push(this._track(new MonkeyArray([...left.elements, ...right.elements])));
     } else {
       throw new Error(`unsupported types for binary operation: ${left.type()} ${right.type()}`);
     }
@@ -814,7 +832,7 @@ export class VM {
       case Opcodes.OpMod: result = left.value % right.value; break;
       default: throw new Error(`unknown float operator: ${op}`);
     }
-    this.push(new MonkeyFloat(result));
+    this.push(this._track(new MonkeyFloat(result)));
   }
 
   executeComparison(op) {
@@ -864,7 +882,7 @@ export class VM {
       if (idx < 0 || idx >= left.value.length) {
         this.push(NULL);
       } else {
-        this.push(new MonkeyString(left.value[idx]));
+        this.push(this._track(new MonkeyString(left.value[idx])));
       }
     } else if (left instanceof MonkeyHash) {
       const key = left.pairs.get(index) || 
