@@ -76,6 +76,8 @@ export const TokenType = {
   CATCH: 'CATCH',
   THROW: 'THROW',
   FINALLY: 'FINALLY',
+  GEN: 'GEN',
+  YIELD: 'YIELD',
 
   // Special
   EOF: 'EOF',
@@ -104,6 +106,8 @@ const KEYWORDS = {
   catch: TokenType.CATCH,
   throw: TokenType.THROW,
   finally: TokenType.FINALLY,
+  gen: TokenType.GEN,
+  yield: TokenType.YIELD,
 };
 
 export class Token {

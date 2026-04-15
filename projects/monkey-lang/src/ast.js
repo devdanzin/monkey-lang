@@ -453,3 +453,23 @@ export class ThrowExpression {
   tokenLiteral() { return this.token.literal; }
   toString() { return `throw ${this.value}`; }
 }
+
+export class GeneratorLiteral {
+  constructor(token, parameters, body, name) {
+    this.token = token;         // GEN token
+    this.parameters = parameters; // [Identifier]
+    this.body = body;           // BlockStatement
+    this.name = name;           // string or null (optional name)
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return `gen(${this.parameters.join(', ')}) { ... }`; }
+}
+
+export class YieldExpression {
+  constructor(token, value) {
+    this.token = token;         // YIELD token
+    this.value = value;         // Expression — the yielded value
+  }
+  tokenLiteral() { return this.token.literal; }
+  toString() { return `yield ${this.value}`; }
+}

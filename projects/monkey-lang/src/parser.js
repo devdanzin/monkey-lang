@@ -74,6 +74,8 @@ export class Parser {
     this.registerPrefix(TokenType.LPAREN, () => this.parseGroupedExpression());
     this.registerPrefix(TokenType.IF, () => this.parseIfExpression());
     this.registerPrefix(TokenType.FUNCTION, () => this.parseFunctionLiteral());
+    this.registerPrefix(TokenType.GEN, () => this.parseGeneratorLiteral());
+    this.registerPrefix(TokenType.YIELD, () => this.parseYieldExpression());
     this.registerPrefix(TokenType.LBRACKET, () => this.parseArrayLiteral());
     this.registerPrefix(TokenType.LBRACE, () => this.parseHashLiteral());
     this.registerPrefix(TokenType.WHILE, () => this.parseWhileExpression());
@@ -701,6 +703,22 @@ export class Parser {
     fn.paramTypes = paramTypes.some(t => t !== null) ? paramTypes : null;
     fn.returnType = returnType;
     return fn;
+  }
+
+  parseGeneratorLiteral() {
+    const token = this.curToken; // GEN token
+    if (!this.expectPeek(TokenType.LPAREN)) return null;
+    const { params: parameters } = this.parseFunctionParameters();
+    if (!this.expectPeek(TokenType.LBRACE)) return null;
+    const body = this.parseBlockStatement();
+    return new ast.GeneratorLiteral(token, parameters, body);
+  }
+
+  parseYieldExpression() {
+    const token = this.curToken; // YIELD token
+    this.nextToken();
+    const value = this.parseExpression(Precedence.LOWEST);
+    return new ast.YieldExpression(token, value);
   }
 
   parseFunctionParameters() {
