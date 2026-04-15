@@ -272,3 +272,40 @@ describe('Array Comprehensions', () => {
     assert.deepEqual(result.elements.map(e => e.value), [10, 20, 30]);
   });
 });
+
+describe('Spread Operator in Arrays', () => {
+  it('spread two arrays', () => {
+    const result = run('let a = [1, 2]; let b = [3, 4]; [...a, ...b]');
+    assert.deepEqual(result.elements.map(e => e.value), [1, 2, 3, 4]);
+  });
+
+  it('spread in middle of array', () => {
+    const result = run('[1, ...[2, 3], 4]');
+    assert.deepEqual(result.elements.map(e => e.value), [1, 2, 3, 4]);
+  });
+
+  it('spread single array', () => {
+    const result = run('[...[1, 2, 3]]');
+    assert.deepEqual(result.elements.map(e => e.value), [1, 2, 3]);
+  });
+
+  it('spread with prefix and suffix', () => {
+    const result = run('let arr = [1, 2, 3]; [0, ...arr, 4]');
+    assert.deepEqual(result.elements.map(e => e.value), [0, 1, 2, 3, 4]);
+  });
+
+  it('spread empty array', () => {
+    const result = run('[...[], 1]');
+    assert.deepEqual(result.elements.map(e => e.value), [1]);
+  });
+
+  it('multiple spreads', () => {
+    const result = run('[...[1], ...[2], ...[3]]');
+    assert.deepEqual(result.elements.map(e => e.value), [1, 2, 3]);
+  });
+
+  it('spread variable', () => {
+    const result = run('let x = [10, 20]; [5, ...x, 30]');
+    assert.deepEqual(result.elements.map(e => e.value), [5, 10, 20, 30]);
+  });
+});

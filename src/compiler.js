@@ -929,10 +929,46 @@ export class Compiler {
       if (!sym) throw new Error(`undefined variable: ${node.value}`);
       this.loadSymbol(sym);
     } else if (node instanceof AST.ArrayLiteral) {
-      for (const el of node.elements) {
-        this.compile(el);
+      const hasSpread = node.elements.some(e => e instanceof AST.SpreadExpression);
+      
+      if (hasSpread) {
+        // With spread: build result via concatenation
+        // Start with empty array, then concat each segment
+        this.emit(Opcodes.OpArray, 0); // empty array
+        
+        let normalElements = [];
+        for (const el of node.elements) {
+          if (el instanceof AST.SpreadExpression) {
+            // First, flush any accumulated normal elements
+            if (normalElements.length > 0) {
+              for (const ne of normalElements) this.compile(ne);
+              this.emit(Opcodes.OpArray, normalElements.length);
+              this.emit(Opcodes.OpAdd); // array concatenation
+              normalElements = [];
+            }
+            // Then concat the spread array
+            this.compile(el.value);
+            this.emit(Opcodes.OpAdd); // array concatenation
+          } else {
+            normalElements.push(el);
+          }
+        }
+        // Flush remaining normal elements
+        if (normalElements.length > 0) {
+          for (const ne of normalElements) this.compile(ne);
+          this.emit(Opcodes.OpArray, normalElements.length);
+          this.emit(Opcodes.OpAdd);
+        }
+      } else {
+        // No spread — normal array creation
+        for (const el of node.elements) {
+          this.compile(el);
+        }
+        this.emit(Opcodes.OpArray, node.elements.length);
       }
-      this.emit(Opcodes.OpArray, node.elements.length);
+    } else if (node instanceof AST.SpreadExpression) {
+      // Spread outside array literal context — just compile the value
+      this.compile(node.value);
     } else if (node instanceof AST.HashLiteral) {
       // Sort keys for deterministic ordering
       const pairs = [...node.pairs];
