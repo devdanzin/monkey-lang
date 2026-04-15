@@ -44,7 +44,7 @@ class Frame {
 }
 
 // Builtins (must match compiler order)
-const builtins = [
+export const builtins = [
   // len
   new MonkeyBuiltin((...args) => {
     if (args.length !== 1) return new MonkeyError(`wrong number of arguments. got=${args.length}, want=1`);
