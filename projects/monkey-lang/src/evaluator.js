@@ -697,12 +697,19 @@ export function monkeyEval(node, env) {
 
   if (node instanceof AST.ClassStatement) {
     const methods = new Map();
+    const staticMethods = new Map();
     for (const m of node.methods) {
       const fn = new MonkeyFunction(m.params, m.body, env);
-      methods.set(m.name, fn);
+      if (m.isStatic) {
+        staticMethods.set(m.name, fn);
+      } else {
+        methods.set(m.name, fn);
+      }
     }
     const superClass = node.superClass ? env.get(node.superClass) : null;
-    return new MonkeyClass(node.name, methods, node.fields, superClass, env);
+    const klass = new MonkeyClass(node.name, methods, node.fields, superClass, env);
+    klass.staticMethods = staticMethods;
+    return klass;
   }
 
   if (node instanceof AST.SelfExpression) {
@@ -1185,7 +1192,6 @@ function evalIndexExpression(left, index) {
   if (left instanceof MonkeyInstance && index instanceof MonkeyString) {
     const value = left.get(index.value);
     if (value instanceof MonkeyFunction) {
-      // Return a bound method — wrap in a closure that sets self
       const method = value;
       const boundMethod = new MonkeyBuiltin((...args) => {
         return callMethod(left, method, args);
@@ -1193,6 +1199,12 @@ function evalIndexExpression(left, index) {
       return boundMethod;
     }
     return value || NULL;
+  }
+  // Class static method access
+  if (left instanceof MonkeyClass && index instanceof MonkeyString) {
+    const staticMethod = left.staticMethods.get(index.value);
+    if (staticMethod) return staticMethod;
+    return NULL;
   }
   return newError(`index operator not supported: ${left.type()}`);
 }

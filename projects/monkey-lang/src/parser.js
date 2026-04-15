@@ -743,8 +743,13 @@ export class Parser {
         fields.push(this.curToken.literal);
         if (this.peekTokenIs(TokenType.SEMICOLON)) this.nextToken();
         this.nextToken(); // advance past semicolon/field name
-      } else if (this.curTokenIs(TokenType.FUNCTION)) {
-        // Method: fn name(params) { body }
+      } else if (this.curTokenIs(TokenType.FUNCTION) || (this.curToken.literal === 'static' && this.peekTokenIs(TokenType.FUNCTION))) {
+        // Method: fn name(params) { body } or static fn name(params) { body }
+        let isStatic = false;
+        if (this.curToken.literal === 'static') {
+          isStatic = true;
+          this.nextToken(); // consume 'static', now at 'fn'
+        }
         const fnToken = this.curToken;
         this.nextToken(); // move to method name
         const methodName = this.curToken.literal;
@@ -752,7 +757,7 @@ export class Parser {
         const { params: parameters } = this.parseFunctionParameters();
         if (!this.expectPeek(TokenType.LBRACE)) return null;
         const body = this.parseBlockStatement();
-        methods.push({ name: methodName, params: parameters, body, token: fnToken });
+        methods.push({ name: methodName, params: parameters, body, token: fnToken, isStatic });
         // After parseBlockStatement, curToken is }, advance past it
         if (this.peekTokenIs(TokenType.SEMICOLON)) this.nextToken();
         this.nextToken();
