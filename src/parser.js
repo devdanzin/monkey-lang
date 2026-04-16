@@ -791,7 +791,15 @@ export class Parser {
 
   parseFunctionLiteral() {    const token = this.curToken;
     if (!this.expectPeek(TokenType.LPAREN)) return null;
-    const { params: parameters, defaults, restParam } = this.parseFunctionParameters();
+    const { params: parameters, defaults, restParam, paramTypes } = this.parseFunctionParameters();
+    
+    // Check for return type annotation: -> type
+    let returnType = null;
+    if (this.peekTokenIs(TokenType.THIN_ARROW)) {
+      this.nextToken(); // consume ->
+      this.nextToken(); // move to type name
+      returnType = this.curToken.literal;
+    }
     
     // Arrow function: fn(x) => expr
     if (this.peekTokenIs(TokenType.ARROW)) {
@@ -803,6 +811,8 @@ export class Parser {
       const fn = new ast.FunctionLiteral(token, parameters, body);
       fn.restParam = restParam;
       fn.defaults = defaults;
+      fn.paramTypes = paramTypes.length ? paramTypes : null;
+      fn.returnType = returnType;
       return fn;
     }
     
@@ -811,16 +821,19 @@ export class Parser {
     const fn = new ast.FunctionLiteral(token, parameters, body);
     fn.restParam = restParam;
     fn.defaults = defaults;
+    fn.paramTypes = paramTypes.length ? paramTypes : null;
+    fn.returnType = returnType;
     return fn;
   }
 
   parseFunctionParameters() {
     const params = [];
     const defaults = [];
+    const paramTypes = [];
     let restParam = null;
     if (this.peekTokenIs(TokenType.RPAREN)) {
       this.nextToken();
-      return { params, defaults, restParam };
+      return { params, defaults, restParam, paramTypes };
     }
     this.nextToken();
     if (this.curTokenIs(TokenType.SPREAD)) {
@@ -828,6 +841,14 @@ export class Parser {
       restParam = new ast.Identifier(this.curToken, this.curToken.literal);
     } else {
       params.push(new ast.Identifier(this.curToken, this.curToken.literal));
+      // Type annotation: param: type
+      if (this.peekTokenIs(TokenType.COLON)) {
+        this.nextToken(); // consume :
+        this.nextToken(); // move to type name
+        paramTypes.push(this.curToken.literal);
+      } else {
+        paramTypes.push(null);
+      }
       if (this.peekTokenIs(TokenType.ASSIGN)) {
         this.nextToken(); // =
         this.nextToken();
@@ -844,6 +865,14 @@ export class Parser {
         restParam = new ast.Identifier(this.curToken, this.curToken.literal);
       } else {
         params.push(new ast.Identifier(this.curToken, this.curToken.literal));
+        // Type annotation: param: type
+        if (this.peekTokenIs(TokenType.COLON)) {
+          this.nextToken(); // consume :
+          this.nextToken(); // move to type name
+          paramTypes.push(this.curToken.literal);
+        } else {
+          paramTypes.push(null);
+        }
         if (this.peekTokenIs(TokenType.ASSIGN)) {
           this.nextToken(); // =
           this.nextToken();
@@ -854,7 +883,7 @@ export class Parser {
       }
     }
     if (!this.expectPeek(TokenType.RPAREN)) return null;
-    return { params, defaults, restParam };
+    return { params, defaults, restParam, paramTypes };
   }
 
   parseCallExpression(fn) {

@@ -13,6 +13,7 @@ export const TokenType = {
   // Multi-char operators
   PIPE: '|>',
   ARROW: '=>',
+  THIN_ARROW: '->',
   SPREAD: '...',
   DOT: '.',
   DOTDOT: '..',
@@ -240,7 +241,8 @@ export class Lexer {
         else { tok = new Token(TokenType.PLUS, '+'); }
         break;
       case '-':
-        if (this.peekChar() === '=') { this.readChar(); tok = new Token(TokenType.MINUS_ASSIGN, '-='); }
+        if (this.peekChar() === '>') { this.readChar(); tok = new Token(TokenType.THIN_ARROW, '->'); }
+        else if (this.peekChar() === '=') { this.readChar(); tok = new Token(TokenType.MINUS_ASSIGN, '-='); }
         else if (this.peekChar() === '-') { this.readChar(); tok = new Token('--', '--'); }
         else { tok = new Token(TokenType.MINUS, '-'); }
         break;
