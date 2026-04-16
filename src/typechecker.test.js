@@ -370,6 +370,10 @@ test('ternary with mismatched types', () => {
   checkHasError('let x = true ? 1 : "hello";', 'Ternary branches have different types');
 });
 
+test('nested ternary (parenthesized)', () => {
+  checkOk('let x = 5; let r = x > 0 ? "pos" : (x < 0 ? "neg" : "zero");');
+});
+
 // ============================================================
 // Range expressions
 // ============================================================
