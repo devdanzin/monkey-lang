@@ -315,6 +315,11 @@ class TypeChecker {
     if (stmt instanceof ast.ExpressionStatement) return this._inferExpr(stmt.expression, env);
     if (stmt instanceof ast.BlockStatement) return this._checkBlock(stmt, env);
     if (stmt instanceof ast.SetStatement) return this._checkSet(stmt, env);
+    if (stmt instanceof ast.EnumStatement) return this._checkEnum(stmt, env);
+    if (stmt instanceof ast.ImportStatement) return tVoid; // TODO: module type checking
+    if (stmt instanceof ast.BreakStatement || stmt instanceof ast.ContinueStatement) return tVoid;
+    if (stmt instanceof ast.DestructuringLet || stmt instanceof ast.HashDestructuringLet) return this._checkDestructure(stmt, env);
+    if (stmt instanceof ast.DestructureLetStatement || stmt instanceof ast.DestructureHashLetStatement) return this._checkDestructure(stmt, env);
     // Other statements — skip for now
     return freshVar();
   }
@@ -389,6 +394,21 @@ class TypeChecker {
     if (expr instanceof ast.HashLiteral) return this._inferHash(expr, env);
     if (expr instanceof ast.AssignExpression) return this._inferAssign(expr, env);
     if (expr instanceof ast.TemplateLiteral || expr instanceof ast.FStringExpression) return tString;
+    if (expr instanceof ast.NullLiteral) return tNull;
+    if (expr instanceof ast.WhileExpression) return this._inferWhile(expr, env);
+    if (expr instanceof ast.DoWhileExpression) return this._inferDoWhile(expr, env);
+    if (expr instanceof ast.ForExpression) return this._inferFor(expr, env);
+    if (expr instanceof ast.ForInExpression) return this._inferForIn(expr, env);
+    if (expr instanceof ast.MatchExpression) return this._inferMatch(expr, env);
+    if (expr instanceof ast.TernaryExpression) return this._inferTernary(expr, env);
+    if (expr instanceof ast.SliceExpression) return this._inferSlice(expr, env);
+    if (expr instanceof ast.RangeExpression) return this._inferRange(expr, env);
+    if (expr instanceof ast.TryCatchExpression) return this._inferTryCatch(expr, env);
+    if (expr instanceof ast.ThrowExpression) return this._inferThrow(expr, env);
+    if (expr instanceof ast.IndexAssignExpression) return this._inferIndexAssign(expr, env);
+    if (expr instanceof ast.ArrayComprehension) return this._inferArrayComp(expr, env);
+    if (expr instanceof ast.OptionalChainExpression) return this._inferOptionalChain(expr, env);
+    if (expr instanceof ast.SpreadExpression || expr instanceof ast.SpreadElement) return freshVar();
 
     // For other expression types, return fresh variable
     return freshVar();
@@ -601,6 +621,222 @@ class TypeChecker {
       }
     }
     return this.subst.apply(valueType);
+  }
+
+  // ============================================================
+  // Loops
+  // ============================================================
+
+  _inferWhile(expr, env) {
+    this._inferExpr(expr.condition, env);
+    this._checkBlock(expr.body, env.extend());
+    return tNull; // while doesn't produce a value
+  }
+
+  _inferDoWhile(expr, env) {
+    this._checkBlock(expr.body, env.extend());
+    this._inferExpr(expr.condition, env);
+    return tNull;
+  }
+
+  _inferFor(expr, env) {
+    const forEnv = env.extend();
+    if (expr.init) this._checkStatement(expr.init, forEnv);
+    if (expr.condition) this._inferExpr(expr.condition, forEnv);
+    if (expr.update) this._inferExpr(expr.update, forEnv);
+    this._checkBlock(expr.body, forEnv);
+    return tNull;
+  }
+
+  _inferForIn(expr, env) {
+    const forEnv = env.extend();
+    const iterableType = this._inferExpr(expr.iterable, env);
+    const resolved = this.subst.apply(iterableType);
+    
+    // Determine element type
+    let elemType;
+    if (resolved.tag === 'TArray') elemType = resolved.elem;
+    else if (resolved.tag === 'THash') elemType = tString; // for-in over hash gives keys
+    else elemType = freshVar();
+    
+    forEnv.set(expr.variable.value || expr.variable, elemType);
+    this._checkBlock(expr.body, forEnv);
+    return tNull;
+  }
+
+  // ============================================================
+  // Match expression
+  // ============================================================
+
+  _inferMatch(expr, env) {
+    const scrutineeType = this._inferExpr(expr.subject || expr.value, env);
+    let resultType = null;
+
+    for (const arm of (expr.arms || expr.cases || [])) {
+      const caseEnv = env.extend();
+      const pattern = arm.pattern;
+      const body = arm.body;
+      const guard = arm.guard;
+      
+      // Pattern matching: bind pattern variables
+      if (pattern) {
+        if (pattern instanceof ast.Identifier && pattern.value !== '_') {
+          caseEnv.set(pattern.value, scrutineeType);
+        }
+      }
+      
+      if (guard) this._inferExpr(guard, caseEnv);
+      
+      // Body might be a block or a single expression
+      let bodyType;
+      if (body instanceof ast.BlockStatement) {
+        bodyType = this._checkBlock(body, caseEnv);
+      } else {
+        bodyType = this._inferExpr(body, caseEnv);
+      }
+      
+      if (!resultType) {
+        resultType = bodyType;
+      } else {
+        try {
+          this._unify(resultType, bodyType, expr);
+        } catch {
+          this._error(`Match arms have different types: ${this.subst.apply(resultType)} vs ${this.subst.apply(bodyType)}`, expr);
+        }
+      }
+    }
+    
+    return resultType || freshVar();
+  }
+
+  // ============================================================
+  // Ternary, Range, Slice, Try/Catch
+  // ============================================================
+
+  _inferTernary(expr, env) {
+    this._inferExpr(expr.condition, env);
+    const thenType = this._inferExpr(expr.consequence, env);
+    const elseType = this._inferExpr(expr.alternative, env);
+    try { this._unify(thenType, elseType, expr); } catch {
+      this._error(`Ternary branches have different types`, expr);
+    }
+    return this.subst.apply(thenType);
+  }
+
+  _inferRange(expr, env) {
+    const startType = this._inferExpr(expr.left, env);
+    const endType = this._inferExpr(expr.right, env);
+    try { this._unify(startType, tInt, expr); } catch {}
+    try { this._unify(endType, tInt, expr); } catch {}
+    return new TArray(tInt);
+  }
+
+  _inferSlice(expr, env) {
+    const leftType = this._inferExpr(expr.left, env);
+    if (expr.start) this._inferExpr(expr.start, env);
+    if (expr.end) this._inferExpr(expr.end, env);
+    return this.subst.apply(leftType); // slice returns same type
+  }
+
+  _inferTryCatch(expr, env) {
+    const tryType = this._checkBlock(expr.tryBody, env.extend());
+    if (expr.catchBody) {
+      const catchEnv = env.extend();
+      if (expr.errorIdent) {
+        const ident = expr.errorIdent.value || expr.errorIdent;
+        catchEnv.set(ident, freshVar());
+      }
+      const catchType = this._checkBlock(expr.catchBody, catchEnv);
+      try { this._unify(tryType, catchType, expr); } catch {}
+    }
+    return this.subst.apply(tryType);
+  }
+
+  _inferThrow(expr, env) {
+    if (expr.value) this._inferExpr(expr.value, env);
+    return freshVar(); // throw never returns
+  }
+
+  _inferIndexAssign(expr, env) {
+    const leftType = this._inferExpr(expr.left, env);
+    this._inferExpr(expr.index, env);
+    const valueType = this._inferExpr(expr.value, env);
+    return this.subst.apply(valueType);
+  }
+
+  _inferArrayComp(expr, env) {
+    const compEnv = env.extend();
+    const iterableType = this._inferExpr(expr.iterable, compEnv);
+    const resolved = this.subst.apply(iterableType);
+    
+    let elemType = freshVar();
+    if (resolved.tag === 'TArray') elemType = resolved.elem;
+    compEnv.set(expr.variable.value || expr.variable, elemType);
+    
+    if (expr.condition) this._inferExpr(expr.condition, compEnv);
+    const bodyType = this._inferExpr(expr.body, compEnv);
+    return new TArray(this.subst.apply(bodyType));
+  }
+
+  _inferOptionalChain(expr, env) {
+    this._inferExpr(expr.left, env);
+    return freshVar(); // optional chain may return null
+  }
+
+  // ============================================================
+  // Enum statement
+  // ============================================================
+
+  _checkEnum(stmt, env) {
+    // Enums create a namespace of constructors
+    const enumName = stmt.name;
+    for (const variant of (stmt.variants || [])) {
+      // Each variant is a constructor function or constant
+      if (variant.params && variant.params.length > 0) {
+        // Constructor with params → function type
+        const paramTypes = variant.params.map(() => freshVar());
+        env.set(`${enumName}.${variant.name}`, new TFun(paramTypes, freshVar()));
+      } else {
+        // Constant variant
+        env.set(`${enumName}.${variant.name}`, freshVar());
+      }
+    }
+    return tVoid;
+  }
+
+  // ============================================================
+  // Destructuring
+  // ============================================================
+
+  _checkDestructure(stmt, env) {
+    const valueType = this._inferExpr(stmt.value, env);
+    // For array destructuring, each name gets the element type
+    // For hash destructuring, each name gets the value type
+    const resolved = this.subst.apply(valueType);
+    
+    if (stmt.names) {
+      for (const name of stmt.names) {
+        if (name && name.value) {
+          if (resolved.tag === 'TArray') {
+            env.set(name.value, resolved.elem || freshVar());
+          } else {
+            env.set(name.value, freshVar());
+          }
+        }
+      }
+    }
+    if (stmt.keys) {
+      for (const key of stmt.keys) {
+        if (key && key.value) {
+          if (resolved.tag === 'THash') {
+            env.set(key.value, resolved.val || freshVar());
+          } else {
+            env.set(key.value, freshVar());
+          }
+        }
+      }
+    }
+    return tVoid;
   }
 
   _unify(t1, t2, node) {

@@ -310,6 +310,114 @@ test('null value', () => checkOk('let x = null;'));
 test('undefined variable detected', () => checkHasError('x + 1;', 'Undefined variable'));
 
 // ============================================================
+// While loops
+// ============================================================
+
+test('while loop', () => {
+  checkOk('let i = 0; while (i < 10) { set i = i + 1; }');
+});
+
+test('while loop with string', () => {
+  checkOk('let s = "hello"; while (len(s) < 10) { set s = s + "!"; }');
+});
+
+// ============================================================
+// For loops
+// ============================================================
+
+test('for-in loop over array', () => {
+  checkOk('let arr = [1, 2, 3]; for (x in arr) { puts(x); }');
+});
+
+test('for-in loop over range', () => {
+  checkOk('for (i in 0..10) { puts(i); }');
+});
+
+// ============================================================
+// Match expressions
+// ============================================================
+
+test('match with consistent arm types', () => {
+  checkOk(`
+    let x = 5;
+    let result = match (x) {
+      1 => "one",
+      2 => "two",
+      _ => "other"
+    };
+  `);
+});
+
+test('match with mismatched arm types', () => {
+  checkHasError(`
+    let x = 5;
+    let result = match (x) {
+      1 => "one",
+      2 => 42
+    };
+  `, 'Match arms have different types');
+});
+
+// ============================================================
+// Ternary expressions
+// ============================================================
+
+test('ternary expression', () => {
+  checkOk('let x = true ? 1 : 2;');
+});
+
+test('ternary with mismatched types', () => {
+  checkHasError('let x = true ? 1 : "hello";', 'Ternary branches have different types');
+});
+
+// ============================================================
+// Range expressions
+// ============================================================
+
+test('range creates int array', () => {
+  checkOk('let arr = 0..10; let x = arr[0] + 1;');
+});
+
+// ============================================================
+// Slice expressions
+// ============================================================
+
+test('array slice', () => {
+  checkOk('let arr = [1, 2, 3, 4]; let sub = arr[1:3]; let x = sub[0] + 1;');
+});
+
+// ============================================================
+// Try/catch
+// ============================================================
+
+test('try/catch expression', () => {
+  checkOk(`
+    let result = try {
+      let x = 42 / 0;
+      x
+    } catch (e) {
+      0
+    };
+  `);
+});
+
+// ============================================================
+// Null literal
+// ============================================================
+
+test('null literal', () => {
+  checkOk('let x = null;');
+});
+
+// ============================================================
+// Array comprehension
+// ============================================================
+
+test('array comprehension', () => {
+  checkOk('let arr = [1, 2, 3]; let doubled = [x * 2 for x in arr];');
+});
+
+// ============================================================
 // Report
 // ============================================================
 
