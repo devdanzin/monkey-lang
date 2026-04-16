@@ -678,11 +678,35 @@ class TypeChecker {
       const body = arm.body;
       const guard = arm.guard;
       
-      // Pattern matching: bind pattern variables
+      // Pattern matching: bind pattern variables and check patterns
       if (pattern) {
         if (pattern instanceof ast.Identifier && pattern.value !== '_') {
+          // Variable pattern: bind to scrutinee type
           caseEnv.set(pattern.value, scrutineeType);
+        } else if (pattern instanceof ast.IntegerLiteral) {
+          // Integer literal pattern: unify scrutinee with int
+          try { this._unify(scrutineeType, tInt, expr); } catch {}
+        } else if (pattern instanceof ast.StringLiteral) {
+          // String literal pattern: unify scrutinee with string
+          try { this._unify(scrutineeType, tString, expr); } catch {}
+        } else if (pattern instanceof ast.BooleanLiteral) {
+          // Boolean literal pattern: unify scrutinee with bool
+          try { this._unify(scrutineeType, tBool, expr); } catch {}
+        } else if (pattern instanceof ast.ArrayLiteral) {
+          // Array pattern: bind element variables
+          const elemType = freshVar();
+          try { this._unify(scrutineeType, new TArray(elemType), expr); } catch {}
+          if (pattern.elements) {
+            for (const elem of pattern.elements) {
+              if (elem instanceof ast.Identifier) {
+                caseEnv.set(elem.value, this.subst.apply(elemType));
+              }
+            }
+          }
+        } else if (pattern instanceof ast.NullLiteral) {
+          try { this._unify(scrutineeType, tNull, expr); } catch {}
         }
+        // Wildcard (_) and other patterns: no binding
       }
       
       if (guard) this._inferExpr(guard, caseEnv);

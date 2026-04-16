@@ -422,6 +422,31 @@ test('array comprehension', () => {
 });
 
 // ============================================================
+// Improved match type inference
+// ============================================================
+
+test('match: integer pattern unifies scrutinee with int', () => {
+  checkOk(`
+    let x = 5;
+    let r = match (x) { 1 => "one", 2 => "two", _ => "other" };
+  `);
+});
+
+test('match: variable pattern binds scrutinee type', () => {
+  checkOk(`
+    let x = 5;
+    let r = match (x) { n => n + 1 };
+  `);
+});
+
+test('match: wildcard pattern no binding', () => {
+  checkOk(`
+    let x = 5;
+    match (x) { _ => "ignored" };
+  `);
+});
+
+// ============================================================
 // Report
 // ============================================================
 
