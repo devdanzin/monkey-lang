@@ -1,113 +1,137 @@
-# 🐒 Monkey-lang
+# Monkey-lang
 
-A feature-rich programming language with a bytecode compiler, virtual machine, garbage collector, debugger, and optimizer.
+A complete programming language implementation in JavaScript, featuring a full compiler pipeline from source code to multiple backends.
 
 ## Features
 
-- **Types**: Integers, floats, booleans, strings, arrays, hashes, null
-- **Variables**: `let`, `const`, `set` (mutation)
-- **Functions**: First-class, closures, recursion, tail call optimization
-- **Default parameters**: `fn(x, y = 10) { ... }`
-- **Rest parameters**: `fn(first, ...rest) { ... }`
-- **Loops**: `for (x in arr)`, `while`, `do-while`
-- **Array comprehensions**: `[x * 2 for x in arr if x > 0]`
-- **Spread operator**: `[...a, ...b]`
-- **Destructuring**: `let [a, b] = arr`, `let {x, y} = hash`
-- **Pattern matching**: `match expr { pattern => body, _ => default }`
-- **Deep equality**: `[1, 2, 3] == [1, 2, 3]` → `true`
-- **F-strings**: `f"Hello {name}!"`
-- **Pipe operator**: `x |> f`
-- **Range syntax**: `1..10`
-- **Range slicing**: `arr[1..3]`, `"hello"[0..2]`
-- **Exponentiation**: `2 ** 10`
-- **Optional chaining**: `x?.y`
-- **Ternary**: `x ? a : b`
-- **40+ built-in functions**
+- **Lexer + Parser** → Rich AST with pattern matching, closures, loops, generators
+- **Tree-walking Evaluator** → Direct interpretation
+- **Bytecode Compiler + VM** → Stack-based virtual machine
+- **WASM Backend** → Compile to WebAssembly
+- **RISC-V Backend** → Compile to RISC-V assembly (with GC!)
+- **Type System** → Hindley-Milner type inference (Algorithm W)
+- **Optimization Pipeline** → SSA, constant propagation, dead code elimination
+- **38 test files** → Comprehensive coverage
 
-## Infrastructure
+## Compiler Pipeline
 
-- **Bytecode compiler** with constant folding
-- **Stack-based VM** with 30+ opcodes
-- **Mark-sweep GC** with generational mode
-- **Bytecode optimizer**: dead code elimination, peephole, jump threading
-- **Bytecode debugger**: step, breakpoints, trace, inspection
-- **Heap visualization**: DOT graph output
-- **REPL**: Interactive + eval mode
-- **Benchmark suite**
+```
+Source Code
+    │
+    ▼
+┌─────────┐    ┌──────────────┐    ┌──────────┐
+│  Lexer  │ →  │    Parser    │ →  │   AST    │
+└─────────┘    └──────────────┘    └──────────┘
+                                        │
+                    ┌───────────────────┬┴──────────────────┐
+                    │                   │                    │
+                    ▼                   ▼                    ▼
+            ┌──────────────┐  ┌──────────────┐    ┌──────────────┐
+            │ Type Checker │  │     CFG      │    │     DCE      │
+            │ (Algorithm W)│  │ Basic Blocks │    │ Dead Code    │
+            └──────┬───────┘  └──────┬───────┘    └──────────────┘
+                   │                 │
+                   ▼                 ▼
+            ┌──────────────┐  ┌──────────────┐
+            │  Type Info   │  │     SSA      │
+            │ (LSP Hover)  │  │  (Cytron)    │
+            └──────────────┘  └──────┬───────┘
+                                     │
+                    ┌────────────────┬┴──────────────────┐
+                    │                │                    │
+                    ▼                ▼                    ▼
+            ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+            │  Const Prop  │  │  Liveness    │  │   Escape     │
+            │   (SCCP)     │  │  Analysis    │  │  Analysis    │
+            └──────────────┘  └──────┬───────┘  └──────────────┘
+                                     │
+                                     ▼
+                              ┌──────────────┐
+                              │  Reg Alloc   │
+                              │ Graph Color  │
+                              └──────────────┘
+                                     │
+                    ┌────────────────┬┴──────────────────┐
+                    │                │                    │
+                    ▼                ▼                    ▼
+            ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+            │   RISC-V     │  │    WASM      │  │  Bytecode    │
+            │  Codegen     │  │  Backend     │  │  Compiler    │
+            └──────────────┘  └──────────────┘  └──────────────┘
+```
 
-## Quick Start
+## Module Catalog
+
+### Frontend
+| Module | File | Description |
+|--------|------|-------------|
+| Lexer | `src/lexer.js` | Tokenization |
+| Parser | `src/parser.js` | Recursive descent, all expression types |
+| AST | `src/ast.js` | Expression/Statement nodes |
+
+### Type System
+| Module | File | Description |
+|--------|------|-------------|
+| Type Checker | `src/typechecker.js` | Algorithm W, HM inference |
+| Type Info | `src/type-info.js` | LSP-like hover (inferred types) |
+| Type Tracer | `src/type-tracer.js` | Step-by-step inference visualization |
+
+### Analysis
+| Module | File | Description |
+|--------|------|-------------|
+| CFG | `src/cfg.js` | Basic blocks, dominators, loop detection, DOT export |
+| SSA | `src/ssa.js` | Cytron algorithm, phi nodes, variable renaming |
+| Constant Propagation | `src/const-prop.js` | SCCP, lattice-based analysis |
+| Liveness | `src/liveness.js` | Backward dataflow, dead assignments |
+| Dead Code Elimination | `src/dce.js` | Unreachable code, constant conditions |
+| Escape Analysis | `src/escape.js` | Stack vs heap allocation decisions |
+| Register Allocator | `src/regalloc.js` | Graph coloring (Chaitin-Briggs) + Linear scan |
+| Pipeline | `src/pipeline.js` | Unified: all passes in sequence |
+
+### Optimization
+| Module | File | Description |
+|--------|------|-------------|
+| Typed Optimizer | `src/typed-optimizer.js` | Constant folding, strength reduction |
+| Inline Caching | `src/shape.js` | V8-style shapes + IC |
+
+### Backends
+| Module | File | Description |
+|--------|------|-------------|
+| Evaluator | `src/evaluator.js` | Tree-walking interpreter |
+| Bytecode Compiler | `src/compiler.js` | Stack-based bytecode |
+| VM | `src/vm.js` | Virtual machine |
+| WASM Backend | `src/wasm.js` | WebAssembly compilation |
+| RISC-V Codegen | `../riscv-emulator/src/monkey-codegen.js` | RISC-V assembly |
+
+### Testing
+| File | Description |
+|------|-------------|
+| 38 test files | `src/*.test.js` |
+| Parity tests | Evaluator ↔ VM equivalence |
+| Integration | End-to-end compilation |
+| Stress tests | Complex programs |
+
+## Running
 
 ```bash
-# Evaluate an expression
-node repl.js --eval "2 ** 10"
-# 1024
-
-# Interactive REPL
+# REPL
 node repl.js
 
-# Run benchmarks
-node bench.js
+# With type checking
+node repl.js --typecheck
 
-# Run tests (807 tests)
-node --test src/*.test.js
+# Run all tests
+for f in src/*.test.js; do node "$f"; done
+
+# Run compiler pipeline on source
+node -e "import {CompilerPipeline} from './src/pipeline.js'; const p = new CompilerPipeline(); console.log(p.run('let x = 5; let y = x + 1;').stats)"
 ```
 
-## Examples
+## Language Features
 
-```
-// Fibonacci
-let fib = fn(n) { if (n < 2) { n } else { fib(n-1) + fib(n-2) } };
-fib(20)  // 6765
-
-// Closures with mutable state
-let make_counter = fn() {
-  let n = 0;
-  let inc = fn() { set n = n + 1; n };
-  inc
-};
-let counter = make_counter();
-counter()  // 1
-counter()  // 2
-
-// Array comprehension with filter
-let evens = [x for x in 1..20 if x % 2 == 0];
-// [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
-
-// Pattern matching with deep equality
-match [1, 2, 3] {
-  [1, 2, 3] => "triple",
-  [1, 2] => "pair",
-  _ => "other"
-}
-// "triple"
-
-// Default + rest parameters
-let format = fn(sep = ", ", ...items) {
-  join([str(x) for x in items], sep)
-};
-format(" | ", 1, 2, 3)  // "1 | 2 | 3"
-
-// Spread operator
-let a = [1, 2, 3];
-let b = [0, ...a, 4];  // [0, 1, 2, 3, 4]
-
-// Hash destructuring
-let {name, age} = {"name": "Alice", "age": 30};
-f"{name} is {age}"  // "Alice is 30"
-
-// Range slicing
-"hello"[1..3]       // "ell"
-[10,20,30,40][1..2] // [20, 30]
-
-// Pipe + match
-5 |> fn(n) { match n % 2 { 0 => "even", _ => "odd" } }
-// "odd"
-```
-
-## Tests
-
-807 tests across 23 test files covering every feature.
-
-```bash
-node --test src/*.test.js
-```
+- **Data types**: integers, strings, booleans, arrays, hashes, null
+- **Functions**: first-class closures, recursion, default params
+- **Control flow**: if/else, while, for-in, match/case
+- **Operators**: arithmetic, comparison, string concat, logical
+- **Built-ins**: puts, len, first, last, rest, push, type
+- **Advanced**: generators (yield), try/catch, spread operator, destructuring
