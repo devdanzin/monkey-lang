@@ -245,6 +245,71 @@ test('multiple let bindings with consistent types', () => {
 });
 
 // ============================================================
+// Let-polymorphism
+// ============================================================
+
+test('polymorphic identity function', () => {
+  checkOk('let id = fn(x) { x }; let a = id(5); let b = id("hello");');
+});
+
+test('polymorphic id used with int then string', () => {
+  checkOk('let id = fn(x) { x }; let a = id(5) + 1; let b = id("hi") + "!";');
+});
+
+test('polymorphic const (K combinator)', () => {
+  checkOk('let k = fn(x) { fn(y) { x } }; let a = k(5)("hello"); let b = k("hi")(42);');
+});
+
+// ============================================================
+// Error detection
+// ============================================================
+
+test('negate string error', () => {
+  checkHasError('let x = -"hello";', 'Cannot negate');
+});
+
+test('call non-function error', () => {
+  checkHasError('let x = 5; x(3);', 'Cannot call');
+});
+
+test('wrong arity error', () => {
+  checkHasError('let f = fn(x, y) { x + y }; f(1);', 'Cannot call');
+});
+
+test('too many arguments error', () => {
+  checkHasError('let f = fn(x) { x }; f(1, 2);', 'Cannot call');
+});
+
+test('add int and bool error', () => {
+  checkHasError('let x = 5 + true;', 'Cannot use');
+});
+
+test('add int and string error', () => {
+  checkHasError('let x = 5 + "hello";', 'Cannot use');
+});
+
+test('compare different types error', () => {
+  checkHasError('let x = 5 > "hello";', 'Cannot compare');
+});
+
+// ============================================================
+// Edge cases
+// ============================================================
+
+test('empty program', () => checkOk(''));
+test('nested arrays', () => checkOk('let x = [[1,2],[3,4]];'));
+test('array of functions', () => checkOk('let x = [fn(a){a}, fn(b){b}];'));
+test('deeply nested if', () => checkOk('let x = if (true) { if (false) { 1 } else { 2 } } else { 3 };'));
+test('function returning function', () => checkOk('let f = fn(x) { fn(y) { fn(z) { x + y + z } } };'));
+test('mixed int and float', () => checkOk('let x = 5; let y = 3.14; let z = x + y;'));
+test('negative prefix on int', () => checkOk('let x = -5; let y = -x;'));
+test('nested scope shadowing', () => {
+  checkOk('let x = 5; let f = fn() { let x = "hello"; x }; let y = x + 1;');
+});
+test('null value', () => checkOk('let x = null;'));
+test('undefined variable detected', () => checkHasError('x + 1;', 'Undefined variable'));
+
+// ============================================================
 // Report
 // ============================================================
 

@@ -47,6 +47,12 @@ class THash {
   equals(other) { return other.tag === 'THash' && this.key.equals(other.key) && this.val.equals(other.val); }
 }
 
+// Type scheme for let-polymorphism: ∀ a b . type
+class Scheme {
+  constructor(vars, type) { this.vars = vars; this.type = type; }
+  toString() { return this.vars.length ? `∀${this.vars.join(' ')}.${this.type}` : this.type.toString(); }
+}
+
 // Primitive types
 const tInt = new TCon('int');
 const tFloat = new TCon('float');
@@ -54,6 +60,64 @@ const tBool = new TCon('bool');
 const tString = new TCon('string');
 const tNull = new TCon('null');
 const tVoid = new TCon('void');
+
+// ============================================================
+// Free Type Variables & Generalization
+// ============================================================
+
+function freeTypeVars(type) {
+  const vars = new Set();
+  function collect(t) {
+    if (t.tag === 'TVar') vars.add(t.name);
+    else if (t.tag === 'TFun') { t.params.forEach(collect); collect(t.ret); }
+    else if (t.tag === 'TArray') collect(t.elem);
+    else if (t.tag === 'THash') { collect(t.key); collect(t.val); }
+  }
+  collect(type);
+  return vars;
+}
+
+function freeTypeVarsScheme(scheme) {
+  const ftv = freeTypeVars(scheme.type);
+  for (const v of scheme.vars) ftv.delete(v);
+  return ftv;
+}
+
+function freeTypeVarsEnv(env) {
+  const vars = new Set();
+  let current = env;
+  while (current) {
+    for (const [, scheme] of current.bindings) {
+      const ftv = scheme instanceof Scheme ? freeTypeVarsScheme(scheme) : freeTypeVars(scheme);
+      for (const v of ftv) vars.add(v);
+    }
+    current = current.parent;
+  }
+  return vars;
+}
+
+function generalize(env, subst, type) {
+  const resolvedType = subst.apply(type);
+  const envVars = freeTypeVarsEnv(env);
+  // Apply subst to env vars too
+  const resolvedEnvVars = new Set();
+  for (const v of envVars) {
+    const resolved = subst.apply(new TVar(v));
+    for (const fv of freeTypeVars(resolved)) resolvedEnvVars.add(fv);
+  }
+  const typeVars = freeTypeVars(resolvedType);
+  const quantified = [...typeVars].filter(v => !resolvedEnvVars.has(v));
+  return new Scheme(quantified, resolvedType);
+}
+
+function instantiateScheme(scheme) {
+  if (!(scheme instanceof Scheme)) return scheme;
+  const subst = new Subst();
+  for (const v of scheme.vars) {
+    subst.map.set(v, freshVar());
+  }
+  return subst.apply(scheme.type);
+}
 
 // ============================================================
 // Substitution
@@ -264,14 +328,21 @@ class TypeChecker {
     try {
       this._unify(placeholder, valueType, stmt);
     } catch { /* ignore — placeholder may not match */ }
-    env.set(stmt.name.value, this.subst.apply(valueType));
+    
+    // Remove placeholder before generalizing (it would pollute free vars)
+    env.bindings.delete(stmt.name.value);
+    
+    // Generalize: let-polymorphism
+    const scheme = generalize(env, this.subst, valueType);
+    env.set(stmt.name.value, scheme);
     return tVoid;
   }
 
   _checkSet(stmt, env) {
     const valueType = this._inferExpr(stmt.value, env);
-    const varType = env.get(stmt.name.value);
-    if (varType) {
+    const existing = env.get(stmt.name.value);
+    if (existing) {
+      const varType = instantiateScheme(existing);
       try {
         this._unify(varType, valueType, stmt);
       } catch {
@@ -329,7 +400,9 @@ class TypeChecker {
       this._error(`Undefined variable: ${expr.value}`, expr);
       return freshVar();
     }
-    return this.subst.apply(t);
+    // Instantiate scheme for let-polymorphism
+    const instantiated = instantiateScheme(t);
+    return this.subst.apply(instantiated);
   }
 
   _inferPrefix(expr, env) {
@@ -337,6 +410,11 @@ class TypeChecker {
     switch (expr.operator) {
       case '!': return tBool;
       case '-': {
+        // Negation requires numeric type
+        const resolved = this.subst.apply(operandType);
+        if (resolved.tag === 'TCon' && resolved.name !== 'int' && resolved.name !== 'float') {
+          this._error(`Cannot negate ${resolved}`, expr);
+        }
         try { this._unify(operandType, tInt, expr); } catch { /* allow float too */ }
         return this.subst.apply(operandType);
       }
@@ -546,7 +624,8 @@ function typecheck(program) {
 
 export {
   typecheck, TypeChecker,
-  TVar, TCon, TFun, TArray, THash,
+  TVar, TCon, TFun, TArray, THash, Scheme,
   tInt, tFloat, tBool, tString, tNull, tVoid,
-  Subst, unify, TypeEnv, freshVar, resetFresh, parseAnnotation
+  Subst, unify, TypeEnv, freshVar, resetFresh, parseAnnotation,
+  generalize, instantiateScheme, freeTypeVars
 };
