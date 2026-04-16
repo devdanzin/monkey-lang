@@ -10,11 +10,13 @@ import { Compiler, SymbolTable } from './src/compiler.js';
 import { VM } from './src/vm.js';
 import { GarbageCollector } from './src/gc.js';
 import { optimize } from './src/optimizer.js';
+import { typecheck } from './src/typechecker.js';
 import { NULL } from './src/object.js';
 
 const args = process.argv.slice(2);
 const useGC = args.includes('--gc');
 const useOptimize = args.includes('--optimize');
+const useTypecheck = args.includes('--typecheck');
 const evalIdx = args.indexOf('--eval');
 
 // For --eval mode, just evaluate and exit
@@ -25,6 +27,17 @@ if (evalIdx >= 0 && args[evalIdx + 1]) {
     const parser = new Parser(lexer);
     const program = parser.parseProgram();
     if (parser.errors.length > 0) throw new Error(parser.errors.join('\n'));
+    
+    // Type checking pass
+    if (useTypecheck) {
+      const { errors } = typecheck(program);
+      if (errors.length > 0) {
+        console.error('Type errors:');
+        errors.forEach(e => console.error(`  ${e.message}`));
+        process.exit(1);
+      }
+    }
+    
     const compiler = new Compiler();
     compiler.compile(program);
     const bytecode = compiler.bytecode();
@@ -51,6 +64,7 @@ console.log('Monkey-lang REPL v1.0');
 console.log('Type .help for commands, .quit to exit');
 if (useGC) console.log('GC enabled');
 if (useOptimize) console.log('Optimizer enabled');
+if (useTypecheck) console.log('Type checker enabled');
 console.log();
 
 // Persistent state for multi-line expressions
@@ -103,6 +117,14 @@ function evaluate(input) {
   
   if (parser.errors.length > 0) {
     throw new Error(parser.errors.join('\n'));
+  }
+  
+  // Type checking pass
+  if (useTypecheck) {
+    const { errors } = typecheck(program);
+    if (errors.length > 0) {
+      throw new Error('Type errors:\n' + errors.map(e => `  ${e.message}`).join('\n'));
+    }
   }
   
   const compiler = new Compiler();
